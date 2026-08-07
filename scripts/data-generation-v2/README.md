@@ -100,10 +100,14 @@ uv run --no-sync python scripts/data-generation-v2/verify_flow_math.py \
 
 ### flow 回放可视化
 
+`--base-image` 选底图。**推荐用 `front_rgb_masked`**：桌面与机械臂被刷平成纯棕后，flow 箭头
+不会淹没在木纹里，物体运动一眼就能看清（默认值仍是 `front_rgb`，保持与旧产物兼容）。
+
 ```bash
 uv run --no-sync python scripts/data-generation-v2/replay_flow_video.py \
-  --h5 artifacts/generated/flow-16env/record_dataset_ButtonUnmask.h5 \
-  --episode 0 --arrow-scale 5
+  --h5 artifacts/generated/v21-16env/record_dataset_*.h5 \
+  --episode 0 --arrow-scale 5 --base-image front_rgb_masked \
+  --output-dir artifacts/flow-viz
 ```
 
 ### 遮蔽图目视检查

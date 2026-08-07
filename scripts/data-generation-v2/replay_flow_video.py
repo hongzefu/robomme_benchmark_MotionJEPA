@@ -3,8 +3,9 @@
 
 每一帧的构成：
 
-- **主画面**：``obs/front_rgb`` 用最近邻放大 3 倍到 768×768（保住像素栅格，不糊掉），
-  叠加每个物体的位置点与位移箭头；
+- **主画面**：底图用最近邻放大 3 倍到 768×768（保住像素栅格，不糊掉），叠加每个物体的位置点与
+  位移箭头。底图由 ``--base-image`` 选：``front_rgb`` 是原始渲染图，``front_rgb_masked`` 是纯色棕
+  遮蔽图（桌面与机械臂被刷平，只剩夹爪接触部位与任务物体）。用遮蔽图当底，箭头不会淹没在木纹里；
 - **右侧图例**：物体原名 + 色块 + 当前帧的 (Δu, Δv) 数值；
 - **底部状态条**：帧号、是否处于 demo 相位、有效位移计数，以及醒目的
   ``delta = 1 frame (next recorded step)`` 标注——位移的时间基准只有一帧，这一点必须一眼看见。
@@ -216,8 +217,14 @@ def render_episode(
     output_path: Path,
     arrow_scale: float,
     fps: int,
+    base_image: str = "front_rgb",
 ) -> dict[str, Any]:
-    """渲染单个 episode 的 flow 对照视频，返回统计信息。"""
+    """渲染单个 episode 的 flow 对照视频，返回统计信息。
+
+    ``base_image`` 选底图：``front_rgb`` 是原始渲染图，``front_rgb_masked`` 是纯色棕遮蔽图
+    （桌面与机械臂被刷平，只剩夹爪接触部位与任务物体）。用遮蔽图当底，flow 箭头不会淹没在
+    木纹里，物体的运动一眼就能看清。
+    """
     import imageio
 
     with h5py.File(h5_path, "r") as handle:
@@ -243,7 +250,17 @@ def render_episode(
                 flow_group = step_group.get("flow")
                 if not isinstance(flow_group, h5py.Group):
                     raise ReplayError(f"{h5_path}/{episode_name}/{name}：缺少 flow")
-                rgb = np.asarray(step_group["obs"]["front_rgb"][()], dtype=np.uint8)
+                obs_group = step_group["obs"]
+                if base_image not in obs_group:
+                    raise ReplayError(
+                        f"{h5_path}/{episode_name}/{name}：obs 下没有 {base_image}"
+                        + (
+                            "，这份产物不是带 --masked-rgb 生成的"
+                            if base_image == "front_rgb_masked"
+                            else ""
+                        )
+                    )
+                rgb = np.asarray(obs_group[base_image][()], dtype=np.uint8)
                 records = {key: flow_group[key][()] for key in flow_objects}
                 is_video_demo = bool(step_group["info"]["is_video_demo"][()])
 
@@ -288,6 +305,12 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--fps", type=int, default=30, help="输出帧率（默认 %(default)s）")
     parser.add_argument(
+        "--base-image",
+        choices=("front_rgb", "front_rgb_masked"),
+        default="front_rgb",
+        help="底图用原始渲染图还是纯色棕遮蔽图（默认 %(default)s）",
+    )
+    parser.add_argument(
         "--output-dir",
         default=str(DEFAULT_OUTPUT_DIR),
         help="视频输出目录（默认 %(default)s）",
@@ -311,6 +334,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 output_path,
                 namespace.arrow_scale,
                 namespace.fps,
+                namespace.base_image,
             )
         except ReplayError as exc:
             print(f"跳过 {h5_path.name}：{exc}", file=sys.stderr, flush=True)
