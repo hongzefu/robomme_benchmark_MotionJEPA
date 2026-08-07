@@ -56,8 +56,8 @@ env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/data-generation-v2/generate_d
 
 ### 16 任务 × episode_0
 
-参考数据不覆盖全部 16 个任务时加 `--no-reference-validation`，生成阶段本身与参考数据无关，
-跳过的只是末尾那次对拍。`--workers 1` 用来消除多进程抢同一张卡带来的调度扰动。
+加 `--no-reference-validation` 可以把生成与校验拆成两步（生成阶段本身与参考数据无关，跳过的只是
+末尾那次对拍），验证脚本随后单独跑。`--workers 1` 用来消除多进程抢同一张卡带来的调度扰动。
 
 ```bash
 env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/data-generation-v2/generate_dataset.py \
@@ -121,9 +121,9 @@ uv run --no-sync python scripts/data-generation-v2/export_masked_preview.py \
 数据源是 HuggingFace 的 `Yinpei/robomme_data_h5`，16 个任务各一个 `.tar.xz`，压缩态合计约 56 GB。
 脚本会跳过本机已有且校验通过的任务，只下缺的那些。下载与解压是小时级长任务，务必用 tmux 起。
 
-**本机现状：参考数据只覆盖 7 个任务**（`ButtonUnmask` / `ButtonUnmaskSwap` / `VideoUnmask` /
-`VideoUnmaskSwap` / `PickXtimes` / `StopCube` / `SwingXtimes`）。因此与官方参考的对拍目前只能覆盖
-这 7 个；生成 16 个任务时需要加 `--no-reference-validation`。
+**本机现状：16 个任务全部齐全**（2026-08-07 补完，共 530 GB，每个任务都通过了 100-episode 校验）。
+因此与官方参考的契约校验与 `joint_action` 对拍现在可以覆盖全部 16 个任务，`--no-reference-validation`
+不再是必需的——只有在生成与校验想拆成两步跑时才需要它。
 
 ```bash
 uv run --no-sync python scripts/data-generation-v2/fetch_reference_h5.py --tasks all

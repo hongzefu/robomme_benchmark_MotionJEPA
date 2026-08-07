@@ -114,9 +114,9 @@ uv sync
 
 ## 数据路径
 
-- **官方参考 h5（仓库外，只读）**：`/data/hongzefu/robomme_data_h5`（约 85 GB）。
-  ⚠ **当前只有 4 个任务**：`ButtonUnmask`、`ButtonUnmaskSwap`、`VideoUnmask`、`VideoUnmaskSwap`。
-  其余 12 个任务的参考数据不在本机，凡是需要与参考数据对拍的流程都只能在这 4 个任务上跑。
+- **官方参考 h5（仓库外，只读）**：`/data/hongzefu/robomme_data_h5`（约 530 GB）。
+  **16 个任务全部齐全**（2026-08-07 用 `scripts/data-generation-v2/fetch_reference_h5.py --tasks all`
+  补完，每个任务均通过 100-episode 校验），与参考数据对拍的流程现在可以覆盖全部 16 个任务。
 - **生成产物（仓库内）**：`artifacts/generated/<名字>/`，每个任务一份 `record_dataset_<Task>.h5` + 一份 metadata JSON。
 - **生成报告**：`scripts/data-generation/reports/generation_report.{json,md}`（每次生成或只读复核会原子替换这两个文件）。
 
@@ -195,9 +195,9 @@ tests/
 
 ## 已知坑
 
-- **生成入口当前跑不通**：`generate_dataset.py` 把官方参考路径硬编码成仓库内 `data/robomme_data_h5` 且**没有 CLI 开关**，该目录当前不存在，于是在生成第一条 episode 之前就会因缺路径报错；`--env all`（16 任务）也超出本机仅有 4 任务参考数据的范围。**处置方式（建软链 / 给入口加参数 / 只跑那 4 个任务）须先问用户**，不要自行改入口脚本。
+- **v1 生成入口仍然跑不通，v2 已修好**：`scripts/data-generation/generate_dataset.py`（v1）把官方参考路径硬编码成仓库内 `data/robomme_data_h5` 且没有 CLI 开关，该目录不存在，会在生成第一条 episode 之前就报错。**v2 入口（`scripts/data-generation-v2/generate_dataset.py`）已新增 `--reference-root`**，配合已补齐的 16 任务参考数据可以正常跑 `--env all`。v1 保持冻结不动，需要生成一律走 v2。
 - **`save_video=False` 会让整条 h5 写入链路失效**：`RecordWrapper` 里同一个判断同时控制视频拼接与 buffer 落盘，关掉它会得到 0 个 timestep 的空 episode。不要为了提速关它。
-- **生成不可逐位复现**：规划器在 screw 连续失败后会退避到带 1 秒墙钟预算的 RRTStar（采样式、依赖当时 CPU 负载），叠加 20 个 worker 抢同一张 GPU 的调度扰动；历史上实测出过 `5.66e-9` 量级数值漂移与部分 episode 的 timestep 集不一致。⚠ 那份历史记录来自**另一台机器上的另一个仓库副本**，本仓库尚未在本机跑通过一次完整生成，不要把它当成本仓库的既定基线。
+- **生成不可逐位复现**：规划器在 screw 连续失败后会退避到带 1 秒墙钟预算的 RRTStar（采样式、依赖当时 CPU 负载），叠加 20 个 worker 抢同一张 GPU 的调度扰动；历史上实测出过 `5.66e-9` 量级数值漂移与部分 episode 的 timestep 集不一致。⚠ 那份历史记录来自**另一台机器上的另一个仓库副本**，不要把它当成本仓库的既定基线。本机的实测基线是：2026-08-07 用 `--workers 1` 背靠背跑的 16 任务 × 1 episode，两次（flow+masked 全开 / 全关）之间 165954 个既有 dataset **逐位一致**、7898 个 `joint_action` 零不一致，且 `rrtstar_attempts` 全程为 0——单 worker 且机器空闲时，兜底根本不会触发。16×100 全量生成本仓库仍未跑过。
 - **timestep 之间不是恒定物理步长**：部分任务的 task_list 里存在名为 `NO RECORD` 的段，该段内的物理步既不进 buffer 也不落 h5，因此相邻 timestep 之间可能隔了任意多个未记录的真实步。任何按"帧间差分"理解的量都必须清楚这一点。
 - **`joint_action` 的 dtype 文档与校验器不一致**：[doc/h5_data_format.md](doc/h5_data_format.md) 写 `float32 (8,)`，而契约校验器与对拍器都强制要求 `float64 (8,)`。
 - **`segmentation` 未入 h5**：运行时可从 obs 取到，但写入 h5 的代码是被注释掉的状态。

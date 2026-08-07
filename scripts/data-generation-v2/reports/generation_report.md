@@ -1,44 +1,44 @@
-# No-Patch Dataset Generation Report
+# 数据生成报告（v2：带 2D flow ground truth）
 
-## Run Provenance
+## 运行来源信息
 
-- Status: generated
-- Current HEAD: 5010225d55637f2b5cb385664981ee632177093a
-- uv.lock SHA-256: 983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03
-- Report time (UTC): 2026-08-07T01:46:54.470964+00:00
-- Report mode: generation
+- 状态：generated
+- 当前 HEAD：c86920fbbbef403ea20e16514be4366dbe5e5861
+- uv.lock SHA-256：983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03
+- 报告时间（UTC）：2026-08-07T21:20:38.558074+00:00
+- 报告模式：generation
 
-## Debug Environment
+## 调试用环境快照
 
-- Snapshot time (UTC): 2026-08-07T01:52:34.080356+00:00
-- Host: sled-vail
-- OS: Linux 6.8.0-1018-nvidia-lowlatency
-- Kernel: 6.8.0-1018-nvidia-lowlatency
-- Architecture: 64bit; Machine: x86_64
-- libc: glibc 2.39
+- 快照时间（UTC）：2026-08-07T21:26:31.901536+00:00
+- 主机名：sled-vail
+- 操作系统：Linux 6.8.0-1018-nvidia-lowlatency
+- 内核：6.8.0-1018-nvidia-lowlatency
+- 架构：64bit；机器类型：x86_64
+- libc：glibc 2.39
 
-### CPU, Memory, and Storage
+### CPU、内存与存储
 
-| Item | Value |
+| 项目 | 取值 |
 | --- | --- |
-| OS CPU count | 32 |
-| CPU affinity count | 32 |
-| CPU affinity IDs | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 |
-| CPU model | AMD EPYC 9334 32-Core Processor |
-| CPU sockets | 1 |
-| Threads per core | 1 |
-| Total memory | 405257068544 bytes (377.43 GiB) |
-| Repository filesystem | /data/hongzefu/robomme_benchmark_MotionJEPA |
-| Filesystem capacity | 15240752955392 bytes (13.86 TiB) |
-| Filesystem used | 9728752422912 bytes (8.85 TiB) |
-| Filesystem available | 4743834255360 bytes (4.31 TiB) |
-- The complete lscpu --json raw fields are available in JSON at debug_environment.cpu.lscpu.raw.
+| 操作系统报告的 CPU 数 | 32 |
+| CPU 亲和性可用数 | 32 |
+| CPU 亲和性 ID 列表 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 |
+| CPU 型号 | AMD EPYC 9334 32-Core Processor |
+| CPU 插槽数 | 1 |
+| 每核线程数 | 1 |
+| 总内存 | 405257068544 bytes (377.43 GiB) |
+| 仓库所在文件系统 | /data/hongzefu/robomme_benchmark_MotionJEPA |
+| 文件系统容量 | 15240752955392 bytes (13.86 TiB) |
+| 文件系统已用 | 10111694675968 bytes (9.20 TiB) |
+| 文件系统可用 | 4360892002304 bytes (3.97 TiB) |
+- 完整的 lscpu --json 原始字段见 JSON 报告的 debug_environment.cpu.lscpu.raw。
 
-### GPU (nvidia-smi)
+### GPU（nvidia-smi）
 
-- nvidia-smi available: True
-- nvidia-smi version: 570.211.01
-- nvidia-smi CUDA version: 12.8
+- nvidia-smi 是否可用：True
+- nvidia-smi 版本：570.211.01
+- nvidia-smi 报告的 CUDA 版本：12.8
 
 | GPU | Category | Field | Value |
 | --- | --- | --- | --- |
@@ -56,8 +56,8 @@
 | 0 | Dynamic | memory_used_mib | 1017 |
 | 0 | Dynamic | memory_free_mib | 44449 |
 | 0 | Static | power_limit_w | 300.00 |
-| 0 | Dynamic | power_draw_w | 23.01 |
-| 0 | Dynamic | temperature_c | 38 |
+| 0 | Dynamic | power_draw_w | 23.12 |
+| 0 | Dynamic | temperature_c | 39 |
 | 0 | Dynamic | utilization_gpu_percent | 0 |
 | 0 | Dynamic | utilization_memory_percent | 0 |
 | 0 | Dynamic | pstate | P2 |
@@ -86,8 +86,8 @@
 | 1 | Dynamic | memory_used_mib | 6 |
 | 1 | Dynamic | memory_free_mib | 45461 |
 | 1 | Static | power_limit_w | 300.00 |
-| 1 | Dynamic | power_draw_w | 27.86 |
-| 1 | Dynamic | temperature_c | 32 |
+| 1 | Dynamic | power_draw_w | 27.84 |
+| 1 | Dynamic | temperature_c | 33 |
 | 1 | Dynamic | utilization_gpu_percent | 0 |
 | 1 | Dynamic | utilization_memory_percent | 0 |
 | 1 | Dynamic | pstate | P2 |
@@ -103,52 +103,52 @@
 | 1 | Static | addressing_mode | Not set |
 | 1 | Dynamic | fan_speed_percent | 30 |
 
-### Python, Tools, and Runtime
+### Python、工具链与运行时
 
-| Item | Value |
+| 项目 | 取值 |
 | --- | --- |
-| Python implementation | CPython |
-| Full Python version | 3.11.14 (main, Feb  3 2026, 22:51:56) [Clang 21.1.4 ] |
+| Python 实现 | CPython |
+| Python 完整版本 | 3.11.14 (main, Feb  3 2026, 22:51:56) [Clang 21.1.4 ] |
 | Python ABI / cache tag | cpython-311-x86_64-linux-gnu / cpython-311 |
-| Python executable | /data/hongzefu/robomme_benchmark_MotionJEPA/.venv/bin/python3 |
+| Python 可执行文件 | /data/hongzefu/robomme_benchmark_MotionJEPA/.venv/bin/python3 |
 | venv / prefix | /data/hongzefu/robomme_benchmark_MotionJEPA/.venv / /data/hongzefu/robomme_benchmark_MotionJEPA/.venv |
 | base prefix | /home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu |
-| uv | uv 0.10.2 (/home/hongzefu/.local/bin/uv) |
-| git | git version 2.43.0 (/usr/bin/git) |
+| uv | uv 0.10.2（/home/hongzefu/.local/bin/uv） |
+| git | git version 2.43.0（/usr/bin/git） |
 | Torch | 2.9.1+cu128 |
-| Torch compiled CUDA | 12.8 |
+| Torch 编译时的 CUDA | 12.8 |
 | cuDNN | 91002 |
-| Torch CUDA available / visible count | True / 1 |
+| Torch CUDA 可用 / 可见设备数 | True / 1 |
 
-| Torch CUDA index | Name | Compute capability | Total memory |
+| Torch CUDA 序号 | 名称 | 算力 | 显存总量 |
 | --- | --- | --- | --- |
 | 0 | NVIDIA RTX 6000 Ada Generation | 8.9 | 47673769984 bytes (44.40 GiB) |
 
-### Restricted Runtime Environment
+### 受限的运行时环境变量
 
-| Category | Variable | Value |
+| 类别 | 变量 | 取值 |
 | --- | --- | --- |
-| Runtime | CUDA_VISIBLE_DEVICES | 0 |
-| Runtime | OMP_NUM_THREADS | Not set |
-| Runtime | MKL_NUM_THREADS | Not set |
-| Runtime | CUDA_HOME | Not set |
-| Runtime | PYTHONPATH | Not set |
-| Slurm allocation | SLURM_JOB_ID | Not set |
-| Slurm allocation | SLURM_JOB_GPUS | Not set |
-| Slurm allocation | SLURM_GPUS_ON_NODE | Not set |
-| Slurm allocation | SLURM_CPUS_PER_TASK | Not set |
-| Slurm allocation | SLURM_CPUS_ON_NODE | Not set |
-| Slurm allocation | SLURM_MEM_PER_NODE | Not set |
-| Slurm allocation | SLURM_MEM_PER_CPU | Not set |
-| Slurm allocation | SLURM_NNODES | Not set |
-| Slurm allocation | SLURM_NODELIST | Not set |
+| 运行时 | CUDA_VISIBLE_DEVICES | 0 |
+| 运行时 | OMP_NUM_THREADS | Not set |
+| 运行时 | MKL_NUM_THREADS | Not set |
+| 运行时 | CUDA_HOME | Not set |
+| 运行时 | PYTHONPATH | Not set |
+| Slurm 分配 | SLURM_JOB_ID | Not set |
+| Slurm 分配 | SLURM_JOB_GPUS | Not set |
+| Slurm 分配 | SLURM_GPUS_ON_NODE | Not set |
+| Slurm 分配 | SLURM_CPUS_PER_TASK | Not set |
+| Slurm 分配 | SLURM_CPUS_ON_NODE | Not set |
+| Slurm 分配 | SLURM_MEM_PER_NODE | Not set |
+| Slurm 分配 | SLURM_MEM_PER_CPU | Not set |
+| Slurm 分配 | SLURM_NNODES | Not set |
+| Slurm 分配 | SLURM_NODELIST | Not set |
 
-### Dependencies
+### 依赖
 
-- Total distributions: 111.
-- The complete distribution list is available in the same JSON at debug_environment.packages.distributions.
+- 已安装的发行包总数：111。
+- 完整的发行包列表见同一份 JSON 报告的 debug_environment.packages.distributions。
 
-| Core dependency | Version |
+| 核心依赖 | 版本 |
 | --- | --- |
 | torch | 2.9.1 |
 | torchvision | 0.24.1 |
@@ -162,10 +162,10 @@
 | setuptools | 80.9.0 |
 | robomme | 0.1.0 |
 
-## Parameters
+## 运行参数
 
     {
-      "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env",
+      "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env",
       "env": "all",
       "episodes": 1,
       "workers": 1,
@@ -176,6 +176,7 @@
       "seed_attempts_per_episode": 1,
       "save_video_for_recording": true,
       "record_flow": true,
+      "record_masked_rgb": true,
       "reference_validation": false,
       "tasks": [
         "PickXtimes",
@@ -200,48 +201,48 @@
       ]
     }
 
-## Scope
+## 范围
 
-- Task count: 0
-- Episodes: []
-- Expected trajectory count: 0
-- Complete 16x100: False
+- 任务数：0
+- episode 列表：[]
+- 预期轨迹条数：0
+- 是否完整的 16x100：False
 
-## Generation and Contract
+## 生成与契约校验
 
-- Successful workers: 16
-- Failed workers: 0
-- Metadata errors: 0
-- Generated HDF5 errors: 0
-- Official HDF5 errors: 0
-- Official final completions: 0/0
-- Generated final completions: 0/0
+- 成功的 worker 数：16
+- 失败的 worker 数：0
+- metadata 错误数：0
+- 生成侧 HDF5 错误数：0
+- 官方侧 HDF5 错误数：0
+- 官方侧末帧完成数：0/0
+- 生成侧末帧完成数：0/0
 
-## Element-wise joint_action Comparison
+## joint_action 逐元素对拍
 
-- Vectors: 0
-- Elements: 0
-- Different elements: 0
-- Comparison errors: 0
-- Maximum absolute difference: None
-- Maximum-difference location: None
-- Maximum allowed absolute difference: None
-- Within tolerance: False
+- 向量条数：0
+- 元素总数：0
+- 存在差异的元素数：0
+- 对拍错误数：0
+- 最大绝对差异：None
+- 最大差异出现的位置：None
+- 允许的最大绝对差异：None
+- 是否在容差内：False
 
-## File Manifest
+## 文件清单
 
-- Status: not collected
-- Official reference revision: a5e4e25ffe8af34f64944f9533d06455ce5f8337
-- Generated files: 0
-- Generated bytes: 0
-- Official reference HDF5 files: 0
-- Official reference HDF5 bytes: 0
+- 状态：未采集
+- 官方参考数据 revision：a5e4e25ffe8af34f64944f9533d06455ce5f8337
+- 生成文件数：0
+- 生成字节数：0
+- 官方参考 HDF5 文件数：0
+- 官方参考 HDF5 字节数：0
 
-## Conclusion
+## 结论
 
-- Full acceptance passed: None
+- 是否通过完整验收：None
 
-## Artifacts
+## 报告文件
 
-- JSON: /data/hongzefu/robomme_benchmark_MotionJEPA/scripts/data-generation-v2/reports/generation_report.json
-- Markdown: /data/hongzefu/robomme_benchmark_MotionJEPA/scripts/data-generation-v2/reports/generation_report.md
+- JSON：/data/hongzefu/robomme_benchmark_MotionJEPA/scripts/data-generation-v2/reports/generation_report.json
+- Markdown：/data/hongzefu/robomme_benchmark_MotionJEPA/scripts/data-generation-v2/reports/generation_report.md

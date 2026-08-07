@@ -1,11 +1,11 @@
 {
   "schema_version": 4,
   "status": "generated",
-  "generated_at_utc": "2026-08-07T01:46:54.470964+00:00",
-  "current_head": "5010225d55637f2b5cb385664981ee632177093a",
+  "generated_at_utc": "2026-08-07T21:20:38.558074+00:00",
+  "current_head": "c86920fbbbef403ea20e16514be4366dbe5e5861",
   "uv_lock_sha256": "983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03",
   "parameters": {
-    "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env",
+    "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env",
     "env": "all",
     "episodes": 1,
     "workers": 1,
@@ -16,6 +16,7 @@
     "seed_attempts_per_episode": 1,
     "save_video_for_recording": true,
     "record_flow": true,
+    "record_masked_rgb": true,
     "reference_validation": false,
     "tasks": [
       "PickXtimes",
@@ -53,16 +54,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 16,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.8192870630459351,
+        "flow_capture_ms_per_step": 0.8075062287124721,
         "flow_capture_count": 550,
+        "masked_rgb_seconds": 0.8165022134780884,
+        "masked_rgb_frames": 550,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/BinFill_episode_0/hdf5_files/BinFill_ep0_seed4000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/BinFill_episode_0/hdf5_files/BinFill_ep0_seed4000.h5",
         "timestep_count": 550
       },
       {
@@ -74,16 +78,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 9,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.7527137680868922,
+        "flow_capture_ms_per_step": 0.7594880612752691,
         "flow_capture_count": 291,
+        "masked_rgb_seconds": 0.4147265814244747,
+        "masked_rgb_frames": 291,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed8000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed8000.h5",
         "timestep_count": 291
       },
       {
@@ -95,16 +102,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 17,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.8738209576806205,
+        "flow_capture_ms_per_step": 0.8585853719583745,
         "flow_capture_count": 514,
+        "masked_rgb_seconds": 0.7695223074406385,
+        "masked_rgb_frames": 514,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed7000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed7000.h5",
         "timestep_count": 514
       },
       {
@@ -116,16 +126,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 13,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.7126571198827342,
+        "flow_capture_ms_per_step": 0.7028663472125405,
         "flow_capture_count": 475,
+        "masked_rgb_seconds": 0.6886549834161997,
+        "masked_rgb_frames": 475,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/InsertPeg_episode_0/hdf5_files/InsertPeg_ep0_seed13000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/InsertPeg_episode_0/hdf5_files/InsertPeg_ep0_seed13000.h5",
         "timestep_count": 475
       },
       {
@@ -137,16 +150,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 12,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.6664274589103811,
+        "flow_capture_ms_per_step": 0.6494572802501566,
         "flow_capture_count": 425,
+        "masked_rgb_seconds": 0.6151201445609331,
+        "masked_rgb_frames": 425,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed14000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed14000.h5",
         "timestep_count": 425
       },
       {
@@ -158,16 +174,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 10,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.8115940145216882,
+        "flow_capture_ms_per_step": 0.806284563926359,
         "flow_capture_count": 96,
+        "masked_rgb_seconds": 0.1477661207318306,
+        "masked_rgb_frames": 96,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/PatternLock_episode_0/hdf5_files/PatternLock_ep0_seed15001.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/PatternLock_episode_0/hdf5_files/PatternLock_ep0_seed15001.h5",
         "timestep_count": 96
       },
       {
@@ -179,16 +198,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 9,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.5981422863997422,
+        "flow_capture_ms_per_step": 0.595790660613543,
         "flow_capture_count": 308,
+        "masked_rgb_seconds": 0.4736848007887602,
+        "masked_rgb_frames": 308,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed12000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed12000.h5",
         "timestep_count": 308
       },
       {
@@ -200,16 +222,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 18,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.5103823973573673,
+        "flow_capture_ms_per_step": 0.5113257619856887,
         "flow_capture_count": 529,
+        "masked_rgb_seconds": 0.7766620721668005,
+        "masked_rgb_frames": 529,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed1000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed1000.h5",
         "timestep_count": 529
       },
       {
@@ -221,16 +246,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 2,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 1.0304324608296156,
+        "flow_capture_ms_per_step": 1.0115583054721355,
         "flow_capture_count": 200,
+        "masked_rgb_seconds": 0.3004707656800747,
+        "masked_rgb_frames": 200,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed16000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed16000.h5",
         "timestep_count": 200
       },
       {
@@ -242,16 +270,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 3,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.5303457671520757,
+        "flow_capture_ms_per_step": 0.5290242427379738,
         "flow_capture_count": 459,
+        "masked_rgb_seconds": 0.6749916598200798,
+        "masked_rgb_frames": 459,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/StopCube_episode_0/hdf5_files/StopCube_ep0_seed2000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/StopCube_episode_0/hdf5_files/StopCube_ep0_seed2000.h5",
         "timestep_count": 459
       },
       {
@@ -263,16 +294,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 15,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.6022912283965166,
+        "flow_capture_ms_per_step": 0.6064679164485812,
         "flow_capture_count": 482,
+        "masked_rgb_seconds": 0.7214606441557407,
+        "masked_rgb_frames": 482,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed3000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed3000.h5",
         "timestep_count": 482
       },
       {
@@ -284,16 +318,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 31,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.6975724098791602,
+        "flow_capture_ms_per_step": 0.6912588763925183,
         "flow_capture_count": 1048,
+        "masked_rgb_seconds": 1.560988338664174,
+        "masked_rgb_frames": 1048,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed10000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed10000.h5",
         "timestep_count": 1048
       },
       {
@@ -305,16 +342,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 37,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.7582136678198973,
+        "flow_capture_ms_per_step": 0.7405069144442677,
         "flow_capture_count": 1200,
+        "masked_rgb_seconds": 1.776729453355074,
+        "masked_rgb_frames": 1200,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed11003.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed11003.h5",
         "timestep_count": 1200
       },
       {
@@ -326,16 +366,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 22,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.5919024762180117,
+        "flow_capture_ms_per_step": 0.5886981401730467,
         "flow_capture_count": 756,
+        "masked_rgb_seconds": 1.0718484185636044,
+        "masked_rgb_frames": 756,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed9000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed9000.h5",
         "timestep_count": 756
       },
       {
@@ -347,16 +390,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 6,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.6576920762096988,
+        "flow_capture_ms_per_step": 0.6500698828672266,
         "flow_capture_count": 239,
+        "masked_rgb_seconds": 0.33820537105202675,
+        "masked_rgb_frames": 239,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed6000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed6000.h5",
         "timestep_count": 239
       },
       {
@@ -368,16 +414,19 @@
         "recovery_mode": "z",
         "attempt_count": 1,
         "record_flow": true,
+        "record_masked_rgb": true,
         "planner_fallback": {
           "screw_calls": 6,
           "screw_rounds_failed": 0,
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.6413154326882099,
+        "flow_capture_ms_per_step": 0.6472909697360056,
         "flow_capture_count": 326,
+        "masked_rgb_seconds": 0.5063763689249754,
+        "masked_rgb_frames": 326,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/flow-16env/.workers/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed5000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/.workers/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed5000.h5",
         "timestep_count": 326
       }
     ]
@@ -389,7 +438,7 @@
   },
   "debug_environment": {
     "schema_version": 1,
-    "captured_at_utc": "2026-08-07T01:52:34.080356+00:00",
+    "captured_at_utc": "2026-08-07T21:26:31.901536+00:00",
     "errors": {},
     "host": {
       "errors": {},
@@ -513,7 +562,7 @@
             },
             {
               "field": "CPU(s) scaling MHz:",
-              "data": "49%"
+              "data": "44%"
             },
             {
               "field": "CPU max MHz:",
@@ -624,8 +673,8 @@
     "storage": {
       "path": "/data/hongzefu/robomme_benchmark_MotionJEPA",
       "total_bytes": 15240752955392,
-      "used_bytes": 9728752422912,
-      "free_bytes": 4743834255360,
+      "used_bytes": 10111694675968,
+      "free_bytes": 4360892002304,
       "errors": {}
     },
     "gpu": {
@@ -653,8 +702,8 @@
           "memory_used_mib": "1017",
           "memory_free_mib": "44449",
           "power_limit_w": "300.00",
-          "power_draw_w": "23.01",
-          "temperature_c": "38",
+          "power_draw_w": "23.12",
+          "temperature_c": "39",
           "utilization_gpu_percent": "0",
           "utilization_memory_percent": "0",
           "pstate": "P2",
@@ -685,8 +734,8 @@
           "memory_used_mib": "6",
           "memory_free_mib": "45461",
           "power_limit_w": "300.00",
-          "power_draw_w": "27.86",
-          "temperature_c": "32",
+          "power_draw_w": "27.84",
+          "temperature_c": "33",
           "utilization_gpu_percent": "0",
           "utilization_memory_percent": "0",
           "pstate": "P2",
