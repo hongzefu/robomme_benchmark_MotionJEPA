@@ -210,3 +210,6 @@ __marimo__/
 .agent/
 .cursor/
 .agents/
+
+# 生成产物：h5 数据集、flow 可视化视频等，动辄 GB 级，不入库
+artifacts/
