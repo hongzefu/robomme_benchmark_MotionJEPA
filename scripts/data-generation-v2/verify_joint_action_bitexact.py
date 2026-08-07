@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""自对拍：验证开启 flow 采集之后，h5 里除 flow 之外的一切**逐位不变**。
+"""自对拍：验证开启 flow 与遮蔽图采集之后，h5 里其余的一切**逐位不变**。
 
-「只增不改」是这条链路的生命线——新增 flow 字段不得改变任何既有 h5 内容。验收口径是
-**自对拍**而不是跟官方参考对拍：同一个 commit 的代码，flow 开关关 / 开各生成一次，比较除
-flow 之外的全部内容。
+「只增不改」是这条链路的生命线——新增字段不得改变任何既有 h5 内容。验收口径是
+**自对拍**而不是跟官方参考对拍：同一个 commit 的代码，两个开关全关 / 全开各生成一次，
+比较除新增字段之外的全部内容。基准侧必须是 ``--no-flow --no-masked-rgb``。
 
 比较是逐位的（``np.array_equal``），不设容差。之所以敢要求逐位：flow 采集全部发生在
 ``env.step()`` **之后**，只读仿真状态、不消费随机数，理论上对仿真与规划零影响。真要出现
@@ -17,6 +17,11 @@ flow 之外的全部内容。
 - ``episode_<i>/setup/flow_schema_version``
 - ``episode_<i>/setup/flow_objects/**``
 - ``episode_<i>/setup/flow_excluded/**``
+- ``episode_<i>/timestep_<k>/obs/front_rgb_masked``
+- ``episode_<i>/setup/masked_rgb_*``（schema_version / paint_color / painted / kept）
+
+flow 与 masked rgb 的存在性断言是**两个独立计数器**，不是合成一个：合成之后
+``--no-masked-rgb`` 开关坏掉时就能躲在正常工作的 ``--flow`` 后面不被发现。
 """
 
 from __future__ import annotations
@@ -31,12 +36,19 @@ import h5py
 import numpy as np
 
 
-# 允许出现在候选侧而基准侧没有的路径前缀片段（即本轮新增的 flow 内容）
+# 允许出现在候选侧而基准侧没有的路径（即本轮新增的内容），两组分开数。
+# flow（v2.0）：
 FLOW_PATH_MARKERS = (
     "/flow/",
     "/flow_schema_version",
     "/flow_objects/",
     "/flow_excluded/",
+)
+# 纯色棕遮蔽图（v2.1）：`/masked_rgb_` 一条覆盖 setup 下的 schema_version /
+# paint_color / painted / kept 四处
+MASKED_RGB_PATH_MARKERS = (
+    "/front_rgb_masked",
+    "/masked_rgb_",
 )
 
 MAX_REPORTED_DIFFS = 40
@@ -46,30 +58,46 @@ def _is_flow_path(path: str) -> bool:
     return any(marker in path for marker in FLOW_PATH_MARKERS)
 
 
+def _is_masked_rgb_path(path: str) -> bool:
+    # front_rgb_masked 用 endswith 判定：子串判定虽然也不会误伤 /front_rgb
+    # （方向是单向的），但写成 endswith 才是把意图直接摆出来
+    if path.endswith("/front_rgb_masked"):
+        return True
+    return "/masked_rgb_" in path
+
+
 def _collect_datasets(
     handle: h5py.File,
-) -> tuple[dict[str, tuple[tuple[int, ...], str]], int]:
-    """递归收集全部 dataset 的路径 -> (shape, dtype)，跳过 flow 内容。
+) -> tuple[dict[str, tuple[tuple[int, ...], str]], int, int]:
+    """递归收集全部 dataset 的路径 -> (shape, dtype)，跳过新增内容。
 
-    同时返回被跳过的 flow dataset 数量。比较本身要排除 flow（那正是本轮新增的东西），
-    但「基准侧一个 flow 都没有、候选侧确实写了 flow」这件事必须单独核一次——否则
-    ``--no-flow`` 开关坏掉、两边都不写 flow 时，逐位对拍照样全绿，等于什么都没验证。
+    同时**分别**返回被跳过的 flow 与 masked rgb dataset 数量。比较本身要排除这两类
+    （那正是新增的东西），但「基准侧一个都没有、候选侧确实写了」这件事必须单独核一次——
+    否则 ``--no-flow`` / ``--no-masked-rgb`` 开关坏掉、两边都不写时，逐位对拍照样全绿，
+    等于什么都没验证。
+
+    两个计数**必须分开**：合成一个计数器的话，``--no-masked-rgb`` 坏掉时就能躲在正常工作的
+    ``--flow`` 后面不被发现。
     """
     collected: dict[str, tuple[tuple[int, ...], str]] = {}
     flow_dataset_count = 0
+    masked_rgb_dataset_count = 0
 
     def visit(name: str, obj: Any) -> None:
-        nonlocal flow_dataset_count
+        nonlocal flow_dataset_count, masked_rgb_dataset_count
         if not isinstance(obj, h5py.Dataset):
             return
         path = "/" + name
         if _is_flow_path(path):
             flow_dataset_count += 1
             return
+        if _is_masked_rgb_path(path):
+            masked_rgb_dataset_count += 1
+            return
         collected[path] = (tuple(obj.shape), obj.dtype.str)
 
     handle.visititems(visit)
-    return collected, flow_dataset_count
+    return collected, flow_dataset_count, masked_rgb_dataset_count
 
 
 def _values_equal(left: Any, right: Any) -> bool:
@@ -96,24 +124,41 @@ def _values_equal(left: Any, right: Any) -> bool:
     return bool(np.array_equal(left_array, right_array))
 
 
-def compare_files(baseline_path: Path, candidate_path: Path) -> dict[str, Any]:
-    """比较两个 h5 文件除 flow 外的全部内容。"""
+def compare_files(
+    baseline_path: Path,
+    candidate_path: Path,
+    expect_flow: bool = True,
+    expect_masked_rgb: bool = True,
+) -> dict[str, Any]:
+    """比较两个 h5 文件除 flow 与 masked rgb 外的全部内容。"""
     differences: list[str] = []
     joint_action_checked = 0
     joint_action_mismatched = 0
 
     with h5py.File(baseline_path, "r") as baseline, h5py.File(candidate_path, "r") as candidate:
-        baseline_sets, baseline_flow_count = _collect_datasets(baseline)
-        candidate_sets, candidate_flow_count = _collect_datasets(candidate)
+        baseline_sets, baseline_flow_count, baseline_masked_count = _collect_datasets(
+            baseline
+        )
+        candidate_sets, candidate_flow_count, candidate_masked_count = _collect_datasets(
+            candidate
+        )
 
-        # flow 存在性：基准侧必须一个都没有，候选侧必须真的写了
+        # 存在性：基准侧必须一个都没有，候选侧必须真的写了。两项独立断言，互不遮蔽。
         if baseline_flow_count != 0:
             differences.append(
                 f"基准侧（应为 --no-flow）意外含有 {baseline_flow_count} 个 flow dataset"
             )
-        if candidate_flow_count == 0:
+        if expect_flow and candidate_flow_count == 0:
             differences.append(
                 "候选侧（应为 --flow）一个 flow dataset 都没有，flow 采集没生效"
+            )
+        if baseline_masked_count != 0:
+            differences.append(
+                f"基准侧（应为 --no-masked-rgb）意外含有 {baseline_masked_count} 个 masked rgb dataset"
+            )
+        if expect_masked_rgb and candidate_masked_count == 0:
+            differences.append(
+                "候选侧（应为 --masked-rgb）一个 masked rgb dataset 都没有，遮蔽图采集没生效"
             )
 
         only_baseline = sorted(set(baseline_sets) - set(candidate_sets))
@@ -180,6 +225,8 @@ def compare_files(baseline_path: Path, candidate_path: Path) -> dict[str, Any]:
         "dataset_count": len(baseline_sets),
         "baseline_flow_datasets": baseline_flow_count,
         "candidate_flow_datasets": candidate_flow_count,
+        "baseline_masked_rgb_datasets": baseline_masked_count,
+        "candidate_masked_rgb_datasets": candidate_masked_count,
         "joint_action_checked": joint_action_checked,
         "joint_action_mismatched": joint_action_mismatched,
         "difference_count": len(differences),
@@ -188,7 +235,12 @@ def compare_files(baseline_path: Path, candidate_path: Path) -> dict[str, Any]:
     }
 
 
-def compare_directories(baseline_dir: Path, candidate_dir: Path) -> list[dict[str, Any]]:
+def compare_directories(
+    baseline_dir: Path,
+    candidate_dir: Path,
+    expect_flow: bool = True,
+    expect_masked_rgb: bool = True,
+) -> list[dict[str, Any]]:
     """按任务逐个比较两个产物目录下的 record_dataset_<任务>.h5。"""
     baseline_files = sorted(baseline_dir.glob("record_dataset_*.h5"))
     if not baseline_files:
@@ -208,7 +260,14 @@ def compare_directories(baseline_dir: Path, candidate_dir: Path) -> list[dict[st
                 }
             )
             continue
-        results.append(compare_files(baseline_path, candidate_path))
+        results.append(
+            compare_files(
+                baseline_path,
+                candidate_path,
+                expect_flow=expect_flow,
+                expect_masked_rgb=expect_masked_rgb,
+            )
+        )
     return results
 
 
@@ -221,29 +280,51 @@ def _format_report(all_results: dict[str, list[dict[str, Any]]]) -> str:
             name = Path(item["baseline"]).name
             mark = "✓" if item["passed"] else "✗"
             lines.append(
-                f"  {mark} {name}: 比较 {item.get('dataset_count', 0)} 个非 flow dataset，"
+                f"  {mark} {name}: 比较 {item.get('dataset_count', 0)} 个既有 dataset，"
                 f"其中 joint_action {item.get('joint_action_checked', 0)} 个"
                 f"（不一致 {item.get('joint_action_mismatched', 0)} 个）；"
                 f"flow dataset 基准侧 {item.get('baseline_flow_datasets', '?')} 个 / "
                 f"候选侧 {item.get('candidate_flow_datasets', '?')} 个；"
+                f"masked rgb dataset 基准侧 {item.get('baseline_masked_rgb_datasets', '?')} 个 / "
+                f"候选侧 {item.get('candidate_masked_rgb_datasets', '?')} 个；"
                 f"总差异 {item['difference_count']} 处"
             )
             for detail in item["differences"]:
                 lines.append(f"      - {detail}")
-        lines.append(f"  小计：{passed}/{len(results)} 个任务除 flow 外逐位一致")
+        lines.append(
+            f"  小计：{passed}/{len(results)} 个任务除 flow 与 masked rgb 外逐位一致"
+        )
     return "\n".join(lines)
 
 
 def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="自对拍：验证开启 flow 后 h5 里除 flow 之外的内容逐位不变",
+        description="自对拍：验证开启 flow 与遮蔽图后 h5 里其余内容逐位不变",
     )
-    parser.add_argument("--baseline", required=True, help="基准产物目录（通常是 --no-flow 那次）")
+    parser.add_argument(
+        "--baseline",
+        required=True,
+        help="基准产物目录（应为 --no-flow --no-masked-rgb 那次）",
+    )
     parser.add_argument(
         "--candidates",
         nargs="+",
         required=True,
         help="待比较的产物目录，可传多个",
+    )
+    parser.add_argument(
+        "--no-expect-flow",
+        dest="expect_flow",
+        action="store_false",
+        default=True,
+        help="候选侧本来就不带 flow 时用，跳过「候选侧必须写了 flow」这条断言",
+    )
+    parser.add_argument(
+        "--no-expect-masked-rgb",
+        dest="expect_masked_rgb",
+        action="store_false",
+        default=True,
+        help="候选侧本来就不带遮蔽图时用，跳过「候选侧必须写了 masked rgb」这条断言",
     )
     parser.add_argument(
         "--json",
@@ -261,7 +342,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     all_results: dict[str, list[dict[str, Any]]] = {}
     for raw in namespace.candidates:
         candidate_dir = Path(raw).expanduser().resolve()
-        all_results[str(candidate_dir)] = compare_directories(baseline_dir, candidate_dir)
+        all_results[str(candidate_dir)] = compare_directories(
+            baseline_dir,
+            candidate_dir,
+            expect_flow=namespace.expect_flow,
+            expect_masked_rgb=namespace.expect_masked_rgb,
+        )
 
     print(_format_report(all_results), flush=True)
 
@@ -275,9 +361,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         item["passed"] for results in all_results.values() for item in results
     )
     print(
-        "结论：除 flow 之外全部逐位一致"
+        "结论：除 flow 与 masked rgb 之外全部逐位一致"
         if everything_passed
-        else "结论：存在非 flow 差异，需逐条排查（先看生成报告里的 planner_fallback）",
+        else "结论：存在既有字段的差异，需逐条排查（先看生成报告里的 planner_fallback）",
         flush=True,
     )
     return 0 if everything_passed else 1

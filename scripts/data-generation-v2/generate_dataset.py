@@ -79,6 +79,7 @@ class EpisodeJob:
     gpu: str
     repo_root: str
     record_flow: bool = False
+    record_masked_rgb: bool = False
 
     @property
     def recovery_mode(self) -> str | None:
@@ -270,6 +271,8 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
     planner_counters: dict[str, int] = {}
     flow_capture_ms_per_step = 0.0
     flow_capture_count = 0
+    masked_rgb_seconds = 0.0
+    masked_rgb_frames = 0
     try:
         source_root = Path(job.repo_root) / "src"
         if not source_root.is_dir():
@@ -286,7 +289,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             ScrewPlanFailure,
         )
 
-        # v2 链路用带 flow 采集的薄子类；record_flow=False 时行为与父类完全一致
+        # v2 链路用带 flow 与遮蔽图采集的薄子类；两个开关都关时行为与父类完全一致
         from record_wrapper_v2 import RobommeRecordWrapperV2
 
         arm_cls, stick_cls, planner_counters = _planner_classes(
@@ -315,6 +318,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             seed=job.seed,
             save_video=True,
             record_flow=job.record_flow,
+            record_masked_rgb=job.record_masked_rgb,
         )
         record_env.reset()
         planner_kwargs: dict[str, Any] = {
@@ -350,11 +354,13 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
                 if caught is None:
                     caught = close_exc
                     error_traceback = traceback.format_exc()
-            # close() 之后再读采集开销：flow 的写盘也发生在 close() 里
+            # close() 之后再读采集开销：flow 与遮蔽图的写盘都发生在 close() 里
             flow_capture_ms_per_step = float(
                 getattr(record_env, "flow_capture_ms_per_step", 0.0)
             )
             flow_capture_count = int(getattr(record_env, "flow_capture_count", 0))
+            masked_rgb_seconds = float(getattr(record_env, "masked_rgb_seconds", 0.0))
+            masked_rgb_frames = int(getattr(record_env, "masked_rgb_frames", 0))
 
     base = {
         "task": job.task,
@@ -365,9 +371,12 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         "recovery_mode": job.recovery_mode,
         "attempt_count": 1,
         "record_flow": bool(job.record_flow),
+        "record_masked_rgb": bool(job.record_masked_rgb),
         "planner_fallback": dict(planner_counters),
         "flow_capture_ms_per_step": flow_capture_ms_per_step,
         "flow_capture_count": flow_capture_count,
+        "masked_rgb_seconds": masked_rgb_seconds,
+        "masked_rgb_frames": masked_rgb_frames,
     }
     if caught is not None:
         return {
@@ -428,6 +437,7 @@ def generate_dataset(
     gpus: str | Sequence[str | int] = GPU_ID,
     reference_root: str | Path = REFERENCE_ROOT,
     record_flow: bool = True,
+    record_masked_rgb: bool = True,
     reference_validation: bool = True,
 ) -> dict[str, Any]:
     """在同一个进程内完成生成、合并，以及拆分开的契约校验与数值对拍。"""
@@ -451,6 +461,7 @@ def generate_dataset(
             "seed_attempts_per_episode": 1,
             "save_video_for_recording": True,
             "record_flow": bool(record_flow),
+            "record_masked_rgb": bool(record_masked_rgb),
             "reference_validation": bool(reference_validation),
         },
     }
@@ -486,6 +497,7 @@ def generate_dataset(
                         gpu=gpu_ids[len(jobs) % len(gpu_ids)],
                         repo_root=str(REPO_ROOT),
                         record_flow=bool(record_flow),
+                        record_masked_rgb=bool(record_masked_rgb),
                     )
                 )
         with ProcessPoolExecutor(
@@ -613,7 +625,21 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--no-flow",
         dest="record_flow",
         action="store_false",
-        help="关闭 flow 采集，行为退化为与父类 RecordWrapper 完全一致；用于自对拍基线",
+        help="关闭 flow 采集；与 --no-masked-rgb 合用即退化为与父类 RecordWrapper 完全一致，用于自对拍基线",
+    )
+    parser.add_argument(
+        "--masked-rgb",
+        dest="record_masked_rgb",
+        action="store_true",
+        default=True,
+        help="写入 obs/front_rgb_masked（默认开启）：白名单只把机器人 link 与桌面涂成纯棕色，"
+        "夹爪手指、地面与全部任务物体保留原像素",
+    )
+    parser.add_argument(
+        "--no-masked-rgb",
+        dest="record_masked_rgb",
+        action="store_false",
+        help="关闭遮蔽图采集；与 --no-flow 合用即得到自对拍基线",
     )
     parser.add_argument(
         "--no-reference-validation",
@@ -636,6 +662,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             gpus=args.gpus,
             reference_root=args.reference_root,
             record_flow=args.record_flow,
+            record_masked_rgb=args.record_masked_rgb,
             reference_validation=args.reference_validation,
         )
     except DatasetGenerationError as exc:

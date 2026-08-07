@@ -15,6 +15,7 @@ flow 全部来自仿真真值。链路里**不存在任何从像素估计的成�
 |---|---|---|
 | RecordWrapper | `RobommeRecordWrapper` | `RobommeRecordWrapperV2`（**薄子类，父类零改动**） |
 | flow 字段 | 无 | `setup/flow_*` 与 `timestep_<k>/flow/` |
+| 遮蔽图字段 | 无 | `obs/front_rgb_masked` 与 `setup/masked_rgb_*`（v2.1） |
 | 参考数据路径 | 硬编码仓库内 `data/robomme_data_h5` | 新增 `--reference-root` |
 | 规划器兜底 | 不可观测 | 报告里记录 `planner_fallback` 计数 |
 | 参考校验 | 强制 | 新增 `--no-reference-validation` 可跳过 |
@@ -30,12 +31,14 @@ v2 之所以做成薄子类而不是复制重构，正是为了让这一点在�
 | `generate_dataset.py` | 生成唯一入口：生成 → 合并 → 契约校验 → 与参考对拍 → 写报告 |
 | `record_wrapper_v2.py` | 薄子类，只 override `reset` / `step` / `close`，其余全部调用父类原函数 |
 | `flow_tracker.py` | 物体枚举（黑名单）、逐帧投影、可见性/遮挡、位移计算、h5 写入 |
+| `masked_rgb.py` | 纯色棕遮蔽图：涂色对象枚举（白名单）、单帧涂色、h5 写入 |
 | `validate_generated_dataset_contract.py` | 契约校验（结构 / seed / difficulty / joint_action shape 与 dtype） |
 | `compare_joint_actions.py` | 与官方参考逐元素对拍 `joint_action` |
 | `write_generation_report.py` | 报告写入（也可只读复核） |
 | `verify_flow_math.py` | **六条判据**验证 flow 与 3D 真值严格一一对应 |
 | `verify_joint_action_bitexact.py` | **自对拍**：验证开 flow 后除 flow 外逐位不变 |
 | `replay_flow_video.py` | 渲染带 flow 箭头的对照视频 |
+| `export_masked_preview.py` | 导出 `front_rgb` \| `front_rgb_masked` 并排对照图，供目视检查 |
 | `fetch_reference_h5.py` | 从 HuggingFace 补齐官方参考 h5 |
 
 ## 常用命令
@@ -68,14 +71,25 @@ env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/data-generation-v2/generate_d
 
 ### 自对拍：确认除 flow 外逐位不变
 
-同一份代码，flow 关 / 开各生成一次，比较除 flow 之外的全部内容。这是「只增不改」的**权威验收口径**，
-不是跟官方参考对拍。
+同一份代码，两个开关全关 / 全开各生成一次，比较除新增字段之外的全部内容。这是「只增不改」的
+**权威验收口径**，不是跟官方参考对拍。基准侧**必须两个开关都关**，否则 verifier 会判基准侧被污染。
 
 ```bash
+# 基准
+env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/data-generation-v2/generate_dataset.py \
+  --output-dir artifacts/generated/v21-16env-baseline \
+  --env all --episodes 1 --workers 1 --gpus 0 \
+  --reference-root /data/hongzefu/robomme_data_h5 \
+  --no-flow --no-masked-rgb --no-reference-validation
+
+# 对拍
 uv run --no-sync python scripts/data-generation-v2/verify_joint_action_bitexact.py \
-  --baseline artifacts/generated/flow-16env-baseline \
-  --candidates artifacts/generated/flow-16env
+  --baseline artifacts/generated/v21-16env-baseline \
+  --candidates artifacts/generated/v21-16env
 ```
+
+flow 与 masked rgb 的存在性是**两个独立断言**：合成一个计数器的话，`--no-masked-rgb` 开关坏掉时
+就能躲在正常工作的 `--flow` 后面不被发现。
 
 ### 数学验证：六条判据
 
@@ -90,6 +104,16 @@ uv run --no-sync python scripts/data-generation-v2/verify_flow_math.py \
 uv run --no-sync python scripts/data-generation-v2/replay_flow_video.py \
   --h5 artifacts/generated/flow-16env/record_dataset_ButtonUnmask.h5 \
   --episode 0 --arrow-scale 5
+```
+
+### 遮蔽图目视检查
+
+白名单涂对没有，最终只能靠眼睛判定。逐张核对：桌面变成均匀一块棕、臂杆（含腕部相机支架）消失、
+**夹爪两根手指还在**、任务物体全保留、顶部地面横带保留、stick 任务那根棍还在。
+
+```bash
+uv run --no-sync python scripts/data-generation-v2/export_masked_preview.py \
+  --h5 artifacts/generated/v21-16env/record_dataset_*.h5 --episode 0 --frames 4
 ```
 
 ### 补齐官方参考 h5

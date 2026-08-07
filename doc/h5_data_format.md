@@ -46,6 +46,7 @@ Each episode contains:
 | `is_gripper_close` | `bool` | Whether gripper is closed |
 | `front_camera_extrinsic` | `float32 (3, 4)` | Front camera extrinsic matrix |
 | `wrist_camera_extrinsic` | `float32 (3, 4)` | Wrist camera extrinsic matrix |
+| `front_rgb_masked` | `uint8 (256, 256, 3)` | 纯色棕遮蔽图（本仓库新增，见下方 `masked-rgb-v1` 一节） |
 
 ## `action/` fields
 
@@ -168,3 +169,110 @@ key 一律是 `<原名>__<seg_id>`。ManiSkill 保证 actor 名全局唯一（`a
 - `scripts/data-generation-v2/verify_flow_math.py`：六条判据验证正反变换严格一一对应
 - `scripts/data-generation-v2/verify_joint_action_bitexact.py`：自对拍，验证开 flow 后除 flow 外逐位不变
 - `scripts/data-generation-v2/replay_flow_video.py`：渲染带 flow 箭头的对照视频
+
+---
+
+# 纯色棕遮蔽图（`masked-rgb-v1`）
+
+由 `scripts/data-generation-v2/` 链路在开启 `--masked-rgb` 时写入（默认开启），落点是
+`timestep_<k>/obs/front_rgb_masked`，与 `front_rgb` 并列、**同 dtype 同 shape、不压缩**。
+
+它是一张**可控的干净底图**：把机械臂与桌面刷成单一棕色，只留下夹爪接触部位与任务物体。
+做 flow 目视检查时箭头不会淹没在木纹里，下游用它也不会被桌面纹理与臂杆外观干扰。
+
+## 怎么算出来的
+
+**纯粹的分割后处理**，复用同一帧已有的 `base_camera` segmentation 缓冲：把命中涂色集的像素
+直接赋成纯棕色。**不改任何渲染材质、不做二次渲染**，因此 `front_rgb` 本身逐位不变。
+
+计算全部发生在 `close()` 里而不是 `step()` 里，`step()` 一个字没动——热路径零开销，规划器那
+1 秒墙钟预算不受任何影响。
+
+## 白名单口径
+
+只有两类东西会被涂棕，其余**一律原样保留**：
+
+1. 机器人 articulation 下的 link（减去下面的保留集）；
+2. 桌面 actor `table-workspace`。
+
+坚持白名单而不是「除了 XX 都涂」，是因为黑名单遇到新出现的未知物体会默认涂掉它、静默毁掉数据；
+白名单遇到未知物体默认保留，最多是少涂一块，肉眼一看就知道。
+
+**保留集**（保留原始像素的机器人部位）：
+
+```text
+若 agent.finger1_link 存在（有手指的机器人，如 panda_wristcam）：
+    保留 = {finger1_link, finger2_link, finger1pad_link, finger2pad_link} 里非 None 的那些
+否则（无手指的机器人，如 panda_stick）：
+    保留 = {tcp 所在 joint 的 parent_link}
+```
+
+三条实测依据：
+
+- **`panda_hand_tcp` 恒为 0 像素**。urdf 里它有 `<visual>`，但渲染不出任何像素（查
+  `flow/panda_hand_tcp__*` 的 `seg_pixel_count`，全 0）。拿 tcp 本身当「stick 末端」是空操作。
+- **`panda_stick` 的那根棍挂在 `panda_hand` 上**：`panda_stick.urdf` 里 `panda_hand` 有两个
+  visual——手掌 mesh，加一个 `radius=0.008 / length=0.1` 的圆柱。**segmentation 是 link 级的**，
+  棍与手掌同属一个 link，所以「保留 stick 末端」唯一可行的粒度就是保留整个 `panda_hand`，
+  RouteStick / PatternLock 的遮蔽图里手掌会连着棍一起留下。
+- **`panda_leftfinger_pad` / `rightfinger_pad` 在 `panda_v3.urdf`（panda_wristcam 用的那份）里
+  根本不存在**，`agent.finger1pad_link` 是 `None`。保留它们只为 urdf 换版后规则不失效。
+
+解析一律**优先走对象身份**而非 `panda_` 字符串前缀：`camera_base_link` / `camera_link` 也是真实的
+机器人 link 却不带该前缀，用前缀规则会把腕部相机支架整个漏掉。名字兜底则限定在「所属 articulation
+是机器人」的 link 里找，否则任务物体一旦重名就会被误保留。
+
+**地面 `ground` 不在白名单里，原样保留**。它占画面顶部约 4.9% 的一条棋盘格横带；机械臂举高穿过
+这条带时，那部分臂杆会被涂成桌面棕、看起来像一块浮空的棕色。这是口径的必然结果，不是 bug。
+
+## 棕色取值
+
+`(179, 107, 67)`——桌面棕色区的**实测中位 RGB**，跨 MoveCube / ButtonUnmask / VideoPlaceOrder
+与跨帧完全一致。用它而不是随便挑一个「标准棕」，是为了让涂掉的机械臂无缝融进涂平的桌面，
+而不是在画面里形成第二块颜色不同的色板。取值同时写进 `setup/masked_rgb_paint_color`。
+
+## `setup/` 新增字段
+
+```text
+episode_<i>/setup/
+  masked_rgb_schema_version        str        固定为 "masked-rgb-v1"
+  masked_rgb_paint_color           uint8 (3,) 实际使用的棕色 RGB
+  masked_rgb_painted/              group      ← 被涂成纯棕色的对象字典
+    <原名>__<seg_id>/              group
+      original_name                str
+      seg_id                       int64
+      kind                         str        "actor" / "link"
+      articulation_name            str
+      reason                       str        "robot_link" / "table_actor"
+  masked_rgb_kept/                 group      ← 保留原始像素的对象字典
+    <原名>__<seg_id>/              group
+      original_name                str
+      seg_id                       int64
+      kind                         str
+      articulation_name            str
+      reason                       str        "gripper_finger" / "gripper_finger_pad" /
+                                              "stick_end_link" / "not_whitelisted"
+      resolved_by                  str        "object_identity" / "name_fallback"；
+                                              白名单外的对象写空串
+```
+
+`painted` 与 `kept` **两个字典都写**：白名单机制下，日后要回答的审计问题是「`ground` 到底涂没涂」
+「左手指是靠对象身份找到的还是退回字符串了」，只记涂掉的那一半答不了。`resolved_by` 正是
+ManiSkill 升级后对象身份这条路静默失效时的唯一探针——它变成 `name_fallback` 就说明该查了。
+
+## 两个已知代价
+
+- **涂色区域不可从遮蔽图无损反推**。棕色取的就是桌面中位色，画面里本来就偏棕的物体会撞色，
+  `np.all(img == paint_color)` 会误判。真需要精确 mask 的话正确做法是另开字段
+  （父类里 `front_camera_segmentation` 的 `create_dataset` 本来就只是被注释掉了），
+  不要试图从颜色反解。
+- **硬边界、无阴影**。`minimal` shader 是单采样光栅化、无 MSAA，所以 rgb 与 segmentation 逐像素
+  对齐（没有边缘光晕，这是好事），代价是涂色区边界完全硬，且物体投在桌面上的接触阴影会连桌面
+  一起被抹平。
+
+## 相关工具
+
+- `scripts/data-generation-v2/export_masked_preview.py`：导出 `front_rgb` 与 `front_rgb_masked`
+  的并排对照图，白名单涂对没有最终只能靠这个用眼睛判定
+- `scripts/data-generation-v2/verify_joint_action_bitexact.py`：自对拍时 flow 与 masked rgb
+  是两个独立计数器，`--no-masked-rgb` 开关坏掉不会躲在正常工作的 `--flow` 后面
