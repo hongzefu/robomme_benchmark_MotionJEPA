@@ -63,7 +63,11 @@
 
 8. **Workflow 只有三条约定，其余全部作废：**
    - **①逐次审批**：**每次生成 workflow 前，必须先把方案（要做什么、分几个 phase、规模多大、用什么模型）交用户审批，获准后才能调 Workflow 工具。** 除此之外的一切开启条件（`ultracode` 关键字、用户原话是否说过「用 workflow」、任务规模是否够大、fan-out 数量刻度等）**一律作废**，不再作为自行启动的依据。
-   - **②模型白名单收紧为 sonnet-only + 有限 opus 例外**：用 Agent 工具 launch subagent 或在 Workflow 脚本里调 `agent()` 时，默认且仅允许 `model: "sonnet"`。**唯一例外**：workflow 收尾的总结/综合 agent、或负责制定计划（plan）的 agent，可用 `model: "opus"`，但单次任务累计使用 opus 不得超过 3 次。禁止 haiku、fable 及一切白名单外模型。**`model` 参数不得省略**——省略会静默继承主会话模型，同样算违规。
+   - **②模型白名单按派发方式分两条**：
+     - **用 Agent 工具 launch subagent：一律 `model: "opus"`。** 这种派发本质上是一次性的单一调用，不存在扇出成本问题。
+     - **Workflow 脚本里调 `agent()`：默认且仅允许 `model: "sonnet"`**——workflow 是一次性拉起大量 agent 的场景。**例外**：workflow 内部负责**制定计划（plan）**与**收尾总结/综合**的 agent **必须**用 `model: "opus"`，且**单次 workflow 内 opus 少于 5 个**（按 workflow 计，一个任务跑多个 workflow 时各自计数）。
+     - 禁止 haiku、fable 及一切白名单外模型。
+     - **`model` 参数不得省略**——省略会静默继承主会话模型，同样算违规。
    - **③不设置任何额外并发限制**：`parallel()`/`pipeline()` 直接传入完整条目即可，不要为控制并发人为拆批、加节流或降低单批数量——Workflow 工具自身已有并发上限（`min(16, cpu核数-2)`），脚本层面不叠加限制。
 
 9. **仓库文档中禁止用硬编码行号引用代码**（`file.py:123` 这类）。行号随代码演进必然漂移。引用代码一律用**稳定符号锚点**：函数/类/方法名、CLI 参数名、或代码段的语义描述；文件级 markdown 链接可保留。本条不约束代码内注释与 commit message。
