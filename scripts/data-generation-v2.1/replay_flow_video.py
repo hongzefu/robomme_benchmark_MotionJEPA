@@ -4,12 +4,19 @@
 每一帧的构成：
 
 - **主画面**：底图用最近邻放大 3 倍到 768×768（保住像素栅格，不糊掉），叠加每个物体的位置点与
-  位移箭头。底图由 ``--base-image`` 选：``front_rgb`` 是原始渲染图，``front_rgb_masked`` 是纯色棕
-  遮蔽图（v2.1 口径：机械臂整根被刷平、只剩夹爪指尖的黑色接触面，桌面木纹与任务物体原样保留）。
+  位移箭头。底图由 ``--base-image`` 三选一：
+
+  | 取值 | 底图 |
+  |---|---|
+  | ``front_rgb`` | 原始渲染图 |
+  | ``front_rgb_masked`` | h5 里的纯色棕遮蔽图（v2.1 口径：机械臂整根被刷平、只剩夹爪指尖的黑色接触面，桌面木纹与任务物体原样保留） |
+  | ``front_rgb_masked_red`` | 同上，但**被删掉的像素在展示层改画成纯红** ``(255, 0, 0)``，一眼看清哪些像素是被抹掉的、且**没有拿任何别的像素去填充** |
+
   用遮蔽图当底，机械臂不会在画面里晃来晃去抢戏；
 - **右侧图例**：物体原名 + 色块 + 当前帧的 (Δu, Δv) 数值；
-- **底部状态条**：帧号、是否处于 demo 相位、有效位移计数，以及醒目的
-  ``delta = 1 frame (next recorded step)`` 标注——位移的时间基准只有一帧，这一点必须一眼看见。
+- **底部状态条**：帧号（含对应的原始 timestep 号）、是否处于 demo 相位、有效位移计数，以及醒目的
+  delta 标注——位移的时间基准永远只有**一个记录步**，即使 ``--frame-stride`` 把视频抽稀了也不变，
+  这一点必须一眼看见，所以抽稀时状态条会同时印出步长。
 
 点的画法区分遮挡：``point_unoccluded=True``（投影点所在像素的分割 id 恰为该物体自身）画实心点，
 被遮挡则画空心圈。``in_frame=False`` 的物体画在最近的画幅边缘并标 ``off``。位移是 NaN 的（末帧、
@@ -33,8 +40,14 @@ import h5py
 import numpy as np
 
 
-DEFAULT_OUTPUT_DIR = Path("artifacts/flow-viz")
+SCRIPT_DIR = Path(__file__).resolve().parent
+# 产物默认落在脚本目录内部（用户口径），与 artifacts/ 下的旧产物分开
+DEFAULT_OUTPUT_DIR = SCRIPT_DIR / "products" / "flow-video"
 UPSCALE = 3  # 256 -> 768
+# 展示层里「被删掉的像素」用什么颜色标出来。纯红，且**不做任何背景填充**——
+# 这块区域在遮蔽图里本来就不含信息，拿别的像素补上去只会造出一张似是而非的图。
+MASK_DISPLAY_COLOR_RGB = (255, 0, 0)
+BASE_IMAGE_CHOICES = ("front_rgb", "front_rgb_masked", "front_rgb_masked_red")
 LEGEND_WIDTH = 330
 STATUS_HEIGHT = 64
 FONT = cv2.FONT_HERSHEY_SIMPLEX
@@ -94,6 +107,32 @@ def _read_flow_objects(setup_group: h5py.Group) -> dict[str, dict[str, Any]]:
     return result
 
 
+def _read_base_image(obs_group: h5py.Group, base_image: str, where: str) -> np.ndarray:
+    """按 ``--base-image`` 口径取出这一帧的底图（RGB uint8）。
+
+    ``front_rgb_masked_red`` 是**展示层**口径：h5 里存的仍是纯色棕遮蔽图，这里把
+    「被删掉的像素」重新画成纯红。删除区域取 ``front_rgb != front_rgb_masked``——近似而非
+    精确（机器人像素恰好等于涂色棕时会漏判，灰白黑的机器人撞上这个棕的概率可以忽略；
+    桌面不在涂色集里，不会误判）。
+    """
+    needed = ("front_rgb", "front_rgb_masked") if base_image == "front_rgb_masked_red" else (base_image,)
+    for key in needed:
+        if key not in obs_group:
+            raise ReplayError(
+                f"{where}：obs 下没有 {key}"
+                + ("，这份产物不是带 --masked-rgb 生成的" if key == "front_rgb_masked" else "")
+            )
+    if base_image != "front_rgb_masked_red":
+        return np.asarray(obs_group[base_image][()], dtype=np.uint8)
+
+    original = np.asarray(obs_group["front_rgb"][()], dtype=np.uint8)
+    masked = np.asarray(obs_group["front_rgb_masked"][()], dtype=np.uint8)
+    deleted = np.any(original != masked, axis=-1)
+    display = original.copy()
+    display[deleted] = np.asarray(MASK_DISPLAY_COLOR_RGB, dtype=np.uint8)
+    return display
+
+
 def _draw_marker(
     canvas: np.ndarray,
     center: tuple[int, int],
@@ -116,6 +155,8 @@ def _render_frame(
     total_frames: int,
     is_video_demo: bool,
     arrow_scale: float,
+    timestep_index: int,
+    frame_stride: int,
 ) -> np.ndarray:
     height, width = rgb.shape[:2]
     canvas = cv2.resize(
@@ -189,6 +230,7 @@ def _render_frame(
     cv2.putText(
         status,
         f"frame {frame_index + 1}/{total_frames}   "
+        f"t={timestep_index}   "
         f"demo={'yes' if is_video_demo else 'no'}   "
         f"valid flow {valid_flow_count}/{len(flow_objects)}   "
         f"arrow x{arrow_scale:g}",
@@ -199,9 +241,16 @@ def _render_frame(
         1,
         cv2.LINE_AA,
     )
+    # 抽稀不改变位移的时间基准：箭头永远是「到下一个记录步」的位移，
+    # 只是视频每 N 个记录步才画一帧。两件事必须同时写清楚，否则读数会被差 N 倍。
+    delta_text = (
+        "delta = 1 frame (next recorded step)"
+        if frame_stride <= 1
+        else f"delta = 1 recorded step   |   video shows every {frame_stride}th step"
+    )
     cv2.putText(
         status,
-        "delta = 1 frame (next recorded step)",
+        delta_text,
         (14, 48),
         FONT,
         0.56,
@@ -219,12 +268,16 @@ def render_episode(
     arrow_scale: float,
     fps: int,
     base_image: str = "front_rgb",
+    frame_stride: int = 1,
 ) -> dict[str, Any]:
     """渲染单个 episode 的 flow 对照视频，返回统计信息。
 
-    ``base_image`` 选底图：``front_rgb`` 是原始渲染图，``front_rgb_masked`` 是纯色棕遮蔽图
-    （v2.1 口径：机械臂整根被刷平、只剩夹爪指尖的黑色接触面，桌面木纹与任务物体原样保留）。
-    用遮蔽图当底，机械臂不会在画面里晃来晃去，物体的运动一眼就能看清。
+    ``base_image`` 选底图，三个取值见模块 docstring 的表；``front_rgb_masked_red`` 是展示层
+    口径，把被删掉的像素画成纯红且不做任何填充。
+
+    ``frame_stride`` 是**时序**降采样：每 N 个记录步取 1 帧进视频（首帧一定在内）。它只影响
+    视频里画了哪些帧，**不改变每帧箭头的时间基准**——箭头永远是「到下一个记录步」的位移，
+    这一点由状态条同时印出步长来提醒。
     """
     import imageio
 
@@ -242,26 +295,21 @@ def render_episode(
         timestep_names = _timestep_names(episode_group)
         if not timestep_names:
             raise ReplayError(f"{h5_path}/{episode_name}：没有 timestep")
+        if frame_stride < 1:
+            raise ReplayError(f"frame_stride 必须 ≥ 1，收到 {frame_stride}")
+        selected = timestep_names[::frame_stride]
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         writer = imageio.get_writer(str(output_path), fps=fps, macro_block_size=1)
         try:
-            for index, name in enumerate(timestep_names):
+            for rendered_index, name in enumerate(selected):
                 step_group = episode_group[name]
                 flow_group = step_group.get("flow")
                 if not isinstance(flow_group, h5py.Group):
                     raise ReplayError(f"{h5_path}/{episode_name}/{name}：缺少 flow")
-                obs_group = step_group["obs"]
-                if base_image not in obs_group:
-                    raise ReplayError(
-                        f"{h5_path}/{episode_name}/{name}：obs 下没有 {base_image}"
-                        + (
-                            "，这份产物不是带 --masked-rgb 生成的"
-                            if base_image == "front_rgb_masked"
-                            else ""
-                        )
-                    )
-                rgb = np.asarray(obs_group[base_image][()], dtype=np.uint8)
+                rgb = _read_base_image(
+                    step_group["obs"], base_image, f"{h5_path}/{episode_name}/{name}"
+                )
                 records = {key: flow_group[key][()] for key in flow_objects}
                 is_video_demo = bool(step_group["info"]["is_video_demo"][()])
 
@@ -269,10 +317,12 @@ def render_episode(
                     rgb,
                     records,
                     flow_objects,
-                    index,
-                    len(timestep_names),
+                    rendered_index,
+                    len(selected),
                     is_video_demo,
                     arrow_scale,
+                    int(name[len("timestep_") :]),
+                    frame_stride,
                 )
                 writer.append_data(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         finally:
@@ -282,7 +332,9 @@ def render_episode(
         "h5": str(h5_path),
         "episode": episode,
         "output": str(output_path),
-        "frame_count": len(timestep_names),
+        "recorded_frame_count": len(timestep_names),
+        "frame_count": len(selected),
+        "frame_stride": frame_stride,
         "object_count": len(flow_objects),
     }
 
@@ -307,9 +359,17 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--fps", type=int, default=30, help="输出帧率（默认 %(default)s）")
     parser.add_argument(
         "--base-image",
-        choices=("front_rgb", "front_rgb_masked"),
+        choices=BASE_IMAGE_CHOICES,
         default="front_rgb",
-        help="底图用原始渲染图还是纯色棕遮蔽图（默认 %(default)s）",
+        help="底图：原始渲染图 / h5 里的纯色棕遮蔽图 / 被删像素改画纯红的展示层遮蔽图"
+        "（默认 %(default)s）",
+    )
+    parser.add_argument(
+        "--frame-stride",
+        type=int,
+        default=1,
+        help="时序降采样：每 N 个记录步取 1 帧进视频，首帧一定在内。"
+        "不改变箭头的时间基准（永远是到下一个记录步的位移）（默认 %(default)s）",
     )
     parser.add_argument(
         "--output-dir",
@@ -336,14 +396,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 namespace.arrow_scale,
                 namespace.fps,
                 namespace.base_image,
+                namespace.frame_stride,
             )
         except ReplayError as exc:
             print(f"跳过 {h5_path.name}：{exc}", file=sys.stderr, flush=True)
             continue
         results.append(result)
         print(
-            f"已生成 {output_path}（{result['frame_count']} 帧，"
-            f"{result['object_count']} 个物体）",
+            f"已生成 {output_path}（{result['frame_count']} 帧"
+            f"／记录 {result['recorded_frame_count']} 帧，步长 {result['frame_stride']}，"
+            f"{result['object_count']} 个物体，底图 {namespace.base_image}）",
             flush=True,
         )
 

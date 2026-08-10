@@ -387,8 +387,11 @@ episode_<i>/setup/
 ## 相关工具
 
 - `scripts/data-generation-v2.1/export_masked_preview.py`：导出
-  `front_rgb` / `paint_mask`（涂色区红色半透明叠加）/ `front_rgb_masked` **三列拼接图**
-  目视核对，**核对清单与 v1 逐条不同**（桌面木纹应当保留、棍应当消失、只剩黑指尖，
-  且中列红色掩码在指尖处应当有个小缺口）
+  `front_rgb` / `paint_mask`（删除区红色半透明叠加）/ `deleted=red`（被删像素画成纯红）
+  **三列拼接图**目视核对，**核对清单与 v1 逐条不同**（桌面木纹应当保留、棍应当消失、
+  只剩黑指尖，且中列与右列的红色区在指尖处应当有个小缺口）
+- ⚠ **红色只在展示层**：`h5` 里存的 `front_rgb_masked` 始终是纯色棕 `(179, 107, 67)`。
+  参考图右列与 `replay_flow_video.py --base-image front_rgb_masked_red` 把被删像素改画成
+  纯红 `(255, 0, 0)` 且**不做任何背景填充**，只是为了让「哪些像素被抹掉了」一眼可见
 - 生成报告里的 `masked_rgb_black_exempt_pixels`：黑色豁免生效与否的自动信号。手指在 256×256
   里只占几十个像素，光看涂色总数看不出来，这个计数恒为 0 就说明阈值或手指 seg id 解析出了问题

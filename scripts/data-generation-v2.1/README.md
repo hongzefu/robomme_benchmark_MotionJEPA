@@ -142,44 +142,55 @@ uv run --no-sync python scripts/data-generation-v2.1/verify_flow_math.py \
   --h5 artifacts/generated/flow-16env-v21mask/record_dataset_*.h5 --episode 0
 ```
 
+## 展示层口径：产物落点、时序降采样、红色遮罩
+
+三条约定对回放视频与参考图同时生效，**h5 一个字节都不受影响**：
+
+1. **产物落在本目录内部** `products/`（`flow-video/` 与 `masked-preview/` 两个子目录），
+   是两个脚本的默认 `--output-dir`。该目录带自己的 `.gitignore`（`*` + `!.gitignore`）——
+   产物在百 MB 量级，只在本机保留、不进 git，但目录本身被跟踪，好让「产物该落在哪」有据可查。
+   h5 仍留在 `artifacts/generated/`，6.4 GB 不适合放进被 git 跟踪的脚本目录。
+2. **时序降采样** `--frame-stride N`：每 N 个记录步取 1（首帧一定在内）。**它只决定画哪些帧，
+   不改变箭头的时间基准**——位移永远是「到下一个记录步」的量。抽稀时视频状态条会同时印出
+   `delta = 1 recorded step | video shows every Nth step`，防止读数被差 N 倍。
+3. **删除区用纯红标出、不做任何填充**：`--base-image front_rgb_masked_red`（视频）与参考图
+   右列都把被删像素画成 `(255, 0, 0)`。那块区域本来就不含信息，拿别的像素补上去只会造出一张
+   似是而非的图。h5 里存的仍是纯色棕遮蔽图，红色**只在展示层**。
+
+删除区一律取 `front_rgb != front_rgb_masked`，是近似口径（机器人像素恰好等于涂色棕时会漏判，
+灰白黑的机器人撞上那个棕的概率可忽略；桌面不在涂色集里所以不会误判）。
+
 ### flow 回放可视化
 
-`--base-image` 选底图。**推荐用 `front_rgb_masked`**：机械臂被刷平成纯棕后不会在画面里晃来晃去
-抢戏，物体运动一眼就能看清（默认值仍是 `front_rgb`，保持与旧产物兼容）。注意 v2.1 的遮蔽图
-**保留桌面木纹**，箭头压在木纹上的观感与 v2 产物不同。
+`--base-image` 三选一：`front_rgb`（原图）、`front_rgb_masked`（h5 里的纯色棕遮蔽图）、
+`front_rgb_masked_red`（被删像素改画纯红的展示层遮蔽图）。用遮蔽图当底，机械臂不会在画面里
+晃来晃去抢戏。注意 v2.1 的遮蔽图**保留桌面木纹**，箭头压在木纹上的观感与 v2 产物不同。
 
 ```bash
 uv run --no-sync python scripts/data-generation-v2.1/replay_flow_video.py \
   --h5 artifacts/generated/v21mask-16env/record_dataset_*.h5 \
-  --episode 0 --arrow-scale 5 --base-image front_rgb_masked \
-  --output-dir artifacts/flow-viz-v21mask
+  --episode 0 --arrow-scale 5 --base-image front_rgb_masked_red --frame-stride 4
 ```
 
 ### 遮蔽图目视检查（三列拼接参考图）
 
-白名单涂对没有，最终只能靠眼睛判定。每个任务一张网格图，行是整段 episode 均匀抽的 8 帧
-（`--frames` 可调），每行三列：
+白名单涂对没有，最终只能靠眼睛判定。每个任务一张网格图，行是在**抽稀后**的时间线上均匀取的
+8 帧（`--frames` 可调），每行三列：
 
 | 列 | 内容 | 看什么 |
 |---|---|---|
 | `front_rgb` | 原始渲染图 | 这一帧机械臂在哪、夹爪什么姿态 |
-| `paint_mask` | 涂色区红色半透明叠在原图上 | 掩码边界准不准、有没有多涂/漏涂 |
-| `front_rgb_masked` | h5 里的遮蔽图 | 最终结果，黑指尖是不是留住了 |
-
-中列掩码取 `front_rgb != front_rgb_masked`，是近似口径（机器人像素恰好等于涂色棕时会漏判，
-概率可忽略；桌面不在涂色集里所以不会误判）。
+| `paint_mask` | 删除区红色半透明叠在原图上 | 掩码边界准不准、有没有多删/漏删 |
+| `deleted=red` | 被删像素画成纯红的遮蔽图 | 最终结果，黑指尖是不是留住了 |
 
 **v2.1 的核对清单与 v2 逐条不同，别拿旧图对照**：桌面木纹原样保留、机械臂从底座到手掌整根
 消失（含腕部相机支架与手掌上的黑色方块）、**只剩夹爪指尖那一小块黑色**（白色指身必须已被
-涂掉，中列红色掩码在指尖处应当有个小缺口）、任务物体全保留、顶部地面横带保留、stick 任务
-那根棍**也没了**。
-
-默认输出到 `artifacts/flow-viz/v21mask-preview/`，与 v2 的 `artifacts/masked-preview/`
-（masked-rgb-v1 口径）分开落盘——两套图长得完全不一样，混在一个目录里迟早被拿错。
+涂掉，中列与右列的红色区在指尖处应当有个小缺口）、任务物体全保留、顶部地面横带保留、
+stick 任务那根棍**也没了**。
 
 ```bash
 uv run --no-sync python scripts/data-generation-v2.1/export_masked_preview.py \
-  --h5 artifacts/generated/v21mask-16env/record_dataset_*.h5 --episode 0
+  --h5 artifacts/generated/v21mask-16env/record_dataset_*.h5 --episode 0 --frame-stride 4
 ```
 
 ### 补齐官方参考 h5

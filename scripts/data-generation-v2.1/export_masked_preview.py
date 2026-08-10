@@ -8,10 +8,14 @@
 | 列 | 内容 | 看什么 |
 |---|---|---|
 | `front_rgb` | 原始渲染图 | 这一帧机械臂在哪、夹爪什么姿态 |
-| `paint_mask` | 涂色区红色半透明叠在原图上 | 掩码边界准不准、有没有多涂/漏涂 |
-| `front_rgb_masked` | h5 里的遮蔽图 | 最终结果，黑指尖是不是留住了 |
+| `paint_mask` | 删除区红色半透明叠在原图上 | 掩码边界准不准、有没有多删/漏删 |
+| `deleted=red` | 被删像素画成纯红的遮蔽图 | 最终结果，黑指尖是不是留住了 |
 
-中列的掩码取 ``front_rgb != front_rgb_masked``。这是**近似而非精确**的口径：理论上某个机器人
+**右列是展示层口径**：h5 里存的 ``front_rgb_masked`` 是纯色棕，这里把被删掉的像素重新画成
+纯红 ``(255, 0, 0)``，**不拿任何别的像素去填充**——那块区域本来就不含信息，补上去只会造出
+一张似是而非的图。
+
+中列与右列的删除区都取 ``front_rgb != front_rgb_masked``。这是**近似而非精确**的口径：理论上某个机器人
 像素本来就恰好等于涂色棕 ``(179, 107, 67)`` 时会被漏判，但机器人是灰白黑三色、逐位撞上这个
 棕色的概率可以忽略；桌面木纹里确实有接近该棕的像素，但桌面根本不在涂色集里，不会造成误判。
 真要精确掩码只能另开 h5 字段，不要试图从颜色反解（见 doc/h5_data_format.md 的「已知代价」）。
@@ -22,7 +26,7 @@
 2. **机械臂**从底座到手掌整根消失在棕色里，含腕部相机支架 ``camera_base_link`` /
    ``camera_link``，以及手掌上那几块黑色方块；
 3. **夹爪指尖那一小块黑色**还在，白色指身必须已经被涂掉——这是判断像素级黑色豁免生效的
-   最直接信号：画面里与机器人有关的东西**只剩这一处**。中列的红色掩码在指尖处应当有一个
+   最直接信号：画面里与机器人有关的东西**只剩这一处**。中列与右列的红色区在指尖处应当有一个
    小缺口，那个缺口就是豁免出来的黑指尖；
 4. **任务物体**（方块、按钮、目标标记等）全部保留原样；
 5. **地面**顶部那条棋盘格横带保留原样；
@@ -47,10 +51,10 @@ except ImportError as exc:  # pragma: no cover - 环境问题应当直接暴露
     raise SystemExit(f"需要 opencv：{exc}")
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-# 与 v2 的 artifacts/masked-preview/ 分开落盘：v2 的旧预览图是 masked-rgb-v1 口径，
-# 两套图长得完全不一样，混在一个目录里迟早会被拿错。
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "artifacts" / "flow-viz" / "v21mask-preview"
+SCRIPT_DIR = Path(__file__).resolve().parent
+# 产物默认落在脚本目录内部（用户口径），与 artifacts/ 下 v2 的旧预览图彻底分开：
+# 那批是 masked-rgb-v1 口径、棕色遮蔽、两列版式，与这里的图长得完全不一样。
+DEFAULT_OUTPUT_DIR = SCRIPT_DIR / "products" / "masked-preview"
 
 # 单块图放大倍数。原图 256×256 太小，看不清指尖那几十个像素有没有留住。
 SCALE = 2
@@ -58,9 +62,11 @@ SCALE = 2
 LABEL_HEIGHT = 22
 # 列间、行间的留白
 GAP = 6
-# 掩码叠加色（RGB）与叠加权重：红色够扎眼，0.7 的权重既盖得住又能透出下面的轮廓
+# 中列掩码叠加色（RGB）与叠加权重：红色够扎眼，0.7 的权重既盖得住又能透出下面的轮廓
 MASK_OVERLAY_COLOR = (255, 40, 40)
 MASK_OVERLAY_ALPHA = 0.70
+# 右列「被删像素」的实心色（RGB）。纯红、不透明、不做任何背景填充。
+MASK_DISPLAY_COLOR = (255, 0, 0)
 
 
 def _timestep_indices(episode_group: h5py.Group) -> list[int]:
@@ -125,18 +131,31 @@ def _mask_overlay(rgb: np.ndarray, mask: np.ndarray) -> np.ndarray:
     return np.where(mask[..., None], blended, rgb)
 
 
+def _deleted_as_red(original: np.ndarray, paint_mask: np.ndarray) -> np.ndarray:
+    """把被删掉的像素画成纯红，其余像素一个都不动。"""
+    display = original.copy()
+    display[paint_mask] = np.asarray(MASK_DISPLAY_COLOR, dtype=np.uint8)
+    return display
+
+
 def build_preview(
-    h5_path: Path, episode: int, frames: int
+    h5_path: Path, episode: int, frames: int, frame_stride: int = 1
 ) -> tuple[np.ndarray, dict[str, Any]]:
-    """读一个 episode，拼出三列网格图，同时返回涂色口径摘要。"""
+    """读一个 episode，拼出三列网格图，同时返回涂色口径摘要。
+
+    ``frame_stride`` 是**时序**降采样：先只保留每 N 个记录步里的第 1 个，再在这条抽稀后的
+    时间线上均匀取 ``frames`` 帧。这样参考图与同口径抽稀的视频看到的是同一批时间点。
+    """
     with h5py.File(h5_path, "r") as handle:
         episode_name = f"episode_{episode}"
         if episode_name not in handle:
             raise KeyError(f"{h5_path.name} 里没有 {episode_name}")
         episode_group = handle[episode_name]
 
+        if frame_stride < 1:
+            raise ValueError(f"frame_stride 必须 ≥ 1，收到 {frame_stride}")
         indices = _timestep_indices(episode_group)
-        picked = _pick_frames(indices, frames)
+        picked = _pick_frames(indices[::frame_stride], frames)
         if not picked:
             raise ValueError(f"{h5_path.name} 的 {episode_name} 一个 timestep 都没有")
 
@@ -162,7 +181,10 @@ def build_preview(
                     _to_bgr(_mask_overlay(original, paint_mask)),
                     f"t={index} paint_mask",
                 ),
-                _label(_to_bgr(masked), f"t={index} front_rgb_masked"),
+                _label(
+                    _to_bgr(_deleted_as_red(original, paint_mask)),
+                    f"t={index} deleted=red",
+                ),
             )
             spacer = np.full((panels[0].shape[0], GAP, 3), 24, dtype=np.uint8)
             rows.append(np.hstack([panels[0], spacer, panels[1], spacer, panels[2]]))
@@ -181,6 +203,7 @@ def build_preview(
         summary.update(
             {
                 "frame_count": len(indices),
+                "frame_stride": frame_stride,
                 "shown_frames": len(picked),
                 "mask_fraction": (mask_pixels / mask_total) if mask_total else 0.0,
             }
@@ -234,6 +257,12 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--episode", type=int, default=0, help="检查哪个 episode，默认 0")
     parser.add_argument("--frames", type=int, default=8, help="每个任务抽几帧，默认 8")
     parser.add_argument(
+        "--frame-stride",
+        type=int,
+        default=1,
+        help="时序降采样：先只保留每 N 个记录步里的第 1 个，再在其上均匀取 --frames 帧，默认 1",
+    )
+    parser.add_argument(
         "--output-dir",
         default=str(DEFAULT_OUTPUT_DIR),
         help=f"图片输出目录，默认 {DEFAULT_OUTPUT_DIR}",
@@ -250,7 +279,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     for raw in namespace.h5:
         h5_path = Path(raw).expanduser().resolve()
         try:
-            grid, summary = build_preview(h5_path, namespace.episode, namespace.frames)
+            grid, summary = build_preview(
+                h5_path, namespace.episode, namespace.frames, namespace.frame_stride
+            )
         except Exception as exc:
             print(f"✗ {h5_path.name}: {exc}", flush=True)
             failures += 1
@@ -268,7 +299,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(
             f"✓ {h5_path.name}[{summary.get('schema_version', '?')}]: "
-            f"{summary.get('frame_count', '?')} 帧取 {summary.get('shown_frames', '?')} 帧，"
+            f"{summary.get('frame_count', '?')} 帧按步长 {summary.get('frame_stride', '?')} "
+            f"抽稀后取 {summary.get('shown_frames', '?')} 帧，"
             f"涂色 {summary.get('painted_count', '?')} 个机器人 link、"
             f"掩码占比 {summary.get('mask_fraction', 0.0):.2%}，"
             f"黑色豁免 {black_text or '无（panda_stick 全涂）'}，"
