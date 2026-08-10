@@ -42,12 +42,34 @@ flow 本身仍全部来自仿真 3D 真值，和 v2 完全一致；“纯 CV”�
 | `verify_joint_action_bitexact.py` | **自对拍**：验证开 flow 后除 flow 外逐位不变 |
 | `verify_cv_arm_removal.py` | 用 v2 产物作只读代理真值，检查 arm-body 召回与逐位不变契约 |
 | `replay_flow_video.py` | 可直接从旧 h5 的原始 RGB-D 在线去臂并渲染 flow 视频 |
-| `export_masked_preview.py` | 导出原图 \| arm mask \| 去臂结果三列网格，供目视检查 |
+| `export_masked_preview.py` | 导出三列概览，或时序抽稀后纯红删除图的 episode contact sheet |
 | `fetch_reference_h5.py` | 从 HuggingFace 补齐官方参考 h5 |
 
 ## 常用命令
 
 从仓库根目录执行。输出目录必须在仓库内，且不存在或为空。
+
+### 16 任务 × episode_0：时序 4 倍降采样纯红删除拼图
+
+本口径**只生成 16 张 PNG，不生成 H5 或视频**。每个任务读取既有 H5 的完整 `episode_0`，先在
+完整原始 RGB-D 时序上计算通用 CV arm mask，再保留 `0,4,8,...,末帧`。每个保留帧保持原始
+256×256 空间分辨率：mask 内写纯红 `(255, 0, 0)`，mask 外与 `front_rgb` 逐位相等，不使用
+时序背景、邻近纹理或 inpaint 填充删除区域。最后按每行 8 帧、从左到右再从上到下的时间顺序
+拼成一张 episode contact sheet。
+
+```bash
+uv run --locked python scripts/data-generation-v3-codex/export_masked_preview.py \
+  --h5 artifacts/generated/v21-16env/record_dataset_*.h5 \
+  --episode 0 --contact-sheet --temporal-stride 4 --columns 8
+```
+
+默认输出：
+
+```text
+scripts/data-generation-v3-codex/products/temporal4-red-mask-contact-sheets/
+```
+
+`products/.gitignore` 只跟踪产物目录约定；PNG 本身留在本机，不进入 Git。
 
 ### 直接重渲染现有 16 个 episode_0（本次使用的路径）
 
