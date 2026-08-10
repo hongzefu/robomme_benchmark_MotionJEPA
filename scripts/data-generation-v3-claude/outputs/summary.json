@@ -1,0 +1,916 @@
+{
+  "params": {
+    "plate_mode": "mode",
+    "plate_min_fraction": 0.15,
+    "diff_threshold": 8,
+    "close_iter": 1,
+    "border_sides": "top,left,right",
+    "border_band": 3,
+    "occluder_sat_k": 3.0,
+    "occluder_sat_cap": 20.0,
+    "occluder_val_pct": 2.0,
+    "static_occluder_mode": "learned",
+    "static_occluder_box": null,
+    "occluder_top_rows": 32,
+    "occluder_max_width": 128,
+    "occluder_val_cap": 160.0,
+    "occluder_area_min": 60,
+    "occluder_area_max": 6000,
+    "occluder_dilate": 2,
+    "stuck_fill": true,
+    "stuck_max_mode_fraction": 0.95,
+    "absorb_distance": 12.0,
+    "absorb_arm_ratio": 0.6,
+    "absorb_max_area": 1500,
+    "shadow_mode": "adjacent",
+    "shadow_ratio_lo": 0.55,
+    "shadow_ratio_hi": 0.97,
+    "shadow_chroma_tol": 0.06,
+    "shadow_dilate": 6,
+    "protect_saturated": true,
+    "protect_sat_min": 60,
+    "protect_min_area": 20,
+    "arm_dilate": 2
+  },
+  "episode": 0,
+  "temporal_stride": 4,
+  "tasks": {
+    "BinFill": {
+      "frame_count": 138,
+      "segment_count": 1,
+      "segments": [
+        {
+          "start": 0,
+          "end": 138,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.3550724685192108,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 399400,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.06935329713683197,
+      "removed_fraction_max": 0.137176513671875,
+      "absorbed_fragment_count": 4,
+      "shadow_pixel_total": 16263,
+      "protected_pixel_total": 35299,
+      "elapsed_seconds": 1.79,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_BinFill.h5",
+      "temporal_stride": 4
+    },
+    "ButtonUnmask": {
+      "frame_count": 73,
+      "segment_count": 1,
+      "segments": [
+        {
+          "start": 0,
+          "end": 73,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.31506848335266113,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 134708,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.050772679995184075,
+      "removed_fraction_max": 0.0903472900390625,
+      "absorbed_fragment_count": 39,
+      "shadow_pixel_total": 13453,
+      "protected_pixel_total": 8287,
+      "elapsed_seconds": 0.97,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_ButtonUnmask.h5",
+      "temporal_stride": 4
+    },
+    "ButtonUnmaskSwap": {
+      "frame_count": 129,
+      "segment_count": 1,
+      "segments": [
+        {
+          "start": 0,
+          "end": 129,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.27906978130340576,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 319026,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.0673080562621124,
+      "removed_fraction_max": 0.1171417236328125,
+      "absorbed_fragment_count": 46,
+      "shadow_pixel_total": 19349,
+      "protected_pixel_total": 19809,
+      "elapsed_seconds": 1.63,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_ButtonUnmaskSwap.h5",
+      "temporal_stride": 4
+    },
+    "InsertPeg": {
+      "frame_count": 119,
+      "segment_count": 2,
+      "segments": [
+        {
+          "start": 0,
+          "end": 60,
+          "phase_is_video_demo": true,
+          "plate_mode_fraction_min": 0.5166666507720947,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 116746,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        },
+        {
+          "start": 60,
+          "end": 119,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.508474588394165,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 13.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 115157,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.05538889139640231,
+      "removed_fraction_max": 0.126434326171875,
+      "absorbed_fragment_count": 0,
+      "shadow_pixel_total": 3332,
+      "protected_pixel_total": 16908,
+      "elapsed_seconds": 1.34,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_InsertPeg.h5",
+      "temporal_stride": 4
+    },
+    "MoveCube": {
+      "frame_count": 107,
+      "segment_count": 2,
+      "segments": [
+        {
+          "start": 0,
+          "end": 59,
+          "phase_is_video_demo": true,
+          "plate_mode_fraction_min": 0.35593220591545105,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 179230,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        },
+        {
+          "start": 59,
+          "end": 107,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.4166666567325592,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 118802,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.06752855532637267,
+      "removed_fraction_max": 0.11492919921875,
+      "absorbed_fragment_count": 5,
+      "shadow_pixel_total": 12563,
+      "protected_pixel_total": 42566,
+      "elapsed_seconds": 1.28,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_MoveCube.h5",
+      "temporal_stride": 4
+    },
+    "PatternLock": {
+      "frame_count": 24,
+      "segment_count": 2,
+      "segments": [
+        {
+          "start": 0,
+          "end": 12,
+          "phase_is_video_demo": true,
+          "plate_mode_fraction_min": 0.1666666716337204,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 28383,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              53,
+              91,
+              169
+            ],
+            "area": 3428,
+            "rejected_oversize": 0
+          }
+        },
+        {
+          "start": 12,
+          "end": 24,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.1666666716337204,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 28243,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              53,
+              91,
+              169
+            ],
+            "area": 3415,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.07372792561848958,
+      "removed_fraction_max": 0.080230712890625,
+      "absorbed_fragment_count": 114,
+      "shadow_pixel_total": 2963,
+      "protected_pixel_total": 19066,
+      "elapsed_seconds": 0.36,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_PatternLock.h5",
+      "temporal_stride": 4
+    },
+    "PickHighlight": {
+      "frame_count": 77,
+      "segment_count": 1,
+      "segments": [
+        {
+          "start": 0,
+          "end": 77,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.5324675440788269,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 107954,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.045190984552556816,
+      "removed_fraction_max": 0.0675811767578125,
+      "absorbed_fragment_count": 3,
+      "shadow_pixel_total": 5662,
+      "protected_pixel_total": 11887,
+      "elapsed_seconds": 0.95,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_PickHighlight.h5",
+      "temporal_stride": 4
+    },
+    "PickXtimes": {
+      "frame_count": 133,
+      "segment_count": 1,
+      "segments": [
+        {
+          "start": 0,
+          "end": 133,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.23308271169662476,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 324866,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              75,
+              146
+            ],
+            "area": 1565,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.061918330371828006,
+      "removed_fraction_max": 0.0888519287109375,
+      "absorbed_fragment_count": 24,
+      "shadow_pixel_total": 34515,
+      "protected_pixel_total": 32655,
+      "elapsed_seconds": 1.58,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_PickXtimes.h5",
+      "temporal_stride": 4
+    },
+    "RouteStick": {
+      "frame_count": 50,
+      "segment_count": 2,
+      "segments": [
+        {
+          "start": 0,
+          "end": 25,
+          "phase_is_video_demo": true,
+          "plate_mode_fraction_min": 0.23999999463558197,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 111920,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        },
+        {
+          "start": 25,
+          "end": 50,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.23999999463558197,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 111866,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.1063055419921875,
+      "removed_fraction_max": 0.1360626220703125,
+      "absorbed_fragment_count": 112,
+      "shadow_pixel_total": 3832,
+      "protected_pixel_total": 10549,
+      "elapsed_seconds": 0.65,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_RouteStick.h5",
+      "temporal_stride": 4
+    },
+    "StopCube": {
+      "frame_count": 115,
+      "segment_count": 1,
+      "segments": [
+        {
+          "start": 0,
+          "end": 115,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.747826099395752,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 30334,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              37,
+              146
+            ],
+            "area": 2016,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.03475739852241848,
+      "removed_fraction_max": 0.0637664794921875,
+      "absorbed_fragment_count": 9,
+      "shadow_pixel_total": 8765,
+      "protected_pixel_total": 41379,
+      "elapsed_seconds": 1.37,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_StopCube.h5",
+      "temporal_stride": 4
+    },
+    "SwingXtimes": {
+      "frame_count": 121,
+      "segment_count": 1,
+      "segments": [
+        {
+          "start": 0,
+          "end": 121,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.586776852607727,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 223933,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.050759181503422006,
+      "removed_fraction_max": 0.0886077880859375,
+      "absorbed_fragment_count": 24,
+      "shadow_pixel_total": 16381,
+      "protected_pixel_total": 24923,
+      "elapsed_seconds": 1.45,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_SwingXtimes.h5",
+      "temporal_stride": 4
+    },
+    "VideoPlaceButton": {
+      "frame_count": 262,
+      "segment_count": 2,
+      "segments": [
+        {
+          "start": 0,
+          "end": 192,
+          "phase_is_video_demo": true,
+          "plate_mode_fraction_min": 0.4427083432674408,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 1049868,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        },
+        {
+          "start": 192,
+          "end": 262,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.41428571939468384,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 288248,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.10473906538868678,
+      "removed_fraction_max": 0.22802734375,
+      "absorbed_fragment_count": 64,
+      "shadow_pixel_total": 47917,
+      "protected_pixel_total": 50222,
+      "elapsed_seconds": 3.17,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_VideoPlaceButton.h5",
+      "temporal_stride": 4
+    },
+    "VideoPlaceOrder": {
+      "frame_count": 300,
+      "segment_count": 2,
+      "segments": [
+        {
+          "start": 0,
+          "end": 235,
+          "phase_is_video_demo": true,
+          "plate_mode_fraction_min": 0.36595743894577026,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 1313683,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        },
+        {
+          "start": 235,
+          "end": 300,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.4000000059604645,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 193999,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              30,
+              110,
+              146
+            ],
+            "area": 941,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.1051928202311198,
+      "removed_fraction_max": 0.2320404052734375,
+      "absorbed_fragment_count": 273,
+      "shadow_pixel_total": 54428,
+      "protected_pixel_total": 83759,
+      "elapsed_seconds": 3.71,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_VideoPlaceOrder.h5",
+      "temporal_stride": 4
+    },
+    "VideoRepick": {
+      "frame_count": 189,
+      "segment_count": 2,
+      "segments": [
+        {
+          "start": 0,
+          "end": 81,
+          "phase_is_video_demo": true,
+          "plate_mode_fraction_min": 0.37037035822868347,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 324741,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              43,
+              110,
+              189
+            ],
+            "area": 1690,
+            "rejected_oversize": 0
+          }
+        },
+        {
+          "start": 81,
+          "end": 189,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.25,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 443045,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              63,
+              110,
+              251
+            ],
+            "area": 2786,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.09277319529699901,
+      "removed_fraction_max": 0.13189697265625,
+      "absorbed_fragment_count": 2,
+      "shadow_pixel_total": 32618,
+      "protected_pixel_total": 103567,
+      "elapsed_seconds": 2.25,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_VideoRepick.h5",
+      "temporal_stride": 4
+    },
+    "VideoUnmask": {
+      "frame_count": 60,
+      "segment_count": 2,
+      "segments": [
+        {
+          "start": 0,
+          "end": 17,
+          "phase_is_video_demo": true,
+          "plate_mode_fraction_min": 0.47058823704719543,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 20.0,
+          "arm_value_min": 40.0,
+          "appearance_sample_pixels": 0,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        },
+        {
+          "start": 17,
+          "end": 60,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.20930232107639313,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 14.4478,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 272358,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              79,
+              0,
+              146
+            ],
+            "area": 6130,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.11687113444010416,
+      "removed_fraction_max": 0.227203369140625,
+      "absorbed_fragment_count": 3,
+      "shadow_pixel_total": 10146,
+      "protected_pixel_total": 55635,
+      "elapsed_seconds": 0.76,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_VideoUnmask.h5",
+      "temporal_stride": 4
+    },
+    "VideoUnmaskSwap": {
+      "frame_count": 82,
+      "segment_count": 2,
+      "segments": [
+        {
+          "start": 0,
+          "end": 42,
+          "phase_is_video_demo": true,
+          "plate_mode_fraction_min": 0.2380952388048172,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 20.0,
+          "arm_value_min": 40.0,
+          "appearance_sample_pixels": 0,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              29,
+              110,
+              146
+            ],
+            "area": 914,
+            "rejected_oversize": 0
+          }
+        },
+        {
+          "start": 42,
+          "end": 82,
+          "phase_is_video_demo": false,
+          "plate_mode_fraction_min": 0.22499999403953552,
+          "plate_mode_fraction_median": 1.0,
+          "plate_unreliable_pixels": 0,
+          "arm_sat_threshold": 10.0,
+          "arm_value_min": 38.0,
+          "appearance_sample_pixels": 122510,
+          "static_occluder": {
+            "status": "ok",
+            "bbox": [
+              0,
+              48,
+              110,
+              179
+            ],
+            "area": 2436,
+            "rejected_oversize": 0
+          }
+        }
+      ],
+      "removed_fraction_mean": 0.04481208615186738,
+      "removed_fraction_max": 0.1085052490234375,
+      "absorbed_fragment_count": 4,
+      "shadow_pixel_total": 9847,
+      "protected_pixel_total": 23582,
+      "elapsed_seconds": 0.98,
+      "source_h5": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21-16env/record_dataset_VideoUnmaskSwap.h5",
+      "temporal_stride": 4
+    }
+  },
+  "static_occluder_consistency": {
+    "bbox_per_task": {
+      "BinFill": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "ButtonUnmask": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "ButtonUnmaskSwap": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "InsertPeg": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "MoveCube": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "PatternLock": [
+        0,
+        53,
+        91,
+        169
+      ],
+      "PickHighlight": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "PickXtimes": [
+        0,
+        29,
+        75,
+        146
+      ],
+      "RouteStick": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "StopCube": [
+        0,
+        29,
+        37,
+        146
+      ],
+      "SwingXtimes": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "VideoPlaceButton": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "VideoPlaceOrder": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "VideoRepick": [
+        0,
+        43,
+        110,
+        189
+      ],
+      "VideoUnmask": [
+        0,
+        29,
+        110,
+        146
+      ],
+      "VideoUnmaskSwap": [
+        0,
+        29,
+        110,
+        146
+      ]
+    },
+    "tasks_without_detection": [],
+    "max_deviation_px": 73,
+    "consistent_within_2px": false
+  }
+}
