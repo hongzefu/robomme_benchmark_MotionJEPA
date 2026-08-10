@@ -46,7 +46,7 @@ Each episode contains:
 | `is_gripper_close` | `bool` | Whether gripper is closed |
 | `front_camera_extrinsic` | `float32 (3, 4)` | Front camera extrinsic matrix |
 | `wrist_camera_extrinsic` | `float32 (3, 4)` | Wrist camera extrinsic matrix |
-| `front_rgb_masked` | `uint8 (256, 256, 3)` | 纯色棕遮蔽图（本仓库新增，见下方 `masked-rgb-v1` 一节） |
+| `front_rgb_masked` | `uint8 (256, 256, 3)` | 纯色棕遮蔽图（本仓库新增；口径分两版，见下方 `masked-rgb-v1` 与 `masked-rgb-v2` 两节，产物属于哪一版看 `setup/masked_rgb_schema_version`） |
 
 ## `action/` fields
 
@@ -174,6 +174,10 @@ key 一律是 `<原名>__<seg_id>`。ManiSkill 保证 actor 名全局唯一（`a
 
 # 纯色棕遮蔽图（`masked-rgb-v1`）
 
+> ⚠ 这一节描述的是 **`scripts/data-generation-v2/`** 的口径。后续 `scripts/data-generation-v2.1/`
+> 换了遮蔽口径，schema 升到 `masked-rgb-v2`，见再下面一节。判断手里的产物属于哪一版，
+> 看 `episode_<i>/setup/masked_rgb_schema_version`。
+
 由 `scripts/data-generation-v2/` 链路在开启 `--masked-rgb` 时写入（默认开启），落点是
 `timestep_<k>/obs/front_rgb_masked`，与 `front_rgb` 并列、**同 dtype 同 shape、不压缩**。
 
@@ -276,3 +280,113 @@ ManiSkill 升级后对象身份这条路静默失效时的唯一探针——它�
   的并排对照图，白名单涂对没有最终只能靠这个用眼睛判定
 - `scripts/data-generation-v2/verify_joint_action_bitexact.py`：自对拍时 flow 与 masked rgb
   是两个独立计数器，`--no-masked-rgb` 开关坏掉不会躲在正常工作的 `--flow` 后面
+
+---
+
+# 纯色棕遮蔽图（`masked-rgb-v2`）
+
+由 `scripts/data-generation-v2.1/` 链路在开启 `--masked-rgb` 时写入（默认开启）。落点、dtype、
+shape、压缩与「在 `close()` 里算、`front_rgb` 逐位不变」这几条与 `masked-rgb-v1` 完全一样，
+**只有涂色口径不同**。
+
+## 与 `masked-rgb-v1` 的三处口径差别
+
+| 方面 | `masked-rgb-v1` | `masked-rgb-v2` |
+|---|---|---|
+| 机器人 | 涂全部 link，但**整根手指 link 保留原像素** | 涂全部 link，只在手指 link 内**按像素**豁免黑色指尖 |
+| `panda_stick` | 保留整个 `panda_hand`（手掌连着棍一起留下） | **不保留任何东西**，整个机器人连棍一起涂掉 |
+| 桌面 `table-workspace` | 涂成纯棕 | **不涂**，木纹原样保留 |
+
+结果是画面里与机器人有关的东西**只剩夹爪指尖那一小块黑色接触面**，桌面与全部任务物体原样保留。
+
+## 白名单口径
+
+只有一类东西会被涂棕：**机器人 articulation 下的 link**。其余一律原样保留——桌面、地面
+`ground`、全部任务物体、以及任何没认出来的东西。白名单而非黑名单的理由与 v1 一致：黑名单遇到
+新出现的未知物体会默认涂掉它、静默毁掉数据。
+
+**唯一例外是逐像素的黑色豁免**：
+
+```text
+若 agent.finger1_link 存在（有手指的机器人，如 panda_wristcam）：
+    豁免 link = {finger1_link, finger2_link, finger1pad_link, finger2pad_link} 里非 None 的那些
+    豁免像素 = 这些 link 内三通道均值 ≤ masked_rgb_black_luminance_max 的像素
+否则（无手指的机器人，如 panda_stick）：
+    豁免集为空，整个机器人全涂
+```
+
+为什么必须按像素而不是按 seg id：`panda_v3.urdf` 里 `panda_leftfinger` 只有**一个** visual
+（`franka_description/meshes/visual/finger.glb`），白色指身与黑色指尖是同一个 mesh 上的两种
+材质，而 ManiSkill 的 segmentation 是 **link 级**的——seg id 这一层根本切不开指身与指尖。
+
+阈值默认 `100`，依据是在 16 任务既有产物上实测的手指像素亮度分布：**暗簇 38–59、亮簇 142–231，
+中间 60–141 完全是空档**，阈值落在空档正中，往两边挪 40 个灰度级结果都不变。实现用整数和
+`R+G+B ≤ 3×阈值` 判定，与「均值 ≤ 阈值」严格等价。实际使用的阈值写进
+`setup/masked_rgb_black_luminance_max`。
+
+豁免**只作用于手指 link**：手掌 `panda_hand` 与腕部相机支架上也有黑色方块，那些不属于夹爪
+接触面，按口径一起涂掉。
+
+## 棕色取值
+
+仍是 `(179, 107, 67)`，桌面棕色区的实测中位 RGB。v2.1 已经不涂桌面了，但涂色仍沿用这个值——
+机械臂在画面里几乎总是压在桌面上，用桌面中位色涂它，涂掉的部分会融进木纹底色而不是形成第二块
+扎眼的色板。取值同时写进 `setup/masked_rgb_paint_color`。
+
+## `setup/` 新增字段
+
+```text
+episode_<i>/setup/
+  masked_rgb_schema_version        str        固定为 "masked-rgb-v2"
+  masked_rgb_paint_color           uint8 (3,) 实际使用的棕色 RGB
+  masked_rgb_black_luminance_max   int64      黑色豁免的三通道均值阈值（默认 100）
+  masked_rgb_painted/              group      ← 被涂成纯棕色的对象字典（= 全部机器人 link）
+    <原名>__<seg_id>/              group
+      original_name                str
+      seg_id                       int64
+      kind                         str        固定 "link"
+      articulation_name            str
+      reason                       str        "robot_link" / "robot_link_black_exempt"
+  masked_rgb_kept/                 group      ← 保留原始像素的对象字典（桌面 / 地面 / 任务物体）
+    <原名>__<seg_id>/              group
+      original_name                str
+      seg_id                       int64
+      kind                         str        "actor" / "link"
+      articulation_name            str
+      reason                       str        固定 "not_whitelisted"
+  masked_rgb_black_exempt/         group      ← 参与黑色像素豁免的 link；panda_stick 下为空 group
+    <原名>__<seg_id>/              group
+      original_name                str
+      seg_id                       int64
+      kind                         str        固定 "link"
+      articulation_name            str
+      reason                       str        "gripper_finger" / "gripper_finger_pad"
+      resolved_by                  str        "object_identity" / "name_fallback"
+```
+
+与 v1 的字段差别有三处，都要注意：
+
+- `masked_rgb_kept` 里**不再有 `resolved_by`**——v2 口径下 kept 只剩「白名单之外」一种情形，
+  解析途径挪到了 `masked_rgb_black_exempt`；
+- 手指 link 同时出现在 `masked_rgb_painted`（`reason = robot_link_black_exempt`）与
+  `masked_rgb_black_exempt` 两处。它属于涂色集，只是黑色像素被逐像素扣掉，**不是整块保留**；
+- `masked_rgb_black_exempt` 是空 group 时也照写。`panda_stick` 任务的「豁免集为空」本身就是
+  要记录的事实，group 缺失与「有 group 但没条目」在审计时是两回事。
+
+`resolved_by` 仍是 ManiSkill 升级后对象身份解析静默失效时的唯一探针——它变成 `name_fallback`
+就说明该查了。
+
+## 两个已知代价（与 v1 相同）
+
+- **涂色区域不可从遮蔽图无损反推**。棕色取的就是桌面中位色，画面里本来就偏棕的物体会撞色。
+  v2.1 保留了桌面木纹，这条反而更严重了：桌面本身就有大量接近该棕色的像素。真需要精确 mask
+  的话正确做法是另开字段，不要试图从颜色反解。
+- **硬边界、无阴影**。`minimal` shader 是单采样光栅化、无 MSAA，所以 rgb 与 segmentation 逐像素
+  对齐（没有边缘光晕，这也正是逐像素亮度判定能干净分开指身与指尖的前提）。
+
+## 相关工具
+
+- `scripts/data-generation-v2.1/export_masked_preview.py`：导出并排对照图目视核对，
+  **核对清单与 v1 逐条不同**（桌面木纹应当保留、棍应当消失、只剩黑指尖）
+- 生成报告里的 `masked_rgb_black_exempt_pixels`：黑色豁免生效与否的自动信号。手指在 256×256
+  里只占几十个像素，光看涂色总数看不出来，这个计数恒为 0 就说明阈值或手指 seg id 解析出了问题
