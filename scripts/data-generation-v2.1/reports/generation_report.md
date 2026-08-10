@@ -3,14 +3,14 @@
 ## 运行来源信息
 
 - 状态：passed
-- 当前 HEAD：d583078ab2542628fdb18f67fffb961dc300f29b
+- 当前 HEAD：3f3959a33cae22f6eabcea3d4d8bde0352415395
 - uv.lock SHA-256：983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03
-- 报告时间（UTC）：2026-08-10T17:51:44.382425+00:00
+- 报告时间（UTC）：2026-08-10T17:59:42.898909+00:00
 - 报告模式：generation
 
 ## 调试用环境快照
 
-- 快照时间（UTC）：2026-08-10T17:52:15.343411+00:00
+- 快照时间（UTC）：2026-08-10T18:05:47.444601+00:00
 - 主机名：sled-vail
 - 操作系统：Linux 6.8.0-1018-nvidia-lowlatency
 - 内核：6.8.0-1018-nvidia-lowlatency
@@ -30,8 +30,8 @@
 | 总内存 | 405257068544 bytes (377.43 GiB) |
 | 仓库所在文件系统 | /data/hongzefu/robomme_benchmark_MotionJEPA |
 | 文件系统容量 | 15240752955392 bytes (13.86 TiB) |
-| 文件系统已用 | 10127075311616 bytes (9.21 TiB) |
-| 文件系统可用 | 4345511366656 bytes (3.95 TiB) |
+| 文件系统已用 | 10140102619136 bytes (9.22 TiB) |
+| 文件系统可用 | 4332484059136 bytes (3.94 TiB) |
 - 完整的 lscpu --json 原始字段见 JSON 报告的 debug_environment.cpu.lscpu.raw。
 
 ### GPU（nvidia-smi）
@@ -56,16 +56,16 @@
 | 0 | Dynamic | memory_used_mib | 1017 |
 | 0 | Dynamic | memory_free_mib | 44449 |
 | 0 | Static | power_limit_w | 300.00 |
-| 0 | Dynamic | power_draw_w | 40.44 |
-| 0 | Dynamic | temperature_c | 33 |
+| 0 | Dynamic | power_draw_w | 23.08 |
+| 0 | Dynamic | temperature_c | 38 |
 | 0 | Dynamic | utilization_gpu_percent | 0 |
 | 0 | Dynamic | utilization_memory_percent | 0 |
-| 0 | Dynamic | pstate | P2 |
-| 0 | Dynamic | graphics_clock_mhz | 465 |
-| 0 | Dynamic | memory_clock_mhz | 810 |
+| 0 | Dynamic | pstate | P5 |
+| 0 | Dynamic | graphics_clock_mhz | 210 |
+| 0 | Dynamic | memory_clock_mhz | 405 |
 | 0 | Static | max_graphics_clock_mhz | 3105 |
 | 0 | Static | max_memory_clock_mhz | 10001 |
-| 0 | Dynamic | pcie_link_gen_current | 4 |
+| 0 | Dynamic | pcie_link_gen_current | 2 |
 | 0 | Static | pcie_link_gen_max | 4 |
 | 0 | Dynamic | pcie_link_width_current | 16 |
 | 0 | Static | pcie_link_width_max | 16 |
@@ -86,16 +86,16 @@
 | 1 | Dynamic | memory_used_mib | 6 |
 | 1 | Dynamic | memory_free_mib | 45461 |
 | 1 | Static | power_limit_w | 300.00 |
-| 1 | Dynamic | power_draw_w | 28.06 |
+| 1 | Dynamic | power_draw_w | 28.27 |
 | 1 | Dynamic | temperature_c | 33 |
 | 1 | Dynamic | utilization_gpu_percent | 0 |
 | 1 | Dynamic | utilization_memory_percent | 0 |
-| 1 | Dynamic | pstate | P8 |
+| 1 | Dynamic | pstate | P2 |
 | 1 | Dynamic | graphics_clock_mhz | 210 |
 | 1 | Dynamic | memory_clock_mhz | 405 |
 | 1 | Static | max_graphics_clock_mhz | 3105 |
 | 1 | Static | max_memory_clock_mhz | 10001 |
-| 1 | Dynamic | pcie_link_gen_current | 1 |
+| 1 | Dynamic | pcie_link_gen_current | 4 |
 | 1 | Static | pcie_link_gen_max | 4 |
 | 1 | Dynamic | pcie_link_width_current | 16 |
 | 1 | Static | pcie_link_width_max | 16 |
@@ -165,8 +165,8 @@
 ## 运行参数
 
     {
-      "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-smoke",
-      "env": "ButtonUnmask,RouteStick",
+      "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env",
+      "env": "all",
       "episodes": 1,
       "workers": 1,
       "requested_gpus": "0",
@@ -179,7 +179,21 @@
       "record_masked_rgb": true,
       "reference_validation": true,
       "tasks": [
+        "PickXtimes",
+        "StopCube",
+        "SwingXtimes",
+        "BinFill",
+        "VideoUnmaskSwap",
+        "VideoUnmask",
+        "ButtonUnmaskSwap",
         "ButtonUnmask",
+        "VideoRepick",
+        "VideoPlaceButton",
+        "VideoPlaceOrder",
+        "PickHighlight",
+        "InsertPeg",
+        "MoveCube",
+        "PatternLock",
         "RouteStick"
       ],
       "gpus": [
@@ -189,29 +203,29 @@
 
 ## 范围
 
-- 任务数：2
+- 任务数：16
 - episode 列表：[0]
-- 预期轨迹条数：2
+- 预期轨迹条数：16
 - 是否完整的 16x100：False
 
 ## 生成与契约校验
 
-- 成功的 worker 数：2
+- 成功的 worker 数：16
 - 失败的 worker 数：0
 - metadata 错误数：0
 - 生成侧 HDF5 错误数：0
 - 官方侧 HDF5 错误数：0
-- 官方侧末帧完成数：2/2
-- 生成侧末帧完成数：2/2
+- 官方侧末帧完成数：16/16
+- 生成侧末帧完成数：16/16
 
 ## joint_action 逐元素对拍
 
-- 向量条数：491
-- 元素总数：3928
-- 存在差异的元素数：569
+- 向量条数：7898
+- 元素总数：63184
+- 存在差异的元素数：988
 - 对拍错误数：0
 - 最大绝对差异：8.881784197001252e-16
-- 最大差异出现的位置：{'task': 'RouteStick', 'episode': 0, 'timestep': 0, 'element_index': 5, 'reference_value': 2.355331019278657, 'generated_value': 2.355331019278658}
+- 最大差异出现的位置：{'task': 'PatternLock', 'episode': 0, 'timestep': 7, 'element_index': 3, 'reference_value': -2.340441748753082, 'generated_value': -2.340441748753081}
 - 允许的最大绝对差异：1e-08
 - 是否在容差内：True
 

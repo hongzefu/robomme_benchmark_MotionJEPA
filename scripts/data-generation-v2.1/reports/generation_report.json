@@ -1,12 +1,12 @@
 {
   "schema_version": 4,
   "status": "passed",
-  "generated_at_utc": "2026-08-10T17:51:44.382425+00:00",
-  "current_head": "d583078ab2542628fdb18f67fffb961dc300f29b",
+  "generated_at_utc": "2026-08-10T17:59:42.898909+00:00",
+  "current_head": "3f3959a33cae22f6eabcea3d4d8bde0352415395",
   "uv_lock_sha256": "983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03",
   "parameters": {
-    "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-smoke",
-    "env": "ButtonUnmask,RouteStick",
+    "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env",
+    "env": "all",
     "episodes": 1,
     "workers": 1,
     "requested_gpus": "0",
@@ -19,7 +19,21 @@
     "record_masked_rgb": true,
     "reference_validation": true,
     "tasks": [
+      "PickXtimes",
+      "StopCube",
+      "SwingXtimes",
+      "BinFill",
+      "VideoUnmaskSwap",
+      "VideoUnmask",
+      "ButtonUnmaskSwap",
       "ButtonUnmask",
+      "VideoRepick",
+      "VideoPlaceButton",
+      "VideoPlaceOrder",
+      "PickHighlight",
+      "InsertPeg",
+      "MoveCube",
+      "PatternLock",
       "RouteStick"
     ],
     "gpus": [
@@ -27,10 +41,36 @@
     ]
   },
   "generation": {
-    "requested_count": 2,
-    "success_count": 2,
+    "requested_count": 16,
+    "success_count": 16,
     "failure_count": 0,
     "results": [
+      {
+        "task": "BinFill",
+        "episode": 0,
+        "seed": 4000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 16,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.8152860098264434,
+        "flow_capture_count": 550,
+        "masked_rgb_seconds": 1.1414073705673218,
+        "masked_rgb_frames": 550,
+        "masked_rgb_painted_pixels": 2086596,
+        "masked_rgb_black_exempt_pixels": 27122,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/BinFill_episode_0/hdf5_files/BinFill_ep0_seed4000.h5",
+        "timestep_count": 550
+      },
       {
         "task": "ButtonUnmask",
         "episode": 0,
@@ -47,15 +87,171 @@
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 0.7304729913006124,
+        "flow_capture_ms_per_step": 0.7684449073170468,
         "flow_capture_count": 291,
-        "masked_rgb_seconds": 0.6000917013734579,
+        "masked_rgb_seconds": 0.5931353531777859,
         "masked_rgb_frames": 291,
         "masked_rgb_painted_pixels": 756652,
         "masked_rgb_black_exempt_pixels": 11303,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-smoke/.workers/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed8000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed8000.h5",
         "timestep_count": 291
+      },
+      {
+        "task": "ButtonUnmaskSwap",
+        "episode": 0,
+        "seed": 7000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 17,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.8617278318924663,
+        "flow_capture_count": 514,
+        "masked_rgb_seconds": 1.06328609213233,
+        "masked_rgb_frames": 514,
+        "masked_rgb_painted_pixels": 1759031,
+        "masked_rgb_black_exempt_pixels": 20377,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed7000.h5",
+        "timestep_count": 514
+      },
+      {
+        "task": "InsertPeg",
+        "episode": 0,
+        "seed": 13000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 13,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.7113227405046162,
+        "flow_capture_count": 475,
+        "masked_rgb_seconds": 1.0124287530779839,
+        "masked_rgb_frames": 475,
+        "masked_rgb_painted_pixels": 1359679,
+        "masked_rgb_black_exempt_pixels": 7915,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/InsertPeg_episode_0/hdf5_files/InsertPeg_ep0_seed13000.h5",
+        "timestep_count": 475
+      },
+      {
+        "task": "MoveCube",
+        "episode": 0,
+        "seed": 14000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 12,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.653956891859279,
+        "flow_capture_count": 425,
+        "masked_rgb_seconds": 0.8700917456299067,
+        "masked_rgb_frames": 425,
+        "masked_rgb_painted_pixels": 1512083,
+        "masked_rgb_black_exempt_pixels": 10475,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed14000.h5",
+        "timestep_count": 425
+      },
+      {
+        "task": "PatternLock",
+        "episode": 0,
+        "seed": 15001,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 10,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.8056979665222267,
+        "flow_capture_count": 96,
+        "masked_rgb_seconds": 0.06470351666212082,
+        "masked_rgb_frames": 96,
+        "masked_rgb_painted_pixels": 356183,
+        "masked_rgb_black_exempt_pixels": 0,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/PatternLock_episode_0/hdf5_files/PatternLock_ep0_seed15001.h5",
+        "timestep_count": 96
+      },
+      {
+        "task": "PickHighlight",
+        "episode": 0,
+        "seed": 12000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 9,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.6049626881813074,
+        "flow_capture_count": 308,
+        "masked_rgb_seconds": 0.612368805333972,
+        "masked_rgb_frames": 308,
+        "masked_rgb_painted_pixels": 725190,
+        "masked_rgb_black_exempt_pixels": 10123,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed12000.h5",
+        "timestep_count": 308
+      },
+      {
+        "task": "PickXtimes",
+        "episode": 0,
+        "seed": 1000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 18,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.5162425571612465,
+        "flow_capture_count": 529,
+        "masked_rgb_seconds": 1.0656571201980114,
+        "masked_rgb_frames": 529,
+        "masked_rgb_painted_pixels": 1696177,
+        "masked_rgb_black_exempt_pixels": 17170,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed1000.h5",
+        "timestep_count": 529
       },
       {
         "task": "RouteStick",
@@ -73,15 +269,197 @@
           "rrtstar_attempts": 0,
           "rrtstar_successes": 0
         },
-        "flow_capture_ms_per_step": 1.0433100070804358,
+        "flow_capture_ms_per_step": 1.0467438120394945,
         "flow_capture_count": 200,
-        "masked_rgb_seconds": 0.13804429583251476,
+        "masked_rgb_seconds": 0.14253824763000011,
         "masked_rgb_frames": 200,
         "masked_rgb_painted_pixels": 1127994,
         "masked_rgb_black_exempt_pixels": 0,
         "ok": true,
-        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-smoke/.workers/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed16000.h5",
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed16000.h5",
         "timestep_count": 200
+      },
+      {
+        "task": "StopCube",
+        "episode": 0,
+        "seed": 2000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 3,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.5362808566402506,
+        "flow_capture_count": 459,
+        "masked_rgb_seconds": 0.9171493072062731,
+        "masked_rgb_frames": 459,
+        "masked_rgb_painted_pixels": 713366,
+        "masked_rgb_black_exempt_pixels": 16786,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/StopCube_episode_0/hdf5_files/StopCube_ep0_seed2000.h5",
+        "timestep_count": 459
+      },
+      {
+        "task": "SwingXtimes",
+        "episode": 0,
+        "seed": 3000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 15,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.6030342576414718,
+        "flow_capture_count": 482,
+        "masked_rgb_seconds": 0.9826279766857624,
+        "masked_rgb_frames": 482,
+        "masked_rgb_painted_pixels": 1302384,
+        "masked_rgb_black_exempt_pixels": 12456,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed3000.h5",
+        "timestep_count": 482
+      },
+      {
+        "task": "VideoPlaceButton",
+        "episode": 0,
+        "seed": 10000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 31,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.6997574579311918,
+        "flow_capture_count": 1048,
+        "masked_rgb_seconds": 2.2310917153954506,
+        "masked_rgb_frames": 1048,
+        "masked_rgb_painted_pixels": 6280192,
+        "masked_rgb_black_exempt_pixels": 39432,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed10000.h5",
+        "timestep_count": 1048
+      },
+      {
+        "task": "VideoPlaceOrder",
+        "episode": 0,
+        "seed": 11003,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 37,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.750647980409364,
+        "flow_capture_count": 1200,
+        "masked_rgb_seconds": 2.2698277588933706,
+        "masked_rgb_frames": 1200,
+        "masked_rgb_painted_pixels": 7031693,
+        "masked_rgb_black_exempt_pixels": 43527,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed11003.h5",
+        "timestep_count": 1200
+      },
+      {
+        "task": "VideoRepick",
+        "episode": 0,
+        "seed": 9000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 22,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.5963311811524724,
+        "flow_capture_count": 756,
+        "masked_rgb_seconds": 1.5487125664949417,
+        "masked_rgb_frames": 756,
+        "masked_rgb_painted_pixels": 3863624,
+        "masked_rgb_black_exempt_pixels": 36722,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed9000.h5",
+        "timestep_count": 756
+      },
+      {
+        "task": "VideoUnmask",
+        "episode": 0,
+        "seed": 6000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 6,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.6663643961546312,
+        "flow_capture_count": 239,
+        "masked_rgb_seconds": 0.4995170161128044,
+        "masked_rgb_frames": 239,
+        "masked_rgb_painted_pixels": 1585100,
+        "masked_rgb_black_exempt_pixels": 9572,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed6000.h5",
+        "timestep_count": 239
+      },
+      {
+        "task": "VideoUnmaskSwap",
+        "episode": 0,
+        "seed": 5000,
+        "difficulty": "easy",
+        "gpu": "0",
+        "recovery_mode": "z",
+        "attempt_count": 1,
+        "record_flow": true,
+        "record_masked_rgb": true,
+        "planner_fallback": {
+          "screw_calls": 6,
+          "screw_rounds_failed": 0,
+          "rrtstar_attempts": 0,
+          "rrtstar_successes": 0
+        },
+        "flow_capture_ms_per_step": 0.6566189880842811,
+        "flow_capture_count": 326,
+        "masked_rgb_seconds": 0.6355382651090622,
+        "masked_rgb_frames": 326,
+        "masked_rgb_painted_pixels": 752486,
+        "masked_rgb_black_exempt_pixels": 7847,
+        "ok": true,
+        "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/.workers/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed5000.h5",
+        "timestep_count": 326
       }
     ]
   },
@@ -89,44 +467,289 @@
     "passed": true,
     "scope": {
       "tasks": [
+        "PickXtimes",
+        "StopCube",
+        "SwingXtimes",
+        "BinFill",
+        "VideoUnmaskSwap",
+        "VideoUnmask",
+        "ButtonUnmaskSwap",
         "ButtonUnmask",
+        "VideoRepick",
+        "VideoPlaceButton",
+        "VideoPlaceOrder",
+        "PickHighlight",
+        "InsertPeg",
+        "MoveCube",
+        "PatternLock",
         "RouteStick"
       ],
       "episode_indices": [
         0
       ],
-      "expected_episode_count": 2,
+      "expected_episode_count": 16,
       "full_16x100": false
     },
     "metadata": {
       "error_count": 0,
       "audits": [
         {
+          "task": "PickXtimes",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_PickXtimes_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "StopCube",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_StopCube_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "SwingXtimes",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_SwingXtimes_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "BinFill",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_BinFill_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "VideoUnmaskSwap",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoUnmaskSwap_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "VideoUnmask",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoUnmask_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "ButtonUnmaskSwap",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_ButtonUnmaskSwap_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
           "task": "ButtonUnmask",
-          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-smoke/record_dataset_ButtonUnmask_metadata.json",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_ButtonUnmask_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "VideoRepick",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoRepick_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "VideoPlaceButton",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoPlaceButton_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "VideoPlaceOrder",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoPlaceOrder_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "PickHighlight",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_PickHighlight_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "InsertPeg",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_InsertPeg_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "MoveCube",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_MoveCube_metadata.json",
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "task": "PatternLock",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_PatternLock_metadata.json",
           "error_count": 0,
           "errors": []
         },
         {
           "task": "RouteStick",
-          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-smoke/record_dataset_RouteStick_metadata.json",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_RouteStick_metadata.json",
           "error_count": 0,
           "errors": []
         }
       ]
     },
     "generated": {
-      "file_count": 2,
-      "episode_count": 2,
-      "completed_count": 2,
-      "joint_vector_count": 491,
-      "joint_element_count": 3928,
+      "file_count": 16,
+      "episode_count": 16,
+      "completed_count": 16,
+      "joint_vector_count": 7898,
+      "joint_element_count": 63184,
       "error_count": 0,
       "audits": [
         {
           "label": "generated",
+          "task": "PickXtimes",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_PickXtimes.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 529,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 529,
+          "joint_element_count": 4232,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "StopCube",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_StopCube.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 459,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 459,
+          "joint_element_count": 3672,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "SwingXtimes",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_SwingXtimes.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 482,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 482,
+          "joint_element_count": 3856,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "BinFill",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_BinFill.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 550,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 550,
+          "joint_element_count": 4400,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "VideoUnmaskSwap",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoUnmaskSwap.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 326,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 326,
+          "joint_element_count": 2608,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "VideoUnmask",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoUnmask.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 239,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 239,
+          "joint_element_count": 1912,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "ButtonUnmaskSwap",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_ButtonUnmaskSwap.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 514,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 514,
+          "joint_element_count": 4112,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
           "task": "ButtonUnmask",
-          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-smoke/record_dataset_ButtonUnmask.h5",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_ButtonUnmask.h5",
           "episodes": [
             {
               "episode": 0,
@@ -146,8 +769,155 @@
         },
         {
           "label": "generated",
+          "task": "VideoRepick",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoRepick.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 756,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 756,
+          "joint_element_count": 6048,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "VideoPlaceButton",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoPlaceButton.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 1048,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 1048,
+          "joint_element_count": 8384,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "VideoPlaceOrder",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_VideoPlaceOrder.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 1200,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 1200,
+          "joint_element_count": 9600,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "PickHighlight",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_PickHighlight.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 308,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 308,
+          "joint_element_count": 2464,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "InsertPeg",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_InsertPeg.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 475,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 475,
+          "joint_element_count": 3800,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "MoveCube",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_MoveCube.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 425,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 425,
+          "joint_element_count": 3400,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
+          "task": "PatternLock",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_PatternLock.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 96,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 96,
+          "joint_element_count": 768,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "generated",
           "task": "RouteStick",
-          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-smoke/record_dataset_RouteStick.h5",
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v21mask-16env/record_dataset_RouteStick.h5",
           "episodes": [
             {
               "episode": 0,
@@ -168,13 +938,160 @@
       ]
     },
     "official": {
-      "file_count": 2,
-      "episode_count": 2,
-      "completed_count": 2,
-      "joint_vector_count": 491,
-      "joint_element_count": 3928,
+      "file_count": 16,
+      "episode_count": 16,
+      "completed_count": 16,
+      "joint_vector_count": 7898,
+      "joint_element_count": 63184,
       "error_count": 0,
       "audits": [
+        {
+          "label": "official",
+          "task": "PickXtimes",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_PickXtimes.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 529,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 529,
+          "joint_element_count": 4232,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "StopCube",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_StopCube.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 459,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 459,
+          "joint_element_count": 3672,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "SwingXtimes",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_SwingXtimes.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 482,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 482,
+          "joint_element_count": 3856,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "BinFill",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_BinFill.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 550,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 550,
+          "joint_element_count": 4400,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "VideoUnmaskSwap",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_VideoUnmaskSwap.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 326,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 326,
+          "joint_element_count": 2608,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "VideoUnmask",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_VideoUnmask.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 239,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 239,
+          "joint_element_count": 1912,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "ButtonUnmaskSwap",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_ButtonUnmaskSwap.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 514,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 514,
+          "joint_element_count": 4112,
+          "error_count": 0,
+          "errors": []
+        },
         {
           "label": "official",
           "task": "ButtonUnmask",
@@ -193,6 +1110,153 @@
           "completed_count": 1,
           "joint_vector_count": 291,
           "joint_element_count": 2328,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "VideoRepick",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_VideoRepick.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 756,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 756,
+          "joint_element_count": 6048,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "VideoPlaceButton",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_VideoPlaceButton.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 1048,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 1048,
+          "joint_element_count": 8384,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "VideoPlaceOrder",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_VideoPlaceOrder.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 1200,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 1200,
+          "joint_element_count": 9600,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "PickHighlight",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_PickHighlight.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 308,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 308,
+          "joint_element_count": 2464,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "InsertPeg",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_InsertPeg.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 475,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 475,
+          "joint_element_count": 3800,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "MoveCube",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_MoveCube.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 425,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 425,
+          "joint_element_count": 3400,
+          "error_count": 0,
+          "errors": []
+        },
+        {
+          "label": "official",
+          "task": "PatternLock",
+          "path": "/data/hongzefu/robomme_data_h5/record_dataset_PatternLock.h5",
+          "episodes": [
+            {
+              "episode": 0,
+              "timestep_count": 96,
+              "final_is_completed": true,
+              "joint_shape": [
+                8
+              ],
+              "joint_dtype": "float64"
+            }
+          ],
+          "completed_count": 1,
+          "joint_vector_count": 96,
+          "joint_element_count": 768,
           "error_count": 0,
           "errors": []
         },
@@ -220,17 +1284,17 @@
       ]
     },
     "joint_action_comparison": {
-      "joint_vector_count": 491,
-      "joint_element_count": 3928,
-      "different_element_count": 569,
+      "joint_vector_count": 7898,
+      "joint_element_count": 63184,
+      "different_element_count": 988,
       "max_abs_diff": 8.881784197001252e-16,
       "max_abs_diff_location": {
-        "task": "RouteStick",
+        "task": "PatternLock",
         "episode": 0,
-        "timestep": 0,
-        "element_index": 5,
-        "reference_value": 2.355331019278657,
-        "generated_value": 2.355331019278658
+        "timestep": 7,
+        "element_index": 3,
+        "reference_value": -2.340441748753082,
+        "generated_value": -2.340441748753081
       },
       "max_allowed_abs_diff": 1e-08,
       "error_count": 0,
@@ -244,16 +1308,16 @@
       "reference_revision": "a5e4e25ffe8af34f64944f9533d06455ce5f8337"
     },
     "acceptance": {
-      "expected_final_completed": 2,
-      "generated_final_completed": 2,
-      "official_final_completed": 2,
+      "expected_final_completed": 16,
+      "generated_final_completed": 16,
+      "official_final_completed": 16,
       "max_allowed_abs_diff": 1e-08,
       "max_abs_diff": 8.881784197001252e-16
     }
   },
   "debug_environment": {
     "schema_version": 1,
-    "captured_at_utc": "2026-08-10T17:52:15.343411+00:00",
+    "captured_at_utc": "2026-08-10T18:05:47.444601+00:00",
     "errors": {},
     "host": {
       "errors": {},
@@ -377,7 +1441,7 @@
             },
             {
               "field": "CPU(s) scaling MHz:",
-              "data": "55%"
+              "data": "54%"
             },
             {
               "field": "CPU max MHz:",
@@ -488,8 +1552,8 @@
     "storage": {
       "path": "/data/hongzefu/robomme_benchmark_MotionJEPA",
       "total_bytes": 15240752955392,
-      "used_bytes": 10127075311616,
-      "free_bytes": 4345511366656,
+      "used_bytes": 10140102619136,
+      "free_bytes": 4332484059136,
       "errors": {}
     },
     "gpu": {
@@ -517,16 +1581,16 @@
           "memory_used_mib": "1017",
           "memory_free_mib": "44449",
           "power_limit_w": "300.00",
-          "power_draw_w": "40.44",
-          "temperature_c": "33",
+          "power_draw_w": "23.08",
+          "temperature_c": "38",
           "utilization_gpu_percent": "0",
           "utilization_memory_percent": "0",
-          "pstate": "P2",
-          "graphics_clock_mhz": "465",
-          "memory_clock_mhz": "810",
+          "pstate": "P5",
+          "graphics_clock_mhz": "210",
+          "memory_clock_mhz": "405",
           "max_graphics_clock_mhz": "3105",
           "max_memory_clock_mhz": "10001",
-          "pcie_link_gen_current": "4",
+          "pcie_link_gen_current": "2",
           "pcie_link_gen_max": "4",
           "pcie_link_width_current": "16",
           "pcie_link_width_max": "16",
@@ -549,16 +1613,16 @@
           "memory_used_mib": "6",
           "memory_free_mib": "45461",
           "power_limit_w": "300.00",
-          "power_draw_w": "28.06",
+          "power_draw_w": "28.27",
           "temperature_c": "33",
           "utilization_gpu_percent": "0",
           "utilization_memory_percent": "0",
-          "pstate": "P8",
+          "pstate": "P2",
           "graphics_clock_mhz": "210",
           "memory_clock_mhz": "405",
           "max_graphics_clock_mhz": "3105",
           "max_memory_clock_mhz": "10001",
-          "pcie_link_gen_current": "1",
+          "pcie_link_gen_current": "4",
           "pcie_link_gen_max": "4",
           "pcie_link_width_current": "16",
           "pcie_link_width_max": "16",

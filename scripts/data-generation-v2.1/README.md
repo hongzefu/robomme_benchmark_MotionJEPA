@@ -82,7 +82,7 @@ v2 之所以做成薄子类而不是复制重构，正是为了让这一点在�
 | `verify_flow_math.py` | **六条判据**验证 flow 与 3D 真值严格一一对应 |
 | `verify_joint_action_bitexact.py` | **自对拍**：验证开 flow 后除 flow 外逐位不变 |
 | `replay_flow_video.py` | 渲染带 flow 箭头的对照视频 |
-| `export_masked_preview.py` | 导出 `front_rgb` \| `front_rgb_masked` 并排对照图，供目视检查 |
+| `export_masked_preview.py` | 导出 `front_rgb` \| `paint_mask` \| `front_rgb_masked` 三列拼接图，供目视检查 |
 | `fetch_reference_h5.py` | 从 HuggingFace 补齐官方参考 h5 |
 
 ## 常用命令
@@ -155,16 +155,31 @@ uv run --no-sync python scripts/data-generation-v2.1/replay_flow_video.py \
   --output-dir artifacts/flow-viz-v21mask
 ```
 
-### 遮蔽图目视检查
+### 遮蔽图目视检查（三列拼接参考图）
 
-白名单涂对没有，最终只能靠眼睛判定。**v2.1 的核对清单与 v2 逐条不同，别拿旧图对照**：
-桌面木纹原样保留、机械臂从底座到手掌整根消失（含腕部相机支架与手掌上的黑色方块）、
-**只剩夹爪指尖那一小块黑色**（白色指身必须已被涂掉）、任务物体全保留、顶部地面横带保留、
-stick 任务那根棍**也没了**。
+白名单涂对没有，最终只能靠眼睛判定。每个任务一张网格图，行是整段 episode 均匀抽的 8 帧
+（`--frames` 可调），每行三列：
+
+| 列 | 内容 | 看什么 |
+|---|---|---|
+| `front_rgb` | 原始渲染图 | 这一帧机械臂在哪、夹爪什么姿态 |
+| `paint_mask` | 涂色区红色半透明叠在原图上 | 掩码边界准不准、有没有多涂/漏涂 |
+| `front_rgb_masked` | h5 里的遮蔽图 | 最终结果，黑指尖是不是留住了 |
+
+中列掩码取 `front_rgb != front_rgb_masked`，是近似口径（机器人像素恰好等于涂色棕时会漏判，
+概率可忽略；桌面不在涂色集里所以不会误判）。
+
+**v2.1 的核对清单与 v2 逐条不同，别拿旧图对照**：桌面木纹原样保留、机械臂从底座到手掌整根
+消失（含腕部相机支架与手掌上的黑色方块）、**只剩夹爪指尖那一小块黑色**（白色指身必须已被
+涂掉，中列红色掩码在指尖处应当有个小缺口）、任务物体全保留、顶部地面横带保留、stick 任务
+那根棍**也没了**。
+
+默认输出到 `artifacts/flow-viz/v21mask-preview/`，与 v2 的 `artifacts/masked-preview/`
+（masked-rgb-v1 口径）分开落盘——两套图长得完全不一样，混在一个目录里迟早被拿错。
 
 ```bash
 uv run --no-sync python scripts/data-generation-v2.1/export_masked_preview.py \
-  --h5 artifacts/generated/v21mask-16env/record_dataset_*.h5 --episode 0 --frames 4
+  --h5 artifacts/generated/v21mask-16env/record_dataset_*.h5 --episode 0
 ```
 
 ### 补齐官方参考 h5
