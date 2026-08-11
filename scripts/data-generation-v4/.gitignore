@@ -1,0 +1,7 @@
+# 产物入 git 策略：
+# - preview 三联图与 summary.json / metrics.json 这类小体积判读产物入 git；
+# - 全帧网格拼图（*_grid.png，单张可达数十 MB）与生成日志不入 git，
+#   用 README「用法」一节的命令随时可从 h5 重新生成。
+outputs/logs/
+outputs/**/*_grid.png
+__pycache__/
