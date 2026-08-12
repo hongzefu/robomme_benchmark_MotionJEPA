@@ -80,7 +80,11 @@ metadata 目录读固定 seed / difficulty。v2.1 的 `read_train_metadata` 把�
 | `fit_color_model.py` | 拟合入口 |
 | `render_outputs.py` | 留出集推理 + 对 GT 验证 + preview 出图入口 |
 | `compare_veto.py` | **三栏对比出图入口**（veto / noveto / GT，train ep0） |
+| `color_distribution.py` | **颜色判决分布出图入口**（veto / noveto 两版 + 否决差异图 + `stats.json`；不读 h5，只读颜色表） |
+| `segmentation_walkthrough.py` | **分割过程走查出图入口**（真实帧逐阶段拆解 + 逐像素举例） |
+| `reports/color_distribution_report.md` | 上面两个入口的**判读报告**（含召回/精确率的两段分解） |
 | `../../tests/lightweight/test_arm_mask_v4_1.py` | GT 映射、重叠计数、归一化似然、否决与四条规则的逻辑测试（19 个，秒级；v4 的测试文件继续护 v4 不动） |
+| `../../tests/lightweight/test_color_distribution.py` | 出图链路的复算对拍测试（10 个，秒级）——`decide` 对 `classify`、`stagewise_masks` 对 `arm_masks_for_episode` 都要逐位一致 |
 
 ## 用法
 
@@ -109,9 +113,15 @@ uv run --no-sync python scripts/data-generation-v4.1/render_outputs.py \
   --model scripts/data-generation-v4.1/outputs/color_model.npz \
   --episodes 10-19 --out scripts/data-generation-v4.1/outputs/holdout
 
-# 5. 单元测试（v4 + v4.1 两套一起跑，互不污染）
+# 5. 颜色判决分布出图（veto / noveto 两版 + 差异图 + stats.json，约 30 秒；只读颜色表，不碰 h5）
+uv run --no-sync python scripts/data-generation-v4.1/color_distribution.py
+
+# 6. 分割过程走查出图（16 任务 × 留出集 ep10，每任务两张：逐阶段走查 + 逐像素举例，实测 25.7 秒）
+uv run --no-sync python scripts/data-generation-v4.1/segmentation_walkthrough.py
+
+# 7. 单元测试（v4 + v4.1 两套一起跑，互不污染）
 uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
-  tests/lightweight/test_arm_mask_v4_1.py -q
+  tests/lightweight/test_arm_mask_v4_1.py tests/lightweight/test_color_distribution.py -q
 ```
 
 三栏图（`outputs/compare_veto/<Task>_veto_compare.png`）：每栏 8 帧 ×
@@ -164,6 +174,23 @@ ButtonUnmask 5226 px、VideoUnmask 4625 px，InsertPeg / MoveCube 为 0）。GT 
 支撑否决只用「出现过 / 没出现过」，先验与似然的削弱根本不进裁决。代价集中在 noveto
 一侧：失去物体单列后纯 argmax 的误标比 v4 多 68%（406615 vs 241765）——似然裁决确实
 变弱了，只是默认口径根本不依赖它。
+
+### 颜色判决分布与分割过程走查（2026-08-12 补做）
+
+完整判读见 [reports/color_distribution_report.md](reports/color_distribution_report.md)，
+要点：
+
+- **判臂颜色上的成分**：veto 口径下判臂的 1670 种颜色在标定集里的**非臂像素恰好为 0**
+  （颜色阶段精确率上界 1.000，noveto 只有 0.943）——「留出集零物体误标」是这条否决规则
+  的**构造性结果**，不是调出来的巧合；代价是颜色阶段召回上界从 0.9975 掉到 0.9092。
+- **被否决翻转的恰好 120 种颜色，饱和度实测最大值为 0.000**，即全部是 `R = G = B` 的
+  纯灰阶；它们带走 8.83% 的臂像素，同时挡下 20,498,259 个非臂像素。前 3 种
+  （`#6C6C6C` / `#A8A8A8` / `#A9A9A9`）就占掉 5.86 个百分点，长尾极陡。
+- **臂的像素质量几乎全在灰白上**：判臂色里低饱和的 470 种占 90.91% 的臂像素，高饱和的
+  1200 种只占 0.0075%（纯色数长尾，且混合列计数全为 0，从不进否决）。
+- **两段分解**：颜色阶段 0.9092 → 留出集实测 0.8184，四条形态学规则再收掉一成召回；
+  反过来 noveto 的颜色级精确率上界 0.943 被形态学（主要是触顶连通域）救到 0.9987，
+  但**救不干净**，仍剩 406,615 个误标物体像素 / 13.82% 的帧碰到物体。
 
 ## 已知代价（诚实清单）
 
