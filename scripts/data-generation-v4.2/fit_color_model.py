@@ -93,7 +93,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     totals = model.class_pixel_totals
     per_class_colors = [int((model.counts[:, index] > 0).sum()) for index in range(3)]
     # 重叠计数下「出现在两列以上」不再是共享的判据（背景像素天然同时进列 0 与列 1），
-    # 有判读价值的是臂列与另外两列的支撑交叠——它们直接决定否决的代价与召回上限
+    # 有判读价值的是臂列与另外两列的支撑交叠。⚠ 这几个量不是附带统计——判别规则本身
+    # 就是纯支撑判据（判臂 = 臂列见过且混合列没见过），所以「臂独有颜色数」逐字等于
+    # 最终的判臂色数，「臂与混合共享的颜色数」逐字等于颜色阶段漏标代价的来源色数。
+    # 键名里的「否决」是 v4.1/v4.2 的历史措辞，含义未变，保留以免与已落盘的 summary 脱节。
     arm_support = model.counts[:, CLASS_ARM] > 0
     mix_support = model.counts[:, CLASS_MIX] > 0
     bg_support = model.counts[:, CLASS_BACKGROUND] > 0

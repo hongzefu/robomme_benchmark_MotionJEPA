@@ -5,8 +5,9 @@
 列 1 = 背景∪物体混合、列 2 = 机械臂）。推理时每种颜色被判成哪一类，完全由这张表
 决定——**与画面内容无关**，所以判决分布可以脱离图片单独画出来，这正是本入口做的事。
 
-判决口径只有一条，与 `ColorModel.classify` 逐位同源：归一化似然 argmax + 混合支撑否决
-（v4.2 删掉了「纯 argmax」对照口径与由它派生的差异图，见目录 README「刚性原则」一节）。
+判决口径只有一条，与 `ColorModel.classify` 逐位同源：**纯支撑三段式判据**——
+`N₀ > 0` 判背景、`N₁ = 0 且 N₂ > 0` 判臂、其余判混合。计数的数值大小不参与判决，
+只参与本入口的加权统计与出图。
 
 ### 三个口径必须分清（report 里逐个标注）
 
@@ -17,13 +18,13 @@
    直接三列求和会把背景像素数重复计一遍）；
 3. **判臂颜色的成分**：判成臂的那批颜色上，`counts[:, ARM]` 是标定集里真正的臂像素、
    `counts[:, MIX]` 是标定集里真正的非臂（背景∪物体）像素——后者就是「颜色阶段就已
-   注定的误标上界」。⚠ 由退化引理（判臂 ⟺ `N₁(c)=0 ∧ N₂(c)>0`）这个数**恒等于 0**，
-   所以「颜色阶段精确率上界 = 1.000」是恒等式而不是经验数字；本入口照样把它算出来
-   打印，是把恒等式当自校验用——不为 0 就说明表或算式坏了。
+   注定的误标上界」。⚠ 由判臂的定义（`N₁ = 0`）这个数**恒等于 0**，所以「颜色阶段
+   精确率上界 = 1.000」是恒等式而不是经验数字；本入口照样把它算出来打印，是把恒等式
+   当自校验用——不为 0 就说明表或算式坏了。
 
 产物（`--out` 目录，默认 `outputs/color_distribution/`）：
 
-- `color_distribution.png`：判决分布大图；
+- `color_distribution.png`：四面板大图（主图 / 亮度剖面 / 支撑集分解 / 共享色 TOP20）；
 - `stats.json`：上面全部数字，供 report 引用。
 
 用法：
@@ -88,18 +89,22 @@ def unpack_rgb(colors: np.ndarray) -> np.ndarray:
 
 
 def decide(counts: np.ndarray) -> np.ndarray:
-    """颜色表 → 每种颜色的判决类别，与 `ColorModel.classify` 同一套算式。
+    """颜色表 → 每种颜色的判决类别，与 `ColorModel.classify` 同一套三段支撑判据。
 
     刻意不复用 `classify`（它吃的是图像、还要处理未见颜色），而是在表上直接算：
-    每列除以本列像素总量得 `P(颜色|类)`，`argmax` 取胜者，列序使平手偏向非臂，
-    再把「判臂但混合列见过」的一律改判混合。
+    `N₀ > 0` 判背景、`N₁ = 0 且 N₂ > 0` 判臂、其余判混合。计数的数值大小不参与。
     `tests/lightweight/test_color_distribution_v4_2.py` 用合成表逐位对拍两条路径。
     """
-    totals = counts.sum(axis=0).astype(np.float64)
-    if not np.all(totals > 0):
-        raise ValueError(f"颜色表存在空列，无法归一化：各列总量 = {totals.tolist()}")
-    winner = np.argmax(counts.astype(np.float64) / totals, axis=1)
-    winner[(winner == CLASS_ARM) & (counts[:, CLASS_MIX] > 0)] = CLASS_MIX
+    counts = np.asarray(counts)
+    if counts.size and not np.all(counts.sum(axis=1) > 0):
+        bad = int(np.flatnonzero(counts.sum(axis=1) <= 0)[0])
+        raise ValueError(
+            f"颜色表存在三列全零行（第 {bad} 行）：这种行会被静默判成混合，"
+            "表里只该收录真实出现过的颜色"
+        )
+    winner = np.full(counts.shape[0], CLASS_MIX, dtype=np.int64)
+    winner[counts[:, CLASS_BACKGROUND] > 0] = CLASS_BACKGROUND
+    winner[(counts[:, CLASS_MIX] == 0) & (counts[:, CLASS_ARM] > 0)] = CLASS_ARM
     return winner
 
 
@@ -114,35 +119,14 @@ def color_features(rgb: np.ndarray) -> dict[str, np.ndarray]:
     }
 
 
-def _swatch_image(
-    rgb: np.ndarray, order: np.ndarray, columns: int, rows: int
-) -> np.ndarray:
-    """把一批颜色铺成 `rows × columns` 的等面积马赛克，空位填背景色。"""
-    canvas = np.full((rows, columns, 3), 0x18, dtype=np.uint8)
-    canvas[:, :, 1] = 0x18
-    canvas[:, :, 2] = 0x1C
-    picked = rgb[order]
-    take = min(picked.shape[0], rows * columns)
-    flat = canvas.reshape(-1, 3)
-    flat[:take] = picked[:take]
-    return flat.reshape(rows, columns, 3)
+def shared_colors(counts: np.ndarray) -> np.ndarray:
+    """臂∩混合共享色的布尔掩码：两列都见过 = 判臂条件差一步、被规则挡下的那批。
 
-
-def _weighted_bar(rgb: np.ndarray, weights: np.ndarray, width: int = 1400) -> np.ndarray:
-    """按像素量加权的一维色带：每种颜色占的横向宽度 ∝ 它的像素数。"""
-    bar = np.full((1, width, 3), 0x18, dtype=np.uint8)
-    total = float(weights.sum())
-    if total <= 0:
-        return bar
-    order = np.argsort(-weights)
-    edges = np.concatenate([[0.0], np.cumsum(weights[order]) / total]) * width
-    starts = np.floor(edges[:-1]).astype(int)
-    ends = np.ceil(edges[1:]).astype(int)
-    for index in range(order.size):
-        low, high = starts[index], min(ends[index], width)
-        if high > low:
-            bar[0, low:high] = rgb[order[index]]
-    return bar
+    它就是颜色阶段漏标代价的**全部**来源（判臂要求 `N₁ = 0`，而这些色 `N₁ > 0`），
+    实测 126 色、带走 9.0789% 的臂像素，且全是 `R=G=B` 的中性灰白。
+    """
+    counts = np.asarray(counts)
+    return (counts[:, CLASS_ARM] > 0) & (counts[:, CLASS_MIX] > 0)
 
 
 def _style(axis: plt.Axes, title: str, xlabel: str = "", ylabel: str = "") -> None:
@@ -157,174 +141,255 @@ def _style(axis: plt.Axes, title: str, xlabel: str = "", ylabel: str = "") -> No
         axis.set_ylabel(ylabel, color=FG, fontsize=10)
 
 
-def _likelihood_plane(
+def _panel_plane(
     axis: plt.Axes,
-    counts: np.ndarray,
     rgb: np.ndarray,
+    features: dict[str, np.ndarray],
     winner: np.ndarray,
+    shared: np.ndarray,
 ) -> None:
-    """判决似然平面：x = log10 P(色|混合)，y = log10 P(色|臂)。
+    """面板 A：亮度 × 饱和度，三类画在**同一张图**上，每个点用它自己的 RGB 上色。
 
-    混合列没见过的颜色 `P = 0`，log 取不到，统一放进左侧那条「从未在无臂场景出现」
-    的专列（画在最小有限值再往左一格）。混合支撑否决的几何含义在这张图上一目了然——
-    **判臂的点只可能落在那条专列上，整个右半平面一个臂色都没有**，这正是退化引理
-    `判臂(c) ⟺ N₁(c)=0 ∧ N₂(c)>0` 的图像形态。
+    这个平面对本链路最有分辨力——机械臂是低饱和的灰白壳体（挤在 S≈0 那条竖线上），
+    任务物体大多带彩色（散在右侧），桌面背景是一大团橙木色。整条规则的全部矛盾就在
+    S≈0 那条线上：灰白臂壳与灰白物体高光在 24 位 RGB 上完全同色。126 个共享色用红圈
+    标出来，一眼看到它们确实全落在那条线上。
     """
-    totals = counts.sum(axis=0).astype(np.float64)
-    p_mix = counts[:, CLASS_MIX] / totals[CLASS_MIX]
-    p_arm = counts[:, CLASS_ARM] / totals[CLASS_ARM]
-    seen_mix = p_mix > 0
-    x = np.full(p_mix.shape, np.nan)
-    x[seen_mix] = np.log10(p_mix[seen_mix])
-    floor = float(np.nanmin(x)) - 1.2
-    x[~seen_mix] = floor
-    y = np.full(p_arm.shape, floor - 1.0)
-    positive_arm = p_arm > 0
-    y[positive_arm] = np.log10(p_arm[positive_arm])
-
-    visible = positive_arm  # 臂列没见过的颜色不可能判臂，画出来只会糊成一片
+    for class_index, marker, size, edge in (
+        (CLASS_BACKGROUND, "o", 7, "#5a5a62"),
+        (CLASS_MIX, "s", 13, "#8a8a92"),
+        (CLASS_ARM, "o", 30, "#f0f0f0"),
+    ):
+        selected = winner == class_index
+        axis.scatter(
+            features["sat"][selected],
+            features["luma"][selected],
+            c=rgb[selected] / 255.0,
+            s=size,
+            marker=marker,
+            linewidths=0.35 if class_index == CLASS_ARM else 0.15,
+            edgecolors=edge,
+            zorder=2 + class_index,
+        )
+    # ⚠ 共享色几乎全落在 S≈0 那一条竖线上，圈画大了会叠成一根实心红条（实测），
+    # 反而看不出「一个个颜色」。所以用小而细的空心圈，再拉一条标注线点名那条竖线。
     axis.scatter(
-        x[visible],
-        y[visible],
-        c=rgb[visible] / 255.0,
-        s=np.where(winner[visible] == CLASS_ARM, 22, 8),
+        features["sat"][shared],
+        features["luma"][shared],
+        s=26,
         marker="o",
-        linewidths=0.25,
-        edgecolors="#9a9aa2",
-        zorder=2,
+        facecolors="none",
+        edgecolors="#ff4d4d",
+        linewidths=0.7,
+        zorder=6,
     )
-    axis.axvline(floor + 0.6, color="#ff4d4d", linestyle="--", linewidth=1.0, zorder=1)
-    axis.text(
-        floor,
-        axis.get_ylim()[1],
-        "混合列\n从未见过",
+    axis.annotate(
+        f"{int(shared.sum())} 个共享色全部落在\nS≈0 这条灰白竖线上",
+        xy=(0.012, 0.30),
+        xytext=(0.20, 0.16),
         color="#ff8f8f",
-        fontsize=8,
-        ha="center",
-        va="top",
+        fontsize=10,
+        arrowprops=dict(arrowstyle="->", color="#ff4d4d", linewidth=1.0),
+        zorder=7,
     )
-    limits = [min(floor, float(np.nanmin(y[visible]))), 0.0]
-    axis.plot(limits, limits, color=GRID, linestyle=":", linewidth=1.0, zorder=1)
+    # 图例里的色块只是各类的代表色（真实点一律画颜色本身），形状才是类别标识
+    legend_specs = (
+        ("o", 5, "#d9a06a", "#5a5a62", f"判背景 {int((winner == CLASS_BACKGROUND).sum())} 色"),
+        ("s", 6, "#b47ad0", "#8a8a92", f"判混合 {int((winner == CLASS_MIX).sum())} 色"),
+        ("o", 7, "#c8c8c8", "#f0f0f0", f"判机械臂 {int((winner == CLASS_ARM).sum())} 色"),
+        ("o", 9, "none", "#ff4d4d", f"臂∩混合共享色 {int(shared.sum())} 色（被规则挡下）"),
+    )
+    axis.legend(
+        handles=[
+            plt.Line2D(
+                [], [], marker=marker, linestyle="", markersize=size,
+                markerfacecolor=face, markeredgecolor=edge, label=label,
+            )
+            for marker, size, face, edge, label in legend_specs
+        ],
+        facecolor=BG, edgecolor=GRID, labelcolor=FG, fontsize=9, loc="upper right",
+    )
+    axis.set_xlim(-0.04, 1.04)
+    axis.set_ylim(-0.04, 1.04)
     axis.grid(color=GRID, linewidth=0.4, alpha=0.5)
 
 
-def render_distribution(
-    model: ColorModel,
-    stats: dict[str, Any],
-    out_path: Path,
-) -> Path:
-    """出判决分布大图：3 行 × 3 列九个面板。"""
+def _panel_luma(
+    axis: plt.Axes,
+    counts: np.ndarray,
+    features: dict[str, np.ndarray],
+    shared: np.ndarray,
+) -> None:
+    """面板 B：亮度轴上的臂 vs 非臂剖面（像素量口径），红色填充 = 共享色带走的部分。
+
+    两条曲线各自按自己的总量归一化，所以看的是**形状**不是高度。两条同时抬起来的
+    亮度段就是灰白重叠区；红色填充是这段重叠里真正付出的代价——它与臂曲线同分母，
+    是臂曲线的一部分，面积恰等于共享色带走的臂像素占比。
+    """
+    edges = np.linspace(0.0, 1.0, 61)
+    centers = (edges[:-1] + edges[1:]) / 2
+    arm_pixels = counts[:, CLASS_ARM].astype(np.float64)
+    non_arm_pixels = counts[:, CLASS_MIX].astype(np.float64)
+    arm_total = max(float(arm_pixels.sum()), 1.0)
+    non_arm_total = max(float(non_arm_pixels.sum()), 1.0)
+
+    hist_arm, _ = np.histogram(features["luma"], bins=edges, weights=arm_pixels)
+    hist_non_arm, _ = np.histogram(features["luma"], bins=edges, weights=non_arm_pixels)
+    hist_shared, _ = np.histogram(
+        features["luma"][shared], bins=edges, weights=arm_pixels[shared]
+    )
+
+    axis.fill_between(
+        centers,
+        hist_shared / arm_total,
+        color="#ff4d4d",
+        alpha=0.55,
+        zorder=2,
+        label=f"其中被共享色带走 {float(arm_pixels[shared].sum()) / arm_total:.2%}",
+    )
+    axis.plot(
+        centers, hist_arm / arm_total, color=CLASS_ACCENT[CLASS_ARM],
+        linewidth=2.0, zorder=3, label="机械臂像素",
+    )
+    axis.plot(
+        centers, hist_non_arm / non_arm_total, color=CLASS_ACCENT[CLASS_MIX],
+        linewidth=1.5, linestyle="--", alpha=0.85, zorder=3,
+        label="非臂像素（背景∪物体）",
+    )
+    axis.legend(facecolor=BG, edgecolor=GRID, labelcolor=FG, fontsize=9)
+    axis.grid(color=GRID, linewidth=0.4, alpha=0.5)
+    axis.set_xlim(0.0, 1.0)
+
+
+def _panel_support(axis: plt.Axes, counts: np.ndarray, shared: np.ndarray) -> None:
+    """面板 C：臂列见过的那批色怎么被拆成「判臂」与「被挡下」两块。
+
+    上下两行是同一个域（臂列见过的色 / 全部臂像素），只是口径不同。两个百分比不一样
+    正说明共享色单个更「重」——它们是大面积的中性灰白，色数上占少数、像素上占多数。
+    """
+    seen_arm = counts[:, CLASS_ARM] > 0
+    kept = seen_arm & ~shared
+    rows = (
+        ("色数口径", int(kept.sum()), int(shared.sum()), "色"),
+        (
+            "像素量口径",
+            int(counts[kept, CLASS_ARM].sum()),
+            int(counts[shared, CLASS_ARM].sum()),
+            "px",
+        ),
+    )
+    for position, (_, keep_value, drop_value, unit) in enumerate(rows):
+        total = max(keep_value + drop_value, 1)
+        axis.barh(
+            position, keep_value / total, color=CLASS_ACCENT[CLASS_ARM],
+            edgecolor=GRID, height=0.78,
+        )
+        axis.barh(
+            position, drop_value / total, left=keep_value / total,
+            color="#ff4d4d", edgecolor=GRID, height=0.5,
+        )
+        axis.text(
+            0.015, position, f"判臂 {keep_value:,} {unit}（{keep_value / total:.2%}）",
+            color="#18181c", fontsize=11, va="center",
+        )
+        axis.text(
+            0.985, position, f"挡下 {drop_value:,} {unit}（{drop_value / total:.2%}）",
+            color=FG, fontsize=11, va="center", ha="right",
+        )
+    axis.set_yticks(range(len(rows)))
+    axis.set_yticklabels([row[0] for row in rows])
+    axis.set_xticks([])
+    axis.set_xlim(0.0, 1.0)
+    axis.invert_yaxis()
+
+
+def _panel_shared_top(
+    axis: plt.Axes,
+    rgb: np.ndarray,
+    counts: np.ndarray,
+    shared: np.ndarray,
+    limit: int = 20,
+) -> None:
+    """面板 D：共享色里带走臂像素最多的前 N 个，条形本身就涂成那个颜色。
+
+    实测全是 `R=G=B` 的中性灰白，`#6C6C6C` 一个色就吃掉约 3% 的臂像素。这张图就是
+    「灰白臂壳与灰白物体在 24 位 RGB 上完全同色」这句话的具体清单。
+    """
+    arm_total = max(int(counts[:, CLASS_ARM].sum()), 1)
+    order = np.flatnonzero(shared)[np.argsort(-counts[shared, CLASS_ARM])][:limit]
+    values = counts[order, CLASS_ARM] / arm_total * 100.0
+    axis.barh(
+        np.arange(order.size),
+        values,
+        color=[tuple(float(value) / 255.0 for value in rgb[index]) for index in order],
+        edgecolor="#8a8a92",
+        linewidth=0.6,
+        height=0.72,
+    )
+    axis.set_yticks(np.arange(order.size))
+    axis.set_yticklabels(
+        ["#{:02X}{:02X}{:02X}".format(*rgb[index]) for index in order], fontsize=8
+    )
+    axis.invert_yaxis()
+    axis.grid(color=GRID, linewidth=0.4, alpha=0.5, axis="x")
+    axis.set_xlim(0.0, float(values.max()) * 1.18 if values.size else 1.0)
+
+
+def render_distribution(model: ColorModel, out_path: Path) -> Path:
+    """出判决分布大图：四个面板，每个回答一个问题。"""
     rgb = unpack_rgb(model.colors)
     counts = model.counts
     winner = decide(counts)
     features = color_features(rgb)
-    # 单色真实像素数 = 混合列 + 臂列（纯背景列与混合列重叠计数，不能三列直接相加）
-    pixels = (counts[:, CLASS_MIX] + counts[:, CLASS_ARM]).astype(np.float64)
+    shared = shared_colors(counts)
+    arm_total = max(int(counts[:, CLASS_ARM].sum()), 1)
+    shared_share = float(counts[shared, CLASS_ARM].sum()) / arm_total
 
-    figure = plt.figure(figsize=(19.5, 16.0), facecolor=BG)
+    figure = plt.figure(figsize=(19.0, 13.0), facecolor=BG)
     grid = figure.add_gridspec(
-        3, 3, hspace=0.30, wspace=0.20, left=0.05, right=0.98, top=0.90, bottom=0.05
+        2,
+        2,
+        hspace=0.26,
+        wspace=0.16,
+        width_ratios=[1.3, 1.0],
+        height_ratios=[1.0, 0.82],
+        left=0.05,
+        right=0.98,
+        top=0.88,
+        bottom=0.06,
     )
     figure.suptitle(
-        "v4.2 颜色表判决分布 · 归一化似然 argmax + 混合支撑否决（唯一口径）\n"
-        f"标定集 val ep0-9 · 唯一颜色 {model.colors.size} 种 · 判决只由颜色表决定，与画面内容无关",
+        "v4.2 颜色表判决分布 · 纯支撑三段式判据（唯一口径）\n"
+        f"标定集 val ep0-9 · 唯一颜色 {model.colors.size} 种 · "
+        "判决只看每列见过没见过，计数的数值大小不参与，也与画面内容无关",
         color=FG,
         fontsize=17,
         y=0.965,
     )
 
-    # 行 1：三类各一张「饱和度 × 亮度」散点。这个平面对本链路最有分辨力——
-    # 机械臂是低饱和的灰白壳体，任务物体大多带彩色，veto 的全部矛盾就在左上角
-    # 那团「灰白」里（灰白臂壳 vs 灰白物体高光在 24 位 RGB 上完全同色）。
-    for class_index in range(3):
-        axis = figure.add_subplot(grid[0, class_index])
-        selected = winner == class_index
-        share = pixels[selected].sum() / max(pixels.sum(), 1.0)
-        axis.scatter(
-            features["sat"][selected],
-            features["luma"][selected],
-            c=rgb[selected] / 255.0,
-            s=9,
-            linewidths=0.2,
-            edgecolors="#8a8a92",
-        )
-        _style(
-            axis,
-            f"{CLASS_LABELS[class_index]}：{int(selected.sum())} 色 · 像素占比 {share:.2%}",
-            "饱和度 S",
-            "亮度 luma" if class_index == 0 else "",
-        )
-        axis.set_xlim(-0.03, 1.03)
-        axis.set_ylim(-0.03, 1.03)
-        axis.grid(color=GRID, linewidth=0.4, alpha=0.5)
+    axis = figure.add_subplot(grid[0, 0])
+    _panel_plane(axis, rgb, features, winner, shared)
+    _style(axis, "A · 三类在颜色空间怎么切的（点色 = 颜色本身）", "饱和度 S", "亮度 luma")
 
-    # 行 2：三类的等面积色板——一种颜色一个小方块，按亮度排序。看的是「色数口径」的
-    # 分布：哪一类占了颜色空间的哪一片。
-    for class_index in range(3):
-        axis = figure.add_subplot(grid[1, class_index])
-        selected = np.flatnonzero(winner == class_index)
-        order = selected[np.argsort(features["luma"][selected])]
-        columns = int(np.ceil(np.sqrt(max(order.size, 1) * 1.6)))
-        rows = int(np.ceil(max(order.size, 1) / columns))
-        axis.imshow(
-            _swatch_image(rgb, order, columns, rows), interpolation="nearest", aspect="auto"
-        )
-        axis.set_xticks([])
-        axis.set_yticks([])
-        _style(axis, f"{CLASS_LABELS[class_index]} 色板（等面积，按亮度排序）")
+    axis = figure.add_subplot(grid[0, 1])
+    _panel_luma(axis, counts, features, shared)
+    _style(axis, "B · 亮度轴剖面（像素量口径，两条各自归一化）", "亮度 luma", "占本类像素比例")
 
-    # 行 3 左：像素量加权色带。与行 2 对照着看——色数口径与像素量口径能差出量级。
-    axis = figure.add_subplot(grid[2, 0])
-    bars = []
-    for class_index in range(3):
-        selected = winner == class_index
-        bars.append(np.repeat(_weighted_bar(rgb[selected], pixels[selected]), 40, axis=0))
-        bars.append(np.full((10, bars[-1].shape[1], 3), 0x18, dtype=np.uint8))
-    axis.imshow(np.concatenate(bars[:-1], axis=0), interpolation="nearest", aspect="auto")
-    axis.set_xticks([])
-    axis.set_yticks([20, 70, 120])
-    axis.set_yticklabels(CLASS_LABELS, fontsize=9)
-    _style(axis, "像素量加权色带（每类内部宽度 ∝ 该色像素数）")
-
-    # 行 3 中：亮度分布，实线 = 像素量口径、虚线 = 色数口径。两条线分岔的地方就是
-    # 「颜色种类很多但像素很少」的长尾（抗锯齿边缘、阴影过渡色）。
-    axis = figure.add_subplot(grid[2, 1])
-    edges = np.linspace(0.0, 1.0, 61)
-    centers = (edges[:-1] + edges[1:]) / 2
-    for class_index in range(3):
-        selected = winner == class_index
-        by_pixel, _ = np.histogram(
-            features["luma"][selected], bins=edges, weights=pixels[selected]
-        )
-        by_color, _ = np.histogram(features["luma"][selected], bins=edges)
-        axis.plot(
-            centers,
-            by_pixel / max(by_pixel.sum(), 1.0),
-            color=CLASS_ACCENT[class_index],
-            linewidth=1.8,
-            label=f"{CLASS_LABELS[class_index]}（像素量）",
-        )
-        axis.plot(
-            centers,
-            by_color / max(by_color.sum(), 1.0),
-            color=CLASS_ACCENT[class_index],
-            linewidth=1.1,
-            linestyle="--",
-            alpha=0.75,
-            label=f"{CLASS_LABELS[class_index]}（色数）",
-        )
-    axis.legend(facecolor=BG, edgecolor=GRID, labelcolor=FG, fontsize=8, ncol=1)
-    axis.grid(color=GRID, linewidth=0.4, alpha=0.5)
-    _style(axis, "亮度分布（各自归一化）", "亮度 luma", "占比")
-
-    # 行 3 右：判决似然平面，混合支撑否决的几何含义全在这张图里
-    axis = figure.add_subplot(grid[2, 2])
-    _likelihood_plane(axis, counts, rgb, winner)
+    axis = figure.add_subplot(grid[1, 0])
+    _panel_support(axis, counts, shared)
     _style(
         axis,
-        "判决似然平面（只画臂列见过的颜色）",
-        "log10 P(色 | 混合)",
-        "log10 P(色 | 臂)",
+        f"C · 全表 {model.colors.size} 色 → 臂列见过 "
+        f"{int((counts[:, CLASS_ARM] > 0).sum())} 色 → 判臂 "
+        f"{int((winner == CLASS_ARM).sum())} 色",
+    )
+
+    axis = figure.add_subplot(grid[1, 1])
+    _panel_shared_top(axis, rgb, counts, shared)
+    _style(
+        axis,
+        f"D · 共享色 TOP20（{int(shared.sum())} 色共带走 {shared_share:.2%} 臂像素）",
+        "带走的臂像素占全部臂像素 %",
     )
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -398,10 +463,9 @@ def compute_stats(model: ColorModel) -> dict[str, Any]:
         "判决": side(winner_all),
     }
 
-    # 否决的代价：臂∩混合共享色。⚠ 这是**纯支撑集**定义（该色在臂列与混合列都出现过），
-    # 不需要「未否决的 argmax」，因此与被删掉的对照口径无关。由退化引理，判臂色恰是
-    # 「臂列见过、混合列没见过」，所以共享色就是颜色阶段漏标的全部来源。
-    shared = (counts[:, CLASS_ARM] > 0) & (counts[:, CLASS_MIX] > 0)
+    # 规则的代价：臂∩混合共享色。判臂要求「混合列没见过」，而这些色混合列见过，
+    # 所以它们就是颜色阶段漏标的**全部**来源——一分不多、一分不少。
+    shared = shared_colors(counts)
     arm_total = max(int(counts[:, CLASS_ARM].sum()), 1)
     stats["否决代价"] = {
         "口径": "臂∩混合共享色（两列都见过），纯支撑集定义",
@@ -449,7 +513,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     out_dir = Path(args.out)
     stats = compute_stats(model)
 
-    written = [render_distribution(model, stats, out_dir / "color_distribution.png")]
+    written = [render_distribution(model, out_dir / "color_distribution.png")]
 
     payload = dict(stats)
     payload["颜色表"] = args.model
@@ -459,7 +523,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     for path in written:
         print(f"已写出 {path}")
 
-    # 恒等式自校验：判臂色上的非臂像素必须为 0（退化引理的直接推论）
+    # 恒等式自校验：判臂色上的非臂像素必须为 0（判臂条件 N₁ = 0 的直接推论）
     false_upper = payload["判决"]["判臂颜色上的真实非臂像素"]
     if false_upper != 0:
         raise SystemExit(

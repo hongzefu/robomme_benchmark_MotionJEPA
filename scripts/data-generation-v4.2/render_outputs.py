@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """推理 + 验证 + 出图入口。
 
-对验证集 episode 逐帧跑「颜色表分类（两分布 + 臂口径，含混合支撑否决）→ 四条形态学
-规则」得到机械臂 mask，涂成纯红，再拿 ground truth segmentation 当尺子把结果量化。
+对验证集 episode 逐帧跑「颜色表分类（查表 + 纯支撑三段式判据）→ 四条形态学规则」
+得到机械臂 mask，涂成纯红，再拿 ground truth segmentation 当尺子把结果量化。
 **GT 只出现在评分环节，不参与产出**。
 
 ⚠ **刚性红线闸门**：跑完立刻用 GT 逐像素校验 `false_object_pixels`（被标进机械臂、
@@ -311,7 +311,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "参数": {
             "颜色表": args.model,
             "验证集": sorted(wanted),
-            "判别规则": "归一化似然 argmax + 混合支撑否决（v4.2 唯一口径，无开关）",
+            "判别规则": "纯支撑三段式判据：N0>0 判背景 / N1=0 且 N2>0 判臂 / 其余判混合（唯一口径，无开关）",
             "开运算次数": params.open_iterations,
             "时间窗": params.temporal_window,
             "最终腐蚀次数": params.final_erode,

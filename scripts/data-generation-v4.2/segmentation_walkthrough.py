@@ -5,9 +5,7 @@
 **颜色判决 → 四条形态学规则**上的每一步都画出来，并把每一步**删掉的像素单独标红**
 ——四条规则的设计原则是「合起来只会让标定区域变小或持平」，这张图就是它的逐格证据。
 
-每个任务出两张：
-
-- `<Task>_walkthrough.png`：**逐阶段走查**，一行七格：
+每个任务出一张 `<Task>_walkthrough.png`：**逐阶段走查**，一行七格：
 
   | 格 | 内容 |
   |---|---|
@@ -19,16 +17,12 @@
   | ③ 时间平滑 | 3 帧滑动多数表决（按 `is_video_demo` 相位分段） |
   | ④ 保守收缩 | 与本帧判臂取交 + 腐蚀一次 = 最终 mask |
 
-  ⚠ ③ 是四条里**唯一可能加像素**的一条（多数表决会把「本帧不在候选、前后帧在」的
-  像素补进来），所以它那一格的红色不一定只减不增；④ 的白名单交把它兜回来，整条链
-  相对候选集才是单调收缩的。走查图把这件事画出来，而不是嘴上说。
+⚠ ③ 是四条里**唯一可能加像素**的一条（多数表决会把「本帧不在候选、前后帧在」的像素
+补进来），所以它那一格的红色不一定只减不增；④ 的白名单交把它兜回来，整条链相对候选集
+才是单调收缩的。走查图把这件事画出来，而不是嘴上说。
 
-  再加底部一条参照带：GT 三类图 / GT 臂 / 红遮罩 / 误差图。
-
-- `<Task>_pixels.png`：**逐像素举例**。在原图上点几个代表性像素（标到的真臂、落在
-  臂∩混合共享色上被否决挡掉的真臂、被正确挡下的真物体、未见色 UNKNOWN、判臂但被
-  形态学收掉的真臂），逐个列出它的 24 位颜色、三列归一化似然、判决与 GT 真身
-  ——把「查表 argmax + 否决」这条规则落到具体数字上。
+再加一条参照带（GT 三类图 / GT 臂 / 红遮罩 / 误差图），以及底部一条**判决规则说明带**
+（`RULE_NOTES`）——「颜色判决」那一格怎么算出来的直接印在图上，不用回翻 README。
 
 选帧规则：优先取该 episode 里**误标物体像素最多的那一帧**（红线若被击穿，图上直接
 看得到）；整段都没有误标时——按刚性原则这是常态——退化成取 GT 臂像素最多的一帧。
@@ -79,7 +73,6 @@ from color_model import (  # noqa: E402
     class_ids_from_setup,
     iter_episode_frames,
     labels_from_segmentation,
-    pack_rgb,
 )
 from fit_color_model import resolve_h5  # noqa: E402
 from render_outputs import _error_image  # noqa: E402
@@ -115,6 +108,39 @@ STAGE_NAMES = (
     "④ 保守收缩 + 腐蚀",
 )
 
+# 底部判决规则说明带。这段文案原来印在 `<Task>_pixels.png` 上，那张图已取消，文案搬来
+# 走查图底部——「颜色判决」那一格怎么算出来的，看图的人不该被迫回翻 README。
+# ⚠ 本文案只准用思源宋体有字形的字符：⟺ / ⊆ / 下标数字这类符号会渲染成豆腐块（实测），
+#   所以三列一律写成 N0 / N1 / N2。
+RULE_NOTES: tuple[tuple[str, tuple[int, int, int], int], ...] = (
+    ("判别规则（逐像素、纯支撑三段式、与画面内容无关）", FG, 19),
+    (
+        "① 查表：把像素的 24 位 RGB 在颜色表里查出三列计数——N0 = 纯背景、"
+        "N1 = 背景与物体混合、N2 = 机械臂；查不到 → 未见色，下游按「不是机械臂」处理。",
+        DIM,
+        16,
+    ),
+    (
+        "② 定类：N0 > 0 判纯背景；N1 = 0 且 N2 > 0 判机械臂；其余判混合。"
+        "只看每列见过没见过，计数的数值大小完全不参与，也没有任何阈值或开关。",
+        DIM,
+        16,
+    ),
+    (
+        "③ 判臂那条是往保守方向倒的：某颜色只要在无臂场景里出现过一次，"
+        "就无法排除它属于物体，一律不判臂。门限就是「出现过 / 没出现过」，即 0。",
+        (255, 150, 150),
+        16,
+    ),
+    (
+        "　 由此判臂色在标定集上的非臂像素恒为 0——「绝不误标物体」这条红线在颜色阶段是"
+        "构造保证的，不是调出来的；代价是灰白共享色上的臂像素被一并挡掉。",
+        (255, 150, 150),
+        16,
+    ),
+    ("④ 之后的四条形态学规则只看上面这张标签图，再不碰颜色，也再不碰 GT。", DIM, 16),
+)
+
 TILE = 256  # front_rgb 就是 256×256，走查图按原分辨率贴，不做任何缩放
 GAP = 10
 PAD = 16
@@ -123,6 +149,8 @@ ROW_LABEL_W = 132
 HEAD_H = 34
 FOOT_H = 30
 LEGEND_H = 40
+NOTE_LINE_H = 30
+NOTE_H = NOTE_LINE_H * len(RULE_NOTES) + 18
 
 
 def _font(size: int) -> ImageFont.FreeTypeFont:
@@ -275,11 +303,11 @@ def _render_walkthrough(
     stages: list[np.ndarray],
     out_path: Path,
 ) -> None:
-    """一行走查 + 一行参照带。"""
+    """一行走查 + 一行参照带 + 底部判决规则说明带。"""
     columns = 2 + len(STAGE_NAMES)
     width = PAD * 2 + ROW_LABEL_W + columns * TILE + (columns - 1) * GAP
     row_h = HEAD_H + TILE + FOOT_H
-    height = PAD * 2 + TITLE_H + row_h + GAP + LEGEND_H + row_h + GAP
+    height = PAD * 2 + TITLE_H + row_h + GAP + LEGEND_H + row_h + GAP + NOTE_H
 
     canvas = Image.new("RGB", (width, height), BG)
     draw = ImageDraw.Draw(canvas)
@@ -303,7 +331,7 @@ def _render_walkthrough(
     tiles: list[tuple[str, np.ndarray, str]] = [
         ("原图 front_rgb", np.asarray(rgb), ""),
         (
-            "颜色判决（查表 argmax + 否决）",
+            "颜色判决（查表 + 三段支撑判据）",
             _label_image(predicted),
             f"判臂 {int((predicted == CLASS_ARM).sum())} px",
         ),
@@ -364,7 +392,7 @@ def _render_walkthrough(
             f"误标物体 {int((final_mask & (gt == CLASS_OBJECT)).sum())} px（红线）",
         ),
     ]
-    _paste_row(canvas, draw, reference, x0, y, head=True)
+    used = _paste_row(canvas, draw, reference, x0, y, head=True)
     draw.multiline_text(
         (PAD, y + HEAD_H + TILE // 2 - 24),
         "参照带\nGT 与产物",
@@ -373,6 +401,14 @@ def _render_walkthrough(
         align="center",
         spacing=6,
     )
+    y += used + GAP
+
+    # 底部规则说明带：把「颜色判决」那一格的算法原地写清楚
+    draw.line([(PAD, y), (width - PAD, y)], fill=LINE, width=1)
+    for offset, (line, color, size) in enumerate(RULE_NOTES):
+        draw.text(
+            (PAD + 6, y + 12 + offset * NOTE_LINE_H), line, font=_font(size), fill=color
+        )
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     canvas.save(out_path)
@@ -384,245 +420,6 @@ def _gt_image(gt: np.ndarray) -> np.ndarray:
     image[gt == CLASS_OBJECT] = (232, 150, 60)
     image[gt == CLASS_ARM] = (255, 255, 255)
     return image
-
-
-def _sample_pixels(
-    rgb: np.ndarray,
-    gt: np.ndarray,
-    model: ColorModel,
-    predicted: np.ndarray,
-    final_mask: np.ndarray,
-) -> list[dict[str, Any]]:
-    """挑一组能讲清规则的代表性像素，每类最多两个，按「解释力」排序。
-
-    刻意不随机采样——要的是把两段代价与两段保护各摆一个到台面上：
-    ①标到的真臂（成功）②落在臂∩混合共享色上、被否决挡掉的真臂（**颜色阶段**的漏标
-    代价，纯支撑集判定）③判臂但被形态学收掉的真臂（**形态学阶段**的漏标代价）
-    ④被判混合、正确挡下的真物体（红线怎么守住的）⑤未见色 UNKNOWN 的真臂
-    ⑥判纯背景的真背景（对照）。
-    """
-    packed = pack_rgb(rgb)
-    shared_support = set(
-        int(color)
-        for color in model.colors[
-            (model.counts[:, CLASS_ARM] > 0) & (model.counts[:, CLASS_MIX] > 0)
-        ].tolist()
-    )
-    on_shared = np.isin(packed, list(shared_support)) if shared_support else np.zeros_like(packed, bool)
-    rows, cols = np.indices(gt.shape)
-    picks: list[dict[str, Any]] = []
-
-    def take(mask: np.ndarray, note: str, limit: int = 1) -> None:
-        found = np.flatnonzero(mask.ravel())
-        if found.size == 0:
-            return
-        # 取该集合里出现次数最多的颜色的代表点，避免挑到孤立的抗锯齿噪点
-        colors, inverse = np.unique(packed.ravel()[found], return_inverse=True)
-        top = np.argsort(-np.bincount(inverse, minlength=colors.size))[:limit]
-        for choice in top:
-            index = int(found[np.flatnonzero(inverse == choice)[0]])
-            picks.append(
-                {
-                    "y": int(rows.ravel()[index]),
-                    "x": int(cols.ravel()[index]),
-                    "note": note,
-                }
-            )
-
-    is_arm = gt == CLASS_ARM
-    is_object = gt == CLASS_OBJECT
-    take(is_arm & final_mask, "真臂 · 标到了", 2)
-    take(is_arm & on_shared, "真臂 · 落在臂∩混合共享色（否决挡掉，颜色阶段代价）", 2)
-    take(
-        is_arm & (predicted == CLASS_ARM) & ~final_mask,
-        "真臂 · 判臂但被形态学收掉（形态学阶段代价）",
-        2,
-    )
-    take(is_object & (predicted == CLASS_MIX), "真物体 · 判混合（红线就是这么守住的）", 2)
-    take(is_arm & (predicted == CLASS_UNKNOWN), "真臂 · 未见色 UNKNOWN")
-    take(gt == CLASS_BACKGROUND, "真背景 · 判纯背景")
-
-    totals = model.counts.sum(axis=0).astype(np.float64)
-    detailed: list[dict[str, Any]] = []
-    for item in picks:
-        y, x = item["y"], item["x"]
-        color = int(packed[y, x])
-        index = int(np.searchsorted(model.colors, color))
-        hit = index < model.colors.size and int(model.colors[index]) == color
-        likelihood = (
-            (model.counts[index].astype(np.float64) / totals).tolist()
-            if hit
-            else [0.0, 0.0, 0.0]
-        )
-        detailed.append(
-            {
-                **item,
-                "rgb": [int(value) for value in rgb[y, x]],
-                "counts": model.counts[index].tolist() if hit else [0, 0, 0],
-                "likelihood": likelihood,
-                "判决": int(predicted[y, x]),
-                "gt": int(gt[y, x]),
-                "最终标定": bool(final_mask[y, x]),
-            }
-        )
-    return detailed
-
-
-DECISION_NAMES = {
-    CLASS_BACKGROUND: "纯背景",
-    CLASS_MIX: "混合",
-    CLASS_ARM: "机械臂",
-    CLASS_UNKNOWN: "未见色",
-}
-GT_NAMES = {CLASS_BACKGROUND: "背景", CLASS_OBJECT: "物体", CLASS_ARM: "机械臂"}
-
-
-def _render_pixels(
-    task: str,
-    episode_name: str,
-    frame_index: int,
-    rgb: np.ndarray,
-    samples: Sequence[dict[str, Any]],
-    out_path: Path,
-) -> None:
-    """逐像素举例图：左边标点的放大原图，右边一张表。"""
-    scale = 3
-    picture = np.asarray(
-        Image.fromarray(rgb).resize((TILE * scale, TILE * scale), Image.NEAREST)
-    )
-    columns = (
-        ("#", 46),
-        ("颜色", 76),
-        ("RGB", 150),
-        ("P(色|背景)", 150),
-        ("P(色|混合)", 150),
-        ("P(色|臂)", 150),
-        ("判决", 108),
-        ("最终标定", 108),
-        ("GT 真身", 108),
-        ("这个像素说明什么", 430),
-    )
-    table_w = sum(item[1] for item in columns)
-    row_h = 46
-    width = PAD * 3 + picture.shape[1] + table_w
-    # 右侧列高 = 表头 + 数据行 + 空一行 + 底部七行规则说明；与左边放大图取较高者
-    table_h = (len(samples) + 2) * row_h + 7 * 30 + 24
-    height = max(picture.shape[0], table_h) + PAD * 2 + TITLE_H
-
-    canvas = Image.new("RGB", (width, height), BG)
-    draw = ImageDraw.Draw(canvas)
-    _center(
-        draw,
-        f"{task} · {episode_name} · 第 {frame_index} 帧 —— 逐像素举例：这个颜色为什么被判成这一类",
-        (0, PAD, width, PAD + TITLE_H - 20),
-        _font(26),
-    )
-    y0 = PAD + TITLE_H
-    canvas.paste(Image.fromarray(picture), (PAD, y0))
-
-    # 采样点常常挤在夹爪那一小块，编号直接贴圆圈右上会互相压住。这里对每个编号试八个
-    # 方位，挑第一个既不压住别的编号、也不压住任何一个圆圈的落点；八个都不行就用最后
-    # 一个方位硬放（宁可重叠也不能把编号丢了）。
-    centers = [
-        (PAD + item["x"] * scale + scale // 2, y0 + item["y"] * scale + scale // 2)
-        for item in samples
-    ]
-    placed: list[tuple[int, int]] = []
-    for index, (cx, cy) in enumerate(centers):
-        draw.ellipse([cx - 11, cy - 11, cx + 11, cy + 11], outline=(255, 255, 0), width=3)
-        draw.ellipse([cx - 3, cy - 3, cx + 3, cy + 3], fill=(255, 255, 0))
-    for index, (cx, cy) in enumerate(centers):
-        spot = (cx + 13, cy - 13)
-        for offset_x, offset_y in (
-            (13, -13),
-            (-28, -13),
-            (13, 6),
-            (-28, 6),
-            (13, -34),
-            (-28, -34),
-            (13, 26),
-            (-28, 26),
-        ):
-            spot = (cx + offset_x, cy + offset_y)
-            clear_of_labels = all(
-                abs(spot[0] - other[0]) > 22 or abs(spot[1] - other[1]) > 22
-                for other in placed
-            )
-            clear_of_dots = all(
-                abs(spot[0] + 7 - other[0]) > 20 or abs(spot[1] + 11 - other[1]) > 20
-                for other in centers
-            )
-            if clear_of_labels and clear_of_dots:
-                break
-        placed.append(spot)
-        draw.text(spot, str(index + 1), font=_font(22), fill=(255, 255, 0))
-
-    x0 = PAD * 2 + picture.shape[1]
-    font_head = _font(16)
-    font_cell = _font(15)
-    x = x0
-    for title, column_w in columns:
-        _center(draw, title, (x, y0, x + column_w, y0 + row_h), font_head, DIM)
-        x += column_w
-    draw.line([(x0, y0 + row_h), (x0 + table_w, y0 + row_h)], fill=LINE, width=1)
-
-    for index, item in enumerate(samples):
-        y = y0 + (index + 1) * row_h
-        values = [
-            str(index + 1),
-            None,
-            "({:>3}, {:>3}, {:>3})".format(*item["rgb"]),
-            f"{item['likelihood'][0]:.3e}",
-            f"{item['likelihood'][1]:.3e}",
-            f"{item['likelihood'][2]:.3e}",
-            DECISION_NAMES[item["判决"]],
-            "是" if item["最终标定"] else "否",
-            GT_NAMES[item["gt"]],
-            item["note"],
-        ]
-        x = x0
-        for (title, column_w), value in zip(columns, values):
-            if value is None:
-                draw.rectangle(
-                    [x + column_w // 2 - 17, y + 11, x + column_w // 2 + 17, y + 35],
-                    fill=tuple(item["rgb"]),
-                    outline=LINE,
-                )
-            else:
-                color = FG
-                # 真臂却没被标进去 = 漏标代价，标红提示（漏标可接受，但要看得见）
-                if title == "最终标定" and not item["最终标定"] and item["gt"] == CLASS_ARM:
-                    color = (255, 120, 120)
-                if title == "这个像素说明什么":
-                    color = DIM
-                _center(draw, value, (x, y, x + column_w, y + row_h), font_cell, color)
-            x += column_w
-        draw.line([(x0, y + row_h), (x0 + table_w, y + row_h)], fill=(52, 52, 58), width=1)
-
-    # 表格通常比左边那张放大图矮一大截，剩下的空白正好写清楚判决规则本身，
-    # 免得读者要跳回 color_model.py 的 docstring 才知道这几列数字怎么用。
-    note_y = y0 + (len(samples) + 2) * row_h
-    for offset, (line, color) in enumerate(
-        (
-            ("判决规则（逐像素、与画面内容无关）", FG),
-            ("① 查表：把像素的 24 位 RGB 在颜色表里查出三列计数；三列都没见过 → UNKNOWN，下游按「不是机械臂」处理。", DIM),
-            ("② 归一化似然 argmax：每列先除以本列像素总量得 P(色|类) 再取最大者。类先验刻意不参与——", DIM),
-            ("　 混合列里物体占多少是未知的，任何用计数绝对量对比的规则都在偷用先验。列序（背景, 混合, 臂）使平手偏向非臂。", DIM),
-            ("③ 混合支撑否决（v4.2 唯一口径，无开关）：argmax 判臂后，凡混合列计数 > 0（= 该色在无臂场景里出现过）一律改判混合。", (255, 150, 150)),
-            # ⚠ 这行文案只准用思源宋体有字形的字符：⟺ / ⊆ 这类数学符号会渲染成豆腐块（实测）
-            ("　 门限就是「出现过 / 没出现过」，不引入任何新阈值。由此「判臂」等价于「该色只在臂列见过」，误标物体在拟合集上恒为 0。", (255, 150, 150)),
-            ("④ 之后的四条形态学规则只看这张标签图，再不碰颜色，也再不碰 GT（见同目录 <Task>_walkthrough.png）。", DIM),
-        )
-    ):
-        draw.text(
-            (x0 + 6, note_y + offset * 30),
-            line,
-            font=_font(18 if offset == 0 else 16),
-            fill=color,
-        )
-
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(out_path)
 
 
 def process_task(
@@ -657,13 +454,6 @@ def process_task(
         [stage[index] for stage in stages],
         Path(out_dir) / f"{task}_walkthrough.png",
     )
-    samples = _sample_pixels(
-        rgb, truth[index], model, predicted[index], stages[-1][index]
-    )
-    _render_pixels(
-        task, episode_name, index, rgb, samples, Path(out_dir) / f"{task}_pixels.png"
-    )
-
     return {
         "task": task,
         "episode": episode_name,
@@ -677,7 +467,6 @@ def process_task(
         # ③ 时间平滑相对 ② 的增量：为正即「多数表决补了像素」，是 ③ 非单调的直接证据。
         # 报告里「时间平滑真的会补像素」那条实证就读这个字段，不许凭印象写。
         "该帧时间平滑增量": int(stages[3][index].sum()) - int(stages[2][index].sum()),
-        "逐像素举例": samples,
     }
 
 
@@ -735,7 +524,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "参数": {
             "颜色表": args.model,
             "episode": episode_name,
-            "判别规则": "归一化似然 argmax + 混合支撑否决（v4.2 唯一口径，无开关）",
+            "判别规则": "纯支撑三段式判据：N0>0 判背景 / N1=0 且 N2>0 判臂 / 其余判混合（唯一口径，无开关）",
             "开运算次数": params.open_iterations,
             "时间窗": params.temporal_window,
             "最终腐蚀次数": params.final_erode,
@@ -758,7 +547,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         f"③ 时间平滑在 {len(grew)}/{len(records)} 个任务的走查帧上**补了**像素"
         "（多数表决非单调的直接证据；④ 白名单交把它兜回来）"
     )
-    print(f"共 {len(records) * 2} 张 → {out_dir}")
+    print(f"共 {len(records)} 张 → {out_dir}")
     return 0
 
 

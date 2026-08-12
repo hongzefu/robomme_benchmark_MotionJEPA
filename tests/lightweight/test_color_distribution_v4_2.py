@@ -4,7 +4,8 @@
 真实链路——这是本文件要护住的第一件事：
 
 1. `color_distribution.decide` 在颜色表上直接复算判决（`ColorModel.classify` 吃的是图像、
-   还要处理未见色，不方便直接用）。它必须与 `classify` 在同一批颜色上**逐位一致**。
+   还要处理未见色，不方便直接用）。它必须与 `classify` 在同一批颜色上**逐位一致**
+   ——两者都是纯支撑三段式判据，但各写各的，对拍才有意义。
 2. `segmentation_walkthrough.stagewise_masks` 把四条形态学规则拆成逐阶段中间态。它必须与
    `arm_mask_v4.arm_masks_for_episode` 的最终输出**逐位一致**，相位分段也要一致。
 
@@ -12,7 +13,7 @@
 必须返回非零退出码并点名，而不是安静放行。红线的价值全押在这个闸门上，它坏了等于没有红线。
 
 外加统计口径的自洽性：像素量口径不许把重叠计数的背景像素重复计一遍；「判臂颜色上的真实
-非臂像素」必须恒等于 0——由退化引理，这是「拟合集上零物体误标」的构造性来源。
+非臂像素」必须恒等于 0——由判臂条件 `N₁ = 0`，这是「标定集上零物体误标」的构造性来源。
 """
 
 from __future__ import annotations
@@ -106,10 +107,14 @@ def test_decide_与_classify_逐位一致():
     )
 
 
-def test_decide_空列时炸掉():
-    model = _model([((10, 10, 10), 0, 0, 5)])
-    with pytest.raises(ValueError, match="空列"):
-        color_distribution.decide(model.counts)
+def test_decide_遇到三列全零行炸掉():
+    """三列全零的行会被「其余判混合」静默兜住，必须当场 fail-loud。
+
+    `decide` 吃的是裸 ndarray（不经 `ColorModel.__post_init__` 的守卫），所以这道
+    检查得自己带一份，不能指望上游。
+    """
+    with pytest.raises(ValueError, match="三列全零行"):
+        color_distribution.decide(np.array([[0, 0, 0], [1, 2, 3]], dtype=np.int64))
 
 
 def test_unpack_rgb_是_pack_rgb_的逆():
@@ -219,13 +224,30 @@ def test_逐阶段复算帧数不匹配时炸掉():
         walkthrough.stagewise_masks(_labels(3), [False, False], MaskParams())
 
 
-def test_色板与色带不越界():
-    rgb = np.array([[10, 20, 30], [200, 100, 50], [255, 255, 255]], dtype=np.uint8)
-    swatch = color_distribution._swatch_image(rgb, np.array([2, 0, 1]), 2, 2)
-    assert swatch.shape == (2, 2, 3)
-    assert np.array_equal(swatch[0, 0], rgb[2])
-    bar = color_distribution._weighted_bar(rgb, np.array([1.0, 1.0, 2.0]), width=100)
-    assert bar.shape == (1, 100, 3)
-    # 权重为 0 的一批颜色不许把色带画成花的
-    blank = color_distribution._weighted_bar(rgb, np.zeros(3), width=20)
-    assert blank.shape == (1, 20, 3)
+def test_共享色掩码就是两列都见过的那批():
+    """共享色 = 臂列与混合列都见过。它是颜色阶段漏标代价的**全部**来源，定义不能漂。"""
+    model = _model(TABLE)
+    shared = color_distribution.shared_colors(model.counts)
+    expected = (model.counts[:, CLASS_ARM] > 0) & (model.counts[:, CLASS_MIX] > 0)
+    assert np.array_equal(shared, expected)
+    # TABLE 里 (200,200,200) 与 (77,77,77) 两个灰白色两列都见过
+    assert int(shared.sum()) == 2
+    # 共享色与判臂色不可能相交（判臂要求混合列没见过）
+    assert not (shared & (color_distribution.decide(model.counts) == CLASS_ARM)).any()
+
+
+def test_四面板出图能跑通并落盘(tmp_path):
+    """整张图端到端画一遍。
+
+    静态检查看不出「某个面板在真实数据上抛异常」这类问题（空数组、全零权重、
+    `max()` 取空、色板越界都在这条路径上），所以这里直接把四个面板都画出来。
+    """
+    try:
+        color_distribution.setup_font()
+    except (OSError, FileNotFoundError):
+        pass  # 没装思源宋体的环境照样能画（中文变豆腐块），不影响本测试要验的东西
+    model = _model(TABLE)
+    out_path = tmp_path / "color_distribution.png"
+    written = color_distribution.render_distribution(model, out_path)
+    assert written == out_path and out_path.exists()
+    assert out_path.stat().st_size > 10_000  # 真画了东西，不是空画布

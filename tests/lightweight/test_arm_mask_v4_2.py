@@ -1,8 +1,8 @@
 """v4.2 两分布 + 臂颜色模型与形态学标定的逻辑测试（合成数据，秒级，不碰任何 h5 产物）。
 
 与 test_arm_mask_v4_1.py 的关系：形态学四条规则、GT 三类映射、重叠计数三块契约逐字继承；
-判别规则部分按 v4.2 口径改写——**混合支撑否决不再是可关的开关**，`classify` 只有一条
-口径，因此凡是靠 `veto_shared=False` 才能观察到的断言全部重写。
+判别规则部分按**纯支撑三段式**口径改写——似然与 argmax 已从代码里删除（实测三段判决与
+支撑判据逐位等价，见 `color_model.py` 模块 docstring 的「来历」一节）。
 
 覆盖五件事：
 
@@ -10,11 +10,13 @@
    归背景、`flow_objects` 归物体、`kind == "tcp"` 归机械臂；未覆盖 seg id 归物体并被
    单独计数。
 2. **重叠计数**：背景像素必须同时进列 0 与列 1，物体像素只进列 1，臂像素只进列 2
-   ——这条同时是退化引理的前提 `supp(N₀) ⊆ supp(N₁)`。
-3. **判别规则**：归一化似然 argmax + 无条件混合支撑否决；未见颜色给 UNKNOWN；空列
-   fail-loud。
-4. **退化引理**：`判臂(c) ⟺ N₁(c)=0 ∧ N₂(c)>0`，即完整两步流程与纯支撑判据逐位等价。
-   这是「拟合集上零物体误标」这条刚性红线的构造性来源，必须钉死。
+   ——这条同时是三段互斥的前提 `supp(N₀) ⊆ supp(N₁)`。
+3. **判别规则**：`N₀>0` 判背景、`N₁=0 且 N₂>0` 判臂、其余判混合；未见颜色给 UNKNOWN；
+   三段互斥且穷尽；规则没有任何开关。
+4. **计数值零作用**：整张表的计数放大任意倍数，判决必须逐位不变——这是「那 145 亿个
+   计数一个都没进判决」这句话的代码化身，也是「拟合集上零物体误标」这条刚性红线的
+   构造性来源（判臂要求 `N₁=0`，而 `N₁` 已把 GT 物体像素全部计入）。
+   外加两道坏表守卫（三列全零行、`supp(N₀) ⊄ supp(N₁)`）必须 fail-loud。
 5. **四条形态学规则**：与 v4 / v4.1 逐字相同的行为契约。
 """
 
@@ -184,43 +186,49 @@ def _model(entries: dict[int, tuple[int, int, int]]) -> ColorModel:
     return ColorModel(colors=colors, counts=counts, source={})
 
 
-def test_归一化似然argmax且未见颜色给_UNKNOWN():
-    # 列总量：纯背景 100、混合 109、臂 40
+def _table_as_image(model: ColorModel) -> np.ndarray:
+    """把整张颜色表摊成一行 (1, N, 3) 的「图像」，好让 classify 一次吃完全表。"""
+    return np.stack(
+        [
+            [(int(c) >> 16) & 0xFF, (int(c) >> 8) & 0xFF, int(c) & 0xFF]
+            for c in model.colors
+        ]
+    ).astype(np.uint8)[None, :, :]
+
+
+def test_三段支撑判据且未见颜色给_UNKNOWN():
     model = _model(
         {
-            0x000000: (100, 100, 0),  # 纯背景色：P(bg)=1.0 > P(mix)=100/109
-            0x010203: (0, 9, 0),  # 只在混合里出现（物体色的典型形态）
-            0x040506: (0, 0, 40),  # 臂独有
+            0x000000: (100, 100, 0),  # N₀ > 0 → 背景
+            0x010203: (0, 9, 0),  # N₀ = 0、N₁ > 0 → 混合（物体色的典型形态）
+            0x040506: (0, 0, 40),  # N₁ = 0、N₂ > 0 → 臂
         }
     )
     rgb = np.array([[[0, 0, 0], [1, 2, 3]], [[4, 5, 6], [9, 9, 9]]], dtype=np.uint8)
     labels = model.classify(rgb)
     assert labels.tolist() == [
         [CLASS_BACKGROUND, CLASS_MIX],
-        [CLASS_ARM, CLASS_UNKNOWN],
+        [CLASS_ARM, CLASS_UNKNOWN],  # 表里没有的颜色
     ]
 
 
 def test_判臂等价于纯支撑判据():
-    """退化引理：`判臂(c) ⟺ N₁(c)=0 ∧ N₂(c)>0`，与似然的具体数值无关。
+    """`判臂(c) ⟺ N₁(c)=0 且 N₂(c)>0`——现在这是定义，但仍留作回归闸门。
 
-    v4.1 有一条 `test_类先验不参与_小类可凭似然胜出大类`，靠 `veto_shared=False` 观察
-    未否决的 argmax。v4.2 删掉了那个开关，该性质经 `classify` 已不可观测，于是换成钉死
-    引理本身——它比原来的断言更强：**臂的裁决压根不看似然大小，只看支撑集**。
-
-    四种组合逐个检查（`N₁` 是否为 0 × 臂似然是否占优），并额外确认「先验不参与」的
-    精神仍在：臂列总量极小的颜色只要 `N₁ = 0` 就照样判臂，不会因为类规模小而落选。
+    四种组合逐个检查（`N₁` 是否为 0 × 臂计数大小），顺便确认「类规模不参与」：臂列
+    只有 1 个像素的颜色，只要 `N₁ = 0` 就照样判臂，不会因为量小而落选；反过来臂列
+    远多于混合列的颜色，只要 `N₁ > 0` 就一律判混合。
     """
     model = _model(
         {
             0x000000: (900, 9995, 0),  # 撑起背景与混合两列的总量
-            # ① N₁ > 0 且臂似然占优（P(X|臂)=3/50 >> P(X|混合)=5/10000）→ 否决改判混合
+            # ① N₁ > 0 且臂计数相对可观（3 vs 5）→ 仍判混合：数值大小不进裁决
             0x0A0B0C: (0, 5, 3),
-            # ② N₁ = 0 且臂计数极小（1 / 50）→ 仍判臂：似然大小与类规模都不进裁决
+            # ② N₁ = 0 且臂计数极小（1）→ 仍判臂
             0x0B0C0D: (0, 0, 1),
             # ③ N₁ = 0 且臂计数大 → 判臂
             0x040506: (0, 0, 46),
-            # ④ N₁ > 0 且臂列没见过 → 非臂（这一支与否决无关，argmax 自然落选）
+            # ④ N₁ > 0 且臂列没见过 → 混合
             0x0C0D0E: (0, 7, 0),
         }
     )
@@ -232,35 +240,91 @@ def test_判臂等价于纯支撑判据():
         [CLASS_ARM, CLASS_MIX],
     ]
 
-    # 引理的正式形态：完整两步流程判臂的颜色集合，逐位等于纯支撑判据的集合
     counts = model.counts
     support_rule = (counts[:, CLASS_MIX] == 0) & (counts[:, CLASS_ARM] > 0)
-    table_rgb = np.stack(
-        [
-            [(int(c) >> 16) & 0xFF, (int(c) >> 8) & 0xFF, int(c) & 0xFF]
-            for c in model.colors
-        ]
-    ).astype(np.uint8)[None, :, :]
-    pipeline_arm = model.classify(table_rgb)[0] == CLASS_ARM
+    pipeline_arm = model.classify(_table_as_image(model))[0] == CLASS_ARM
     assert np.array_equal(pipeline_arm, support_rule)
 
-    # 推论 1：判臂颜色上的非臂（混合列）像素恒为 0 —— 拟合集上零物体误标是恒等式
+    # 推论：判臂颜色上的非臂（混合列）像素恒为 0 —— 标定集上零物体误标是恒等式
     assert int(counts[support_rule, CLASS_MIX].sum()) == 0
 
 
-def test_臂独有颜色不受否决影响():
+def test_判决三段互斥且穷尽():
+    """三段覆盖表里每一行，且没有任何一行同时满足两段。
+
+    互斥靠 `supp(N₀) ⊆ supp(N₁)`（`N₀>0` 蕴含 `N₁>0`，与判臂的 `N₁=0` 互斥），
+    穷尽靠「每行至少一列 > 0」。两条前提都由 `__post_init__` 守卫兜着，这里验结论。
+    """
+    model = _model(
+        {
+            0x000000: (7, 7, 0),  # 只在纯背景
+            0x010101: (3, 5, 0),  # 背景 + 物体
+            0x020202: (2, 4, 9),  # 三列都见过：N₀>0 → 背景（不是臂）
+            0x030303: (0, 6, 0),  # 只在混合
+            0x040404: (0, 6, 8),  # 臂与混合共享 → 混合
+            0x050505: (0, 0, 5),  # 臂独有 → 臂
+        }
+    )
+    labels = model.classify(_table_as_image(model))[0]
+    assert labels.tolist() == [
+        CLASS_BACKGROUND,
+        CLASS_BACKGROUND,
+        CLASS_BACKGROUND,
+        CLASS_MIX,
+        CLASS_MIX,
+        CLASS_ARM,
+    ]
+    # 穷尽：没有任何一行落到三段之外
+    assert not (labels == CLASS_UNKNOWN).any()
+    # 互斥：三个集合两两不交、并起来恰好是全表
+    blocks = [labels == value for value in (CLASS_BACKGROUND, CLASS_MIX, CLASS_ARM)]
+    assert sum(int(block.sum()) for block in blocks) == model.colors.size
+
+
+def test_计数值大小不影响判决():
+    """整表计数放大任意倍数，判决必须逐位不变——先验的数值一个都没进裁决。
+
+    这条是本链路全部论断的代码化身：颜色表里那几十亿个计数，真正被消费的只有三个
+    0/1 支撑位。旧的归一化似然 argmax 写法通不过这条（放大单列会改变列总量，
+    进而改变 `P(色|类)` 的相对大小）。
+    """
+    entries = {
+        0x000000: (900, 9995, 0),
+        0x0A0B0C: (0, 5, 3),
+        0x0B0C0D: (0, 0, 1),
+        0x040506: (0, 0, 46),
+        0x0C0D0E: (0, 7, 0),
+    }
+    base = _model(entries)
+    reference = base.classify(_table_as_image(base))
+
+    for factor in (2, 1000, 10**6):
+        scaled = ColorModel(
+            colors=base.colors, counts=base.counts * factor, source={}
+        )
+        assert np.array_equal(scaled.classify(_table_as_image(scaled)), reference)
+
+    # 只放大某一列同样不改判决（这一支专门盯死「列总量」不再被使用）
+    for column in (CLASS_BACKGROUND, CLASS_MIX, CLASS_ARM):
+        counts = base.counts.copy()
+        counts[:, column] *= 10**6
+        skewed = ColorModel(colors=base.colors, counts=counts, source={})
+        assert np.array_equal(skewed.classify(_table_as_image(skewed)), reference)
+
+
+def test_臂独有颜色判臂():
     model = _model(
         {
             0x000000: (100, 100, 0),
-            0x040506: (0, 0, 40),  # 混合列计数为 0：否决不碰它
+            0x040506: (0, 0, 40),  # 混合列没见过 → 判臂
         }
     )
     rgb = np.array([[[4, 5, 6]]], dtype=np.uint8)
     assert model.classify(rgb).tolist() == [[CLASS_ARM]]
 
 
-def test_否决没有开关_不接受任何额外实参():
-    """v4.2 的刚性原则要求否决无法被关掉；留个回归闸门，防止开关被悄悄加回来。"""
+def test_判别规则没有开关_不接受任何额外实参():
+    """刚性原则要求规则无法被关掉；留个回归闸门，防止开关被悄悄加回来。"""
     model = _model({0x000000: (100, 100, 0), 0x040506: (0, 0, 40)})
     rgb = np.array([[[4, 5, 6]]], dtype=np.uint8)
     with pytest.raises(TypeError):
@@ -269,12 +333,22 @@ def test_否决没有开关_不接受任何额外实参():
         model.classify(rgb, veto_shared=False)
 
 
-def test_空列直接报错不静默():
-    # 臂列全零：归一化没有意义，必须 fail-loud 而不是除零或静默判非臂
-    model = _model({0x000000: (10, 10, 0)})
-    rgb = np.array([[[0, 0, 0]]], dtype=np.uint8)
-    with pytest.raises(ValueError, match="空列"):
-        model.classify(rgb)
+def test_坏颜色表必须fail_loud():
+    """三段判据的两条前提破了就静默判错，所以建表时必须当场炸掉。"""
+    # ① 三列全零行：会被「其余判混合」静默兜住，看不出表坏了
+    with pytest.raises(ValueError, match="三列全零行"):
+        ColorModel(
+            colors=np.array([0x000000], dtype=np.uint32),
+            counts=np.array([[0, 0, 0]], dtype=np.int64),
+            source={},
+        )
+    # ② 背景列见过但混合列没见过：破坏 supp(N₀) ⊆ supp(N₁)，判背景与判臂不再互斥
+    with pytest.raises(ValueError, match="supp"):
+        ColorModel(
+            colors=np.array([0x000000], dtype=np.uint32),
+            counts=np.array([[5, 0, 0]], dtype=np.int64),
+            source={},
+        )
 
 
 def test_只保留触到上边界的连通块():

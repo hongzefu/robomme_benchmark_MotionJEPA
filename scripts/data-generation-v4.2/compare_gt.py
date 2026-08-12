@@ -3,7 +3,7 @@
 
 对每个任务的 episode_0（train seed，未参与标定——标定集是 val split ep0-9）逐帧跑：
 
-- **预测**：归一化似然 argmax + 混合支撑否决 → 四条形态学规则（v4.2 唯一口径）；
+- **预测**：查表 + 纯支撑三段式判据 → 四条形态学规则（唯一口径）；
 - **ground truth**：GT segmentation 的机械臂像素直接作 mask（理想上界，误差图应全白，
   这一栏是**出图链路自身的自校验**：GT 栏若出现非白像素，说明画图或对齐环节有 bug）。
 
@@ -65,7 +65,7 @@ FG = (240, 240, 240)
 # 两栏的（标题, 颜色）；顺序即出图顺序，键与 `process_task` 的 variants 一一对应
 COLUMN_KEYS = ("pred", "ground_truth")
 COLUMNS = (
-    ("预测：似然 argmax + 混合支撑否决", (120, 235, 140)),
+    ("预测：三段支撑判据 + 四条形态学规则", (120, 235, 140)),
     ("ground truth（上界 · 自校验）", (140, 190, 255)),
 )
 
@@ -275,7 +275,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "参数": {
             "颜色表": args.model,
             "episode": episode_name,
-            "判别规则": "归一化似然 argmax + 混合支撑否决（v4.2 唯一口径，无开关）",
+            "判别规则": "纯支撑三段式判据：N0>0 判背景 / N1=0 且 N2>0 判臂 / 其余判混合（唯一口径，无开关）",
             "开运算次数": params.open_iterations,
             "时间窗": params.temporal_window,
             "最终腐蚀次数": params.final_erode,
