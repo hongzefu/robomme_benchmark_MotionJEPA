@@ -65,8 +65,8 @@
 
 3. **落成 fail-loud 硬闸门，且刻意不提供豁免开关。** `render_outputs.enforce_no_false_object`
    是唯一实现，被两个评估入口共用：
-   - `render_outputs.py`（留出集 train ep10-19 全帧）**逐 episode** 校验；
-   - `compare_gt.py`（train ep0）**逐任务**校验，GT 栏按构造恒为 0 不参与。
+   - `render_outputs.py`（评估集 val ep10-19 全帧）**逐 episode** 校验；
+   - `compare_gt.py`（评估集 val ep10）**逐任务**校验，GT 栏按构造恒为 0 不参与。
 
    非 0 时打印逐条明细并让 `main()` 返回 1（= 进程退出码非 0）。
    背景误标 `false_background_pixels` 继续记录但**不设闸门**——宗旨只针对物体。
@@ -79,17 +79,25 @@
 
 1. **标定集 = benchmark val split ep 0–9**（每任务 10 条，共 160 episode）。三套 split
    （`src/robomme/env_metadata/{train,val,test}/`）seed 固定；val 编码为
-   `1_000_000 + task_index*10000 + ep*100 + retry`。标定数据集
-   `artifacts/generated/v4seg-16env-val10ep` 由本目录 `generate_dataset.py --split val`
-   生成，**v4.2 不重造数据集**，直接复用。
+   `1_000_000 + task_index*10000 + ep*100 + retry`，每条 episode 的真实 seed 存在 h5 的
+   `<episode>/setup/seed` 里（判 split 读它，不靠目录名猜）。
 2. **GT 只允许提供两个场景级分布 + 臂分布**，不提供物体级逐像素分割（v4.1 起的削弱口径，
    现实语义 = 拿得到「没有臂的空场景」和「摆了物体但没有臂的场景」两种画面级监督，
    外加臂自己的外观样本）。
 3. **判别规则 = 纯支撑三段式判据**（`N₀>0` 判背景 / `N₁=0 且 N₂>0` 判臂 / 其余判混合），
    无似然、无 argmax、无阈值、无开关。它是 v4.1 那条概率式规则的退化形态，实测三段逐位
    等价，见 2.5。
-4. **评估集**：train split ep 0（两栏对比图与走查图）、train split ep 10–19（留出集全帧
-   指标）。两者都与标定集零重叠。
+4. **评估集 = 同一个 val split 的 ep 10–19**（每任务 10 条，共 160 episode）：全帧指标走
+   ep10-19，两栏对比图与走查图取其中的 ep10。与标定集**同 split、不同 episode**，
+   seed 也因此不同（BinFill 标定 1040000–1040900 vs 评估 1041000–1041900），**零重叠**。
+5. **标定与评估同住一份数据集** `artifacts/generated/v4seg-16env-val20ep`（`--split val
+   --episodes 20`，320 episode）。⚠ 生成器的 `--episodes` 是「从 ep0 起的**数量**」不是
+   区间，所以拿 ep10-19 只能连 ep0-19 一起生成；ep0-9 的 seed 固定，与旧的
+   `v4seg-16env-val10ep` 逐位相同（已对拍），因此**颜色表不必重拟合**。
+6. **产物目录名自带口径**：`validation_val_ep10-19` / `compare_gt_val_ep10` /
+   `walkthrough_val_ep10` / `color_distribution_val_ep0-9`——`ls outputs/` 一眼看出每个
+   数字算在哪批 episode 上，不用翻文档（用户 2026-08-12 决定：「所有的产物文件夹都写上
+   at test/val ep几到几」）。
 
 ---
 
@@ -290,7 +298,7 @@ v4.1 / v4.2 前期的写法是个完整的概率式判别：每列除以本列�
 时间窗必须是**正奇数**，否则构造参数时就抛错。
 
 ⚠ **这是四条里唯一可能让区域变大的一条**：多数表决会把「本帧不在候选、但前后帧在」的
-像素**补进来**。这不是 bug，是多数表决的定义使然——第 6.5 节有 7/16 个任务的实测证据。
+像素**补进来**。这不是 bug，是多数表决的定义使然——第 6.5 节有 3/16 个任务的实测证据。
 
 **④ 保守收缩：先取白名单交，再腐蚀一次。**
 先与**本帧自己的候选**取交集，也就是**只保留当前帧自己被判成机械臂的像素**；这一刀
@@ -348,8 +356,8 @@ v4.1 留出集实测抓到过反例：③ 的多数表决把 InsertPeg 的 **292
 | `color_model.py` | 两分布 + 臂的颜色表拟合 / 推理（**唯一碰 GT 的模块**），含判别规则与它的来历 |
 | `arm_mask_v4.py` | 四条形态学规则 + 涂红（与 v4 / v4.1 运算逐字相同） |
 | `fit_color_model.py` | 拟合入口 |
-| `render_outputs.py` | 留出集推理 + 对 GT 验证 + preview 出图，**刚性闸门 `enforce_no_false_object` 的定义处** |
-| `compare_gt.py` | **两栏对比出图入口**（预测 / GT，train ep0），复用同一个闸门 |
+| `render_outputs.py` | 评估集推理 + 对 GT 验证 + preview 出图，**刚性闸门 `enforce_no_false_object` 的定义处** |
+| `compare_gt.py` | **两栏对比出图入口**（预测 / GT，评估集 val ep10），复用同一个闸门 |
 | `color_distribution.py` | **颜色判决分布出图入口**（一张图 + `stats.json`；不读 h5，只读颜色表） |
 | `segmentation_walkthrough.py` | **分割过程走查出图入口**（真实帧逐阶段拆解 + 底部规则说明带） |
 | `reports/color_distribution_report.md` | 上面两个入口的**判读报告** |
@@ -364,33 +372,31 @@ v4.1 留出集实测抓到过反例：③ 的多数表决把 InsertPeg 的 **292
 ## 五、用法
 
 ```bash
-# 1.（一般不用跑）生成带 GT segmentation 的 val split 标定数据集
-#    ⚠ 正式生成前须与用户确认新的 --output-dir 名字；v4.2 直接复用 v4.1 生成的同名产物
+# 1.（一般不用跑）生成 val split 数据集：ep0-9 当标定集、ep10-19 当评估集
+#    ⚠ 正式生成前须与用户确认新的 --output-dir 名字（必须是不存在或空的目录）
+#    ⚠ --episodes 是「从 ep0 起的数量」不是区间，想要 ep10-19 只能连 ep0-19 一起生成
 uv run --locked scripts/data-generation-v4.2/generate_dataset.py \
-  --output-dir artifacts/generated/v4seg-16env-val10ep --env all --episodes 10 \
+  --output-dir artifacts/generated/v4seg-16env-val20ep --env all --episodes 20 \
   --workers 16 --gpus 0,1 --split val \
   --reference-root /data/hongzefu/robomme_data_h5 --no-reference-validation
 
 # 2. 在标定集（val ep 0-9）上拟合两分布 + 臂颜色表（单进程，实测约 19 分钟）
 uv run --no-sync python scripts/data-generation-v4.2/fit_color_model.py \
-  --h5 'artifacts/generated/v4seg-16env-val10ep/record_dataset_*.h5' \
+  --h5 'artifacts/generated/v4seg-16env-val20ep/record_dataset_*.h5' \
   --episodes 0-9 --out scripts/data-generation-v4.2/outputs/color_model.npz
 
-# 3. 留出集全帧指标 + preview（train ep10-19，160 episode，含刚性闸门）
-uv run --no-sync python scripts/data-generation-v4.2/render_outputs.py \
-  --h5 'artifacts/generated/v4seg-16env-20ep/record_dataset_*.h5' \
-  --episodes 10-19 --out scripts/data-generation-v4.2/outputs/holdout
+# 3. 评估集全帧指标 + preview（val ep10-19，160 episode，含刚性闸门）
+#    下面四条的 --h5 / --episode(s) / --out 都已是默认值，日常直接裸跑即可
+uv run --no-sync python scripts/data-generation-v4.2/render_outputs.py --workers 16
 
-# 4. 两栏对比出图（预测 | GT，train ep0，16 张 + metrics.json，含刚性闸门）
-uv run --no-sync python scripts/data-generation-v4.2/compare_gt.py \
-  --h5 'artifacts/generated/v4seg-16env-20ep/record_dataset_*.h5' \
-  --out scripts/data-generation-v4.2/outputs/compare_gt
+# 4. 两栏对比出图（预测 | GT，val ep10，16 张 + metrics.json，含刚性闸门）
+uv run --no-sync python scripts/data-generation-v4.2/compare_gt.py --workers 16
 
 # 5. 颜色判决分布出图（四面板一张图 + stats.json；只读颜色表，不碰 h5）
 uv run --no-sync python scripts/data-generation-v4.2/color_distribution.py
 
-# 6. 分割过程走查出图（16 任务 × 留出集 ep10，每任务一张）
-uv run --no-sync python scripts/data-generation-v4.2/segmentation_walkthrough.py
+# 6. 分割过程走查出图（16 任务 × 评估集 ep10，每任务一张）
+uv run --no-sync python scripts/data-generation-v4.2/segmentation_walkthrough.py --workers 16
 
 # 7. 单元测试（v4 / v4.1 / v4.2 三套一起跑，互不污染）
 uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
@@ -398,7 +404,7 @@ uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
   tests/lightweight/test_arm_mask_v4_2.py tests/lightweight/test_color_distribution_v4_2.py -q
 ```
 
-两栏图（`outputs/compare_gt/<Task>_compare.png`）：每栏 8 帧 ×（原图 | 红遮罩 | 误差图）。
+两栏图（`outputs/compare_gt_val_ep10/<Task>_compare.png`）：每栏 8 帧 ×（原图 | 红遮罩 | 误差图）。
 误差图配色：**白 = 标对的机械臂、红 = 误标到物体（核心红线）、黄 = 误标到背景、
 蓝 = 漏标的机械臂**。GT 栏的红遮罩直接涂 GT 臂像素，误差图应全白（出图链路自校验）。
 
@@ -435,18 +441,21 @@ uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
 `1796 种臂列出现过的颜色 − 126 种共享色 = 1670`，与判臂色数严丝合缝。
 另外核验了两条结构前提：`supp(N₀) ⊆ supp(N₁)` 与 `N₁ ≥ N₀` **逐元素成立**。
 
-**（b）改规则后重跑四个入口，产物数字一个都没变**——这是本轮最强的验收：
+**（b）改规则后重跑四个入口，产物数字一个都没变**——这是判别规则改写那一轮最强的验收。
+
+⚠ 这组对比做在**当时的评估集（train ep10-19）**上，之后评估集才整体搬到 val ep10-19，
+所以下表的 77,272 帧与 6.3 的 78,764 帧不是同一批；对比结论（换规则不改数字）不受影响。
 
 | 产物 | 与改规则前的 diff |
 |---|---|
-| `holdout/metrics.json`（160 ep / 77,272 帧） | **只有 `参数.判别规则` 字符串与 `耗时秒` 两行**，全部指标逐位相同 |
-| `holdout/*_preview.png` × 16 | **逐字节相同**（git 认为未修改） |
-| `compare_gt/metrics.json` | 同上，只有规则字符串与耗时 |
-| `color_distribution/stats.json` | **逐字节相同** |
+| `metrics.json`（当时 160 ep / 77,272 帧） | **只有 `参数.判别规则` 字符串与 `耗时秒` 两行**，全部指标逐位相同 |
+| 16 张 preview | **逐字节相同**（git 认为未修改） |
+| 两栏对比的 `metrics.json` | 同上，只有规则字符串与耗时 |
+| `stats.json` | **逐字节相同** |
 | `walkthrough.json` | 去掉已取消的 `逐像素举例` 字段后，逐任务数字逐位相同 |
 
-`compare_gt/*.png` 与 `*_walkthrough.png` 确有变化，但只因为图上印的**文案**改了
-（列标题改口径名、走查图新增底部规则说明带），mask 本身没动——由上表的 metrics 佐证。
+两栏对比图与走查图确有变化，但只因为图上印的**文案**改了（列标题改口径名、走查图新增
+底部规则说明带），mask 本身没动——由上表的 metrics 佐证。
 
 **（c）判臂色的成分**（推论 1、2 的实测）：
 
@@ -463,49 +472,56 @@ uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
 挡下的理由。这 126 色实测**全部是 `R=G=B` 的中性灰白**（饱和度最大 0.000），
 单个最重的 `#6C6C6C` 一个色就吃掉 2.99% 的臂像素。
 
-### 6.3 留出集全帧（train ep10–19，160 episode / 77,272 帧）
+### 6.3 评估集全帧（val ep10–19，160 episode / 78,764 帧）
 
 | 指标 | 值 |
 |---|---:|
 | **误标物体像素（刚性红线）** | **0** |
 | 误标背景像素 | **0** |
 | **标定精确率** | **1.000000** |
-| 机械臂召回 | 0.818412 |
+| 机械臂召回 | **0.817440** |
 | 存在物体误标的帧占比 | **0** |
-| 未见颜色占比 | 0.1866% |
-| GT 兜底（setup 未覆盖 seg id）像素 | 2,278,922，其中被误标进机械臂 **0** |
+| 未见颜色占比 | 0.1914% |
+| GT 兜底（setup 未覆盖 seg id）像素 | 2,267,011，其中被误标进机械臂 **0** |
+| GT 臂像素 / 标定像素 | 341,842,908 / 279,436,234 |
+| GT 物体像素（红线的分母） | 122,842,049，误标 **0** |
 
-逐任务召回从 **0.684357**（StopCube）到 **0.851516**（MoveCube）。
-闸门输出：`刚性红线通过：留出集逐 episode 共 160 项，GT 判定的误标物体像素全部为 0`。
-耗时 35.7 秒（16 进程）。
+逐任务召回从 **0.672621**（StopCube）到 **0.851839**（MoveCube）。
+闸门输出：`刚性红线通过：评估集（val ep10-19）逐 episode 共 160 项，GT 判定的误标物体
+像素全部为 0`。耗时 37.8 秒（16 进程）。
 
-⚠ 这三个数（0 / 1.000000 / 0.818412）与 v4.1 的 veto 口径**逐位相同**——同一张表、
-同一条规则，本来就该相同；相同本身就是「只删对照口径、只改规则写法、没动判据」的实证。
+⚠ **与旧的 train ep10-19 口径对照**（评估集搬家前后）：召回 0.818412 → **0.817440**、
+未见色 0.1866% → **0.1914%**，误标物体与精确率两项都不变（0 / 1.000000）。差别很小是
+预期的——同一张颜色表、同一套规则，换的只是被评的那批 episode。⚠ 但**这两组数不是同一
+批帧，不能当成「性能下降了 0.001」来读**。
 
-### 6.4 train ep0 两栏对比（16 张 + metrics.json）
+### 6.4 val ep10 两栏对比（16 张 + metrics.json）
 
 **16/16 任务误标物体 = 0**，GT 栏自校验误标也全为 0（出图链路自身没走样）。
-逐任务召回 0.719397（StopCube）～ 0.854263（VideoUnmask）。耗时 7.6 秒。
+逐任务召回 0.699032（StopCube）～ 0.857557（InsertPeg）。耗时 8.4 秒。
 
-### 6.5 分割过程走查（留出集 ep10，16 张）
+### 6.5 分割过程走查（评估集 val ep10，16 张）
 
 16 个任务全部 `该帧误标物体 0 px`；逐阶段复算与 `arm_masks_for_episode` 的运行期
 逐位断言全部通过。
 
-**③ 时间平滑在 7/16 个任务的走查帧上「补」了像素**（ButtonUnmask +5、InsertPeg +4、
-PatternLock +1、VideoPlaceButton +14、VideoPlaceOrder +28、VideoRepick +3、
-VideoUnmaskSwap +1），其余 9 个持平或减少。这是 §3.3「③ 单独看不单调」的直接实证。
-最典型的 VideoPlaceOrder ep10 第 102 帧：
+**③ 时间平滑在 3/16 个任务的走查帧上「补」了像素**（VideoRepick +10、ButtonUnmaskSwap +5、
+SwingXtimes +3），其余 13 个持平或减少。这是 §3.3「③ 单独看不单调」的直接实证。
+幅度最大的 VideoRepick val ep10 第 95 帧：
 
 | 阶段 | 像素数 | 增量 |
 |---|---:|---:|
-| 候选：判臂像素 | 16,636 | — |
-| ① 开运算 | 16,621 | −15 |
-| ② 触顶连通域 | 16,621 | ±0 |
-| ③ 时间平滑 | **16,649** | **+28** ← 多数表决在补像素 |
-| ④ 保守收缩 + 腐蚀 | **16,003** | −646 |
+| 候选：判臂像素 | 11,346 | — |
+| ① 开运算 | 11,338 | −8 |
+| ② 触顶连通域 | 11,338 | ±0 |
+| ③ 时间平滑 | **11,348** | **+10** ← 多数表决在补像素 |
+| ④ 保守收缩 + 腐蚀 | **10,785** | −563 |
 
-④ 的白名单交把 ③ 补进来的那 28 个像素连同边缘一起收掉，最终 mask 仍是候选的子集。
+④ 的白名单交把 ③ 补进来的那 10 个像素连同边缘一起收掉，最终 mask 仍是候选的子集。
+
+⚠ 「几分之几的任务上 ③ 在补像素」这个数**逐评估集重测、不许照抄**：v4.1 的 noveto 口径
+数出 13/16、train ep10 数出 7/16、本轮 val ep10 数出 **3/16**。走查每个任务只取一帧，
+这个比例本来就带很强的抽样噪声——它证明的是「③ 确实会补」这件定性事实，不是一个稳定指标。
 
 ## 七、已知代价（诚实清单）
 
@@ -516,7 +532,7 @@ VideoUnmaskSwap +1），其余 9 个持平或减少。这是 §3.3「③ 单独�
 3. **未见颜色一律不标**：标定集（val ep0-9）没见过的颜色在评估集出现时按「不是机械臂」
    处理。方向与宗旨一致（宁可漏标）。
 4. **触顶规则漏掉非从上方入画的臂**（沿用 v4 口径，属可接受漏标）。
-5. **③ 时间平滑单独看不单调**：整条链的单调性靠 ④ 的白名单兜住（6.5 节实测 7/16 个
+5. **③ 时间平滑单独看不单调**：整条链的单调性靠 ④ 的白名单兜住（6.5 节实测 3/16 个
    走查帧上 ③ 在补像素）。改动 ④ 时务必记得这点。
 
 ---
@@ -527,10 +543,10 @@ VideoUnmaskSwap +1），其余 9 个持平或减少。这是 §3.3「③ 单独�
 |---|---|
 | `outputs/color_model.npz` | 颜色表（16297 色，与 v4.1 逐位相同） |
 | `outputs/color_model_summary.json` | 拟合摘要（各列像素数、支撑交叠、规则代价；键名里的「否决」是历史措辞，含义未变） |
-| `outputs/holdout/` | `metrics.json`（全帧口径）。⚠ 16 张 preview 是**一次性目视复核**用的，看完即删，不长期入库 |
-| `outputs/compare_gt/` | train ep0 的 16 张两栏对比图 + `metrics.json` |
-| `outputs/color_distribution/` | 四面板 `color_distribution.png` + `stats.json` |
-| `outputs/walkthrough/` | 16 张逐阶段走查 + `walkthrough.json`（逐像素举例图已取消） |
+| `outputs/validation_val_ep10-19/` | **val ep10-19 全帧**的 `metrics.json`（唯一全量口径）。⚠ 16 张 preview 是**一次性目视复核**用的，看完即删，不长期入库 |
+| `outputs/compare_gt_val_ep10/` | **val ep10** 的 16 张两栏对比图 + `metrics.json`（16 条抽查，不是全量口径） |
+| `outputs/color_distribution_val_ep0-9/` | **val ep0-9（标定集）** 的四面板 `color_distribution.png` + `stats.json`。⚠ 这里的召回/精确率是**上界**不是实测 |
+| `outputs/walkthrough_val_ep10/` | **val ep10** 的 16 张逐阶段走查 + `walkthrough.json`（不产生指标） |
 | `reports/color_distribution_report.md` | 判读报告 |
 | `reports/generation_report.{json,md}` | 标定数据集的生成报告（数据集未重造，与 v4.1 同源） |
 | `outputs/logs/` | 五个入口的运行日志（gitignore，不入库） |

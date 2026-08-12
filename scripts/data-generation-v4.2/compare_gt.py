@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""两栏对比出图入口：预测 | ground truth，全部取 train split 的 episode_0。
+"""两栏对比出图入口：预测 | ground truth，取评估集 val split 的 episode_10。
 
 对每个任务的 episode_0（train seed，未参与标定——标定集是 val split ep0-9）逐帧跑：
 
@@ -16,9 +16,9 @@
 用法：
 
     uv run --no-sync python scripts/data-generation-v4.2/compare_gt.py \\
-      --h5 'artifacts/generated/v4seg-16env-20ep/record_dataset_*.h5' \\
+      --h5 'artifacts/generated/v4seg-16env-val20ep/record_dataset_*.h5' \\
       --model scripts/data-generation-v4.2/outputs/color_model.npz \\
-      --out scripts/data-generation-v4.2/outputs/compare_gt
+      --out scripts/data-generation-v4.2/outputs/compare_gt_val_ep10
 """
 
 from __future__ import annotations
@@ -219,8 +219,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--h5",
         nargs="+",
-        default=["artifacts/generated/v4seg-16env-20ep/record_dataset_*.h5"],
-        help="h5 路径或 glob（默认 train split 的 v4seg 数据集）",
+        default=["artifacts/generated/v4seg-16env-val20ep/record_dataset_*.h5"],
+        help="h5 路径或 glob（默认 val split 的 v4seg 数据集）",
     )
     parser.add_argument(
         "--model",
@@ -228,10 +228,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="fit_color_model.py 产出的颜色表",
     )
     parser.add_argument(
-        "--episode", type=int, default=0, help="出图用的 episode（默认 train ep0）"
+        "--episode", type=int, default=10, help="出图用的 episode（默认评估集 val ep10）"
     )
     parser.add_argument(
-        "--out", default=str(SCRIPT_DIR / "outputs" / "compare_gt"), help="产物目录"
+        "--out",
+        default=str(SCRIPT_DIR / "outputs" / "compare_gt_val_ep10"),
+        help="产物目录",
     )
     parser.add_argument("--preview-rows", type=int, default=8, help="每栏抽帧行数")
     parser.add_argument("--workers", type=int, default=8, help="并行进程数")

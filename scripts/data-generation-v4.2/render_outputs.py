@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """推理 + 验证 + 出图入口。
 
-对验证集 episode 逐帧跑「颜色表分类（查表 + 纯支撑三段式判据）→ 四条形态学规则」
+对**评估集** episode 逐帧跑「颜色表分类（查表 + 纯支撑三段式判据）→ 四条形态学规则」
 得到机械臂 mask，涂成纯红，再拿 ground truth segmentation 当尺子把结果量化。
 **GT 只出现在评分环节，不参与产出**。
 
@@ -12,9 +12,10 @@
 用法：
 
     uv run --no-sync python scripts/data-generation-v4.2/render_outputs.py \\
-      --h5 'artifacts/generated/v4seg-16env-20ep/record_dataset_*.h5' \\
+      --h5 'artifacts/generated/v4seg-16env-val20ep/record_dataset_*.h5' \\
       --model scripts/data-generation-v4.2/outputs/color_model.npz \\
-      --episodes 10-19 --out scripts/data-generation-v4.2/outputs/holdout
+      --episodes 10-19 \\
+      --out scripts/data-generation-v4.2/outputs/validation_val_ep10-19
 
 产物：
 
@@ -233,17 +234,27 @@ def enforce_no_false_object(scope: str, entries: Sequence[tuple[str, int]]) -> i
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--h5", nargs="+", required=True, help="h5 路径或 glob")
+    parser.add_argument(
+        "--h5",
+        nargs="+",
+        default=["artifacts/generated/v4seg-16env-val20ep/record_dataset_*.h5"],
+        help="h5 路径或 glob（默认 val split 的 v4seg 数据集）",
+    )
     parser.add_argument(
         "--model",
         default=str(SCRIPT_DIR / "outputs" / "color_model.npz"),
         help="fit_color_model.py 产出的颜色表",
     )
     parser.add_argument(
-        "--episodes", default="10-19", help="验证集 episode（默认后 10 个）"
+        "--episodes",
+        default="10-19",
+        # ⚠ 标定集是同一份 h5 的 ep0-9，评估集必须与之不相交，改这个值前先想清楚
+        help="评估集 episode（默认 val ep10-19；ep0-9 是颜色表的标定集，不许拿来评估）",
     )
     parser.add_argument(
-        "--out", default=str(SCRIPT_DIR / "outputs" / "holdout"), help="产物目录"
+        "--out",
+        default=str(SCRIPT_DIR / "outputs" / "validation_val_ep10-19"),
+        help="产物目录",
     )
     parser.add_argument("--preview-rows", type=int, default=8, help="preview 抽帧行数")
     parser.add_argument(
@@ -277,8 +288,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 if int(name[len("episode_") :]) in wanted:
                     jobs.append((str(path), name))
     if not jobs:
-        raise SystemExit("验证集为空：没有任何 episode 命中")
-    print(f"验证集：{len(paths)} 个 h5 × {len(jobs)} 个 episode，并行 {args.workers}")
+        raise SystemExit("评估集为空：没有任何 episode 命中")
+    print(f"评估集：{len(paths)} 个 h5 × {len(jobs)} 个 episode，并行 {args.workers}")
 
     started = time.perf_counter()
     records: list[dict[str, Any]] = []
@@ -310,7 +321,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     payload = {
         "参数": {
             "颜色表": args.model,
-            "验证集": sorted(wanted),
+            "评估集 episode": sorted(wanted),
             "判别规则": "纯支撑三段式判据：N0>0 判背景 / N1=0 且 N2>0 判臂 / 其余判混合（唯一口径，无开关）",
             "开运算次数": params.open_iterations,
             "时间窗": params.temporal_window,
@@ -356,7 +367,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     # 刚性红线：逐 episode 校验，任何一个 episode 误标物体都算击穿，退出码非 0
     return enforce_no_false_object(
-        "留出集逐 episode",
+        "评估集（val ep10-19）逐 episode",
         [
             (f"{record['task']}/{record['episode']}", record["false_object_pixels"])
             for record in records

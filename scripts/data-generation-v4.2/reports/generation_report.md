@@ -3,14 +3,14 @@
 ## 运行来源信息
 
 - 状态：generated
-- 当前 HEAD：468b9d9392c65fd2662eeae338f8814e990eeff4
+- 当前 HEAD：9e42f3a57e002d978b029edf5b7798567016a0e3
 - uv.lock SHA-256：983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03
-- 报告时间（UTC）：2026-08-12T18:24:07.543859+00:00
+- 报告时间（UTC）：2026-08-12T23:19:32.158506+00:00
 - 报告模式：generation
 
 ## 调试用环境快照
 
-- 快照时间（UTC）：2026-08-12T18:37:38.770326+00:00
+- 快照时间（UTC）：2026-08-12T23:39:48.323213+00:00
 - 主机名：sled-vail
 - 操作系统：Linux 6.8.0-1018-nvidia-lowlatency
 - 内核：6.8.0-1018-nvidia-lowlatency
@@ -30,8 +30,8 @@
 | 总内存 | 405257068544 bytes (377.43 GiB) |
 | 仓库所在文件系统 | /data/hongzefu/robomme_benchmark_MotionJEPA |
 | 文件系统容量 | 15240752955392 bytes (13.86 TiB) |
-| 文件系统已用 | 10390832529408 bytes (9.45 TiB) |
-| 文件系统可用 | 4081754148864 bytes (3.71 TiB) |
+| 文件系统已用 | 10584132300800 bytes (9.63 TiB) |
+| 文件系统可用 | 3888454377472 bytes (3.54 TiB) |
 - 完整的 lscpu --json 原始字段见 JSON 报告的 debug_environment.cpu.lscpu.raw。
 
 ### GPU（nvidia-smi）
@@ -56,13 +56,13 @@
 | 0 | Dynamic | memory_used_mib | 1017 |
 | 0 | Dynamic | memory_free_mib | 44449 |
 | 0 | Static | power_limit_w | 300.00 |
-| 0 | Dynamic | power_draw_w | 83.97 |
-| 0 | Dynamic | temperature_c | 45 |
+| 0 | Dynamic | power_draw_w | 22.51 |
+| 0 | Dynamic | temperature_c | 29 |
 | 0 | Dynamic | utilization_gpu_percent | 0 |
 | 0 | Dynamic | utilization_memory_percent | 0 |
 | 0 | Dynamic | pstate | P2 |
-| 0 | Dynamic | graphics_clock_mhz | 2715 |
-| 0 | Dynamic | memory_clock_mhz | 9501 |
+| 0 | Dynamic | graphics_clock_mhz | 210 |
+| 0 | Dynamic | memory_clock_mhz | 405 |
 | 0 | Static | max_graphics_clock_mhz | 3105 |
 | 0 | Static | max_memory_clock_mhz | 10001 |
 | 0 | Dynamic | pcie_link_gen_current | 4 |
@@ -86,16 +86,16 @@
 | 1 | Dynamic | memory_used_mib | 6 |
 | 1 | Dynamic | memory_free_mib | 45461 |
 | 1 | Static | power_limit_w | 300.00 |
-| 1 | Dynamic | power_draw_w | 70.44 |
-| 1 | Dynamic | temperature_c | 46 |
+| 1 | Dynamic | power_draw_w | 28.19 |
+| 1 | Dynamic | temperature_c | 32 |
 | 1 | Dynamic | utilization_gpu_percent | 0 |
 | 1 | Dynamic | utilization_memory_percent | 0 |
-| 1 | Dynamic | pstate | P2 |
-| 1 | Dynamic | graphics_clock_mhz | 2550 |
-| 1 | Dynamic | memory_clock_mhz | 9501 |
+| 1 | Dynamic | pstate | P5 |
+| 1 | Dynamic | graphics_clock_mhz | 210 |
+| 1 | Dynamic | memory_clock_mhz | 405 |
 | 1 | Static | max_graphics_clock_mhz | 3105 |
 | 1 | Static | max_memory_clock_mhz | 10001 |
-| 1 | Dynamic | pcie_link_gen_current | 4 |
+| 1 | Dynamic | pcie_link_gen_current | 2 |
 | 1 | Static | pcie_link_gen_max | 4 |
 | 1 | Dynamic | pcie_link_width_current | 16 |
 | 1 | Static | pcie_link_width_max | 16 |
@@ -110,8 +110,8 @@
 | Python 实现 | CPython |
 | Python 完整版本 | 3.11.14 (main, Feb  3 2026, 22:51:56) [Clang 21.1.4 ] |
 | Python ABI / cache tag | cpython-311-x86_64-linux-gnu / cpython-311 |
-| Python 可执行文件 | /data/hongzefu/robomme_benchmark_MotionJEPA/.venv/bin/python3 |
-| venv / prefix | /data/hongzefu/robomme_benchmark_MotionJEPA/.venv / /data/hongzefu/robomme_benchmark_MotionJEPA/.venv |
+| Python 可执行文件 | /data/hongzefu/robomme_benchmark_MotionJEPA/.venv/bin/python |
+| venv / prefix | Not set / /data/hongzefu/robomme_benchmark_MotionJEPA/.venv |
 | base prefix | /home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu |
 | uv | uv 0.10.2（/home/hongzefu/.local/bin/uv） |
 | git | git version 2.43.0（/usr/bin/git） |
@@ -166,9 +166,9 @@
 ## 运行参数
 
     {
-      "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v4seg-16env-val10ep",
+      "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/artifacts/generated/v4seg-16env-val20ep",
       "env": "all",
-      "episodes": 10,
+      "episodes": 20,
       "workers": 16,
       "requested_gpus": "0,1",
       "split": "val",
@@ -214,7 +214,7 @@
 
 ## 生成与契约校验
 
-- 成功的 worker 数：160
+- 成功的 worker 数：320
 - 失败的 worker 数：0
 - metadata 错误数：0
 - 生成侧 HDF5 错误数：0
@@ -248,5 +248,5 @@
 
 ## 报告文件
 
-- JSON：/data/hongzefu/robomme_benchmark_MotionJEPA/scripts/data-generation-v4.1/reports/generation_report.json
-- Markdown：/data/hongzefu/robomme_benchmark_MotionJEPA/scripts/data-generation-v4.1/reports/generation_report.md
+- JSON：/data/hongzefu/robomme_benchmark_MotionJEPA/scripts/data-generation-v4.2/reports/generation_report.json
+- Markdown：/data/hongzefu/robomme_benchmark_MotionJEPA/scripts/data-generation-v4.2/reports/generation_report.md

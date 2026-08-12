@@ -22,7 +22,7 @@
    精确率上界 = 1.000」是恒等式而不是经验数字；本入口照样把它算出来打印，是把恒等式
    当自校验用——不为 0 就说明表或算式坏了。
 
-产物（`--out` 目录，默认 `outputs/color_distribution/`）：
+产物（`--out` 目录，默认 `outputs/color_distribution_val_ep0-9/`）：
 
 - `color_distribution.png`：四面板大图（主图 / 亮度剖面 / 支撑集分解 / 共享色 TOP20）；
 - `stats.json`：上面全部数字，供 report 引用。
@@ -31,7 +31,7 @@
 
     uv run --no-sync python scripts/data-generation-v4.2/color_distribution.py \\
       --model scripts/data-generation-v4.2/outputs/color_model.npz \\
-      --out scripts/data-generation-v4.2/outputs/color_distribution
+      --out scripts/data-generation-v4.2/outputs/color_distribution_val_ep0-9
 """
 
 from __future__ import annotations
@@ -503,7 +503,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument(
         "--out",
-        default=str(SCRIPT_DIR / "outputs" / "color_distribution"),
+        default=str(SCRIPT_DIR / "outputs" / "color_distribution_val_ep0-9"),
         help="产物目录",
     )
     args = parser.parse_args(argv)

@@ -5,10 +5,11 @@
 那是拿 GT 当尺子量结果，不参与产出）。三列 =（纯背景，背景∪物体混合，机械臂），
 背景像素重叠计入前两列，物体在混合列中的占比（类先验）对模型不可见。
 
-用法（标定集 = benchmark val split 的 ep 0-9，与 train split 零重叠）：
+用法（标定集 = benchmark val split 的 ep 0-9；评估集是同一份 h5 的 ep10-19，
+两者 episode 不相交、seed 不同，零重叠）：
 
     uv run --no-sync python scripts/data-generation-v4.2/fit_color_model.py \\
-      --h5 'artifacts/generated/v4seg-16env-val10ep/record_dataset_*.h5' \\
+      --h5 'artifacts/generated/v4seg-16env-val20ep/record_dataset_*.h5' \\
       --episodes 0-9 --out scripts/data-generation-v4.2/outputs/color_model.npz
 
 `--episodes` 只接受标定集，评估用的 episode 必须留出来不参与拟合，否则后面的数字
