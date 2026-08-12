@@ -17,12 +17,10 @@
       --episodes 10-19 \\
       --out scripts/data-generation-v4.2/outputs/validation_val_ep10-19
 
-产物：
-
-- `<Task>_ep<k>_preview.png`：均匀抽帧的三联网格——原图 | 红遮罩 | 误差图。
-  误差图配色：**白 = 标对的机械臂、红 = 误标到物体（必须为零）、黄 = 误标到背景、
-  蓝 = 漏标的机械臂**（漏标按口径是可接受代价，所以给冷色，一眼与红区分）。
-- `metrics.json`：逐任务 + 全局的像素级统计，全帧口径（不是抽样帧）。
+产物只有一个 `metrics.json`：逐 episode + 逐任务 + 全局的像素级统计，**全帧口径**
+（不是抽样帧）。用户 2026-08-12 决定本入口**不再出任何图**——它的职责就是产出唯一那份
+全量实测数据；要看图去 `compare_gt_val_ep10/`（两栏抽查）或 `walkthrough_val_ep10/`
+（逐阶段过程），那两个入口本来就是干这个的，这里再出一份抽帧图纯属重复。
 """
 
 from __future__ import annotations
@@ -35,7 +33,6 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Sequence
 
-import cv2
 import h5py
 import numpy as np
 
@@ -44,7 +41,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from arm_mask_v4 import MaskParams, apply_red_mask, arm_masks_for_episode  # noqa: E402
+from arm_mask_v4 import MaskParams, arm_masks_for_episode  # noqa: E402
 from color_model import (  # noqa: E402
     CLASS_ARM,
     CLASS_BACKGROUND,
@@ -60,13 +57,16 @@ from color_model import (  # noqa: E402
 from fit_color_model import parse_episodes, resolve_h5  # noqa: E402
 
 
-# 误差图配色（BGR 顺序留给 cv2 写文件时再转，这里统一按 RGB 存）
+# 误差图配色（按 RGB 存；本模块只定义不落盘，落盘在 compare_gt / walkthrough 两处）
 COLOR_TRUE_ARM = (255, 255, 255)  # 标对的机械臂
 COLOR_FALSE_OBJECT = (255, 0, 0)  # 误标到物体：核心红线
 COLOR_FALSE_BACKGROUND = (255, 255, 0)  # 误标到背景：可容忍的多删
 COLOR_MISSED_ARM = (0, 0, 255)  # 漏标的机械臂：按口径可接受
 
 
+# ⚠ 下面两个函数在本模块内部**已无调用点**（本入口不再出图），但它们是
+# `compare_gt.py` 与 `segmentation_walkthrough.py` 的共享件——误差图与三联网格的口径必须
+# 只有一处定义，否则三个入口的配色/拼法会各自漂移。别当死代码删掉。
 def _error_image(mask: np.ndarray, gt: np.ndarray) -> np.ndarray:
     image = np.zeros((*mask.shape, 3), np.uint8)
     image[mask & (gt == CLASS_ARM)] = COLOR_TRUE_ARM
@@ -80,21 +80,13 @@ def _grid(rows: Sequence[Sequence[np.ndarray]]) -> np.ndarray:
     return np.concatenate([np.concatenate(row, axis=1) for row in rows], axis=0)
 
 
-def _write_png(path: Path, image: np.ndarray) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if not cv2.imwrite(str(path), image[:, :, ::-1]):
-        raise RuntimeError(f"写图失败：{path}")
-
-
 def process_episode(
     h5_path: str,
     episode_name: str,
     model_path: str,
-    out_dir: str,
     params: MaskParams,
-    preview_rows: int,
 ) -> dict[str, Any]:
-    """跑完一个 episode：全帧算指标，抽帧出 preview。"""
+    """跑完一个 episode，全帧算指标。不出图。"""
     model = ColorModel.load(model_path)
     task = Path(h5_path).stem.replace("record_dataset_", "")
 
@@ -148,24 +140,6 @@ def process_episode(
             stats["frames_touching_object"] += 1 if false_object else 0
             stats["uncovered_gt_pixels"] += int(uncovered_map.sum())
             stats["false_uncovered_pixels"] += int((mask & uncovered_map).sum())
-
-        if preview_rows > 0 and frames:
-            picks = np.unique(
-                np.linspace(0, len(frames) - 1, preview_rows).round().astype(int)
-            )
-            rows = []
-            for index in picks:
-                rgb = frames[index][1]
-                rows.append(
-                    [
-                        rgb,
-                        apply_red_mask(rgb, masks[index]),
-                        _error_image(masks[index], truth[index]),
-                    ]
-                )
-            _write_png(
-                Path(out_dir) / f"{task}_{episode_name}_preview.png", _grid(rows)
-            )
     return stats
 
 
@@ -256,12 +230,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=str(SCRIPT_DIR / "outputs" / "validation_val_ep10-19"),
         help="产物目录",
     )
-    parser.add_argument("--preview-rows", type=int, default=8, help="preview 抽帧行数")
-    parser.add_argument(
-        "--preview-episodes",
-        default="10",
-        help="只给这些 episode 出 preview 图（指标始终按全部验证 episode 算）；空串表示全出",
-    )
     parser.add_argument("--workers", type=int, default=8, help="并行进程数")
     parser.add_argument("--open-iterations", type=int, default=1)
     parser.add_argument("--temporal-window", type=int, default=3)
@@ -278,9 +246,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    preview_only = (
-        set(parse_episodes(args.preview_episodes)) if args.preview_episodes else None
-    )
     jobs: list[tuple[str, str]] = []
     for path in paths:
         with h5py.File(str(path), "r") as handle:
@@ -296,16 +261,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     with ProcessPoolExecutor(max_workers=args.workers) as executor:
         futures = {
             executor.submit(
-                process_episode,
-                h5_path,
-                episode_name,
-                args.model,
-                str(out_dir),
-                params,
-                args.preview_rows
-                if preview_only is None
-                or int(episode_name[len("episode_") :]) in preview_only
-                else 0,
+                process_episode, h5_path, episode_name, args.model, params
             ): (h5_path, episode_name)
             for h5_path, episode_name in jobs
         }

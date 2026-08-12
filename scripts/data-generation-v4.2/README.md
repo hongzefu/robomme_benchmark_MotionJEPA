@@ -356,7 +356,7 @@ v4.1 留出集实测抓到过反例：③ 的多数表决把 InsertPeg 的 **292
 | `color_model.py` | 两分布 + 臂的颜色表拟合 / 推理（**唯一碰 GT 的模块**），含判别规则与它的来历 |
 | `arm_mask_v4.py` | 四条形态学规则 + 涂红（与 v4 / v4.1 运算逐字相同） |
 | `fit_color_model.py` | 拟合入口 |
-| `render_outputs.py` | 评估集推理 + 对 GT 验证 + preview 出图，**刚性闸门 `enforce_no_false_object` 的定义处** |
+| `render_outputs.py` | 评估集推理 + 对 GT 验证，产出唯一那份全量 `metrics.json`（**不出图**），**刚性闸门 `enforce_no_false_object` 的定义处**；`_error_image` / `_grid` 也在这里定义，供另两个入口共享 |
 | `compare_gt.py` | **两栏对比出图入口**（预测 / GT，评估集 val ep10），复用同一个闸门 |
 | `color_distribution.py` | **颜色判决分布出图入口**（一张图 + `stats.json`；不读 h5，只读颜色表） |
 | `segmentation_walkthrough.py` | **分割过程走查出图入口**（真实帧逐阶段拆解 + 底部规则说明带） |
@@ -385,7 +385,7 @@ uv run --no-sync python scripts/data-generation-v4.2/fit_color_model.py \
   --h5 'artifacts/generated/v4seg-16env-val20ep/record_dataset_*.h5' \
   --episodes 0-9 --out scripts/data-generation-v4.2/outputs/color_model.npz
 
-# 3. 评估集全帧指标 + preview（val ep10-19，160 episode，含刚性闸门）
+# 3. 评估集全帧指标（val ep10-19，160 episode，含刚性闸门；只出 metrics.json，不出图）
 #    下面四条的 --h5 / --episode(s) / --out 都已是默认值，日常直接裸跑即可
 uv run --no-sync python scripts/data-generation-v4.2/render_outputs.py --workers 16
 
@@ -449,7 +449,7 @@ uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
 | 产物 | 与改规则前的 diff |
 |---|---|
 | `metrics.json`（当时 160 ep / 77,272 帧） | **只有 `参数.判别规则` 字符串与 `耗时秒` 两行**，全部指标逐位相同 |
-| 16 张 preview | **逐字节相同**（git 认为未修改） |
+| 当时随附的 16 张 preview | **逐字节相同**（git 认为未修改）。⚠ 该入口此后已改为不出图 |
 | 两栏对比的 `metrics.json` | 同上，只有规则字符串与耗时 |
 | `stats.json` | **逐字节相同** |
 | `walkthrough.json` | 去掉已取消的 `逐像素举例` 字段后，逐任务数字逐位相同 |
@@ -543,7 +543,7 @@ SwingXtimes +3），其余 13 个持平或减少。这是 §3.3「③ 单独看�
 |---|---|
 | `outputs/color_model.npz` | 颜色表（16297 色，与 v4.1 逐位相同） |
 | `outputs/color_model_summary.json` | 拟合摘要（各列像素数、支撑交叠、规则代价；键名里的「否决」是历史措辞，含义未变） |
-| `outputs/validation_val_ep10-19/` | **val ep10-19 全帧**的 `metrics.json`（唯一全量口径）。⚠ 16 张 preview 是**一次性目视复核**用的，看完即删，不长期入库 |
+| `outputs/validation_val_ep10-19/` | **val ep10-19 全帧**的 `metrics.json`（唯一全量口径）。**只有这一个文件**——用户 2026-08-12 决定本入口不再出任何图，要看图去另两个目录 |
 | `outputs/compare_gt_val_ep10/` | **val ep10** 的 16 张两栏对比图 + `metrics.json`（16 条抽查，不是全量口径） |
 | `outputs/color_distribution_val_ep0-9/` | **val ep0-9（标定集）** 的四面板 `color_distribution.png` + `stats.json`。⚠ 这里的召回/精确率是**上界**不是实测 |
 | `outputs/walkthrough_val_ep10/` | **val ep10** 的 16 张逐阶段走查 + `walkthrough.json`（不产生指标） |

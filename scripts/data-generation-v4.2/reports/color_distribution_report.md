@@ -35,8 +35,8 @@ ep 0–9，160 episode 全帧；与 v4.1 的表逐位相同，已对拍）。
    下重新测过，不沿用旧数（该条经两次重测，最新结果见第六节：**3/16**）。
 2. 判别规则已从「归一化似然 argmax + 混合支撑否决」改写成**纯支撑三段式判据**
    （实测三段判决逐位等价，见 README 2.5）。**改写后重跑四个入口，全部指标数字一个都
-   没变**——`metrics.json` 除规则字符串与耗时外逐位相同、16 张 preview 与 `stats.json`
-   逐字节相同。
+   没变**——`metrics.json` 除规则字符串与耗时外逐位相同、当时随附的 16 张 preview 与
+   `stats.json` 逐字节相同（该入口此后已改为只出 `metrics.json`、不出图）。
 3. **评估集已从 train split 搬到 val split**（用户 2026-08-12 决定）：标定 = val ep0-9、
    评估 = val ep10-19（同一份数据集 `v4seg-16env-val20ep` 的两段不相交 episode）。
    本报告第五、六节的实测数字都是**在新的 val 评估集上重测的**，与旧的 train ep10-19
@@ -259,7 +259,8 @@ uv run --no-sync python -m pytest tests/lightweight/test_color_distribution_v4_2
 6. **`stats.json` 里 `否决代价` 这个键名是历史措辞**：规则改写成纯支撑三段式后已经没有
    独立的「否决」步骤，但这一项的口径（臂∩混合共享色）与数值一个字节都没变，键名保留
    以免与已落盘的产物脱节。
-7. **`validation_val_ep10-19/` 下的 16 张 preview 是一次性目视复核用的**，看完即删、
-   不长期入库；`metrics.json` 保留（它是全量指标与刚性红线闸门判据的唯一出处）。
+7. **`validation_val_ep10-19/` 下只有 `metrics.json` 一个文件**（用户 2026-08-12 决定：
+   该入口不再出图）。它是全量指标与刚性红线闸门判据的唯一出处；要看图去
+   `compare_gt_val_ep10/`（16 条抽查两栏图）或 `walkthrough_val_ep10/`（逐阶段过程图）。
 8. **产物目录名自带口径**（用户 2026-08-12 决定）：目录名里的 `val ep10-19` / `val ep10` /
    `val ep0-9` 就是这批数字算在哪的权威标注，`ls outputs/` 一眼可见，不用翻文档。
