@@ -20,7 +20,7 @@ ep 0–9，160 episode 全帧；与 v4.1 的表逐位相同，已对拍）。
 | 入口 | 产物 | 回答的问题 |
 |---|---|---|
 | `color_distribution.py` | `outputs/color_distribution_val_ep0-9/` | 颜色表把颜色空间切成了什么样？规则挡下了哪些颜色、代价多大？ |
-| `segmentation_walkthrough.py` | `outputs/walkthrough_val_ep10/` | 拿一张真实帧，它是**一步一步**怎么被分出来的？ |
+| `segmentation_walkthrough.py` | `outputs/walkthrough_val_ep0-5/` | 拿真实帧，它是**一步一步**怎么被分出来的？（现为整段视频，见第六节的改版注记） |
 
 两个入口都**不碰 GT**（GT 只在走查图的「参照带」里当尺子），也都不改动既有链路——
 `color_distribution.decide` 与 `segmentation_walkthrough.stagewise_masks` 分别与
@@ -167,9 +167,14 @@ ep 0–9，160 episode 全帧；与 v4.1 的表逐位相同，已对拍）。
 
 ## 六、分割过程逐格走查
 
-每个任务一张（16 张，`outputs/walkthrough_val_ep10/<Task>_walkthrough.png`），取评估集
-`episode_10`，帧号按「优先取误标物体最多的一帧；整段无误标则取 GT 臂像素最多的一帧」
-——本轮 16 个任务的误标物体全为 0，因此全部走后一支。
+⚠ **本节的图是改版前的产物，原样保留。** 该入口此后（用户 2026-08-12 决定）已改为
+**出视频**：`outputs/walkthrough_val_ep0-5/<Task>_ep<N>_walkthrough.mp4`，16 任务 ×
+ep0-5 = 96 段，整段 episode 逐帧渲染同一套版面（版面一格不减），标题栏另印该 episode 的
+metadata 难度。下面这张单帧 PNG 只是那套版面的一帧样例，读法完全一致。
+
+改版前是每个任务一张（16 张，`outputs/walkthrough_val_ep10/<Task>_walkthrough.png`），
+取评估集 `episode_10`，帧号按「优先取误标物体最多的一帧；整段无误标则取 GT 臂像素最多
+的一帧」——本轮 16 个任务的误标物体全为 0，因此全部走后一支。
 
 ![ButtonUnmask 走查](../outputs/walkthrough_val_ep10/ButtonUnmask_walkthrough.png)
 

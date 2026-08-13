@@ -95,7 +95,7 @@
    区间，所以拿 ep10-19 只能连 ep0-19 一起生成；ep0-9 的 seed 固定，与旧的
    `v4seg-16env-val10ep` 逐位相同（已对拍），因此**颜色表不必重拟合**。
 6. **产物目录名自带口径**：`validation_val_ep10-19` / `compare_gt_val_ep10` /
-   `walkthrough_val_ep10` / `color_distribution_val_ep0-9`——`ls outputs/` 一眼看出每个
+   `walkthrough_val_ep0-5` / `color_distribution_val_ep0-9`——`ls outputs/` 一眼看出每个
    数字算在哪批 episode 上，不用翻文档（用户 2026-08-12 决定：「所有的产物文件夹都写上
    at test/val ep几到几」）。
 
@@ -323,9 +323,10 @@ v4.1 留出集实测抓到过反例：③ 的多数表决把 InsertPeg 的 **292
 - **①②④ 逐条单调**：① 的结果含于候选，② 的结果含于 ① 的结果，④ 的结果含于它自己的输入；
 - **③ 单独看不单调**，是 ④ 的白名单把它兜回来的；
 - 因此「每一条规则都只会让标定区域变小或持平」这句话**对整条链成立、对 ①②④ 成立、
-  但对 ③ 不成立**。走查图 `<Task>_walkthrough.png` 每格脚注的**带符号**增量把这件事画了
-  出来（③ 那格出现 `+n` 就是它在补像素），`walkthrough.json` 里的 `该帧时间平滑增量`
-  字段是同一件事的机读版本。
+  但对 ③ 不成立**。走查视频 `<Task>_ep<N>_walkthrough.mp4` 每格脚注的**带符号**增量把
+  这件事画了出来（③ 那格出现 `+n` 就是它在补像素），`walkthrough.json` 里的
+  `时间平滑补像素帧数`（整段口径）与 `该帧时间平滑增量`（代表帧口径）是同一件事的
+  机读版本。
 
 ### 3.4 相位切段
 
@@ -359,7 +360,7 @@ v4.1 留出集实测抓到过反例：③ 的多数表决把 InsertPeg 的 **292
 | `render_outputs.py` | 评估集推理 + 对 GT 验证，产出唯一那份全量 `metrics.json`（**不出图**），**刚性闸门 `enforce_no_false_object` 的定义处**；`_error_image` / `_grid` 也在这里定义，供另两个入口共享 |
 | `compare_gt.py` | **两栏对比出图入口**（预测 / GT，评估集 val ep10），复用同一个闸门 |
 | `color_distribution.py` | **颜色判决分布出图入口**（一张图 + `stats.json`；不读 h5，只读颜色表） |
-| `segmentation_walkthrough.py` | **分割过程走查出图入口**（真实帧逐阶段拆解 + 底部规则说明带） |
+| `segmentation_walkthrough.py` | **分割过程走查出视频入口**（真实帧逐阶段拆解 + 底部规则说明带；整段 episode 逐帧成 mp4，标题栏印 metadata 难度） |
 | `reports/color_distribution_report.md` | 上面两个入口的**判读报告** |
 | `../../tests/lightweight/test_arm_mask_v4_2.py` | GT 映射、重叠计数、判臂等价于纯支撑判据、四条规则的逻辑测试 |
 | `../../tests/lightweight/test_color_distribution_v4_2.py` | 出图链路的复算对拍与闸门测试 |
@@ -395,7 +396,7 @@ uv run --no-sync python scripts/data-generation-v4.2/compare_gt.py --workers 16
 # 5. 颜色判决分布出图（四面板一张图 + stats.json；只读颜色表，不碰 h5）
 uv run --no-sync python scripts/data-generation-v4.2/color_distribution.py
 
-# 6. 分割过程走查出图（16 任务 × 评估集 ep10，每任务一张）
+# 6. 分割过程走查出视频（16 任务 × ep0-5 = 96 段 mp4，每任务每 episode 一段）
 uv run --no-sync python scripts/data-generation-v4.2/segmentation_walkthrough.py --workers 16
 
 # 7. 单元测试（v4 / v4.1 / v4.2 三套一起跑，互不污染）
@@ -452,7 +453,7 @@ uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
 | 当时随附的 16 张 preview | **逐字节相同**（git 认为未修改）。⚠ 该入口此后已改为不出图 |
 | 两栏对比的 `metrics.json` | 同上，只有规则字符串与耗时 |
 | `stats.json` | **逐字节相同** |
-| `walkthrough.json` | 去掉已取消的 `逐像素举例` 字段后，逐任务数字逐位相同 |
+| `walkthrough.json` | 去掉已取消的 `逐像素举例` 字段后，逐任务数字逐位相同。⚠ 该入口此后已改为出视频（ep0-5，每任务每 episode 一段 mp4），json 新增难度与整段统计字段 |
 
 两栏对比图与走查图确有变化，但只因为图上印的**文案**改了（列标题改口径名、走查图新增
 底部规则说明带），mask 本身没动——由上表的 metrics 佐证。
@@ -546,7 +547,7 @@ SwingXtimes +3），其余 13 个持平或减少。这是 §3.3「③ 单独看�
 | `outputs/validation_val_ep10-19/` | **val ep10-19 全帧**的 `metrics.json`（唯一全量口径）。**只有这一个文件**——用户 2026-08-12 决定本入口不再出任何图，要看图去另两个目录 |
 | `outputs/compare_gt_val_ep10/` | **val ep10** 的 16 张两栏对比图 + `metrics.json`（16 条抽查，不是全量口径） |
 | `outputs/color_distribution_val_ep0-9/` | **val ep0-9（标定集）** 的四面板 `color_distribution.png` + `stats.json`。⚠ 这里的召回/精确率是**上界**不是实测 |
-| `outputs/walkthrough_val_ep10/` | **val ep10** 的 16 张逐阶段走查 + `walkthrough.json`（不产生指标） |
+| `outputs/walkthrough_val_ep0-5/` | **val ep0-5** 的 96 段逐阶段走查视频（16 任务 × 6 episode，标题栏含 metadata 难度）+ `walkthrough.json`（不产生指标） |
 | `reports/color_distribution_report.md` | 判读报告 |
 | `reports/generation_report.{json,md}` | 标定数据集的生成报告（数据集未重造，与 v4.1 同源） |
 | `outputs/logs/` | 五个入口的运行日志（gitignore，不入库） |
