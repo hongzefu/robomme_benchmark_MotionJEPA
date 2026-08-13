@@ -14,7 +14,7 @@ ep 0–9，160 episode 全帧；与 v4.1 的表逐位相同，已对拍）。
 
 ## 一、这份报告回答什么
 
-`compare_gt.py` 与 `render_outputs.py` 给的是**最终指标**，看不出中间发生了什么。
+`render_outputs.py` 给的是**最终指标**，看不出中间发生了什么。
 另外两个入口把过程拆开画出来：
 
 | 入口 | 产物 | 回答的问题 |
@@ -266,6 +266,6 @@ uv run --no-sync python -m pytest tests/lightweight/test_color_distribution_v4_2
    以免与已落盘的产物脱节。
 7. **`validation_val_ep10-19/` 下只有 `metrics.json` 一个文件**（用户 2026-08-12 决定：
    该入口不再出图）。它是全量指标与刚性红线闸门判据的唯一出处；要看图去
-   `compare_gt_val_ep10/`（16 条抽查两栏图）或 `walkthrough_val_ep10/`（逐阶段过程图）。
+   `walkthrough_val_ep0-5/`（逐阶段走查视频）。
 8. **产物目录名自带口径**（用户 2026-08-12 决定）：目录名里的 `val ep10-19` / `val ep10` /
    `val ep0-9` 就是这批数字算在哪的权威标注，`ls outputs/` 一眼可见，不用翻文档。

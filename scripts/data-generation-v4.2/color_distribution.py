@@ -62,7 +62,7 @@ from color_model import (  # noqa: E402
     ColorModel,
 )
 
-# 与 compare_gt.py 同一套深色版式，出图风格保持一致
+# 与走查视频同一套深色版式，出图风格保持一致
 FONT_PATH = "/usr/share/fonts/opentype/noto/NotoSerifCJK-Bold.ttc"
 BG = "#18181c"
 FG = "#f0f0f0"

@@ -19,8 +19,8 @@
 
 产物只有一个 `metrics.json`：逐 episode + 逐任务 + 全局的像素级统计，**全帧口径**
 （不是抽样帧）。用户 2026-08-12 决定本入口**不再出任何图**——它的职责就是产出唯一那份
-全量实测数据；要看图去 `compare_gt_val_ep10/`（两栏抽查）或 `walkthrough_val_ep10/`
-（逐阶段过程），那两个入口本来就是干这个的，这里再出一份抽帧图纯属重复。
+全量实测数据；要看图去 `walkthrough_val_ep0-5/`（逐阶段走查视频），那个入口本来就是
+干这个的，这里再出一份抽帧图纯属重复。
 """
 
 from __future__ import annotations
@@ -57,7 +57,7 @@ from color_model import (  # noqa: E402
 from fit_color_model import parse_episodes, resolve_h5  # noqa: E402
 
 
-# 误差图配色（按 RGB 存；本模块只定义不落盘，落盘在 compare_gt / walkthrough 两处）
+# 误差图配色（按 RGB 存；本模块只定义不落盘，落盘在 walkthrough）
 COLOR_TRUE_ARM = (255, 255, 255)  # 标对的机械臂
 COLOR_FALSE_OBJECT = (255, 0, 0)  # 误标到物体：核心红线
 COLOR_FALSE_BACKGROUND = (255, 255, 0)  # 误标到背景：可容忍的多删
@@ -65,8 +65,8 @@ COLOR_MISSED_ARM = (0, 0, 255)  # 漏标的机械臂：按口径可接受
 
 
 # ⚠ 下面两个函数在本模块内部**已无调用点**（本入口不再出图），但它们是
-# `compare_gt.py` 与 `segmentation_walkthrough.py` 的共享件——误差图与三联网格的口径必须
-# 只有一处定义，否则三个入口的配色/拼法会各自漂移。别当死代码删掉。
+# `segmentation_walkthrough.py` 的共享件——误差图与三联网格的口径必须只有一处定义，
+# 否则各入口的配色/拼法会各自漂移。别当死代码删掉。
 def _error_image(mask: np.ndarray, gt: np.ndarray) -> np.ndarray:
     image = np.zeros((*mask.shape, 3), np.uint8)
     image[mask & (gt == CLASS_ARM)] = COLOR_TRUE_ARM
