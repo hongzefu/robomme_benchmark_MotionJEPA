@@ -2,7 +2,9 @@
 
 本目录做一件事：**把 RoboMME `front_rgb` 里的机械臂标出来、涂成纯红 (255,0,0)**。
 方法是先在标定集上建一张先验颜色表，再用它逐像素判别，最后过四条形态学规则收缩成
-最终 mask。
+最终 mask。在此之上另有一个**网格 mask 派生口径**（像素 mask → Wan VAE latent 对齐
+的 32×32 格级 mask，见「四、网格 mask」）——⚠ 下面这条刚性原则**只约束像素口径，
+不适用于网格口径**，理由见第四节。
 
 **刚性原则（第一判据，凌驾于其它一切指标）：不得把物体判错成 robot arm，「判错」以
 ground truth 为准。** 精确说法：整段 episode 每一帧被标成臂的像素，逐个查它在 GT
@@ -137,10 +139,22 @@ uv run --no-sync python scripts/data-generation-v4.2/color_distribution.py
 # 5. 分割过程走查出视频（16 任务 × ep0-5 = 96 段 mp4）
 uv run --no-sync python scripts/data-generation-v4.2/segmentation_walkthrough.py --workers 16
 
-# 6. 单元测试（v4 / v4.1 / v4.2 三套一起跑，互不污染）
+# 6. 网格 mask：评估集全量量化（全 64 档进 JSON + 五项锚点对拍，实测 41.6 秒）
+uv run --no-sync python scripts/data-generation-v4.2/grid_sweep.py \
+  --episodes 10-19 --no-preview --workers 16 \
+  --out scripts/data-generation-v4.2/outputs/json/grid_sweep_val_ep10-19.json
+
+# 7. 网格 mask：标定集预览出图（目视挑阈值用；数字不作结论，见四）
+uv run --no-sync python scripts/data-generation-v4.2/grid_sweep.py \
+  --episodes 0-5 --workers 16 --candidate-k 1,2,4,8,13,20,26,32 \
+  --preview-dir scripts/data-generation-v4.2/outputs/grid_sweep_val_ep0-5 \
+  --out scripts/data-generation-v4.2/outputs/json/grid_sweep_val_ep0-5.json
+
+# 8. 单元测试（v4 / v4.1 / v4.2 / 网格 mask 四套一起跑，互不污染）
 uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
   tests/lightweight/test_arm_mask_v4_1.py tests/lightweight/test_color_distribution.py \
-  tests/lightweight/test_arm_mask_v4_2.py tests/lightweight/test_color_distribution_v4_2.py -q
+  tests/lightweight/test_arm_mask_v4_2.py tests/lightweight/test_color_distribution_v4_2.py \
+  tests/lightweight/test_grid_mask_v4_2.py -q
 ```
 
 ### 2.4 文件结构
@@ -155,8 +169,11 @@ uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
 | `render_outputs.py` | 全量指标 + 刚性闸门 `enforce_no_false_object` 定义处；`_error_image` / `_grid` 共享件也在这里 |
 | `color_distribution.py` | 颜色判决分布出图入口 |
 | `segmentation_walkthrough.py` | 逐阶段走查出视频入口 |
+| `grid_mask.py` | 网格 mask 纯函数模块（像素 mask → 32×32 格级 mask，只依赖 numpy） |
+| `grid_sweep.py` | 网格阈值扫描入口：全 64 档指标 JSON + 三套预览图（见四） |
 | `../../tests/lightweight/test_arm_mask_v4_2.py` | GT 映射、重叠计数、判臂等价于纯支撑判据、四条规则的逻辑测试 |
 | `../../tests/lightweight/test_color_distribution_v4_2.py` | 出图链路的复算对拍与闸门测试 |
+| `../../tests/lightweight/test_grid_mask_v4_2.py` | 网格对齐、阈值边界、超集/单调两性质、累计表后缀和==直算的逻辑测试 |
 
 ⚠ `color_model` / `arm_mask_v4` 两个模块名在 v4、v4.1、v4.2 三个目录里同名，测试文件
 必须用各自的 `sys.modules` 隔离导入器，否则按导入顺序会静默拿到错的实现。
@@ -226,7 +243,34 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
 4. 触顶规则漏掉非从上方入画的臂（沿用 v4 口径，可接受漏标）。
 5. ③时间平滑单独看不单调，整条链的单调性靠④的白名单兜住；改动④时务必记得。
 
-### 3.6 归档文件清单
+### 3.6 网格 mask 逐阈值实测（评估集 val ep10-19，160 episode / 78,764 帧）
+
+`grid_sweep.py` 实测 41.6 秒（16 进程），启动即做五项锚点对拍（帧数 / 像素 mask
+像素 / GT 三类像素）**逐位等于** `validation_val_ep10-19.json`——复刻的像素链路与
+全量入口零口径漂移。候选八档（完整 64 档曲线在 JSON 里）：
+
+| K（占比） | GT 臂像素覆盖率 | GT 物体被涂比例 | 网格精确率 |
+|---|---:|---:|---:|
+| 1（1.6%） | 0.925466 | 0.017624 | 0.862774 |
+| 2（3.1%） | 0.921437 | 0.015807 | 0.871381 |
+| 4（6.2%） | 0.914452 | 0.012942 | 0.883830 |
+| 8（12.5%） | 0.902793 | 0.009395 | 0.900523 |
+| 13（20.3%） | 0.883580 | 0.006325 | 0.916779 |
+| 20（31.2%） | 0.851912 | 0.003742 | 0.944332 |
+| 26（40.6%） | 0.828215 | 0.002346 | 0.956184 |
+| 32（50.0%） | 0.795610 | 0.001458 | 0.970893 |
+
+三个结构性读数：
+
+1. **纯误涂格恒为 0**（全部 64 档、全部 episode）：像素口径精确率为 1，任何被选中
+   的格子都至少含 1 个真臂像素——这是像素刚性红线在网格口径留下的结构性遗产。
+2. **K=1 臂覆盖 0.925 > 像素召回 0.817**：整格外扩把漏标的薄边缘（灰白共享色）捡了
+   回来；即便 K=32 也还有 0.796，代价换收益的区间集中在 K∈[8,32]。
+3. **低估补偿换算表**（JSON `逐计数档位` 节）：名义占比 v/64 是链路看到的，GT 臂
+   平均占比是真相——v=13（名义 20.3%）的格子实际平均 50.8% 是臂，v=32（名义 50%）
+   实际 68.9%。想选「格内真实臂占比 ≥ X」直接查表，不要拿 0.817 做整体反推。
+
+### 3.7 归档文件清单
 
 全部 JSON 集中在 `outputs/json/` 一个文件夹，文件名自带口径；文档只保留本 README。
 
@@ -237,6 +281,69 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
 | `outputs/json/validation_val_ep10-19.json` | val ep10-19 全帧指标（唯一全量口径，该入口不出图） |
 | `outputs/json/color_distribution_val_ep0-9.json` | 颜色判决分布全部数字（召回/精确率是上界） |
 | `outputs/json/walkthrough_val_ep0-5.json` | 走查逐任务统计与代表帧逐阶段数字（不产生指标） |
+| `outputs/json/grid_sweep_val_ep10-19.json` | 网格 mask 全 64 档逐阈值指标 + 低估补偿换算表（网格口径唯一可引用数字） |
+| `outputs/json/grid_sweep_val_ep0-5.json` | 网格 mask 标定集口径（参数块自带「数字不作结论」警告） |
 | `outputs/color_distribution_val_ep0-9/` | 标定集四面板 `color_distribution.png` |
 | `outputs/walkthrough_val_ep0-5/` | 96 段逐阶段走查视频 |
+| `outputs/grid_sweep_val_ep0-5/` | 网格预览三套：`tiles/` 256 张（给 agent）、`mosaic/` 8 张 + `strips/` 16 张（给人拍板） |
 | `outputs/logs/` | 各入口运行日志（gitignore，不入库） |
+
+---
+
+## 四、网格 mask（Wan VAE latent 对齐口径）
+
+在像素级红 mask 之上的派生口径：把像素 mask 网格化成**整格判臂**的块状 mask。
+
+### 4.1 口径
+
+- **网格对齐 Wan VAE 输入**：`front_rgb` 与 MotionJEPA 的 Wan VAE 输入同为
+  256×256，VAE 做 8× 空间下采样，因此网格 **32×32、每格 8×8 px——一格恰对应一个
+  latent 空间位置**，mask 一个格子 = 干净遮掉一个 latent 位置。
+- **占比分子**：格内被 v4.2 像素级最终 mask（`arm_masks_for_episode` 输出，产出
+  不看 GT）判臂的像素数；**计数 ≥ K ⇒ 整格标臂**。判据是整数比较，分数入口
+  `GridParams.from_fraction` 用有理数精确换算，全链路无浮点边界。
+- **阈值全局统一（用户拍板）**：单一整数 K 对全部任务、全部 episode、全部格子
+  位置一体生效；`grid_mask.py` 与 `grid_sweep.py` 都**不提供**按任务 / episode /
+  位置的覆盖通道。逐任务指标只用于观测哪个任务在某全局 K 下最吃亏。
+- **K 待标定，代码不设默认值**：`GridParams.min_pixels` 强制显式传——阈值由用户
+  目视预览图拍板，在那之前代码里不立第二个口径。
+
+### 4.2 ⚠ 刚性红线不适用于网格口径
+
+**第一节的刚性原则（误标物体像素恒为 0）只约束像素口径。** 整格涂红必然覆盖臂
+边界格里的物体/背景像素，「不得误标物体」在网格口径下必然击穿、也不该成立——
+因此 `grid_sweep.py` **刻意不 import 也不调用 `enforce_no_false_object`**，GT 全程
+只当尺子做量化记录（涂进多少物体/背景像素、臂覆盖率），不设闸门。不要拿第一节的
+结论去推网格 mask 的性质。
+
+### 4.3 ⚠ 网格 mask 打破「只减不增」单调性
+
+二、的四条形态学规则每条都只让区域变小或持平；网格化在 K=1 时是像素 mask 的
+**严格超集**——它是整条链路第一个会让区域**变大**的算子。替代性质是**对阈值单调
+收缩**：K1 ≤ K2 ⇒ grid(K2) ⊆ grid(K1)（两条都有单测钉死）。
+
+### 4.4 ⚠ 时间维未对齐
+
+本口径只对齐 Wan VAE 的**空间** 8× 下采样；Wan VAE 还有时间维 4× 压缩（首帧单独
+成组），网格 mask 是**逐帧独立**的，在时间轴上与 latent 组不对齐。将来接生成链路
+时不要把「一格 = 一个 latent 位置」这句外推到时间维。
+
+### 4.5 数据口径分工与产物
+
+- **目视挑阈值**：标定集 val ep0-5 出三套预览图（与走查同口径）。⚠ ep0-9 是颜色表
+  的拟合集，**其上一切数字偏乐观、不作结论**（JSON 参数块自动注明）。
+  - `tiles/<Task>_K<NN>_{typical,worst}.png`：2×3 版面（原帧 / GT 三类 / 像素 mask
+    基准；网格叠加 / 网格 vs 像素差异 / 网格版误差图），tile 2× 放大，**给 agent
+    读**（长边约 1.6k，只被轻压）。typical = 走查同口径 `_pick_frame` 代表帧，
+    worst = K=1 下涂进 GT 物体最多的帧；两者挑选规则都与 K 无关，8 档共用同帧。
+  - `mosaic/grid_K<NN>.png`（每档 4×4 拼图，任务按像素级召回升序，StopCube 恒
+    左上）与 `strips/<Task>_sweep.png`（每任务跨阈值横条）：tile 3×，**给人拍板，
+    不给 agent 读**（长边超 3k 会被压到看不清）。
+- **可引用数字**：评估集 val ep10-19（`grid_sweep_val_ep10-19.json`，全 64 档 +
+  低估补偿换算表）。该口径下脚本自动做五项锚点对拍，逐位不等即非零退出。
+- 放大一律 `np.repeat` 最近邻，**禁止任何插值**——块状硬边正是要目视/消费的东西。
+
+### 4.6 本轮范围声明
+
+只做模块（`grid_mask.py`）+ 扫描（`grid_sweep.py`）+ 阈值标定；**不动 h5 schema、
+不接生成链路**。阈值拍板后的落地（写默认值、进生成产物）另开一轮、另行确认。
