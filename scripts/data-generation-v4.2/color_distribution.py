@@ -25,7 +25,7 @@
 产物（`--out` 目录，默认 `outputs/color_distribution_val_ep0-9/`）：
 
 - `color_distribution.png`：四面板大图（主图 / 亮度剖面 / 支撑集分解 / 共享色 TOP20）；
-- `stats.json`：上面全部数字，供 report 引用。
+- `outputs/json/<out 目录名>.json`：上面全部数字的机读版（JSON 产物集中在 outputs/json/）。
 
 用法：
 
@@ -511,13 +511,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     setup_font()
     model = ColorModel.load(args.model)
     out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
     stats = compute_stats(model)
 
     written = [render_distribution(model, out_dir / "color_distribution.png")]
 
     payload = dict(stats)
     payload["颜色表"] = args.model
-    (out_dir / "stats.json").write_text(
+    json_dir = out_dir.parent / "json"
+    json_dir.mkdir(parents=True, exist_ok=True)
+    (json_dir / f"{out_dir.name}.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     for path in written:

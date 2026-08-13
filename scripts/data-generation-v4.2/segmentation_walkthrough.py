@@ -30,7 +30,8 @@ episode 的 **metadata 难度**（`setup/difficulty`）。
 再加一条参照带（GT 三类图 / GT 臂 / 红遮罩 / 误差图），以及底部一条**判决规则说明带**
 （`RULE_NOTES`）——「颜色判决」那一格怎么算出来的直接印在图上，不用回翻 README。
 
-整段逐帧出，所以不再需要选帧；`walkthrough.json` 里仍记一个**代表帧**（误标物体像素
+整段逐帧出，所以不再需要选帧；`outputs/json/<out 目录名>.json`（JSON 产物集中在
+outputs/json/）里仍记一个**代表帧**（误标物体像素
 最多的那一帧；整段无误标——按刚性原则这是常态——则取 GT 臂像素最多的一帧）的逐阶段
 数字，口径与出图时代完全一致，方便与旧报告对拍。
 
@@ -671,7 +672,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "耗时秒": round(elapsed, 1),
         "逐任务": records,
     }
-    (out_dir / "walkthrough.json").write_text(
+    json_dir = out_dir.parent / "json"
+    json_dir.mkdir(parents=True, exist_ok=True)
+    (json_dir / f"{out_dir.name}.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     for record in records:

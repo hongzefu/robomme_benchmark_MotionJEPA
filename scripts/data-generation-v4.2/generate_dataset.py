@@ -66,8 +66,19 @@ from write_generation_report import (
 )
 
 # 报告模块把落点写死成「自己所在目录 / reports」，直接复用会覆盖 v2.1 已归档的报告。
-# 这里把模块级落点改指到 v4 目录——写报告的函数体读的就是这个模块全局名。
-_report_module.REPORTS_ROOT = SCRIPT_DIR / "reports"
+# 这里把模块级落点改指到本目录的 outputs/json/——全部 JSON 产物集中放在那里（用户
+# 2026-08-12 决定），且文档只保留 README.md 一个 md，故写完顺手删掉模块附带的 md 报告。
+_report_module.REPORTS_ROOT = SCRIPT_DIR / "outputs" / "json"
+
+_write_generation_report_orig = write_generation_report
+
+
+def write_generation_report(*args, **kwargs):  # noqa: F811 —— 有意遮蔽 import 名
+    result = _write_generation_report_orig(*args, **kwargs)
+    md_path = _report_module.REPORTS_ROOT / "generation_report.md"
+    if md_path.exists():
+        md_path.unlink()
+    return result
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -715,7 +726,7 @@ def generate_dataset(
 
 
 def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="RoboMME 数据生成与校验（在 v2.1 之上多落一份 GT segmentation，并支持 --split）；完整报告写到本目录 reports/ 下的 generation_report.json 与 generation_report.md")
+    parser = argparse.ArgumentParser(description="RoboMME 数据生成与校验（在 v2.1 之上多落一份 GT segmentation，并支持 --split）；完整报告写到本目录 outputs/json/generation_report.json（只留机读 JSON，不出 md）")
     parser.add_argument("--output-dir", required=True, help="仓库内的输出目录，必须不存在或为空")
     parser.add_argument("--env", "--environment", default="all", help="all，或逗号分隔的环境名列表")
     parser.add_argument(

@@ -121,7 +121,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "总像素数": total_pixels,
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
-    (target.parent / "color_model_summary.json").write_text(
+    json_dir = target.parent / "json"
+    json_dir.mkdir(parents=True, exist_ok=True)
+    (json_dir / "color_model_summary.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     return 0

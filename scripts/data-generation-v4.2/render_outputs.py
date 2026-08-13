@@ -15,12 +15,12 @@
       --h5 'artifacts/generated/v4seg-16env-val20ep/record_dataset_*.h5' \\
       --model scripts/data-generation-v4.2/outputs/color_model.npz \\
       --episodes 10-19 \\
-      --out scripts/data-generation-v4.2/outputs/validation_val_ep10-19
+      --out scripts/data-generation-v4.2/outputs/json/validation_val_ep10-19.json
 
-产物只有一个 `metrics.json`：逐 episode + 逐任务 + 全局的像素级统计，**全帧口径**
-（不是抽样帧）。用户 2026-08-12 决定本入口**不再出任何图**——它的职责就是产出唯一那份
-全量实测数据；要看图去 `walkthrough_val_ep0-5/`（逐阶段走查视频），那个入口本来就是
-干这个的，这里再出一份抽帧图纯属重复。
+产物只有一个 JSON：逐 episode + 逐任务 + 全局的像素级统计，**全帧口径**（不是抽样帧）。
+全部 JSON 产物集中放在 `outputs/json/`，文件名自带口径。用户 2026-08-12 决定本入口
+**不再出任何图**——它的职责就是产出唯一那份全量实测数据；要看图去
+`walkthrough_val_ep0-5/`（逐阶段走查视频），那个入口本来就是干这个的。
 """
 
 from __future__ import annotations
@@ -184,7 +184,7 @@ def enforce_no_false_object(scope: str, entries: Sequence[tuple[str, int]]) -> i
     `entries` 是 `(条目名, false_object_pixels)` 列表（逐 episode 或逐任务都行）。
     返回值直接当退出码用：0 = 通过，1 = 红线被击穿。
 
-    为什么要有这个函数：把「误标物体 = 0」写进 metrics.json 只是记录，人不看就等于没有。
+    为什么要有这个函数：把「误标物体 = 0」写进指标 JSON 只是记录，人不看就等于没有。
     本链路的宗旨是「绝不误标其他物体，允许少量机械臂没被标进去」，红线被击穿时产物
     整体不可信，必须让调用方（脚本、CI、人）立刻知道，而不是安静出图。
     **刻意不提供豁免开关**——有开关就等于又养出第二个口径。
@@ -227,8 +227,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument(
         "--out",
-        default=str(SCRIPT_DIR / "outputs" / "validation_val_ep10-19"),
-        help="产物目录",
+        default=str(SCRIPT_DIR / "outputs" / "json" / "validation_val_ep10-19.json"),
+        help="指标 JSON 落盘路径（全部 JSON 产物集中在 outputs/json/）",
     )
     parser.add_argument("--workers", type=int, default=8, help="并行进程数")
     parser.add_argument("--open-iterations", type=int, default=1)
@@ -243,8 +243,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         temporal_window=args.temporal_window,
         final_erode=args.final_erode,
     )
-    out_dir = Path(args.out)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = Path(args.out)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
 
     jobs: list[tuple[str, str]] = []
     for path in paths:
@@ -288,7 +288,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "逐任务": {task: summarize(items) for task, items in by_task.items()},
         "逐 episode": records,
     }
-    (out_dir / "metrics.json").write_text(
+    out_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
 

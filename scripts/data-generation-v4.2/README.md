@@ -103,13 +103,14 @@ ground truth 为准。** 精确说法：整段 episode 每一帧被标成臂的�
 **评估集 = 同一 val split 的 ep10–19**（160 episode），与标定集同 split、不同 episode、
 seed 零重叠。标定与评估同住一份数据集 `artifacts/generated/v4seg-16env-val20ep`
 （⚠ 生成器 `--episodes` 是「从 ep0 起的数量」不是区间；ep0-9 seed 固定，与旧
-`v4seg-16env-val10ep` 逐位相同已对拍，颜色表不必重拟合）。产物目录名自带口径
-（`validation_val_ep10-19` 等），`ls outputs/` 一眼看出每批数字算在哪。
+`v4seg-16env-val10ep` 逐位相同已对拍，颜色表不必重拟合）。图/视频产物目录名自带口径
+（`walkthrough_val_ep0-5` 等）；**全部 JSON 产物集中在 `outputs/json/` 一个文件夹**，
+文件名同样带口径（如 `validation_val_ep10-19.json`），不再每个产物目录下各放一个。
 
 | 入口 | 验的是什么 |
 |---|---|
-| `render_outputs.py` | **唯一全量指标**：val ep10-19 全帧推理 + 对 GT 逐像素验证，产出 `metrics.json`（不出图），**刚性闸门定义处**，逐 episode 校验红线 |
-| `color_distribution.py` | 颜色表自身：四面板判决分布图 + `stats.json`（不碰 h5），跑完断言红线恒等式，破坏即 `SystemExit`。⚠ 它给的召回/精确率是**上界**不是实测 |
+| `render_outputs.py` | **唯一全量指标**：val ep10-19 全帧推理 + 对 GT 逐像素验证，产出 `json/validation_val_ep10-19.json`（不出图），**刚性闸门定义处**，逐 episode 校验红线 |
+| `color_distribution.py` | 颜色表自身：四面板判决分布图 + 机读 JSON（不碰 h5），跑完断言红线恒等式，破坏即 `SystemExit`。⚠ 它给的召回/精确率是**上界**不是实测 |
 | `segmentation_walkthrough.py` | mask 产生过程：16 任务 × ep0-5 逐帧渲染「候选→①→②→③→④」逐阶段走查视频，逐阶段复算与运行期逐位断言 |
 
 ### 2.3 用法
@@ -130,7 +131,7 @@ uv run --no-sync python scripts/data-generation-v4.2/fit_color_model.py \
 # 3. 评估集全帧指标（val ep10-19，含刚性闸门；--h5/--episodes/--out 已是默认值）
 uv run --no-sync python scripts/data-generation-v4.2/render_outputs.py --workers 16
 
-# 4. 颜色判决分布出图（四面板一张图 + stats.json；只读颜色表，不碰 h5）
+# 4. 颜色判决分布出图（四面板一张图 + 机读 JSON；只读颜色表，不碰 h5）
 uv run --no-sync python scripts/data-generation-v4.2/color_distribution.py
 
 # 5. 分割过程走查出视频（16 任务 × ep0-5 = 96 段 mp4）
@@ -154,7 +155,6 @@ uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
 | `render_outputs.py` | 全量指标 + 刚性闸门 `enforce_no_false_object` 定义处；`_error_image` / `_grid` 共享件也在这里 |
 | `color_distribution.py` | 颜色判决分布出图入口 |
 | `segmentation_walkthrough.py` | 逐阶段走查出视频入口 |
-| `reports/color_distribution_report.md` | 判读报告 |
 | `../../tests/lightweight/test_arm_mask_v4_2.py` | GT 映射、重叠计数、判臂等价于纯支撑判据、四条规则的逻辑测试 |
 | `../../tests/lightweight/test_color_distribution_v4_2.py` | 出图链路的复算对拍与闸门测试 |
 
@@ -228,13 +228,15 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
 
 ### 3.6 归档文件清单
 
+全部 JSON 集中在 `outputs/json/` 一个文件夹，文件名自带口径；文档只保留本 README。
+
 | 路径 | 内容 |
 |---|---|
 | `outputs/color_model.npz` | 先验颜色表（16297 色，与 v4.1 逐位相同） |
-| `outputs/color_model_summary.json` | 拟合摘要（键名里的「否决」是历史措辞，含义未变） |
-| `outputs/validation_val_ep10-19/` | val ep10-19 全帧 `metrics.json`（唯一全量口径，本入口不出图） |
-| `outputs/color_distribution_val_ep0-9/` | 标定集四面板 `color_distribution.png` + `stats.json`（召回/精确率是上界） |
-| `outputs/walkthrough_val_ep0-5/` | 96 段逐阶段走查视频 + `walkthrough.json`（不产生指标） |
-| `reports/color_distribution_report.md` | 判读报告 |
-| `reports/generation_report.{json,md}` | 标定数据集生成报告（数据集与 v4.1 同源） |
+| `outputs/json/color_model_summary.json` | 拟合摘要（键名里的「否决」是历史措辞，含义未变） |
+| `outputs/json/validation_val_ep10-19.json` | val ep10-19 全帧指标（唯一全量口径，该入口不出图） |
+| `outputs/json/color_distribution_val_ep0-9.json` | 颜色判决分布全部数字（召回/精确率是上界） |
+| `outputs/json/walkthrough_val_ep0-5.json` | 走查逐任务统计与代表帧逐阶段数字（不产生指标） |
+| `outputs/color_distribution_val_ep0-9/` | 标定集四面板 `color_distribution.png` |
+| `outputs/walkthrough_val_ep0-5/` | 96 段逐阶段走查视频 |
 | `outputs/logs/` | 各入口运行日志（gitignore，不入库） |
