@@ -1,0 +1,8 @@
+# 产物一律不入 git：sidecar、实测 JSON、预览图都能用 README 的命令从 h5 + 代码重生成。
+# ⚠ 唯一例外是 gt-data/outputs/color_model.npz（像素表）——它是重建成本最高的资产
+#   （需先生成 val split 数据集再拟合约 19 分钟），故显式反忽略、纳入版本管理。
+outputs/
+!gt-data/outputs/
+gt-data/outputs/*
+!gt-data/outputs/color_model.npz
+__pycache__/

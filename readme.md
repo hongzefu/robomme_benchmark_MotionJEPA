@@ -105,15 +105,23 @@ The environment input/output format is described in [doc/env_format.md](doc/env_
 
 ### 🔧 Data Generation
 
-The repository includes a complete 16-task × 100-episode HDF5 generation and validation workflow. It uses 20 workers and is locked to physical GPU 0. See [scripts/data-generation/README.md](scripts/data-generation/README.md) for the full workflow and artifact contract.
+The repository includes an HDF5 generation workflow that additionally records ground-truth
+segmentation, used to calibrate and produce robot-arm masks. See
+[scripts/data-generation/README.md](scripts/data-generation/README.md) for the full workflow,
+its two operating modes, and the artifact contract.
+
+Note: actions are re-planned by the motion planner — **no joint-angle replay is performed**.
+The same seed reproduces the same initial scene layout, not the same trajectory, and a small
+number of episodes may fail to complete (they are skipped and recorded in the run summary).
 
 ```bash
-env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/data-generation/generate_dataset.py \
-  --output-dir artifacts/generated/no-patch-full-16x100 \
+uv run --locked python scripts/data-generation/gt-data/generate_dataset.py \
+  --output-dir artifacts/generated/<name> \
   --env all \
-  --episodes 100 \
-  --workers 20 \
-  --gpus 0
+  --episodes 10 \
+  --split train \
+  --workers 16 \
+  --gpus 0,1
 ```
 
 
