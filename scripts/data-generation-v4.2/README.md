@@ -280,6 +280,10 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
 ### 3.7 归档文件清单
 
 全部 JSON 集中在 `outputs/json/` 一个文件夹，文件名自带口径；文档只保留本 README。
+**图/视频类预览产物已于 2026-08-14 随「旧产物大扫除」整体清理**（用户指令；含
+`walkthrough_val_ep0-5/`、`color_distribution_val_ep0-9/`、`grid_sweep_val_ep0-5/`、
+`grid_sweep_val_ep0-10_per_episode/` 四个目录）——数字均已留档在下列 JSON 里，
+图/视频需要时按 2.3 的对应命令再生成即可。
 
 | 路径 | 内容 |
 |---|---|
@@ -290,9 +294,7 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
 | `outputs/json/walkthrough_val_ep0-5.json` | 走查逐任务统计与代表帧逐阶段数字（不产生指标） |
 | `outputs/json/grid_sweep_val_ep10-19.json` | 网格 mask 全 64 档逐阈值指标 + 低估补偿换算表（网格口径唯一可引用数字） |
 | `outputs/json/grid_sweep_val_ep0-5.json` | 网格 mask 标定集口径（参数块自带「数字不作结论」警告） |
-| `outputs/color_distribution_val_ep0-9/` | 标定集四面板 `color_distribution.png` |
-| `outputs/walkthrough_val_ep0-5/` | 96 段逐阶段走查视频 |
-| `outputs/grid_sweep_val_ep0-5/` | 网格预览三套：`tiles/` 256 张（给 agent）、`mosaic/` 8 张 + `strips/` 16 张（给人拍板） |
+| `outputs/json/grid_sweep_val_ep0-10.json` | 逐 episode 预览模式那次运行的标定集口径 JSON（同上警告） |
 | `outputs/logs/` | 各入口运行日志（gitignore，不入库） |
 
 ---
@@ -351,8 +353,8 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
     聚合模式每任务只留一个 episode 胜出，逐 episode 模式一个不丢，用于挨个核查。
     该模式**不产 mosaic/strips**（那两套按任务横向排布，同一格位会被多个 episode
     争用，没有对应语义）。配套 `--preview-kinds typical,worst` 可只出其中一种。
-    已产出的一份：`outputs/grid_sweep_val_ep0-10_per_episode/`（ep0-10 × 16 任务 ×
-    K∈{8,13} × worst = 352 张，142 MB）。
+    曾产出的一份（ep0-10 × 16 任务 × K∈{8,13} × worst = 352 张，142 MB）已随
+    2026-08-14 大扫除清理，其 JSON 留档为 `json/grid_sweep_val_ep0-10.json`。
 - **可引用数字**：评估集 val ep10-19（`grid_sweep_val_ep10-19.json`，全 64 档 +
   低估补偿换算表）。该口径下脚本自动做五项锚点对拍，逐位不等即非零退出。
 - 放大一律 `np.repeat` 最近邻，**禁止任何插值**——块状硬边正是要目视/消费的东西。
