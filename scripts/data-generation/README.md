@@ -1,60 +1,195 @@
 # data-generation：机械臂 mask 标定与生产
 
-把 `front_rgb` 里的机械臂标出来，产出 **Wan VAE latent 对齐的 32×32 格级 mask**。
-两个子文件夹职责不重叠：
+把 `front_rgb` 里的机械臂标出来，产出 **Wan VAE latent 对齐的 32×32 格级 mask**，
+供下游 MotionJEPA 消费。整条链路分两个阶段，对应两个子文件夹：
 
-| 子文件夹 | 职责 |
-|---|---|
-| `gt-data/` | 生成带 **GT segmentation** 的数据，并在其上拟合**像素表**（颜色表） |
-| `arm-mask/` | 用像素表产 mask（两种数据源共用一条路径），并在有 GT 时给实测结果 |
+| 阶段 | 子文件夹 | 做什么 |
+|---|---|---|
+| **第一阶段** | `gt-data/` | 生成带 **GT segmentation** 的数据，并在其上拟合**像素表**（颜色表） |
+| **第二阶段** | `arm-mask/` | 用像素表产 mask（两个模式共用一条路径），并在有 GT 时给实测结果 |
 
-推理链固定为三步，全链路**零浮点阈值**：
+mask 的推理链固定为三步，全链路**零浮点阈值**：
 
 ```
 像素表查表 → 四条形态学规则 → K=13 网格化（32×32，一格 = 一个 latent 位置）
 ```
 
+数据范围：官方 `Yinpei/robomme_data_h5` 本地备份 `/data/hongzefu/robomme_data_h5`，
+**train split 每任务前 10 个 episode（ep0-9）**。所有命令都在仓库根执行。
+
 ---
 
-## 一、两个模式
+## 一、第一阶段：生成 GT 数据 + 拟合像素表（`gt-data/`）
+
+### 1.1 GT 数据怎么生成
+
+入口是 `generate_dataset.py`。它读 `src/robomme/env_metadata/<split>/` 里记录的
+**官方实际使用的 seed**（含官方失败重试后递增过的值，直接取用、单次尝试、不做递增
+重试），同 seed 重建 env，然后由 **planner 重新规划动作**走完整个 episode。落盘时
+`record_wrapper.py`（`RecordWrapper` 的薄子类）在既有 h5 内容之外**只增不改**地多写
+两样东西：
+
+- 逐帧 GT segmentation：`timestep_<k>/obs/front_camera_segmentation`，直接取自
+  ManiSkill 的 `obs`，是仿真真值，不含任何像素估计；
+- seg_id 枚举表：`setup/segmentation_objects` / `setup/segmentation_excluded`
+  （「场景对象 → segmentation id」清单，GT 三类映射的唯一依据，见 `seg_id_table.py`）。
+
+两个关键设定（用户 2026-08-14 拍板，详见第五节）：**不回放 joint angle**——同 seed
+只保证场景初始摆放与官方一致，轨迹会不同；**失败 episode 跳过**并记入
+`generation_summary.json`，不影响其余产物落盘。
+
+```bash
+uv run --locked python scripts/data-generation/gt-data/generate_dataset.py \
+  --output-dir artifacts/generated/<名字> --env all --episodes 10 --split train \
+  --workers 16 --gpus 0,1
+```
+
+### 1.2 像素表怎么拟合
+
+入口是 `fit_color_model.py`，这是整条链路**唯一**读 GT 来产出模型的地方。它在上一步
+生成的带 GT 数据上，统计每种 24 位颜色在三列里的出现计数：**列 0 = 纯背景**、
+**列 1 = 背景∪物体混合**（物体不单独可见，类先验对模型不可见）、**列 2 = 机械臂**。
+推理时逐像素查表，只看每列「见过 / 没见过」（纯支撑三段式，计数大小不参与），
+判臂条件是「混合列一次都没出现过且臂列出现过」——这使**标定集上误标物体恒为 0 是
+恒等式**。完整推导与代价分析见 `color_model.py` 模块 docstring。
+
+⚠ **标定集必须与实测集零 seed 重叠**：现行像素表在 **val split ep0-9** 上拟合，第二
+阶段消费的是 **train split ep0-9**，零重叠，实测数字是干净的泛化数字。
+
+```bash
+# 需先用 1.1 的命令生成一份 --split val 的数据集；拟合本身单进程约 19 分钟
+uv run --no-sync python scripts/data-generation/gt-data/fit_color_model.py \
+  --h5 'artifacts/generated/<val 数据集>/record_dataset_*.h5' --episodes 0-9 \
+  --out scripts/data-generation/gt-data/outputs/color_model.npz
+```
+
+产物 `outputs/color_model.npz` 是本目录**唯一入 git 的产物**，已随仓库提供——
+**一般不需要重跑第一阶段**，直接进第二阶段即可。
+
+---
+
+## 二、第二阶段：mask 生产（`arm-mask/`）
+
+两个模式共用同一个生产入口 `make_mask.py`，走完全相同的代码路径且**全程不看 GT**
+（只读 `obs/front_rgb` 与 `info/`）；差别只在 `--source` 指向哪份数据、以及事后有没有
+GT 可以量化。**两个模式都不包含任何 replay**。
 
 | 模式 | 做什么 | 有 GT？ | 产出 |
 |---|---|---|---|
-| **① 现有 dataset 直接产 mask** | 读官方 h5 里已有的 `front_rgb`，直接跑推理链 | 否 | sidecar |
-| **② 同 seed 重新生成 + 实测** | 用官方同 seed 重新渲染带 GT 的数据，在其上产 mask 并用 GT 当尺子量化 | 是 | sidecar + 实测 JSON |
+| **①** | 读官方 h5 里现成的 `front_rgb`，直接跑推理链 | 否 | sidecar |
+| **②** | 官方同 seed 重新生成带 GT 的数据，产 mask 后用 GT 量化 | 是 | sidecar + 实测 JSON |
 
-**两个模式都不包含任何 replay。** 模式①只读 h5 里现成的像素，不重放、不起仿真；
-模式②是纯 planner 重新规划生成，不读官方动作。
+### 2.1 模式①：官方 h5 直接产 mask
 
-**mask 单独生产**：两个模式共用同一个 `make_mask.py`，走完全相同的代码路径且**全程不看
-GT**；模式②的 GT 量化是之后独立的一步（`evaluate.py` 读 sidecar），既不混进生成器、也不
-混进 mask 生产。
+只读官方 h5 现成的像素，不重放、不起仿真，一条命令直接出 sidecar：
 
-数据范围：官方 `Yinpei/robomme_data_h5` 本地备份 `/data/hongzefu/robomme_data_h5`，
-**train split 每任务前 10 个 episode（ep0-9）**。
+```bash
+uv run --no-sync python scripts/data-generation/arm-mask/make_mask.py \
+  --source /data/hongzefu/robomme_data_h5 --tasks all --episodes 0-9 --workers 16
+```
+
+官方数据没有 GT，因此模式①只有**金丝雀**（未见颜色率的倍率 + 绝对值双判据、空 mask
+帧与判臂率下限的结构闸门，FAIL 以退出码 1 结束）与结构统计量，没有精确率 / 召回这类
+以 GT 为尺的数字——那些数字只能来自模式②。
+
+### 2.2 模式②：同 seed 重新生成 + 实测
+
+一条命令跑完四步编排（`run_generated.py`）：
+
+```
+生成（gt-data/generate_dataset.py，即第一阶段 1.1 的同一入口，--split train）
+  → 产 mask（make_mask.py，与模式①完全同一条路径，全程不看 GT）
+  → 实测（evaluate.py，读 sidecar + GT，pixel/grid 双口径 + 刚性闸门）
+  → 删数据集（用户拍板：约 60 GB，跑完即删，只留 sidecar 与实测 JSON）
+```
+
+```bash
+uv run --locked python scripts/data-generation/arm-mask/run_generated.py \
+  --episodes 10 --workers 16 --gpus 0,1
+#   加 --keep-dataset 保留数据集（约 60 GB）供换参重跑
+#   加 --skip-generate 对已存在的数据集只跑后三步
+```
+
+GT 量化是独立的一步（`evaluate.py` 读 sidecar），既不混进生成器、也不混进 mask
+生产。planner 失败的 episode 会被跳过，实测样本量可能少于「任务数 × episode 数」，
+实测 JSON 里如实记录。
+
+单步拆开跑（`run_generated.py` 内部就是串这三条）：
+
+```bash
+uv run --locked python scripts/data-generation/gt-data/generate_dataset.py \
+  --output-dir artifacts/generated/<名字> --env all --episodes 10 --split train \
+  --workers 16 --gpus 0,1
+uv run --no-sync python scripts/data-generation/arm-mask/make_mask.py \
+  --source artifacts/generated/<名字> --episodes 0-9 --out-dir <sidecar 目录> --no-baseline
+uv run --no-sync python scripts/data-generation/arm-mask/evaluate.py \
+  --sidecar-dir <sidecar 目录> --source artifacts/generated/<名字> --episodes 0-9
+```
 
 ---
 
-## 二、用户关键决策（逐条生效，改动前先确认）
+## 三、实测结果（2026-08-14，16 任务 × ep0-9 = 160 episode / 80,853 帧）
 
-1. **不使用任何 joint angle 回放功能。** 动作由 planner 重新规划，代价是：
-   - 可能**无法 100% 完成全部 episode**——失败的跳过并记入摘要，不影响其余产物落盘；
-   - **RGB 观察与官方不完全一致**——同 seed 只保证场景初始摆放一致，轨迹会不同。
-   - 因此与官方数据的契约校验、`joint_action` 逐位对拍全部删除，不存在开关。
-2. **不再生成 flow，本目录不出现 flow 命名。** 历史上的逐帧稀疏物体轨迹采集已整体删除；
-   原 `setup/flow_objects` / `flow_excluded` 那张表实质是「场景对象 → segmentation id」
-   清单，是 GT 三类映射的唯一依据，保留并改名为 `setup/segmentation_objects` /
-   `setup/segmentation_excluded`（见 `gt-data/seg_id_table.py`）。
-3. **像素表沿用 val split ep0-9 拟合的 `color_model.npz`**，与两个模式消费的 train split
-   **零 seed 重叠**，所以实测是干净的泛化数字。
-4. **网格阈值 K = 13** 全局统一（全任务 / 全 episode / 全格子位置一体生效），唯一落点是
-   `arm-mask/make_mask.py` 的 `GRID_MIN_PIXELS`；`grid_mask.GridParams.min_pixels` 刻意
-   无默认值，库层不立第二个口径。
-5. **模式②的数据跑完即删**（约 60 GB），只留 sidecar 与实测 JSON。
+数字全部来自模式②——它是唯一有 GT 当尺子的口径。模式①（官方 h5）没有 GT，只有金丝雀
+与结构量。机读原件在 `arm-mask/outputs/json/`。
+
+### 3.1 像素口径（刚性红线在此，红线定义见第四节）
+
+| 指标 | 实测 |
+|---|---:|
+| **误标物体像素（刚性红线）** | **0** |
+| 误标背景像素 | **0** |
+| **标定精确率** | **1.000000** |
+| 机械臂召回 | 0.816906 |
+| 未见颜色率 | 0.1626% |
+| 存在物体误标的帧占比 | 0 |
+
+闸门输出：逐 episode 共 160 项误标物体像素全部为 0。实测耗时 11.5 秒（16 进程）——
+`evaluate.py` 读 sidecar 而非重跑推理链，故比历史上「两处各跑一遍链路」快近一个数量级。
+
+### 3.2 网格口径 K=13（⚠ 刚性红线在此不适用，原因见第四节）
+
+| 指标 | 实测 |
+|---|---:|
+| GT 臂像素覆盖率 | 0.883361 |
+| GT 物体像素被涂比例 | 0.006211 |
+| 网格精确率 | 0.916749 |
+| **纯误涂格（格内 GT 臂像素为 0）** | **0** |
+| 网格臂格占比（/ 全部格） | 6.417% |
+
+**纯误涂格恒为 0** 是像素刚性红线在网格口径留下的结构性遗产：任何被选中的格子都至少含
+1 个真臂像素。
+
+**低估补偿换算表**（名义占比是链路看到的，GT 臂真实占比才是真相）：K=13 名义 20.3%，
+格内 **GT 臂真实平均占比 50.6%**；K=32 名义 50%，实际 69.1%。想选「格内真实臂占比 ≥ X」
+直接查 JSON 里的 `低估补偿换算表`，**不要拿整体召回做反推**——反推假设漏标在格间均匀，
+实际薄边缘格漏得多、臂身中央格几乎不漏。
+
+### 3.3 模式①（官方 h5）
+
+80,853 帧，未见颜色率 0.1626%，像素判臂率 5.44%，空像素 mask 帧 0、空网格帧 0，
+**金丝雀 PASS（零命中项）**，耗时 68 秒。sidecar 44 MB。
+
+### 3.4 ⚠ 同 seed 重放的实际保真度
+
+用户决策里预估的两项代价（见第五节），本轮实测**都没有兑现**：
+
+| 预估代价 | 本轮实测 |
+|---|---|
+| 可能无法 100% 完成全部 episode | **160/160 成功，0 失败** |
+| 可能无法获得完全一致的 RGB 观察 | 抽 6 个任务 8 个 episode（2734 帧）与官方逐像素对比，**8/8 帧数相同且逐位完全一致，最大绝对差 0** |
+
+佐证：模式①与模式②在 **16/16 个任务**上的帧数、未见色像素、臂像素、网格格数四项**逐位
+相等**——两份数据在本链路看来完全同一。成因是 screw 规划本身确定性，只有 RRTStar 兜底
+才引入随机，本轮未触发。
+
+⚠ **这是实测观察，不构成保证。** 采样非全量；多 worker 抢卡时兜底一旦触发就会分叉；
+本链路也没有任何机制去校验它（对拍器已随「不回放 joint angle」一并删除）。第五节的风险
+声明照旧成立，不因这次结果放松。
 
 ---
 
-## 三、刚性红线（第一判据，只约束像素口径）
+## 四、刚性红线（第一判据，只约束像素口径）
 
 **不得把物体判错成 robot arm，「判错」以 GT 为准。** 精确说法：整段每一帧被标成臂的像素，
 逐个查它在 `obs/front_camera_segmentation` 里的真身，真身是「物体」的像素数累加必须恒为 0
@@ -84,45 +219,44 @@ grid(K2) ⊆ grid(K1)（两条都有单测钉死）。
 
 ---
 
-## 四、用法（在仓库根）
+## 五、用户关键决策（逐条生效，改动前先确认）
 
-```bash
-# 模式①：官方 h5 直接产 mask（16 任务 × ep0-9）
-uv run --no-sync python scripts/data-generation/arm-mask/make_mask.py \
-  --source /data/hongzefu/robomme_data_h5 --tasks all --episodes 0-9 --workers 16
-
-# 模式②：一条命令跑完 生成 → 产 mask → 实测 → 删数据
-uv run --locked python scripts/data-generation/arm-mask/run_generated.py \
-  --episodes 10 --workers 16 --gpus 0,1
-#   加 --keep-dataset 保留数据集（约 60 GB）供换参重跑
-#   加 --skip-generate 对已存在的数据集只跑后两步
-
-# 单步跑（run_generated.py 内部就是串这三条）
-uv run --locked python scripts/data-generation/gt-data/generate_dataset.py \
-  --output-dir artifacts/generated/<名字> --env all --episodes 10 --split train \
-  --workers 16 --gpus 0,1
-uv run --no-sync python scripts/data-generation/arm-mask/make_mask.py \
-  --source artifacts/generated/<名字> --episodes 0-9 --out-dir <sidecar 目录> --no-baseline
-uv run --no-sync python scripts/data-generation/arm-mask/evaluate.py \
-  --sidecar-dir <sidecar 目录> --source artifacts/generated/<名字> --episodes 0-9
-
-# 重新拟合像素表（一般不用跑：需先生成 val split 数据集，单进程约 19 分钟）
-uv run --no-sync python scripts/data-generation/gt-data/fit_color_model.py \
-  --h5 'artifacts/generated/<val 数据集>/record_dataset_*.h5' --episodes 0-9 \
-  --out scripts/data-generation/gt-data/outputs/color_model.npz
-
-# 单元测试
-uv run --no-sync python -m pytest tests/lightweight/test_arm_mask.py \
-  tests/lightweight/test_grid_mask.py tests/lightweight/test_make_mask.py \
-  tests/lightweight/test_seg_id_table.py tests/lightweight/test_record_wrapper.py -q
-```
+1. **不使用任何 joint angle 回放功能。** 动作由 planner 重新规划，代价是：
+   - 可能**无法 100% 完成全部 episode**——失败的跳过并记入摘要，不影响其余产物落盘；
+   - **RGB 观察与官方不完全一致**——同 seed 只保证场景初始摆放一致，轨迹会不同。
+   - 因此与官方数据的契约校验、`joint_action` 逐位对拍全部删除，不存在开关。
+2. **不再生成 flow，本目录不出现 flow 命名。** 历史上的逐帧稀疏物体轨迹采集已整体删除；
+   原 `setup/flow_objects` / `flow_excluded` 那张表实质是「场景对象 → segmentation id」
+   清单，是 GT 三类映射的唯一依据，保留并改名为 `setup/segmentation_objects` /
+   `setup/segmentation_excluded`（见 `gt-data/seg_id_table.py`）。
+3. **像素表沿用 val split ep0-9 拟合的 `color_model.npz`**，与两个模式消费的 train split
+   **零 seed 重叠**，所以实测是干净的泛化数字。
+4. **网格阈值 K = 13** 全局统一（全任务 / 全 episode / 全格子位置一体生效），唯一落点是
+   `arm-mask/make_mask.py` 的 `GRID_MIN_PIXELS`；`grid_mask.GridParams.min_pixels` 刻意
+   无默认值，库层不立第二个口径。
+5. **模式②的数据跑完即删**（约 60 GB），只留 sidecar 与实测 JSON。
 
 ---
 
-## 五、文件结构
+## 六、已知代价（诚实清单）
+
+1. **臂与混合共享的中性灰白色一律不判臂**：臂的灰白外壳与灰白物体撞色的部分照旧漏标。
+   这是本方案唯一的结构性漏标来源，代价有闭式（见 `color_model.py`）。
+2. **物体误标在评估集上没有理论零保证**（标定集上才是恒等式），所以才有硬闸门——数字以
+   每次实测为准，不以推理为准。
+3. **未见颜色一律不标**，方向与宗旨一致（宁可漏标）。
+4. **触顶规则漏掉非从上方入画的臂**（可接受漏标）。
+5. **模式①的根本盲点**：官方数据没有 GT，像素刚性红线在那里**不可复验**。关闭这个盲点
+   正是模式②存在的理由——同 seed 重放出带 GT 的同场景数据，让红线可验。
+6. **模式②与官方轨迹不同**：不回放 joint angle，实测数字代表「同场景、planner 自己走一遍」
+   的表现，不是官方那一模一样的画面上的表现。
+
+---
+
+## 七、文件结构与实现细节
 
 ```text
-gt-data/                     职责①：产 GT + 拟合像素表
+gt-data/                     第一阶段：产 GT + 拟合像素表
   generate_dataset.py        生成入口（--split/--episodes；失败 episode 跳过并记录）
   record_wrapper.py          薄子类：落盘 GT segmentation + seg_id 表。⚠ 不 override step()
   seg_id_table.py            场景对象 → segmentation id 枚举表（GT 三类映射的唯一依据）
@@ -130,7 +264,7 @@ gt-data/                     职责①：产 GT + 拟合像素表
   color_model.py             像素表定义 / 拟合 / 推理（唯一碰 GT 的模块）
   fit_color_model.py         拟合入口
   outputs/color_model.npz    ★ 像素表，唯一入 git 的产物
-arm-mask/                    职责②：产 mask + 实测
+arm-mask/                    第二阶段：产 mask + 实测
   make_mask.py               唯一 mask 生产入口（模式①②共用，全程不看 GT），K=13 唯一落点
   evaluate.py                模式②实测：读 sidecar + GT，pixel/grid 双口径 + 刚性闸门
   run_generated.py           模式②编排：生成 → mask → 实测 → 删数据
@@ -168,78 +302,10 @@ arm-mask/                    职责②：产 mask + 实测
 主键对齐：(task, `episode_<i>`, timestep 序) ↔ MotionJEPA 侧 `<Task>_ep<i>`。
 写后默认回读逐位对拍（`--no-verify` 可关）。
 
----
+### 单元测试
 
-## 六、实测结果（2026-08-14，16 任务 × ep0-9 = 160 episode / 80,853 帧）
-
-数字全部来自模式②——它是唯一有 GT 当尺子的口径。模式①（官方 h5）没有 GT，只有金丝雀
-与结构量。机读原件在 `arm-mask/outputs/json/`。
-
-### 6.1 像素口径（刚性红线在此）
-
-| 指标 | 实测 |
-|---|---:|
-| **误标物体像素（刚性红线）** | **0** |
-| 误标背景像素 | **0** |
-| **标定精确率** | **1.000000** |
-| 机械臂召回 | 0.816906 |
-| 未见颜色率 | 0.1626% |
-| 存在物体误标的帧占比 | 0 |
-
-闸门输出：逐 episode 共 160 项误标物体像素全部为 0。实测耗时 11.5 秒（16 进程）——
-`evaluate.py` 读 sidecar 而非重跑推理链，故比历史上「两处各跑一遍链路」快近一个数量级。
-
-### 6.2 网格口径 K=13（⚠ 刚性红线在此不适用）
-
-| 指标 | 实测 |
-|---|---:|
-| GT 臂像素覆盖率 | 0.883361 |
-| GT 物体像素被涂比例 | 0.006211 |
-| 网格精确率 | 0.916749 |
-| **纯误涂格（格内 GT 臂像素为 0）** | **0** |
-| 网格臂格占比（/ 全部格） | 6.417% |
-
-**纯误涂格恒为 0** 是像素刚性红线在网格口径留下的结构性遗产：任何被选中的格子都至少含
-1 个真臂像素。
-
-**低估补偿换算表**（名义占比是链路看到的，GT 臂真实占比才是真相）：K=13 名义 20.3%，
-格内 **GT 臂真实平均占比 50.6%**；K=32 名义 50%，实际 69.1%。想选「格内真实臂占比 ≥ X」
-直接查 JSON 里的 `低估补偿换算表`，**不要拿整体召回做反推**——反推假设漏标在格间均匀，
-实际薄边缘格漏得多、臂身中央格几乎不漏。
-
-### 6.3 模式①（官方 h5）
-
-80,853 帧，未见颜色率 0.1626%，像素判臂率 5.44%，空像素 mask 帧 0、空网格帧 0，
-**金丝雀 PASS（零命中项）**，耗时 68 秒。sidecar 44 MB。
-
-### 6.4 ⚠ 同 seed 重放的实际保真度
-
-用户决策里预估的两项代价，本轮实测**都没有兑现**：
-
-| 预估代价 | 本轮实测 |
-|---|---|
-| 可能无法 100% 完成全部 episode | **160/160 成功，0 失败** |
-| 可能无法获得完全一致的 RGB 观察 | 抽 6 个任务 8 个 episode（2734 帧）与官方逐像素对比，**8/8 帧数相同且逐位完全一致，最大绝对差 0** |
-
-佐证：模式①与模式②在 **16/16 个任务**上的帧数、未见色像素、臂像素、网格格数四项**逐位
-相等**——两份数据在本链路看来完全同一。成因是 screw 规划本身确定性，只有 RRTStar 兜底
-才引入随机，本轮未触发。
-
-⚠ **这是实测观察，不构成保证。** 采样非全量；多 worker 抢卡时兜底一旦触发就会分叉；
-本链路也没有任何机制去校验它（对拍器已随「不回放 joint angle」一并删除）。第二节的风险
-声明照旧成立，不因这次结果放松。
-
----
-
-## 七、已知代价（诚实清单）
-
-1. **臂与混合共享的中性灰白色一律不判臂**：臂的灰白外壳与灰白物体撞色的部分照旧漏标。
-   这是本方案唯一的结构性漏标来源，代价有闭式（见 `color_model.py`）。
-2. **物体误标在评估集上没有理论零保证**（标定集上才是恒等式），所以才有硬闸门——数字以
-   每次实测为准，不以推理为准。
-3. **未见颜色一律不标**，方向与宗旨一致（宁可漏标）。
-4. **触顶规则漏掉非从上方入画的臂**（可接受漏标）。
-5. **模式①的根本盲点**：官方数据没有 GT，像素刚性红线在那里**不可复验**。关闭这个盲点
-   正是模式②存在的理由——同 seed 重放出带 GT 的同场景数据，让红线可验。
-6. **模式②与官方轨迹不同**：不回放 joint angle，实测数字代表「同场景、planner 自己走一遍」
-   的表现，不是官方那一模一样的画面上的表现。
+```bash
+uv run --no-sync python -m pytest tests/lightweight/test_arm_mask.py \
+  tests/lightweight/test_grid_mask.py tests/lightweight/test_make_mask.py \
+  tests/lightweight/test_seg_id_table.py tests/lightweight/test_record_wrapper.py -q
+```
