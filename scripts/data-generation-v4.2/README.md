@@ -1,10 +1,15 @@
 # 数据生成 v4.2：机械臂标定（先验颜色表 + 纯支撑判据 + 形态学收缩）
 
-本目录做一件事：**把 RoboMME `front_rgb` 里的机械臂标出来、涂成纯红 (255,0,0)**。
-方法是先在标定集上建一张先验颜色表，再用它逐像素判别，最后过四条形态学规则收缩成
-最终 mask。在此之上另有一个**网格 mask 派生口径**（像素 mask → Wan VAE latent 对齐
-的 32×32 格级 mask，见「四、网格 mask」）——⚠ 下面这条刚性原则**只约束像素口径，
-不适用于网格口径**，理由见第四节。
+本链路的定位（用户 2026-08-14 拍板）：**生成新数据只为标定颜色表（已完成）；
+正式产出是对官方旧数据的标注**——对 `Yinpei/robomme_data_h5` 本地备份（train
+split，无 GT segmentation）跑「查表 → 四条形态学规则 → K=13 网格化」，产出 Wan VAE
+latent 对齐的 32×32 格级机械臂 mask sidecar（见「五、官方数据标注」）。
+
+一、二、三节是颜色表的标定与验证（在自生 val split 数据上做，有 GT 当尺子）：
+**把 `front_rgb` 里的机械臂标出来、涂成纯红 (255,0,0)**——先在标定集上建一张先验
+颜色表，再逐像素判别，最后过四条形态学规则收缩成像素级 mask。第四节是**网格 mask
+派生口径**（像素 mask → 32×32 格级）——⚠ 下面这条刚性原则**只约束像素口径，不适用
+于网格口径**，理由见第四节。
 
 **刚性原则（第一判据，凌驾于其它一切指标）：不得把物体判错成 robot arm，「判错」以
 ground truth 为准。** 精确说法：整段 episode 每一帧被标成臂的像素，逐个查它在 GT
@@ -157,11 +162,18 @@ uv run --no-sync python scripts/data-generation-v4.2/grid_sweep.py \
   --preview-dir scripts/data-generation-v4.2/outputs/grid_sweep_val_ep0-10_per_episode \
   --out scripts/data-generation-v4.2/outputs/json/grid_sweep_val_ep0-10.json
 
-# 8. 单元测试（v4 / v4.1 / v4.2 / 网格 mask 四套一起跑，互不污染）
+# 8. 官方数据标注（正式产出：16 任务 × ep0-9 → K=13 sidecar + 480 张预览，实测 80.8 秒）
+uv run --no-sync python scripts/data-generation-v4.2/annotate_reference.py \
+  --tasks all --episodes 0-9 --workers 16 \
+  --out-dir scripts/data-generation-v4.2/outputs/ref_arm_grid_mask_ep0-9 \
+  --json scripts/data-generation-v4.2/outputs/json/ref_annotate_ep0-9.json \
+  --preview-dir scripts/data-generation-v4.2/outputs/ref_annotate_ep0-9_preview
+
+# 9. 单元测试（v4 / v4.1 / v4.2 / 网格 mask / 官方标注 五套一起跑，互不污染）
 uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
   tests/lightweight/test_arm_mask_v4_1.py tests/lightweight/test_color_distribution.py \
   tests/lightweight/test_arm_mask_v4_2.py tests/lightweight/test_color_distribution_v4_2.py \
-  tests/lightweight/test_grid_mask_v4_2.py -q
+  tests/lightweight/test_grid_mask_v4_2.py tests/lightweight/test_annotate_reference.py -q
 ```
 
 ### 2.4 文件结构
@@ -178,9 +190,11 @@ uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
 | `segmentation_walkthrough.py` | 逐阶段走查出视频入口 |
 | `grid_mask.py` | 网格 mask 纯函数模块（像素 mask → 32×32 格级 mask，只依赖 numpy） |
 | `grid_sweep.py` | 网格阈值扫描入口：全 64 档指标 JSON + 三套预览图（见四） |
+| `annotate_reference.py` | 官方数据标注入口（正式产出）：K=13 sidecar + 金丝雀 + 预览（见五） |
 | `../../tests/lightweight/test_arm_mask_v4_2.py` | GT 映射、重叠计数、判臂等价于纯支撑判据、四条规则的逻辑测试 |
 | `../../tests/lightweight/test_color_distribution_v4_2.py` | 出图链路的复算对拍与闸门测试 |
 | `../../tests/lightweight/test_grid_mask_v4_2.py` | 网格对齐、阈值边界、超集/单调两性质、累计表后缀和==直算的逻辑测试 |
+| `../../tests/lightweight/test_annotate_reference.py` | 官方帧迭代器、三层互验、sidecar 回环、金丝雀分支的逻辑测试 |
 
 ⚠ `color_model` / `arm_mask_v4` 两个模块名在 v4、v4.1、v4.2 三个目录里同名，测试文件
 必须用各自的 `sys.modules` 隔离导入器，否则按导入顺序会静默拿到错的实现。
@@ -295,6 +309,9 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
 | `outputs/json/grid_sweep_val_ep10-19.json` | 网格 mask 全 64 档逐阈值指标 + 低估补偿换算表（网格口径唯一可引用数字） |
 | `outputs/json/grid_sweep_val_ep0-5.json` | 网格 mask 标定集口径（参数块自带「数字不作结论」警告） |
 | `outputs/json/grid_sweep_val_ep0-10.json` | 逐 episode 预览模式那次运行的标定集口径 JSON（同上警告） |
+| `outputs/ref_arm_grid_mask_ep0-9/` | **正式产出**：官方数据 K=13 网格 mask sidecar ×16（44 MB，见五） |
+| `outputs/ref_annotate_ep0-9_preview/` | 官方数据标注预览 480 张（16 任务 × 10 ep × 3 帧型，247 MB） |
+| `outputs/json/ref_annotate_ep0-9.json` | 官方数据标注统计 + 金丝雀判决（唯一机读口径） |
 | `outputs/logs/` | 各入口运行日志（gitignore，不入库） |
 
 ---
@@ -314,8 +331,11 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
 - **阈值全局统一（用户拍板）**：单一整数 K 对全部任务、全部 episode、全部格子
   位置一体生效；`grid_mask.py` 与 `grid_sweep.py` 都**不提供**按任务 / episode /
   位置的覆盖通道。逐任务指标只用于观测哪个任务在某全局 K 下最吃亏。
-- **K 待标定，代码不设默认值**：`GridParams.min_pixels` 强制显式传——阈值由用户
-  目视预览图拍板，在那之前代码里不立第二个口径。
+- **K 已拍板 = 13（2026-08-14 用户定案）**：此前 workflow 标定（8 个 sonnet 逐档
+  目视 + 1 个 opus 综合评估集全 64 档数字）推荐 K=8、次选 K=13，用户选 13（纯度
+  优先：低估补偿表显示格内真实臂占比过半的严格阈值点在 v≈12-13）。拍板值写在
+  `annotate_reference.GRID_MIN_PIXELS`（唯一落点，无 CLI 开关）；`GridParams.
+  min_pixels` 本身仍无默认值、强制显式传——库层不立第二个口径。
 
 ### 4.2 ⚠ 刚性红线不适用于网格口径
 
@@ -359,7 +379,86 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
   低估补偿换算表）。该口径下脚本自动做五项锚点对拍，逐位不等即非零退出。
 - 放大一律 `np.repeat` 最近邻，**禁止任何插值**——块状硬边正是要目视/消费的东西。
 
-### 4.6 本轮范围声明
+### 4.6 范围与落地状态
 
-只做模块（`grid_mask.py`）+ 扫描（`grid_sweep.py`）+ 阈值标定；**不动 h5 schema、
-不接生成链路**。阈值拍板后的落地（写默认值、进生成产物）另开一轮、另行确认。
+网格 mask 的标定轮只做模块（`grid_mask.py`）+ 扫描（`grid_sweep.py`）+ 阈值标定，
+不动 h5 schema。**阈值拍板（K=13）后的落地已完成**：走官方数据标注入口
+`annotate_reference.py`（见五），产出独立 sidecar，官方 h5 与自生数据集都保持不动；
+仍然**不接数据生成链路**（用户拍板：生成新数据只为标定颜色表，后续均标注旧数据）。
+
+---
+
+## 五、官方数据标注（正式产出，K=13）
+
+对官方旧数据 `/data/hongzefu/robomme_data_h5`（`Yinpei/robomme_data_h5` 本地备份，
+**只读参考源**）跑「查表 → 四条形态学规则 → K=13 网格化」，产出独立 sidecar。
+唯一入口 `annotate_reference.py`，范围 = 每任务前 10 个 episode（ep0-9，用户拍板
+不跑全量），2026-08-14 实测 16 任务 × 10 ep = **80,853 帧 / 80.8 秒（16 进程）**。
+
+### 5.1 数据源与 split 归属（跨 split 泛化是结论不是风险）
+
+- 官方数据 = **train split**：MoveCube ep0-4 的 `setup/seed`（14000..14400）与
+  `src/robomme/env_metadata/train` 的 records 逐位一致；颜色表拟合在自生 **val**
+  split——**零 seed 重叠**。
+- 官方数据**没有 GT segmentation**（setup 无 flow_excluded/flow_objects），这正是
+  颜色表方案的存在理由；代价见 5.4 的盲点声明。
+- 结构已实测核验（160/160 episode）：timestep 0-based 连续、`is_video_demo` 严格
+  前缀、exec 段都有 `is_completed=True`——与 MotionJEPA `build_data_raw_from_h5.py`
+  的切段规则完全兼容。
+
+### 5.2 sidecar schema（`outputs/ref_arm_grid_mask_ep0-9/arm_grid_mask_<Task>.h5` ×16）
+
+每 episode **三层全存**（用户拍板；gzip4，合计 44 MB）：
+
+| dataset | shape / dtype | 说明 |
+|---|---|---|
+| `arm_grid_mask` | (T,32,32) bool | **正式产物**：K=13 格级 mask，一格 = 一个 Wan VAE latent 位置 |
+| `arm_cell_counts` | (T,32,32) uint8 | 阈值无关计数，`counts >= K` 即任意档网格——换 K 免重跑 |
+| `arm_mask_px` | (T,256,256) bool | 像素层审计留痕：无 GT 环境下唯一客观存档，任意 K/涂红帧可重建 |
+| `is_video_demo` / `is_completed` | (T,) bool | 下游切段与 exec 截断必需；**刻意不存 exec_len**（`first_completed + 2` 公式留在下游，防两仓两口径） |
+| `unseen_pixels` / `arm_pixels` / `timestep_index` | (T,) int32 | 逐帧未见色数 / 像素 mask 数 / 主键（恒 = arange(T)） |
+
+根 attrs（英文 snake_case）含 `min_pixels=13`、`cell_size=8`、颜色表 md5、形态学
+参数、`has_ground_truth=False`、git commit 等 21 键；episode attrs 含 seed /
+difficulty / demo_prefix 等溯源量。**主键对齐**：(task, `episode_<i>`, timestep 序)
+↔ MotionJEPA 侧 `<Task>_ep<i>`。回读示例即 `read_sidecar_episode`。
+写后默认回读逐位对拍（`verify_sidecar`，`--no-verify` 可关）。
+
+### 5.3 金丝雀（迁移监测；产物全部落盘后才判，FAIL 退出码 1）
+
+颜色表拟合在自生 val 数据上，跨到官方渲染数据的迁移质量双轨监测（阈值与实测锚点
+见 `CanaryThresholds`）：
+
+- **未见颜色率**（诊断量，方向安全——未见 ⇒ 不判臂 ⇒ 只会漏标）：全局 >0.5% FAIL；
+  逐任务「相对 v4seg 评估集同任务基线倍率 >5× **且** 绝对值 >0.5%」FAIL（双判据：
+  单看倍率会被零基线任务放大，单看绝对值会误杀 RouteStick——其 2.19% 未见率来自
+  运行时动态创建的路线曲线，v4seg 基线同为 2.20%，倍率 1.0×，任务固有非迁移症状）。
+- **结构闸门**（真正测「臂丢没丢」）：任一 episode 空像素 mask 帧占比 >1% FAIL
+  （画面顶部基座恒可见，实测下界 614 px / 14 格）；任一任务像素判臂率 <0.5% FAIL
+  （实测最低 StopCube 1.86%）。
+
+**2026-08-14 全量实测：判决 PASS（零命中项）**。全局未见率 **0.1626%**（v4seg 同分布
+基线 0.1914%——跨 split 反而更低）；空 mask 帧 = 0、空网格帧 = 0（16×10 全部）；
+全局像素判臂率 5.44%。逐任务未见率最高 RouteStick 2.1857%（基线倍率 1.00×）、
+InsertPeg 0.8213%（0.96×），其余全部 <0.06%。
+
+### 5.4 ⚠ 无 GT 的根本盲点（唯一无法用数字关闭的风险）
+
+「颜色在标定集只在臂上见过、在官方数据却落在物体上」这一格**无法量化**——官方数据
+没有 GT 当尺子，像素口径的刚性红线（误标物体恒 0）在这里**不可复验**，其保证仅来自
+v4seg 评估集的实测外推。唯一观察窗是预览图目视：`unseen` 帧型（品红=未见色落点）
+与 `min` 帧型（最可能漏臂的帧）。
+
+### 5.5 预览（`outputs/ref_annotate_ep0-9_preview/`，480 张）
+
+每 episode 三帧型（挑选规则全部与 K 无关）：`max`（像素 mask 最大，信息最多）/
+`min`（最小，最可能漏臂）/ `unseen`（未见色最多，迁移诊断）。2×3 版式：原帧 /
+像素 mask 红遮罩 / 未见色高亮（品红+压暗）；网格叠加 / 网格 vs 像素差异 / 网格
+mask 纯黑白（下游消费口径）。无 GT，故没有误差图与 GT 三类面板（与四节的标定预览
+版式刻意不同）。
+
+### 5.6 产物入库与交付
+
+sidecar / 预览 / JSON 都在 gitignore 的 `outputs/` 下**不入 git**，重建即按 2.3 的
+第 8 条命令（确定性：颜色表 + 官方数据 + 本 README 记录的参数即可逐位复现）。
+MotionJEPA 消费侧如需固定路径，搬运/拷贝另开一轮确认。
