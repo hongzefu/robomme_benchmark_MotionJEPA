@@ -444,13 +444,21 @@ def _load_pixel_recall(path: Path) -> dict[str, float]:
 
 
 def render_previews(
-    previews: dict[str, dict[str, dict[str, Any]]],
+    entries: Sequence[dict[str, Any]],
+    aggregated: dict[str, dict[str, dict[str, Any]]] | None,
     candidate_k: tuple[int, ...],
     cell_size: int,
     preview_dir: Path,
     pixel_recall: dict[str, float],
+    kinds: tuple[str, ...],
 ) -> dict[str, int]:
-    """产出三套预览图。previews: task → {"typical"/"worst" → 帧载荷}。"""
+    """产出预览图。
+
+    `entries` 是扁平的代表帧清单（每项含 task / episode / kind / payload），tiles
+    逐项渲染；`aggregated` 为**每任务聚合后**的代表帧（task → kind → 载荷），只有
+    它非空时才产出 mosaic / strips——那两套按任务横向排布，逐 episode 模式下没有
+    对应语义（同一格位会被 11 个 episode 争用），故直接跳过。
+    """
     from PIL import Image, ImageDraw, ImageFont
 
     from segmentation_walkthrough import FONT_PATH
@@ -523,66 +531,77 @@ def render_previews(
         "误差图：白=臂标对 / 红=涂到物体 / 黄=涂到背景 / 蓝=漏臂"
     )
 
+    # ---- tiles：每（代表帧 × 阈值）一张 2×3，给 agent 读 ----
+    for entry in entries:
+        task, kind, payload = entry["task"], entry["kind"], entry["payload"]
+        if kind not in kinds:
+            continue
+        # 逐 episode 模式的文件名带 ep 号（同一任务会出多张，不带号会互相覆盖）；
+        # 聚合模式沿用原命名，既有产物与外部引用不受影响
+        stem = task if aggregated is not None else f"{task}_ep{entry['episode_index']:02d}"
+        rgb = payload["rgb"]
+        gt = payload["gt"].astype(np.int64)
+        mask = payload["mask"]
+        counts = cell_counts(mask, cell_size)
+        recall = pixel_recall.get(task)
+        recall_text = f"像素级召回 {recall:.3f}" if recall is not None else ""
+        scale = TILE_SCALE_AGENT
+        base_row = [
+            (_nearest(rgb, scale), "原帧 front_rgb", ""),
+            (_nearest(_gt_image(gt), scale), "GT 三类（白=臂 橙=物体 蓝=背景）", ""),
+            (
+                _nearest(apply_red_mask(rgb, mask), scale),
+                "像素 mask 红遮罩（基准）",
+                f"像素 mask {int(mask.sum())} px",
+            ),
+        ]
+        for k in candidate_k:
+            grid = grid_from_counts(counts, k)
+            up = upsample_grid(grid, cell_size)
+            painted_arm = int((up & (gt == CLASS_ARM)).sum())
+            painted_obj = int((up & (gt == CLASS_OBJECT)).sum())
+            painted_bg = int((up & (gt == CLASS_BACKGROUND)).sum())
+            grid_row = [
+                (
+                    _grid_overlay(rgb, grid, cell_size, scale),
+                    f"网格叠加（K={k}）",
+                    f"{int(grid.sum())} 格 = {int(grid.sum()) * cell_area} px",
+                ),
+                (
+                    _nearest(_diff_image(mask, up), scale),
+                    "网格 vs 像素差异",
+                    f"多涂 {int((up & ~mask).sum())} px / 丢 {int((mask & ~up).sum())} px",
+                ),
+                (
+                    _nearest(_error_image(up, gt), scale),
+                    "网格版误差图（GT 尺子）",
+                    f"臂 {painted_arm} / 物体 {painted_obj} / 背景 {painted_bg} px",
+                ),
+            ]
+            title = (
+                f"{task} · {payload['episode']} · 帧 {payload['frame_index']}"
+                f"（{kind}） · K={k}（{k}/{cell_area} = {k / cell_area:.1%}）"
+                + (f" · {recall_text}" if recall_text else "")
+            )
+            compose(
+                [base_row, grid_row],
+                title,
+                diff_legend,
+                tiles_dir / f"{stem}_K{k:02d}_{kind}.png",
+                tile=256 * scale,
+            )
+            written["tiles"] += 1
+
+    if aggregated is None:
+        # 逐 episode 模式：mosaic / strips 按任务横向排布，同一格位会被多个 episode
+        # 争用，没有对应语义，直接跳过
+        return written
+
     # 任务排序：按像素级召回升序（最弱的 StopCube 恒在左上角），缺数字的排最后
+    previews = aggregated
     ordered_tasks = sorted(
         previews, key=lambda task: (pixel_recall.get(task, 2.0), task)
     )
-
-    # ---- tiles：每（任务 × 阈值 × 代表帧）一张 2×3，给 agent 读 ----
-    for task in ordered_tasks:
-        for kind, payload in previews[task].items():
-            rgb = payload["rgb"]
-            gt = payload["gt"].astype(np.int64)
-            mask = payload["mask"]
-            counts = cell_counts(mask, cell_size)
-            recall = pixel_recall.get(task)
-            recall_text = f"像素级召回 {recall:.3f}" if recall is not None else ""
-            scale = TILE_SCALE_AGENT
-            base_row = [
-                (_nearest(rgb, scale), "原帧 front_rgb", ""),
-                (_nearest(_gt_image(gt), scale), "GT 三类（白=臂 橙=物体 蓝=背景）", ""),
-                (
-                    _nearest(apply_red_mask(rgb, mask), scale),
-                    "像素 mask 红遮罩（基准）",
-                    f"像素 mask {int(mask.sum())} px",
-                ),
-            ]
-            for k in candidate_k:
-                grid = grid_from_counts(counts, k)
-                up = upsample_grid(grid, cell_size)
-                painted_arm = int((up & (gt == CLASS_ARM)).sum())
-                painted_obj = int((up & (gt == CLASS_OBJECT)).sum())
-                painted_bg = int((up & (gt == CLASS_BACKGROUND)).sum())
-                grid_row = [
-                    (
-                        _grid_overlay(rgb, grid, cell_size, scale),
-                        f"网格叠加（K={k}）",
-                        f"{int(grid.sum())} 格 = {int(grid.sum()) * cell_area} px",
-                    ),
-                    (
-                        _nearest(_diff_image(mask, up), scale),
-                        "网格 vs 像素差异",
-                        f"多涂 {int((up & ~mask).sum())} px / 丢 {int((mask & ~up).sum())} px",
-                    ),
-                    (
-                        _nearest(_error_image(up, gt), scale),
-                        "网格版误差图（GT 尺子）",
-                        f"臂 {painted_arm} / 物体 {painted_obj} / 背景 {painted_bg} px",
-                    ),
-                ]
-                title = (
-                    f"{task} · {payload['episode']} · 帧 {payload['frame_index']}"
-                    f"（{kind}） · K={k}（{k}/{cell_area} = {k / cell_area:.1%}）"
-                    + (f" · {recall_text}" if recall_text else "")
-                )
-                compose(
-                    [base_row, grid_row],
-                    title,
-                    diff_legend,
-                    tiles_dir / f"{task}_K{k:02d}_{kind}.png",
-                    tile=256 * scale,
-                )
-                written["tiles"] += 1
 
     # ---- mosaic：每阈值一张 4×4（typical 帧的三色差异图），给人拍板 ----
     for k in candidate_k:
@@ -641,6 +660,36 @@ def render_previews(
         )
         written["strips"] += 1
     return written
+
+
+def _episode_index(episode_name: str) -> int:
+    return int(episode_name[len("episode_") :])
+
+
+def _flat_preview_entries(
+    records: Sequence[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """逐 episode 模式的扁平代表帧清单：每个 (任务, episode, kind) 各一项。
+
+    与聚合模式的区别只在这里——聚合模式每任务只留一个 episode 胜出，逐 episode
+    模式一个不丢，用于「每个 episode 都出图」的目视核查。
+    """
+    entries: list[dict[str, Any]] = []
+    for record in records:
+        if "preview" not in record:
+            continue
+        for kind, payload in record["preview"].items():
+            entries.append(
+                {
+                    "task": record["task"],
+                    "episode": record["episode"],
+                    "episode_index": _episode_index(record["episode"]),
+                    "kind": kind,
+                    "payload": dict(payload, episode=record["episode"]),
+                }
+            )
+    entries.sort(key=lambda item: (item["task"], item["episode_index"], item["kind"]))
+    return entries
 
 
 def _merge_task_previews(
@@ -739,6 +788,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="显式声明不出图（与 --preview-dir 互斥，纯粹让命令行意图可读）",
     )
     parser.add_argument(
+        "--preview-per-episode",
+        action="store_true",
+        help="逐 episode 出 tiles（每任务每 episode 各一张，文件名带 ep 号）；"
+        "默认是每任务只出一张聚合代表帧。该模式不产 mosaic/strips（按任务排布，无对应语义）",
+    )
+    parser.add_argument(
+        "--preview-kinds",
+        default="typical,worst",
+        help="出哪种代表帧：typical（走查同口径最大臂帧）/ worst（K=1 涂进物体最多帧），"
+        "逗号分隔",
+    )
+    parser.add_argument(
         "--candidate-k",
         default=",".join(str(k) for k in DEFAULT_CANDIDATE_K),
         help="出图/帧级统计的候选阈值（逗号分隔的格内像素数）；指标 JSON 恒扫全 64 档",
@@ -763,6 +824,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.preview_dir and args.no_preview:
         raise SystemExit("--preview-dir 与 --no-preview 互斥")
     want_preview = args.preview_dir is not None
+    preview_kinds = tuple(
+        item.strip() for item in args.preview_kinds.split(",") if item.strip()
+    )
+    if not preview_kinds or any(k not in ("typical", "worst") for k in preview_kinds):
+        raise SystemExit(f"--preview-kinds 只接受 typical / worst：{preview_kinds}")
 
     cell_area = args.cell_size * args.cell_size
     candidate_k = tuple(
@@ -847,7 +913,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         for record in records
     ]
 
-    calibration_scope = wanted <= set(range(10))
+    # ⚠ 判据是「与标定集有交集」而非「完全落在标定集内」：ep0-10 这类跨界口径同样
+    # 被颜色表的拟合集污染，数字一样偏乐观，必须照样警告
+    calibration_scope = bool(wanted & set(range(10)))
     payload = {
         "参数": {
             "颜色表": args.model,
@@ -885,17 +953,39 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"指标 JSON 已写入 {out_path}（全 {cell_area} 档）")
 
     if want_preview:
-        previews = _merge_task_previews(records)
         pixel_recall = _load_pixel_recall(
             SCRIPT_DIR / "outputs" / "json" / "validation_val_ep10-19.json"
         )
         preview_dir = Path(args.preview_dir)
+        if args.preview_per_episode:
+            entries = _flat_preview_entries(records)
+            aggregated = None
+        else:
+            aggregated = _merge_task_previews(records)
+            entries = [
+                {
+                    "task": task,
+                    "episode": payload["episode"],
+                    "episode_index": _episode_index(payload["episode"]),
+                    "kind": kind,
+                    "payload": payload,
+                }
+                for task, kinds in aggregated.items()
+                for kind, payload in kinds.items()
+            ]
         written = render_previews(
-            previews, candidate_k, args.cell_size, preview_dir, pixel_recall
+            entries,
+            aggregated,
+            candidate_k,
+            args.cell_size,
+            preview_dir,
+            pixel_recall,
+            preview_kinds,
         )
         print(
             f"预览图已写入 {preview_dir}：tiles {written['tiles']} 张 / "
             f"mosaic {written['mosaic']} 张 / strips {written['strips']} 张"
+            + ("（逐 episode 模式不产 mosaic/strips）" if aggregated is None else "")
         )
 
     # 终端速览：候选档的关键指标

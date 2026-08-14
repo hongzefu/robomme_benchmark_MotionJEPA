@@ -150,6 +150,13 @@ uv run --no-sync python scripts/data-generation-v4.2/grid_sweep.py \
   --preview-dir scripts/data-generation-v4.2/outputs/grid_sweep_val_ep0-5 \
   --out scripts/data-generation-v4.2/outputs/json/grid_sweep_val_ep0-5.json
 
+# 7'. 网格 mask：逐 episode 出图（每任务每 episode 各一张，不产 mosaic/strips）
+uv run --no-sync python scripts/data-generation-v4.2/grid_sweep.py \
+  --episodes 0-10 --workers 16 --candidate-k 8,13 \
+  --preview-per-episode --preview-kinds worst \
+  --preview-dir scripts/data-generation-v4.2/outputs/grid_sweep_val_ep0-10_per_episode \
+  --out scripts/data-generation-v4.2/outputs/json/grid_sweep_val_ep0-10.json
+
 # 8. 单元测试（v4 / v4.1 / v4.2 / 网格 mask 四套一起跑，互不污染）
 uv run --no-sync python -m pytest tests/lightweight/test_arm_mask_v4.py \
   tests/lightweight/test_arm_mask_v4_1.py tests/lightweight/test_color_distribution.py \
@@ -339,6 +346,13 @@ train ep10 口径 7/16），走查每任务只取一帧，抽样噪声很强；�
   - `mosaic/grid_K<NN>.png`（每档 4×4 拼图，任务按像素级召回升序，StopCube 恒
     左上）与 `strips/<Task>_sweep.png`（每任务跨阈值横条）：tile 3×，**给人拍板，
     不给 agent 读**（长边超 3k 会被压到看不清）。
+  - **逐 episode 模式** `--preview-per-episode`：tiles 改成每（任务 × episode ×
+    档 × 帧型）各一张，文件名带 ep 号 `<Task>_ep<NN>_K<NN>_<kind>.png`；默认的
+    聚合模式每任务只留一个 episode 胜出，逐 episode 模式一个不丢，用于挨个核查。
+    该模式**不产 mosaic/strips**（那两套按任务横向排布，同一格位会被多个 episode
+    争用，没有对应语义）。配套 `--preview-kinds typical,worst` 可只出其中一种。
+    已产出的一份：`outputs/grid_sweep_val_ep0-10_per_episode/`（ep0-10 × 16 任务 ×
+    K∈{8,13} × worst = 352 张，142 MB）。
 - **可引用数字**：评估集 val ep10-19（`grid_sweep_val_ep10-19.json`，全 64 档 +
   低估补偿换算表）。该口径下脚本自动做五项锚点对拍，逐位不等即非零退出。
 - 放大一律 `np.repeat` 最近邻，**禁止任何插值**——块状硬边正是要目视/消费的东西。
