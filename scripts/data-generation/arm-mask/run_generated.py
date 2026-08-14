@@ -7,7 +7,13 @@
     生成（gt-data/generate_dataset.py，planner 重新规划，不回放 joint angle）
       → 产 mask（make_mask.py，全程不看 GT）
       → 实测（evaluate.py，读 sidecar + GT，pixel/grid 双口径）
+      → [--videos] 可视化视频（make_videos.py，6 面板 + worst 合集）
       → 删数据集（用户拍板：跑完即删；--keep-dataset 可保留）
+
+视频步刻意放在编排里而不是让人独立跑：①删数据逻辑的单一负责点在本脚本，独立跑就得
+--keep-dataset 再手动删，忘了就留 60 GB；②planner 非确定性 ⇒ sidecar 与数据集必须
+同批产出，编排保证这一点（make_videos.py 另有指纹校验兜底）；③任一步失败即中止 ⇒
+视频步失败时数据集不会被删，--skip-generate 可原地重跑。
 
 ## ⚠ 两点必须知道
 
@@ -70,6 +76,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="跑完保留生成的数据集（约 60 GB）；默认删除",
     )
     parser.add_argument(
+        "--videos",
+        action="store_true",
+        help="实测之后、删数据之前，用 make_videos.py 出 6 面板视频 + worst 合集",
+    )
+    parser.add_argument(
+        "--video-out-dir",
+        default=None,
+        help="透传给 make_videos.py 的 --out-dir（默认其自身默认值 outputs/videos）",
+    )
+    parser.add_argument(
         "--skip-generate",
         action="store_true",
         help="跳过生成，直接对已存在的 --dataset-dir 产 mask 并实测（隐含保留数据集）",
@@ -79,10 +95,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     dataset_dir = Path(args.dataset_dir)
     episode_range = f"0-{args.episodes - 1}" if args.episodes > 1 else "0"
     python = sys.executable
+    total_steps = 4 if args.videos else 3
 
     if not args.skip_generate:
         _run(
-            "1/3 生成带 GT 数据",
+            f"1/{total_steps} 生成带 GT 数据",
             [
                 python,
                 str(GT_DATA_DIR / "generate_dataset.py"),
@@ -98,7 +115,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit(f"--skip-generate 要求 --dataset-dir 已存在：{dataset_dir}")
 
     _run(
-        "2/3 产 mask",
+        f"2/{total_steps} 产 mask",
         [
             python,
             str(SCRIPT_DIR / "make_mask.py"),
@@ -120,7 +137,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
 
     _run(
-        "3/3 实测（pixel + grid 双口径）",
+        f"3/{total_steps} 实测（pixel + grid 双口径）",
         [
             python,
             str(SCRIPT_DIR / "evaluate.py"),
@@ -132,6 +149,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             "--json", args.eval_json,
         ],
     )
+
+    if args.videos:
+        video_command = [
+            python,
+            str(SCRIPT_DIR / "make_videos.py"),
+            "--source", str(dataset_dir),
+            "--sidecar-dir", args.sidecar_dir,
+            "--tasks", args.env,
+            "--episodes", episode_range,
+            "--workers", str(args.workers),
+        ]
+        if args.video_out_dir is not None:
+            video_command += ["--out-dir", args.video_out_dir]
+        _run(f"4/{total_steps} 可视化视频（6 面板 + worst 合集）", video_command)
 
     if args.keep_dataset or args.skip_generate:
         print(f"\n数据集保留在 {dataset_dir}")

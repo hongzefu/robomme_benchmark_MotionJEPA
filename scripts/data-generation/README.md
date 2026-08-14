@@ -114,6 +114,8 @@ GT 量化是独立的一步（`evaluate.py` 读 sidecar），既不混进生成�
 生产。planner 失败的 episode 会被跳过，实测样本量可能少于「任务数 × episode 数」，
 实测 JSON 里如实记录。
 
+加 `--videos` 会在实测之后、删数据之前多跑一步可视化视频（见 2.3）。
+
 单步拆开跑（`run_generated.py` 内部就是串这三条）：
 
 ```bash
@@ -125,6 +127,46 @@ uv run --no-sync python scripts/data-generation/arm-mask/make_mask.py \
 uv run --no-sync python scripts/data-generation/arm-mask/evaluate.py \
   --sidecar-dir <sidecar 目录> --source artifacts/generated/<名字> --episodes 0-9
 ```
+
+### 2.3 可视化视频（`make_videos.py`）
+
+给每个 episode 出一个多面板同步播放的 mp4（目视工具，**不是判据**——数字判据以
+`evaluate.py` 为准）。只读 sidecar + 源 h5，**不重跑推理链**：想换 K / 换形态学参数出
+新视频，必须先重跑 `make_mask.py`。产物落 `arm-mask/outputs/videos/<reference|generated>/`
+（gitignore，约 2-4 GB，**不随模式②数据集一起删除**）。
+
+面板布局（每格 256×256，`--scale` 可整数倍放大；中文标题/图例为静态层，逐帧字幕为
+ASCII）：
+
+| 模式 | 布局 | 面板 |
+|---|---|---|
+| ①（无 GT） | 1×3 | RGB 原帧 ｜ 像素 mask（纯红） ｜ 网格 mask（半透明红，K=13） |
+| ②（带 GT） | 3×2 | 上排同模式①；下排：GT 臂 mask（纯绿） ｜ 像素误差 ｜ 网格误差 |
+
+误差面板画在压暗灰度 RGB 上：**蓝=漏标臂、红=误涂物体、橙=误涂背景、绿=涂对**。
+⚠ 红色包含 setup 表未覆盖 seg id 的兜底物体像素；网格误差面板必然出现红色（整格涂红
+覆盖物体是网格口径的固有性质），**不等于像素刚性红线被击穿**——红线只约束像素口径。
+
+**worst 片段合集**（仅模式②）：逐帧误差 = 网格 mask 对 GT 的**漏标臂像素 + 误涂物体
+像素**（刻意不含误涂背景——整格涂红盖到背景是网格化的必然代价，不算错）。全体帧按
+误差降序取 top-N 峰值帧（默认 20），各带前后 `--context-seconds`（默认 1 秒）上下文，
+同 episode 重叠/相邻段合并（峰值取大者）、跨 episode 永不合并，**段数可少于 N**。
+合集里段按峰值误差降序，段前有中文标题卡、峰值帧画黄框；另落 `worst.json` 机读排名。
+模式①没有 GT ⇒ 无误差面板、无 worst 合集（显式传 worst 参数会报错）。
+
+```bash
+# 模式①：默认参数即指向官方 h5 与 reference sidecar
+uv run --no-sync python scripts/data-generation/arm-mask/make_videos.py --workers 16
+
+# 模式②：走编排（保证数据集与 sidecar 同批；make_videos 另有源文件指纹校验兜底）
+uv run --locked python scripts/data-generation/arm-mask/run_generated.py \
+  --videos --episodes 10 --workers 16 --gpus 0,1
+```
+
+防错配：sidecar root attrs 记录了源 h5 的文件名/字节数/mtime，`make_videos.py` 逐
+episode 校验指纹与帧数、`timestep_index` 对齐，任一不符 fail-loud——planner 非确定性
+意味着重新生成的数据集与旧 sidecar 可能不同批，静默错配是灾难。已渲染的 mp4 默认跳过
+（断点续跑），`--overwrite` 强制重渲。
 
 ---
 
@@ -261,6 +303,8 @@ grid(K2) ⊆ grid(K1)（两条都有单测钉死）。
    正是模式②存在的理由——同 seed 重放出带 GT 的同场景数据，让红线可验。
 6. **模式②与官方轨迹不同**：不回放 joint angle，实测数字代表「同场景、planner 自己走一遍」
    的表现，不是官方那一模一样的画面上的表现。
+7. **视频是目视工具，不是判据**：worst 排名依赖 GT，只在模式②有意义，且继承第 6 条
+   ——它反映的是自生轨迹上的误差，不是官方画面上的。
 
 ---
 
@@ -278,10 +322,11 @@ gt-data/                     第一阶段：产 GT + 拟合像素表
 arm-mask/                    第二阶段：产 mask + 实测
   make_mask.py               唯一 mask 生产入口（模式①②共用，全程不看 GT），K=13 唯一落点
   evaluate.py                模式②实测：读 sidecar + GT，pixel/grid 双口径 + 刚性闸门
-  run_generated.py           模式②编排：生成 → mask → 实测 → 删数据
+  run_generated.py           模式②编排：生成 → mask → 实测 → [--videos 视频] → 删数据
+  make_videos.py             可视化视频（读 sidecar + 源 h5，不重跑推理链）
   arm_mask.py                四条形态学规则
   grid_mask.py               32×32 网格化纯函数
-  outputs/                   sidecar 与实测 JSON（gitignore）
+  outputs/                   sidecar、实测 JSON 与 videos/（gitignore）
 ```
 
 `arm-mask` 只通过 `sys.path` 只读 import `gt-data/color_model.py` 的推理侧——像素表的定义
@@ -318,5 +363,6 @@ arm-mask/                    第二阶段：产 mask + 实测
 ```bash
 uv run --no-sync python -m pytest tests/lightweight/test_arm_mask.py \
   tests/lightweight/test_grid_mask.py tests/lightweight/test_make_mask.py \
+  tests/lightweight/test_make_videos.py \
   tests/lightweight/test_seg_id_table.py tests/lightweight/test_record_wrapper.py -q
 ```
