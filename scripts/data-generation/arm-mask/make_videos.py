@@ -18,13 +18,18 @@
   （整格涂红覆盖物体是网格口径的固有性质），**不等于像素刚性红线被击穿**——红线只
   约束像素口径（evaluate.py 实测 false_object_pixels = 0）。
 
-## worst 片段合集（仅模式②）
+## worst 片段合集（仅模式②，两个）
 
 逐帧误差 = **网格 mask 对 GT 的漏标臂像素 + 误涂物体像素**（刻意不含误涂背景——
 整格涂红盖到背景是网格化的必然代价，不算错；`frame_error` 是该口径的唯一落点）。
-全体帧按误差降序取 top-N **峰值帧**（默认 20），各带前后 --context-seconds 上下文，
-同 episode 重叠/相邻段合并（峰值取大者）、跨 episode 永不合并，段数可少于 N。
-合集按峰值误差降序排列，段前有中文标题卡，峰值帧画黄框；另落 worst.json 机读排名。
+
+- **worst_per_task.mp4**：每任务最差第一名，一任务恰一段（16 段），按峰值误差降序；
+- **worst_top<N>.mp4**：全局最差 top-N **段**（默认 5，段互不重叠——早期版本按帧取
+  top-N 再合并，最差帧扎堆时段数会缩水到两三段，用户拍板改成段语义）。
+
+每段带前后 --context-seconds 上下文。两个合集**开头都有清单卡**，逐条列出各段的
+任务 / episode / 峰值帧号 / 误差像素数；段前有中文标题卡，峰值帧画黄框；另落
+worst.json 机读排名（两张表）。
 
 ## 防错配（最高风险项）
 
@@ -312,7 +317,7 @@ class FrameScore(NamedTuple):
 
 @dataclass(frozen=True)
 class Segment:
-    """一个 worst 片段（含合并信息）。"""
+    """一个 worst 片段。"""
 
     task: str
     episode: int
@@ -320,75 +325,75 @@ class Segment:
     end: int
     peak_frame: int
     peak_error: int
-    merged_peaks: tuple[int, ...]
 
 
-def merge_segments(segments: Sequence[Segment], merge_gap_frames: int = 0) -> list[Segment]:
-    """同一 (task, episode) 内按 start 合并重叠/相邻（间隔 ≤ merge_gap_frames）段，
-    峰值取误差更大者。跨 episode 的输入直接报错——调用方必须先分组。"""
-    if not segments:
-        return []
-    keys = {(seg.task, seg.episode) for seg in segments}
-    if len(keys) != 1:
-        raise ValueError(f"merge_segments 只接受同一 (task, episode)：{sorted(keys)}")
-    ordered = sorted(segments, key=lambda seg: (seg.start, seg.end))
-    merged = [ordered[0]]
-    for seg in ordered[1:]:
-        prev = merged[-1]
-        if seg.start <= prev.end + 1 + merge_gap_frames:
-            peak_frame, peak_error = (
-                (seg.peak_frame, seg.peak_error)
-                if seg.peak_error > prev.peak_error
-                else (prev.peak_frame, prev.peak_error)
-            )
-            merged[-1] = Segment(
-                task=prev.task,
-                episode=prev.episode,
-                start=prev.start,
-                end=max(prev.end, seg.end),
-                peak_frame=peak_frame,
-                peak_error=peak_error,
-                merged_peaks=tuple(sorted({*prev.merged_peaks, *seg.merged_peaks})),
-            )
-        else:
-            merged.append(seg)
-    return merged
-
-
-def select_worst_segments(
-    scores: Sequence[FrameScore],
-    episode_lengths: Mapping[tuple[str, int], int],
-    top_n: int,
-    context_frames: int,
-    merge_gap_frames: int = 0,
-) -> list[Segment]:
-    """选 worst 片段：误差 > 0 的帧按 (误差降序, task, episode, frame) 稳定排序取
-    top_n 个峰值帧，各带 ±context_frames 上下文（边界裁剪不补黑帧），同 episode
-    合并，最终按峰值误差降序。合并后段数可少于 top_n（top-N 是帧语义不是段语义）。"""
-    ranked = sorted(
+def _ranked_scores(scores: Sequence[FrameScore]) -> list[FrameScore]:
+    """误差 > 0 的帧按 (误差降序, task, episode, frame) 稳定排序。"""
+    return sorted(
         (s for s in scores if s.error > 0),
         key=lambda s: (-s.error, s.task, s.episode, s.frame),
-    )[:top_n]
-    by_episode: dict[tuple[str, int], list[Segment]] = {}
-    for score in ranked:
-        total = episode_lengths[(score.task, score.episode)]
-        if not 0 <= score.frame < total:
-            raise ValueError(f"帧号越界：{score} vs 长度 {total}")
-        seg = Segment(
-            task=score.task,
-            episode=score.episode,
-            start=max(0, score.frame - context_frames),
-            end=min(total - 1, score.frame + context_frames),
-            peak_frame=score.frame,
-            peak_error=score.error,
-            merged_peaks=(score.frame,),
+    )
+
+
+def _segment_for(
+    score: FrameScore,
+    episode_lengths: Mapping[tuple[str, int], int],
+    context_frames: int,
+) -> Segment:
+    total = episode_lengths[(score.task, score.episode)]
+    if not 0 <= score.frame < total:
+        raise ValueError(f"帧号越界：{score} vs 长度 {total}")
+    return Segment(
+        task=score.task,
+        episode=score.episode,
+        start=max(0, score.frame - context_frames),
+        end=min(total - 1, score.frame + context_frames),
+        peak_frame=score.frame,
+        peak_error=score.error,
+    )
+
+
+def select_top_segments(
+    scores: Sequence[FrameScore],
+    episode_lengths: Mapping[tuple[str, int], int],
+    count: int,
+    context_frames: int,
+) -> list[Segment]:
+    """全局最差 top-N 段：按误差降序扫描峰值帧，与已选段（同 episode）重叠的跳过，
+    凑满 count 个**互不重叠**的段（早期版本按帧取 top-N 再合并，最差帧扎堆时段数会
+    缩水到两三段，用户拍板改成段语义）。误差 > 0 的帧不足时段数可少于 count。"""
+    chosen: list[Segment] = []
+    for score in _ranked_scores(scores):
+        seg = _segment_for(score, episode_lengths, context_frames)
+        overlaps = any(
+            o.task == seg.task
+            and o.episode == seg.episode
+            and not (seg.end < o.start or seg.start > o.end)
+            for o in chosen
         )
-        by_episode.setdefault((score.task, score.episode), []).append(seg)
-    merged: list[Segment] = []
-    for group in by_episode.values():
-        merged.extend(merge_segments(group, merge_gap_frames))
-    merged.sort(key=lambda seg: (-seg.peak_error, seg.task, seg.episode, seg.start))
-    return merged
+        if overlaps:
+            continue
+        chosen.append(seg)
+        if len(chosen) == count:
+            break
+    return chosen
+
+
+def select_per_task_segments(
+    scores: Sequence[FrameScore],
+    episode_lengths: Mapping[tuple[str, int], int],
+    context_frames: int,
+) -> list[Segment]:
+    """每任务最差第一名，一任务恰一段（该任务全帧误差为 0 则无段）；结果按峰值误差
+    降序（不是任务名序——最该看的排最前）。"""
+    best: dict[str, FrameScore] = {}
+    for score in _ranked_scores(scores):  # 已按误差降序 → 每任务首次出现即第一名
+        best.setdefault(score.task, score)
+    segments = [
+        _segment_for(score, episode_lengths, context_frames) for score in best.values()
+    ]
+    segments.sort(key=lambda seg: (-seg.peak_error, seg.task, seg.episode, seg.start))
+    return segments
 
 
 # ---------------------------------------------------------------------------
@@ -473,6 +478,22 @@ def render_static_chrome(
         font=font(13),
         fill=(170, 170, 170),
     )
+    return np.asarray(image, np.uint8)
+
+
+def render_list_card(layout: Layout, title: str, entries: Sequence[str]) -> np.ndarray:
+    """合集开头的清单卡：标题 + 编号列表（黑底中文左对齐）。字号/行距按 16 段
+    放得下 3×2 画布高度取值。"""
+    from PIL import Image, ImageDraw, ImageFont
+
+    image = Image.new("RGB", (layout.width, layout.height), (0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    draw.text((PAD * 3, PAD * 3), title, font=ImageFont.truetype(FONT_PATH, 22), fill=CANVAS_FG)
+    entry_font = ImageFont.truetype(FONT_PATH, 15)
+    y = PAD * 3 + 44
+    for entry in entries:
+        draw.text((PAD * 3, y), entry, font=entry_font, fill=(210, 210, 210))
+        y += 24
     return np.asarray(image, np.uint8)
 
 
@@ -696,15 +717,26 @@ def _episode_errors(
     return out
 
 
+def segment_list_entries(segments: Sequence[Segment]) -> list[str]:
+    """清单卡与 worst.json 共用的逐段文案。"""
+    return [
+        f"{rank}. {seg.task} · episode_{seg.episode} · 最差帧 {seg.peak_frame} · "
+        f"误差 {seg.peak_error} px"
+        for rank, seg in enumerate(segments, start=1)
+    ]
+
+
 def render_worst_reel(
     segments: Sequence[Segment],
     h5_by_task: Mapping[str, str],
     sidecar_by_task: Mapping[str, str],
     reel_path: Path,
     opts: VideoOptions,
+    list_title: str,
 ) -> int:
-    """worst 合集（单进程串行）：段按峰值误差降序，段前中文标题卡，峰值帧画黄框，
-    段间 2 帧黑帧。返回写出的总帧数。"""
+    """worst 合集（单进程串行）：开头清单卡逐条列出各段（任务/episode/最差帧/误差
+    像素数），段按峰值误差降序，段前中文标题卡，峰值帧画黄框，段间 2 帧黑帧。
+    返回写出的总帧数。"""
     import cv2
 
     cv2.setNumThreads(1)
@@ -716,6 +748,11 @@ def render_worst_reel(
     reel_path.parent.mkdir(parents=True, exist_ok=True)
     tmp = reel_path.with_name(reel_path.stem + ".partial.mp4")
     with _open_writer(tmp, opts) as writer:
+        list_card = render_list_card(layout, list_title, segment_list_entries(segments))
+        list_seconds = min(8.0, 2.0 + 0.3 * len(segments))
+        for _ in range(max(1, round(opts.fps * list_seconds))):
+            writer.append_data(list_card)
+            written += 1
         for rank, seg in enumerate(segments, start=1):
             card = render_title_card(
                 layout,
@@ -813,10 +850,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--ffmpeg-threads", type=int, default=1)
     parser.add_argument("--overwrite", action="store_true", help="重渲已存在的 mp4")
     parser.add_argument("--limit-frames", type=int, default=0, help="调试：每 episode 只出前 N 帧")
-    parser.add_argument("--top-worst", type=int, default=None, help="worst 峰值帧数（默认 20，仅模式②）")
+    parser.add_argument("--top-worst", type=int, default=None, help="全局 worst 段数（默认 5，仅模式②）")
     parser.add_argument("--context-seconds", type=float, default=None, help="worst 段上下文秒数（默认 1.0）")
     parser.add_argument("--no-worst", action="store_true", help="不出 worst 合集（仅模式②有意义）")
-    parser.add_argument("--worst-out", default=None, help="worst 合集 mp4 路径")
+    parser.add_argument("--worst-out", default=None, help="全局 top-N 合集 mp4 路径")
+    parser.add_argument("--worst-per-task-out", default=None, help="每任务最差第一名合集 mp4 路径")
     parser.add_argument("--worst-json", default=None, help="worst 机读排名 JSON 路径")
     parser.add_argument("--json", default=None, help="运行统计 JSON 路径")
     args = parser.parse_args(argv)
@@ -847,6 +885,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--top-worst": args.top_worst,
         "--context-seconds": args.context_seconds,
         "--worst-out": args.worst_out,
+        "--worst-per-task-out": args.worst_per_task_out,
         "--worst-json": args.worst_json,
     }
     if mode == MODE_REFERENCE:
@@ -855,7 +894,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise SystemExit(
                 f"模式①（无 GT）不出 worst 合集，这些参数无意义：{explicit}"
             )
-    top_worst = args.top_worst if args.top_worst is not None else 20
+    top_worst = args.top_worst if args.top_worst is not None else 5
     context_seconds = args.context_seconds if args.context_seconds is not None else 1.0
 
     sidecar_dir = Path(
@@ -920,47 +959,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                     FrameScore(result["task"], result["episode"], t, err, missed, false_obj)
                 )
         context_frames = round(opts.fps * context_seconds)
-        segments = select_worst_segments(scores, lengths, top_worst, context_frames)
-        reel_path = Path(
+        top_segments = select_top_segments(scores, lengths, top_worst, context_frames)
+        per_task_segments = select_per_task_segments(scores, lengths, context_frames)
+        top_reel_path = Path(
             args.worst_out
             if args.worst_out is not None
             else out_dir / f"worst_top{top_worst}.mp4"
         )
+        per_task_reel_path = Path(
+            args.worst_per_task_out
+            if args.worst_per_task_out is not None
+            else out_dir / "worst_per_task.mp4"
+        )
         worst_json_path = Path(
             args.worst_json if args.worst_json is not None else out_dir / "worst.json"
         )
-        if segments:
-            reel_frames = render_worst_reel(
-                segments, h5_by_task, sidecar_by_task, reel_path, opts
-            )
-        else:
-            reel_frames = 0
-            print("全部帧误差为 0，不出 worst 合集")
-        ranked = sorted(
-            (s for s in scores if s.error > 0),
-            key=lambda s: (-s.error, s.task, s.episode, s.frame),
-        )[:top_worst]
-        worst_summary = {
-            "口径": "逐帧误差 = 网格 mask 对 GT 的漏标臂像素 + 误涂物体像素（不含误涂背景）",
-            "参数": {
-                "top_worst": top_worst,
-                "context_seconds": context_seconds,
-                "context_frames": context_frames,
-                "fps": opts.fps,
-            },
-            "帧排名": [
-                {
-                    "rank": rank,
-                    "task": s.task,
-                    "episode": s.episode,
-                    "frame": s.frame,
-                    "error": s.error,
-                    "missed_arm": s.missed_arm,
-                    "false_object": s.false_object,
-                }
-                for rank, s in enumerate(ranked, start=1)
-            ],
-            "段": [
+
+        def _segment_rows(segments: list[Segment]) -> list[dict[str, Any]]:
+            return [
                 {
                     "rank": rank,
                     "task": seg.task,
@@ -970,19 +986,55 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "frames": seg.end - seg.start + 1,
                     "peak_frame": seg.peak_frame,
                     "peak_error": seg.peak_error,
-                    "merged_peaks": list(seg.merged_peaks),
                 }
                 for rank, seg in enumerate(segments, start=1)
-            ],
-            "reel": str(reel_path) if segments else None,
-            "reel_frames": reel_frames,
+            ]
+
+        reels: dict[str, dict[str, Any]] = {}
+        for key, segments, reel_path, list_title in (
+            (
+                "全局topN",
+                top_segments,
+                top_reel_path,
+                f"全局最差 top-{top_worst}（网格误差 = 漏标臂 + 误涂物体像素）",
+            ),
+            (
+                "每任务最差",
+                per_task_segments,
+                per_task_reel_path,
+                "每任务最差第一名（网格误差 = 漏标臂 + 误涂物体像素）",
+            ),
+        ):
+            if segments:
+                reel_frames = render_worst_reel(
+                    segments, h5_by_task, sidecar_by_task, reel_path, opts, list_title
+                )
+                print(f"worst 合集[{key}]：{len(segments)} 段 / {reel_frames} 帧 → {reel_path}")
+            else:
+                reel_frames = 0
+                print(f"全部帧误差为 0，不出 worst 合集[{key}]")
+            reels[key] = {
+                "reel": str(reel_path) if segments else None,
+                "reel_frames": reel_frames,
+                "清单": segment_list_entries(segments),
+                "段": _segment_rows(segments),
+            }
+
+        worst_summary = {
+            "口径": "逐帧误差 = 网格 mask 对 GT 的漏标臂像素 + 误涂物体像素（不含误涂背景）；"
+            "全局 topN 为段语义（段互不重叠），每任务最差为一任务恰一段",
+            "参数": {
+                "top_worst": top_worst,
+                "context_seconds": context_seconds,
+                "context_frames": context_frames,
+                "fps": opts.fps,
+            },
+            **reels,
         }
         worst_json_path.parent.mkdir(parents=True, exist_ok=True)
         worst_json_path.write_text(
             json.dumps(worst_summary, ensure_ascii=False, indent=2), encoding="utf-8"
         )
-        if segments:
-            print(f"worst 合集：{len(segments)} 段 / {reel_frames} 帧 → {reel_path}")
 
     summary = {
         "mode": mode,

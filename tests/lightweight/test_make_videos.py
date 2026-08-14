@@ -7,8 +7,8 @@
 2. **网格叠加**：grid_overlay_fast 变色范围恰为 upsample_grid（不画格线时）。
 3. **画布布局与拼接**：W/H 为 16 的倍数（防 imageio/libx264 静默缩放）、
    compose_frame 逐块可还原、逐帧字幕纯 ASCII（cv2.putText 画不了中文）。
-4. **worst 选段**：边界裁剪不越界、重叠段合并峰值取大、跨 episode 不合并、
-   误差降序且并列稳定、段数不超过 top_n。
+4. **worst 选段**：边界裁剪不越界、全局 top 段互不重叠（重叠峰跳过取下一名）、
+   每任务恰取第一名、误差降序且并列稳定、段数上限与零误差忽略。
 5. **fail-loud**：sidecar 指纹（源文件名/字节数/mtime）不符即报错、
    面板数/面板尺寸不符即报错。
 """
@@ -43,7 +43,6 @@ upsample_grid = grid_mask_mod.upsample_grid
 
 ErrorCounts = make_videos.ErrorCounts
 FrameScore = make_videos.FrameScore
-Segment = make_videos.Segment
 caption_lines = make_videos.caption_lines
 check_sidecar_fingerprint = make_videos.check_sidecar_fingerprint
 compose_frame = make_videos.compose_frame
@@ -52,9 +51,9 @@ error_overlay = make_videos.error_overlay
 frame_error = make_videos.frame_error
 gray3 = make_videos.gray3
 grid_overlay_fast = make_videos.grid_overlay_fast
-merge_segments = make_videos.merge_segments
 panel_layout = make_videos.panel_layout
-select_worst_segments = make_videos.select_worst_segments
+select_per_task_segments = make_videos.select_per_task_segments
+select_top_segments = make_videos.select_top_segments
 
 
 def _toy_case(size: int = 16) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -200,54 +199,61 @@ def _score(task, ep, frame, err):
 def test_worst选段边界不越界():
     lengths = {("A", 0): 10}
     scores = [_score("A", 0, 0, 5), _score("A", 0, 9, 4)]
-    segments = select_worst_segments(scores, lengths, top_n=2, context_frames=3)
+    segments = select_top_segments(scores, lengths, count=2, context_frames=3)
     for seg in segments:
         assert 0 <= seg.start <= seg.end <= 9
     # 两端各一个峰：起点段 [0,3]、终点段 [6,9]
     assert {(s.start, s.end) for s in segments} == {(0, 3), (6, 9)}
 
 
-def test_worst重叠段合并取更大峰值():
-    lengths = {("A", 0): 100}
-    scores = [_score("A", 0, 10, 5), _score("A", 0, 14, 9)]
-    segments = select_worst_segments(scores, lengths, top_n=2, context_frames=3)
-    assert len(segments) == 1
-    seg = segments[0]
-    assert (seg.start, seg.end) == (7, 17)
-    assert seg.peak_frame == 14 and seg.peak_error == 9
-    assert seg.merged_peaks == (10, 14)
+def test_worst全局top段互不重叠且重叠峰取下一名():
+    lengths = {("A", 0): 100, ("B", 0): 100}
+    # 帧 14 与帧 10 的段重叠（±3）→ 帧 10 被跳过，取下一名 B 的帧 50
+    scores = [_score("A", 0, 14, 9), _score("A", 0, 10, 5), _score("B", 0, 50, 3)]
+    segments = select_top_segments(scores, lengths, count=2, context_frames=3)
+    assert [(s.task, s.peak_frame, s.peak_error) for s in segments] == [
+        ("A", 14, 9),
+        ("B", 50, 3),
+    ]
+    # 同帧号不同 episode / 任务不算重叠
+    lengths2 = {("A", 0): 100, ("A", 1): 100}
+    scores2 = [_score("A", 0, 10, 5), _score("A", 1, 10, 4)]
+    assert len(select_top_segments(scores2, lengths2, 2, 3)) == 2
 
 
-def test_worst跨episode不合并():
-    lengths = {("A", 0): 100, ("A", 1): 100, ("B", 0): 100}
-    scores = [_score("A", 0, 10, 5), _score("A", 1, 10, 5), _score("B", 0, 10, 5)]
-    segments = select_worst_segments(scores, lengths, top_n=3, context_frames=3)
-    assert len(segments) == 3
-    with pytest.raises(ValueError, match="同一"):
-        merge_segments(
-            [
-                Segment("A", 0, 0, 5, 2, 9, (2,)),
-                Segment("A", 1, 3, 8, 4, 7, (4,)),
-            ]
-        )
+def test_worst每任务恰取第一名且按误差降序():
+    lengths = {("A", 0): 100, ("A", 1): 100, ("B", 0): 100, ("C", 0): 100}
+    scores = [
+        _score("A", 0, 10, 5),
+        _score("A", 1, 20, 8),  # A 的第一名
+        _score("B", 0, 30, 9),  # B 的第一名
+        # C 全帧误差 0 → 无段
+        _score("C", 0, 40, 0),
+    ]
+    segments = select_per_task_segments(scores, lengths, context_frames=2)
+    assert [(s.task, s.episode, s.peak_frame, s.peak_error) for s in segments] == [
+        ("B", 0, 30, 9),
+        ("A", 1, 20, 8),
+    ]
 
 
 def test_worst按误差降序且并列稳定():
     lengths = {("A", 0): 100, ("B", 0): 100}
     scores = [_score("B", 0, 50, 7), _score("A", 0, 50, 7), _score("A", 0, 20, 9)]
-    segments = select_worst_segments(scores, lengths, top_n=3, context_frames=1)
+    segments = select_top_segments(scores, lengths, count=3, context_frames=1)
     assert [(s.task, s.peak_frame) for s in segments] == [("A", 20), ("A", 50), ("B", 50)]
 
 
-def test_worst段数不超过top_n且忽略零误差():
+def test_worst段数不超过count且忽略零误差():
     lengths = {("A", 0): 2000}
     scores = [_score("A", 0, t, 0) for t in range(50)] + [
         _score("A", 0, 100 * (i + 1), i + 1) for i in range(10)
     ]
-    segments = select_worst_segments(scores, lengths, top_n=4, context_frames=2)
-    assert len(segments) <= 4
+    segments = select_top_segments(scores, lengths, count=4, context_frames=2)
+    assert len(segments) == 4
     assert all(seg.peak_error > 0 for seg in segments)
-    assert select_worst_segments([_score("A", 0, 5, 0)], lengths, 4, 2) == []
+    assert select_top_segments([_score("A", 0, 5, 0)], lengths, 4, 2) == []
+    assert select_per_task_segments([_score("A", 0, 5, 0)], lengths, 2) == []
 
 
 # ---------------------------------------------------------------------------
