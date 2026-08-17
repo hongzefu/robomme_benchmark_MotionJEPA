@@ -210,3 +210,6 @@ __marimo__/
 .agent/
 .cursor/
 .agents/
+
+# 数据生成产物（h5 与视频体量巨大，不入 git）
+scripts/data-generation-newSeed/outputs/
