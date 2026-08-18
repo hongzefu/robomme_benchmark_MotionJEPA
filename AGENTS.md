@@ -743,3 +743,15 @@
 - 差异或阻塞：三处踩坑均已处置并文档化——①「谁在动」须用窗口首末净位移判定（路径长会被对角交换擦碰旁观 bin 的抖动误报）；② Button/ep91 抓取子目标（step≈200）与第三 swap 窗口（164-214）重叠致 85 条确定性失败，仅重试 attempt 启用「最后按钮 post-solve evaluate 前 hold 到 swap 结束+10」两阶段补救（83 条 hold→214、2 条 hold→224），attempt 0 不 hold 保 is_original 可比性；③ 穷举引入对角交换穿越旁观 bin：193/318 条 min_clearance<0.055 m，环境原行为不修，逐条量化在 episode_map 与富标签供下游过滤。
 - 修改文件：新增 `scripts/data-generation-MotionJEPALabel/`（8 脚本+README+CLAUDE.md）、`tests/lightweight/test_swap_variant_plan.py`；`.gitignore` 补 outputs 行；`AGENTS.md` 本条。
 - 下一步：MotionJEPA 侧适配由用户自行进行（merged h5 已满足其 build_data_raw 的 0-based 密集断言，标签与 swap_labels_v7 同 schema）；如需扩 ep94-99 或禁相邻重复口径，枚举层参数已就绪。
+
+### 2026-08-18 — swap 变体 2D 简图（draw_variant_diagrams.py，2.9.1）
+
+- 状态：完成。
+- 目标：为 318 条变体的 `01|23` 签名提供可读可视化——每源 episode（2 task × ep90-93）一张 PNG、每变体一子图：真实 bin 布局与尺寸、bin 藏 cube 颜色（灰斜线=空诱饵）、金框/银虚线框=第一/第二抓取目标、按序圈号双向弧箭头（同对重复交换错弧度）、★橙底=原始组合、⚠=min_clearance<0.055。
+- 执行命令：`uv run python scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py`（默认参数，退出码 0）。
+- 输入与来源：`outputs/phase0/original_index.json` 的布局指纹 + `outputs/full/episode_map_{Task}.json`；matplotlib 3.10.8 + Noto Sans CJK JP。
+- 输出路径：`outputs/full/diagrams/{Task}_ep{N}_variants.png` 共 8 张（216 变体大图 2046×3322px）。
+- 结果与证据：抽查 VideoUnmaskSwap_ep90（★var3=12 与 phase0 原始序列一致，金框=藏蓝 cube bin 与任务语言一致）与 ButtonUnmaskSwap_ep91 裁片（★var128=12|12|03 居中、相邻重复对双弧错开、③ 连 0-3、var127 带 ⚠），全部与 episode_map 逐项吻合；8 张图已发送用户。
+- 差异或阻塞：小变体图的下排子图标题与上排图区轻微贴近，可读性不受影响，未改。
+- 修改文件：新增 `draw_variant_diagrams.py`；README/CLAUDE.md 的 diagrams 引用与命令行（本轮预写）；AGENTS.md 本条。
+- 下一步：无；图在 outputs/ 下天然被 gitignore，需要重出图直接重跑脚本。
