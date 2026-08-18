@@ -731,3 +731,15 @@
 - 差异或阻塞：当前官方脚本硬编码 `CUDA_VISIBLE_DEVICES=1`、串行遍历任务且所有视频共用一个目录，不能直接满足单 GPU 0、高并发和双数据集隔离要求；将只扩展调度、GPU/输出参数和审计汇总，不改 action 提取或环境回放语义。工作树已有 `.codex-motionjepa-edit` staged 删除、`AGENTS.md` 和 `scripts/data-generation/README.md` 修改，本轮保留并不触碰无关状态。
 - 修改文件：本条先更新 `AGENTS.md`；待修改 `scripts/dataset_replay.py` 并新增定向轻量测试。
 - 下一步：实现单 GPU 16-worker 并行调度和隔离输出，运行语法及定向测试，通过后执行官方集与生成集两批回放。
+
+### 2026-08-18 — swap 变体派生数据集 ep90-93×2env 穷举 318 条 + 双层标签（data-generation-MotionJEPALabel）
+
+- 状态：完成。
+- 目标：对 VideoUnmaskSwap/ButtonUnmaskSwap 的 train ep90-93（MotionJEPA eval 集前 4 条），布局逐比特不变、只穷举 swap 交换对序列（P^k，含相邻重复），生成 318 条变体的官方格式数据集，h5 内嵌 timestep 级 swap_gt 标注，另出 v7 同构 chunk 标签与富标签，全程零 src 改动。
+- 执行命令：`pytest tests/lightweight/test_swap_variant_plan.py`（20 过）；`probe_original.py --gpus 0 --workers 8`（8/8，与官方 joint_action ≤1.1e-17）；`make_chunk_labels.py --regression`（319/319 复现 v7 人工资产）；smoke 9 条（PASS）；tmux 全量三轮（318/318）；`merge_variant_h5.py --delete-source`（85 GiB，校验过）；`make_chunk_labels.py`（7268 chunk/2784 正例）；`verify_variants.py`（PASS）。
+- 输入与来源：seed/difficulty 读 `env_metadata/train`；swap 次数按 env `__init__` RNG 流离线复算；原始交换序列与布局基线来自 Phase 0 无注入控制跑；官方比对基线 `/data/hongzefu/robomme_data_h5`。
+- 输出路径：`scripts/data-generation-MotionJEPALabel/outputs/full/`（merged h5×2、metadata、episode_map、两份标签 JSON、verification_report、videos/traces）；`outputs/phase0/`（控制跑基线）。
+- 结果与证据：覆盖 318/318 无缺口；布局指纹 0 失配；is_original 7/8 ≤1.4e-6、Button/ep91 1.55e-3（交换角色规范化的接触链混沌放大，子目标名称序列相同、切换步差 ≤1，已静态实证 window1 角色翻转）；标签主键网格与 h5 完全对账。
+- 差异或阻塞：三处踩坑均已处置并文档化——①「谁在动」须用窗口首末净位移判定（路径长会被对角交换擦碰旁观 bin 的抖动误报）；② Button/ep91 抓取子目标（step≈200）与第三 swap 窗口（164-214）重叠致 85 条确定性失败，仅重试 attempt 启用「最后按钮 post-solve evaluate 前 hold 到 swap 结束+10」两阶段补救（83 条 hold→214、2 条 hold→224），attempt 0 不 hold 保 is_original 可比性；③ 穷举引入对角交换穿越旁观 bin：193/318 条 min_clearance<0.055 m，环境原行为不修，逐条量化在 episode_map 与富标签供下游过滤。
+- 修改文件：新增 `scripts/data-generation-MotionJEPALabel/`（8 脚本+README+CLAUDE.md）、`tests/lightweight/test_swap_variant_plan.py`；`.gitignore` 补 outputs 行；`AGENTS.md` 本条。
+- 下一步：MotionJEPA 侧适配由用户自行进行（merged h5 已满足其 build_data_raw 的 0-based 密集断言，标签与 swap_labels_v7 同 schema）；如需扩 ep94-99 或禁相邻重复口径，枚举层参数已就绪。

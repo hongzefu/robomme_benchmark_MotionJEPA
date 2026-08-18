@@ -213,3 +213,4 @@ __marimo__/
 
 # 数据生成产物（h5 与视频体量巨大，不入 git）
 scripts/data-generation-newSeed/outputs/
+scripts/data-generation-MotionJEPALabel/outputs/
