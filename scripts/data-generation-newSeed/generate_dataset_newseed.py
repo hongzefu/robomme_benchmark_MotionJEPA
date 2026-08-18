@@ -728,6 +728,7 @@ def generate_dataset_newseed(
     output_dir: str | Path,
     env: str = "all",
     episodes: int = MAX_EPISODES,
+    episode_start: int = 0,
     workers: int = DEFAULT_WORKERS,
     gpus: str | Sequence[str | int] = "0",
     difficulty_ratio: str = DEFAULT_DIFFICULTY_RATIO,
@@ -738,8 +739,10 @@ def generate_dataset_newseed(
     affinity: str = "none",
 ) -> dict[str, Any]:
     _ensure_layout()
-    if not 1 <= episodes <= MAX_EPISODES:
-        raise DatasetGenerationError(f"episodes 必须落在 1..{MAX_EPISODES}")
+    if episodes < 1:
+        raise DatasetGenerationError("episodes 必须大于 0")
+    if episode_start < 0:
+        raise DatasetGenerationError("episode-start 必须不小于 0")
     if workers < 1:
         raise DatasetGenerationError("workers 必须大于 0")
     if not 1 <= max_attempts <= MAX_ATTEMPTS:
@@ -750,6 +753,19 @@ def generate_dataset_newseed(
     gpu_ids = _parse_gpus(gpus)
     layout = get_layout(layout_name)
     cycle = parse_difficulty_ratio(difficulty_ratio)
+
+    # 护栏：episode 号太大时 seed 会越过下一代布局的 offset，与 test/val/heldout 的 seed 空间相撞。
+    next_offsets = [item.offset for item in LAYOUTS.values() if item.offset > layout.offset]
+    if next_offsets:
+        seed_ceiling = min(next_offsets)
+        last_episode = episode_start + episodes - 1
+        for task in tasks:
+            max_seed = layout.seed(task, last_episode, MAX_ATTEMPTS - 1)
+            if max_seed >= seed_ceiling:
+                raise DatasetGenerationError(
+                    f"{task} episode {last_episode} 的最大可能 seed {max_seed} "
+                    f"越过下一代布局的 offset {seed_ceiling}，请缩小 episode 范围"
+                )
 
     # 父进程在建池之前定好线程环境；spawn 的子进程会继承，
     # 并在重跑本模块顶层时（早于 import numpy）据此设置 OpenBLAS/libgomp。
@@ -770,7 +786,7 @@ def generate_dataset_newseed(
             repo_root=str(REPO_ROOT),
         )
         for task in tasks
-        for episode in range(episodes)
+        for episode in range(episode_start, episode_start + episodes)
     ]
 
     parameters = {
@@ -778,6 +794,7 @@ def generate_dataset_newseed(
         "env": env,
         "tasks": tasks,
         "episodes": episodes,
+        "episode_start": episode_start,
         "workers": workers,
         "gpus": list(gpu_ids),
         "seed_layout": layout_name,
@@ -834,7 +851,13 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--output-dir", required=True, help="仓库内的输出目录")
     parser.add_argument("--env", "--environment", default="all", help="all 或逗号分隔的环境名")
-    parser.add_argument("--episodes", type=int, default=MAX_EPISODES, help="每个环境从 episode 0 起的条数")
+    parser.add_argument("--episodes", type=int, default=MAX_EPISODES, help="每个环境的条数（配合 --episode-start）")
+    parser.add_argument(
+        "--episode-start",
+        type=int,
+        default=0,
+        help="起始 episode 号（默认 0）；难度循环与 seed 都按绝对 episode 号计算，接续生成时口径自然延续",
+    )
     parser.add_argument("--workers", "--max-workers", dest="workers", type=int, default=DEFAULT_WORKERS)
     parser.add_argument("--gpus", "--gpu", dest="gpus", default="0", help="逗号分隔的物理卡号，如 0,1")
     parser.add_argument(
@@ -873,6 +896,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             output_dir=args.output_dir,
             env=args.env,
             episodes=args.episodes,
+            episode_start=args.episode_start,
             workers=args.workers,
             gpus=args.gpus,
             difficulty_ratio=args.difficulty_ratio,

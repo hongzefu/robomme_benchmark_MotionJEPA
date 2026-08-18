@@ -40,7 +40,10 @@ EXPECTED_ENV_CODES = {
     "ButtonUnmaskSwap": 7,
     "ButtonUnmask": 8,
 }
-# train metadata 里 attempt != 0 的全部条目：(task, episode) -> attempt
+# train metadata 原始 ep0–99 段里 attempt != 0 的全部条目：(task, episode) -> attempt。
+# ep100 起是 2026-08 用当前环境代码接续生成的，允许出现新的 attempt != 0（失败演进属正常），
+# 所以精确断言只覆盖 ep0–99，ep100+ 只验 attempt 落在合法域。
+ORIGINAL_EPISODES = 100
 EXPECTED_PROBES = {
     ("VideoUnmaskSwap", 32): 1,
     ("VideoUnmaskSwap", 61): 1,
@@ -80,21 +83,29 @@ def test_base_seed_and_difficulty_match_train_metadata(task: str) -> None:
     """每条 train 记录的 seed 应等于 base_seed + 预期 attempt，难度应逐条相同。"""
     layout = get_layout(DEFAULT_LAYOUT)
     cycle = parse_difficulty_ratio("211")
-    planned = plan_episodes(task, 100, cycle, layout)
     records = _train_records(task)
+    planned = plan_episodes(task, len(records), cycle, layout)
 
-    assert len(records) == 100, f"{task} 的 train metadata 应有 100 条"
+    assert len(records) >= ORIGINAL_EPISODES, f"{task} 的 train metadata 至少应有原始 100 条"
+    assert [int(record["episode"]) for record in records] == list(range(len(records))), (
+        f"{task} 的 episode 序号必须连续（0..{len(records) - 1}）"
+    )
 
     for plan, record in zip(planned, records):
         episode = int(record["episode"])
         assert plan["episode"] == episode
-        expected_attempt = EXPECTED_PROBES.get((task, episode), 0)
-        expected_seed = int(plan["base_seed"]) + expected_attempt
-        assert int(record["seed"]) == expected_seed, (
-            f"{task}/episode_{episode}: seed 应为 {expected_seed}，"
-            f"实际为 {record['seed']}（base_seed={plan['base_seed']}，"
-            f"预期 attempt={expected_attempt}）"
-        )
+        attempt = int(record["seed"]) - int(plan["base_seed"])
+        if episode < ORIGINAL_EPISODES:
+            expected_attempt = EXPECTED_PROBES.get((task, episode), 0)
+            assert attempt == expected_attempt, (
+                f"{task}/episode_{episode}: seed 应为 {int(plan['base_seed']) + expected_attempt}，"
+                f"实际为 {record['seed']}（base_seed={plan['base_seed']}，"
+                f"预期 attempt={expected_attempt}）"
+            )
+        else:
+            assert 0 <= attempt < 100, (
+                f"{task}/episode_{episode}: attempt 反解为 {attempt}，超出合法域 [0, 100)"
+            )
         assert str(record["difficulty"]) == plan["difficulty"], (
             f"{task}/episode_{episode}: 难度应为 {plan['difficulty']}，"
             f"实际为 {record['difficulty']}"
@@ -102,16 +113,39 @@ def test_base_seed_and_difficulty_match_train_metadata(task: str) -> None:
 
 
 def test_probe_set_is_exactly_the_nonzero_attempts() -> None:
-    """反过来校验：除 8 个探针外，其余 392 条的 attempt 必须都是 0。"""
+    """反过来校验：原始 ep0–99 段里除 8 个探针外，其余 392 条的 attempt 必须都是 0。"""
     layout = get_layout(DEFAULT_LAYOUT)
     found: dict[tuple[str, int], int] = {}
     for task in TARGET_TASKS:
         for record in _train_records(task):
             episode = int(record["episode"])
+            if episode >= ORIGINAL_EPISODES:
+                continue
             attempt = int(record["seed"]) - layout.base_seed(task, episode)
             if attempt != 0:
                 found[(task, episode)] = attempt
     assert found == EXPECTED_PROBES
+
+
+def test_episode_start_extension_seeds() -> None:
+    """接续生成段（ep100+）的 seed 与难度锚点：episode-start 链路依赖的公式值。"""
+    layout = get_layout(DEFAULT_LAYOUT)
+    cycle = parse_difficulty_ratio("211")
+    # ep100 难度循环回到 easy（100 % 4 == 0），seed 直接跨过 ep0–99 段
+    assert layout.base_seed("VideoUnmask", 100) == 16_000
+    assert layout.base_seed("VideoUnmaskSwap", 100) == 15_000
+    assert layout.base_seed("ButtonUnmaskSwap", 100) == 17_000
+    assert layout.base_seed("ButtonUnmask", 100) == 18_000
+    assert layout.base_seed("ButtonUnmask", 399) == 47_900
+    from seed_layout import difficulty_for
+
+    assert difficulty_for(100, cycle) == "easy"
+    assert difficulty_for(101, cycle) == "easy"
+    assert difficulty_for(102, cycle) == "medium"
+    assert difficulty_for(103, cycle) == "hard"
+    # 同 env 内新旧两段的 seed 空间不重叠：ep0–99 最大可能 seed < ep100 的起始 seed
+    for task in TARGET_TASKS:
+        assert layout.seed(task, 99, 99) < layout.base_seed(task, 100)
 
 
 if __name__ == "__main__":
