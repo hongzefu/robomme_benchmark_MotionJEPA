@@ -136,7 +136,58 @@ uv run python scripts/data-generation-newSeed/utils/append_train_metadata.py \
 `outputs/train-ep0-99-official/` 与 `outputs/train-ep100-399/`；本目录存有生成段
 `run_parameters.json` / `run_summary.json` 副本。过程细节与逐段数字见 [run-log.md](run-log.md)。
 
-## 六、h5 与原版官方数据（Yinpei/robomme_data_h5）的格式差异
+## 六、v2 合并数据集（dataset-build 可接受形式）
+
+用户后续要求（2026-08-18）：「把这400个合并成 …/MotionJEPA/scripts/dataset-build 可接受的形式，
+在不修改 /nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA 的前提下对齐」，
+「合并的data放在 /data/hongzefu/robomme_data_h5_v2_4env400ep」。
+
+### 位置与构建
+
+**`/data/hongzefu/robomme_data_h5_v2_4env400ep/`**：4 个 `record_dataset_{task}.h5`
+（各 400 集、合计约 292 GiB）+ 4 份 `*_metadata.json`（仅供溯源 episode→seed，链路不消费）。
+构建命令（把逐 episode h5 按 metadata 逐条合并，merge 的正向操作）：
+
+```bash
+uv run python scripts/data-generation-newSeed/merge_episode_h5.py \
+  --input-dir scripts/data-generation-newSeed/outputs/train-ep0-399 \
+  --env VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask \
+  --output-dir /data/hongzefu/robomme_data_h5_v2_4env400ep
+```
+
+（前提：`train-ep0-399/` 里有 4 份 400 条版 metadata json，从 `src/robomme/env_metadata/train/` 拷入。）
+
+### dataset-build 的输入契约（探查自 NFS 仓库 `build_data_raw_from_h5.py`，未改其任何文件）
+
+- 只认每 task 一个 `record_dataset_{Task}.h5`（`--h5_dir` 指向本目录即可）；
+- 顶层 `episode_0..N-1`、组内 `timestep_*` 均须 0-based 严格连续（N 实测，不写死 100）；
+- 每 timestep 只读 `obs/front_rgb`、`info/is_video_demo`、`info/is_completed` 三个字段——
+  **ep100–399 缺的 8 个字段不被读取，字段不均一无影响**；
+- 语义断言：demo 帧必须构成严格前缀；exec 段须有 `is_completed=True` 且完成帧后至少留 1 帧；
+- 不需要 metadata json。
+
+契约校验工具 `verify_merged_v2.py`（本目录）对全部 1600 集预演上述断言 + seed 对拍，
+实测 4 个文件全部通过；并用 NFS 仓库的 `build_data_raw_from_h5.py` 本体对
+ep0/100/399 × 4 env 跑过验收冒烟（结果见 run-log 第 8 节）。使用：
+
+```bash
+uv run python /nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA/scripts/dataset-build/build_data_raw_from_h5.py \
+  --h5_dir /data/hongzefu/robomme_data_h5_v2_4env400ep \
+  --tasks ButtonUnmask,ButtonUnmaskSwap,VideoUnmask,VideoUnmaskSwap \
+  --output_root <data-raw 落点>
+```
+
+### 下游注意事项（均可用环境变量/CLI 解决，无需改 NFS 仓库）
+
+1. **arm-mask 段会拒绝新数据**：`arm-mask/EXTERNAL_PIN.json` 用字节数+sha256 三环钉死官方
+   4 个文件，`verify_data_pin.py` 与 G4 校验对新文件必然不匹配——先只跑到 latent
+   （prepare_v8 stage 1–3），要过 arm-mask 需另行决定重刷 pin（改仓库，超出本次范围）。
+2. `prepare_v7_arm_masks.sh` full 默认 `EPISODES=0-99`，400 集须显式传 `EPISODES=0-399`。
+3. `prepare_v8_2_extract.sh` 分片数（8）与 walltime 按 600 变体标定，400 集 × 4 env
+   （约 1600 目录）需按环境变量按比例加大。
+4. 训练配置 `configs/default.yaml` 的 `holdout_episodes: "90-99"` 在 400 集下只留 10/400，按需调整。
+
+## 七、h5 与原版官方数据（Yinpei/robomme_data_h5）的格式差异
 
 2026-08-17 逐项比对结论（比对细节见 `scripts/data-generation-newSeed/CLAUDE.md` 第十四节）：
 

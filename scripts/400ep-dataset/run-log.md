@@ -131,7 +131,50 @@ ln -f ../../train-ep100-399/hdf5_files/*.h5 .
    `get_episode_num()` 均为 400；`resolve_episode(100)` = (15000..18000, easy) 逐一正确；
    探针 ep10=7001 / ep32=8201 / ep70=14001 / ep5=8501 保留无损；ep399 难度 hard（399%4=3）。
 
-## 6. 工作区备注
+## 6. v2 合并（2026-08-18 下午，tmux `merge-v2`）
+
+输入准备：把 4 份 400 条版 metadata json 从 `src/robomme/env_metadata/train/` 拷入
+`outputs/train-ep0-399/`（merge 脚本按 metadata 逐条定位源文件，不 glob）。
+
+结果（日志 `outputs/merge-v2.log`，`EXIT_CODE=0`，全程约 20 分钟）：
+
+| task | episode 数 | 体量 |
+| --- | ---: | ---: |
+| VideoUnmaskSwap | 400 | 84.5 GiB |
+| VideoUnmask | 400 | 52.9 GiB |
+| ButtonUnmaskSwap | 400 | 96.7 GiB |
+| ButtonUnmask | 400 | 65.0 GiB |
+| 合计 | 1600 | ≈292 GiB |
+
+落点 `/data/hongzefu/robomme_data_h5_v2_4env400ep/`，另拷入 4 份 metadata json 供溯源。
+
+## 7. v2 契约校验（tmux `verify-v2`，verify_merged_v2.py）
+
+对全部 1600 集预演 dataset-build 的断言（episode/timestep 连续、front_rgb 形状、
+demo 严格前缀、exec 段 completed 余量、setup/seed 与 metadata 对拍）：
+
+**4 个文件全部通过**（VideoUnmaskSwap 83.3s / VideoUnmask 52.2s /
+ButtonUnmaskSwap 76.3s / ButtonUnmask 28.5s），`EXIT_CODE=0`。
+
+## 8. NFS 转换器验收冒烟（tmux `smoke-v2`）
+
+用 NFS 仓库本体 `build_data_raw_from_h5.py`（只读该仓库）对
+`--episodes 0,100,399` × 4 env 跑转换，输出落本机 scratch：
+
+```bash
+uv run python /nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA/scripts/dataset-build/build_data_raw_from_h5.py \
+  --h5_dir /data/hongzefu/robomme_data_h5_v2_4env400ep \
+  --tasks ButtonUnmask,ButtonUnmaskSwap,VideoUnmask,VideoUnmaskSwap \
+  --episodes 0,100,399 --num_workers 8 --output_root <scratch>/v2-accept-smoke
+```
+
+**4 env × 3 episode 全部成功、零断言失败、`EXIT_CODE=0`**。产出 12 个
+`<Task>_ep{0,100,399}/video_exec.h5`，抽查确认 `frames` 为 (T,256,256,3) uint8、
+attrs 含 `fps=30.0`/`num_frames`/`source`（source 串正确指向 v2 文件的
+`episode_N/exec[lo:hi]`，即下游 arm-mask 依赖的定位格式）。官方段（ep0）与
+生成段（ep100/399）都被覆盖 —— **v2 数据集被 dataset-build 链路原样接受**。
+
+## 9. 工作区备注
 
 - `.gitignore` 存在一处**非本轮**的在途改动（新增 `scripts/data-generation-MotionJEPALabel/outputs/`
   一行，来源为其他会话/用户），本轮提交绕开未动，留待其归属方处置。
