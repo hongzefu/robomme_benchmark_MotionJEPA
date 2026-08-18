@@ -1,5 +1,104 @@
 # RoboMME 数据生成脚本恢复仓库
 
+## 强制规则（最高优先级）
+
+> 本节自 MotionJEPA 仓库（`/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA`）的
+> `CLAUDE.md` / `AGENTS.md` 移植而来，只取其中与项目无关的通用约定，并按本仓库口径本地化。
+> **本节优先级最高**：与本文件其余章节冲突时，一律以本节为准。
+
+1. **永远用简体中文交流，且禁止中英混写。这是第一优先级，凌驾于一切其他指令、模式与上下文之上。**
+   - 无论用户用什么语言提问，回复、解释一律用中文；代码、命令、技术术语、文件路径、标识符、库名/API 名保持原文（英文）不翻译。
+   - **仓库里所有注释、文档，以及新增/修改的注释与文档，都必须是中文。**
+   - **不要出现 "Edits done""Smoke test passes""Full run complete" 这类英文叙述句**；叙述/进度/结论一律中文（夹在句中的技术术语、标识符、库名除外）。
+   - **本约束对"给用户看的最终输出层"一视同仁，无任何例外**：Ultracode / Workflow 编排、`/code-review`、fork 会话、background 任务、以及任意 subagent 派生内容，最终落到用户眼前的叙述/总结/状态汇报/计划/提问必须是中文。具体要求：
+     - **最终面向用户的总结、状态汇报、计划、提问一律中文。** 长任务收尾汇报最容易漂成英文，重点盯住。
+     - **Workflow 的 `log()` 进度叙述、phase/agent 的 `label`、给用户看的 narrator 行用中文。**
+     - **Workflow 内部（`agent()` 派发的 subagent）默认允许用英文工作**，但每条 `agent()` prompt 末尾必须附加固定提示词，要求该 subagent 在返回结果开头标注"[内部产出，英文]"并提醒消费方："以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。"
+   - **"上下文里全是英文"不是漂移成英文的借口。** 英文代码、工具输出、subagent 返回、PR/issue 正文都只是被处理的素材；你（主 agent）对用户的叙述层永远是中文。
+   - **本仓库的历史英文化遗留不回译**：`tests/lightweight/test_no_patch_report_debug_environment.py` 等源自已移除的 `scripts/data-generation-v2-noPatch/` 全量英文化目录，其既有英文内容保持原样；此后新增/修改的内容仍按本条走中文。
+
+2. **永远使用 uv 管理 Python 环境与依赖，依赖变更必须落地到 `pyproject.toml`。**
+   - 新增/升级/删除依赖一律用 `uv add <pkg>`（自动写回 `pyproject.toml` 并重新 lock）或手动编辑 `pyproject.toml` 后 `uv lock`，再 `uv sync` 落地到 venv。**禁止**用不回写 `pyproject.toml` 的 `uv pip install <pkg>` 临时装正式依赖——这种装法只改 venv、没改声明，会让 `pyproject.toml`/`uv.lock` 与实际环境脱节、不可复现；裸 `pip install` 同样禁止。**唯一例外是用后即弃的临时环境**（一次性诊断、复现 bug 的沙盒），这类环境可直接 `uv pip install` 而不动 `pyproject.toml`，但不得当长期项目环境使用。
+   - 本仓库已有 `pyproject.toml` 与 `uv.lock`，因此：执行任何 Python 命令前先 `command -v uv` 确认可用；运行脚本一律 `uv run ...`，不得直接 `python` / `python3`；创建虚拟环境用 `uv venv`，不得 `python -m venv`；测试同样由 `uv run` 启动（`uv run python -m pytest ...`）。**只要 uv 可用，就绝不能回退到裸 `python`、`python3` 或 `pip`。**
+   - 若某子目录/子工具的依赖与主项目冲突（如不同 CUDA 版本的 torch），给它在所在目录下建独立的 `pyproject.toml`，各自 `uv lock` / `uv sync`，产生独立 venv；**不要用 uv workspace 纳管**（成员共享同一份 `uv.lock`，会把本想隔离的冲突拉回主项目解析图）。子项目的 `pyproject.toml`/`uv.lock` 同样须被 git 跟踪。
+   - 在 NFS 路径（`/nfs/turbo/...`）下执行 uv 操作时须带 `UV_LINK_MODE=copy`；本仓库位于本机盘 `/data`，常规操作不需要。
+
+3. **每次完成代码改动后，必须运行端到端测试，且总耗时必须控制在 5 分钟以内。** 如果全量测试会超时，选取覆盖核心路径的子集运行，而不是跳过测试：
+   - 无需数据集（任何机器都能跑，核心路径）：`uv run python -m pytest tests/lightweight/ -q`
+   - 需要数据集 / MuJoCo 环境（按环境条件跑）：`uv run python -m pytest tests/dataset/ -q`
+   - 只改了某个生成链路时，至少跑该链路的定向单测（如改 swap 变体枚举 → `uv run python -m pytest tests/lightweight/test_swap_variant_plan.py -q`），再视时间预算补跑 `tests/lightweight/` 全量。
+   - 涉及实跑生成的验证一律先做「单任务、单 episode、单 worker」的最小 smoke，通过后再放大规模；smoke 失败不得直接启动全量。
+
+4. **后台进程的起法（超 5 分钟必须 tmux）与等法（一律 Monitor），命令必须规范写：**
+   - **任何预计超过 5 分钟的后台任务（全量数据生成、合并、审计等）必须用 tmux detached session 起，脱离 harness 会话**——`run_in_background` 起的进程是 Claude Code 会话的子进程，会话退出/崩溃会连带杀死跑了几小时的任务。标准模板（2026-08-06 nohup vs tmux 六判据实测后定；内部仍是下述 pipefail+tee 管道；`EXIT_CODE=` 尾行作 Monitor 的统一完成信号）：
+     ```bash
+     tmux new-session -d -s <任务名> \
+       "set -o pipefail; PYTHONUNBUFFERED=1 uv run python scripts/<入口脚本>.py <参数> 2>&1 | tee /path/to/run.log; echo \"EXIT_CODE=\$?\" >> /path/to/run.log"
+     ```
+     配套命令：死活判断 `tmux has-session -t <任务名>`（实测运行中为真、结束后为假，无 stale 假阳性）；中途停止 `tmux kill-session -t <任务名>`（实测连 tee 一并干净退出、零孤儿；⚠ 强杀不会写 `EXIT_CODE=` 尾行，判死只能靠 has-session）；人肉围观 `tmux attach -t <任务名>`（Ctrl-b d 脱开）；`tmux ls` 一览所有在跑任务。落选方案 nohup（存活性/日志/退出码与 tmux 逐项打平，但需 setsid+pidfile+按进程组 `kill -- -PGID` 三件套且只杀 wrapper 会留孤儿）不再使用。**≤5 分钟的短任务照旧直接 `run_in_background`，不强制 tmux。**
+   - **等待任何后台进程（生成、合并、测试、日志变化）一律用 Monitor。Monitor 要"挂在一个流上、有关心的行就发事件"，禁止塞 `while ...; do sleep N; done; echo 完成` 这种最后才输出一次的阻塞脚本。** 正确形态是 tail 日志 + 过滤完成/报错行（`tr` 需 `stdbuf -oL` 防管道缓冲吞行）；**一份日志挂一个 Monitor，禁止一条 `tail -F` 同时挂多个日志文件**（实测多文件 tail 每次切换都打 `==> 文件 <==` 头部行，噪声大到触发 Monitor 限流）：
+     ```bash
+     tail -n +1 -F /path/to/run.log | stdbuf -oL tr '\r' '\n' \
+       | grep --line-buffered -E "全部完成|EXIT_CODE=|Error|Traceback|out of memory|找不到"
+     ```
+   - **进程存活检测禁止用裸 `pgrep -f "<pattern>"`**（pattern 在 Monitor 自身 argv 里 → 永远自匹配恒真）。tmux 起的任务用 `tmux has-session`；其余用括号技巧 `pgrep -f "[g]enerate_swap_variants.py"` 或启动时 `$!` 记下的具体 PID。
+   - **`run_in_background` 直接起的进程退出时 harness 会自动重新唤醒，无需再挂 pgrep 轮询；但 tmux 里起的任务 harness 感知不到退出，Monitor 是唯一完成信号，必须挂。**
+   - **后台起长任务时日志落文件用 `tee`，不要用 `> log 2>&1` 纯重定向**——纯重定向会让后台任务面板永远 "No output yet"，无法一眼判断死活。三个坑逐一处理：`PYTHONUNBUFFERED=1` 防管道块缓冲吞输出、`set -o pipefail` 防主命令崩了 `$?` 被 tee 的 0 顶替、日志文件照常供 Monitor tail（该管道已内嵌在上面的 tmux 模板里；短任务直接 `run_in_background` 时单独套用同一管道即可）。
+
+5. **Workflow 只有三条约定，其余全部作废：**
+   - **①逐次审批**：**每次生成 workflow 前，必须先把方案（要做什么、分几个 phase、规模多大、用什么模型）交用户审批，获准后才能调 Workflow 工具。** 除此之外的一切开启条件（`ultracode` 关键字、用户原话是否说过「用 workflow」、任务规模是否够大、fan-out 数量刻度等）**一律作废**，不再作为自行启动的依据。
+   - **②模型规则（2026-08-06 更新，按启动方式分两条）**：**用 Agent 工具 launch 单个 subagent 时强制 `model: "opus"`**；Workflow 脚本里调 `agent()` 默认且仅允许 `model: "sonnet"`，**唯一例外**：workflow 收尾的总结/综合 agent、或负责制定计划（plan）的 agent，可用 `model: "opus"`，但**单次 workflow 内（按 workflow 计，不是按完整任务计——一个任务跑多个 workflow 时每个 workflow 各自计数）**累计使用 opus 不得超过 3 次。两条通用：禁止 haiku、fable 及一切白名单外模型，且 **`model` 参数不得省略**——省略会静默继承主会话模型（常是 fable），同样算违规。
+   - **③不设置任何额外并发限制**：`parallel()`/`pipeline()` 直接传入完整条目即可，不要为控制并发人为拆批、加节流或降低单批数量——Workflow 工具自身已有并发上限（`min(16, cpu核数-2)`），脚本层面不叠加限制。
+
+6. **仓库文档中禁止用硬编码行号引用代码**（`file.py:123` 这类）。行号随代码演进必然漂移。引用代码一律用**稳定符号锚点**：函数/类/方法名、CLI flag 名、JSON 字段名、或代码段的语义描述；文件级 markdown 链接可保留。本条不约束代码内注释与 commit message。
+
+7. **凡 patch 级特征图/热力图（如 16×16 网格）的放大可视化只能用最近邻 `cv2.INTER_NEAREST`，禁止 linear/bilinear 等任何插值**——patch 级特征只有网格分辨率，线性插值会伪造亚格子细节并糊掉格子边界。本仓库的可视化脚本（如 `scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py`）同受此约束。（真实照片帧、渲染视频帧的缩放不受此限。）
+
+8. **每次改动完成（并跑过规则 3 的测试）后必须 `git commit`，且只能提交本轮自己改的内容：**
+   - **commit message 用简体中文**，subject **沿用本仓库现行体例** `<大版本>.<小版本>[.<修订>] <中文描述>`（照抄 `git log`，如 `2.9.2 变体简图出图验证与账本补记`）。大版本号只在系统性、跨机制的重大更新时递增；小版本号用于该大版本内的常规迭代，每次 commit 递增；从哪个版本号接续以 `git log` 最近一次为准。
+   - **只 commit 自己改的文件**：一律 `git add <逐个明确路径>`，**禁止 `git add -A`、`git add .`、`git commit -a`** 这类全量暂存——它们会把用户或其他 agent 的在途改动一并裹进来。
+   - **提交前先 `git status --short` 核对工作区**：若存在不属于本轮改动的文件（他人编辑、别的 agent 产物、遗留脏文件），**一律绕开、不得提交，也不得 stash/revert 掉**；必要时在汇报里点名这些文件，交用户处置。
+   - **subject 沿用上述体例不动，body 必须详写过程**——目标是人类不看会话记录也能了解具体过程、复现当时场景，详略以「会话工作总结」为准（按主题分节、成段叙述、带实测数字，不是三五行摘要）。body 须包含：①**用户指令原话**（本轮涉及的全部关键用户消息：初始指令 + 中途追加/纠偏，按时间顺序原话保留，闲聊/确认类可略）；②**结构化后的完整计划**（要做什么、分几步、判据是什么）；③**实施过程分节叙述**（一、二、三…写清每一步做了什么、关键设计点与取舍理由）；④**计划到实施中的意外**（踩的坑、临时改向、被推翻的假设、外部事件、顺手修的 bug 及各自处置）；⑤**重要实验/测试**（命令/入口、关键参数口径、实测数字与结论）；⑥**当前状态与下一步**。纯文档/一行修补类微小改动 body 可相应精简，但用户指令原话与测试/验证结果两项不可省。
+
+9. **本机（非集群）上跑任何消费数据集的任务，一律优先用 `/data` 本地盘副本，不读 NFS 原件。**
+   - **理由**：`/nfs/turbo` 是网络文件系统，实测带宽约 132 MB/s 就是天花板，且已被坐实为大批量读取任务的真实瓶颈（加大 batch 吞吐纹丝不动，纯卡在读取上）。`/data` 是本机 NVMe（14 TB），不受此限。
+   - **本仓库口径**：仓库本体与官方参考集都已在本机盘上——官方参考数据固定在仓库内 `data/robomme_data_h5/`，生成产物落 `artifacts/generated/<...>/` 或各生成目录自己的 `outputs/`；跨仓库引用 MotionJEPA 侧数据时优先取 `/data/hongzefu/` 下的本机副本。
+   - **同步只用 rsync**，NFS 侧是权威源，两边不一致时以 NFS 为准；NFS 原件被重建或增量更新后必须重跑同步，别让本地副本悄悄变陈旧：
+     ```bash
+     rsync -a --info=progress2 /nfs/turbo/coe-chaijy-unreplicated/hongzefu/<目录> /data/hongzefu/
+     ```
+
+10. **仅 OpenAI Codex agent：`bwrap` / `apply_patch` 故障回退**
+
+    > 本条只适用于 OpenAI Codex 主 agent 及其 Codex subagent。其他 agent、Claude Code
+    > （含其 subagent 与 Workflow）、自动化工具和人类用户必须忽略本条。本条不修改上面
+    > 任何规则，也不覆盖系统、开发者或用户给出的更高优先级规则。
+
+    Codex 运行环境偶尔会在启动沙箱时报告：
+
+    ```text
+    bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted
+    ```
+
+    该错误可能同时导致 `apply_patch` 和普通只读命令无法启动。它是 Codex 沙箱/隔离层故障，
+    不是仓库代码错误；不得据此修改项目代码、宿主机网络或沙箱配置，也不得用更宽泛的命令
+    绕过原任务边界。
+
+    1. 先保留原始错误并向用户或父 agent 简短说明。普通命令若因该错误失败，在更高优先级
+       规则允许时，用**相同的最小命令**、准确的 `justification` 和
+       `sandbox_permissions="require_escalated"` 重试；不得顺手扩大读取、写入或网络范围。
+    2. 文件编辑仍必须先尝试 `apply_patch`。只有确认失败发生在 `apply_patch` 的沙箱启动阶段，
+       而不是 patch 语法、上下文或目标文件错误时，才可在允许升级权限的前提下回退到
+       `/usr/bin/patch`，对固定字面路径应用可审计的最小 unified diff。
+    3. 只有不改变语义的纯机械替换才可回退到 `perl -0pi`，且匹配文本、目标文件和预期替换
+       次数必须预先核验。禁止用 Python 写文件、glob、递归目标、未校验变量、符号链接目标，
+       也禁止把单文件失败扩大成目录级重写。
+    4. 删除操作不会因沙箱故障自动获得授权。仍须逐项核验固定目标、文件类型、符号链接、
+       恢复能力和用户授权，并遵守上级规则中的破坏性操作约束。
+    5. 回退后立即检查 `.orig`、`.rej` 和其他探针/临时文件，逐文件查看
+       `git diff -- <path>`，再运行 `git diff --check` 与 `git status --short`。若出现拒绝块、
+       部分应用、目标数量异常或范围外改动，必须停止并上报，不得继续叠加补丁掩盖问题。
+
 ## 仓库目标
 
 本仓库专门用于寻找、恢复并验证 RoboMME dataset 的生成脚本。最终目标不是只找到一个历史文件，而是完成以下闭环：
@@ -12,7 +111,6 @@
 
 ## 全局执行规则
 
-- 所有计划、进展、结论和阻塞说明都必须使用中文。
 - 每次开始工作前先阅读本文件；每个阶段开始、取得关键进展、遇到阻塞以及完成时，都必须更新本文件中的“当前进度”和“追加式执行日志”。不能只在聊天消息、终端输出或其他报告里记录进展。
 - `AGENTS.md` 是本任务的持续状态账本。更新进度表的同时保留已有日志，不得覆盖或删除旧记录。
 - 所有下载数据、生成数据、审查产物和日志都必须位于本仓库根目录内。禁止使用仓库外目录作为真实存储位置，也禁止用符号链接、bind mount 或仅存于 `/tmp` 的文件绕过此限制。
@@ -20,18 +118,6 @@
 - 当前 `.gitignore` 和 `.dockerignore` 没有忽略 `data/`。下载前必须先避免大型数据被 Git 跟踪或被无意加入 Docker build context，并在执行日志中记录具体处理。除非用户明确要求，不得提交下载或生成的 HDF5、图片、视频等大型产物。
 - 任何“完成”“一致”或“可用”的判断都必须附带可复现命令、退出状态、输出路径和审查摘要。没有证据时只能写“未验证”或“进行中”。
 - 不得用破坏性 Git 操作清理工作区。检查历史优先使用 `git log`、`git show`、`git ls-tree`、`git diff`；需要运行历史版本时使用隔离 worktree 或恢复分支，不能覆盖用户现有修改。
-
-## Python 与 uv 规则
-
-在执行任何 Python 命令前，必须先运行 `command -v uv`，并检查仓库中的 `uv.lock` 或 `pyproject.toml`。
-
-本仓库已经包含 `uv.lock` 和 `pyproject.toml`，因此：
-
-- 运行脚本必须使用 `uv run ...`，不能直接使用 `python` 或 `python3`；
-- 安装依赖必须使用 `uv add` 或 `uv pip install`，不能使用 `pip`；
-- 创建虚拟环境必须使用 `uv venv`，不能使用 `python -m venv`；
-- 测试命令也必须由 `uv run` 启动，例如 `uv run python -m pytest ...`；
-- 只要 uv 可用，就绝不能回退到裸 `python`、`python3` 或 `pip`。
 
 ## 第一阶段：下载官方参考 dataset
 
@@ -755,3 +841,15 @@
 - 差异或阻塞：小变体图的下排子图标题与上排图区轻微贴近，可读性不受影响，未改。
 - 修改文件：新增 `draw_variant_diagrams.py`；README/CLAUDE.md 的 diagrams 引用与命令行（本轮预写）；AGENTS.md 本条。
 - 下一步：无；图在 outputs/ 下天然被 gitignore，需要重出图直接重跑脚本。
+
+### 2026-08-18 — 移植 MotionJEPA 通用 agent 约定进 AGENTS.md 并新增 CLAUDE.md 指针
+
+- 状态：完成。
+- 目标：把 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA` 的 `CLAUDE.md`「强制规则（最高优先级）」14 条里**纯通用**的部分 + 其 `AGENTS.md` 的 Codex `bwrap` 回退节，移植进本仓库 `AGENTS.md` 并本地化；同时消除本仓库旧「Python 与 uv 规则」与全局 uv 口径的冲突；另建根目录 `CLAUDE.md` 作单句指针，指向本文件这一权威源。
+- 执行命令：只读比对两仓库文档；`sed`/heredoc 拼接改写 `AGENTS.md`；`uv run python -m pytest tests/lightweight/ -q` 核验仓库未被破坏。
+- 输入与来源：`/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA/CLAUDE.md`（强制规则 1–14）与同仓库 `AGENTS.md`（Codex `bwrap` 节）。
+- 输出路径：本仓库 `AGENTS.md`（置顶新增 `## 强制规则（最高优先级）` 10 条）、新增 `CLAUDE.md`。
+- 结果与证据：章节顺序核验为 `强制规则（最高优先级)` → `仓库目标` → `全局执行规则` → `第一阶段…`，旧 `## Python 与 uv 规则` 已删除；`uv pip install` 全文仅剩「禁止装正式依赖 / 仅用后即弃临时环境例外」一处语境；历史日志与「当前进度」表零改动。
+- 差异或阻塞：搬运时做了四处本地化——①测试清单换成本仓库的 `tests/lightweight/`、`tests/dataset/`；②commit subject 体例保留本仓库现行的 `<大版本>.<小版本>[.<修订>] <中文描述>`，不引入 MotionJEPA 的 `commitV6.2:`；③tmux/Monitor 示例换成本仓库生成入口与 `[g]enerate_swap_variants.py` 括号技巧；④`/data` 优先条的权威副本路径换成本仓库口径。明确未搬：greatlakes slurm 提交规约、`run_name` 确认、训练配置落点询问、Beta commit + `docs/training-doc/` 建档、评估绝对口径、Playwright 站点交互测试——均为 MotionJEPA 训练/站点侧特有，本数据生成仓用不上。中文规则里补了一条例外：`tests/lightweight/test_no_patch_report_debug_environment.py` 等源自已移除 `scripts/data-generation-v2-noPatch/` 的英文化遗留不回译。
+- 修改文件：`AGENTS.md`（头部新增章节、删除旧 uv 小节与重复的中文条目、本条日志）、新增 `CLAUDE.md`。
+- 下一步：无。后续所有工作以 `AGENTS.md` 的强制规则章节为最高优先级口径。
