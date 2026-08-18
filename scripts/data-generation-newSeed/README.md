@@ -36,7 +36,8 @@ train 当年失败过的 episode 上。要复现 train 请用 `scripts/data-gene
 | 文件 | 作用 |
 | --- | --- |
 | `seed_layout.py` | seed 公式与难度循环的唯一定义；train/test/val/heldout 四代布局的 offset 与 env_block |
-| `generate_dataset_newseed.py` | 生成入口：每卡一个进程池、进程终身绑卡、失败自动换 seed 重试、结果边跑边写 JSONL |
+| `generate_dataset_newseed.py` | 生成入口：每卡一个进程池、进程终身绑卡、失败自动换 seed 重试、结果边跑边写 JSONL；`--episode-start` 支持接续生成（实录见 [`scripts/400ep-dataset/`](../400ep-dataset/README.md)） |
+| `utils/append_train_metadata.py` | 把接续段 metadata 纯追加回 `env_metadata/train`（两阶段落盘、断言无重叠且连续、`--dry-run`） |
 | `merge_episode_h5.py` | 把逐 episode 的 h5 合并成官方格式 `record_dataset_{task}.h5`（按 metadata 逐条定位而非 glob；生成入口刻意不合并） |
 | `utils/compare_with_metadata.py` | 与 train metadata 逐条比对 (seed, difficulty)，出一致性报告——实质是检验当前环境代码与 2025-12 的行为等价性 |
 | `utils/calibrate_parallelism.py` | 并行度标定：串行跑多档 workers/GPU/线程限制配置，采资源指标，出稳态吞吐对比表 |

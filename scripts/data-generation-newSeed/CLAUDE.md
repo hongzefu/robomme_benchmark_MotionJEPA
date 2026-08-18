@@ -54,6 +54,13 @@ uv run python scripts/data-generation-newSeed/generate_dataset_newseed.py \
   --output-dir scripts/data-generation-newSeed/outputs/full
 ```
 
+接续生成用 `--episode-start`（2026-08-18 加入，如 `--episode-start 100 --episodes 300`
+生成 ep100–399）：难度循环与 seed 都按绝对 episode 号计算，接续段口径自然延续；
+内置护栏保证最大可能 seed 不越过下一代布局的 offset（train 即 500000）。
+把接续段 metadata 追加回 `env_metadata/train` 用 `utils/append_train_metadata.py`
+（纯追加、两阶段落盘、支持 `--dry-run`）。一次完整的接续生成实录见
+[`scripts/400ep-dataset/`](../400ep-dataset/README.md)（四 Unmask 系 env 扩到 ep0–399）。
+
 产物：
 
 | 产物 | 位置 |

@@ -1,0 +1,37 @@
+{
+  "parameters": {
+    "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPA/scripts/data-generation-newSeed/outputs/train-ep100-399",
+    "env": "VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask",
+    "tasks": [
+      "VideoUnmaskSwap",
+      "VideoUnmask",
+      "ButtonUnmaskSwap",
+      "ButtonUnmask"
+    ],
+    "episodes": 300,
+    "episode_start": 100,
+    "workers": 32,
+    "gpus": [
+      "1"
+    ],
+    "seed_layout": "train",
+    "difficulty_ratio": "211",
+    "difficulty_cycle": [
+      "easy",
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "max_attempts": 100,
+    "limit_threads": true,
+    "max_tasks_per_child": 8,
+    "affinity": "none",
+    "save_video_for_recording": true
+  },
+  "requested_count": 1200,
+  "success_count": 1200,
+  "exhausted_count": 0,
+  "elapsed_s": 2500.6,
+  "throughput_ep_per_min": 28.79,
+  "peak_rss_mb": 4357.4
+}
