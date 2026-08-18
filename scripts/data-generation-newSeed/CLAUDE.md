@@ -1,13 +1,136 @@
-# 实测记录：无 seed 生成链路的性能与行为
+# CLAUDE.md — data-generation-newSeed 完整参考
 
-本文件记录 2026-08-17 建立 `scripts/data-generation-newSeed/` 时的全部实测数据与结论。
-目的是让后续改动有据可依 —— 尤其是并行度、资源约束、GPU 绑定这几处，凭直觉调很容易调反。
+本文件供 agent 阅读：命令用法、seed 公式、口径一致性约束、并行执行要点，
+以及 2026-08-17 建立本目录时的**全部实测数据**（机器环境、瓶颈定位、并行度标定、
+全量 400 条结果、与原版官方数据的逐项比对）。人类可读的结论摘要见 [README.md](README.md)。
 
-所有数字均为本机实测，不是估算。
+所有数字均为本机实测，不是估算。改动本目录代码前先读完「并行执行要点」与「实测记录」两部分——
+并行度、资源约束、GPU 绑定这几处凭直觉调很容易调反。
 
 ---
 
-## 一、机器与环境
+## 一、seed 公式
+
+```
+seed = offset + env_code * env_block + episode * 100 + attempt
+```
+
+`env_code` 是任务在 16 任务规范序（`scripts/data-generation/validate_generated_dataset_contract.py`
+的 `ALL_TASKS`）里的 1-indexed 位置。四代数据集的布局：
+
+| 布局 | offset | env_block |
+| --- | ---: | ---: |
+| `train` | 0 | 1,000 |
+| `test` | 500,000 | 10,000 |
+| `val` | 1,000,000 | 10,000 |
+| `heldout` | 1,500,000 | 100,000 |
+
+难度用 ratio 字符串表示，三位数字依次对应 easy/medium/hard。`211` 展开成周期 4 的
+`[easy, easy, medium, hard]`，按 `episode % 4` 取 —— 这与四个 Unmask 系 env 的 train metadata 完全一致。
+
+公式与难度循环的唯一定义在 `seed_layout.py`，不读 metadata、按公式自算。
+
+## 二、与骨架的口径一致性（⚠ 改动前必读）
+
+env kwargs、FailRecover 分档（ep0-2 → `z`、ep3-5 → `xy`、ep≥6 → 不设）、planner 的
+screw×3 → RRT\*×3 重试、成功判定（跑完 task_list 且 `evaluate(solve_complete_eval=True)`
+的 `success` 真、`fail` 假）**与骨架逐字相同**。
+
+这一点很关键：本目录的用途之一是验证「当前环境代码与 2025-12 环境代码的行为等价性」——
+seed 公式是纯函数，公式层面一致是必然的，真正被检验的是 attempt 层面。**这些口径一旦改动,
+比对结果就失去意义。**
+
+不做的事：不 replay、不导出 segmentation PNG、不与官方 reference 做 1e-8 数值比对
+（`data/robomme_data_h5` 在本仓库并不存在）。
+
+## 三、用法
+
+### 生成
+
+```bash
+uv run python scripts/data-generation-newSeed/generate_dataset_newseed.py \
+  --env VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask \
+  --episodes 100 --difficulty 211 --gpus 0,1 --workers 32 \
+  --output-dir scripts/data-generation-newSeed/outputs/full
+```
+
+产物：
+
+| 产物 | 位置 |
+| --- | --- |
+| 每 episode 的 h5 | `hdf5_files/{task}_ep{N}_seed{M}.h5` |
+| rollout 视频 | `videos/{task}_ep{N}_seed{M}{_FailRecoverZ/XY}_{难度}_{目标}.mp4` |
+| 失败 attempt 的视频 | 同目录，`FAILED_` / `success_NO_OBJECT_` 前缀（保留作为失败演进的证据） |
+| 逐 attempt 日志 | `episode_results.jsonl`（边跑边写，中途崩溃不丢已完成的部分） |
+| 成功 seed 汇总 | `record_dataset_{task}_metadata.json`（与 `env_metadata` 同构） |
+| 运行参数与摘要 | `run_parameters.json` / `run_summary.json` |
+
+失败 attempt 留下的空 h5 会被 worker 删掉（`RecordWrapper` 在 `__init__` 就建文件，
+但只有 episode 成功才写内容），因此 `hdf5_files/` 里只有真正成功的轨迹。
+
+### 一致性比对
+
+```bash
+uv run python scripts/data-generation-newSeed/utils/compare_with_metadata.py \
+  --env VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask \
+  --output-dir scripts/data-generation-newSeed/outputs/full
+```
+
+出 `consistency_report.{json,md}`，含全量比对表、train 里 attempt≠0 的探针单列、
+以及不一致条目的完整 attempt 轨迹（哪几个 seed 失败、失败原因）。
+
+### 合并 h5（按需）
+
+生成入口**不合并**，避免生成期就把体量翻倍、也让单条失败不牵连其余产物。需要时单独跑：
+
+```bash
+uv run python scripts/data-generation-newSeed/merge_episode_h5.py \
+  --input-dir scripts/data-generation-newSeed/outputs/full \
+  --env VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask
+```
+
+源文件按 metadata 逐条定位而非 glob，目录里混有残留也不会被误吸。`--delete-source`
+默认关闭；合并期间两份并存，需要双倍空间。
+
+### 并行度标定
+
+```bash
+uv run python scripts/data-generation-newSeed/utils/calibrate_parallelism.py \
+  --root scripts/data-generation-newSeed/outputs/calib \
+  --env VideoUnmask --episodes 64
+```
+
+默认三档 `A:20:0:off;B:32:0:on;C:32:0,1:on`（档位之间用**分号**分隔，因为 gpus 字段本身含逗号）。
+出 `calibration.md`，含稳态吞吐与资源占用对比。
+
+## 四、并行执行要点（踩过的坑，改动前必读）
+
+1. **物理仿真在 CPU 上**。ManiSkill 的 `num_envs` 默认 1 → `sim_backend` 解析为 `physx_cpu`，
+   GPU 只承担 sapien 渲染。所以并行度上限由物理核数决定，显存不是主要约束，
+   **内存才是**（视频帧全程驻留，单 worker 峰值可达数 GB）。
+2. **每卡一个进程池，进程终身绑卡**。GPU 号是池的静态属性（写在 `initargs` 里），
+   worker 被回收或崩溃重建后依然正确。若改成「单池 + 计数器按 job 分卡」，
+   worker 每次重建都会让计数器继续递增，两卡负载会静默漂移；而且 `CUDA_VISIBLE_DEVICES`
+   只在该进程首次初始化 CUDA 之前有效，池复用进程时对第二个 job 就失效了。
+3. **线程限制必须在 import numpy 之前**。OpenBLAS/libgomp 在 `.so` 加载时读线程数，
+   放进程池 initializer 里已经太晚 —— spawn 的子进程 bootstrap 会重跑本模块顶层，
+   那时 numpy 已经 import 完毕。所以设置写在 `generate_dataset_newseed.py` 的最顶部。
+4. **线程源不止 OpenMP**。OpenCV 有独立线程池（`cv2.setNumThreads`），
+   ffmpeg/x264 在每个 episode 收尾编码 mp4 时按 `sched_getaffinity` 自动决定线程数、
+   完全不看 `OMP_NUM_THREADS` —— 要压住它只能用 `--affinity per-gpu` 走 CPU 亲和。
+5. **`BrokenProcessPool` 必须处理**。worker 在 C++ 层段错误会让整个池死掉，
+   所有 in-flight 和 pending 的 job 瞬间全败。调度循环会重建该池并把它名下的 job 退回队列，
+   否则一次段错误就报废整批任务。
+6. **重试的边界**。五类任务性失败（`SceneGenerationError` / `FailsafeTimeout` /
+   `PlannerExhausted` / `ScrewPlanFailure` / `DatasetGenerationError`）视为「该 seed 不通」，
+   换 seed 重试；其余异常记为 `failure_class: "code"`，同一 episode 连续 3 次即放弃，
+   避免对着一个必然复现的 bug 空转到 attempt 上限。
+
+---
+
+# 实测记录（2026-08-17）
+
+## 五、机器与环境
 
 | 项 | 值 |
 | --- | --- |
@@ -22,9 +145,7 @@
 > 0.88 核 CPU）。因此标定的单卡档一律改用干净的 GPU1。CPU 层面的外部干扰约 3%（0.88/32 核），
 > 可接受；显存层面 GPU0 只剩约 30 GiB 可用。**复现这些数字时要先确认两张卡是否干净。**
 
----
-
-## 二、瓶颈定位：源码层面的结论
+## 六、瓶颈定位：源码层面的结论
 
 这几条是从源码逐行确认的，不是猜测，它们决定了并行策略：
 
@@ -48,9 +169,7 @@
 
 而 **mplib 不是过度订阅的来源**：`ldd` 显示它只链接 `libompl` + `libpthread`，没有 `libgomp` / `libtbb`。
 
----
-
-## 三、GPU 绑定自证
+## 七、GPU 绑定自证
 
 ```
 $ CUDA_VISIBLE_DEVICES=1 python -c "import sapien; d=sapien.Device('cuda'); print(d.cuda_id, d.pci_string)"
@@ -70,9 +189,7 @@ $ CUDA_VISIBLE_DEVICES=1 python -c "import sapien; d=sapien.Device('cuda'); prin
 | 3 | 6300 | `0000:02:00.0`（GPU1） |
 | 4 | 6400 | `0000:02:00.0`（GPU1） |
 
----
-
-## 四、冒烟：正确性验收（VideoUnmask ep0-4，双卡，workers=5）
+## 八、冒烟：正确性验收（VideoUnmask ep0-4，双卡，workers=5）
 
 **5/5 全部成功，seed 与难度与 train metadata 逐条一致：**
 
@@ -107,9 +224,7 @@ $ CUDA_VISIBLE_DEVICES=1 python -c "import sapien; d=sapien.Device('cuda'); prin
 5 条合计 862 MB h5 + 24 MB 视频。合并后 `record_dataset_VideoUnmask.h5` = 0.84 GiB，
 结构为 `episode_0..4`，`setup/seed` 与文件名一致。
 
----
-
-## 五、资源约束的实测上限
+## 九、资源约束的实测上限
 
 | 约束 | 实测值 | 是否构成瓶颈 |
 | --- | --- | --- |
@@ -119,9 +234,7 @@ $ CUDA_VISIBLE_DEVICES=1 python -c "import sapien; d=sapien.Device('cuda'); prin
 | **磁盘** | 400 条约 82 GB h5 + 6 GB 视频；剩 4.0T | ❌ |
 | **CPU** | 见下节 | ✅ **唯一的真实约束** |
 
----
-
-## 六、并行度标定
+## 十、并行度标定
 
 标定集：`VideoUnmask` 的 ep0-95（96 条 = 3 × 32，保证有完整的稳态窗口）。
 吞吐用**稳态吞吐**：按完成时间排序后丢掉前 W 与后 W 条，剔除进程池「填充 → 稳态 → 排空」的首尾效应。
@@ -217,9 +330,7 @@ W=32 时两者只差 0.9%。原因是 `sim_backend=physx_cpu` 让 ManiSkill 的 
 - **冠军选择**：在全部成功且内存/显存安全的档里，取稳态吞吐达到最高值 97% 的**最小** workers ——
   更小的并发意味着更低的内存峰值、更短的收尾长尾、更小的崩溃爆炸半径。
 
----
-
-## 七、正确性数据：seed 公式
+## 十一、正确性数据：seed 公式反解
 
 用 `seed = env_code * 1000 + episode * 100 + attempt` 对 train metadata 全部 16 个 env、1600 条反解，
 attempt 全部落在合理小整数区间（无负数、无异常值，全局 max = 7，额外 attempt 共 280 次）：
@@ -248,9 +359,7 @@ attempt 全部落在合理小整数区间（无负数、无异常值，全局 ma
 
 `tests/lightweight/test_seed_layout.py` 把这些固化成秒级回归（7 项，0.09 s）。
 
----
-
-## 八、这个验证实际在测什么
+## 十二、这个验证实际在测什么
 
 seed 公式是纯函数 `f(env_code, episode, attempt)`，**公式层面一致是必然的**。
 真正被检验的是 attempt 层面：train 由 2025-12 的环境代码产出，而 `src/robomme/robomme_env/`
@@ -274,9 +383,7 @@ train 里 attempt≠0 的 8 个探针最敏感：
 
 **不能把「seed 对上」简单当成脚本正确性的证明。**
 
----
-
-## 九、全量 400 条的结果（2026-08-17，最终）
+## 十三、全量 400 条的结果（2026-08-17，最终）
 
 配置：`--env VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask --episodes 100
 --difficulty 211 --gpus 1 --workers 32`
@@ -325,15 +432,13 @@ train 里 attempt≠0 的 8 个探针最敏感：
    差异恰好落在 train 当年失败过的那些 episode 上。若目标是复现 train，应继续用
    `scripts/data-generation/generate_dataset.py` 读死 seed；本目录适用于**产生新数据**。
 
----
-
-## 十、与原版官方数据的逐项比对（2026-08-17）
+## 十四、与原版官方数据的逐项比对（2026-08-17）
 
 原版数据位置：`/data/hongzefu/robomme_data_h5/record_dataset_{task}.h5`（合并格式，14 GB/env 级别）。
 已确认它用的就是 train metadata 的 seed 集合 —— 例如 `VideoUnmask/episode_10` 的
 `setup/seed = 7001`，正是 train 里 attempt=1 的那个值。
 
-### 10.1 字段集差异：原版多 8 个字段，生成侧没有任何多余字段
+### 14.1 字段集差异：原版多 8 个字段，生成侧没有任何多余字段
 
 | 类别 | 原版有、生成没有 |
 | --- | --- |
@@ -346,10 +451,10 @@ train 里 attempt≠0 的 8 个探针最敏感：
 "remove in dataset generation: obs/eef_state_raw action/eef_action_raw setup/fail_recover"
 删掉的正是这 8 个字段。原版数据早于该 commit，所以带着这些字段。
 
-### 10.2 seed 差异：400 条中 392 条同 seed，8 条不同
+### 14.2 seed 差异：400 条中 392 条同 seed，8 条不同
 
 8 条差异全部是那 8 个探针，偏差量**一律 −1**（生成侧 attempt=0，原版 attempt=1），
-成因见第九节。这 8 条因为 seed 不同、场景布局完全不同，轨迹不可比：
+成因见第十三节。这 8 条因为 seed 不同、场景布局完全不同，轨迹不可比：
 
 | env | ep | 原版 seed | 生成 seed | 原版 timestep | 生成 timestep | 变化 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -365,7 +470,7 @@ train 里 attempt≠0 的 8 个探针最敏感：
 其中 **VideoUnmaskSwap/ep32 的 timestep 数从 286 涨到 440（+53.8%）**，远超其余 7 条
 （都在 ±10% 以内）—— 换 seed 即换场景布局，轨迹长度本就不可比，这条只是变化最剧烈的一个。
 
-### 10.3 同 seed 下的 joint_action 数值差异
+### 14.3 同 seed 下的 joint_action 数值差异
 
 392 条同 seed 的 episode，**timestep 数全部一致**，逐 timestep 逐元素比对
 `action/joint_action`（8 维 float64），判定阈值 `1e-8`：
@@ -412,7 +517,7 @@ train 里 attempt≠0 的 8 个探针最敏感：
 
 **逐 episode 的完整 400 行表**见 `reports/joint_action_diff_full.md`。
 
-### 10.4 结论
+### 14.4 结论
 
 | 维度 | 结论 |
 | --- | --- |

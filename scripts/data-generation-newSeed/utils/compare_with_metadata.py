@@ -18,9 +18,10 @@ from pathlib import Path
 from typing import Any, Sequence
 
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-CONTRACT_DIR = SCRIPT_DIR.parent / "data-generation"
-for _extra in (str(SCRIPT_DIR), str(CONTRACT_DIR)):
+SCRIPT_DIR = Path(__file__).resolve().parent          # .../data-generation-newSeed/utils
+NEWSEED_DIR = SCRIPT_DIR.parent                       # .../data-generation-newSeed（seed_layout 所在）
+CONTRACT_DIR = SCRIPT_DIR.parents[1] / "data-generation"
+for _extra in (str(NEWSEED_DIR), str(CONTRACT_DIR)):
     if _extra not in sys.path:
         sys.path.insert(0, _extra)
 

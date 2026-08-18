@@ -27,9 +27,10 @@ from typing import Any, Sequence
 import psutil
 
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-GENERATOR = SCRIPT_DIR / "generate_dataset_newseed.py"
-REPO_ROOT = SCRIPT_DIR.parents[1]
+SCRIPT_DIR = Path(__file__).resolve().parent          # .../data-generation-newSeed/utils
+NEWSEED_DIR = SCRIPT_DIR.parent                       # .../data-generation-newSeed
+GENERATOR = NEWSEED_DIR / "generate_dataset_newseed.py"
+REPO_ROOT = SCRIPT_DIR.parents[2]
 
 # 默认三档：A 是历史基线（不限线程、单卡），B 加线程限制并打满物理核，
 # C 与 B 的 CPU 负载完全相同、只把渲染摊到两张卡 —— C≈B 即证明 GPU 不是瓶颈。
