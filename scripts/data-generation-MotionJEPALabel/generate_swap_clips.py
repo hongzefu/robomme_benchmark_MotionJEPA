@@ -256,6 +256,7 @@ def main(argv=None) -> int:
                 "bystander_net_max": result["bystander_net_max"],
                 "bystander_path_max": result["bystander_path_max"],
                 "disturbed_bins": result["disturbed_bins"],
+                "contacts": result.get("contacts"),
                 "geometry": result["geometry"],
                 "buttons": result["fingerprint"].get("buttons"),
                 "attempt": result["attempt"],

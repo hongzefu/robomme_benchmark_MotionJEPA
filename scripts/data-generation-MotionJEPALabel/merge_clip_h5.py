@@ -127,6 +127,7 @@ def merge_task(input_dir: Path, output_dir: Path, task: str, delete_source: bool
                         "bystander_net_max": record["bystander_net_max"],
                         "bystander_path_max": record["bystander_path_max"],
                         "disturbed_bins": record["disturbed_bins"],
+                        "contacts": record.get("contacts"),
                         "buttons": record.get("buttons"),
                         "attempt": record.get("attempt", 0),
                         "last_env_step": record.get("last_env_step"),

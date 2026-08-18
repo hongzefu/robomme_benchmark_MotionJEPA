@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """端到端验收：把「除了 bin 初始位置和第一次 swap 的排列组合，其他全部一致」逐条变成断言。
 
-十条判据（全过才算数）。核心是判据 4 —— clip 全程 110 帧的 joint_action 跨同源变体
+十一条判据（全过才算数）。核心是判据 4 —— clip 全程 110 帧的 joint_action 跨同源变体
 逐位相同，这是「机器人动作恒定」的机器证明。
 
 判据 5 的口径说明（实测校准过）：后 30 帧要求的是**窗口 2 的 teleport 端点位置**跨变体
@@ -44,10 +44,11 @@ from swap_inject import MOVED_NET_EPS  # noqa: E402
 # 判据 3/4 期望逐位相同；实测若出现 ulp 级残差，降到这个阈值并在报告里单列实测值
 BITWISE_FALLBACK_TOL = 1e-9
 # 判据 4 只对「clip 内机器人不做运动规划」的 env 做硬断言。
-# ButtonUnmaskSwap 例外并非放水，而是已实测定位的环境行为：第一次 swap 的容器按
-# lane_offset=0.07 抬升绕行时会物理擦碰机械臂（ep95 实测关节角在 env 79 从严格 0.0
-# 突跳到 4.7e-5 并指数增长），到 env 88 时 solve_button 的第 2/3 段规划以偏离后的
-# 关节角为起点，指令随之分叉（最大 1.6e-1 rad ≈ 9°）。零 src 改动无法消除。
+# ButtonUnmaskSwap 例外并非放水，而是已实测定位的环境行为 —— 注意机械臂**从未**被容器
+# 碰到（判据 11 实测 0/48）。真正的链条是：交换中的两个容器互撞（判据 11 的 bin_bin，
+# 20/48 条）→ 改变 PhysX 的接触求解规模与顺序 → 机械臂-按钮的接触力数值解发生变化
+# → qpos 偏离（ep95 实测 env 79 从严格 0.0 突跳到 4.7e-5）→ 指数放大 → env 88 时
+# solve_button 的第 2/3 段规划以偏离的关节角为起点，指令分叉（最大 1.6e-1 rad ≈ 9°）。
 # 用户拍板：保留 48 条并逐条量化 —— 标签里的 action_group / action_dev_max 供下游过滤。
 ACTION_BITWISE_REQUIRED = {"VideoUnmaskSwap": True, "ButtonUnmaskSwap": False}
 # 判据 5：窗口 2 端点位置集合的一致性阈值（实测残差 ~6e-7，来自 teleport 后的物理噪声）
@@ -89,6 +90,11 @@ def load_episode(group: h5py.Group) -> dict:
         "min_clearance": float(np.asarray(gt["min_clearance"])),
         "bystander_net_max": float(np.asarray(gt["bystander_net_max"])),
         "n_bins": int(np.asarray(gt["slot_xy"]).shape[0]),
+        "contact_robot_bin": int(np.asarray(gt["contact_robot_bin_forceful_frames"])),
+        "contact_bin_bin": int(np.asarray(gt["contact_bin_bin_forceful_frames"])),
+        "contact_bin_bin_event": int(np.asarray(gt["contact_bin_bin_event_forceful_frames"])),
+        "contact_bin_bin_impulse": float(np.asarray(gt["contact_bin_bin_impulse_max"])),
+        "contact_robot_button": int(np.asarray(gt["contact_robot_button_forceful_frames"])),
     }
 
 
@@ -109,6 +115,7 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
     worst_ja = 0.0
     action_dev_by_task: dict[str, float] = defaultdict(float)
     action_groups_by_source: list[dict] = []
+    contact_rows: list[dict] = []
     worst_prefix = 0.0
     worst_endpoint = 0.0
     rgb_hashes: dict[tuple, list[str]] = defaultdict(list)
@@ -191,6 +198,30 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
                             f"[8] {task}/ep{src_episode}/var{entry['variant_idx']}: "
                             "事件开始后有 cube 未被藏走"
                         )
+                    # ── 判据 11：机械臂 ↔ 容器接触（物理引擎实测，必须为 0）──
+                    # 本链路的前提是「机器人动作只由任务本身决定」。若机械臂真被 swap 中的
+                    # 容器碰到，那 clip 里就多了一条 swap→机器人的直接因果通路。
+                    # 2026-08-18 全量实测：0/48 条，从未发生。
+                    if data["contact_robot_bin"] > 0:
+                        failures.append(
+                            f"[11] {task}/ep{src_episode}/var{entry['variant_idx']}: "
+                            f"检测到机械臂 ↔ 容器接触 {data['contact_robot_bin']} 帧"
+                        )
+                    contact_rows.append(
+                        {
+                            "task": task,
+                            "src_episode": src_episode,
+                            "variant_idx": entry["variant_idx"],
+                            "event_slots": list(data["event_slots"]),
+                            "topo_class": data["topo_class"],
+                            "robot_bin_frames": data["contact_robot_bin"],
+                            "bin_bin_frames": data["contact_bin_bin"],
+                            "bin_bin_event_frames": data["contact_bin_bin_event"],
+                            "bin_bin_impulse_max": data["contact_bin_bin_impulse"],
+                            "robot_button_frames": data["contact_robot_button"],
+                        }
+                    )
+
                     # 判据 7 素材
                     rgb_hashes[(task, src_episode)].append(data["rgb_event_end"])
                     report["quality"].append(
@@ -337,13 +368,29 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
         notes.append(f"判据 4（★ 机器人动作恒定）{task}：clip 全程 joint_action 跨同源变体{verdict}")
     if action_dev_by_task.get("ButtonUnmaskSwap"):
         notes.append(
-            "  ↳ ButtonUnmaskSwap 的动作差异是已实测定位的环境行为：第一次 swap 的容器按 "
-            "lane_offset=0.07 抬升绕行时物理擦碰机械臂，solve_button 的后两段规划以被扰动的"
-            "关节角为起点而分叉。零 src 改动无法消除，标签里 action_group / action_dev_max "
-            "逐条量化，下游取同一 action_group 即得无泄露子集。"
+            "  ↳ ButtonUnmaskSwap 的动作差异是已实测定位的环境行为，但**不是**机械臂被容器碰到"
+            "（判据 11 实测 0/48）：真正发生的是**交换中的两个容器互撞**（20/48 条），它改变 "
+            "PhysX 的接触求解规模与顺序，进而让机械臂-按钮的接触力数值解发生变化 —— ep95/var2 "
+            "实测 env 70 起 bin_0↔bin_3 持续接触、env 79 button_cap↔panda_finger 冲量出现差异、"
+            "qpos 偏离 4.7e-5 后指数放大，env 88 时 solve_button 的后两段规划以偏离的关节角为"
+            "起点而分叉。零 src 改动无法消除，标签里 action_group / action_dev_max 逐条量化，"
+            "下游取同一 action_group 即得无泄露子集。"
         )
     notes.append(f"判据 3（前 {CLIP_MARGIN} 帧 bins_pos）最大差 {worst_prefix:.3e}")
     notes.append(f"判据 5（clip 末帧位置集合）最大差 {worst_endpoint:.3e}（阈值 {ENDPOINT_TOL}）")
+    rb_hit = [r for r in contact_rows if r["robot_bin_frames"] > 0]
+    bb_hit = [r for r in contact_rows if r["bin_bin_frames"] > 0]
+    notes.append(
+        f"判据 11（机械臂 ↔ 容器接触）：{len(rb_hit)}/{total_clips} 条检测到 —— "
+        + ("**全部为 0，机器人从未被 swap 中的容器碰到**" if not rb_hit else "存在接触，见失败项")
+    )
+    by_topo: dict[str, list[int]] = defaultdict(list)
+    for row in contact_rows:
+        by_topo[row["topo_class"]].append(int(row["bin_bin_frames"] > 0))
+    notes.append(
+        f"容器 ↔ 容器互撞（clip 内实际发生的物理接触）：{len(bb_hit)}/{total_clips} 条，"
+        + "、".join(f"{k} {sum(v)}/{len(v)}" for k, v in sorted(by_topo.items()))
+    )
     low = [item for item in report["quality"] if item["min_clearance"] < 0.055]
     notes.append(
         f"质量：min_clearance < 0.055 m 的 clip 有 {len(low)}/{total_clips} 条"
@@ -360,6 +407,9 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
         "endpoint_positions_max_abs_diff": worst_endpoint,
         "topo_class_counts": dict(topo_counts),
         "chunk_label_count": len(chunk_labels["records"]),
+        "contact_robot_bin_clips": len(rb_hit),
+        "contact_bin_bin_clips": len(bb_hit),
+        "contact_rows": contact_rows,
     }
     report["failures"] = failures
     report["notes"] = notes
@@ -413,10 +463,25 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"| {item['task']} | {item['src_episode']} | {item['n_action_groups']} | "
             f"{mapping} | {item['max_dev']:.3e} |"
         )
+    lines += ["", "## 接触检测（物理引擎 get_contacts 实测，冲量 > 1e-9 才算）", "",
+              f"- **机械臂 ↔ 容器：{report['checks']['contact_robot_bin_clips']}/"
+              f"{report['checks']['total_clips']} 条** —— 机器人是否被 swap 中的容器碰到",
+              f"- 容器 ↔ 容器互撞：{report['checks']['contact_bin_bin_clips']}/"
+              f"{report['checks']['total_clips']} 条（全部落在第一次 swap 窗口内）",
+              "",
+              "| task | 源 ep | var | 事件槽位 | 拓扑类别 | 机械臂↔容器 | 容器互撞帧 | 冲量max | 机械臂↔按钮 |",
+              "| --- | ---: | ---: | --- | --- | ---: | ---: | ---: | ---: |"]
+    for row in report["checks"]["contact_rows"]:
+        lines.append(
+            f"| {row['task']} | {row['src_episode']} | {row['variant_idx']} | "
+            f"{tuple(row['event_slots'])} | {row['topo_class']} | {row['robot_bin_frames']} | "
+            f"{row['bin_bin_frames']} | {row['bin_bin_impulse_max']:.3f} | "
+            f"{row['robot_button_frames']} |"
+        )
     if report["failures"]:
         lines += ["", "## 失败项", ""] + [f"- {line}" for line in report["failures"]]
     else:
-        lines += ["", "## 结论", "", "**全部十条判据通过。**"]
+        lines += ["", "## 结论", "", "**全部十一条判据通过。**"]
 
     (gen_dir / "verification_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     (gen_dir / "verification_report.json").write_text(

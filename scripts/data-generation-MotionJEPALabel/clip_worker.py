@@ -65,6 +65,7 @@ from swap_inject import (  # noqa: E402
     PARTIAL_MOVED_EPS,
     attach_pose_probe,
     bystander_metrics,
+    contact_summary,
     inject_pairs,
     layout_fingerprint,
     measure_window,
@@ -332,6 +333,7 @@ def write_clip(
     geometry: Mapping[str, Any],
     clearance: float,
     bystanders: Mapping[str, Any],
+    contacts: Mapping[str, Any],
 ) -> dict[str, Any]:
     """裁剪 + 改写 info + 写 swap_gt。返回 clip 的段长信息。
 
@@ -411,6 +413,20 @@ def write_clip(
             gt.create_dataset("bins_pos", data=sample["bins"].astype(np.float32))
             gt.create_dataset("cubes_pos", data=sample["cubes"].astype(np.float32))
             gt.create_dataset("env_step", data=np.int32(step))
+            # 逐帧接触分类（见 swap_inject._contact_snapshot）
+            frame_contacts = sample.get("contacts") or {}
+            for key in (
+                "robot_bin_count", "bin_bin_count", "robot_button_count",
+            ):
+                gt.create_dataset(
+                    f"contact_{key}", data=np.int32(frame_contacts.get(key, 0))
+                )
+            for key in (
+                "robot_bin_impulse", "bin_bin_impulse", "robot_button_impulse",
+            ):
+                gt.create_dataset(
+                    f"contact_{key}", data=np.float32(frame_contacts.get(key, 0.0))
+                )
 
         # ── setup 级：事件标签 + 槽位几何 + 质量指标 ──
         event_slots = tuple(slot_pairs[0])
@@ -443,6 +459,30 @@ def write_clip(
             "net_permutation",
             data=np.asarray(net_permutation(slot_pairs, job.num_bins), dtype=np.int8),
         )
+        # ── 接触检测（clip 区间内，见 swap_inject.contact_summary）──
+        # robot_bin   ：机械臂连杆 ↔ 容器 —— 2026-08-18 全量实测 0 帧，从未发生；
+        # bin_bin     ：容器互撞 —— 实际发生的接触，也是 Button 动作分叉的真正源头；
+        # robot_button：机械臂 ↔ 按钮 —— 任务本身的接触，作为对照基线。
+        # *_frames 含零冲量的接触候选；判「真的撞上了」要用 *_forceful_frames。
+        for key in (
+            "robot_bin_frames", "robot_bin_forceful_frames", "robot_bin_event_forceful_frames",
+            "bin_bin_frames", "bin_bin_forceful_frames", "bin_bin_event_forceful_frames",
+            "robot_button_frames", "robot_button_forceful_frames",
+        ):
+            gt.create_dataset(f"contact_{key}", data=np.int32(contacts.get(key, 0)))
+        for key in ("robot_bin_impulse_max", "bin_bin_impulse_max", "robot_button_impulse_max"):
+            gt.create_dataset(f"contact_{key}", data=np.float32(contacts.get(key, 0.0)))
+        for prefix in ("robot_bin", "bin_bin"):
+            onset = contacts.get(f"{prefix}_onset_env_step", -1)
+            gt.create_dataset(
+                f"contact_{prefix}_onset_clip_frame",
+                data=np.int32(onset - CLIP_START if onset >= 0 else -1),
+            )
+        for key in ("bin_bin_pairs", "bin_bin_forceful_pairs"):
+            gt.create_dataset(
+                f"contact_{key}",
+                data=np.asarray(contacts.get(key) or [], dtype=np.int8).reshape(-1, 2),
+            )
         gt.create_dataset("min_clearance", data=np.float32(clearance))
         gt.create_dataset("bystander_net_max", data=np.float32(bystanders["bystander_net_max"]))
         gt.create_dataset("bystander_path_max", data=np.float32(bystanders["bystander_path_max"]))
@@ -740,6 +780,13 @@ def _postprocess(
         upto_step=None if job.mode == "control" else CLIP_END - 1,
     )
     geometry = slot_geometry(fingerprint)
+    # 接触统计只看 clip 覆盖的区间（control 模式看全程）
+    contacts = contact_summary(
+        trace,
+        CLIP_START if job.mode == "clip" else 0,
+        CLIP_END if job.mode == "clip" else 10 ** 9,
+        event_window=swap_windows_env(len(bin_pairs_seq))[0],
+    )
 
     result: dict[str, Any] = {
         **base,
@@ -756,6 +803,7 @@ def _postprocess(
         "measured_events": events,
         "min_clearance": None if clearance != clearance else round(clearance, 4),
         **bystanders,
+        "contacts": contacts,
         "fingerprint": fingerprint,
         "geometry": {
             "slot_xy": geometry["slot_xy"],
@@ -780,7 +828,7 @@ def _postprocess(
         clip_path = clip_h5_path(output_root, job)
         segment = write_clip(
             raw_path, clip_path, job, slot_pairs, bin_pairs_seq, trace,
-            fingerprint, geometry, clearance, bystanders,
+            fingerprint, geometry, clearance, bystanders, contacts,
         )
         if segment["n_timesteps"] != CLIP_LEN:
             raise ClipGenerationError(

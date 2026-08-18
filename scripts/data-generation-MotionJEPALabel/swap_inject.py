@@ -24,6 +24,7 @@ RecordWrapper 每次 step 调用记录一帧 —— 在实例上替换 `step`（
 from __future__ import annotations
 
 import math
+import re
 from typing import Any, Mapping, Sequence
 
 import numpy as np
@@ -38,6 +39,9 @@ MOVED_NET_EPS = 0.03
 DISTURBED_NET_EPS = 0.02
 # 窗口 2 在 clip 内只露出前 30 帧，此时交换对已推进过半 —— 部分位移的下限放宽到这里
 PARTIAL_MOVED_EPS = 0.01
+# 接触冲量下限：PhysX 会把「贴得很近但没使上力」的物体也配成接触对（impulse 恒 0），
+# 实测 48 条 clip 里容器之间几乎每帧都有这种零冲量候选。判「真的撞上了」必须看冲量。
+FORCEFUL_IMPULSE_EPS = 1e-9
 
 
 def _xyz(actor: Any) -> np.ndarray:
@@ -106,8 +110,80 @@ def readback_pairs(task_env: Any) -> list[tuple[int | None, int | None]]:
     return result
 
 
-def attach_pose_probe(task_env: Any) -> list[dict]:
-    """实例级替换 step，逐帧采样 bin/cube 绝对位置。返回 trace 列表（原位追加）。
+# sapien 的 entity.name 会带子场景前缀（如 "scene-0_bin_0"），而 spawned_bins 的 .name
+# 是裸名（"bin_0"）—— 匹配前必须先剥掉前缀，否则容器一侧永远匹配不上、接触统计恒为 0。
+_SCENE_PREFIX = re.compile(r"^scene-\d+_")
+
+
+def _strip_scene(name: str) -> str:
+    return _SCENE_PREFIX.sub("", str(name))
+
+
+def _contact_snapshot(
+    task_env: Any, bin_names: dict[str, int], robot_links: set[str]
+) -> dict:
+    """一帧的接触分类统计（sapien `scene.get_contacts()` 全量扫一次）。
+
+    分三类，因为它们的含义完全不同：
+
+    * **robot_bin** —— 机械臂连杆 ↔ 容器。这是「机器人被 swap 中的容器碰到」的直接证据。
+      2026-08-18 实测：**全 48 条 clip 共 0 帧**，从未发生。
+    * **bin_bin** —— 容器 ↔ 容器，即交换中的两个 bin 互相撞上，或撞到被锁定的旁观 bin。
+      这才是实际发生的物理接触（20/48 条），也是 ButtonUnmaskSwap 动作分叉的**真正源头**：
+      它改变 PhysX 的接触求解规模与顺序，进而让机械臂-按钮的接触力数值解发生变化
+      （ep95/var2 实测：env 70 起 bin_0↔bin_3 持续接触 → env 79 button_cap↔panda_finger
+      的冲量出现差异 → qpos 偏离 4.7e-5 → 指数放大 → 规划分叉）。
+      实测规律：cross_aligned 0/16 从不撞、cross_diagonal 13/16、same_column 7/16。
+    * **robot_button** —— 机械臂 ↔ 按钮，任务本身的接触，作为对照基线记录。
+
+    impulse 为 0 的接触点是 PhysX 的接触候选（已配对但当帧无力），所以同时记
+    `*_count`（接触点数）与 `*_impulse`（冲量范数之和），下游可按需选判据。
+    """
+    stats = {
+        "robot_bin_count": 0, "robot_bin_impulse": 0.0,
+        "bin_bin_count": 0, "bin_bin_impulse": 0.0,
+        "robot_button_count": 0, "robot_button_impulse": 0.0,
+        "bin_bin_pairs": set(), "bin_bin_forceful_pairs": set(),
+    }
+    try:
+        contacts = task_env.scene.get_contacts()
+    except Exception:  # noqa: BLE001  拿不到接触不该拖垮生成
+        stats["bin_bin_pairs"] = []
+        stats["bin_bin_forceful_pairs"] = []
+        return stats
+    for contact in contacts:
+        try:
+            name_a = _strip_scene(contact.bodies[0].entity.name)
+            name_b = _strip_scene(contact.bodies[1].entity.name)
+            impulse = float(
+                np.linalg.norm(sum(np.asarray(point.impulse) for point in contact.points))
+            )
+            points = len(contact.points)
+        except Exception:  # noqa: BLE001
+            continue
+        in_bin = [name for name in (name_a, name_b) if name in bin_names]
+        in_robot = [name for name in (name_a, name_b) if name in robot_links]
+        is_button = any("button" in name for name in (name_a, name_b))
+        if len(in_bin) == 2:
+            stats["bin_bin_count"] += points
+            stats["bin_bin_impulse"] += impulse
+            pair = tuple(sorted((bin_names[in_bin[0]], bin_names[in_bin[1]])))
+            stats["bin_bin_pairs"].add(pair)
+            if impulse > FORCEFUL_IMPULSE_EPS:
+                stats["bin_bin_forceful_pairs"].add(pair)
+        elif in_bin and in_robot:
+            stats["robot_bin_count"] += points
+            stats["robot_bin_impulse"] += impulse
+        elif in_robot and is_button:
+            stats["robot_button_count"] += points
+            stats["robot_button_impulse"] += impulse
+    stats["bin_bin_pairs"] = sorted(stats["bin_bin_pairs"])
+    stats["bin_bin_forceful_pairs"] = sorted(stats["bin_bin_forceful_pairs"])
+    return stats
+
+
+def attach_pose_probe(task_env: Any, with_contacts: bool = True) -> list[dict]:
+    """实例级替换 step，逐帧采样 bin/cube 绝对位置与接触统计。返回 trace（原位追加）。
 
     trace[t] 采样于第 t 次 step 调用返回后（t = 调用入口时的 elapsed_steps），
     与 h5 的 timestep_t、swap 逻辑里的 cur_step 同一口径。
@@ -115,20 +191,84 @@ def attach_pose_probe(task_env: Any) -> list[dict]:
     trace: list[dict] = []
     orig_step = task_env.step  # 绑定方法（类上的 step）
 
+    bin_names: dict[str, int] = {}
+    robot_links: set[str] = set()
+    if with_contacts:
+        bin_names = {
+            _strip_scene(getattr(actor, "name", f"bin_{idx}")): idx
+            for idx, actor in enumerate(task_env.spawned_bins)
+        }
+        try:
+            robot_links = {_strip_scene(link.name) for link in task_env.agent.robot.links}
+        except Exception:  # noqa: BLE001
+            robot_links = set()
+
     def stepped(action: Any) -> Any:
         ts = int(task_env.elapsed_steps)
         result = orig_step(action)
-        trace.append(
-            {
-                "step": ts,
-                "bins": np.stack([_xyz(b) for b in task_env.spawned_bins]),
-                "cubes": np.stack([_xyz(c) for c in task_env.spawned_dynamic_cubes]),
-            }
-        )
+        sample = {
+            "step": ts,
+            "bins": np.stack([_xyz(b) for b in task_env.spawned_bins]),
+            "cubes": np.stack([_xyz(c) for c in task_env.spawned_dynamic_cubes]),
+        }
+        if with_contacts:
+            sample["contacts"] = _contact_snapshot(task_env, bin_names, robot_links)
+        trace.append(sample)
         return result
 
     task_env.step = stepped
     return trace
+
+
+def contact_summary(
+    trace: Sequence[dict], lo: int, hi: int, event_window: tuple[int, int] | None = None
+) -> dict:
+    """把逐帧接触统计汇总成 clip 级结论（只统计 env step ∈ [lo, hi) 的帧）。
+
+    每类接触给两套数：`*_frames` 是有接触**候选**的帧数（含零冲量），
+    `*_forceful_frames` 是冲量真正大于 0 的帧数 —— **判「发生了接触」要用后者**。
+    `event_window` 给定时额外统计事件窗口（第一次 swap）内的有力接触。
+    """
+    frames = [item for item in trace if lo <= item["step"] < hi and "contacts" in item]
+    if not frames:
+        return {}
+
+    def _agg(prefix: str) -> dict:
+        forceful = [
+            item for item in frames if item["contacts"][f"{prefix}_impulse"] > FORCEFUL_IMPULSE_EPS
+        ]
+        return {
+            f"{prefix}_frames": sum(1 for i in frames if i["contacts"][f"{prefix}_count"] > 0),
+            f"{prefix}_forceful_frames": len(forceful),
+            f"{prefix}_impulse_max": round(
+                max(i["contacts"][f"{prefix}_impulse"] for i in frames), 6
+            ),
+            f"{prefix}_onset_env_step": forceful[0]["step"] if forceful else -1,
+        }
+
+    out: dict = {}
+    for prefix in ("robot_bin", "bin_bin", "robot_button"):
+        out.update(_agg(prefix))
+    pairs: set[tuple[int, int]] = set()
+    forceful_pairs: set[tuple[int, int]] = set()
+    for item in frames:
+        pairs.update(tuple(pair) for pair in item["contacts"]["bin_bin_pairs"])
+        forceful_pairs.update(
+            tuple(pair) for pair in item["contacts"].get("bin_bin_forceful_pairs", [])
+        )
+    out["bin_bin_pairs"] = sorted(pairs)
+    out["bin_bin_forceful_pairs"] = sorted(forceful_pairs)
+
+    if event_window is not None:
+        a, b = event_window
+        inside = [item for item in frames if a <= item["step"] < b]
+        for prefix in ("robot_bin", "bin_bin"):
+            out[f"{prefix}_event_forceful_frames"] = sum(
+                1
+                for i in inside
+                if i["contacts"][f"{prefix}_impulse"] > FORCEFUL_IMPULSE_EPS
+            )
+    return out
 
 
 # ── 布局指纹 ─────────────────────────────────────────────────────────────────

@@ -18,18 +18,39 @@
 | 控制跑 ↔ 官方数据 | 8/8 源 joint_action 全程 ≤2.6e-18，**clip 区间严格 0.0** |
 | 类别均衡 | 三个拓扑类**各 16 条**（剔除 3-bin 源换来的一致性） |
 | 标签规则回归 | 对官方 ep90-99 复算，与 v7 人工资产 **319/319 全对** |
+| 接触检测 | 机械臂 ↔ 容器 **0/48**；容器互撞 20/48（全在事件窗口内） |
 | 单测 | 39 passed |
 | 体量 | merged h5 共 **3.28 GiB**（每 env 1.64 GiB） |
 
+## 接触检测（物理引擎实测）
+
+用 sapien `scene.get_contacts()` 逐帧扫全场接触，按三类统计（冲量 > 1e-9 才算「真的撞上」，
+因为 PhysX 会把贴得很近但没使上力的物体也配成接触对）：
+
+| 接触类型 | 结果 | 含义 |
+| --- | --- | --- |
+| **机械臂 ↔ 容器** | **0/48 条** | 机器人**从未**被 swap 中的容器碰到（验收判据 11） |
+| **容器 ↔ 容器** | **20/48 条**，全部落在第一次 swap 窗口内 | clip 内实际发生的物理接触 |
+| 机械臂 ↔ 按钮 | Button 每条 17 帧 / Video 0 帧 | 任务本身的接触，对照基线 |
+
+容器互撞与拓扑类别强相关：**`cross_aligned`（跨列同侧）0/16 从不撞**、
+`same_column` 7/16、`cross_diagonal`（对角）13/16 —— 对角路径最长、最容易穿过别的容器。
+
+图：`diagrams/contact_overview.png`（谁撞了、多重、涉及哪些容器对）与
+`diagrams/contact_timeline.png`（接触落在 clip 的哪些帧）。
+
 ## ⚠ 已知问题：ButtonUnmaskSwap 的动作通道泄露
 
-Button 的机器人在第一次 swap 期间会被**抬升绕行的容器物理擦碰**
-（`swap_flat_two_lane` 的 `lane_offset=0.07`）。ep95 实测：关节角在 env 79 从严格 0.0
-突跳到 4.7e-5 并指数增长，env 88 时 `solve_button` 的第 2/3 段规划以被扰动的关节角为
-起点而分叉，指令最大差 **1.6e-1 rad（≈9°）**。于是机器人动作与 swap 内容产生确定性
-对应 —— 模型可绕过视觉、直接从动作通道反推 swap。零 src 改动无法消除。
+Button 侧 clip 全程 `joint_action` 跨同源变体最大差 **1.6e-1 rad（≈9°）**；Video 侧严格 0.0。
 
-**处置（用户拍板）：保留 48 条并逐条量化。** 标签里有两个可过滤字段：
+**根因（实测定位，注意不是机械臂被碰）**：机械臂从未接触容器（上表 0/48）。真正的链条是
+**交换中的两个容器互撞** → 改变 PhysX 的接触求解规模与顺序 → 机械臂-按钮的接触力数值解
+发生变化 → 关节角偏离 → 后续规划以偏离的关节角为起点而分叉。ep95/var2 逐帧实证：
+env 70 起 `bin_0↔bin_3` 持续接触 → env 79 `button_cap↔panda_finger` 冲量出现差异、
+关节角从严格 0.0 突跳到 4.7e-5 并指数增长 → env 88 时 `solve_button` 的第 2/3 段规划分叉。
+Video 不受影响：demo 段 `solve_hold_obj` 开环发同一 qpos、**不做任何运动规划**。
+
+零 src 改动无法消除。**处置（用户拍板）：保留 48 条并逐条量化。** 标签里两个可过滤字段：
 
 - `action_group`：同源内按 `joint_action` **逐位相同**划分的等价组 id；
 - `action_dev_max`：与同源其他变体的 `joint_action` 最大绝对差（rad）。
@@ -51,8 +72,13 @@ episode_map_{Task}.json               dense ↔ 源ep/变体号/seed/槽位序�
 clip_events.json                      ★ 主标签：clip 级事件（每条 clip 一个事件）
 swap_labels_clip.json                 chunk 级二值，与 MotionJEPA v7 同 schema
 swap_events_clip.json                 chunk 级富标签
-verification_report.{json,md}         十条判据的验收报告
+verification_report.{json,md}         十一条判据的验收报告
 diagrams/{Task}_ep{N}_clips.png       每源一张、每变体一子图的 2D 简图
+                                      （红框 = 检测到容器互撞）
+diagrams/contact_overview.png         48 条 clip 的接触矩阵
+diagrams/contact_timeline.png         接触发生在 clip 哪些帧的时间轴
+original_index.json                   Phase 0 控制跑的原始槽位序列与布局基线（复现所需）
+logs/                                 各阶段运行日志
 traces/ videos/                       clip 区间位姿 npz 与截断 rollout 录像
 ```
 
@@ -101,7 +127,7 @@ uv run python scripts/data-generation-MotionJEPALabel/make_clip_labels.py --inpu
 ```
 
 ```bash
-uv run python scripts/data-generation-MotionJEPALabel/verify_clips.py --gen-dir scripts/data-generation-MotionJEPALabel/outputs/event1
+uv run python scripts/data-generation-MotionJEPALabel/verify_clips.py --gen-dir scripts/data-generation-MotionJEPALabel/outputs/event1 --phase0-index scripts/data-generation-MotionJEPALabel/outputs/event1/original_index.json
 ```
 
 ```bash

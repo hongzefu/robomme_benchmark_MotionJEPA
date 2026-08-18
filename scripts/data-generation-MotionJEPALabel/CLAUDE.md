@@ -152,7 +152,8 @@ MotionJEPA `build_data_raw_from_h5` 对齐）：
 episode_N/timestep_t/swap_gt/   swap_active, swap_window_idx, swap_slots(int8[2]),
                                 swap_bins(int8[2]), swap_pair_pos(f32[2,3]),
                                 swap_progress, bins_pos(f32[n,3]), cubes_pos(f32[3,3]),
-                                env_step(int32)
+                                env_step(int32),
+                                contact_{robot_bin,bin_bin,robot_button}_{count,impulse}
 episode_N/setup/swap_gt/        env_seed, variant_seed, src_episode, variant_idx,
                                 is_original, difficulty, signature,
                                 slot_pairs/bin_pairs(int8[k,2]),
@@ -163,6 +164,9 @@ episode_N/setup/swap_gt/        env_seed, variant_seed, src_episode, variant_idx
                                 slot_xy(f32[n,2]), reference_axis_deg,
                                 net_permutation, min_clearance,
                                 bystander_net_max/path_max, disturbed_bins,
+                                contact_*_frames / *_forceful_frames /
+                                *_event_forceful_frames / *_impulse_max /
+                                *_onset_clip_frame / bin_bin_(forceful_)pairs,
                                 bins_pos_traj(f32[110,n,3]), cubes_pos_traj
 episode_N/setup/meta/           bin_colors, color_names, task_goal_color,
                                 button_left, button_right   ← 纯 metadata，不进标签
@@ -215,29 +219,65 @@ Button 压根没旋转。实测均值对两 env 都成立，且天然吸收 ±0.
 ⚠ 在 clip 上区分度很低：`grid_starts(110) = [0,16,32,48,64]` 只有 5 个 chunk，
 按 ε=0.10 第 0 个为负、其余 4 个为正（48 clip → 240 条、192 正）。主用途是 clip 级多类判别。
 
-## 八、⚠ ButtonUnmaskSwap 的动作通道泄露（已知、不可消除）
+## 八、接触检测与 ButtonUnmaskSwap 的动作通道泄露
+
+### 8.1 接触检测（物理引擎实测，`swap_inject._contact_snapshot`）
+
+逐帧调 sapien `scene.get_contacts()` 扫全场，按三类归并。两个实现坑：
+
+1. **实体名带子场景前缀**：`entity.name` 是 `scene-0_bin_0`，而 `spawned_bins` 的 `.name`
+   是裸名 `bin_0` —— 不剥前缀（`_strip_scene`）就永远匹配不上，统计会恒为 0；
+2. **零冲量接触候选**：PhysX 会把贴得很近但没使上力的物体也配成接触对（实测容器之间
+   几乎每帧都有），所以 `*_frames` 没有判别力，**判「真的撞上了」必须用
+   `*_forceful_frames`**（冲量 > `FORCEFUL_IMPULSE_EPS` = 1e-9）。
+
+全量实测结果：
+
+| 接触类型 | 结果 |
+| --- | --- |
+| **robot_bin**（机械臂连杆 ↔ 容器） | **0/48 条** —— 机器人从未被 swap 中的容器碰到 |
+| **bin_bin**（容器 ↔ 容器） | **20/48 条**，全部落在第一次 swap 窗口内 |
+| robot_button（机械臂 ↔ 按钮） | Button 每条 17 帧、Video 0 帧（任务本身的接触） |
+
+容器互撞与拓扑类别强相关：`cross_aligned` **0/16**（跨列同侧路径最短，从不撞）、
+`same_column` 7/16、`cross_diagonal` **13/16**（对角路径最长、最容易穿过别的容器）。
+
+### 8.2 动作通道泄露的正确因果链
 
 **现象**：Button 侧 clip 全程 `joint_action` 跨同源变体最大差 5.8e-3 ~ **1.6e-1 rad（≈9°）**；
 Video 侧严格 0.0。
 
-**根因（实测定位）**：以 ep95 为例，实测关节角 `joint_state` 在 **clip45（env 79）从
-严格 0.0 突跳到 4.7e-5** 并指数增长（clip53 已到 6.1e-3），到 **clip54（env 88）** 指令
-`joint_action` 才开始分叉。即：物理层先偏离、规划层随后。env 79 落在第一次 swap 窗口的
-抬升阶段 —— `swap_flat_two_lane` 的 `lane_offset=0.07` 让交换中的容器抬高绕行，
-擦碰了正在按按钮的机械臂；而 `solve_button` 分**三段**规划
-（ready → 下压 → 抬起），第 2/3 段以被扰动后的实测关节角为起点，于是产生离散不同的解。
-Video 不受影响，因为 demo 段 `solve_hold_obj` 是开环发同一 qpos、**不做任何规划**。
+⚠ **不要归因成「容器擦碰机械臂」** —— 那是本轮一度做出的错误推断，已被接触检测推翻
+（robot_bin 实测 0/48；末端与最近容器的中心距 0.12~0.21 m）。正确链条是：
+
+```
+交换中的两个容器互撞（bin_bin 接触）
+  → 改变 PhysX 的接触求解规模与顺序
+  → 机械臂-按钮的接触力数值解发生变化
+  → 关节角偏离
+  → solve_button 的第 2/3 段规划以偏离的关节角为起点 → 指令分叉
+```
+
+ep95/var2 的逐帧实证（对照 var0）：
+
+| env step | 观察到什么 |
+| --- | --- |
+| 70 | `bin_0↔bin_3` 开始持续接触（var0 无此接触） |
+| 79 | `button_cap↔panda_leftfinger/rightfinger` 冲量出现差异（var0 左 0.0648/右 0.0029，var2 左 0.0234/右 0.0438）；qpos 从严格 0.0 突跳到 **4.7e-5** |
+| 82 | 按钮接触冲量差已达 1.29；qpos 差 1.4e-3 |
+| 88 | 指令 `joint_action` 首次分叉 |
+
+Video 不受影响：demo 段 `solve_hold_obj` 开环发同一 qpos、**不做任何运动规划**，
+所以即便容器互撞（Video 侧也有 8/24 条），指令仍逐位相同。
+**这正说明泄露的必要条件是「clip 内存在运动规划」，而不是「有没有接触」。**
 
 排除项：不是浮点噪声（ulp 是 1e-15 量级，实测起步 4.7e-5）；不是 RRT* 随机性
-（同源内分组稳定、Phase 0 与官方逐位一致）；末端执行器与最近 bin 的中心距有 0.12~0.21 m，
-所以擦碰发生在**手臂连杆**而非末端。
+（同源分组稳定、Phase 0 与官方逐位一致）。零 src 改动无法消除。
 
-**处置（用户 2026-08-18 拍板）：保留 48 条并逐条量化。** 标签里两个可过滤字段：
+### 8.3 处置：保留 48 条并逐条量化（用户 2026-08-18 拍板）
 
-- `action_group`：同源内按 `joint_action` 逐位相同划分的等价组 id；
-- `action_dev_max`：与同源其他变体的 `joint_action` 最大绝对差（rad）。
-
-实测分组（`verification_report.md` 有完整表）：
+标签里两个可过滤字段：`action_group`（同源内按 `joint_action` 逐位相同划分的等价组 id）、
+`action_dev_max`（与同源其他变体的最大绝对差）。实测分组：
 
 | env / 源 ep | 动作组数 | 各变体所属组 | 组间最大差 (rad) |
 | --- | ---: | --- | ---: |
@@ -279,7 +319,7 @@ uv run python scripts/data-generation-MotionJEPALabel/draw_clip_diagrams.py \
   --gen-dir scripts/data-generation-MotionJEPALabel/outputs/event1
 ```
 
-## 十、验收判据（`verify_clips.py`，十条全过才算数）
+## 十、验收判据（`verify_clips.py`，十一条全过才算数）
 
 1. 每源恰 6 条且事件槽位对覆盖全部 `C(4,2)`；`is_original` 每源恰 1 条；bin 数恒 4；
 2. 槽位 xy 与 Phase 0 布局基线逐位相同；
@@ -297,7 +337,10 @@ uv run python scripts/data-generation-MotionJEPALabel/draw_clip_diagrams.py \
 8. **cube 可见性分段**：clip 帧 0-29 全部 z < 0.1（在容器内），帧 30-109 全部 z > 5（已藏走）；
 9. merged h5 结构：episode/timestep 密集连续、每条恰 110 帧、scope 段 == 110、swap_gt 齐全；
 10. 标签对账：clip 级标签数 == clip 总数、类别分布与 h5 实测一致且每类均衡、
-    chunk 标签数 == 网格期望。
+    chunk 标签数 == 网格期望；
+11. **机械臂 ↔ 容器接触必须为 0**（物理引擎 `get_contacts` 实测）。本链路的前提是
+    「机器人动作只由任务本身决定」；若机械臂真被 swap 中的容器碰到，clip 里就多了一条
+    swap → 机器人的**直接**因果通路。实测 0/48。
 
 ---
 
@@ -338,13 +381,15 @@ Button 的 press1 结束于 110/121/115/117、press2 结束于 200~211，clip �
 | 标签规则回归 | 对官方 ep90-99 复算，与 v7 人工资产 **319/319 全对**（ε=0.10） |
 | clip 级标签 | 48 条，`same_column` / `cross_aligned` / `cross_diagonal` **各 16 条** |
 | chunk 级标签 | 240 条（swap=1 共 192 条） |
-| 验收 | **十条判据全过** |
+| 接触检测 | 机械臂 ↔ 容器 **0/48**；容器互撞 20/48（`cross_aligned` 0/16、`same_column` 7/16、`cross_diagonal` 13/16） |
+| 验收 | **十一条判据全过** |
 
 关键判据实测值：
 
 - 判据 4：Video **0.0（逐位相同）**；Button 最大 1.598e-01（见 §八）；
 - 判据 3（前 30 帧 `bins_pos`）：**0.000e+00**；
 - 判据 5（clip 末帧位置集合）：**1.192e-06**（阈值 1e-05）；
+- 判据 11（机械臂 ↔ 容器接触）：**0/48**；
 - 质量：`min_clearance < 0.055 m` 的 clip **14/48** 条，最小 0.0045；
   `bystander_net_max` 只有 Video/ep91 一源非零（0.0087）。
 

@@ -79,18 +79,59 @@ def grid_starts(segment_frames: int) -> list[int]:
     return list(range(0, max(0, segment_frames - CHUNK_SPAN), CHUNK_STEP))
 
 
+# ── 接触检测字段（物理引擎实测） ──────────────────────────────────────────────
+
+
+def _contact_fields(contacts: dict) -> dict:
+    """把 clip 的接触统计摊平进标签。判据说明见 swap_inject.contact_summary。
+
+    * `contact_robot_bin_*` —— 机械臂连杆 ↔ 容器。2026-08-18 全量实测 **0/48 条**，
+      机器人从未被 swap 中的容器碰到；
+    * `contact_bin_bin_*` —— 容器互撞（交换中的两个容器相撞，或撞上被锁定的旁观容器）。
+      这是 clip 内实际发生的物理接触，也是 ButtonUnmaskSwap 动作分叉的源头：
+      它改变 PhysX 的接触求解，间接让机械臂-按钮的接触力数值解发生变化；
+    * `contact_robot_button_*` —— 机械臂 ↔ 按钮，任务本身的接触，对照基线。
+
+    `*_frames` 含零冲量的接触候选（PhysX 把贴近的物体也配成接触对），
+    **判「真的撞上了」一律用 `*_forceful_frames`**。
+    """
+    return {
+        "contact_robot_bin_forceful_frames": contacts.get("robot_bin_forceful_frames", 0),
+        "contact_robot_bin_impulse_max": contacts.get("robot_bin_impulse_max", 0.0),
+        "contact_bin_bin_forceful_frames": contacts.get("bin_bin_forceful_frames", 0),
+        "contact_bin_bin_event_forceful_frames": contacts.get(
+            "bin_bin_event_forceful_frames", 0
+        ),
+        "contact_bin_bin_impulse_max": contacts.get("bin_bin_impulse_max", 0.0),
+        "contact_bin_bin_onset_clip_frame": (
+            contacts["bin_bin_onset_env_step"] - CLIP_START
+            if contacts.get("bin_bin_onset_env_step", -1) >= 0
+            else -1
+        ),
+        "contact_bin_bin_forceful_pairs": contacts.get("bin_bin_forceful_pairs") or [],
+        "contact_robot_button_forceful_frames": contacts.get(
+            "robot_button_forceful_frames", 0
+        ),
+        # 一句话结论：这条 clip 里有没有检测到物理接触，分别是哪一类
+        "has_robot_bin_contact": bool(contacts.get("robot_bin_forceful_frames", 0)),
+        "has_bin_bin_contact": bool(contacts.get("bin_bin_forceful_frames", 0)),
+    }
+
+
 # ── 动作通道泄露的量化（ButtonUnmaskSwap 的已知问题） ────────────────────────
 
 
 def action_deviation(handle: h5py.File, entries: Sequence[dict]) -> dict[int, dict]:
     """同源变体之间的 joint_action 偏差与「动作等价组」。
 
-    背景（实测）：ButtonUnmaskSwap 的机器人在第一次 swap 期间会被抬升绕行的容器
-    （`swap_flat_two_lane` 的 lane_offset=0.07）物理擦碰 —— ep95 实测实测关节角在
-    env 79 从严格 0.0 突跳到 4.7e-5 并指数增长，到 env 88 时 `solve_button` 的第 2/3 段
-    规划以偏离后的关节角为起点，指令随之分叉，最大差 1.6e-1 rad（≈9°）。
-    于是机器人动作与 swap 内容产生确定性对应，构成**动作通道的信息泄露**。
-    VideoUnmaskSwap 不受影响（demo 段 `solve_hold_obj` 开环发同一指令、不做规划）。
+    背景（实测）：机械臂**从未**被 swap 中的容器碰到（接触检测实测 0/48）。真正的链条是
+    **交换中的两个容器互撞**（20/48 条）改变了 PhysX 的接触求解规模与顺序，进而让机械臂-按钮
+    的接触力数值解发生变化 —— ep95/var2 实测 env 70 起 bin_0↔bin_3 持续接触、env 79
+    button_cap↔panda_finger 的冲量出现差异、关节角从严格 0.0 突跳到 4.7e-5 后指数增长，
+    到 env 88 时 `solve_button` 的第 2/3 段规划以偏离后的关节角为起点，指令随之分叉，
+    最大差 1.6e-1 rad（≈9°）。于是机器人动作与 swap 内容产生确定性对应，构成
+    **动作通道的信息泄露**。VideoUnmaskSwap 不受影响（demo 段 `solve_hold_obj` 开环发
+    同一指令、不做规划，实测严格 0.0）。
 
     这里把它量化成两个可过滤的字段：
 
@@ -264,6 +305,8 @@ def build_labels(input_dir: Path, dataset_name: str, epsilon: float, tasks: Sequ
                         "disturbed_bins": entry["disturbed_bins"],
                         # 动作通道泄露的量化：同组内 joint_action 逐位相同
                         **deviation[(entry["src_episode"], entry["variant_idx"])],
+                        # 接触检测（物理引擎 get_contacts 实测，见 swap_inject）
+                        **_contact_fields(entry.get("contacts") or {}),
                     }
                 )
 
@@ -396,6 +439,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         zero = sum(1 for v in values if v == 0.0)
         print(f"  {task}: {zero}/{len(values)} 条为 0，最大 {max(values):.3e}")
     print(f"  全体无泄露（action_dev_max==0）的 clip：{len(clean)}/{len(clip_payload['records'])} 条")
+    total = len(clip_payload["records"])
+    rb = [r for r in clip_payload["records"] if r["has_robot_bin_contact"]]
+    bb = [r for r in clip_payload["records"] if r["has_bin_bin_contact"]]
+    print("接触检测（物理引擎 get_contacts 实测，冲量 > 1e-9 才算）：")
+    print(f"  机械臂 ↔ 容器：{len(rb)}/{total} 条 —— 机器人是否被 swap 中的容器碰到")
+    print(f"  容器 ↔ 容器  ：{len(bb)}/{total} 条，全部落在第一次 swap 窗口内")
+    by_topo: dict[str, list[int]] = {}
+    for record in clip_payload["records"]:
+        by_topo.setdefault(record["topo_class"], []).append(
+            int(record["has_bin_bin_contact"])
+        )
+    for name, flags in sorted(by_topo.items()):
+        print(f"    {name}: {sum(flags)}/{len(flags)} 条检测到容器互撞")
     return 0
 
 
