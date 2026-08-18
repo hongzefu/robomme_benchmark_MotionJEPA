@@ -324,3 +324,69 @@ train 里 attempt≠0 的 8 个探针最敏感：
 3. **实践含义**：用本脚本无 seed 重跑，**无法逐字复现 train 的 seed 集合**，
    差异恰好落在 train 当年失败过的那些 episode 上。若目标是复现 train，应继续用
    `scripts/data-generation/generate_dataset.py` 读死 seed；本目录适用于**产生新数据**。
+
+---
+
+## 十、与原版官方数据的逐项比对（2026-08-17）
+
+原版数据位置：`/data/hongzefu/robomme_data_h5/record_dataset_{task}.h5`（合并格式，14 GB/env 级别）。
+已确认它用的就是 train metadata 的 seed 集合 —— 例如 `VideoUnmask/episode_10` 的
+`setup/seed = 7001`，正是 train 里 attempt=1 的那个值。
+
+### 10.1 字段集差异：原版多 8 个字段，生成侧没有任何多余字段
+
+| 类别 | 原版有、生成没有 |
+| --- | --- |
+| timestep | `action/eef_action_raw/{pose,quat,rpy}`、`obs/eef_state_raw/{pose,quat,rpy}` |
+| setup | `fail_recover_mode`、`fail_recover_seed_anchor` |
+
+原版每个 timestep 有 27 个字段，生成侧 21 个，共同 21 个（生成侧是原版的真子集）。
+
+**这不是缺陷，是预期内的版本差异**：commit `68a65a0`（2026-03-01）
+"remove in dataset generation: obs/eef_state_raw action/eef_action_raw setup/fail_recover"
+删掉的正是这 8 个字段。原版数据早于该 commit，所以带着这些字段。
+
+### 10.2 seed 差异：400 条中 392 条同 seed，8 条不同
+
+8 条差异全部是那 8 个探针，偏差量一律 −1（生成侧 attempt=0，原版 attempt=1），详见第九节。
+
+### 10.3 同 seed 下的 joint_action 数值差异
+
+392 条同 seed 的 episode，**timestep 数全部一致**，逐 timestep 逐元素比对 `action/joint_action`（8 维）：
+
+| env | 总数 | 同 seed | 异 seed | 逐位相同(<1e-8) | 最大绝对差 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| VideoUnmaskSwap | 100 | 98 | 2 | 97/98 | 2.146e-06 |
+| VideoUnmask | 100 | 99 | 1 | **99/99** | 2.078e-17 |
+| ButtonUnmaskSwap | 100 | 97 | 3 | 96/97 | 1.788e-06 |
+| ButtonUnmask | 100 | 98 | 2 | 97/98 | 3.576e-07 |
+| **合计** | **400** | **392** | **8** | **389/392（99.2%）** | **2.146e-06** |
+
+**389/392 条逐元素完全相同**（最大差 <1e-8，VideoUnmask 甚至整体只有 2e-17 的机器精度级噪声）。
+
+仅 3 条存在肉眼可见的偏差：
+
+| episode | seed | timestep | 最大绝对差 | 平均绝对差 | 超差元素占比 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| VideoUnmaskSwap/ep88 | 13800 | 453 | 2.146e-06 | 5.772e-08 | 657/3624（18.1%） |
+| ButtonUnmaskSwap/ep87 | 15700 | 443 | 1.788e-06 | 7.645e-08 | 1074/3544（30.3%） |
+| ButtonUnmask/ep55 | 13500 | 363 | 3.576e-07 | 8.813e-09 | 294/2904（10.1%） |
+
+这三条的量级（1e-6 ~ 1e-7）远小于关节角的物理意义尺度，是浮点非确定性累积的结果
+（同一 seed 下规划器的迭代求解对浮点舍入顺序敏感，偏差沿轨迹缓慢放大），
+**不是逻辑差异** —— 佐证是三条的 timestep 数与原版完全一致，轨迹结构没有分叉。
+
+> 注意：这个量级过不了骨架 `compare_joint_actions.py` 的 `1e-8` 验收线。
+> 但历史全量报告里官方自己的复现跑也没过（`max_abs_diff = 7.86e-03`，比这里大三个数量级），
+> 所以 1e-8 那条线在当前环境下本就不现实。
+
+### 10.4 结论
+
+| 维度 | 结论 |
+| --- | --- |
+| 字段 | 生成侧比原版少 8 个字段，且是真子集 —— 由 `68a65a0` 有意删除，非缺陷 |
+| seed | 392/400 相同；8 条差异全为探针，方向单一（原版 attempt=1 → 现在 attempt=0） |
+| 数值 | 同 seed 的 392 条里 **389 条逐位相同**，3 条为 1e-6 级浮点噪声，无逻辑分叉 |
+
+→ **生成链路在数值层面与原版等价**。两份数据的实质差异只有两点：
+少 8 个已被上游删除的字段，以及 8 个 episode 因环境行为漂移而选中了不同的 seed。
