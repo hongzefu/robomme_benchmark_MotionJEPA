@@ -1,254 +1,362 @@
 # CLAUDE.md — data-generation-MotionJEPALabel 完整参考
 
-本文件供 agent 阅读：swap 变体派生数据集的机制原理、口径约束、命令用法与实测记录。
+本文件供 agent 阅读：单事件 swap clip 数据集的机制原理、口径约束、命令用法与实测记录。
 人类可读的结论摘要见 [README.md](README.md)。
 
-任务背景：MotionJEPA（/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA）以
-train ep90-99 为 eval 集，2026-08-15 删 linear probe 的弃用理由是「缺 swap 子事件粒度
-标签」。本链路对 VideoUnmaskSwap / ButtonUnmaskSwap 的 train ep90-93 做「布局不变、
-只穷举 swap 对象」的派生，产出带完整 ground truth 标注的专用评估数据集。
+任务背景：MotionJEPA（/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA）以 train
+ep90-99 为 eval 集，2026-08-15 删 linear probe 的弃用理由是「缺 swap 子事件粒度标签」。
+上一版链路（commit `a90f071`）对 ep90-93 穷举**整条 swap 序列**产出 318 条完整 episode、
+89 GiB —— 但那把「第一次换哪对/第二次换哪对/第三次换哪对」三个因子搅在一起，还捎带了
+抓取段的机器人动作差异与 easy/medium/hard 三套布局模板。本轮彻底重构，只留一个事件。
+
+**宗旨（用户 2026-08-18 拍板）：除了 bin 的初始位置和第一次 swap 的排列组合，
+其他全部保持一致。**
 
 ---
 
-## 一、核心机制：零 src 改动的 swap 注入
+## 一、clip 区间与两条时间线
 
-环境侧事实（`src/robomme/robomme_env/{VideoUnmaskSwap,ButtonUnmaskSwap}.py`，两者同构）：
+第一次 swap 窗口恒为 env step `[64,114)`（`_refresh_swap_schedule` 硬编码 `64+50i`）。
+clip = 窗口 ±30 帧 = **env step `[34,144)`，共 110 帧**，落盘时帧号重编号 `0..109`。
 
-1. swap 的对象是 **bin（容器）**，`swap_flat_two_lane`（`utils/statechange.py:45`）做
-   kinematic teleport 位置互换；cube 在窗口内藏到 (10,10,10)，结束后落回**自己 bin 的
-   新位置** —— cube↔bin 绑定不变（三仙归洞语义）。
-2. swap 次数 k 由 `__init__` 里独立 `torch.Generator(manual_seed(seed))` 的第一笔
-   `randint(swap_min, swap_max+1)` 决定（`VideoUnmaskSwap.py:141-143`）——可离线复算。
-3. 帧窗口硬编码：第 i 次交换占 env step `[64+50i, 64+50(i+1))`（`_refresh_swap_schedule`）。
-4. swap 对象选择位于 `_load_scene` RNG 流**最末尾**（`VideoUnmaskSwap.py:341-347`）：
-   抽 `swap_pair{k}_idx1`，`idx2` 留 None、运行时进窗口首帧取 xy 最近邻回填。
-5. **注入方法**：`env.reset()` 后覆写 `swap_pair{1,2,3}_idx1/idx2` 六个属性（idx2 必须
-   显式给，否则被最近邻覆盖）再调 `_refresh_swap_schedule()`。零 RNG 消耗 ⇒ 布局/颜色/
-   任务目标逐比特不变（`verify_variants.py` 用布局指纹逐位断言）。
-6. 注入路径与原始路径行为等价：窗口前两条路径都是 no-op（原始因 `idx_b is None`
-   continue，注入因 `cur_step < start` 返回），端点捕获都发生在窗口首帧。
+clip 内帧号换算：`clip 帧 = env step − 34`。窗口 1 = clip `[30,80)`；
+窗口 2 = clip `[80,130)`（只露出前 30 帧）；窗口 3 = clip `[130,180)`（完全不可见）。
 
-由此的枚举空间：每次交换是 bin 的**无序对**（对 `swap_flat_two_lane` 逐项代入可证
-(i,j)/(j,i) 轨迹逐位相同），P = C(bin数,2)，k 次交换共 P^k 种序列（含相邻重复 ——
-Phase 0 实测 ButtonUnmaskSwap/ep91 的原始序列就是 `12|12|03`，相邻重复天然存在）。
+env 侧关键时刻（`VideoUnmaskSwap.step` / `statechange.py`）：
 
-## 二、编号与 seed（派生 episode ↔ seed 一一对应）
+| env step | 发生什么 | 出处 |
+| --- | --- | --- |
+| 0-31 | **全部 bin 藏到 (10,10,10)**，露出彩色 cube（unmask 揭示阶段） | `lift_and_drop_objects_back_to_original(bin, 0, 64)`，`drop_step = 0 + 64//2 = 32` |
+| 32 | bin 落回原位，盖住 cube | 同上 |
+| 34 | **clip 起点** —— 已在容器落回之后，所以 clip 内 cube 从头就被遮挡 | 本链路 |
+| 64 | 第一次 swap 开始；同时 cube 被藏到 (10,10,10) | `lift_and_drop_objectA_onto_objectB(cube, 64, swap_end)` |
+| 114 | 第一次 swap 结束、第二次开始 | `_refresh_swap_schedule` |
+| 143 | **clip 末帧** | 本链路 |
+
+⇒ clip 内 cube 要么被容器遮挡（帧 0-29）、要么已藏走（帧 30-109），**颜色根本不进画面**。
+
+机器人在 clip 内做什么：
+
+| env | clip 内行为 | 段边界（Phase 0 实测） |
+| --- | --- | --- |
+| VideoUnmaskSwap | static 子目标，`solve_hold_obj` 开环 hold，**不做任何运动规划** | demo 段恒 168 帧（k=2） |
+| ButtonUnmaskSwap | press1 + press2，两者 `failure_func` 均为 `None` | press1 → 110/121/115/117，press2 → 200~211 |
+
+## 二、源三重筛选（缺一不可）
+
+1. **4-bin（medium/hard），剔除全部 easy**：easy 是 3-bin，且 `region3_tri` /
+   `region3_line` 两套模板随 seed 二选一，类别体系（半程/全程 vs 腰/底边）与 4-bin 的
+   互不相通 —— 三套几何无法合成统一的多类判别标签空间。只留 4-bin 后**每源恒
+   `C(4,2)=6` 条、模板唯一、类别恒为 3 类各 2 个槽位对**。
+2. **swap_times ≥ 2**：Video 的 demo 段长 = 最后一次 swap 结束（+0~4 帧），k=1 时 demo
+   只到 env 114，clip 的后 30 帧会跌出 demo、机器人开始朝目标 bin 移动。
+3. **两 env 取共同源号**：让两边条数与难度构成对称。
+   ⚠ 共同源号 **不等于**共同布局 —— 两 env 的 seed 不同（ep91 是 14100 vs 16100），
+   bin 位置本就不同；对称性只体现在条数与难度构成上。
+
+结果恒为 `{91, 95, 98, 99}`，每 env 24 条、合计 **48 条**：
+
+| env | ep | seed | 难度 | k | 原始 bin 序列 | 原始槽位序列 |
+| --- | ---: | ---: | --- | ---: | --- | --- |
+| Video | 91 | 14100 | hard | 2 | 03\|12 | 03\|12 |
+| Video | 95 | 14500 | hard | 2 | 01\|02 | 01\|12 |
+| Video | 98 | 14800 | medium | 2 | 03\|12 | 03\|12 |
+| Video | 99 | 14900 | hard | 2 | 01\|01 | 01\|01 |
+| Button | 91 | 16100 | hard | 3 | 12\|12\|03 | 12\|12\|03 |
+| Button | 95 | 16500 | hard | 2 | 03\|12 | 03\|12 |
+| Button | 98 | **16801** | medium | 2 | 12\|12 | 12\|12 |
+| Button | 99 | 16900 | hard | 3 | 03\|12\|03 | 03\|12\|03 |
+
+⚠ Button/ep98 的 seed 是 **16801**（历史 attempt 探针，非 `16000+100e` 规则值）——
+seed 一律从 train metadata 读表，**禁止公式反推**。
+Video/ep95 是槽位换算的活样本：bin 序列 `01|02` → 槽位序列 `01|12`（第一次换完后 bin0
+落在 slot1，所以第二次动的是 slot1↔slot2）。
+
+## 三、核心机制：零 src 改动的 swap 注入 + 窗口 ≥2 按槽位固定
+
+环境侧事实（两个 env 同构）：swap 的对象是 **bin**，`swap_flat_two_lane` 做 kinematic
+teleport 位置互换；swap 对象选择位于 `_load_scene` RNG 流**最末尾**，`swap_pair{k}_idx2`
+本就留 None、运行时进窗口首帧取最近邻回填。**注入 = reset 后覆写
+`swap_pair{1,2,3}_idx1/idx2` 六个属性再 `_refresh_swap_schedule()`**，零 RNG 消耗 ⇒
+布局/颜色/任务目标逐比特不变。idx2 必须显式给，否则被最近邻覆盖。
+
+### 槽位（slot）语义
+
+bin `i` 的**初始位置**定义为 slot `i`。维护 `slot[b]` = bin b 当前槽位，初始
+`slot[b]=b`；窗口交换 bin (u,v) 即 `slot[u], slot[v] = slot[v], slot[u]`。
+**窗口 i 实际移动的槽位对** `S_i = (slot_before[u], slot_before[v])`。
+`clip_plan.slot_pairs_from_bin_pairs` / `bin_pairs_from_slot_pairs` 是互逆的换算
+（单测对全部长度 ≤3 的序列穷举验证过）。
+
+### 注入语义
+
+- **窗口 1**：枚举 `C(4,2)=6` 个槽位对。窗口 1 之前 slot 是 identity，所以槽位对 == bin 对。
+- **窗口 i≥2**：从 Phase 0 原始跑复算出原始槽位对 `S_i^orig`，变体里注入「**当前占据
+  `S_i^orig` 两槽的那两个 bin**」。于是窗口 i≥2 的 teleport 起止位置、被锁定旁观 bin 的
+  位置集合，跨同源全部变体一致 —— 后 30 帧不是第二个变化因子。
+  推论：窗口 1 取原始槽位对时整条序列退化为原始 bin 对序列 ⇒ `is_original` 变体仍逐位
+  复现官方 episode。
+
+⚠ **窗口 ≥2 的原始槽位对只能实测拿到**：`idx2` 是运行时进窗口那一刻按最近邻回填的，
+静态算不出。这就是 Phase 0 必须跑**完整** rollout 的原因（Button 的 k=3 源第三个窗口到
+env 214 才结束，而正式产物的截断点在 press2 结束 ~200，够不着）。
+
+## 四、截断 rollout（正式产物）与 `episode_success` 置位
+
+clip 只到 env 143，抓取段完全用不上：
+
+- **Video**：只 solve `task_list[0]`（static，hold 到最后一次 swap 结束 ≥164）；
+- **Button**：只 solve `task_list[0..1]`（两个按钮，跑到 ≥198）。
+
+硬断言：录到的帧数 ≥ 144（`CLIP_END`），否则 fail-loud。
+
+⚠ `RecordWrapper.close()` 里是 `if self.episode_success:` 才落盘，而 `episode_success`
+只在 `terminated` 时置真 —— 截断跑必须在 close 前**显式** `record_env.episode_success = True`
+（实例属性赋值，零 src 改动）。这是有意为之的「录制部分轨迹」，**不是绕过失败判定**：
+截断点之前的两个子目标 `failure_func` 都是 `None`，这段里根本不存在失败条件。
+
+收益（实测）：旧链路 318 条里有 85 条撞上「抓取子目标 step≈200 开始 vs 第三个 swap 窗口
+到 214 才结束」的时序冲突、必须加 hold 补救；本轮 **48/48 零重试**。速度约 2 倍。
+
+## 五、与 newSeed 骨架的三处刻意偏离（⚠ 改动前必读）
+
+`clip_worker.py` 的 rollout 骨架照抄 `scripts/data-generation-newSeed/generate_dataset_newseed.py`，除三处：
+
+1. **FailRecover 恒不启用**：骨架按 episode 号分档，本链路的 staging 编号会让分档乱套；
+   源 ep91-99 全部 ≥6，原始行为就是不启用。
+2. **失败重试不换 seed**：骨架 `bump` 会按公式换 seed —— 换 seed 即换布局，摧毁前提。
+   `ClipJob.bump()` 只加 attempt。
+3. **difficulty 读 train metadata**，不用 `difficulty_for()` 循环。
+
+另有一条硬规则：**每变体新建 env，禁止复用** —— `statechange.py` 的 `_two_lane_swaps` /
+`_lift_drop_onto_cache` 按 `id(actor)` 做键且 reset 不清理，跨变体复用会静默读旧缓存。
+
+## 六、clip 裁剪与 h5 结构
+
+worker 在 `close()` 后把 raw 的 `timestep_34..143` 拷成 clip h5、帧号重编号 `0..109`，
+并**改写 `info`** 让整段 clip 恰好构成该 env 的 scope 段（口径与 `segment_lengths` /
+MotionJEPA `build_data_raw_from_h5` 对齐）：
+
+- Video（scope=demo）：全部 `is_video_demo=True` → `demo_prefix=110`、`exec_len=0`；
+- Button（scope=exec）：全部 `is_video_demo=False` + **末帧 `is_completed=True`**
+  → `exec_len = min(109+2, 110) = 110`。
+
+⚠ Button 末帧的 `is_completed=True` 是**人为置位**，语义是「clip 到此为止」而**不是**
+「任务完成」—— 截断 rollout 时任务确实没做完。下游只把它当段尾标记用。
+
+裁剪后删除 raw h5（clip 是唯一产物）。
+
+### h5 内嵌标注
 
 ```
-staging_episode = src_episode × 1000 + variant_idx     （生成期文件名用）
-variant_seed    = env_seed    × 1000 + variant_idx     （metadata/文件名的唯一标识）
-反解：// 1000 与 % 1000
-```
-
-- **环境实际播种用 env_seed**（train metadata 里的原始 seed；同源变体共享，布局不变之源）。
-  直接拿 variant_seed 去 `gym.make` 复现不了 —— 复现须 env_seed + 注入 pairs。
-- 合并后官方 h5 内重编号为**密集 0..M-1**（下游普遍假设 episode 0-based 连续），
-  `episode_map_{Task}.json` 记录 dense ↔ staging ↔ seed ↔ pairs 的完整映射。
-
-## 三、与 newSeed 骨架的三处刻意偏离（⚠ 改动前必读）
-
-`variant_worker.py` 的 rollout 骨架（env kwargs、planner screw×3→RRT*×3、成功判定、
-线程压 1、每卡一池绑卡、BrokenProcessPool 重建）照抄
-`scripts/data-generation-newSeed/generate_dataset_newseed.py`，除三处：
-
-1. **FailRecover 恒不启用**：骨架按 episode 号分档（ep≤2→z、≤5→xy），本链路的
-   staging/dense 编号会让分档乱套；源 ep90-93 全部 ≥6，原始行为就是不启用。
-2. **失败重试不换 seed**：骨架 `bump` 会按公式换 seed —— 本链路换 seed 即换布局，
-   摧毁「其他配置不变」前提。`VariantJob.bump()` 只加 attempt。
-3. **difficulty 读 train metadata**：不用 `difficulty_for()` 循环（对 staging 号无意义）。
-
-另有两条硬规则：
-
-- **每变体新建 env，禁止复用**：`statechange.py` 的 `_two_lane_swaps` /
-  `_lift_drop_onto_cache` 按 `id(actor)` 做键且 reset 不清理，跨变体复用会静默读旧缓存。
-- **swap_times 不改**：VideoUnmaskSwap 的 static 子目标时长在 `_load_scene` 建 task_list
-  时取 `swap_schedule[-1][3]`，改次数会造成 task_list 与 schedule 不一致。
-
-## 三之二、ButtonUnmaskSwap 的抓取/swap 时序冲突与 hold 补救（踩坑记录）
-
-ep91（hard，k=3）的第三个 swap 窗口到 step 214 才结束，而抓取子目标实测 step≈200
-就开始（子目标边界：按钮1 0-109、按钮2 110-199、抓红 200-314、放下 315、抓蓝 356-453）。
-原始序列恰好最后窗口动的是 (0,3)（目标 bin2 静止）所以官方数据成立；穷举变体则撞上
-两种确定性失败（85/216 条）：
-
-- **(a) 抓取规划读到移动中的位置**（83 条）：最后窗口在动目标 bin，oracle 按 step 200
-  时的位置规划抓取，teleport 继续走 → 抓错 bin → 环境判 fail。
-- **(b) 旁观 bin 被瞬时挤高**（var61/var191）：按钮 2 完成的那次 evaluate 把子目标推进
-  到抓取并即刻激活 failure_func（其他 bin z>0.15 即败），恰逢对角 teleport 深度穿越
-  旁观 bin（var61 实测 min_clearance=0.0062 m）把它挤过阈值 → episode 在 step≈200
-  终止，还没走到抓取 entry。
-
-补救（零 src 改动）：**仅重试 attempt（≥1）时**，在最后一个按钮 solve 完成后、其
-post-solve evaluate 之前，用环境自带的 `solve_hold_obj_absTimestep`（VideoUnmaskSwap
-static 子目标同款机制）hold 到 `swap_schedule[-1][3]+10`（+10 为被挤高 bin 的自由落体
-沉降余量）。attempt 0 一律不 hold —— 天然可成功的变体（含全部 is_original）轨迹与
-官方逐位可比；hold 变体的 `attempt`/`pickup_hold_step` 逐条记录在 manifest/episode_map/
-富标签里（83 条 hold 到 214（第一版实现，无余量已够）、2 条 hold 到 224）。
-
-## 四、两道对账闸 + 净位移判据（踩坑记录）
-
-1. 注入后立即 `readback_pairs` == 计划（第一道闸）；rollout 后再读回仍 == 计划
-   （防最近邻覆写）。
-2. 位姿探针（实例级替换 `task_env.step`，trace[t] 与 h5 timestep_t 同一次调用）反解
-   实测事件（第二道闸）。**判定「谁真的交换了」必须用窗口首末净位移（>0.03 m），
-   不能用路径长**：对角交换会擦碰被 `other_cube` 锁定的旁观 bin，旁观者被来回抖动
-   （实测路径长可达 0.11 m）但净位移近乎零 —— smoke 首跑用路径长阈值 0.02 时，
-   VideoUnmaskSwap/ep90 的两条对角变体 (0,2)/(1,3) 被确定性误杀（三次 attempt 的
-   path_len 逐位相同）。旁观扰动降级为质量指标：`bystander_net_max` /
-   `bystander_path_max` / `disturbed_bins`（净位移 >0.02 记入），写进 h5 与富标签。
-
-## 五、h5 内嵌 swap_gt 标注（RecordWrapper 落盘后追加写）
-
-```
-episode_N/timestep_t/swap_gt/   swap_active, swap_window_idx, swap_pair(int8[2]),
-                                swap_pair_pos(f32[2,3]), swap_progress,
-                                bins_pos(f32[n,3]), cubes_pos(f32[3,3])
+episode_N/timestep_t/swap_gt/   swap_active, swap_window_idx, swap_slots(int8[2]),
+                                swap_bins(int8[2]), swap_pair_pos(f32[2,3]),
+                                swap_progress, bins_pos(f32[n,3]), cubes_pos(f32[3,3]),
+                                env_step(int32)
 episode_N/setup/swap_gt/        env_seed, variant_seed, src_episode, variant_idx,
-                                is_original, difficulty, signature, pairs(int8[k,2]),
-                                windows(int32[k,2]), candidates(int8[n]),
-                                bin_colors(str[n]), net_permutation(int8[n]),
-                                task_goal_color, min_clearance, bystander_net_max,
-                                bystander_path_max, disturbed_bins,
-                                bins_pos_traj(f32[T,n,3]), cubes_pos_traj(f32[T,3,3])
+                                is_original, difficulty, signature,
+                                slot_pairs/bin_pairs(int8[k,2]),
+                                windows_clip/windows_env(int32[k,2]),
+                                clip_start_env_step, clip_len,
+                                ★ event_slots(int8[2]), topo_class,
+                                pair_distance, pair_azimuth, pair_azimuth_local,
+                                slot_xy(f32[n,2]), reference_axis_deg,
+                                net_permutation, min_clearance,
+                                bystander_net_max/path_max, disturbed_bins,
+                                bins_pos_traj(f32[110,n,3]), cubes_pos_traj
+episode_N/setup/meta/           bin_colors, color_names, task_goal_color,
+                                button_left, button_right   ← 纯 metadata，不进标签
 ```
 
-合并（`raw.copy` 整组拷贝）自动带走全部标注，合并逻辑零改动。`swap_progress` 用
-smoothstep（与 `swap_flat_two_lane` 的 smooth=True 同型），`swap_active` 按
-`start <= t < end` 归窗。
+合并（`raw.copy` 整组拷贝）自动带走全部标注，合并逻辑零改动。
 
-## 六、chunk 标签口径（与 MotionJEPA v7 对齐）
+## 七、标签设计
 
-- 网格：scope 段（Video→demo、Button→exec）内 `range(0, T_seg-32, 16)`；
-  段长口径与 MotionJEPA `build_data_raw_from_h5` 同源：demo = `is_video_demo` 前缀长、
-  exec = 段内首个 `is_completed` 真 + 2；**两个 scope 段段内帧号 == env step**（实测）。
-- 判正：chunk `[s, s+32]` 内任一窗口的 smoothstep 进度增量最大值 > ε=0.10。
-  **不能用简单窗口重叠**：smooth 让窗口末尾几帧几乎不动，人眼判「没在 swap」，
-  几何重叠会在 ButtonUnmaskSwap 每个 episode 的窗口尾部多打一个假正例。
-- **回归验证（必跑）**：`make_chunk_labels.py --regression` 对官方 train ep90-99 复算
-  标签与 `swap_labels_v7.json` 人工资产逐条比对 —— 2026-08-18 实测 **319/319 全对**，
-  网格主键完全对齐（ε 在 [0.05, 0.24] 区间均全对，取 0.10）。
-- 产物两份：`swap_labels_swapvar.json`（v7 同构 schema，`load_manual_swap` 可直接读）
-  与 `swap_events_swapvar.json`（富标签：pair、progress 连续值、swap_kind、
-  episode_signature、net_permutation、is_identity_net、is_original、min_clearance、
-  bystander 指标）。
+**主标签 = clip 级事件类别**（`clip_events.json`，每条 clip 恰含一个事件）：
+`event_slots`（窗口 1 移动的槽位对）、`topo_class`、`pair_distance`、`pair_azimuth`、
+`pair_azimuth_local`、`slot_xy`、`reference_axis_deg`、`event_window_clip`。
+**不含任何颜色字段。**
 
-## 七、命令用法（按 Phase 顺序）
+### 拓扑类别按槽位角色定义，不按距离
+
+两个 env 的 region4 模板写法不同，但槽位角色完全同构（`SLOT_ROLE`）：
+
+```
+Video （_load_scene:196-202）：模板固定，再整体随机旋转 α∈[0,180°)
+    region4 = [[-0.05,-0.1], [-0.05,0.1], [0.1,0.1], [0.1,-0.1]]
+Button（_load_scene:234-267）：两列各带一个 seed 随机 y 偏移，
+    且 rotate_points_random 那行**被注释掉了**（α 恒为 0）
+    region4 = [[0,-0.1+y1], [0,0.1+y1], [0.1,0.1+y2], [0.1,-0.1+y2]]
+⇒ slot 0/1 = 左列的下/上，slot 2/3 = 右列的上/下
+
+same_column    (0,1) (2,3)  同一列内上下互换
+cross_aligned  (1,2) (0,3)  跨列、同侧
+cross_diagonal (0,2) (1,3)  跨列、异侧
+```
+
+Video 下三类恰好对应 0.15 / 0.20 / 0.25 三档名义距离（单测交叉验证过）；
+**Button 下距离序不成立** —— 跨列同侧 ∈[0.100,0.141]、跨列对角 ∈[0.141,0.316]，对角可比
+同列的 0.20 还短。ep95 实测：`cross_aligned` d=0.104 m **短于** `same_column` d=0.169 m。
+所以 `topo_class` 是**生成机制的真值**，`pair_distance` / `pair_azimuth_local` 是连续
+协变量，下游要按几何分类必须用后者。
+
+`reference_axis_deg` 取「列方向」的实测均值（slot0→slot1 与 slot3→slot2 的平均），
+不去拟合 `rotate_points_random` 的角度 —— Video 的 angle 是 `_load_scene` 局部变量取不到，
+Button 压根没旋转。实测均值对两 env 都成立，且天然吸收 ±0.07 的 rejection 抖动。
+
+### chunk 级标签（兼容层）
+
+`swap_labels_clip.json`（v7 同构，`load_manual_swap` 可直接读）与 `swap_events_clip.json`
+（富标签）。判正规则与旧链路逐字相同：chunk `[s,s+32]` 在任一窗口内推进的 smoothstep
+进度增量 > ε=0.10。**不能用简单窗口重叠** —— smooth 让窗口末尾几帧几乎不动，几何重叠
+会在窗口尾部多打假正例。规则须先过 `--regression`（对官方 ep90-99 复算、与 v7 人工资产
+逐条比对）。
+
+⚠ 在 clip 上区分度很低：`grid_starts(110) = [0,16,32,48,64]` 只有 5 个 chunk，
+按 ε=0.10 第 0 个为负、其余 4 个为正（48 clip → 240 条、192 正）。主用途是 clip 级多类判别。
+
+## 八、⚠ ButtonUnmaskSwap 的动作通道泄露（已知、不可消除）
+
+**现象**：Button 侧 clip 全程 `joint_action` 跨同源变体最大差 5.8e-3 ~ **1.6e-1 rad（≈9°）**；
+Video 侧严格 0.0。
+
+**根因（实测定位）**：以 ep95 为例，实测关节角 `joint_state` 在 **clip45（env 79）从
+严格 0.0 突跳到 4.7e-5** 并指数增长（clip53 已到 6.1e-3），到 **clip54（env 88）** 指令
+`joint_action` 才开始分叉。即：物理层先偏离、规划层随后。env 79 落在第一次 swap 窗口的
+抬升阶段 —— `swap_flat_two_lane` 的 `lane_offset=0.07` 让交换中的容器抬高绕行，
+擦碰了正在按按钮的机械臂；而 `solve_button` 分**三段**规划
+（ready → 下压 → 抬起），第 2/3 段以被扰动后的实测关节角为起点，于是产生离散不同的解。
+Video 不受影响，因为 demo 段 `solve_hold_obj` 是开环发同一 qpos、**不做任何规划**。
+
+排除项：不是浮点噪声（ulp 是 1e-15 量级，实测起步 4.7e-5）；不是 RRT* 随机性
+（同源内分组稳定、Phase 0 与官方逐位一致）；末端执行器与最近 bin 的中心距有 0.12~0.21 m，
+所以擦碰发生在**手臂连杆**而非末端。
+
+**处置（用户 2026-08-18 拍板）：保留 48 条并逐条量化。** 标签里两个可过滤字段：
+
+- `action_group`：同源内按 `joint_action` 逐位相同划分的等价组 id；
+- `action_dev_max`：与同源其他变体的 `joint_action` 最大绝对差（rad）。
+
+实测分组（`verification_report.md` 有完整表）：
+
+| env / 源 ep | 动作组数 | 各变体所属组 | 组间最大差 (rad) |
+| --- | ---: | --- | ---: |
+| Video 91/95/98/99 | 1 | 全部 → 0 | 0.000e+00 |
+| Button 91 | 2 | var0/3/5→0，var1/2/4→1 | 5.842e-03 |
+| Button 95 | 2 | var0/1/4→0，var2/3/5→1 | 1.598e-01 |
+| Button 98 | 2 | var0/4→0，var1/2/3/5→1 | 6.366e-03 |
+| Button 99 | 2 | var0/3/4→0，var1/2/5→1 | 3.245e-02 |
+
+**下游取同一 `action_group` 即得动作完全无泄露的子集。**
+
+## 九、命令用法（按 Phase 顺序）
 
 ```bash
-# P0a 枚举单测（秒级）
-uv run python -m pytest tests/lightweight/test_swap_variant_plan.py -q
-# P0b 控制跑（8 条，约 2 min；含与官方 h5 的逐元素比对红线）
-uv run python scripts/data-generation-MotionJEPALabel/probe_original.py --gpus 0 --workers 8
+# P0a 纯函数单测（秒级，39 passed）
+uv run python -m pytest tests/lightweight/test_swap_clip_plan.py -q
+# P0b 计划表（不生成数据）
+uv run python scripts/data-generation-MotionJEPALabel/clip_plan.py
+# P0c 控制跑（8 条完整 rollout，约 35 s；含与官方 h5 的红线比对）
+uv run python scripts/data-generation-MotionJEPALabel/probe_original.py --gpus 0,1 --workers 8
 # 标签规则回归（只读，约 1 min）
-uv run python scripts/data-generation-MotionJEPALabel/make_chunk_labels.py --regression
-# P1 smoke（9 条变体）
-uv run python scripts/data-generation-MotionJEPALabel/generate_swap_variants.py \
-  --tasks VideoUnmaskSwap --src-episodes 92,90 \
-  --output-dir scripts/data-generation-MotionJEPALabel/outputs/smoke --gpus 0 --workers 9
-# P2 全量（318 条，>5 min 必须 tmux）
-tmux new-session -d -s swapvar-full \
-  "set -o pipefail; PYTHONUNBUFFERED=1 uv run python \
-   scripts/data-generation-MotionJEPALabel/generate_swap_variants.py \
-   --output-dir scripts/data-generation-MotionJEPALabel/outputs/full --gpus 0 --workers 32 \
-   2>&1 | tee scripts/data-generation-MotionJEPALabel/outputs/full_run.log; \
-   echo \"EXIT_CODE=\$?\" >> scripts/data-generation-MotionJEPALabel/outputs/full_run.log"
+uv run python scripts/data-generation-MotionJEPALabel/make_clip_labels.py --regression
+# P1 smoke（单源 6 条）
+uv run python scripts/data-generation-MotionJEPALabel/generate_swap_clips.py \
+  --output-dir scripts/data-generation-MotionJEPALabel/outputs/smoke \
+  --tasks VideoUnmaskSwap --only-episodes 91 --gpus 0,1 --workers 6
+# P2 全量（48 条，约 60 s；>5 min 的任务才需要 tmux）
+uv run python scripts/data-generation-MotionJEPALabel/generate_swap_clips.py \
+  --output-dir scripts/data-generation-MotionJEPALabel/outputs/event1 --gpus 0,1 --workers 16
 # P3 合并 + 密集重编号 + episode_map
-uv run python scripts/data-generation-MotionJEPALabel/merge_variant_h5.py \
-  --input-dir scripts/data-generation-MotionJEPALabel/outputs/full --delete-source
-# P4 标签 + 验收
-uv run python scripts/data-generation-MotionJEPALabel/make_chunk_labels.py \
-  --input-dir scripts/data-generation-MotionJEPALabel/outputs/full --dataset-name dataset-swapvar
-uv run python scripts/data-generation-MotionJEPALabel/verify_variants.py \
-  --gen-dir scripts/data-generation-MotionJEPALabel/outputs/full
-# 变体 2D 简图（每源 episode 一张、每变体一子图，出 outputs/full/diagrams/）
-uv run python scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py
+uv run python scripts/data-generation-MotionJEPALabel/merge_clip_h5.py \
+  --input-dir scripts/data-generation-MotionJEPALabel/outputs/event1 --delete-source
+# P4 标签 + 验收 + 简图
+uv run python scripts/data-generation-MotionJEPALabel/make_clip_labels.py \
+  --input-dir scripts/data-generation-MotionJEPALabel/outputs/event1
+uv run python scripts/data-generation-MotionJEPALabel/verify_clips.py \
+  --gen-dir scripts/data-generation-MotionJEPALabel/outputs/event1
+uv run python scripts/data-generation-MotionJEPALabel/draw_clip_diagrams.py \
+  --gen-dir scripts/data-generation-MotionJEPALabel/outputs/event1
 ```
 
-## 八、验收判据（`verify_variants.py`，全部过才算数）
+## 十、验收判据（`verify_clips.py`，十条全过才算数）
 
-覆盖完整度 == 枚举期望；布局指纹与 Phase 0 基线逐位相同；is_original 每源恰一条且与
-官方 h5 joint_action 逐元素 <1e-5（见下）；同源变体 swap 窗口中点帧哈希两两互异；
-scope 段长 ≥ swap 结束帧；merged h5 结构（episode/timestep 连续、末帧 is_completed、
-swap_gt 齐全）；min_clearance < 0.055 m 者单列；标签主键集合 == 网格集合。
-
-**is_original 的等价判据（数值 1e-2 兜底 + 结构检查才是主判据）**：控制跑（无注入）
-与官方逐位一致（1e-17 级）；is_original 变体因注入把交换对角色规范化为 (小,大)，
-与原始随机角色的浮点运算顺序不同（ep91 已静态实证：原始 window1 的 idx1=bin_2，
-规范化后翻转），bin 终态 ulp 级差异在**接触链**上混沌放大——接触链越长放大越多：
-
-| episode | 角色 | max_abs_diff | 定性 |
-| --- | --- | ---: | --- |
-| 6/8 个 episode | 恰与原始一致 | ≤1.1e-17 | 逐位相同 |
-| Video/ep92 | 翻转 | 1.363e-06 | 短接触链（一次抓取） |
-| Button/ep91 | window1 翻转 | 1.553e-03 | 最长接触链（抓-放-抓）；按钮段严格为 0，
-差异从 step 295（首次抓取接触后半程）起指数增长 |
-
-1.5e-3 rad ≈ 0.09°，在环境自身复现包络内（官方历史自复现记录 7.86e-3）。真正证明
-「无逻辑分叉」的是结构检查：帧数相等 + simple_subgoal 名称序列完全相同 + 每个切换步
-差 ≤2（ep91 实测五个子目标切换步 0/110/200/315/356 完全一致，唯一偏差是「全部完成」
-落位 452 vs 453 —— 尾段噪声让完成判定早了一步）。
+1. 每源恰 6 条且事件槽位对覆盖全部 `C(4,2)`；`is_original` 每源恰 1 条；bin 数恒 4；
+2. 槽位 xy 与 Phase 0 布局基线逐位相同；
+3. **前 30 帧不变性**：clip 帧 0-29 的 `bins_pos` 跨同源变体逐位相同；
+4. **★ 机器人动作恒定**：clip 全程 `joint_action` 跨同源变体逐位相同 ——
+   `ACTION_BITWISE_REQUIRED` 只对 Video 硬断言，Button 量化报告（见 §八）；
+5. **后 30 帧受控性**：clip 末帧的 `bins_pos` 排序后位置集合跨变体差 < 1e-5。
+   ⚠ 口径是**窗口 2 的端点位置**而非整段逐位相同：窗口 1 的对角交换会擦碰被锁定的旁观
+   bin（实测 `min_clearance` 低到 0.0045 m），把它挤开几毫米再弹回 —— 那是第一次 swap 的
+   物理余波、是允许变化维度的直接后果，由 `bystander_net_max` 逐条量化；
+6. **窗口 1 生效**：clip 帧 30→79 的净位移恰为计划的两个 bin 且 ≥0.03 m。
+   **必须用净位移，不能用路径长** —— 对角交换会擦碰旁观 bin，路径长可达 0.11 m 却净位移
+   近零，用路径长会确定性误杀；
+7. **变体互异**：同源变体在事件末帧（clip 79）的 `front_rgb` md5 两两不同；
+8. **cube 可见性分段**：clip 帧 0-29 全部 z < 0.1（在容器内），帧 30-109 全部 z > 5（已藏走）；
+9. merged h5 结构：episode/timestep 密集连续、每条恰 110 帧、scope 段 == 110、swap_gt 齐全；
+10. 标签对账：clip 级标签数 == clip 总数、类别分布与 h5 实测一致且每类均衡、
+    chunk 标签数 == 网格期望。
 
 ---
 
 # 实测记录（2026-08-18）
 
-## 九、Phase 0 控制跑（8/8 成功，123.8 s，GPU0，workers=8）
+## 十一、Phase 0 控制跑（8/8 成功，32.4 s，GPU 0+1，workers=8）
 
-与官方 `/data/hongzefu/robomme_data_h5` 的 joint_action 最大偏差全部在机器精度：
+与官方 `/data/hongzefu/robomme_data_h5` 的 joint_action 偏差全部在机器精度，
+**clip 区间 `[34,144)` 严格 0.0**：
 
-| task/ep | 原始 pairs | T | demo | exec | max_abs_diff |
-| --- | --- | ---: | ---: | ---: | ---: |
-| ButtonUnmaskSwap/ep90 | 03\|12 | 321 | 0 | 316 | 2.36e-18 |
-| ButtonUnmaskSwap/ep91 | 12\|12\|03 | 464 | 0 | 455 | 2.02e-18 |
-| ButtonUnmaskSwap/ep92 | 02 | 453 | 0 | 448 | 2.40e-18 |
-| ButtonUnmaskSwap/ep93 | 02\|02 | 465 | 0 | 460 | 1.89e-18 |
-| VideoUnmaskSwap/ep90 | 12 | 221 | 114 | 98 | 4.81e-19 |
-| VideoUnmaskSwap/ep91 | 03\|12 | 407 | 168 | 234 | 1.06e-17 |
-| VideoUnmaskSwap/ep92 | 12 | 376 | 114 | 254 | 7.10e-18 |
-| VideoUnmaskSwap/ep93 | 12\|12 | 276 | 168 | 103 | 1.15e-17 |
+| task/ep | T | demo | exec | 全程 max_diff | clip 区间 max_diff |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Button/ep91 | 464 | 0 | 455 | 2.02e-18 | **0.0** |
+| Button/ep95 | 479 | 0 | 474 | 1.90e-18 | **0.0** |
+| Button/ep98 | 320 | 0 | 316 | 2.30e-18 | **0.0** |
+| Button/ep99 | 453 | 0 | 447 | 2.57e-18 | **0.0** |
+| Video/ep91 | 407 | 168 | 234 | 1.06e-17 | **0.0** |
+| Video/ep95 | 427 | 168 | 254 | 1.65e-17 | **0.0** |
+| Video/ep98 | 278 | 168 | 102 | 9.32e-18 | **0.0** |
+| Video/ep99 | 429 | 168 | 253 | 1.54e-17 | **0.0** |
 
-实测 bin 数（4/4/3/3 按难度）与离线复算的 swap_times（Video [1,2,1,2]、Button
-[2,3,1,2]）逐条一致；原始序列 min_clearance 全部 ≥0.0699。demo 前缀有 +0~+4 帧
-子目标切换延迟（ep91/93 为 168 = 164+4），所以段长必须从产物读、不能纯公式算。
+Video 的 demo 段恒 168（k=2 ⇒ 164+4 帧子目标切换延迟），完整覆盖 clip 的 `[34,144)`。
+Button 的 press1 结束于 110/121/115/117、press2 结束于 200~211，clip 全落在两次 press 内。
 
-## 十、规模（离线复算 + 单测钉死）
+## 十二、smoke（Video ep91 六条，6/6，17.3 s）
 
-| ep | Video seed/难度/k/变体 | Button seed/难度/k/变体 |
+跨变体自检（clip 帧口径）：帧数恒 110；全部 `is_video_demo=True`、`is_completed` 全 False；
+**clip 全程 `joint_action` 最大差 0.0**；前 30 帧 `bins_pos` 最大差 0.0；
+事件末帧 `front_rgb` md5 六者互异；cube 在帧 0-29 全部 z=0.0167、帧 30-109 全部藏走。
+关键帧拼图肉眼确认：事件前两列六行完全一致、画面里只有 4 个白色容器无任何彩色 cube。
+
+## 十三、全量 48 条（2026-08-18）
+
+| 阶段 | 结果 |
+| --- | --- |
+| 生成 | **48/48 成功，59.5 s（48.4 ep/min），零重试、零闸门失败** |
+| 合并 | 每 env 24 条 → 1.64 GiB，共 **3.28 GiB**；结构校验全过 |
+| 标签规则回归 | 对官方 ep90-99 复算，与 v7 人工资产 **319/319 全对**（ε=0.10） |
+| clip 级标签 | 48 条，`same_column` / `cross_aligned` / `cross_diagonal` **各 16 条** |
+| chunk 级标签 | 240 条（swap=1 共 192 条） |
+| 验收 | **十条判据全过** |
+
+关键判据实测值：
+
+- 判据 4：Video **0.0（逐位相同）**；Button 最大 1.598e-01（见 §八）；
+- 判据 3（前 30 帧 `bins_pos`）：**0.000e+00**；
+- 判据 5（clip 末帧位置集合）：**1.192e-06**（阈值 1e-05）；
+- 质量：`min_clearance < 0.055 m` 的 clip **14/48** 条，最小 0.0045；
+  `bystander_net_max` 只有 Video/ep91 一源非零（0.0087）。
+
+## 十四、与上一版（318 条穷举）的对比
+
+| 项 | 上一版 `a90f071` | 本轮 |
 | --- | --- | --- |
-| 90 | 14000 medium k=1 → 6 | 16000 medium k=2 → 36 |
-| 91 | 14100 hard k=2 → 36 | 16100 hard k=3 → 216 |
-| 92 | 14200 easy k=1 → 3 | 16200 easy k=1 → 3 |
-| 93 | 14300 easy k=2 → 9 | 16300 easy k=2 → 9 |
-
-Video 小计 54，Button 小计 264，**合计 318**（禁相邻重复则 234，未采用）。
-涉及的 8 个 seed 全是规则值（attempt 探针 16401/16801 在 ep94/98，不在本轮范围）。
-
-## 十一、P1 smoke（VideoUnmaskSwap ep92×3 + ep90×6，9/9 成功，83.2 s，验收 PASS）
-
-- 布局指纹与基线逐位一致 9/9；注入读回一致 9/9；净位移对账 9/9；
-- 变体互异（swap 窗口中点帧 md5 两两不同）9/9；
-- is_original：ep90 var3 ↔ 官方 4.8e-19、ep92 var2 ↔ 官方 1.363e-06（角色顺序效应，见§八）；
-- min_clearance 分布：min 0.0561 / 中位 0.1002，0 条低于 0.055；
-- 标签 54 条 chunk（27 正例），主键集合与网格完全对齐。
-
-## 十二、全量 318 条（2026-08-18，最终）
-
-生成分三轮（后两轮为 hold 机制迭代，断点续跑自动跳过已成功者）：
-
-| 轮 | 代码状态 | 结果 |
-| --- | --- | --- |
-| 第一轮（tmux swapvar-full） | 无 hold | 233/318 成功，1599.6 s（8.74 ep/min，GPU0 与他人任务共卡）；85 条 ButtonUnmaskSwap/ep91 耗尽（§三之二 的时序冲突） |
-| 续跑一（第一版 hold：挂抓取 entry 前，hold 到 214） | 83/85 成功 | var61/var191 仍败（失败类型 (b)，fail 在按钮 2 的 evaluate 就触发，走不到抓取 entry） |
-| 续跑二（第二版 hold：前置到按钮 post-solve evaluate 之前，hold 到 224） | 2/2 成功 | **最终 318/318，穷举无缺口** |
-
-- 事后闸门：布局指纹与 Phase 0 基线逐位一致 **0 失配**；is_original 每源恰 1 条。
-- 合并（`--delete-source`）：Video 54 条 → 12.7 GiB，Button 264 条 → 72.3 GiB，共 **85 GiB**；
-  episode/timestep 连续、末帧 is_completed、swap_gt 齐全校验全过。
-- 标签：**7268 条 chunk，swap=1 共 2784 条**；主键网格与 merged h5 完全对账；
-  规则先过 319/319 人工资产回归。
-- is_original 八条明细见 §八表格。
-- **数据质量分布（下游过滤依据）**：min_clearance min=0.0007 / p05=0.0045 /
-  中位=0.0504；**193/318 条 < 0.055 m**（对角/远距交换穿过被锁定的旁观 bin ——
-  原始数据因最近邻配对天然避开，穷举必然引入；环境原行为，不修改，逐条量化在
-  episode_map 与富标签）。hold 补救 85 条（83 条 hold→214、2 条 hold→224），
-  `attempt`/`pickup_hold_step` 逐条可查。
+| 条数 / 体量 | 318 条 / 89 GiB | **48 条 / 3.28 GiB** |
+| 源 | ep90-93 × 2 env（含 easy 3-bin） | ep91/95/98/99 × 2 env（全 4-bin） |
+| 枚举 | 整条 swap 序列（`P^k`） | **只第一次 swap（`C(4,2)=6`）**，其余按槽位固定 |
+| rollout | 完整（含抓取） | **截断**（Video 1 个子目标、Button 2 个） |
+| 落盘 | 完整 episode（221-465 帧） | **110 帧 clip**（env `[34,144)`） |
+| 失败 | 85/318 条需 hold 补救，三轮才跑完 | **零重试** |
+| 类别 | 3 套互不相通的几何 | **1 套，三类各 16 条** |
+| 主标签 | chunk 级二值 | **clip 级多类事件** |

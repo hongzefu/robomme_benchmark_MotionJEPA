@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
-"""Phase 0 控制跑：对 2 task × ep90-93 各跑一次**无注入**的完整 rollout。
+"""Phase 0 控制跑：对入选的 4 源 × 2 env 各跑一次**无注入的完整 rollout**（8 条）。
+
+为什么必须完整跑（而正式产物是截断的）：窗口 2/3 的 `swap_pair{k}_idx2` 是运行时进入
+该窗口那一刻按「前次交换后的位置」取最近邻回填的，静态算不出 —— 只能实跑到那一步再
+读回。ButtonUnmaskSwap 的 k=3 源（ep91/ep99）第三个窗口到 env step 214 才结束，而截断
+点在 press2 结束（~200），够不着。8 条完整跑约 2-3 分钟，不值得为此做特殊截断。
 
 产出（全部落 --output-dir）：
-* `original_index.json` —— 每个源 episode 的原始 pair 序列（is_original 判定的唯一
-  正确来源：第 2/3 窗口的 idx2 是运行时按前次交换后的位置取最近邻，静态算不出）、
-  布局指纹基线、实测 bin 数、段长基线；
-* 控制跑的 h5（含 swap_gt 标注）/ 视频 / trace，供后续变体对拍；
-* 与官方 `/data/hongzefu/robomme_data_h5` 的逐元素 joint_action 比对结果。
 
-红线：任一控制跑失败、或与官方 h5 数值比对超过 --joint-action-tol，退出码非零，
-不得进入后续 Phase。
+* `original_index.json` —— 每源的原始 bin 对序列与换算出的**原始槽位对序列**
+  （窗口 ≥2 固定值之源）、布局指纹基线、槽位几何、按钮位置、子目标边界、段长，
+  以及与官方 h5 的 joint_action 比对；
+* 控制跑的完整 h5 / 视频 / trace，供后续 clip 对拍。
+
+红线：任一控制跑失败、或与官方 h5 的 joint_action 偏差超过 --joint-action-tol，
+退出码非零，不得进入后续 Phase。
 """
 
 from __future__ import annotations
@@ -41,24 +46,30 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from variant_plan import (  # noqa: E402
-    DEFAULT_SRC_EPISODES,
+from clip_plan import (  # noqa: E402
+    CANDIDATE_EPISODES,
+    CLIP_END,
+    CLIP_START,
     EVAL_TASKS,
     REPO_ROOT,
-    source_episode,
+    select_sources,
+    signature_of,
+    slot_pairs_from_bin_pairs,
 )
-from variant_worker import (  # noqa: E402
-    VariantJob,
-    _segment_lengths,
-    _sorted_timesteps,
+from clip_worker import (  # noqa: E402
+    ClipJob,
     run_jobs,
+    segment_lengths,
+    sorted_timesteps,
 )
 
 
-def _compare_with_official(
-    ours_path: Path, episode: int, official_dir: Path, task: str
-) -> dict:
-    """逐 timestep 逐元素比对 action/joint_action，并对拍段长。"""
+def _joint_action(group: h5py.Group, name: str) -> np.ndarray:
+    return np.asarray(group[name]["action"]["joint_action"], dtype=np.float64)
+
+
+def _compare_with_official(ours_path: Path, episode: int, official_dir: Path, task: str) -> dict:
+    """逐 timestep 逐元素比对 joint_action（全程 + clip 区间两个口径），并对拍段长。"""
     official_path = official_dir / f"record_dataset_{task}.h5"
     if not official_path.is_file():
         return {"available": False, "reason": f"官方 h5 不存在：{official_path}"}
@@ -67,41 +78,45 @@ def _compare_with_official(
         if name not in official:
             return {"available": False, "reason": f"官方 h5 缺 {name}"}
         group_ours, group_off = ours[name], official[name]
-        ts_ours = _sorted_timesteps(group_ours)
-        ts_off = _sorted_timesteps(group_off)
+        ts_ours, ts_off = sorted_timesteps(group_ours), sorted_timesteps(group_off)
+        seg_ours, seg_off = segment_lengths(group_ours), segment_lengths(group_off)
         result: dict = {
             "available": True,
             "T_ours": len(ts_ours),
             "T_official": len(ts_off),
             "T_equal": len(ts_ours) == len(ts_off),
+            "segments_ours": dict(zip(("T", "demo_prefix", "exec_len"), seg_ours)),
+            "segments_official": dict(zip(("T", "demo_prefix", "exec_len"), seg_off)),
+            "segments_equal": seg_ours == seg_off,
         }
-        seg_ours = _segment_lengths(group_ours)
-        seg_off = _segment_lengths(group_off)
-        result["segments_ours"] = {"T": seg_ours[0], "demo_prefix": seg_ours[1], "exec_len": seg_ours[2]}
-        result["segments_official"] = {"T": seg_off[0], "demo_prefix": seg_off[1], "exec_len": seg_off[2]}
-        result["segments_equal"] = seg_ours == seg_off
         if not result["T_equal"]:
             return result
-        max_diff = 0.0
+        max_all = 0.0
+        max_clip = 0.0
         for name_ts in ts_ours:
-            a = np.asarray(group_ours[name_ts]["action"]["joint_action"], dtype=np.float64)
-            b = np.asarray(group_off[name_ts]["action"]["joint_action"], dtype=np.float64)
+            a, b = _joint_action(group_ours, name_ts), _joint_action(group_off, name_ts)
             if a.shape != b.shape:
                 result["shape_mismatch_at"] = name_ts
                 return result
-            max_diff = max(max_diff, float(np.max(np.abs(a - b))))
-        result["joint_action_max_abs_diff"] = max_diff
+            diff = float(np.max(np.abs(a - b)))
+            max_all = max(max_all, diff)
+            if CLIP_START <= int(name_ts.rsplit("_", 1)[1]) < CLIP_END:
+                max_clip = max(max_clip, diff)
+        result["joint_action_max_abs_diff"] = max_all
+        result["joint_action_max_abs_diff_clip"] = max_clip
         return result
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(description="Phase 0 控制跑：拿原始 swap 序列与布局基线")
+    parser = argparse.ArgumentParser(description="Phase 0 控制跑：拿原始槽位序列与布局基线")
     parser.add_argument("--output-dir", default=str(SCRIPT_DIR / "outputs" / "phase0"))
     parser.add_argument("--tasks", default=",".join(EVAL_TASKS))
     parser.add_argument(
-        "--episodes", default=",".join(str(item) for item in DEFAULT_SRC_EPISODES)
+        "--episodes",
+        default=",".join(str(item) for item in CANDIDATE_EPISODES),
+        help="候选源 episode（筛选前）；实际用哪些由三重筛选决定",
     )
-    parser.add_argument("--gpus", default="1", help="逗号分隔的物理卡号")
+    parser.add_argument("--gpus", default="0", help="逗号分隔的物理卡号")
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--max-attempts", type=int, default=3)
     parser.add_argument("--official-h5-dir", default="/data/hongzefu/robomme_data_h5")
@@ -119,27 +134,37 @@ def main(argv=None) -> int:
     episodes = tuple(int(item) for item in args.episodes.split(",") if item.strip())
     gpu_ids = tuple(item.strip() for item in args.gpus.split(",") if item.strip())
 
+    selected = select_sources(tasks, episodes)
     jobs = []
     for task in tasks:
-        for episode in episodes:
-            src = source_episode(task, episode)
+        for src in selected[task]:
             jobs.append(
-                VariantJob(
+                ClipJob(
                     task=task,
-                    src_episode=episode,
+                    src_episode=src.episode,
                     variant_idx=-1,
                     env_seed=src.env_seed,
                     variant_seed=src.env_seed,
-                    wrapper_episode=episode,
+                    wrapper_episode=src.episode,
                     difficulty=src.difficulty,
                     num_bins=src.num_bins,
-                    pairs=None,
-                    original_pairs=None,
+                    mode="control",
+                    bin_pairs=None,
+                    slot_pairs=None,
+                    is_original=True,  # 控制跑本身就是原始序列
                     attempt=0,
                     output_root=str(output),
                     repo_root=str(REPO_ROOT),
                 )
             )
+    if not jobs:
+        print("ERROR: 三重筛选后没有任何源 episode", file=sys.stderr)
+        return 1
+    print(
+        f"Phase 0 控制跑 {len(jobs)} 条："
+        + "，".join(f"{task} ep{[s.episode for s in selected[task]]}" for task in tasks),
+        flush=True,
+    )
 
     started = time.monotonic()
     succeeded, exhausted = run_jobs(
@@ -171,19 +196,28 @@ def main(argv=None) -> int:
                 )
         else:
             gate_failures.append(f"{label}: 无法比对官方数据（{comparison.get('reason')}）")
+
+        bin_pairs_seq = [tuple(pair) for pair in result["bin_pairs"]]
+        num_bins = len(result["fingerprint"]["bins"])
+        slot_pairs = slot_pairs_from_bin_pairs(bin_pairs_seq, num_bins)
         records.append(
             {
                 "task": result["task"],
                 "episode": result["src_episode"],
                 "env_seed": result["env_seed"],
                 "difficulty": result["difficulty"],
-                "num_bins_actual": len(result["fingerprint"]["bins"]),
-                "swap_times": len(result["pairs"]),
-                "original_pairs": result["pairs"],
-                "signature": result["signature"],
+                "num_bins_actual": num_bins,
+                "swap_times": len(bin_pairs_seq),
+                # ★ 后续窗口固定值之源：原始 bin 对 → 原始槽位对
+                "original_bin_pairs": [list(pair) for pair in bin_pairs_seq],
+                "original_slot_pairs": [list(pair) for pair in slot_pairs],
+                "signature": signature_of(slot_pairs),
                 "n_timesteps": result["n_timesteps"],
                 "demo_prefix": result["demo_prefix"],
                 "exec_len": result["exec_len"],
+                "subgoal_boundaries": result.get("subgoal_boundaries"),
+                "buttons": result["fingerprint"].get("buttons"),
+                "geometry": result["geometry"],
                 "min_clearance": result["min_clearance"],
                 "h5_path": result["h5_path"],
                 "trace_path": result["trace_path"],
@@ -195,6 +229,7 @@ def main(argv=None) -> int:
     index = {
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "elapsed_s": round(elapsed, 1),
+        "clip": {"start": CLIP_START, "end": CLIP_END},
         "requested": len(jobs),
         "succeeded": len(succeeded),
         "exhausted": len(exhausted),
@@ -203,19 +238,21 @@ def main(argv=None) -> int:
         "records": records,
     }
     index_path = output / "original_index.json"
-    index_path.write_text(
-        json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    index_path.write_text(json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     print(f"\n控制跑 {len(succeeded)}/{len(jobs)} 成功，耗时 {elapsed:.1f}s")
     for record in records:
         comparison = record["official_comparison"]
-        diff = comparison.get("joint_action_max_abs_diff")
+        boundaries = record.get("subgoal_boundaries") or []
         print(
-            f"  {record['task']}/ep{record['episode']}: pairs={record['signature']}"
-            f"  T={record['n_timesteps']} demo={record['demo_prefix']} exec={record['exec_len']}"
-            f"  官方比对 max_diff={diff if diff is not None else 'N/A'}"
+            f"  {record['task']}/ep{record['episode']}: "
+            f"bin={'|'.join(f'{i}{j}' for i, j in record['original_bin_pairs'])} "
+            f"slot={record['signature']}  T={record['n_timesteps']} "
+            f"demo={record['demo_prefix']} exec={record['exec_len']}  "
+            f"官方 max_diff={comparison.get('joint_action_max_abs_diff')} "
+            f"(clip 区间 {comparison.get('joint_action_max_abs_diff_clip')})"
         )
+        print("      子目标边界：" + "、".join(f"{b['step']}:{b['subgoal']}" for b in boundaries))
     if exhausted:
         print(f"ERROR: {len(exhausted)} 条控制跑失败，红线触发", file=sys.stderr)
         return 2
