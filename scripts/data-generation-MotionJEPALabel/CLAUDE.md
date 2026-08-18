@@ -160,6 +160,8 @@ uv run python scripts/data-generation-MotionJEPALabel/make_chunk_labels.py \
   --input-dir scripts/data-generation-MotionJEPALabel/outputs/full --dataset-name dataset-swapvar
 uv run python scripts/data-generation-MotionJEPALabel/verify_variants.py \
   --gen-dir scripts/data-generation-MotionJEPALabel/outputs/full
+# 变体 2D 简图（每源 episode 一张、每变体一子图，出 outputs/full/diagrams/）
+uv run python scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py
 ```
 
 ## 八、验收判据（`verify_variants.py`，全部过才算数）

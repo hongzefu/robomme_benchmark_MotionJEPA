@@ -33,6 +33,8 @@ swap_labels_swapvar.json              chunk 级二值标签，与 MotionJEPA swa
 swap_events_swapvar.json              chunk 级富标签（交换对、进度连续值、净置换、
                                       is_original、min_clearance、旁观扰动等）
 verification_report.{json,md}         端到端验收报告
+diagrams/{Task}_ep{N}_variants.png    变体 2D 简图：每源 episode 一张、每变体一子图
+                                      （bin 布局+藏 cube 颜色+按序 swap 箭头+原始高亮）
 videos/ traces/                       rollout 视频与逐帧位姿 npz
 ```
 
@@ -67,6 +69,7 @@ uv run python scripts/data-generation-MotionJEPALabel/make_chunk_labels.py \
   --input-dir scripts/data-generation-MotionJEPALabel/outputs/full --dataset-name dataset-swapvar
 uv run python scripts/data-generation-MotionJEPALabel/verify_variants.py \
   --gen-dir scripts/data-generation-MotionJEPALabel/outputs/full
+uv run python scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py   # 8 张变体简图
 ```
 
 MotionJEPA 侧适配提示：merged h5 已满足其 `build_data_raw_from_h5` 的「episode 0-based
