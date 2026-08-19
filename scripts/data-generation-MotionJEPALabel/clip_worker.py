@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """probe_original 与 generate_swap_clips 共用的 rollout worker（两种模式）。
 
-**control 模式**（Phase 0，8 条）：不注入、跑**完整** task_list、要求任务成功、不裁剪。
+**control 模式**（Phase 0，每源一条）：不注入、跑**完整** task_list、要求任务成功、不裁剪。
 唯一目的是拿到「原始 bin 对序列」—— 窗口 2/3 的 `idx2` 是运行时进窗口那一刻按最近邻
 回填的，静态算不出，只能实跑读回；顺带产出布局基线、槽位几何、按钮位置、子目标边界，
 以及与官方 h5 的逐元素 joint_action 比对。
 
-**clip 模式**（正式产物，48 条）：注入 + **截断** rollout + 裁剪成 110 帧 clip。
+**clip 模式**（正式产物，每源 2~3 条）：注入 + **截断** rollout + 裁剪成 110 帧 clip。
 
     Video  只 solve task_list[0]（static 子目标，hold 到最后一次 swap 结束 ≥164）
     Button 只 solve task_list[0..1]（两个按钮，跑到 ≥198）
@@ -21,10 +21,12 @@ clip 只到 env step 143，抓取段完全用不上。截断带来三个好处�
 
 与 newSeed 骨架（scripts/data-generation-newSeed/generate_dataset_newseed.py）的偏离：
 
-1. FailRecover 恒不启用 —— 骨架按 episode 号分档，本链路的 staging 编号会让分档乱套，
-   且源 ep91-99 全部 ≥6、原始行为本就不启用；
+1. FailRecover 恒不启用 —— 骨架按 episode 号分档，本链路的 staging 编号会让分档乱套。
+   train 源 ep91-99 全部 ≥6、原始行为本就不启用；test/val 的低号源（如 ep3 ≤5）在
+   原版生成器里**可能**启用过分档恢复，但两 split 没有官方 h5 可逐位比对，本链路统一
+   不启用是唯一自洽口径（Phase 0 的原始序列即本链路自己的控制跑真值）；
 2. 失败重试**不换 seed** —— 换 seed 即换布局，摧毁「其他配置不变」的前提；
-3. difficulty 一律来自 train metadata，不用 difficulty_for() 循环。
+3. difficulty 一律来自所属 split 的 metadata，不用 difficulty_for() 循环。
 
 每个 job 一次 gym.make，**禁止跨变体复用 env** —— statechange.py 的 `_two_lane_swaps` 与
 `_lift_drop_onto_cache` 按 id(actor) 做键且 reset 不清理，复用有静默污染风险。
@@ -94,6 +96,7 @@ class ClipJob:
     """一次 attempt。mode='control' 表示 Phase 0 控制跑（无注入、完整 rollout、不裁剪）。"""
 
     task: str
+    split: str  # 源所属 split（train/test/val）—— episode 号只在 split 内可比
     src_episode: int
     variant_idx: int  # 控制跑用 -1
     env_seed: int
@@ -118,7 +121,7 @@ class ClipJob:
     @property
     def label(self) -> str:
         suffix = "control" if self.mode == "control" else f"var{self.variant_idx}"
-        return f"{self.task}/ep{self.src_episode}/{suffix}"
+        return f"{self.task}/{self.split}/ep{self.src_episode}/{suffix}"
 
 
 # 池进程私有：由 initializer 填，worker 回传供审计
@@ -311,7 +314,11 @@ def clip_h5_path(output_root: Path, job: ClipJob) -> Path:
 
 
 def trace_path(output_root: Path, job: ClipJob) -> Path:
-    return output_root / "traces" / f"{job.task}_ep{job.wrapper_episode}.npz"
+    # 文件名带 seed 是结构性去重：control 模式的 wrapper_episode = src_episode 会在
+    # test/val 之间同号（如双方都有 ep3），variant_seed（= env_seed）则全局唯一。
+    return (
+        output_root / "traces" / f"{job.task}_ep{job.wrapper_episode}_seed{job.variant_seed}.npz"
+    )
 
 
 # ── clip 裁剪：raw 的 timestep_34..143 → 110 帧、帧号重编号 0..109 ─────────────
@@ -416,7 +423,10 @@ def write_clip(
         gt.create_dataset("event_slots", data=np.asarray(event_slots, dtype=np.int8))
         # 全部几何的复算根：最近邻集合、topo_class、pair_distance/azimuth、reference_axis_deg
         gt.create_dataset("slot_xy", data=np.asarray(geometry["slot_xy"], dtype=np.float32))
-        # 同源分组的键（判据 3/4/5/7 都是同源变体之间的比较）与跨源可比的变体编号
+        # 同源分组的键（判据 3/4/5/7 都是同源变体之间的比较）与跨源可比的变体编号。
+        # split 必须显式落盘：episode 号只在 split 内可比，且 env_seed 反查 split 需要
+        # 翻三份 metadata —— 不可复算，符合「只留不可复算的」口径。
+        gt.create_dataset("split", data=job.split, dtype=str_dtype)
         gt.create_dataset("src_episode", data=np.int64(job.src_episode))
         gt.create_dataset("variant_idx", data=np.int64(job.variant_idx))
         # 需与原版序列比对才知道 —— h5 内没有原版序列，静态算不出
@@ -804,6 +814,7 @@ def _postprocess(
 def _job_fields(job: ClipJob) -> dict[str, Any]:
     return {
         "task": job.task,
+        "split": job.split,
         "src_episode": job.src_episode,
         "variant_idx": job.variant_idx,
         "wrapper_episode": job.wrapper_episode,
@@ -873,7 +884,7 @@ def run_jobs(
     succeeded: list[dict[str, Any]] = []
     exhausted: list[dict[str, Any]] = []
     total = len(jobs)
-    strikes: dict[tuple[str, int, int], int] = {}
+    strikes: dict[tuple[str, str, int, int], int] = {}
 
     with jsonl_path.open("a", buffering=1, encoding="utf-8") as sink:
 
@@ -905,7 +916,7 @@ def run_jobs(
                 except BaseException as exc:  # noqa: BLE001
                     result = _synth_failure(job, exc, "infra")
                 record(result)
-                key = (job.task, job.src_episode, job.variant_idx)
+                key = (job.task, job.split, job.src_episode, job.variant_idx)
                 if result.get("ok"):
                     strikes.pop(key, None)
                     succeeded.append(result)

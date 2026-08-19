@@ -7,12 +7,14 @@
 3. 哪一条是 is_original（与官方 episode 逐位一致的那条）；
 4. 这条 clip 里物理引擎**检测到了什么接触**（红框 = 容器互撞；机械臂 ↔ 容器实测恒 0）。
 
-另出两张全局接触图：
+另出三类全局接触图（三 split 扩源后按 (task, split) 分页，避免单图 160+ 行超出可读范围）：
 
-* `contact_overview.png` —— 全部 clip 的接触矩阵（谁撞了、多重、撞了几帧）；
-* `contact_timeline.png` —— 每条 clip 的接触时间轴（接触落在 clip 的哪些帧）。
+* `contact_summary.png` —— 一张总表：每 (task, split) 一行的 clip 数/接触计数/事件分布；
+* `contact_overview_{task}_{split}.png` —— 接触矩阵分页（色深刻度全局统一，跨页可比）；
+* `contact_timeline_{task}_{split}.png` —— 接触时间轴分页（接触落在 clip 的哪些帧）。
 
-输出目录：{gen_dir}/diagrams/
+输出目录：{gen_dir}/diagrams/；逐源简图命名 `{task}_{split}_ep{N}_clips.png`
+（test/ep3 与 val/ep3 是无关源，文件名不带 split 会互相覆盖）。
 """
 
 from __future__ import annotations
@@ -46,6 +48,7 @@ from clip_plan import (  # noqa: E402
     EVAL_TASKS,
     REQUIRED_BINS,
     SLOT_ROLE,
+    SPLIT_CODE,
     bin_pairs,
     swap_windows_clip,
 )
@@ -138,7 +141,9 @@ def draw_clip(ax, record: dict) -> None:
     )
 
 
-def draw_episode(task: str, src_episode: int, records: Sequence[dict], out_dir: Path) -> Path:
+def draw_episode(
+    task: str, split: str, src_episode: int, records: Sequence[dict], out_dir: Path
+) -> Path:
     """每源一张图：6 个格子按 variant_idx（= 槽位对的字典序下标）落位。
 
     最近邻约束下每源只有 2~3 条，空格子**本身就是信息** —— 它把「这个槽位对结构上进不来」
@@ -153,7 +158,7 @@ def draw_episode(task: str, src_episode: int, records: Sequence[dict], out_dir: 
         idx = record["variant_idx"]
         if idx >= axes.size:  # 取代 zip 的静默截断：格子不够必须炸，不能悄悄少画
             raise SystemExit(
-                f"ERROR: {task}/ep{src_episode} 的 variant_idx={idx} 超出 {axes.size} 个格子"
+                f"ERROR: {task}/{split}/ep{src_episode} 的 variant_idx={idx} 超出 {axes.size} 个格子"
             )
         occupied[idx] = record
     for idx, ax in enumerate(axes.flat):
@@ -173,7 +178,7 @@ def draw_episode(task: str, src_episode: int, records: Sequence[dict], out_dir: 
 
     first = records[0]
     fig.suptitle(
-        f"{task} / 源 ep{src_episode}（env_seed={first['env_seed']}，{first['difficulty']}，"
+        f"{task} / {split} 源 ep{src_episode}（env_seed={first['env_seed']}，{first['difficulty']}，"
         f"swap_times={first['swap_times']}）\n"
         f"每子图 = 一条 110 帧 clip；唯一事件 = 第一次 swap 换了哪两个槽位\n"
         f"只枚举「最近邻可达对」（idx2 恒为 idx1 的严格最近邻）；后续窗口按槽位固定、跨变体一致",
@@ -192,7 +197,7 @@ def draw_episode(task: str, src_episode: int, records: Sequence[dict], out_dir: 
     fig.tight_layout(rect=(0, 0.035, 1, 0.94))
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    path = out_dir / f"{task}_ep{src_episode}_clips.png"
+    path = out_dir / f"{task}_{split}_ep{src_episode}_clips.png"
     fig.savefig(path, dpi=140)
     plt.close(fig)
     return path
@@ -201,23 +206,68 @@ def draw_episode(task: str, src_episode: int, records: Sequence[dict], out_dir: 
 # ── 全局接触图：直接回答「哪些 clip 检测到了接触、是哪一类」 ─────────────────
 
 
-def draw_contact_overview(records: list[dict], out_dir: Path) -> Path:
-    """全部 clip 的接触矩阵：行 = (task, 源 ep)，列 = var0..5（按 variant_idx 落位）。
-
-    列号即槽位对的字典序下标，所以最近邻约束下 var1/var4（两个对角对）恒为空列 —— 空列
-    本身就说明「这两个对结构上进不来」。格子填色按容器互撞的最大冲量，格内写事件槽位、
-    撞了几帧、涉及哪些容器对。机械臂 ↔ 容器接触若存在会用黑色粗边框圈出 —— 实测恒 0。
-    """
-    groups: dict[tuple[str, int], dict[int, dict]] = {}
+def _split_task_pages(records: list[dict]) -> list[tuple[str, str, list[dict]]]:
+    """按 (task, split) 分页并排序（task 字典序、split 按 train<test<val）。"""
+    pages: dict[tuple[str, str], list[dict]] = {}
     for record in records:
-        groups.setdefault((record["task"], record["src_episode"]), {})[
-            record["variant_idx"]
-        ] = record
-    keys = sorted(groups, key=lambda k: (k[0], k[1]))
-    n_rows, n_cols = len(keys), math.comb(REQUIRED_BINS, 2)
+        pages.setdefault((record["task"], record["split"]), []).append(record)
+    return [
+        (task, split, pages[(task, split)])
+        for task, split in sorted(pages, key=lambda kv: (kv[0], SPLIT_CODE[kv[1]]))
+    ]
 
-    # 最近邻子集里互撞极少（实测 1/19）。只剩一条时 log10 色深刻度会把这唯一一格涂成满色深，
-    # 让人误以为很严重 —— 少于 2 条互撞就统一用固定浅色，不做刻度映射。
+
+def draw_contact_summary(records: list[dict], out_dir: Path) -> Path:
+    """一张总表：每 (task, split) 一行 —— 分页后仍保留「一眼看全」的入口。"""
+    pages = _split_task_pages(records)
+    header = ["task", "split", "源数", "clip 数", "event_slots 分布", "互撞条数", "机械臂↔容器"]
+    rows = []
+    for task, split, subset in pages:
+        events: dict[str, int] = {}
+        for record in subset:
+            key = "".join(str(v) for v in record["event_slots"])
+            events[key] = events.get(key, 0) + 1
+        rows.append([
+            task.replace("UnmaskSwap", ""),
+            split,
+            str(len({r["src_episode"] for r in subset})),
+            str(len(subset)),
+            "  ".join(f"{k}:{v}" for k, v in sorted(events.items())),
+            str(sum(1 for r in subset if r.get("contact_bin_bin_forceful_frames", 0))),
+            str(sum(1 for r in subset if r.get("contact_robot_bin_forceful_frames", 0))),
+        ])
+    n_rb = sum(1 for r in records if r.get("contact_robot_bin_forceful_frames", 0))
+    n_bb = sum(1 for r in records if r.get("contact_bin_bin_forceful_frames", 0))
+    fig, ax = plt.subplots(figsize=(11.5, 0.42 * len(rows) + 2.4))
+    ax.axis("off")
+    table = ax.table(cellText=rows, colLabels=header, loc="center", cellLoc="center")
+    table.auto_set_font_size(False)
+    table.set_fontsize(8.5)
+    table.scale(1.0, 1.5)
+    ax.set_title(
+        f"clip 数据集总览：{len(records)} 条 clip / {len({(r['task'], r['split'], r['src_episode']) for r in records})} 个源单元\n"
+        f"机械臂 ↔ 容器接触 {n_rb}/{len(records)} 条；容器互撞 {n_bb}/{len(records)} 条"
+        "（矩阵与时间轴详图按 (task, split) 分页，见 contact_overview_* / contact_timeline_*）",
+        fontsize=10.5, pad=16,
+    )
+    fig.tight_layout()
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / "contact_summary.png"
+    fig.savefig(path, dpi=140)
+    plt.close(fig)
+    return path
+
+
+def draw_contact_overview(records: list[dict], out_dir: Path) -> list[Path]:
+    """接触矩阵（按 (task, split) 分页）：行 = 源 ep，列 = var0..5（按 variant_idx 落位）。
+
+    列号即槽位对的字典序下标，对角对不在最近邻集合时 var1/var4 为空列 —— 空列本身就说明
+    「这两个对结构上进不来」。格子填色按容器互撞的最大冲量；**色深刻度全局统一**
+    （graded/vmax 对全体 clip 算一次再传给每页），同一冲量在任何一页颜色相同。
+    机械臂 ↔ 容器接触若存在会用黑色粗边框圈出 —— 历轮实测恒 0。
+    """
+    # 互撞极少时 log10 色深刻度会把唯一一格涂成满色深，让人误以为很严重 ——
+    # 少于 2 条互撞就统一用固定浅色，不做刻度映射。判定与 vmax 都对**全体** clip 算。
     impulses = [
         r.get("contact_bin_bin_impulse_max", 0.0)
         for r in records
@@ -225,147 +275,167 @@ def draw_contact_overview(records: list[dict], out_dir: Path) -> Path:
     ]
     graded = len(impulses) >= 2
     vmax = max(impulses) if impulses else 1.0
+    n_rb_all = sum(1 for r in records if r.get("contact_robot_bin_forceful_frames", 0))
+    n_bb_all = sum(1 for r in records if r.get("contact_bin_bin_forceful_frames", 0))
 
-    fig, ax = plt.subplots(figsize=(13.0, 1.05 * n_rows + 2.4))
-    n_rb = sum(1 for r in records if r.get("contact_robot_bin_forceful_frames", 0))
-    n_bb = sum(1 for r in records if r.get("contact_bin_bin_forceful_frames", 0))
+    paths = []
+    for task, split, subset in _split_task_pages(records):
+        groups: dict[int, dict[int, dict]] = {}
+        for record in subset:
+            groups.setdefault(record["src_episode"], {})[record["variant_idx"]] = record
+        keys = sorted(groups)
+        n_rows, n_cols = len(keys), math.comb(REQUIRED_BINS, 2)
 
-    for row, key in enumerate(keys):
-        for col in range(n_cols):
-            record = groups[key].get(col)
-            if record is None:
-                continue
-            bb = record.get("contact_bin_bin_forceful_frames", 0)
-            rb = record.get("contact_robot_bin_forceful_frames", 0)
-            imp = record.get("contact_bin_bin_impulse_max", 0.0)
-            if not bb:
-                shade = 0.0
-            elif graded:
-                shade = 0.25 + 0.75 * (np.log10(imp + 1) / np.log10(vmax + 1))
-            else:
-                shade = 0.6  # 样本太少，不做刻度映射
-            face = (1.0, 1.0 - 0.72 * shade, 1.0 - 0.72 * shade) if bb else "#f2f2f2"
-            ax.add_patch(plt.Rectangle(
-                (col, n_rows - row - 1), 1, 1, facecolor=face,
-                edgecolor="#000000" if rb else "#bbbbbb",
-                linewidth=2.6 if rb else 0.7, zorder=1,
-            ))
-            slots = tuple(record["event_slots"])
-            label = f"var{col}  {slots[0]}↔{slots[1]}\n{TOPO_LABEL[record['topo_class']]}"
-            if bb:
-                pairs = record.get("contact_bin_bin_forceful_pairs") or []
-                label += (f"\n⚡{bb}帧 J={imp:.1f}\n"
-                          + "·".join(f"{a}-{b}" for a, b in pairs))
-            else:
-                label += "\n无接触"
-            ax.annotate(label, (col + 0.5, n_rows - row - 0.5), ha="center", va="center",
-                        fontsize=6.0, zorder=3,
-                        color="#7a0000" if bb else "#666666")
-        ax.annotate(f"{key[0].replace('UnmaskSwap','')}\nep{key[1]}",
-                    (-0.06, n_rows - row - 0.5), ha="right", va="center", fontsize=8)
+        fig, ax = plt.subplots(figsize=(13.0, 1.05 * n_rows + 2.4))
+        for row, src_ep in enumerate(keys):
+            for col in range(n_cols):
+                record = groups[src_ep].get(col)
+                if record is None:
+                    continue
+                bb = record.get("contact_bin_bin_forceful_frames", 0)
+                rb = record.get("contact_robot_bin_forceful_frames", 0)
+                imp = record.get("contact_bin_bin_impulse_max", 0.0)
+                if not bb:
+                    shade = 0.0
+                elif graded:
+                    shade = 0.25 + 0.75 * (np.log10(imp + 1) / np.log10(vmax + 1))
+                else:
+                    shade = 0.6  # 样本太少，不做刻度映射
+                face = (1.0, 1.0 - 0.72 * shade, 1.0 - 0.72 * shade) if bb else "#f2f2f2"
+                ax.add_patch(plt.Rectangle(
+                    (col, n_rows - row - 1), 1, 1, facecolor=face,
+                    edgecolor="#000000" if rb else "#bbbbbb",
+                    linewidth=2.6 if rb else 0.7, zorder=1,
+                ))
+                slots = tuple(record["event_slots"])
+                label = f"var{col}  {slots[0]}↔{slots[1]}\n{TOPO_LABEL[record['topo_class']]}"
+                if bb:
+                    pairs = record.get("contact_bin_bin_forceful_pairs") or []
+                    label += (f"\n⚡{bb}帧 J={imp:.1f}\n"
+                              + "·".join(f"{a}-{b}" for a, b in pairs))
+                else:
+                    label += "\n无接触"
+                ax.annotate(label, (col + 0.5, n_rows - row - 0.5), ha="center", va="center",
+                            fontsize=6.0, zorder=3,
+                            color="#7a0000" if bb else "#666666")
+            ax.annotate(f"ep{src_ep}",
+                        (-0.06, n_rows - row - 0.5), ha="right", va="center", fontsize=8)
 
-    ax.set_xlim(-0.9, n_cols); ax.set_ylim(0, n_rows)
-    ax.set_xticks([]); ax.set_yticks([]); ax.axis("off")
-    ax.set_title(
-        "clip 接触检测总览（物理引擎 sapien get_contacts 实测，冲量 > 1e-9 才算「真的撞上」）\n"
-        f"机械臂 ↔ 容器：{n_rb}/{len(records)} 条  ——  "
-        f"容器 ↔ 容器互撞：{n_bb}/{len(records)} 条（全部落在第一次 swap 窗口内）",
-        fontsize=11, pad=14,
-    )
-    handles = [
-        Patch(facecolor="#f2f2f2", edgecolor="#bbbbbb", label="未检测到接触"),
-        Patch(facecolor="#f5b0b0", edgecolor="#bbbbbb", label="容器互撞（色深=冲量大）"),
-        Patch(facecolor="white", edgecolor="#000000", lw=2.6, label="机械臂↔容器接触（实测 0 条）"),
-    ]
-    fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=8.5, frameon=False)
-    fig.tight_layout(rect=(0, 0.045, 1, 1))
-    out_dir.mkdir(parents=True, exist_ok=True)
-    path = out_dir / "contact_overview.png"
-    fig.savefig(path, dpi=140)
-    plt.close(fig)
-    return path
+        ax.set_xlim(-0.9, n_cols); ax.set_ylim(0, n_rows)
+        ax.set_xticks([]); ax.set_yticks([]); ax.axis("off")
+        n_bb_page = sum(1 for r in subset if r.get("contact_bin_bin_forceful_frames", 0))
+        ax.set_title(
+            f"clip 接触矩阵 —— {task} / {split}（{len(subset)} 条；冲量 > 1e-9 才算「真的撞上」）\n"
+            f"本页互撞 {n_bb_page}/{len(subset)} 条；全体：机械臂↔容器 {n_rb_all}/{len(records)}、"
+            f"互撞 {n_bb_all}/{len(records)}（色深刻度全局统一，跨页可比）",
+            fontsize=11, pad=14,
+        )
+        handles = [
+            Patch(facecolor="#f2f2f2", edgecolor="#bbbbbb", label="未检测到接触"),
+            Patch(facecolor="#f5b0b0", edgecolor="#bbbbbb", label="容器互撞（色深=冲量大）"),
+            Patch(facecolor="white", edgecolor="#000000", lw=2.6, label="机械臂↔容器接触"),
+        ]
+        fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=8.5, frameon=False)
+        fig.tight_layout(rect=(0, 0.045, 1, 1))
+        out_dir.mkdir(parents=True, exist_ok=True)
+        path = out_dir / f"contact_overview_{task}_{split}.png"
+        fig.savefig(path, dpi=140)
+        plt.close(fig)
+        paths.append(path)
+    return paths
 
 
-def draw_contact_timeline(gen_dir: Path, records: list[dict], out_dir: Path) -> Path:
-    """接触时间轴：每条 clip 一行，标出接触落在 clip 的哪些帧。
+def draw_contact_timeline(gen_dir: Path, records: list[dict], out_dir: Path) -> list[Path]:
+    """接触时间轴（按 (task, split) 分页）：每条 clip 一行，标出接触落在 clip 的哪些帧。
 
-    需要逐帧数据，所以直接读 merged h5 的 `timestep_t/swap_gt/contact_*_impulse`。
+    需要逐帧数据，直接读 merged h5 的 `timestep_t/swap_gt/contact_*_impulse`；
+    每个 task 的 h5 只打开一次，页内迭代该 task 的各 split。
     """
     by_task: dict[str, list[dict]] = {}
     for record in records:
         by_task.setdefault(record["task"], []).append(record)
 
-    series: list[tuple[str, np.ndarray, np.ndarray, dict]] = []
+    paths = []
     for task in sorted(by_task):
-        entries = sorted(by_task[task], key=lambda r: (r["src_episode"], r["variant_idx"]))
+        by_split: dict[str, list[dict]] = {}
+        for record in by_task[task]:
+            by_split.setdefault(record["split"], []).append(record)
         with h5py.File(gen_dir / f"record_dataset_{task}.h5", "r") as handle:
-            for record in entries:
-                group = handle[record["episode"].replace("ep", "episode_")]
-                bb = np.array([
-                    float(np.asarray(group[f"timestep_{t}"]["swap_gt"]["contact_bin_bin_impulse"]))
-                    for t in range(CLIP_LEN)
-                ])
-                btn = np.array([
-                    float(np.asarray(
-                        group[f"timestep_{t}"]["swap_gt"]["contact_robot_button_impulse"]))
-                    for t in range(CLIP_LEN)
-                ])
-                series.append((task, bb, btn, record))
+            for split in sorted(by_split, key=lambda s: SPLIT_CODE[s]):
+                entries = sorted(
+                    by_split[split], key=lambda r: (r["src_episode"], r["variant_idx"])
+                )
+                series: list[tuple[np.ndarray, np.ndarray, dict]] = []
+                for record in entries:
+                    group = handle[record["episode"].replace("ep", "episode_")]
+                    bb = np.array([
+                        float(np.asarray(
+                            group[f"timestep_{t}"]["swap_gt"]["contact_bin_bin_impulse"]))
+                        for t in range(CLIP_LEN)
+                    ])
+                    btn = np.array([
+                        float(np.asarray(
+                            group[f"timestep_{t}"]["swap_gt"]["contact_robot_button_impulse"]))
+                        for t in range(CLIP_LEN)
+                    ])
+                    series.append((bb, btn, record))
 
-    fig, ax = plt.subplots(figsize=(13.5, 0.30 * len(series) + 2.6))
-    w0, w1 = swap_windows_clip(2)[0]
-    ax.axvspan(w0, w1, color="#fff2cc", zorder=0)
-    ax.axvspan(w1, CLIP_LEN, color="#f0f6ff", zorder=0)
-    ax.axvspan(0, w0, color="#f6f6f6", zorder=0)
+                fig, ax = plt.subplots(figsize=(13.5, 0.30 * len(series) + 2.6))
+                w0, w1 = swap_windows_clip(2)[0]
+                ax.axvspan(w0, w1, color="#fff2cc", zorder=0)
+                ax.axvspan(w1, CLIP_LEN, color="#f0f6ff", zorder=0)
+                ax.axvspan(0, w0, color="#f6f6f6", zorder=0)
 
-    for row, (task, bb, btn, record) in enumerate(series):
-        y = len(series) - row - 1
-        hit_btn = np.flatnonzero(btn > 1e-9)
-        if hit_btn.size:
-            ax.scatter(hit_btn, np.full(hit_btn.size, y), s=5, marker="s",
-                       color="#4a90d9", zorder=2)
-        hit_bb = np.flatnonzero(bb > 1e-9)
-        if hit_bb.size:
-            ax.scatter(hit_bb, np.full(hit_bb.size, y), s=26, marker="|",
-                       color="#c00000", linewidths=1.9, zorder=3)
-        slots = tuple(record["event_slots"])
-        mark = "⚡" if hit_bb.size else "  "
-        ax.annotate(
-            f"{mark}{task.replace('UnmaskSwap','')[:3]} ep{record['src_episode']} "
-            f"var{record['variant_idx']} {slots[0]}↔{slots[1]} {TOPO_LABEL[record['topo_class']]}",
-            (-1.5, y), ha="right", va="center", fontsize=5.6,
-            color="#c00000" if hit_bb.size else "#555555",
-        )
+                for row, (bb, btn, record) in enumerate(series):
+                    y = len(series) - row - 1
+                    hit_btn = np.flatnonzero(btn > 1e-9)
+                    if hit_btn.size:
+                        ax.scatter(hit_btn, np.full(hit_btn.size, y), s=5, marker="s",
+                                   color="#4a90d9", zorder=2)
+                    hit_bb = np.flatnonzero(bb > 1e-9)
+                    if hit_bb.size:
+                        ax.scatter(hit_bb, np.full(hit_bb.size, y), s=26, marker="|",
+                                   color="#c00000", linewidths=1.9, zorder=3)
+                    slots = tuple(record["event_slots"])
+                    mark = "⚡" if hit_bb.size else "  "
+                    ax.annotate(
+                        f"{mark}ep{record['src_episode']} "
+                        f"var{record['variant_idx']} {slots[0]}↔{slots[1]} "
+                        f"{TOPO_LABEL[record['topo_class']]}",
+                        (-1.5, y), ha="right", va="center", fontsize=5.6,
+                        color="#c00000" if hit_bb.size else "#555555",
+                    )
 
-    ax.set_xlim(-38, CLIP_LEN)
-    ax.set_ylim(-1, len(series))
-    ax.set_yticks([])
-    ax.set_xticks([0, w0, 55, w1, CLIP_LEN])
-    ax.set_xticklabels([
-        "clip0\n(env34)", f"clip{w0}\n第一次swap起", "clip55\n事件中",
-        f"clip{w1}\n第一次swap止", f"clip{CLIP_LEN}\n(env144)"], fontsize=7.5)
-    for spine in ("top", "right", "left"):
-        ax.spines[spine].set_visible(False)
-    ax.set_title(
-        "clip 接触时间轴 —— 接触发生在哪些帧\n"
-        "黄底 = 第一次 swap 窗口（唯一事件）；蓝底 = 第二次 swap 露出的后 30 帧",
-        fontsize=11, pad=12,
-    )
-    handles = [
-        Line2D([0], [0], marker="|", color="#c00000", lw=0, markersize=9,
-               markeredgewidth=2, label="容器 ↔ 容器互撞（有力）"),
-        Line2D([0], [0], marker="s", color="#4a90d9", lw=0, markersize=5,
-               label="机械臂 ↔ 按钮接触（任务本身，仅 Button）"),
-        Line2D([0], [0], marker="x", color="#000000", lw=0, markersize=7,
-               label="机械臂 ↔ 容器接触：全部 clip 实测 0 帧，故图上无此标记"),
-    ]
-    fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=8, frameon=False)
-    fig.tight_layout(rect=(0, 0.04, 1, 1))
-    out_dir.mkdir(parents=True, exist_ok=True)
-    path = out_dir / "contact_timeline.png"
-    fig.savefig(path, dpi=140)
-    plt.close(fig)
-    return path
+                ax.set_xlim(-38, CLIP_LEN)
+                ax.set_ylim(-1, len(series))
+                ax.set_yticks([])
+                ax.set_xticks([0, w0, 55, w1, CLIP_LEN])
+                ax.set_xticklabels([
+                    "clip0\n(env34)", f"clip{w0}\n第一次swap起", "clip55\n事件中",
+                    f"clip{w1}\n第一次swap止", f"clip{CLIP_LEN}\n(env144)"], fontsize=7.5)
+                for spine in ("top", "right", "left"):
+                    ax.spines[spine].set_visible(False)
+                ax.set_title(
+                    f"clip 接触时间轴 —— {task} / {split}（{len(series)} 条）\n"
+                    "黄底 = 第一次 swap 窗口（唯一事件）；蓝底 = 第二次 swap 露出的后 30 帧",
+                    fontsize=11, pad=12,
+                )
+                handles = [
+                    Line2D([0], [0], marker="|", color="#c00000", lw=0, markersize=9,
+                           markeredgewidth=2, label="容器 ↔ 容器互撞（有力）"),
+                    Line2D([0], [0], marker="s", color="#4a90d9", lw=0, markersize=5,
+                           label="机械臂 ↔ 按钮接触（任务本身，仅 Button）"),
+                    Line2D([0], [0], marker="x", color="#000000", lw=0, markersize=7,
+                           label="机械臂 ↔ 容器接触：历轮实测 0 帧，非零会画为黑 x"),
+                ]
+                fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=8, frameon=False)
+                fig.tight_layout(rect=(0, 0.04, 1, 1))
+                out_dir.mkdir(parents=True, exist_ok=True)
+                path = out_dir / f"contact_timeline_{task}_{split}.png"
+                fig.savefig(path, dpi=140)
+                plt.close(fig)
+                paths.append(path)
+    return paths
 
 
 def main(argv=None) -> int:
@@ -396,14 +466,17 @@ def main(argv=None) -> int:
 
     written = []
     for task in tasks:
-        by_source: dict[int, list[dict]] = {}
+        by_source: dict[tuple[str, int], list[dict]] = {}
         for record in labels:
             if record["task"] == task:
-                by_source.setdefault(record["src_episode"], []).append(record)
-        for src_episode, records in sorted(by_source.items()):
-            written.append(draw_episode(task, src_episode, records, out_dir))
-    written.append(draw_contact_overview(labels, out_dir))
-    written.append(draw_contact_timeline(gen_dir, labels, out_dir))
+                by_source.setdefault((record["split"], record["src_episode"]), []).append(record)
+        for (split, src_episode), records in sorted(
+            by_source.items(), key=lambda kv: (SPLIT_CODE[kv[0][0]], kv[0][1])
+        ):
+            written.append(draw_episode(task, split, src_episode, records, out_dir))
+    written.append(draw_contact_summary(labels, out_dir))
+    written.extend(draw_contact_overview(labels, out_dir))
+    written.extend(draw_contact_timeline(gen_dir, labels, out_dir))
     for path in written:
         print(f"已写出 {path}")
     print(f"共 {len(written)} 张图")

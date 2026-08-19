@@ -44,7 +44,7 @@ from clip_plan import (  # noqa: E402
     CLIP_LEN,
     CLIP_START,
     compute_swap_times,
-    load_train_record,
+    load_metadata_record,
     native_window_slots,
     swap_windows_env,
 )
@@ -213,7 +213,8 @@ def run_regression(v7_path: Path, official_dir: Path, epsilon: float) -> int:
             for episode in episodes:
                 group = handle[f"episode_{episode}"]
                 total, demo_prefix, exec_len = segment_lengths(group)
-                env_seed, difficulty = load_train_record(task, episode)
+                # v7 人工资产只覆盖官方 train ep90-99 —— 本回归与扩源正交，显式钉死 train
+                env_seed, difficulty = load_metadata_record(task, episode, "train")
                 windows = swap_windows_env(compute_swap_times(env_seed, difficulty))
                 frames = demo_prefix if SWAP_SCOPE[task] == "demo" else exec_len
                 for start in grid_starts(frames):
@@ -271,11 +272,13 @@ def augment_episode_maps(
       `original_idx1` 才能算「原版那一刻会换哪对槽位」。
     """
     # Phase 0 的 original_idx1：量化「窗口 ≥2 按槽位固定」对原版最近邻规则的偏离
-    native_idx1: dict[tuple[str, int], list] = {}
-    phase0_slot_xy: dict[tuple[str, int], list] = {}
+    native_idx1: dict[tuple[str, str, int], list] = {}
+    phase0_slot_xy: dict[tuple[str, str, int], list] = {}
     if phase0_index is not None and Path(phase0_index).is_file():
         for record in json.loads(Path(phase0_index).read_text(encoding="utf-8"))["records"]:
-            key = (str(record["task"]), int(record["episode"]))
+            if not record.get("split"):
+                continue  # 旧版索引记录：视为几何不可用，绝不默认回填 train
+            key = (str(record["split"]), str(record["task"]), int(record["episode"]))
             native_idx1[key] = record.get("original_idx1") or []
             phase0_slot_xy[key] = (record.get("geometry") or {}).get("slot_xy") or []
 
@@ -288,13 +291,21 @@ def augment_episode_maps(
         payload = json.loads(map_path.read_text(encoding="utf-8"))
         episode_map = payload["records"]
         variant = SWAP_SCOPE[task]
+        missing_split = [e["dense_episode"] for e in episode_map if not e.get("split")]
+        if missing_split:
+            raise SystemExit(
+                f"ERROR: {map_path} 有 {len(missing_split)} 条记录无 split 字段（旧版产物）——"
+                "请用新版链路重新合并"
+            )
         with h5py.File(input_dir / f"record_dataset_{task}.h5", "r") as handle:
-            by_source: dict[int, list[dict]] = {}
+            # 同源分组键必须带 split：test/ep3 与 val/ep3 是无关源，混组会让
+            # action_dev_max / action_group 全部算成垃圾且不报错
+            by_source: dict[tuple[str, int], list[dict]] = {}
             for entry in episode_map:
-                by_source.setdefault(entry["src_episode"], []).append(entry)
+                by_source.setdefault((entry["split"], entry["src_episode"]), []).append(entry)
             deviation = {
-                (src, index): info
-                for src, entries in by_source.items()
+                (src_key, index): info
+                for src_key, entries in by_source.items()
                 for index, info in action_deviation(handle, entries).items()
             }
             for entry in episode_map:
@@ -319,7 +330,7 @@ def augment_episode_maps(
                 #   本链路 = 按槽位固定（后 30 帧跨变体一致的前提）
                 #   原版   = 拿该窗口定死的 idx1(bin) 取当时的最近邻
                 # 窗口 1 已把某些 bin 挪了位，两者不一定重合 —— 不重合不作废，逐条量化。
-                key0 = (task, entry["src_episode"])
+                key0 = (entry["split"], task, entry["src_episode"])
                 later_native: list[list[int]] = []
                 later_follows = None
                 if native_idx1.get(key0) and phase0_slot_xy.get(key0):
@@ -338,7 +349,9 @@ def augment_episode_maps(
 
                 entry["later_windows_follow_native_nn"] = later_follows
                 entry["later_windows_native_slots"] = later_native
-                entry.update(deviation[(entry["src_episode"], entry["variant_idx"])])
+                entry.update(
+                    deviation[((entry["split"], entry["src_episode"]), entry["variant_idx"])]
+                )
                 all_records.append({"task": task, **entry})
 
         payload["labels"] = _label_meta(task, episode_map)
@@ -361,12 +374,13 @@ def _label_meta(task: str, episode_map: Sequence[dict]) -> dict:
         key = "".join(str(v) for v in entry["event_slots"])
         class_counts[key] = class_counts.get(key, 0) + 1
         topo_counts[entry["topo_class"]] = topo_counts.get(entry["topo_class"], 0) + 1
-        per_source_legal[f"ep{entry['src_episode']}"] = [
+        per_source_legal[f"{entry['split']}/ep{entry['src_episode']}"] = [
             "".join(str(v) for v in pair) for pair in (entry["legal_event_slots"] or [])
         ]
     native_deviation = [
         {
             "dense_episode": entry["dense_episode"],
+            "split": entry["split"],
             "src_episode": entry["src_episode"],
             "variant_idx": entry["variant_idx"],
             "event_slots": entry["event_slots"],
@@ -378,7 +392,7 @@ def _label_meta(task: str, episode_map: Sequence[dict]) -> dict:
     ]
     leaky_sources = sorted(
         {
-            f"ep{entry['src_episode']}"
+            f"{entry['split']}/ep{entry['src_episode']}"
             for entry in episode_map
             if entry.get("action_group_identifies_label")
         }
@@ -419,8 +433,9 @@ def _label_meta(task: str, episode_map: Sequence[dict]) -> dict:
         ),
         "topo_class_counts": topo_counts,
         "cross_diagonal_note": (
-            "cross_diagonal 在本 8 源上恒为空 —— 这是实测事实、不是几何必然"
-            "（对角对从来不是任何 bin 的最近邻）。字段保留以便源集合变化时仍可用"
+            "cross_diagonal 在旧的 train 8 源上恒为空 —— 实测事实、不是几何必然。"
+            "扩源到 test/val 后若某源的对角对成为最近邻，它会正常入选并进验收告警"
+            "（判据 10c-iii 已从硬失败降级为告警+计数）"
         ),
         "later_windows_deviating_from_native_nn": native_deviation,
         "later_windows_note": (
@@ -445,7 +460,7 @@ def _label_meta(task: str, episode_map: Sequence[dict]) -> dict:
         "note": (
             "每条 episode 是一段 110 帧 clip，恰含一个事件；标签只用相对位置，不含 cube 颜色；"
             "主轴是 event_slots，topo_class 是它的 4→2 粗化协变量。"
-            "h5 内只嵌不可复算的 10 个 setup 字段 + 8 个逐帧字段，派生标签一律以本文件为准"
+            "h5 内只嵌不可复算的 11 个 setup 字段（含 split）+ 8 个逐帧字段，派生标签一律以本文件为准"
         ),
         "n_records": len(episode_map),
     }
@@ -487,7 +502,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         key = "".join(str(v) for v in record["event_slots"])
         class_counts[key] = class_counts.get(key, 0) + 1
         topo_counts[record["topo_class"]] = topo_counts.get(record["topo_class"], 0) + 1
-        legal_pairs[f"{record['task']}/ep{record['src_episode']}"] = [
+        legal_pairs[f"{record['task']}/{record['split']}/ep{record['src_episode']}"] = [
             "".join(str(v) for v in pair) for pair in (record["legal_event_slots"] or [])
         ]
     print(
@@ -497,7 +512,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(
         "  协变量 topo_class（非主轴）："
         + "、".join(f"{name} {count}" for name, count in sorted(topo_counts.items()))
-        + "；cross_diagonal 恒空（对角对结构上进不了最近邻）"
+        + f"；cross_diagonal {topo_counts.get('cross_diagonal', 0)} 条"
+        "（train 8 源实测恒空，非几何必然；非零会进验收告警）"
     )
     print("  逐源合法对：" + "  ".join(
         f"{key}={','.join(pairs)}" for key, pairs in sorted(legal_pairs.items())
@@ -515,7 +531,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"  全体无泄露（action_dev_max==0）的 clip：{len(clean)}/{len(records)} 条")
     leaky = sorted(
         {
-            f"{r['task']}/ep{r['src_episode']}"
+            f"{r['task']}/{r['split']}/ep{r['src_episode']}"
             for r in records if r.get("action_group_identifies_label")
         }
     )
@@ -539,7 +555,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     # 最近邻子集里互撞条数极少，按 topo_class 分组统计已无意义 —— 直接逐条列出
     for record, fields in bb:
         print(
-            f"    {record['task']}/ep{record['src_episode']}/var{record['variant_idx']}"
+            f"    {record['task']}/{record['split']}/ep{record['src_episode']}/var{record['variant_idx']}"
             f" 事件={record['event_slots']} 互撞 {fields['contact_bin_bin_forceful_frames']} 帧"
             f"（最大冲量 {fields['contact_bin_bin_impulse_max']:.4g}）"
         )

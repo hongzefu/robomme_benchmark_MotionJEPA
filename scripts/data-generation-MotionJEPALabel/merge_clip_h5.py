@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """把逐条 clip h5 合并成官方格式的 `record_dataset_{Task}.h5`，episode 重编号为密集 0..M-1。
 
-为什么要重编号：生成期用 staging_episode = src_episode*1000 + variant_idx 做文件名，
-但下游（MotionJEPA `build_data_raw_from_h5`）断言 episode 必须 0-based 密集连续。
-重编号是信息无损的 —— `episode_map_{Task}.json` 记下 dense ↔ staging ↔ seed ↔ 槽位序列
-的完整映射，`h5` 内 `setup/swap_gt` 也自带全部字段。
+为什么要重编号：生成期用 staging_episode（split 位 + episode 位 + 变体位三段编码，见
+clip_plan.staging_episode）做文件名，但下游（MotionJEPA `build_data_raw_from_h5`）断言
+episode 必须 0-based 密集连续。重编号是信息无损的 —— `episode_map_{Task}.json` 记下
+dense ↔ staging ↔ split ↔ seed ↔ 槽位序列的完整映射，`h5` 内 `setup/swap_gt` 也自带全部字段。
+密集编号按 (split 序, src_episode, variant_idx) 排 —— train 块在前、test/val 依次在后。
 
 产物：
 * `record_dataset_{Task}.h5`（`raw.copy` 整组拷贝，逐帧 swap_gt 自动带走）
@@ -28,7 +29,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from clip_plan import CLIP_LEN, EVAL_TASKS  # noqa: E402
+from clip_plan import CLIP_LEN, EVAL_TASKS, SPLIT_CODE  # noqa: E402
 from clip_worker import CLIP_IS_DEMO, segment_lengths, sorted_timesteps  # noqa: E402
 
 
@@ -76,7 +77,15 @@ def merge_task(input_dir: Path, output_dir: Path, task: str, delete_source: bool
     records = [item for item in _load_manifest(input_dir) if item["task"] == task]
     if not records:
         raise MergeError(f"{task}: manifest 里没有任何成功 clip")
-    records.sort(key=lambda item: (item["src_episode"], item["variant_idx"]))
+    missing_split = [item for item in records if not item.get("split")]
+    if missing_split:
+        raise MergeError(
+            f"{task}: manifest 里有 {len(missing_split)} 条记录无 split 字段（旧版产物）——"
+            "请用新版链路重新生成"
+        )
+    records.sort(
+        key=lambda item: (SPLIT_CODE[item["split"]], item["src_episode"], item["variant_idx"])
+    )
 
     target = output_dir / f"record_dataset_{task}.h5"
     temporary = output_dir / f".record_dataset_{task}.h5.tmp"
@@ -101,7 +110,7 @@ def merge_task(input_dir: Path, output_dir: Path, task: str, delete_source: bool
                 pair_info = (geometry.get("pairs") or {}).get(pair_key)
                 if not pair_info:
                     raise MergeError(
-                        f"{task}/ep{record['src_episode']}/var{record['variant_idx']}: "
+                        f"{task}/{record['split']}/ep{record['src_episode']}/var{record['variant_idx']}: "
                         f"geometry.pairs 缺 {pair_key} —— slot_geometry 必须枚举全部 C(n,2) 对，"
                         "检查是否有人把 clip_plan.bin_pairs 改成了「只返回合法对」"
                     )
@@ -109,6 +118,7 @@ def merge_task(input_dir: Path, output_dir: Path, task: str, delete_source: bool
                     {
                         "dense_episode": dense,
                         "staging_episode": record["staging_episode"],
+                        "split": record["split"],
                         "src_episode": record["src_episode"],
                         "variant_idx": record["variant_idx"],
                         "variant_seed": record["variant_seed"],
@@ -153,12 +163,22 @@ def merge_task(input_dir: Path, output_dir: Path, task: str, delete_source: bool
                         "episode": dense,
                         "seed": record["variant_seed"],
                         "difficulty": record["difficulty"],
+                        # 溯源字段：没有它，合并 metadata 与官方单 split 文件无法区分
+                        "split": record["split"],
                     }
                 )
         temporary.replace(target)
     except Exception:
         temporary.unlink(missing_ok=True)
         raise
+
+    # ★ 唯一性闸门：variant_seed 不编码 split，唯一性是被断言的性质而非构造保证
+    seeds = [item["seed"] for item in metadata_records]
+    if len(seeds) != len(set(seeds)):
+        raise MergeError(f"{task}: metadata 的 seed 列有重复 —— variant_seed 跨 split 碰撞")
+    stagings = [item["staging_episode"] for item in episode_map]
+    if len(stagings) != len(set(stagings)):
+        raise MergeError(f"{task}: staging_episode 有重复 —— split 编码失效")
 
     (output_dir / f"record_dataset_{task}_metadata.json").write_text(
         json.dumps(
@@ -178,9 +198,13 @@ def merge_task(input_dir: Path, output_dir: Path, task: str, delete_source: bool
                 "clip_len": CLIP_LEN,
                 "note": (
                     "每条 episode 是一段 110 帧 clip（env step [34,144)）：第一次 swap 窗口"
-                    "（clip 帧 30-79）前后各 30 帧。事件标签是 event_slots/topo_class；"
-                    "seed 字段 = variant_seed = env_seed*1000 + variant_idx（可反解）；"
-                    "复现须用 env_seed 建环境并按 bin_pairs 注入，直接用 variant_seed 复现不了"
+                    "（clip 帧 30-79）前后各 30 帧。源来自 train/test/val 三个 split（split "
+                    "字段），episode 号只在 split 内可比。事件标签是 event_slots/topo_class；"
+                    "seed 字段 = variant_seed = env_seed*1000 + variant_idx（可反解，刻意不编码"
+                    " split，唯一性由三 split 的 env_seed 数值域不相交保证并在合并时断言）；"
+                    "staging_episode = split_code*1000000 + src_episode*1000 + variant_idx"
+                    "（split_code: train=0/test=1/val=2）；复现须用 env_seed 建环境并按 "
+                    "bin_pairs 注入，直接用 variant_seed 复现不了"
                 ),
                 "record_count": len(episode_map),
                 "records": episode_map,

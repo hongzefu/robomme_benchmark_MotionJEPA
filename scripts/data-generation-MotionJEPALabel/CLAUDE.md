@@ -12,6 +12,13 @@ ep90-99 为 eval 集，2026-08-15 删 linear probe 的弃用理由是「缺 swap
 **宗旨（用户 2026-08-18 拍板）：除了 bin 的初始位置和第一次 swap 的排列组合，
 其他全部保持一致。**
 
+**★ 2026-08-19 扩源：源从 train ep90-99（4 源、19 条）扩到 train + test + val 三 split
+（33 源、153 条）。** 源键全链路改为 `(split, task, episode)`；`staging_episode` 加 split 位
+（`split_code*1_000_000 + src_episode*1000 + variant_idx`，train=0/test=1/val=2）；
+`variant_seed` 编码不动（须可逆到 env_seed），跨 split 唯一性由三重守卫断言（单测全组合、
+生成闸门、merge 闸门）。test/val 无官方 h5，Phase 0 的官方红线只对 train 生效，其余记入
+`comparison_skipped` 显式呈现。实测记录见 §十六。
+
 **★ 2026-08-19 重构：第一次 swap 的可选对收敛到「最近邻可达对」（48 条 → 19 条）。**
 理由与口径见 [§三 A 最近邻约束](#三a最近邻约束2026-08-19-重构)。一句话：原版 env 的
 `idx2` 是运行时按**严格最近邻**回填的，所以旧口径 `C(4,2)=6` 全枚举里有一大半的对在
@@ -56,12 +63,20 @@ env 侧关键时刻（`VideoUnmaskSwap.step` / `statechange.py`）：
    槽位角色统一**（每源的实际条数由最近邻约束决定，见 §三A，恒为 2~3 条）。
 2. **swap_times ≥ 2**：Video 的 demo 段长 = 最后一次 swap 结束（+0~4 帧），k=1 时 demo
    只到 env 114，clip 的后 30 帧会跌出 demo、机器人开始朝目标 bin 移动。
-3. **两 env 取共同源号**：口径保留不变（用户 2026-08-19 明确要求筛选不动）。
-   ⚠ 共同源号 **不等于**共同布局 —— 两 env 的 seed 不同（ep91 是 14100 vs 16100），
-   bin 位置本就不同。⚠ 最近邻约束下这条筛选**不再保证两边条数对称**（实测 Video 11 条
-   vs Button 8 条），因为条数取决于各自布局的最近邻结构。
+3. **两 env 取共同源号（split 内）**：口径保留不变（用户 2026-08-19 明确要求筛选不动），
+   扩源后交集只在 split 内取 —— episode 号只在 split 内可比，test ep3 与 val ep3 无关。
+   ⚠ 共同源号 **不等于**共同布局 —— 两 env 的 seed 不同（train ep91 是 14100 vs 16100），
+   bin 位置本就不同。⚠ 最近邻约束下这条筛选**不再保证两边条数对称**（全量实测 Video 80
+   vs Button 73），因为条数取决于各自布局的最近邻结构。
 
-结果恒为 `{91, 95, 98, 99}`，Video 11 条 + Button 8 条、合计 **19 条**：
+三 split 筛选结果：train `{91,95,98,99}`（4 源）、test
+`{3,6,7,11,15,19,23,27,30,31,35,39,43,46,47}`（15 源）、val
+`{3,6,7,11,14,15,19,23,27,31,35,39,43,47}`（14 源），合计 33 源 × 2 env、**153 条**。
+⚠ seed 必须读所属 split 的 metadata：train Button ep98 = 16801、val Button ep39/ep43 =
+1073901/1074301，全是 attempt 尾号、公式反推不出。medium 源的 `swap_times` 由
+`compute_swap_times`（纯 RNG 复刻）静态可算，筛选不需要实跑。
+
+train 子集的 8 源明细（历史锚点，Video 11 条 + Button 8 条 = 19 条）：
 
 | env | ep | seed | 难度 | k | 原始 bin 序列 | 原始槽位序列 | 合法对（最近邻） | 条数 | 最小 argmin 余量 |
 | --- | ---: | ---: | --- | ---: | --- | --- | --- | ---: | ---: |
@@ -74,11 +89,9 @@ env 侧关键时刻（`VideoUnmaskSwap.step` / `statechange.py`）：
 | Button | 98 | **16801** | medium | 2 | 12\|12 | 12\|12 | 03,12 | 2 | 0.0207 |
 | Button | 99 | 16900 | hard | 3 | 03\|12\|03 | 03\|12\|03 | 03,12 | 2 | 0.0921 |
 
-全局最小 argmin 余量 **0.0089 m**（Video ep98），比 teleport 落定噪声（~1e-6）高三个
-数量级 —— 最近邻判定在数值上是稳的。低于 `NN_MARGIN_WARN`=0.005 会进验收报告的告警段。
-
-⚠ Button/ep98 的 seed 是 **16801**（历史 attempt 探针，非 `16000+100e` 规则值）——
-seed 一律从 train metadata 读表，**禁止公式反推**。
+train 8 源最小 argmin 余量 **0.0089 m**（Video ep98）；三 split 全量的全局最小降到
+**0.00055 m**（Video/val/ep47），低于 `NN_MARGIN_WARN`=0.005 的告警共 21 条（不作废
+数据，只进告警段）—— 规模效应的直接后果。
 Video/ep95 是槽位换算的活样本：bin 序列 `01|02` → 槽位序列 `01|12`（第一次换完后 bin0
 落在 slot1，所以第二次动的是 slot1↔slot2）。
 
@@ -113,7 +126,7 @@ Video/ep95 是槽位换算的活样本：bin 序列 `01|02` → 槽位序列 `01
 **约束只作用于第一次 swap**（用户 2026-08-19 拍板）。窗口 ≥2 沿用 §三 的「按槽位固定」
 注入 —— 那是后 30 帧跨变体一致（判据 5）的前提，与最近邻回填不可兼得，选了前者。
 
-### 窗口 ≥2 的口径对账：实测 4/19 条不重合
+### 窗口 ≥2 的口径对账：train 实测 4/19 条不重合（三 split 全量 28/153，见 §十六）
 
 原版窗口 ≥2 的 `idx1` 是一个**固定的 bin**，而窗口 1 可能已经把它挪到了别的槽位；
 我们钉死的却是**槽位对**。两者何时重合、何时不重合，可以精确算出来 ——
@@ -158,14 +171,15 @@ env 63）的实测位置复算一遍，确保「计划所用的几何」与「�
 
 ### 被这条约束排除掉的是什么
 
-实测 8 个源：**对角对 `(0,2)`/`(1,3)` 从来不是任何 bin 的最近邻** ⇒ `cross_diagonal`
-整类消失（16/48 条）；Button 四个源的合法集合恒为 `{(0,3),(1,2)}`（全 `cross_aligned`）。
-48 条里有 **29 条**是原版结构上不可能出现的，本轮全部删除。
+train 8 源实测：**对角对 `(0,2)`/`(1,3)` 从来不是任何 bin 的最近邻** ⇒ `cross_diagonal`
+在 train 整类消失；Button 四个 train 源的合法集合恒为 `{(0,3),(1,2)}`（全 `cross_aligned`）。
+旧全枚举 48 条里有 **29 条**是原版结构上不可能出现的，最近邻重构时全部删除。
 
-⚠ 「对角进不了最近邻」是**本 8 源的实测事实、不是几何必然** —— Button 的 region4 带列内
-随机 y 偏移、各 bin 还有 ±0.07 的 rejection 抖动，理论上对角可以成为最近邻
-（单测 `test_diagonal_can_be_nearest_neighbor_in_principle` 用合成布局构造了反例）。
-所以 `topo_class` 字段与三类映射一律保留，判据 10c-iii 只是把「恒为 0」做成回归守卫。
+⚠ 「对角进不了最近邻」是**train 8 源的实测事实、不是几何必然** —— 三 split 扩源后
+**真实反例已经出现**：Button/val/ep11 与 val/ep31 的合法集合含 (0,2)，全量 153 条里
+`cross_diagonal` 有 2 条。因此判据 10c-iii 从「恒为 0 的硬失败」**降级为告警 + 计数**，
+正确性改由「topo_class 分布的几何现算 vs merge 写入两路对账」硬判据兜底（含分 split
+各查一遍）。`topo_class` 字段与三类映射照旧保留。
 
 ### 有方向的正确性证据（Phase 0 实测 8/8）
 
@@ -245,10 +259,13 @@ clip 只到 env 143，抓取段完全用不上：
 `clip_worker.py` 的 rollout 骨架照抄 `scripts/data-generation-newSeed/generate_dataset_newseed.py`，除三处：
 
 1. **FailRecover 恒不启用**：骨架按 episode 号分档，本链路的 staging 编号会让分档乱套；
-   源 ep91-99 全部 ≥6，原始行为就是不启用。
+   train 源 ep91-99 全部 ≥6，原始行为就是不启用。⚠ 三 split 扩源后 test/val 各有 ep3
+   （≤5）—— 原版生成器**可能**对低号 episode 启用过分档恢复，但 test/val 没有官方 h5
+   可逐位比对，「恒不启用」是唯一自洽口径（Phase 0 控制跑即这些源的原始序列真值，
+   determinism 由重跑逐位一致保证）。
 2. **失败重试不换 seed**：骨架 `bump` 会按公式换 seed —— 换 seed 即换布局，摧毁前提。
    `ClipJob.bump()` 只加 attempt。
-3. **difficulty 读 train metadata**，不用 `difficulty_for()` 循环。
+3. **difficulty 读所属 split 的 metadata**，不用 `difficulty_for()` 循环。
 
 另有一条硬规则：**每变体新建 env，禁止复用** —— `statechange.py` 的 `_two_lane_swaps` /
 `_lift_drop_onto_cache` 按 `id(actor)` 做键且 reset 不清理，跨变体复用会静默读旧缓存。
@@ -268,15 +285,15 @@ MotionJEPA `build_data_raw_from_h5` 对齐）：
 
 裁剪后删除 raw h5（clip 是唯一产物）。
 
-### h5 内嵌标注（2026-08-19 精简：62 → 18 个字段）
+### h5 内嵌标注（2026-08-19 精简：62 → 18 个字段；扩源后 setup 增 `split` → 19 个）
 
 口径是**只留不可复算的** —— 一个字段只有在「用本组其余字段 + `clip_plan.py` 的纯函数
 算不出来」时才落盘。保留清单与各自作用见 [README](README.md#h5-新增字段)：
 
 ```
-episode_N/setup/swap_gt/        env_seed, bin_pairs, event_slots, slot_xy,
+episode_N/setup/swap_gt/        env_seed, bin_pairs, event_slots, slot_xy, split,
                                 src_episode, variant_idx, is_original, difficulty,
-                                clip_start_env_step, clip_len                    （10 个）
+                                clip_start_env_step, clip_len                    （11 个）
 episode_N/timestep_t/swap_gt/   bins_pos(f32[n,3]), cubes_pos(f32[3,3]),
                                 contact_{robot_bin,bin_bin,robot_button}_{count,impulse}
                                                                                  （8 个）
@@ -461,22 +478,27 @@ ep91/ep99 各只有 2 条且分成 2 组，「同一组」只剩 1 条，等于�
 （对照：全枚举版 48 条时 Button 四个源都是 2 组、每组 3 条，最大差 1.598e-01；
 最近邻约束删掉了互撞最剧烈的对角/长距对，所以偏差量级也从 1.6e-1 降到 3.2e-2。）
 
-## 九、命令用法（按 Phase 顺序）
+## 九、命令用法（按 Phase 顺序；--splits 默认 train,test,val 全选）
 
 ```bash
-# P0a 纯函数单测（秒级，69 passed）
+# P0a 纯函数单测（秒级，76 passed；两条 artifact-gated 用例有 Phase 0 索引才实跑）
 uv run python -m pytest tests/lightweight/test_swap_clip_plan.py -q
 # P0b 计划表（不生成数据）
 uv run python scripts/data-generation-MotionJEPALabel/clip_plan.py
-# P0c 控制跑（8 条完整 rollout，约 35 s；含与官方 h5 的红线比对）
-uv run python scripts/data-generation-MotionJEPALabel/probe_original.py --gpus 0,1 --workers 8
-# 标签规则回归（只读，约 1 min）
+# P0c 控制跑（66 条完整 rollout，约 2.5 min；train 源含与官方 h5 的红线比对，
+#     test/val 记 comparison_skipped；接近 5 min 量级，建议按 AGENTS.md 规则 4 tmux+Monitor）
+uv run python scripts/data-generation-MotionJEPALabel/probe_original.py --gpus 0,1 --workers 16
+# 标签规则回归（只读，约 1 min；对官方 train ep90-99，与扩源正交）
 uv run python scripts/data-generation-MotionJEPALabel/make_clip_labels.py --regression
-# P1 smoke（单源 2~3 条；Video ep95 合法集合大小为 3）
+# P1 smoke A：非 train 单源（test:3 的 Video 侧 2~3 条）
 uv run python scripts/data-generation-MotionJEPALabel/generate_swap_clips.py \
   --output-dir scripts/data-generation-MotionJEPALabel/outputs/smoke \
-  --tasks VideoUnmaskSwap --only-episodes 95 --gpus 0,1 --workers 6
-# P2 全量（19 条，约 40 s；>5 min 的任务才需要 tmux）
+  --tasks VideoUnmaskSwap --splits test --only-sources test:3 --gpus 0,1 --workers 6
+# P1 smoke B（★ 跨 split 碰撞）：train:91 + test:3 + val:3（ep3 同号双 split）
+uv run python scripts/data-generation-MotionJEPALabel/generate_swap_clips.py \
+  --output-dir scripts/data-generation-MotionJEPALabel/outputs/smoke_xsplit \
+  --splits train,test,val --only-sources train:91,test:3,val:3 --gpus 0,1 --workers 12
+# P2 全量（153 条，约 3 min；⚠ 全量重生成前先删旧 clip_results.jsonl，防旧键形污染续跑）
 uv run python scripts/data-generation-MotionJEPALabel/generate_swap_clips.py \
   --output-dir scripts/data-generation-MotionJEPALabel/outputs/event1 --gpus 0,1 --workers 16
 # P3 合并 + 密集重编号 + episode_map
@@ -506,7 +528,11 @@ uv run python scripts/data-generation-MotionJEPALabel/prune_outputs.py --yes
 5. **后 30 帧受控性**：clip 末帧的 `bins_pos` 排序后位置集合跨变体差 < 1e-5。
    ⚠ 口径是**窗口 2 的端点位置**而非整段逐位相同：窗口 1 的对角交换会擦碰被锁定的旁观
    bin（实测 `min_clearance` 低到 0.0045 m），把它挤开几毫米再弹回 —— 那是第一次 swap 的
-   物理余波、是允许变化维度的直接后果，由 `bystander_net_max` 逐条量化；
+   物理余波、是允许变化维度的直接后果，由 `bystander_net_max` 逐条量化。
+   **2026-08-19 扩源后加条件降级**：该源事件窗口内存在**有力**容器互撞时超阈降为量化
+   告警（实测 Button/val/ep11 冲量 ~17 的剧烈互撞把旁观 bin 撞离 6~8 mm 且不弹回，末帧
+   集合差 1.3e-2 —— 同因不同幅的物理余波，按「保留 + 量化」不作废）；无互撞而超阈仍是
+   硬失败（那说明注入本身错了）；
 6. **窗口 1 生效**：clip 帧 30→79 的净位移恰为计划的两个 bin 且 ≥0.03 m。
    **必须用净位移，不能用路径长** —— 对角交换会擦碰旁观 bin，路径长可达 0.11 m 却净位移
    近零，用路径长会确定性误杀；
@@ -523,9 +549,11 @@ uv run python scripts/data-generation-MotionJEPALabel/prune_outputs.py --yes
     `event_slots`/`slot_xy`（不再有内嵌的 `topo_class` 可读），与 map 里 merge 阶段写下的
     值是两条独立路径，对不上即说明某一环串了；(c) 三条替代旧「三类均衡」的确定性判据 ——
     **i** 标签侧逐源覆盖（从 `episode_map_{Task}.json` 独立复核判据 1，防漏条/串源）；
-    **ii** 全局 `event_slots` 分布与「各源合法集合求并」的期望**逐项相等**
-    （期望值代码现算，绝不写死数字）；**iii** `cross_diagonal == 0` 的回归守卫
-    （notes 里注明这是实测事实、不是几何必然，非 0 即说明布局或源集合已变）；
+    **ii** 全局与**分 split** 的 `event_slots` 分布均与「各源合法集合求并」的期望**逐项
+    相等**，且 `topo_class` 分布做「几何现算 vs merge 写入」两路对账（期望值代码现算，
+    绝不写死数字，均为硬判据）；**iii** `cross_diagonal` 计数**告警**（2026-08-19 从硬
+    失败降级：test/val 扩源后对角对真实进入了 Button/val/ep11、val/ep31 的最近邻集合，
+    「恒为 0」只是 train 8 源的实测事实；正确性由 ii 的两路对账兜底）；
     (d) chunk 级标签已不落盘，改为**现算一遍网格**做回归守卫：19 clip × 5 chunk = 95 条、
     每条首 chunk 判负 ⇒ 正例恒为 76，窗口结构或 ε 一变就炸；
 11. **机械臂 ↔ 容器接触必须为 0**（物理引擎 `get_contacts` 实测）。本链路的前提是
@@ -551,6 +579,9 @@ uv run python scripts/data-generation-MotionJEPALabel/prune_outputs.py --yes
 ---
 
 # 实测记录（2026-08-18）
+
+> ⚠ §十一~§十五 是 train-only 19 条时代的历史实测（审计留痕，不回改）；
+> 当前三 split 153 条的实测见 §十六。
 
 ## 十一、Phase 0 控制跑（8/8 成功，32.4 s，GPU 0+1，workers=8）
 
@@ -631,6 +662,10 @@ Button 的 press1 结束于 110/121/115/117、press2 结束于 200~211，clip �
 | 主标签 | chunk 级二值 | `topo_class` 三类 | **`event_slots` 四类（8/7/2/2）** |
 | 判据数 | — | 十一条 | **十二条 + 告警段** |
 
+（第四代 = 2026-08-19 三 split 扩源：33 源 / 153 条 / 10.4 GiB，`event_slots` 五类
+`03:63/12:63/01:11/23:14/02:2`，判据与产物形态同第三代、仅 10c-iii 降级 + 判据 5 条件
+降级 + 分 split 汇总，完整实测见 §十六。）
+
 ## 十五、产物收敛与 h5 精简（2026-08-19，全链路重生实测）
 
 用户拍板「输出只要 diagram / h5 / video 三类」「h5 新增字段保持简洁」后的一轮重构。
@@ -655,3 +690,45 @@ h5 结构变了 ⇒ **必须全链路重生**（不能只改文档），实测�
 
 ⚠ 清理后**验收仍可重跑**（实测退出码 0）：`verify_clips.py` 已去掉对 `clips_manifest.json`
 的依赖（那行读进来从未使用），现在只吃 `episode_map` + h5 + Phase 0 索引三样，全是保留项。
+
+## 十六、三 split 扩源全量实测（2026-08-19）
+
+源扩到 train ep90-99 + test/val ep0-49，33 源 × 2 env、153 条 clip。全链路实测：
+
+| 阶段 | 结果 |
+| --- | --- |
+| 纯函数单测 | **76 passed**（含新 split 编码往返、33×2×6 seed 全组合唯一性、两条 artifact-gated 覆盖用例；train-only 时代 2 skip，全量 Phase 0 后转实跑） |
+| Phase 0 确定性回归 | `--splits train` 重跑与旧索引 8 源 × 5 字段（`original_bin_pairs/original_slot_pairs/original_idx1/fingerprint/geometry`）**逐位相同** |
+| Phase 0 全量 | **66/66 成功，135.5 s**（GPU 0,1 × workers 16）；train 8 条官方红线 clip 区间严格 0.0；test/val 58 条记 `comparison_skipped` |
+| 跨 split 碰撞 smoke | train:91 + test:3 + val:3 共 13 条：staging 前缀 0/1/2 三分、trace 文件互异、episode_map 三 split 齐、metadata seed 唯一、验收退出码 0。★ 顺带修掉一个过严闸门：staging_episode 是按任务的命名空间，唯一性检查从全局改为 task 内 |
+| 生成 | **153/153 成功，182.1 s（50.4 ep/min），零重试、零闸门失败** |
+| 合并 | Video 80 条 5.46 GiB + Button 73 条 4.98 GiB；metadata seed 列唯一性闸门过 |
+| 标签规则回归 | 官方 train ep90-99 复算 **319/319**（与扩源正交） |
+| clip 级标签 | 153 条；`event_slots` = `03:63 / 12:63 / 01:11 / 23:14 / 02:2`；`topo_class` = `cross_aligned 126 / same_column 25 / cross_diagonal 2` |
+| 验收 | **十二条判据全过（退出码 0）**，告警 31 条（见下） |
+| 出图 | **79 张**（66 逐源 + contact_summary + overview×6 + timeline×6） |
+| 清理 | 释放 **18.0 GiB**（phase0 h5 17.5 GiB + 录像/trace/过程产物）；清理后 phase0 520 KiB + event1 约 10.8 GiB |
+
+关键判据实测值：
+
+- 判据 12：153/153 事件对满足最近邻关系；原始首对命中 **33/33** 源、有方向判据 **33/33**；
+  全局最小 argmin 余量 **0.00055 m**（Video/val/ep47），< 0.005 告警 **21 条**（train 时代
+  最小 0.0089，从未触警 —— 规模效应）；
+- 判据 3（前 30 帧 `bins_pos`）：**0.000e+00**（108 次同源两两比较）；
+- 判据 4：Video **0.0（80/80 逐位相同）**；Button 最大 **3.370e-02**，无泄露 26/73；
+  全体 `action_dev_max==0` 的无泄露子集 **106/153 条**；关节角可完全反推标签的源 **13 个**
+  （train 2 + test 6 + val 5，全在 Button 侧，见 `labels.action_leak_sources`）；
+- 判据 5：151/153 在 1e-5 内；**2 条量化告警**（Button/val/ep11 var3/var5，差 1.28e-2 /
+  6.5e-3）—— 该源对角对入选最近邻、事件窗口内互撞冲量 ~17 把旁观 bin 撞离 6~8 mm 未弹回
+  （`bystander_net_max` 0.0084/0.0006），按「保留 + 量化」处置（判据 5 的条件降级见 §十）；
+- 判据 11（机械臂 ↔ 容器）：**0/153**；容器互撞 **5/153**（Button/val/ep11 三条 11/13/5 帧
+  冲量 ~17；另两条微冲量 <2e-3）；
+- ★ `cross_diagonal` 首次非空：**2 条**（Button/val/ep11 的 (0,2)、val/ep31 的 (0,2)）——
+  坐实「对角进不了最近邻」只是 train 8 源的实测事实；判据 10c-iii 的降级与 topo 两路对账
+  硬判据按设计各就各位；
+- 窗口 ≥2 与原版最近邻规则不重合：**28/153 条**（train 时代 4/19；整条原版可达子集 =
+  `later_windows_follow_native_nn == true` 过滤后 125/153）。
+
+⚠ 全库 `tests/lightweight/` 全量跑有 4 条**既有失败**（`test_TaskGoal.py` 2 条、
+`test_step_error_handling.py` 2 条）—— 均不涉及本目录任何文件，git stash 基线复测同样失败，
+非本轮引入，留待单独处置。

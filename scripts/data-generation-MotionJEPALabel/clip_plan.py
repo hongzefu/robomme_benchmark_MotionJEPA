@@ -23,7 +23,11 @@
 （取最近**两个**再随机挑一个）是**全仓无调用点的死代码**，不得采信 —— 按 top-2 口径复算
 会得到每源 4~5 对，与真实机制不符。
 
-三重源筛选（缺一不可）：
+源范围（2026-08-19 扩源）：**train ep90-99 + test ep0-49 + val ep0-49 三个 split**。
+episode 号只在 split 内可比（test ep3 与 val ep3 是两条无关的 episode），因此 split 是
+源身份的一部分，全链路以 ``(split, task, episode)`` 为源键。
+
+三重源筛选（缺一不可，逐 split 独立执行）：
 
 1. **4-bin（medium/hard）**：easy 是 3-bin，且 ``region3_tri`` / ``region3_line`` 两套模板
    随 seed 二选一，类别体系（半程/全程 vs 腰/底边）与 4-bin 的（长边/短边/对角）互不相通，
@@ -31,17 +35,23 @@
 2. **swap_times ≥ 2**：VideoUnmaskSwap 的 demo 段长 = 最后一次 swap 结束（+0~4 帧），
    k=1 时 demo 只到 env step 114，clip 的后 30 帧会跌出 demo、机器人开始朝目标 bin 移动，
    「动作恒定」不再成立。
-3. **两 env 取共同源号**：让 Video / Button 的条数与难度构成完全对称。
-   注意共同源号 **不等于**共同布局 —— 两 env 的 seed 不同（如 ep91 是 14100 vs 16100），
-   bin 位置本就不同；对称性只体现在条数与难度构成上。
+3. **两 env 取共同源号（split 内）**：让 Video / Button 的条数与难度构成完全对称。
+   注意共同源号 **不等于**共同布局 —— 两 env 的 seed 不同（如 train ep91 是 14100 vs
+   16100），bin 位置本就不同；对称性只体现在条数与难度构成上。
 
-编号（派生 episode ↔ seed 一一对应，与旧链路同公式）：
+编号（派生 episode ↔ seed 一一对应）：
 
-* ``staging_episode = src_episode * VARIANT_BLOCK + variant_idx``
-* ``variant_seed    = env_seed    * VARIANT_BLOCK + variant_idx``
+* ``staging_episode = SPLIT_CODE[split] * SPLIT_BLOCK + src_episode * VARIANT_BLOCK + variant_idx``
+* ``variant_seed    = env_seed * VARIANT_BLOCK + variant_idx``（**刻意不编码 split**）
 
 环境实际播种用的是 env_seed（同源变体共享，这正是布局不变的保证）；variant_seed 只做
 唯一标识 —— 直接拿它去 gym.make 复现不了，须 env_seed + 注入。
+
+⚠ variant_seed 不编码 split 的理由：它的契约是「可逆到 env_seed」（``decode_variant_seed``），
+且作为官方格式 metadata 的 ``seed`` 字段落盘，掺入 split 码会同时破坏逆与语义。
+跨 split 唯一性来自三个 split 的 env_seed 数值域互不相交（train 万位、test 55-57 万、
+val 105-107 万）—— 这是**待断言的性质而非可依赖的构造**，由三重守卫看住：
+单测全组合断言、生成闸门唯一性断言、merge 闸门 metadata seed 列唯一性断言。
 """
 
 from __future__ import annotations
@@ -58,8 +68,21 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 EVAL_TASKS = ("VideoUnmaskSwap", "ButtonUnmaskSwap")
-# 候选源范围：MotionJEPA 的 eval 集（train ep90-99）。三重筛选后实际入选 {91,95,98,99}。
-CANDIDATE_EPISODES = tuple(range(90, 100))
+
+# split 全集与编码（train < test < val 的顺序同时是 merge 密集重编号的排序依据）。
+SPLITS = ("train", "test", "val")
+SPLIT_CODE = {"train": 0, "test": 1, "val": 2}
+# staging_episode 的 split 位基数。取 1e6 而非 1e5：train metadata 已扩到 ep≤399，
+# 1e6 给 src_episode < 1000 的余量，防止未来扩 episode 范围时 split 边界被静默串位。
+SPLIT_BLOCK = 1_000_000
+
+# 候选源范围（筛选前）：train 是 MotionJEPA 的 eval 集 ep90-99（三重筛选后恒入选
+# {91,95,98,99}）；test/val 各 50 条全量参与筛选（实测入选 15/14 源）。
+CANDIDATE_EPISODES_BY_SPLIT = {
+    "train": tuple(range(90, 100)),
+    "test": tuple(range(0, 50)),
+    "val": tuple(range(0, 50)),
+}
 
 # 与 VideoUnmaskSwap.py / ButtonUnmaskSwap.py 的 configs 类属性逐字一致
 # （单测用 AST 解析两份 env 源码校验此表，不在此 import 重型模块）。
@@ -122,9 +145,10 @@ TOPO_CROSS_DIAGONAL = "cross_diagonal"  # (0,2) (1,3) —— 跨列、异侧
 
 @dataclass(frozen=True)
 class SourceEpisode:
-    """一个源 episode 的全部静态事实（seed/difficulty 来自 train metadata）。"""
+    """一个源 episode 的全部静态事实（seed/difficulty 来自所属 split 的 metadata）。"""
 
     task: str
+    split: str
     episode: int
     env_seed: int
     difficulty: str
@@ -157,6 +181,7 @@ class ClipVariant:
     """
 
     task: str
+    split: str
     src_episode: int
     variant_idx: int
     env_seed: int
@@ -177,7 +202,7 @@ class ClipVariant:
 
     @property
     def staging_episode(self) -> int:
-        return staging_episode(self.src_episode, self.variant_idx)
+        return staging_episode(self.split, self.src_episode, self.variant_idx)
 
     @property
     def variant_seed(self) -> int:
@@ -212,25 +237,32 @@ class ClipVariant:
 # ── metadata 与 RNG 复算 ──────────────────────────────────────────────────────
 
 
-def load_train_record(task: str, episode: int, repo_root: Path = REPO_ROOT) -> tuple[int, str]:
-    """从 train metadata 读 (seed, difficulty)。
+def load_metadata_record(
+    task: str, episode: int, split: str, repo_root: Path = REPO_ROOT
+) -> tuple[int, str]:
+    """从所属 split 的 metadata 读 (seed, difficulty)。
 
-    **必须读表**：ep94/98 等 attempt≠0 的 seed 公式算不出（本轮入选源里 ButtonUnmaskSwap
-    的 ep98 就是 16801，而非规则值 16800）。
+    ``split`` **必填、无默认值** —— 给个默认 "train" 就等于给「漏传即静默读错 split」
+    开后门，而 seed 数值域恰好不相交会让错误静默传播很远。
+
+    **必须读表**：attempt≠0 的 seed 公式算不出（train Button ep98 是 16801 而非规则值
+    16800；val Button ep39/ep43 是 1073901/1074301）。
     """
+    if split not in SPLIT_CODE:
+        raise ValueError(f"未知 split：{split!r}（合法值 {SPLITS}）")
     path = (
         repo_root
         / "src"
         / "robomme"
         / "env_metadata"
-        / "train"
+        / split
         / f"record_dataset_{task}_metadata.json"
     )
     payload = json.loads(path.read_text(encoding="utf-8"))
     for record in payload["records"]:
         if int(record["episode"]) == episode:
             return int(record["seed"]), str(record["difficulty"])
-    raise KeyError(f"{task} 的 train metadata 里没有 episode {episode}")
+    raise KeyError(f"{task} 的 {split} metadata 里没有 episode {episode}")
 
 
 def compute_swap_times(env_seed: int, difficulty: str) -> int:
@@ -245,11 +277,14 @@ def compute_swap_times(env_seed: int, difficulty: str) -> int:
     )
 
 
-def source_episode(task: str, episode: int, repo_root: Path = REPO_ROOT) -> SourceEpisode:
-    env_seed, difficulty = load_train_record(task, episode, repo_root)
+def source_episode(
+    task: str, episode: int, split: str, repo_root: Path = REPO_ROOT
+) -> SourceEpisode:
+    env_seed, difficulty = load_metadata_record(task, episode, split, repo_root)
     config = ENV_CONFIGS[difficulty]
     return SourceEpisode(
         task=task,
+        split=split,
         episode=episode,
         env_seed=env_seed,
         difficulty=difficulty,
@@ -263,33 +298,67 @@ def source_episode(task: str, episode: int, repo_root: Path = REPO_ROOT) -> Sour
 
 def select_sources(
     tasks: Sequence[str] = EVAL_TASKS,
-    episodes: Iterable[int] = CANDIDATE_EPISODES,
+    splits: Sequence[str] = SPLITS,
+    episodes_by_split: Mapping[str, Iterable[int]] | None = None,
     repo_root: Path = REPO_ROOT,
     require_common: bool = True,
 ) -> dict[str, list[SourceEpisode]]:
-    """4-bin → k≥2 → 两 env 共同源号。返回 {task: [SourceEpisode]}（按 episode 升序）。"""
-    episodes = list(episodes)
-    per_task: dict[str, list[SourceEpisode]] = {}
-    for task in tasks:
-        kept = []
-        for episode in episodes:
-            src = source_episode(task, episode, repo_root)
-            if src.num_bins != REQUIRED_BINS:
-                continue
-            if src.swap_times < MIN_SWAP_TIMES:
-                continue
-            kept.append(src)
-        per_task[task] = kept
+    """4-bin → k≥2 → 两 env 共同源号（**split 内**）。
 
-    if require_common and len(per_task) > 1:
-        common = set.intersection(
-            *(set(src.episode for src in kept) for kept in per_task.values())
-        )
-        per_task = {
-            task: [src for src in kept if src.episode in common]
-            for task, kept in per_task.items()
-        }
+    返回 {task: [SourceEpisode]}，按 ``(SPLIT_CODE[split], episode)`` 升序 ——
+    与 merge 的密集重编号排序一致（train < test < val）。
+
+    共同源号只在 split 内取交集：episode 号只在 split 内可比，test ep3 与 val ep3
+    是两条无关的 episode，跨 split 求交没有意义。
+    """
+    if episodes_by_split is None:
+        episodes_by_split = CANDIDATE_EPISODES_BY_SPLIT
+    per_task: dict[str, list[SourceEpisode]] = {task: [] for task in tasks}
+    for split in splits:
+        if split not in SPLIT_CODE:
+            raise ValueError(f"未知 split：{split!r}（合法值 {SPLITS}）")
+        split_kept: dict[str, list[SourceEpisode]] = {}
+        for task in tasks:
+            kept = []
+            for episode in episodes_by_split[split]:
+                src = source_episode(task, episode, split, repo_root)
+                if src.num_bins != REQUIRED_BINS:
+                    continue
+                if src.swap_times < MIN_SWAP_TIMES:
+                    continue
+                kept.append(src)
+            split_kept[task] = kept
+        if require_common and len(split_kept) > 1:
+            common = set.intersection(
+                *(set(src.episode for src in kept) for kept in split_kept.values())
+            )
+            split_kept = {
+                task: [src for src in kept if src.episode in common]
+                for task, kept in split_kept.items()
+            }
+        for task in tasks:
+            per_task[task].extend(split_kept[task])
+    for task in tasks:
+        per_task[task].sort(key=lambda src: (SPLIT_CODE[src.split], src.episode))
     return per_task
+
+
+def select_sources_by_split(
+    tasks: Sequence[str] = EVAL_TASKS,
+    splits: Sequence[str] = SPLITS,
+    episodes_by_split: Mapping[str, Iterable[int]] | None = None,
+    repo_root: Path = REPO_ROOT,
+    require_common: bool = True,
+) -> dict[str, dict[str, list[SourceEpisode]]]:
+    """同 ``select_sources``，但按 {split: {task: [...]}} 嵌套返回（报表与单测用）。"""
+    flat = select_sources(tasks, splits, episodes_by_split, repo_root, require_common)
+    nested: dict[str, dict[str, list[SourceEpisode]]] = {
+        split: {task: [] for task in tasks} for split in splits
+    }
+    for task, sources in flat.items():
+        for src in sources:
+            nested[src.split][task].append(src)
+    return nested
 
 
 # ── 枚举与槽位换算 ────────────────────────────────────────────────────────────
@@ -402,17 +471,20 @@ def nearest_neighbor_margin(slot_xy: Sequence[Sequence[float]]) -> list[float]:
     return margins
 
 
-def load_slot_xy_index(path: Path) -> dict[tuple[str, int], list[list[float]]]:
-    """从 Phase 0 的 ``original_index.json`` 读出 {(task, episode): slot_xy}。
+def load_slot_xy_index(path: Path) -> dict[tuple[str, str, int], list[list[float]]]:
+    """从 Phase 0 的 ``original_index.json`` 读出 {(split, task, episode): slot_xy}。
 
     只解析形状，不做任何几何判断 —— 供 ``plan_table`` 的 CLI 与单测共用。
+    缺 ``split`` 字段的记录（旧版单 split 索引）直接跳过 —— 旧索引对新链路等同于
+    「几何不可用」，绝不能默认回填 "train" 让旧数据冒充新真值。
     """
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
-    out: dict[tuple[str, int], list[list[float]]] = {}
+    out: dict[tuple[str, str, int], list[list[float]]] = {}
     for record in payload.get("records", []):
         slot_xy = (record.get("geometry") or {}).get("slot_xy")
-        if slot_xy:
-            out[(str(record["task"]), int(record["episode"]))] = [
+        split = record.get("split")
+        if slot_xy and split:
+            out[(str(split), str(record["task"]), int(record["episode"]))] = [
                 [float(value) for value in row] for row in slot_xy
             ]
     return out
@@ -482,21 +554,20 @@ def variant_specs(
     fail-loud：原始首对必须落在合法集合内（原版 idx2 本就是最近邻回填，理应恒成立）。
     一旦不成立，说明本模块的最近邻复刻与 env 实际行为脱节，必须停机排查。
     """
+    label = f"{src.task}/{src.split}/ep{src.episode}"
     if len(original_bin_pairs) != src.swap_times:
         raise ValueError(
-            f"{src.task}/ep{src.episode}: 原始序列 {len(original_bin_pairs)} 段 "
-            f"≠ swap_times {src.swap_times}"
+            f"{label}: 原始序列 {len(original_bin_pairs)} 段 ≠ swap_times {src.swap_times}"
         )
     if len(slot_xy) != src.num_bins:
         raise ValueError(
-            f"{src.task}/ep{src.episode}: slot_xy 有 {len(slot_xy)} 个槽位 "
-            f"≠ num_bins {src.num_bins}"
+            f"{label}: slot_xy 有 {len(slot_xy)} 个槽位 ≠ num_bins {src.num_bins}"
         )
     legal = nearest_neighbor_pairs(slot_xy)
     original_slots = slot_pairs_from_bin_pairs(original_bin_pairs, src.num_bins)
     if original_slots[0] not in legal:
         raise ValueError(
-            f"{src.task}/ep{src.episode}: 原始首对 {original_slots[0]} 不在最近邻合法集合 "
+            f"{label}: 原始首对 {original_slots[0]} 不在最近邻合法集合 "
             f"{legal} 内 —— 最近邻复刻与 env 实际行为脱节，停机排查。"
             f"各槽位 argmin 余量 ={[round(m, 5) for m in nearest_neighbor_margin(slot_xy)]}"
         )
@@ -508,6 +579,7 @@ def variant_specs(
         specs.append(
             ClipVariant(
                 task=src.task,
+                split=src.split,
                 src_episode=src.episode,
                 variant_idx=idx,
                 env_seed=src.env_seed,
@@ -555,10 +627,17 @@ def nominal_distance_video(pair: tuple[int, int]) -> float:
 # ── 编号与帧号换算 ────────────────────────────────────────────────────────────
 
 
-def staging_episode(src_episode: int, variant_idx: int) -> int:
+def staging_episode(split: str, src_episode: int, variant_idx: int) -> int:
+    """split 位 + episode 位 + 变体位的三段编码；三段各自带范围守卫 fail-loud。"""
+    if split not in SPLIT_CODE:
+        raise ValueError(f"未知 split：{split!r}（合法值 {SPLITS}）")
     if not 0 <= variant_idx < VARIANT_BLOCK:
         raise ValueError(f"variant_idx 越界：{variant_idx}")
-    return src_episode * VARIANT_BLOCK + variant_idx
+    if not 0 <= src_episode < SPLIT_BLOCK // VARIANT_BLOCK:
+        raise ValueError(
+            f"src_episode 越界：{src_episode}（须 < {SPLIT_BLOCK // VARIANT_BLOCK}）"
+        )
+    return SPLIT_CODE[split] * SPLIT_BLOCK + src_episode * VARIANT_BLOCK + variant_idx
 
 
 def variant_seed(env_seed: int, variant_idx: int) -> int:
@@ -567,8 +646,13 @@ def variant_seed(env_seed: int, variant_idx: int) -> int:
     return env_seed * VARIANT_BLOCK + variant_idx
 
 
-def decode_staging_episode(staging: int) -> tuple[int, int]:
-    return staging // VARIANT_BLOCK, staging % VARIANT_BLOCK
+def decode_staging_episode(staging: int) -> tuple[str, int, int]:
+    code = staging // SPLIT_BLOCK
+    for split, split_code in SPLIT_CODE.items():
+        if split_code == code:
+            remainder = staging % SPLIT_BLOCK
+            return split, remainder // VARIANT_BLOCK, remainder % VARIANT_BLOCK
+    raise ValueError(f"staging_episode {staging} 的 split 位 {code} 不合法")
 
 
 def decode_variant_seed(seed: int) -> tuple[int, int]:
@@ -617,21 +701,22 @@ def signature_of(slot_pairs: Sequence[tuple[int, int]]) -> str:
 
 def plan_table(
     tasks: Sequence[str] = EVAL_TASKS,
-    episodes: Iterable[int] = CANDIDATE_EPISODES,
+    splits: Sequence[str] = SPLITS,
+    episodes_by_split: Mapping[str, Iterable[int]] | None = None,
     repo_root: Path = REPO_ROOT,
     require_common: bool = True,
-    geometry: Mapping[tuple[str, int], Sequence[Sequence[float]]] | None = None,
+    geometry: Mapping[tuple[str, str, int], Sequence[Sequence[float]]] | None = None,
 ) -> dict:
-    """筛选后的计划表：逐 episode 行 + 总计，供 --dry-run 与单测对账。
+    """筛选后的计划表：逐 (split, episode) 行 + 总计，供 --dry-run 与单测对账。
 
-    ``geometry``（{(task, episode): slot_xy}）决定这张表是真值还是上界：
+    ``geometry``（{(split, task, episode): slot_xy}）决定这张表是真值还是上界：
 
     * **给了几何**：``variant_count`` / ``total`` 是最近邻约束下的**真实**变体数；
     * **没给几何**：真实变体数**算不出来**（它依赖实测布局）。此时 ``variant_count`` 与
       ``total`` 一律为 ``None``，只给 ``*_upper_bound``。**绝不返回一个看起来像真值的
       C(4,2) 全枚举总数** —— 那正是本轮要消灭的旧口径。
     """
-    selected = select_sources(tasks, episodes, repo_root, require_common)
+    selected = select_sources(tasks, splits, episodes_by_split, repo_root, require_common)
     rows = []
     total = 0
     total_upper = 0
@@ -639,9 +724,12 @@ def plan_table(
         for src in selected[task]:
             upper = src.num_pairs_upper_bound
             total_upper += upper
-            slot_xy = None if geometry is None else geometry.get((task, src.episode))
+            slot_xy = (
+                None if geometry is None else geometry.get((src.split, task, src.episode))
+            )
             row = {
                 "task": task,
+                "split": src.split,
                 "episode": src.episode,
                 "env_seed": src.env_seed,
                 "difficulty": src.difficulty,
@@ -674,19 +762,47 @@ def plan_table(
     }
 
 
+def add_source_selection_args(parser: argparse.ArgumentParser) -> None:
+    """probe/generate/plan 三个 CLI 共用的源选择参数（split 化后集中定义一处）。"""
+    parser.add_argument(
+        "--splits",
+        default=",".join(SPLITS),
+        help="逗号分隔的 split 集合（train/test/val）",
+    )
+    for split in SPLITS:
+        parser.add_argument(
+            f"--episodes-{split}",
+            default=",".join(str(item) for item in CANDIDATE_EPISODES_BY_SPLIT[split]),
+            help=f"{split} 的候选源 episode 号（筛选前）",
+        )
+
+
+def parse_source_selection(args: argparse.Namespace) -> tuple[tuple[str, ...], dict[str, tuple[int, ...]]]:
+    """把 CLI 的 --splits / --episodes-* 解析成 (splits, episodes_by_split)。"""
+    splits = tuple(item.strip() for item in args.splits.split(",") if item.strip())
+    for split in splits:
+        if split not in SPLIT_CODE:
+            raise SystemExit(f"未知 split：{split!r}（合法值 {SPLITS}）")
+    episodes_by_split = {
+        split: tuple(
+            int(item)
+            for item in getattr(args, f"episodes_{split}").split(",")
+            if item.strip()
+        )
+        for split in splits
+    }
+    return splits, episodes_by_split
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="打印 clip 变体计划（不生成任何数据）")
     parser.add_argument("--tasks", default=",".join(EVAL_TASKS), help="逗号分隔的任务名")
-    parser.add_argument(
-        "--episodes",
-        default=",".join(str(item) for item in CANDIDATE_EPISODES),
-        help="逗号分隔的候选源 episode 号（筛选前）",
-    )
+    add_source_selection_args(parser)
     parser.add_argument(
         "--no-common",
         dest="require_common",
         action="store_false",
-        help="不要求两 env 取共同源号（默认要求）",
+        help="不要求两 env 取共同源号（默认要求，split 内取交集）",
     )
     parser.add_argument(
         "--original-index",
@@ -697,10 +813,12 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     index_path = Path(args.original_index)
     geometry = load_slot_xy_index(index_path) if index_path.exists() else None
+    splits, episodes_by_split = parse_source_selection(args)
 
     table = plan_table(
         tasks=tuple(item.strip() for item in args.tasks.split(",") if item.strip()),
-        episodes=tuple(int(item) for item in args.episodes.split(",") if item.strip()),
+        splits=splits,
+        episodes_by_split=episodes_by_split,
         require_common=args.require_common,
         geometry=geometry,
     )
@@ -710,7 +828,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     has_geometry = table["geometry_available"]
     print(
-        f"{'task':<18} {'ep':>4} {'env_seed':>9} {'难度':<7} {'bin':>3} {'k':>2} "
+        f"{'task':<18} {'split':<6} {'ep':>4} {'env_seed':>9} {'难度':<7} {'bin':>3} {'k':>2} "
         f"{'变体数':>6}  {'合法对':<14} {'argmin余量':>10}"
     )
     for row in table["rows"]:
@@ -718,7 +836,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         legal = row["legal_pairs"]
         margin = row["nn_margin_min"]
         print(
-            f"{row['task']:<18} {row['episode']:>4} {row['env_seed']:>9} "
+            f"{row['task']:<18} {row['split']:<6} {row['episode']:>4} {row['env_seed']:>9} "
             f"{row['difficulty']:<7} {row['num_bins']:>3} {row['swap_times']:>2} "
             f"{(str(count) if count is not None else '≤' + str(row['variant_count_upper_bound'])):>6}"
             f"  {(','.join(legal) if legal else '—'):<14} "

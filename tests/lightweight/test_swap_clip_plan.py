@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-"""轻量测试：单事件 swap clip 的源筛选/枚举/槽位换算/编号，与 env 源码及 train metadata 对账。
+"""轻量测试：单事件 swap clip 的源筛选/枚举/槽位换算/编号，与 env 源码及各 split metadata 对账。
 
 不跑任何 rollout，纯函数层面校验，秒级完成。目的是在花掉小时级 rollout 之前就排除
 swap_times 复算、难度→bin 数映射、region4 模板、槽位换算、编号公式写错。
+
+源范围（2026-08-19 扩源）：train ep90-99 + test ep0-49 + val ep0-49 三个 split，源键为
+``(split, task, episode)``。metadata 文件（``src/robomme/env_metadata/{split}/``）是被 git
+跟踪的仓库源码、不是数据集产物，lightweight 读它不违反 AGENTS.md 规则 3。
 
 本轮宗旨是「除了 bin 的初始位置和第一次 swap 的排列组合，其他全部保持一致」，且第一次
 swap 的可选对受**最近邻约束**（idx2 恒为 idx1 的严格最近邻，见 clip_plan 模块 docstring）。
@@ -14,8 +18,10 @@ swap 的可选对受**最近邻约束**（idx2 恒为 idx1 的严格最近邻，
 * ``test_is_original_reproduces_original_bin_pairs``：is_original 变体的注入序列退化为
   原始 bin 对序列 —— 仍逐位复现官方 episode。
 
-几何常量（``MEASURED_SLOT_XY`` / ``MEASURED_ORIGINAL_BIN_PAIRS``）内嵌在本文件里，
-**不读 outputs/**，保证 lightweight 套件在任何机器上都能跑（AGENTS.md 规则 3）。
+实测几何常量（``MEASURED_SLOT_XY_TRAIN`` / ``MEASURED_ORIGINAL_BIN_PAIRS_TRAIN``）内嵌在
+本文件里且**只覆盖 train 的 8 个历史已验证源** —— 它们是回归锚点，不是数据集规模的真值来源。
+33 源全量覆盖由 ``test_phase0_index_covers_all_selected_sources`` 做（有 Phase 0 产物才跑、
+不硬编码总数）；本文件**不读 outputs/** 之外的例外仅此一条 artifact-gated 用例（无产物即 skip）。
 
 运行（使用 uv）：
     uv run python -m pytest tests/lightweight/test_swap_clip_plan.py -q
@@ -38,7 +44,7 @@ REPO_ROOT = find_repo_root(__file__)
 sys.path.insert(0, str(REPO_ROOT / "scripts" / "data-generation-MotionJEPALabel"))
 
 from clip_plan import (  # noqa: E402
-    CANDIDATE_EPISODES,
+    CANDIDATE_EPISODES_BY_SPLIT,
     CLIP_END,
     CLIP_LEN,
     CLIP_MARGIN,
@@ -50,6 +56,9 @@ from clip_plan import (  # noqa: E402
     REGION_ROTATED,
     REQUIRED_BINS,
     SLOT_ROLE,
+    SPLIT_BLOCK,
+    SPLIT_CODE,
+    SPLITS,
     TOPO_CROSS_ALIGNED,
     TOPO_CROSS_DIAGONAL,
     TOPO_SAME_COLUMN,
@@ -69,6 +78,7 @@ from clip_plan import (  # noqa: E402
     pair_index,
     plan_table,
     select_sources,
+    select_sources_by_split,
     signature_of,
     slot_pairs_from_bin_pairs,
     source_episode,
@@ -177,131 +187,202 @@ def test_swap_window_constants_match_source(task: str) -> None:
     assert "64+50*2,64+50*3)" in squeezed
 
 
-# ── 与 train metadata 对账：入选源的 seed 与难度 ──────────────────────────────
+# ── 与各 split metadata 对账：入选源的 seed 与难度 ────────────────────────────
 
-# 三重筛选（4-bin → k≥2 → 两 env 共同源号）后的最终源；ButtonUnmaskSwap/ep98 的
-# seed 是 16801 而非规则值 16800（历史 attempt 探针）——这正是必须读表的原因。
+# 三重筛选（4-bin → k≥2 → split 内两 env 共同源号）后的最终源号；顺序即
+# (SPLIT_CODE, episode) 排序。33 源 × 2 env = 66 个源单元。
+EXPECTED_SOURCES_BY_SPLIT = {
+    "train": [91, 95, 98, 99],
+    "test": [3, 6, 7, 11, 15, 19, 23, 27, 30, 31, 35, 39, 43, 46, 47],
+    "val": [3, 6, 7, 11, 14, 15, 19, 23, 27, 31, 35, 39, 43, 47],
+}
+
+# seed/难度/bin/k 锚点：train 全 8 行（ButtonUnmaskSwap/ep98 的 seed 是 16801 而非规则值
+# 16800，历史 attempt 探针 —— 这正是必须读表的原因），另钉 3 行 test/val 证明 split 路径
+# 段真的在被使用（val Button ep39/ep43 也是 attempt 尾号 seed：1073901/1074301）。
+# 66 行全钉等于抄一遍 metadata 文件、什么都测不到，不做。
 EXPECTED_SOURCE = {
-    ("VideoUnmaskSwap", 91): (14100, "hard", 4, 2),
-    ("VideoUnmaskSwap", 95): (14500, "hard", 4, 2),
-    ("VideoUnmaskSwap", 98): (14800, "medium", 4, 2),
-    ("VideoUnmaskSwap", 99): (14900, "hard", 4, 2),
-    ("ButtonUnmaskSwap", 91): (16100, "hard", 4, 3),
-    ("ButtonUnmaskSwap", 95): (16500, "hard", 4, 2),
-    ("ButtonUnmaskSwap", 98): (16801, "medium", 4, 2),
-    ("ButtonUnmaskSwap", 99): (16900, "hard", 4, 3),
+    ("train", "VideoUnmaskSwap", 91): (14100, "hard", 4, 2),
+    ("train", "VideoUnmaskSwap", 95): (14500, "hard", 4, 2),
+    ("train", "VideoUnmaskSwap", 98): (14800, "medium", 4, 2),
+    ("train", "VideoUnmaskSwap", 99): (14900, "hard", 4, 2),
+    ("train", "ButtonUnmaskSwap", 91): (16100, "hard", 4, 3),
+    ("train", "ButtonUnmaskSwap", 95): (16500, "hard", 4, 2),
+    ("train", "ButtonUnmaskSwap", 98): (16801, "medium", 4, 2),
+    ("train", "ButtonUnmaskSwap", 99): (16900, "hard", 4, 3),
+    ("test", "VideoUnmaskSwap", 3): (550300, "hard", 4, 3),
+    ("val", "ButtonUnmaskSwap", 39): (1073901, "hard", 4, 3),
+    ("val", "ButtonUnmaskSwap", 43): (1074301, "hard", 4, 2),
 }
 
 
 @pytest.mark.parametrize("key", sorted(EXPECTED_SOURCE))
-def test_source_episode_facts(key: tuple[str, int]) -> None:
-    task, episode = key
+def test_source_episode_facts(key: tuple[str, str, int]) -> None:
+    split, task, episode = key
     env_seed, difficulty, num_bins, swap_times = EXPECTED_SOURCE[key]
-    src = source_episode(task, episode)
+    src = source_episode(task, episode, split)
+    assert src.split == split
     assert src.env_seed == env_seed
     assert src.difficulty == difficulty
     assert src.num_bins == num_bins
     assert src.swap_times == swap_times
 
 
+def test_load_metadata_record_requires_valid_split() -> None:
+    """split 必填且必须合法 —— 防「漏传即静默读错 split」。"""
+    with pytest.raises(TypeError):
+        source_episode("VideoUnmaskSwap", 91)  # 不给 split 直接 TypeError
+    with pytest.raises(ValueError, match="未知 split"):
+        source_episode("VideoUnmaskSwap", 91, "heldout")
+
+
 # ── 源三重筛选与规模 ─────────────────────────────────────────────────────────
 
 
-def test_select_sources_is_exactly_91_95_98_99() -> None:
+def test_select_sources_matches_expected_per_split() -> None:
+    nested = select_sources_by_split()
+    for split, expected in EXPECTED_SOURCES_BY_SPLIT.items():
+        for task in EVAL_TASKS:
+            got = [src.episode for src in nested[split][task]]
+            assert got == expected, f"{task}/{split}: 筛选结果 {got} ≠ {expected}"
+    assert sum(len(v) for v in EXPECTED_SOURCES_BY_SPLIT.values()) == 33
+
+
+def test_select_sources_flat_order_is_split_then_episode() -> None:
+    """扁平结果按 (SPLIT_CODE, episode) 升序 —— 与 merge 的密集重编号排序一致。"""
     selected = select_sources()
     for task in EVAL_TASKS:
-        assert [src.episode for src in selected[task]] == [91, 95, 98, 99], (
-            f"{task}: 筛选结果 {[s.episode for s in selected[task]]} ≠ [91,95,98,99]"
-        )
+        keys = [(SPLIT_CODE[src.split], src.episode) for src in selected[task]]
+        assert keys == sorted(keys)
+        assert len(selected[task]) == 33
 
 
 def test_filters_actually_bite() -> None:
-    """逐条验证三重筛选各自剔掉了谁 —— 防止筛选条件写反还恰好凑对总数。"""
+    """逐条验证三重筛选各自剔掉了谁 —— 防止筛选条件写反还恰好凑对总数。
+
+    train 侧保留历史精确断言；test/val 侧用计算式断言（非空剔除、交集真变小），
+    不硬编码 50 条的逐条清单。
+    """
     unfiltered = {
-        task: [source_episode(task, ep) for ep in CANDIDATE_EPISODES] for task in EVAL_TASKS
+        split: {
+            task: [
+                source_episode(task, ep, split)
+                for ep in CANDIDATE_EPISODES_BY_SPLIT[split]
+            ]
+            for task in EVAL_TASKS
+        }
+        for split in SPLITS
     }
-    # 4-bin 门槛剔掉全部 easy
-    assert all(
-        src.num_bins == 3 for src in unfiltered["VideoUnmaskSwap"] if src.difficulty == "easy"
-    )
-    # k≥2 门槛剔掉 Video 的 ep90/92/94/96
-    dropped_video = sorted(
+    for split in SPLITS:
+        # 4-bin 门槛剔掉全部 easy（easy 恒 3-bin）
+        for task in EVAL_TASKS:
+            assert all(
+                src.num_bins == 3
+                for src in unfiltered[split][task]
+                if src.difficulty == "easy"
+            )
+        # k≥2 门槛在每个 split 都真的剔掉了 4-bin 源（medium 才可能 k=1）
+        dropped = [
+            src.episode
+            for src in unfiltered[split]["VideoUnmaskSwap"]
+            if src.num_bins == REQUIRED_BINS and src.swap_times < MIN_SWAP_TIMES
+        ]
+        assert dropped, f"{split}: k≥2 门槛没剔掉任何源，筛选条件可疑"
+    # train 精确回归：k≥2 剔掉 Video 的 ep90/94，共同源号剔掉 Button 独有的 ep90
+    assert sorted(
         src.episode
-        for src in unfiltered["VideoUnmaskSwap"]
+        for src in unfiltered["train"]["VideoUnmaskSwap"]
         if src.num_bins == REQUIRED_BINS and src.swap_times < MIN_SWAP_TIMES
-    )
-    assert dropped_video == [90, 94]
-    # 共同源号门槛剔掉 Button 独有的 ep90
-    per_task = select_sources(require_common=False)
-    assert [src.episode for src in per_task["ButtonUnmaskSwap"]] == [90, 91, 95, 98, 99]
-    assert [src.episode for src in per_task["VideoUnmaskSwap"]] == [91, 95, 98, 99]
+    ) == [90, 94]
+    nested_loose = select_sources_by_split(require_common=False)
+    assert [src.episode for src in nested_loose["train"]["ButtonUnmaskSwap"]] == [90, 91, 95, 98, 99]
+    assert [src.episode for src in nested_loose["train"]["VideoUnmaskSwap"]] == [91, 95, 98, 99]
+    # test/val：共同源号门槛真的在起作用（并集严格大于交集）
+    nested_strict = select_sources_by_split()
+    for split in ("test", "val"):
+        loose_union = set(
+            src.episode for task in EVAL_TASKS for src in nested_loose[split][task]
+        )
+        strict_common = set(
+            src.episode for src in nested_strict[split]["VideoUnmaskSwap"]
+        )
+        assert strict_common < loose_union, f"{split}: 共同源号门槛没剔掉任何源"
 
 
-# ── Phase 0 实测几何（内嵌常量，不读 outputs/）─────────────────────────────
+# ── Phase 0 实测几何（内嵌常量，不读 outputs/；**train-only 回归锚点**）────────
 #
-# 8 个入选源 reset 后的槽位 xy，取自 Phase 0 控制跑的 geometry.slot_xy。布局只由 env_seed
-# 决定、逐位可复现，所以可以安全地当常量钉在这里；与实际 Phase 0 产物的对拍见
-# test_measured_layouts_match_phase0_index（有产物才跑）。
-MEASURED_SLOT_XY = {
-    ("ButtonUnmaskSwap", 91): ((0.018860617652535439, -0.032360583543777466), (0.037674009799957275, 0.14158430695533752), (0.13856323063373566, 0.16328300535678864), (0.1379207968711853, -0.045993141829967499)),
-    ("ButtonUnmaskSwap", 95): ((0.0028231116011738777, -0.014349059201776981), (-0.026936819776892662, 0.15235261619091034), (0.1182674914598465, 0.19348432123661041), (0.1070883646607399, -0.009289667010307312)),
-    ("ButtonUnmaskSwap", 98): ((0.038808993995189667, -0.016091369092464447), (0.0010299879359081388, 0.22210311889648438), (0.12315738946199417, 0.13342700898647308), (0.069320403039455414, -0.13129152357578278)),
-    ("ButtonUnmaskSwap", 99): ((-0.028430763632059097, -0.074804984033107758), (0.033607639372348785, 0.18174615502357483), (0.11400412768125534, 0.1101541668176651), (0.096989408135414124, -0.11219239234924316)),
-    ("VideoUnmaskSwap", 91): ((0.081310369074344635, 0.065327830612659454), (-0.053857926279306412, -0.076493784785270691), (-0.15639244019985199, -0.022627763450145721), (-0.026895113289356232, 0.11353651434183121)),
-    ("VideoUnmaskSwap", 95): ((-0.037683755159378052, 0.13056036829948425), (0.069486118853092194, 0.019286032766103745), (0.0034428178332746029, -0.13628381490707397), (-0.16626280546188354, -0.0019962657243013382)),
-    ("VideoUnmaskSwap", 98): ((0.034369964152574539, 0.1008264422416687), (0.085645034909248352, -0.12671147286891937), (-0.13782745599746704, -0.10730509459972382), (-0.13243746757507324, 0.097971305251121521)),
-    ("VideoUnmaskSwap", 99): ((-0.054652493447065353, 0.059143904596567154), (0.10435368120670319, 0.061266347765922546), (0.06396271288394928, -0.12674188613891602), (-0.092229895293712616, -0.037124276161193848)),
+# train 8 个历史已验证源 reset 后的槽位 xy，取自 Phase 0 控制跑的 geometry.slot_xy。
+# 布局只由 env_seed 决定、逐位可复现，所以可以安全地当常量钉在这里；与实际 Phase 0
+# 产物的对拍见 test_measured_layouts_match_phase0_index（有产物才跑）。
+# ⚠ 刻意**不**扩到 test/val 的 25 个新源：那些值只在 Phase 0 之后才存在，抄进来就成了
+# 产物的转录而非独立校验，且每次重跑 Phase 0 都要重贴 —— 33 源全量覆盖由
+# test_phase0_index_covers_all_selected_sources 现算（不硬编码总数）。
+MEASURED_SLOT_XY_TRAIN = {
+    ("train", "ButtonUnmaskSwap", 91): ((0.018860617652535439, -0.032360583543777466), (0.037674009799957275, 0.14158430695533752), (0.13856323063373566, 0.16328300535678864), (0.1379207968711853, -0.045993141829967499)),
+    ("train", "ButtonUnmaskSwap", 95): ((0.0028231116011738777, -0.014349059201776981), (-0.026936819776892662, 0.15235261619091034), (0.1182674914598465, 0.19348432123661041), (0.1070883646607399, -0.009289667010307312)),
+    ("train", "ButtonUnmaskSwap", 98): ((0.038808993995189667, -0.016091369092464447), (0.0010299879359081388, 0.22210311889648438), (0.12315738946199417, 0.13342700898647308), (0.069320403039455414, -0.13129152357578278)),
+    ("train", "ButtonUnmaskSwap", 99): ((-0.028430763632059097, -0.074804984033107758), (0.033607639372348785, 0.18174615502357483), (0.11400412768125534, 0.1101541668176651), (0.096989408135414124, -0.11219239234924316)),
+    ("train", "VideoUnmaskSwap", 91): ((0.081310369074344635, 0.065327830612659454), (-0.053857926279306412, -0.076493784785270691), (-0.15639244019985199, -0.022627763450145721), (-0.026895113289356232, 0.11353651434183121)),
+    ("train", "VideoUnmaskSwap", 95): ((-0.037683755159378052, 0.13056036829948425), (0.069486118853092194, 0.019286032766103745), (0.0034428178332746029, -0.13628381490707397), (-0.16626280546188354, -0.0019962657243013382)),
+    ("train", "VideoUnmaskSwap", 98): ((0.034369964152574539, 0.1008264422416687), (0.085645034909248352, -0.12671147286891937), (-0.13782745599746704, -0.10730509459972382), (-0.13243746757507324, 0.097971305251121521)),
+    ("train", "VideoUnmaskSwap", 99): ((-0.054652493447065353, 0.059143904596567154), (0.10435368120670319, 0.061266347765922546), (0.06396271288394928, -0.12674188613891602), (-0.092229895293712616, -0.037124276161193848)),
 }
 
 # 各源 Phase 0 实测的原始 bin 对序列（窗口 ≥2 的 idx2 只能实跑读回，静态算不出）
-MEASURED_ORIGINAL_BIN_PAIRS = {
-    ("ButtonUnmaskSwap", 91): ((1, 2), (1, 2), (0, 3)),
-    ("ButtonUnmaskSwap", 95): ((0, 3), (1, 2)),
-    ("ButtonUnmaskSwap", 98): ((1, 2), (1, 2)),
-    ("ButtonUnmaskSwap", 99): ((0, 3), (1, 2), (0, 3)),
-    ("VideoUnmaskSwap", 91): ((0, 3), (1, 2)),
-    ("VideoUnmaskSwap", 95): ((0, 1), (0, 2)),
-    ("VideoUnmaskSwap", 98): ((0, 3), (1, 2)),
-    ("VideoUnmaskSwap", 99): ((0, 1), (0, 1)),
+MEASURED_ORIGINAL_BIN_PAIRS_TRAIN = {
+    ("train", "ButtonUnmaskSwap", 91): ((1, 2), (1, 2), (0, 3)),
+    ("train", "ButtonUnmaskSwap", 95): ((0, 3), (1, 2)),
+    ("train", "ButtonUnmaskSwap", 98): ((1, 2), (1, 2)),
+    ("train", "ButtonUnmaskSwap", 99): ((0, 3), (1, 2), (0, 3)),
+    ("train", "VideoUnmaskSwap", 91): ((0, 3), (1, 2)),
+    ("train", "VideoUnmaskSwap", 95): ((0, 1), (0, 2)),
+    ("train", "VideoUnmaskSwap", 98): ((0, 3), (1, 2)),
+    ("train", "VideoUnmaskSwap", 99): ((0, 1), (0, 1)),
 }
 
 # 由上面几何按严格 argmin 推出的合法对集合 —— 本轮数据集的变体空间真值
-EXPECTED_LEGAL_PAIRS = {
-    ("ButtonUnmaskSwap", 91): [(0, 3), (1, 2)],
-    ("ButtonUnmaskSwap", 95): [(0, 3), (1, 2)],
-    ("ButtonUnmaskSwap", 98): [(0, 3), (1, 2)],
-    ("ButtonUnmaskSwap", 99): [(0, 3), (1, 2)],
-    ("VideoUnmaskSwap", 91): [(0, 3), (1, 2)],
-    ("VideoUnmaskSwap", 95): [(0, 1), (0, 3), (1, 2)],
-    ("VideoUnmaskSwap", 98): [(0, 3), (1, 2), (2, 3)],
-    ("VideoUnmaskSwap", 99): [(0, 1), (0, 3), (2, 3)],
+EXPECTED_LEGAL_PAIRS_TRAIN = {
+    ("train", "ButtonUnmaskSwap", 91): [(0, 3), (1, 2)],
+    ("train", "ButtonUnmaskSwap", 95): [(0, 3), (1, 2)],
+    ("train", "ButtonUnmaskSwap", 98): [(0, 3), (1, 2)],
+    ("train", "ButtonUnmaskSwap", 99): [(0, 3), (1, 2)],
+    ("train", "VideoUnmaskSwap", 91): [(0, 3), (1, 2)],
+    ("train", "VideoUnmaskSwap", 95): [(0, 1), (0, 3), (1, 2)],
+    ("train", "VideoUnmaskSwap", 98): [(0, 3), (1, 2), (2, 3)],
+    ("train", "VideoUnmaskSwap", 99): [(0, 1), (0, 3), (2, 3)],
 }
 
-EXPECTED_TOTAL_CLIPS = 19
+# train 子集的历史真值（回归锚点）：Video 11 + Button 8 = 19 条
+EXPECTED_TRAIN_CLIPS = 19
 
 
-def test_plan_table_with_geometry_totals_19() -> None:
-    table = plan_table(geometry=MEASURED_SLOT_XY)
+def test_plan_table_train_subset_still_totals_19() -> None:
+    """train 子集（历史 8 源）的规模回归：扩源不得改变 train 侧的枚举结果。"""
+    table = plan_table(splits=("train",), geometry=MEASURED_SLOT_XY_TRAIN)
     assert table["geometry_available"] is True
     per_task: dict[str, int] = {task: 0 for task in EVAL_TASKS}
     for row in table["rows"]:
+        assert row["split"] == "train"
         per_task[row["task"]] += row["variant_count"]
     assert per_task["VideoUnmaskSwap"] == 11
     assert per_task["ButtonUnmaskSwap"] == 8
-    assert table["total"] == EXPECTED_TOTAL_CLIPS
+    assert table["total"] == EXPECTED_TRAIN_CLIPS
     # 每源 2~3 条，由该源布局的最近邻结构决定（不再是恒 6）
     assert [row["variant_count"] for row in table["rows"]] == [2, 3, 3, 3, 2, 2, 2, 2]
     assert all(row["variant_count_upper_bound"] == 6 for row in table["rows"])
 
 
 def test_plan_table_without_geometry_reports_upper_bound_only() -> None:
-    """没有实测几何时算不出真实变体数 —— 必须给 None，不能给一个像真值的 48。"""
+    """没有实测几何时算不出真实变体数 —— 必须给 None，不能给一个像真值的全枚举总数。"""
     table = plan_table()
     assert table["geometry_available"] is False
     assert table["total"] is None
-    assert table["total_upper_bound"] == 48
+    # 33 源 × 2 env × C(4,2)=6 —— 上界随源集合计算，不是真值
+    assert table["total_upper_bound"] == 33 * 2 * 6
     assert all(row["variant_count"] is None for row in table["rows"])
     assert all(row["legal_pairs"] is None for row in table["rows"])
+    # train-only 调用给出历史上界 48
+    assert plan_table(splits=("train",))["total_upper_bound"] == 48
 
 
 # ── 槽位换算：本轮「后续窗口固定」的实现核心 ─────────────────────────────────
@@ -340,19 +421,19 @@ def test_slot_tracking_worked_example() -> None:
 # ── 变体构造：宗旨的两条机器判据 ─────────────────────────────────────────────
 
 # ButtonUnmaskSwap/ep91 的原始序列（Phase 0 实测，bin 口径）；k=3、4 bin。
-ORIGINAL_EP91 = MEASURED_ORIGINAL_BIN_PAIRS[("ButtonUnmaskSwap", 91)]
-SLOT_XY_EP91 = MEASURED_SLOT_XY[("ButtonUnmaskSwap", 91)]
+ORIGINAL_EP91 = MEASURED_ORIGINAL_BIN_PAIRS_TRAIN[("train", "ButtonUnmaskSwap", 91)]
+SLOT_XY_EP91 = MEASURED_SLOT_XY_TRAIN[("train", "ButtonUnmaskSwap", 91)]
 
 
 def _spec_fixture():
-    src = source_episode("ButtonUnmaskSwap", 91)
+    src = source_episode("ButtonUnmaskSwap", 91, "train")
     return src, variant_specs(src, ORIGINAL_EP91, SLOT_XY_EP91)
 
 
 def test_variant_specs_enumerates_only_nearest_neighbor_pairs() -> None:
     """★ 本轮核心判据：只枚举最近邻可达对，且 variant_idx 是槽位对的字典序下标。"""
     src, specs = _spec_fixture()
-    legal = EXPECTED_LEGAL_PAIRS[("ButtonUnmaskSwap", 91)]
+    legal = EXPECTED_LEGAL_PAIRS_TRAIN[("train", "ButtonUnmaskSwap", 91)]
     assert len(specs) == len(legal)
     assert sorted(spec.event_slots for spec in specs) == legal
     assert [spec.variant_idx for spec in specs] == [pair_index(pair) for pair in legal]
@@ -361,29 +442,29 @@ def test_variant_specs_enumerates_only_nearest_neighbor_pairs() -> None:
     assert not any(spec.event_slots in ((0, 2), (1, 3)) for spec in specs)
 
 
-@pytest.mark.parametrize("key", sorted(MEASURED_SLOT_XY))
+@pytest.mark.parametrize("key", sorted(MEASURED_SLOT_XY_TRAIN))
 def test_measured_layouts_yield_expected_legal_pairs(key: tuple[str, int]) -> None:
     """逐源钉死合法对集合与条数 —— 数据集规模的真值来源。"""
-    legal = nearest_neighbor_pairs(MEASURED_SLOT_XY[key])
-    assert legal == EXPECTED_LEGAL_PAIRS[key]
+    legal = nearest_neighbor_pairs(MEASURED_SLOT_XY_TRAIN[key])
+    assert legal == EXPECTED_LEGAL_PAIRS_TRAIN[key]
     assert 2 <= len(legal) <= 3
 
 
-def test_measured_layouts_total_19_clips() -> None:
-    total = sum(len(pairs) for pairs in EXPECTED_LEGAL_PAIRS.values())
-    assert total == EXPECTED_TOTAL_CLIPS
-    video = sum(len(v) for k, v in EXPECTED_LEGAL_PAIRS.items() if k[0] == "VideoUnmaskSwap")
+def test_measured_train_layouts_total_19_clips() -> None:
+    total = sum(len(pairs) for pairs in EXPECTED_LEGAL_PAIRS_TRAIN.values())
+    assert total == EXPECTED_TRAIN_CLIPS
+    video = sum(len(v) for k, v in EXPECTED_LEGAL_PAIRS_TRAIN.items() if k[1] == "VideoUnmaskSwap")
     assert video == 11
 
 
-@pytest.mark.parametrize("key", sorted(MEASURED_ORIGINAL_BIN_PAIRS))
+@pytest.mark.parametrize("key", sorted(MEASURED_ORIGINAL_BIN_PAIRS_TRAIN))
 def test_original_first_pair_is_always_legal(key: tuple[str, int]) -> None:
     """原版 idx2 本就是最近邻回填 ⇒ 原始首对必落在合法集合内（8/8）。
 
     这条不成立就说明本模块的最近邻复刻与 env 实际行为脱节。
     """
-    first_slots = slot_pairs_from_bin_pairs(MEASURED_ORIGINAL_BIN_PAIRS[key], 4)[0]
-    assert first_slots in EXPECTED_LEGAL_PAIRS[key]
+    first_slots = slot_pairs_from_bin_pairs(MEASURED_ORIGINAL_BIN_PAIRS_TRAIN[key], 4)[0]
+    assert first_slots in EXPECTED_LEGAL_PAIRS_TRAIN[key]
 
 
 def test_measured_layouts_match_phase0_index() -> None:
@@ -399,7 +480,9 @@ def test_measured_layouts_match_phase0_index() -> None:
     if not path.exists():
         pytest.skip("没有 Phase 0 产物")
     measured = load_slot_xy_index(path)
-    for key, expected in MEASURED_SLOT_XY.items():
+    if not measured:
+        pytest.skip("Phase 0 索引是旧版（记录无 split 字段），等重跑后再对拍")
+    for key, expected in MEASURED_SLOT_XY_TRAIN.items():
         assert key in measured, f"Phase 0 索引里缺 {key}"
         for actual_row, expected_row in zip(measured[key], expected):
             assert tuple(actual_row[:2]) == tuple(expected_row)
@@ -440,20 +523,20 @@ def test_is_original_reproduces_original_bin_pairs() -> None:
 
 
 def test_variant_specs_rejects_length_mismatch() -> None:
-    src = source_episode("ButtonUnmaskSwap", 91)  # k=3
+    src = source_episode("ButtonUnmaskSwap", 91, "train")  # k=3
     with pytest.raises(ValueError):
         variant_specs(src, ((0, 1), (2, 3)), SLOT_XY_EP91)  # 只给了 2 段
 
 
 def test_variant_specs_rejects_illegal_original_first_pair() -> None:
     """原始首对不在合法集合内 ⇒ fail-loud，绝不静默产出一个没有 is_original 的源。"""
-    src = source_episode("ButtonUnmaskSwap", 91)  # k=3
+    src = source_episode("ButtonUnmaskSwap", 91, "train")  # k=3
     with pytest.raises(ValueError, match="不在最近邻合法集合"):
         variant_specs(src, ((0, 2), (1, 2), (0, 3)), SLOT_XY_EP91)  # (0,2) 是对角对
 
 
 def test_variant_specs_requires_matching_slot_count() -> None:
-    src = source_episode("ButtonUnmaskSwap", 91)
+    src = source_episode("ButtonUnmaskSwap", 91, "train")
     with pytest.raises(ValueError):
         variant_specs(src, ORIGINAL_EP91, SLOT_XY_EP91[:3])
 
@@ -511,33 +594,36 @@ def test_native_window_slots_tracks_the_moved_bin() -> None:
     assert native_window_slots(paired, 1, [(0, 3)]) == (1, 2)
     assert native_window_slots(paired, 1, [(1, 2)]) == (1, 2)
 
-    xy99 = MEASURED_SLOT_XY[("VideoUnmaskSwap", 99)]
+    xy99 = MEASURED_SLOT_XY_TRAIN[("train", "VideoUnmaskSwap", 99)]
     assert nearest_neighbor(xy99, 0) == 3 and nearest_neighbor(xy99, 1) == 0
     assert native_window_slots(xy99, 0, [(0, 1)]) == (0, 1)   # 与原始一致
     assert native_window_slots(xy99, 0, [(0, 3)]) == (0, 3)   # 偏离原始的 (0,1)
     assert native_window_slots(xy99, 0, [(2, 3)]) == (0, 3)   # 同上
 
 
-def test_later_windows_deviation_count_is_four() -> None:
-    """★ 已知取舍的量化：窗口 ≥2 按槽位固定，与原版最近邻规则在 4/19 条上不重合。
+def test_later_windows_deviation_count_is_four_on_train_sources() -> None:
+    """★ 已知取舍的量化（**train-only 回归锚点**）：窗口 ≥2 按槽位固定，与原版最近邻
+    规则在 train 19 条中的 4 条上不重合。
 
     这不是缺陷 —— 用户拍板「约束只作用于第一次 swap」，窗口 ≥2 的固定是后 30 帧跨变体
     一致（判据 5）的前提，两者不可兼得。事件本身仍严格落在原版可达空间内。
+    全源集合（含 test/val）的偏离计数由 make_clip_labels 逐条量化、verify_clips 报告，
+    不在这里钉死。
     """
     idx1_w2 = {  # Phase 0 实测的 original_idx1[1]
-        ("ButtonUnmaskSwap", 91): 1, ("ButtonUnmaskSwap", 95): 1,
-        ("ButtonUnmaskSwap", 98): 1, ("ButtonUnmaskSwap", 99): 2,
-        ("VideoUnmaskSwap", 91): 1, ("VideoUnmaskSwap", 95): 2,
-        ("VideoUnmaskSwap", 98): 1, ("VideoUnmaskSwap", 99): 0,
+        ("train", "ButtonUnmaskSwap", 91): 1, ("train", "ButtonUnmaskSwap", 95): 1,
+        ("train", "ButtonUnmaskSwap", 98): 1, ("train", "ButtonUnmaskSwap", 99): 2,
+        ("train", "VideoUnmaskSwap", 91): 1, ("train", "VideoUnmaskSwap", 95): 2,
+        ("train", "VideoUnmaskSwap", 98): 1, ("train", "VideoUnmaskSwap", 99): 0,
     }
     deviating = []
-    for key, slot_xy in sorted(MEASURED_SLOT_XY.items()):
-        fixed = slot_pairs_from_bin_pairs(MEASURED_ORIGINAL_BIN_PAIRS[key], 4)[1]
-        for first in EXPECTED_LEGAL_PAIRS[key]:
+    for key, slot_xy in sorted(MEASURED_SLOT_XY_TRAIN.items()):
+        fixed = slot_pairs_from_bin_pairs(MEASURED_ORIGINAL_BIN_PAIRS_TRAIN[key], 4)[1]
+        for first in EXPECTED_LEGAL_PAIRS_TRAIN[key]:
             if native_window_slots(slot_xy, idx1_w2[key], [first]) != fixed:
                 deviating.append((key, first))
     assert len(deviating) == 4
-    assert all(key[0] == "VideoUnmaskSwap" for key, _ in deviating)
+    assert all(key[1] == "VideoUnmaskSwap" for key, _ in deviating)
 
 
 def test_pair_index_is_inverse_of_bin_pairs() -> None:
@@ -657,30 +743,136 @@ def test_event_window_sits_inside_clip_with_margins() -> None:
 
 
 def test_staging_and_seed_roundtrip() -> None:
-    assert staging_episode(91, 5) == 91005
+    """staging 三段编码（split 位 + episode 位 + 变体位）往返与守卫。"""
+    assert staging_episode("train", 91, 5) == 91005
+    assert staging_episode("test", 3, 2) == 1_003_002
+    assert staging_episode("val", 3, 2) == 2_003_002
     assert variant_seed(14100, 5) == 14100005
-    assert decode_staging_episode(91005) == (91, 5)
+    assert decode_staging_episode(91005) == ("train", 91, 5)
+    assert decode_staging_episode(1_003_002) == ("test", 3, 2)
+    assert decode_staging_episode(2_003_002) == ("val", 3, 2)
     assert decode_variant_seed(14100005) == (14100, 5)
-    for src_ep in (91, 95, 98, 99):
-        for idx in (0, 5, VARIANT_BLOCK - 1):
-            assert decode_staging_episode(staging_episode(src_ep, idx)) == (src_ep, idx)
+    for split in SPLITS:
+        for src_ep in (0, 3, 91, 99):
+            for idx in (0, 5, VARIANT_BLOCK - 1):
+                assert decode_staging_episode(staging_episode(split, src_ep, idx)) == (
+                    split,
+                    src_ep,
+                    idx,
+                )
     with pytest.raises(ValueError):
-        staging_episode(91, VARIANT_BLOCK)
+        staging_episode("train", 91, VARIANT_BLOCK)
+    with pytest.raises(ValueError):
+        staging_episode("train", SPLIT_BLOCK // VARIANT_BLOCK, 0)  # episode 位越界
+    with pytest.raises(ValueError):
+        staging_episode("heldout", 91, 0)  # 未知 split
+    # SPLIT_CODE 与 SPLITS 自洽（编码连续且从 0 起，是 decode 穷举的前提）
+    assert sorted(SPLIT_CODE.values()) == list(range(len(SPLITS)))
+    assert set(SPLIT_CODE) == set(SPLITS)
 
 
 def test_variant_seed_unique_and_disjoint_from_env_seeds() -> None:
-    """全部 19 条的 variant_seed 互异，且不与任何源 env_seed 撞号。"""
-    seen: set[int] = set()
+    """跨三个 split 的全部 33 源 × 2 env × 全部 6 个 variant_idx（几何无关的最坏情况），
+    variant_seed 互异且不与任何源 env_seed 撞号。
+
+    这就是「variant_seed 不编码 split」决定的守卫之一：唯一性靠三个 split 的 env_seed
+    数值域互不相交，一旦 metadata 变化打破该前提，这条会先炸。
+    staging_episode 的唯一性由编码本身保证（split 位），顺带全组合断言一遍。
+    """
     selected = select_sources()
+    env_seeds = {src.env_seed for task in EVAL_TASKS for src in selected[task]}
+    assert len(env_seeds) == 33 * 2  # 66 个源单元的 env_seed 本身互异
+    seeds: set[int] = set()
+    stagings: set[int] = set()
+    count = 0
     for task in EVAL_TASKS:
         for src in selected[task]:
-            for pair in EXPECTED_LEGAL_PAIRS[(task, src.episode)]:
-                seed = variant_seed(src.env_seed, pair_index(pair))
-                assert seed not in seen
-                seen.add(seed)
-    assert len(seen) == EXPECTED_TOTAL_CLIPS
-    assert not seen & {value[0] for value in EXPECTED_SOURCE.values()}
+            for idx in range(len(bin_pairs(REQUIRED_BINS))):
+                seed = variant_seed(src.env_seed, idx)
+                assert seed not in seeds
+                seeds.add(seed)
+                stagings.add(staging_episode(src.split, src.episode, idx))
+                count += 1
+    assert count == 33 * 2 * 6
+    assert not seeds & env_seeds
+    # staging 在 (split, episode, idx) 维度去重后 = 33 源去掉「两 env 同 split 同源号」
+    # 的重复 —— 每源两 env 的 staging 相同（同 split 同 ep 同 idx），所以是 33 * 6
+    assert len(stagings) == 33 * 6
+
+
+def test_phase0_index_covers_all_selected_sources() -> None:
+    """artifact-gated 全量覆盖：有（新版）Phase 0 索引时，66 个源单元逐一在场且几何合法。
+
+    不硬编码任何总数之外的实测值 —— 合法对大小 ∈ [2,3]、原始首对落在合法集合内、
+    variant_idx 编号往返自洽，全部现算。没有产物（或产物是旧版无 split 字段）则 skip。
+    """
+    import json
+
+    path = (
+        REPO_ROOT
+        / "scripts"
+        / "data-generation-MotionJEPALabel"
+        / "outputs"
+        / "phase0"
+        / "original_index.json"
+    )
+    if not path.exists():
+        pytest.skip("没有 Phase 0 产物")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    records = {
+        (str(r["split"]), str(r["task"]), int(r["episode"])): r
+        for r in payload.get("records", [])
+        if r.get("split")
+    }
+    if not records:
+        pytest.skip("Phase 0 索引是旧版（记录无 split 字段），等重跑后再对拍")
+    selected = select_sources()
+    expected_keys = {
+        (src.split, task, src.episode) for task in EVAL_TASKS for src in selected[task]
+    }
+    assert set(records) == expected_keys, (
+        f"Phase 0 覆盖与筛选结果不一致：缺 {sorted(expected_keys - set(records))[:5]}…，"
+        f"多 {sorted(set(records) - expected_keys)[:5]}…"
+    )
+    for key, record in sorted(records.items()):
+        slot_xy = record["geometry"]["slot_xy"]
+        legal = nearest_neighbor_pairs(slot_xy)
+        assert 2 <= len(legal) <= 3, f"{key}: 合法对数 {len(legal)} 越界"
+        original_first = slot_pairs_from_bin_pairs(
+            [tuple(p) for p in record["original_bin_pairs"]], len(slot_xy)
+        )[0]
+        assert original_first in legal, f"{key}: 原始首对 {original_first} 不在 {legal}"
+        for pair in legal:
+            assert bin_pairs(len(slot_xy))[pair_index(pair, len(slot_xy))] == pair
 
 
 def test_signature_format() -> None:
     assert signature_of(((0, 1), (2, 3))) == "01|23"
+
+
+def test_clip_job_paths_distinct_across_splits() -> None:
+    """test/val 同号源（如双方都有 ep3）的三条产物路径与 h5 组名必须互异。
+
+    control 模式的 wrapper_episode = src_episode 跨 split 同号，路径唯一性只能来自
+    文件名里的 seed（variant_seed = env_seed，全局唯一）；clip 模式则由 staging 编码
+    的 split 位保证。两条腿分别断言。
+    """
+    from clip_worker import ClipJob, clip_h5_path, raw_h5_path, trace_path
+
+    def control_job(split: str, env_seed: int) -> ClipJob:
+        return ClipJob(
+            task="VideoUnmaskSwap", split=split, src_episode=3, variant_idx=-1,
+            env_seed=env_seed, variant_seed=env_seed, wrapper_episode=3,
+            difficulty="hard", num_bins=4, mode="control", bin_pairs=None,
+            slot_pairs=None, is_original=True, attempt=0,
+            output_root="/tmp/x", repo_root="/tmp/x",
+        )
+
+    test_job = control_job("test", 550300)
+    val_job = control_job("val", 1050300)
+    root = Path("/tmp/x")
+    for helper in (raw_h5_path, clip_h5_path, trace_path):
+        assert helper(root, test_job) != helper(root, val_job), helper.__name__
+    assert test_job.label != val_job.label
+    # clip 模式：同 variant_idx 的 staging_episode 因 split 位互异
+    assert staging_episode("test", 3, 2) != staging_episode("val", 3, 2)

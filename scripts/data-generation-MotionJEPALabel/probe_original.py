@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Phase 0 控制跑：对入选的 4 源 × 2 env 各跑一次**无注入的完整 rollout**（8 条）。
+"""Phase 0 控制跑：对三重筛选入选的每个源（split × episode × 2 env）各跑一次
+**无注入的完整 rollout**（train+test+val 全选时 33 源 × 2 env = 66 条）。
 
 为什么必须完整跑（而正式产物是截断的）：窗口 2/3 的 `swap_pair{k}_idx2` 是运行时进入
 该窗口那一刻按「前次交换后的位置」取最近邻回填的，静态算不出 —— 只能实跑到那一步再
@@ -13,8 +14,11 @@
   以及与官方 h5 的 joint_action 比对；
 * 控制跑的完整 h5 / 视频 / trace，供后续 clip 对拍。
 
-红线：任一控制跑失败、或与官方 h5 的 joint_action 偏差超过 --joint-action-tol，
-退出码非零，不得进入后续 Phase。
+红线：任一控制跑失败、或 **train 源**与官方 h5 的 joint_action 偏差超过
+--joint-action-tol，退出码非零，不得进入后续 Phase。
+test/val 源没有官方 h5（HF 数据集只发布了 train 100 集），逐位比对无对象 ——
+这些源记入 ``comparison_skipped`` 显式呈现，不判失败；其「原始序列真值」就是
+本控制跑自身（determinism 由重跑逐位一致来保证）。
 """
 
 from __future__ import annotations
@@ -47,11 +51,13 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from clip_plan import (  # noqa: E402
-    CANDIDATE_EPISODES,
     CLIP_END,
     CLIP_START,
     EVAL_TASKS,
     REPO_ROOT,
+    SPLIT_CODE,
+    add_source_selection_args,
+    parse_source_selection,
     select_sources,
     signature_of,
     slot_pairs_from_bin_pairs,
@@ -68,8 +74,21 @@ def _joint_action(group: h5py.Group, name: str) -> np.ndarray:
     return np.asarray(group[name]["action"]["joint_action"], dtype=np.float64)
 
 
-def _compare_with_official(ours_path: Path, episode: int, official_dir: Path, task: str) -> dict:
-    """逐 timestep 逐元素比对 joint_action（全程 + clip 区间两个口径），并对拍段长。"""
+def _compare_with_official(
+    ours_path: Path, episode: int, official_dir: Path, task: str, split: str
+) -> dict:
+    """逐 timestep 逐元素比对 joint_action（全程 + clip 区间两个口径），并对拍段长。
+
+    官方 h5（HF 的 robomme_data_h5）只覆盖 **train** 100 集 —— test/val 源没有可比对象，
+    返回 ``expected_unavailable=True``，由调用方记入 ``comparison_skipped``（显式呈现、
+    不判失败）；train 源照旧走硬红线。
+    """
+    if split != "train":
+        return {
+            "available": False,
+            "expected_unavailable": True,
+            "reason": f"官方 h5 只覆盖 train（本源属 {split}，无逐位比对对象）",
+        }
     official_path = official_dir / f"record_dataset_{task}.h5"
     if not official_path.is_file():
         return {"available": False, "reason": f"官方 h5 不存在：{official_path}"}
@@ -111,11 +130,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Phase 0 控制跑：拿原始槽位序列与布局基线")
     parser.add_argument("--output-dir", default=str(SCRIPT_DIR / "outputs" / "phase0"))
     parser.add_argument("--tasks", default=",".join(EVAL_TASKS))
-    parser.add_argument(
-        "--episodes",
-        default=",".join(str(item) for item in CANDIDATE_EPISODES),
-        help="候选源 episode（筛选前）；实际用哪些由三重筛选决定",
-    )
+    add_source_selection_args(parser)
     parser.add_argument("--gpus", default="0", help="逗号分隔的物理卡号")
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--max-attempts", type=int, default=3)
@@ -131,16 +146,17 @@ def main(argv=None) -> int:
     (output / "hdf5_files").mkdir(exist_ok=True)
 
     tasks = tuple(item.strip() for item in args.tasks.split(",") if item.strip())
-    episodes = tuple(int(item) for item in args.episodes.split(",") if item.strip())
+    splits, episodes_by_split = parse_source_selection(args)
     gpu_ids = tuple(item.strip() for item in args.gpus.split(",") if item.strip())
 
-    selected = select_sources(tasks, episodes)
+    selected = select_sources(tasks, splits, episodes_by_split)
     jobs = []
     for task in tasks:
         for src in selected[task]:
             jobs.append(
                 ClipJob(
                     task=task,
+                    split=src.split,
                     src_episode=src.episode,
                     variant_idx=-1,
                     env_seed=src.env_seed,
@@ -161,8 +177,15 @@ def main(argv=None) -> int:
         print("ERROR: 三重筛选后没有任何源 episode", file=sys.stderr)
         return 1
     print(
-        f"Phase 0 控制跑 {len(jobs)} 条："
-        + "，".join(f"{task} ep{[s.episode for s in selected[task]]}" for task in tasks),
+        f"Phase 0 控制跑 {len(jobs)} 条：\n"
+        + "\n".join(
+            f"  {task}: "
+            + "，".join(
+                f"{split} ep{[s.episode for s in selected[task] if s.split == split]}"
+                for split in splits
+            )
+            for task in tasks
+        ),
         flush=True,
     )
 
@@ -179,11 +202,19 @@ def main(argv=None) -> int:
     official_dir = Path(args.official_h5_dir)
     records = []
     gate_failures: list[str] = []
-    for result in sorted(succeeded, key=lambda item: (item["task"], item["src_episode"])):
+    comparison_skipped: list[str] = []
+    for result in sorted(
+        succeeded,
+        key=lambda item: (item["task"], SPLIT_CODE[item["split"]], item["src_episode"]),
+    ):
         comparison = _compare_with_official(
-            Path(result["h5_path"]), result["src_episode"], official_dir, result["task"]
+            Path(result["h5_path"]),
+            result["src_episode"],
+            official_dir,
+            result["task"],
+            result["split"],
         )
-        label = f"{result['task']}/ep{result['src_episode']}"
+        label = f"{result['task']}/{result['split']}/ep{result['src_episode']}"
         if comparison.get("available"):
             diff = comparison.get("joint_action_max_abs_diff")
             if not comparison["T_equal"]:
@@ -194,6 +225,9 @@ def main(argv=None) -> int:
                 gate_failures.append(
                     f"{label}: joint_action 最大偏差 {diff} ≥ 阈值 {args.joint_action_tol}"
                 )
+        elif comparison.get("expected_unavailable"):
+            # test/val 无官方 h5 —— 显式记录、不判失败（train 仍是硬红线）
+            comparison_skipped.append(f"{label}: {comparison.get('reason')}")
         else:
             gate_failures.append(f"{label}: 无法比对官方数据（{comparison.get('reason')}）")
 
@@ -203,6 +237,7 @@ def main(argv=None) -> int:
         records.append(
             {
                 "task": result["task"],
+                "split": result["split"],
                 "episode": result["src_episode"],
                 "env_seed": result["env_seed"],
                 "difficulty": result["difficulty"],
@@ -236,8 +271,10 @@ def main(argv=None) -> int:
         "requested": len(jobs),
         "succeeded": len(succeeded),
         "exhausted": len(exhausted),
+        "splits": list(splits),
         "joint_action_tol": args.joint_action_tol,
         "gate_failures": gate_failures,
+        "comparison_skipped": comparison_skipped,
         "records": records,
     }
     index_path = output / "original_index.json"
@@ -248,7 +285,7 @@ def main(argv=None) -> int:
         comparison = record["official_comparison"]
         boundaries = record.get("subgoal_boundaries") or []
         print(
-            f"  {record['task']}/ep{record['episode']}: "
+            f"  {record['task']}/{record['split']}/ep{record['episode']}: "
             f"bin={'|'.join(f'{i}{j}' for i, j in record['original_bin_pairs'])} "
             f"slot={record['signature']}  T={record['n_timesteps']} "
             f"demo={record['demo_prefix']} exec={record['exec_len']}  "
@@ -264,6 +301,11 @@ def main(argv=None) -> int:
         for line in gate_failures:
             print(f"  {line}", file=sys.stderr)
         return 2
+    if comparison_skipped:
+        print(
+            f"官方比对跳过 {len(comparison_skipped)} 条（test/val 无官方 h5，"
+            "已记入索引的 comparison_skipped；train 红线不受影响）"
+        )
     print(f"original_index 已写入 {index_path}")
     return 0
 
