@@ -63,6 +63,7 @@ from clip_plan import (  # noqa: E402
     nearest_neighbor,
     nearest_neighbor_margin,
     nearest_neighbor_pairs,
+    native_window_slots,
     net_permutation,
     nominal_distance_video,
     pair_index,
@@ -497,6 +498,46 @@ def test_nearest_neighbor_margin_matches_manual() -> None:
     margins = nearest_neighbor_margin(layout)
     assert margins[0] == pytest.approx(2.0)  # slot0：最近 1.0、次近 3.0
     assert margins[1] == pytest.approx(1.0)  # slot1：最近 1.0、次近 2.0
+
+
+def test_native_window_slots_tracks_the_moved_bin() -> None:
+    """原版后续窗口的 idx1 是一个固定的 **bin**，窗口 1 可能已把它挪到别的槽位。
+
+    手算样例：NN 图为 0↔3、1↔2（Button 型完美配对）时，无论窗口 1 换 (0,3) 还是 (1,2)，
+    bin 1 的最近邻槽位对恒为 (1,2)；而 NN 图非配对时（Video ep99 型 NN=[3,0,3,0]），
+    bin 0 被挪到 slot3 后会给出 (0,3) 而不是原始的 (0,1)。
+    """
+    paired = ((0.0, 0.0), (0.0, 0.5), (0.02, 0.5), (0.02, 0.0))  # NN: 0↔3, 1↔2
+    assert native_window_slots(paired, 1, [(0, 3)]) == (1, 2)
+    assert native_window_slots(paired, 1, [(1, 2)]) == (1, 2)
+
+    xy99 = MEASURED_SLOT_XY[("VideoUnmaskSwap", 99)]
+    assert nearest_neighbor(xy99, 0) == 3 and nearest_neighbor(xy99, 1) == 0
+    assert native_window_slots(xy99, 0, [(0, 1)]) == (0, 1)   # 与原始一致
+    assert native_window_slots(xy99, 0, [(0, 3)]) == (0, 3)   # 偏离原始的 (0,1)
+    assert native_window_slots(xy99, 0, [(2, 3)]) == (0, 3)   # 同上
+
+
+def test_later_windows_deviation_count_is_four() -> None:
+    """★ 已知取舍的量化：窗口 ≥2 按槽位固定，与原版最近邻规则在 4/19 条上不重合。
+
+    这不是缺陷 —— 用户拍板「约束只作用于第一次 swap」，窗口 ≥2 的固定是后 30 帧跨变体
+    一致（判据 5）的前提，两者不可兼得。事件本身仍严格落在原版可达空间内。
+    """
+    idx1_w2 = {  # Phase 0 实测的 original_idx1[1]
+        ("ButtonUnmaskSwap", 91): 1, ("ButtonUnmaskSwap", 95): 1,
+        ("ButtonUnmaskSwap", 98): 1, ("ButtonUnmaskSwap", 99): 2,
+        ("VideoUnmaskSwap", 91): 1, ("VideoUnmaskSwap", 95): 2,
+        ("VideoUnmaskSwap", 98): 1, ("VideoUnmaskSwap", 99): 0,
+    }
+    deviating = []
+    for key, slot_xy in sorted(MEASURED_SLOT_XY.items()):
+        fixed = slot_pairs_from_bin_pairs(MEASURED_ORIGINAL_BIN_PAIRS[key], 4)[1]
+        for first in EXPECTED_LEGAL_PAIRS[key]:
+            if native_window_slots(slot_xy, idx1_w2[key], [first]) != fixed:
+                deviating.append((key, first))
+    assert len(deviating) == 4
+    assert all(key[0] == "VideoUnmaskSwap" for key, _ in deviating)
 
 
 def test_pair_index_is_inverse_of_bin_pairs() -> None:

@@ -363,6 +363,32 @@ def nearest_neighbor_pairs(slot_xy: Sequence[Sequence[float]]) -> list[tuple[int
     return sorted(pairs)
 
 
+def native_window_slots(
+    slot_xy: Sequence[Sequence[float]],
+    idx1_bin: int,
+    prior_slot_pairs: Sequence[tuple[int, int]],
+    num_bins: int = REQUIRED_BINS,
+) -> tuple[int, int]:
+    """**原版规则下**某个后续窗口实际会交换的槽位对（用来量化本链路对它的偏离）。
+
+    本链路对窗口 ≥2 用的是「按槽位固定」注入（见 bin_pairs_from_slot_pairs），那是后 30 帧
+    跨变体一致的前提；而原版是拿该窗口在 ``_load_scene`` 里定死的 ``idx1``（一个 **bin**）
+    去取当时的最近邻。两者不一定重合 —— 因为窗口 1 可能已经把那个 bin 挪到了别的槽位。
+
+    关键前提：``swap_flat_two_lane`` 是两个 bin **互换位置**，所以被占用的位置集合恒不变
+    ⇒ **槽位层面的最近邻图在整条 episode 里不变**，可以直接用初始 slot_xy 复算。
+
+    参数：``idx1_bin`` 是该窗口的原版 idx1（Phase 0 的 ``original_idx1``）；
+    ``prior_slot_pairs`` 是该窗口**之前**各窗口实际交换的槽位对序列。
+    """
+    slot_of = list(range(num_bins))
+    for u, v in bin_pairs_from_slot_pairs(prior_slot_pairs, num_bins):
+        slot_of[u], slot_of[v] = slot_of[v], slot_of[u]
+    seat = slot_of[idx1_bin]
+    other = nearest_neighbor(slot_xy, seat)
+    return (min(seat, other), max(seat, other))
+
+
 def nearest_neighbor_margin(slot_xy: Sequence[Sequence[float]]) -> list[float]:
     """逐槽位的 argmin 余量 = d(次近) − d(最近)。余量越小，最近邻判定越接近平局。"""
     margins = []

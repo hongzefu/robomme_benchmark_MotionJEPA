@@ -44,6 +44,7 @@ from clip_plan import (  # noqa: E402
     CLIP_START,
     compute_swap_times,
     load_train_record,
+    native_window_slots,
     swap_windows_clip,
     swap_windows_env,
 )
@@ -247,7 +248,22 @@ def run_regression(v7_path: Path, official_dir: Path, epsilon: float) -> int:
 # ── 数据集模式：对合并产物出三份标签 JSON ─────────────────────────────────────
 
 
-def build_labels(input_dir: Path, dataset_name: str, epsilon: float, tasks: Sequence[str]):
+def build_labels(
+    input_dir: Path,
+    dataset_name: str,
+    epsilon: float,
+    tasks: Sequence[str],
+    phase0_index: Path | None = None,
+):
+    # Phase 0 的 original_idx1：量化「窗口 ≥2 按槽位固定」对原版最近邻规则的偏离
+    native_idx1: dict[tuple[str, int], list] = {}
+    phase0_slot_xy: dict[tuple[str, int], list] = {}
+    if phase0_index is not None and Path(phase0_index).is_file():
+        for record in json.loads(Path(phase0_index).read_text(encoding="utf-8"))["records"]:
+            key = (str(record["task"]), int(record["episode"]))
+            native_idx1[key] = record.get("original_idx1") or []
+            phase0_slot_xy[key] = (record.get("geometry") or {}).get("slot_xy") or []
+
     clip_records = []
     chunk_binary = []
     chunk_rich = []
@@ -286,6 +302,27 @@ def build_labels(input_dir: Path, dataset_name: str, epsilon: float, tasks: Sequ
                 slot_pairs = [tuple(pair) for pair in entry["slot_pairs"]]
                 windows = swap_windows_clip(len(slot_pairs))
 
+                # 窗口 ≥2 的两种口径对账（见 clip_plan.native_window_slots）：
+                #   本链路 = 按槽位固定（后 30 帧跨变体一致的前提）
+                #   原版   = 拿该窗口定死的 idx1(bin) 取当时的最近邻
+                # 窗口 1 已把某些 bin 挪了位，两者不一定重合 —— 不重合不作废，逐条量化。
+                key0 = (task, entry["src_episode"])
+                later_native: list[list[int]] = []
+                later_follows = None
+                if native_idx1.get(key0) and phase0_slot_xy.get(key0):
+                    later_follows = True
+                    for widx in range(1, len(slot_pairs)):
+                        idx1_bin = native_idx1[key0][widx] if widx < len(native_idx1[key0]) else None
+                        if idx1_bin is None:
+                            later_native.append([])
+                            continue
+                        native = native_window_slots(
+                            phase0_slot_xy[key0], int(idx1_bin), slot_pairs[:widx]
+                        )
+                        later_native.append(list(native))
+                        if native != slot_pairs[widx]:
+                            later_follows = False
+
                 # ── 主标签：clip 级事件（一条 clip 一个事件） ──
                 clip_records.append(
                     {
@@ -305,6 +342,10 @@ def build_labels(input_dir: Path, dataset_name: str, epsilon: float, tasks: Sequ
                             None if not entry.get("slot_nn_margin")
                             else round(min(entry["slot_nn_margin"]), 6)
                         ),
+                        # 窗口 ≥2 的口径对账：本链路按槽位固定 vs 原版最近邻规则
+                        "later_windows_follow_native_nn": later_follows,
+                        "later_windows_fixed_slots": [list(p) for p in slot_pairs[1:]],
+                        "later_windows_native_slots": later_native,
                         # 协变量（非主标签轴）：本子集只出现 same_column / cross_aligned
                         "topo_class": entry["topo_class"],
                         "pair_distance": entry["pair_distance"],
@@ -387,6 +428,19 @@ def build_labels(input_dir: Path, dataset_name: str, epsilon: float, tasks: Sequ
         per_source_legal[f"{record['task']}/ep{record['src_episode']}"] = [
             "".join(str(v) for v in pair) for pair in (record["legal_event_slots"] or [])
         ]
+    native_deviation = [
+        {
+            "task": record["task"],
+            "episode": record["episode"],
+            "src_episode": record["src_episode"],
+            "variant_idx": record["variant_idx"],
+            "event_slots": record["event_slots"],
+            "fixed_later_slots": record["later_windows_fixed_slots"],
+            "native_later_slots": record["later_windows_native_slots"],
+        }
+        for record in clip_records
+        if record.get("later_windows_follow_native_nn") is False
+    ]
     leaky_sources = sorted(
         {
             f"{record['task']}/ep{record['src_episode']}"
@@ -428,6 +482,15 @@ def build_labels(input_dir: Path, dataset_name: str, epsilon: float, tasks: Sequ
             "cross_diagonal_note": (
                 "cross_diagonal 在本 8 源上恒为空 —— 这是实测事实、不是几何必然"
                 "（对角对从来不是任何 bin 的最近邻）。字段保留以便源集合变化时仍可用"
+            ),
+            "later_windows_deviating_from_native_nn": native_deviation,
+            "later_windows_note": (
+                "窗口 ≥2 本链路按槽位固定（后 30 帧跨变体一致的前提），原版则是拿该窗口"
+                "定死的 idx1(bin) 取当时的最近邻。窗口 1 可能已把那个 bin 挪了位，所以两者"
+                "不一定重合。上表逐条列出不重合的变体：它们的**事件本身**（第一次 swap）仍"
+                "严格落在原版可达空间内，只是后 30 帧露出的第二次 swap 换的不是原版会换的"
+                "那一对。下游若要求整条 clip 都原版可达，按 later_windows_follow_native_nn "
+                "== true 过滤"
             ),
             "action_leak_sources": leaky_sources,
             "action_leak_note": (
@@ -477,6 +540,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--tasks", default=",".join(sorted(SWAP_SCOPE)))
     parser.add_argument("--dataset-name", default="dataset-swapclip-event1")
     parser.add_argument("--epsilon", type=float, default=DEFAULT_EPSILON)
+    parser.add_argument(
+        "--phase0-index",
+        default=str(SCRIPT_DIR / "outputs" / "phase0" / "original_index.json"),
+        help="Phase 0 索引；用于量化窗口 ≥2 相对原版最近邻规则的偏离",
+    )
     args = parser.parse_args(argv)
 
     if args.regression:
@@ -488,7 +556,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     input_dir = Path(args.input_dir).resolve()
     tasks = [item.strip() for item in args.tasks.split(",") if item.strip()]
     clip_payload, binary_payload, rich_payload = build_labels(
-        input_dir, args.dataset_name, args.epsilon, tasks
+        input_dir, args.dataset_name, args.epsilon, tasks, Path(args.phase0_index)
     )
     for name, payload in (
         ("clip_events.json", clip_payload),

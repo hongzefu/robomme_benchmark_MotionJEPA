@@ -546,6 +546,24 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
         f"判据 5（clip 末帧位置集合）：同上 {comparison_pairs[0]} 次比较全部通过，"
         f"最大差 {worst_endpoint:.3e}（阈值 {ENDPOINT_TOL}）"
     )
+    deviating = clip_labels["meta"].get("later_windows_deviating_from_native_nn") or []
+    notes.append(
+        f"窗口 ≥2 的口径对账：{len(deviating)}/{total_clips} 条的「按槽位固定」与原版最近邻"
+        "规则不重合"
+        + (
+            "（"
+            + "、".join(
+                f"{d['task'][:6]}/ep{d['src_episode']}/var{d['variant_idx']}"
+                f" 钉死{d['fixed_later_slots']} vs 原版{d['native_later_slots']}"
+                for d in deviating
+            )
+            + "）"
+            if deviating else ""
+        )
+        + "。**事件本身（第一次 swap）仍严格落在原版可达空间内**，不重合的只是后 30 帧露出的"
+        "第二次 swap 换了哪一对 —— 这是「约束只作用于第一次 swap」这个决定的直接后果，"
+        "已逐条量化在 clip_events.json 的 later_windows_follow_native_nn 字段。"
+    )
     notes.append(
         f"判据 12（★ 最近邻不变量）：{total_clips}/{total_clips} 条 clip 的事件对满足"
         "「其一为另一之严格最近邻」，且用 clip 自身事件前一帧实测几何复算的合法集合与 Phase 0 "
