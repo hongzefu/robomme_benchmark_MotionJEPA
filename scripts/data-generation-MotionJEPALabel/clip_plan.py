@@ -5,14 +5,29 @@
 因此本模块把「变化」压缩到两个维度，其余一律钉死：
 
 * 变化维度 1 —— bin 初始位置：由源 episode 的 env_seed 决定，跨源变化；
-* 变化维度 2 —— 第一次 swap 的槽位对：每源恒 ``C(4,2)=6`` 种，穷举；
+* 变化维度 2 —— 第一次 swap 的槽位对：只枚举该源实测几何下的**最近邻可达对**，每源 2~3 种；
 * 其余（后续 swap 窗口、机器人动作、bin 数、布局模板、类别体系）全部固定，见下。
+
+★ 最近邻约束（2026-08-19 起）
+--------------------------------
+原版 env 选 swap 对的真实机制是两步：``swap_pair{k}_idx1`` 在 ``_load_scene`` 里定死，
+``idx2`` 留 None，进入窗口首帧才在 ``step()`` 里对全部 ``spawned_bins`` 取**距 idx1 最近的
+那一个**（严格单个 argmin，见两个 env 的 ``pair_idx2 is None`` 分支）。所以旧口径的
+``C(4,2)=6`` 全枚举里，有一大半的对在原版数据中**结构上永不可能出现** —— 实测 8 个源里
+对角对 (0,2)/(1,3) 从来不是任何 bin 的最近邻。
+
+本轮口径：**第一主角 idx1 放宽为任意 bin**（不受原版 ``randperm(3)`` 与任务目标耦合的
+限制），但 **idx2 只能是 idx1 当时的严格最近邻**。变体空间 = ``nearest_neighbor_pairs``。
+
+⚠ 同一份 env 源码里的 ``_compute_dynamic_swap_candidates`` / ``_select_swap_pair_from_positions``
+（取最近**两个**再随机挑一个）是**全仓无调用点的死代码**，不得采信 —— 按 top-2 口径复算
+会得到每源 4~5 对，与真实机制不符。
 
 三重源筛选（缺一不可）：
 
 1. **4-bin（medium/hard）**：easy 是 3-bin，且 ``region3_tri`` / ``region3_line`` 两套模板
    随 seed 二选一，类别体系（半程/全程 vs 腰/底边）与 4-bin 的（长边/短边/对角）互不相通，
-   三套几何无法合成统一的多类判别标签空间。只留 ``region4`` 后每源恒 6 条、模板唯一。
+   三套几何无法合成统一的多类判别标签空间。只留 ``region4`` 后模板唯一、槽位角色统一。
 2. **swap_times ≥ 2**：VideoUnmaskSwap 的 demo 段长 = 最后一次 swap 结束（+0~4 帧），
    k=1 时 demo 只到 env step 114，clip 的后 30 帧会跌出 demo、机器人开始朝目标 bin 移动，
    「动作恒定」不再成立。
@@ -37,8 +52,9 @@ import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Iterable, Mapping, Sequence
 
+SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 EVAL_TASKS = ("VideoUnmaskSwap", "ButtonUnmaskSwap")
@@ -70,8 +86,13 @@ CLIP_START = SWAP_WINDOW_START - CLIP_MARGIN                      # 34
 CLIP_END = SWAP_WINDOW_START + SWAP_WINDOW_LEN + CLIP_MARGIN      # 144
 CLIP_LEN = CLIP_END - CLIP_START                                  # 110
 
-# staging episode / variant seed 的编码基数；每源 6 条 < 1000，不会越位
+# staging episode / variant seed 的编码基数。variant_idx 是 bin_pairs() 的字典序下标
+# （≤5，见 pair_index），远小于 1000，不会越位。
 VARIANT_BLOCK = 1000
+
+# 判据：argmin 余量（次近距离 − 最近距离）低于此值时，最近邻判定接近平局，值得人看一眼。
+# 不作废数据，只进告警。实测 8 个源的全局最小余量是 0.0089 m（Video ep98）。
+NN_MARGIN_WARN = 0.005
 
 # ── 槽位拓扑：两个 env 的 region4 模板写法不同，但槽位角色完全同构 ─────────────
 #
@@ -111,7 +132,12 @@ class SourceEpisode:
     swap_times: int
 
     @property
-    def num_pairs(self) -> int:
+    def num_pairs_upper_bound(self) -> int:
+        """全枚举上界 ``C(n,2)`` —— **不是**本轮的实际变体数。
+
+        实际变体数受最近邻约束、取决于该源的实测布局，只能由
+        ``nearest_neighbor_pairs(slot_xy)`` 算出（n=4 时恒为 2 或 3）。
+        """
         return math.comb(self.num_bins, 2)
 
 
@@ -124,6 +150,10 @@ class ClipVariant:
     的位置集合跨同源全部变体逐位相同。
     ``bin_pairs``：注入用的 **bin** 对序列，由 slot_pairs 逐窗换算而来（见
     ``bin_pairs_from_slot_pairs``）。窗口 1 之前 slot 是 identity，故两者的首项相同。
+
+    ``variant_idx``：事件槽位对在 ``bin_pairs()`` 里的**字典序下标**（见 ``pair_index``），
+    不是列表位置。最近邻约束下取值稀疏（实测只出现 0/2/3/5，对角的 1/4 恒缺席），
+    这是刻意的 —— 它让 variant_idx ↔ event_slots 成为双射、跨源可比。
     """
 
     task: str
@@ -135,6 +165,15 @@ class ClipVariant:
     slot_pairs: tuple[tuple[int, int], ...]
     bin_pairs: tuple[tuple[int, int], ...]
     is_original: bool
+
+    def __post_init__(self) -> None:
+        # 编号自洽：任何构造路径都绕不过去，防止未来有人退回「列表位置即 variant_idx」
+        expected = pair_index(self.slot_pairs[0], self.num_bins)
+        if self.variant_idx != expected:
+            raise ValueError(
+                f"{self.task}/ep{self.src_episode}: variant_idx={self.variant_idx} "
+                f"与事件槽位对 {self.slot_pairs[0]} 的字典序下标 {expected} 不符"
+            )
 
     @property
     def staging_episode(self) -> int:
@@ -257,11 +296,100 @@ def select_sources(
 
 
 def bin_pairs(num_bins: int = REQUIRED_BINS) -> list[tuple[int, int]]:
-    """全部无序对，(i, j) i<j 按字典序；下标即 variant_idx。
+    """全部无序对，(i, j) i<j 按字典序；下标即 ``pair_index``，也即本链路的 variant_idx。
 
     用无序对是因为对 ``swap_flat_two_lane`` 逐项代入可证 (i,j) 与 (j,i) 轨迹逐位相同。
+
+    ⚠ **本函数返回的是「全部对」，绝不能缩成「合法对」。** 它同时被四处复用，其中
+    ``swap_inject.slot_geometry`` 靠它枚举**全部 6 对**的距离/方位角写进 h5 协变量；
+    一旦缩水，``merge_clip_h5`` 取 ``pairs[f"{i}{j}"]`` 会缺项、``pair_distance`` 变 None。
+    要「只枚举可达对」请用 ``nearest_neighbor_pairs``。
     """
     return list(itertools.combinations(range(num_bins), 2))
+
+
+def pair_index(pair: tuple[int, int], num_bins: int = REQUIRED_BINS) -> int:
+    """槽位对 → 它在 ``bin_pairs()`` 里的字典序下标，即 variant_idx。是 bin_pairs 的逆。"""
+    key = (min(pair), max(pair))
+    return bin_pairs(num_bins).index(key)
+
+
+# ── 最近邻约束：原版 env 唯一可达的 swap 对 ───────────────────────────────────
+
+
+def _slot_distance(slot_xy: Sequence[Sequence[float]], i: int, j: int) -> float:
+    """两个槽位的 xy 平面距离。多余的 z 维会被忽略，三维/二维输入都能吃。"""
+    a, b = slot_xy[i], slot_xy[j]
+    return math.hypot(float(a[0]) - float(b[0]), float(a[1]) - float(b[1]))
+
+
+def nearest_neighbor(slot_xy: Sequence[Sequence[float]], index: int) -> int:
+    """槽位 ``index`` 的严格最近邻下标。
+
+    **逐字复刻 env 的运行时回填**（``VideoUnmaskSwap.step`` / ``ButtonUnmaskSwap.step`` 里
+    ``pair_idx2 is None`` 分支的 closest_actor 扫描）：按 ``spawned_bins`` 升序遍历、跳过
+    自身、判据是严格 ``dist < closest_dist`` —— 后来者**不覆盖**同距的前者，
+    因此**平局取下标最小**者。写成 ``<=`` 就变成取下标最大，与 env 不符。
+
+    ⚠ 不要采信同文件里的 ``_compute_dynamic_swap_candidates`` /
+    ``_select_swap_pair_from_positions``（取最近两个再随机）—— 全仓无调用点的死代码。
+    """
+    best: int | None = None
+    best_dist = float("inf")
+    for candidate in range(len(slot_xy)):
+        if candidate == index:
+            continue
+        dist = _slot_distance(slot_xy, index, candidate)
+        if dist < best_dist:
+            best_dist = dist
+            best = candidate
+    if best is None:
+        raise ValueError("至少要有两个槽位才能取最近邻")
+    return best
+
+
+def nearest_neighbor_pairs(slot_xy: Sequence[Sequence[float]]) -> list[tuple[int, int]]:
+    """该布局下**原版机制可达**的 swap 对全集：``{(i, NN(i))}`` 去重后按字典序。
+
+    这就是本链路第一次 swap 的合法变体空间：idx1 放宽为任意槽位，idx2 只能是它的最近邻。
+
+    n=4 时结果条数恒落在 [2, 3]：全局最近的那一对必然互为最近邻（占掉 2 个槽位并去重成
+    1 对），剩下 2 个槽位各贡献至多 1 对 ⇒ 上界 3；每个槽位至少贡献 1 对 ⇒ 下界 2。
+    """
+    pairs = {
+        (min(i, nearest_neighbor(slot_xy, i)), max(i, nearest_neighbor(slot_xy, i)))
+        for i in range(len(slot_xy))
+    }
+    return sorted(pairs)
+
+
+def nearest_neighbor_margin(slot_xy: Sequence[Sequence[float]]) -> list[float]:
+    """逐槽位的 argmin 余量 = d(次近) − d(最近)。余量越小，最近邻判定越接近平局。"""
+    margins = []
+    for index in range(len(slot_xy)):
+        dists = sorted(
+            _slot_distance(slot_xy, index, other)
+            for other in range(len(slot_xy))
+            if other != index
+        )
+        margins.append(dists[1] - dists[0] if len(dists) >= 2 else float("inf"))
+    return margins
+
+
+def load_slot_xy_index(path: Path) -> dict[tuple[str, int], list[list[float]]]:
+    """从 Phase 0 的 ``original_index.json`` 读出 {(task, episode): slot_xy}。
+
+    只解析形状，不做任何几何判断 —— 供 ``plan_table`` 的 CLI 与单测共用。
+    """
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    out: dict[tuple[str, int], list[list[float]]] = {}
+    for record in payload.get("records", []):
+        slot_xy = (record.get("geometry") or {}).get("slot_xy")
+        if slot_xy:
+            out[(str(record["task"]), int(record["episode"]))] = [
+                [float(value) for value in row] for row in slot_xy
+            ]
+    return out
 
 
 def slot_pairs_from_bin_pairs(
@@ -309,24 +437,47 @@ def net_permutation(
 
 
 def variant_specs(
-    src: SourceEpisode, original_bin_pairs: Sequence[tuple[int, int]]
+    src: SourceEpisode,
+    original_bin_pairs: Sequence[tuple[int, int]],
+    slot_xy: Sequence[Sequence[float]],
 ) -> list[ClipVariant]:
-    """对一个源 episode 枚举全部 6 条 clip 变体。
+    """对一个源 episode 枚举它的全部 clip 变体（每源 2~3 条，受最近邻约束）。
 
     ``original_bin_pairs`` 是 Phase 0 控制跑实测到的原始 bin 对序列（窗口 ≥2 的 idx2 是
     进窗口时最近邻回填的，只能实测拿到）。窗口 ≥2 的槽位对从它换算，全体变体共用；
     窗口 1 换成枚举值。取到原始首对的那一条即 ``is_original``，其注入序列会退化成
     原始 bin 对序列 ⇒ 仍逐位复现官方 episode。
+
+    ``slot_xy`` 是该源 reset 后的槽位 xy（Phase 0 的 ``geometry.slot_xy``），用来算出
+    最近邻合法对集合。**刻意设成必填、无默认值**：给个默认值就等于给「漏传即静默退回
+    C(4,2) 全枚举」开后门，而条数、is_original、尾部唯一性等既有闸门对此**全都自洽**、
+    查不出来。
+
+    fail-loud：原始首对必须落在合法集合内（原版 idx2 本就是最近邻回填，理应恒成立）。
+    一旦不成立，说明本模块的最近邻复刻与 env 实际行为脱节，必须停机排查。
     """
     if len(original_bin_pairs) != src.swap_times:
         raise ValueError(
             f"{src.task}/ep{src.episode}: 原始序列 {len(original_bin_pairs)} 段 "
             f"≠ swap_times {src.swap_times}"
         )
+    if len(slot_xy) != src.num_bins:
+        raise ValueError(
+            f"{src.task}/ep{src.episode}: slot_xy 有 {len(slot_xy)} 个槽位 "
+            f"≠ num_bins {src.num_bins}"
+        )
+    legal = nearest_neighbor_pairs(slot_xy)
     original_slots = slot_pairs_from_bin_pairs(original_bin_pairs, src.num_bins)
+    if original_slots[0] not in legal:
+        raise ValueError(
+            f"{src.task}/ep{src.episode}: 原始首对 {original_slots[0]} 不在最近邻合法集合 "
+            f"{legal} 内 —— 最近邻复刻与 env 实际行为脱节，停机排查。"
+            f"各槽位 argmin 余量 ={[round(m, 5) for m in nearest_neighbor_margin(slot_xy)]}"
+        )
     tail = original_slots[1:]
     specs = []
-    for idx, first in enumerate(bin_pairs(src.num_bins)):
+    for first in legal:
+        idx = pair_index(first, src.num_bins)
         slots = (first,) + tail
         specs.append(
             ClipVariant(
@@ -443,29 +594,55 @@ def plan_table(
     episodes: Iterable[int] = CANDIDATE_EPISODES,
     repo_root: Path = REPO_ROOT,
     require_common: bool = True,
+    geometry: Mapping[tuple[str, int], Sequence[Sequence[float]]] | None = None,
 ) -> dict:
-    """筛选后的计划表：逐 episode 行 + 总计，供 --dry-run 与单测对账。"""
+    """筛选后的计划表：逐 episode 行 + 总计，供 --dry-run 与单测对账。
+
+    ``geometry``（{(task, episode): slot_xy}）决定这张表是真值还是上界：
+
+    * **给了几何**：``variant_count`` / ``total`` 是最近邻约束下的**真实**变体数；
+    * **没给几何**：真实变体数**算不出来**（它依赖实测布局）。此时 ``variant_count`` 与
+      ``total`` 一律为 ``None``，只给 ``*_upper_bound``。**绝不返回一个看起来像真值的
+      C(4,2) 全枚举总数** —— 那正是本轮要消灭的旧口径。
+    """
     selected = select_sources(tasks, episodes, repo_root, require_common)
     rows = []
     total = 0
+    total_upper = 0
     for task in tasks:
         for src in selected[task]:
-            count = src.num_pairs
-            total += count
-            rows.append(
-                {
-                    "task": task,
-                    "episode": src.episode,
-                    "env_seed": src.env_seed,
-                    "difficulty": src.difficulty,
-                    "num_bins": src.num_bins,
-                    "swap_times": src.swap_times,
-                    "variant_count": count,
-                }
-            )
+            upper = src.num_pairs_upper_bound
+            total_upper += upper
+            slot_xy = None if geometry is None else geometry.get((task, src.episode))
+            row = {
+                "task": task,
+                "episode": src.episode,
+                "env_seed": src.env_seed,
+                "difficulty": src.difficulty,
+                "num_bins": src.num_bins,
+                "swap_times": src.swap_times,
+                "variant_count_upper_bound": upper,
+            }
+            if slot_xy is None:
+                row.update({"variant_count": None, "legal_pairs": None, "nn_margin_min": None})
+            else:
+                legal = nearest_neighbor_pairs(slot_xy)
+                total += len(legal)
+                row.update(
+                    {
+                        "variant_count": len(legal),
+                        "legal_pairs": [f"{i}{j}" for i, j in legal],
+                        "nn_margin_min": min(nearest_neighbor_margin(slot_xy)),
+                    }
+                )
+            rows.append(row)
+
+    available = bool(rows) and all(row["variant_count"] is not None for row in rows)
     return {
         "rows": rows,
-        "total": total,
+        "geometry_available": available,
+        "total": total if available else None,
+        "total_upper_bound": total_upper,
         "clip": {"start": CLIP_START, "end": CLIP_END, "length": CLIP_LEN},
         "topo_table": {f"{i}{j}": name for (i, j), name in topo_table().items()},
     }
@@ -485,25 +662,51 @@ def main(argv: Sequence[str] | None = None) -> int:
         action="store_false",
         help="不要求两 env 取共同源号（默认要求）",
     )
+    parser.add_argument(
+        "--original-index",
+        default=str(SCRIPT_DIR / "outputs" / "phase0" / "original_index.json"),
+        help="Phase 0 索引；提供后才能算出最近邻约束下的真实变体数（否则只能给上界）",
+    )
     args = parser.parse_args(argv)
+
+    index_path = Path(args.original_index)
+    geometry = load_slot_xy_index(index_path) if index_path.exists() else None
 
     table = plan_table(
         tasks=tuple(item.strip() for item in args.tasks.split(",") if item.strip()),
         episodes=tuple(int(item) for item in args.episodes.split(",") if item.strip()),
         require_common=args.require_common,
+        geometry=geometry,
     )
     print(
         f"clip 区间 env step [{CLIP_START},{CLIP_END}) 共 {CLIP_LEN} 帧；"
         f"窗口 1 在 clip 帧 {swap_windows_clip(1)[0]}"
     )
-    print(f"{'task':<18} {'ep':>4} {'env_seed':>9} {'难度':<7} {'bin':>3} {'k':>2} {'变体数':>6}")
+    has_geometry = table["geometry_available"]
+    print(
+        f"{'task':<18} {'ep':>4} {'env_seed':>9} {'难度':<7} {'bin':>3} {'k':>2} "
+        f"{'变体数':>6}  {'合法对':<14} {'argmin余量':>10}"
+    )
     for row in table["rows"]:
+        count = row["variant_count"]
+        legal = row["legal_pairs"]
+        margin = row["nn_margin_min"]
         print(
             f"{row['task']:<18} {row['episode']:>4} {row['env_seed']:>9} "
             f"{row['difficulty']:<7} {row['num_bins']:>3} {row['swap_times']:>2} "
-            f"{row['variant_count']:>6}"
+            f"{(str(count) if count is not None else '≤' + str(row['variant_count_upper_bound'])):>6}"
+            f"  {(','.join(legal) if legal else '—'):<14} "
+            f"{(f'{margin:.4f}' if margin is not None else '—'):>10}"
         )
-    print(f"合计 {table['total']} 条")
+    if has_geometry:
+        print(f"合计 {table['total']} 条")
+    else:
+        print(f"合计 ≤{table['total_upper_bound']} 条（上界）")
+        print(
+            f"⚠ 未找到 Phase 0 几何（{index_path}），只能给出 C(n,2) 全枚举上界。"
+            "真实变体数受最近邻约束（idx2 恒为 idx1 的严格最近邻），"
+            "必须有实测 slot_xy 才能算出 —— 先跑 probe_original.py。"
+        )
     print("拓扑类别表：" + "  ".join(f"{k}={v}" for k, v in table["topo_table"].items()))
     return 0
 

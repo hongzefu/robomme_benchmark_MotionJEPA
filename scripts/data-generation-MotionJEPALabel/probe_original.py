@@ -211,6 +211,9 @@ def main(argv=None) -> int:
                 # ★ 后续窗口固定值之源：原始 bin 对 → 原始槽位对
                 "original_bin_pairs": [list(pair) for pair in bin_pairs_seq],
                 "original_slot_pairs": [list(pair) for pair in slot_pairs],
+                # ★ 第一主角：原版 _load_scene 定死的 idx1（idx2 是运行时最近邻回填）。
+                #   有了它，验收才能做「原版 idx2 == NN(idx1)」的有方向判据。
+                "original_idx1": result.get("original_idx1"),
                 "signature": signature_of(slot_pairs),
                 "n_timesteps": result["n_timesteps"],
                 "demo_prefix": result["demo_prefix"],

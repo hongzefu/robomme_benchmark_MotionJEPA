@@ -47,6 +47,7 @@ from clip_plan import (  # noqa: E402
     CLIP_START,
     EVAL_TASKS,
     REPO_ROOT,
+    nearest_neighbor_pairs,
     select_sources,
     variant_specs,
 )
@@ -129,6 +130,7 @@ def main(argv=None) -> int:
 
     jobs: list[ClipJob] = []
     baseline: dict[tuple[str, int], dict] = {}
+    legal_pairs: dict[tuple[str, int], list[tuple[int, int]]] = {}
     expected: dict[tuple[str, int], int] = {}
     skipped = 0
     for task in tasks:
@@ -148,8 +150,28 @@ def main(argv=None) -> int:
                 )
                 return 1
             baseline[key] = record["fingerprint"]
+            slot_xy = (record.get("geometry") or {}).get("slot_xy")
+            if not slot_xy:
+                print(
+                    f"ERROR: {task}/ep{src.episode} 的 Phase 0 记录缺 geometry.slot_xy，"
+                    "算不出最近邻合法对 —— 请重跑 probe_original.py",
+                    file=sys.stderr,
+                )
+                return 1
             original_bin_pairs = tuple(tuple(pair) for pair in record["original_bin_pairs"])
-            specs = variant_specs(src, original_bin_pairs)
+            specs = variant_specs(src, original_bin_pairs, slot_xy)
+            legal_pairs[key] = nearest_neighbor_pairs(slot_xy)
+            # 交叉校验：纯函数层（clip_plan）与运行期几何层（swap_inject.slot_geometry）
+            # 是两条独立的计算路径，这里把它们锁在一起。旧版 Phase 0 索引没有这个键，跳过。
+            recorded = (record.get("geometry") or {}).get("legal_event_pairs")
+            if recorded is not None:
+                if [list(pair) for pair in legal_pairs[key]] != [list(p) for p in recorded]:
+                    print(
+                        f"ERROR: {task}/ep{src.episode} 的最近邻合法对两条路径算出不同结果："
+                        f"clip_plan={legal_pairs[key]} vs Phase 0 索引={recorded}",
+                        file=sys.stderr,
+                    )
+                    return 1
             expected[key] = len(specs)
             for spec in specs:
                 variant_key = (task, src.episode, spec.variant_idx)
@@ -216,6 +238,7 @@ def main(argv=None) -> int:
     gate_failures: list[str] = []
     original_counts: dict[tuple[str, int], int] = {}
     tail_slots: dict[tuple[str, int], set] = {}
+    event_slots_seen: dict[tuple[str, int], list[tuple[int, int]]] = {}
     manifest = []
     for result in sorted(
         all_ok.values(), key=lambda item: (item["task"], item["src_episode"], item["variant_idx"])
@@ -233,6 +256,7 @@ def main(argv=None) -> int:
         tail_slots.setdefault(key, set()).add(
             tuple(tuple(pair) for pair in result["slot_pairs"][1:])
         )
+        event_slots_seen.setdefault(key, []).append(tuple(result["event_slots"]))
         manifest.append(
             {
                 "task": result["task"],
@@ -273,6 +297,13 @@ def main(argv=None) -> int:
         )
         if actual != count:
             gate_failures.append(f"{key[0]}/ep{key[1]}: 成功 {actual} 条，期望 {count} 条")
+        # ★ 最近邻闸门：实测事件槽位对集合必须恰等于该源的合法对集合（不多不少、无重复）
+        seen = sorted(event_slots_seen.get(key, []))
+        if seen != legal_pairs.get(key, []):
+            gate_failures.append(
+                f"{key[0]}/ep{key[1]}: 事件槽位对集合 {seen} ≠ 最近邻合法集合 "
+                f"{legal_pairs.get(key)}"
+            )
         if original_counts.get(key, 0) != 1:
             gate_failures.append(
                 f"{key[0]}/ep{key[1]}: is_original 数为 {original_counts.get(key, 0)}，应恰为 1"

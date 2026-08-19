@@ -54,6 +54,7 @@ from clip_plan import (  # noqa: E402
     CLIP_START,
     clip_visible_windows,
     net_permutation,
+    pair_index,
     signature_of,
     slot_pairs_from_bin_pairs,
     swap_windows_clip,
@@ -71,6 +72,7 @@ from swap_inject import (  # noqa: E402
     measure_window,
     measure_window_partial,
     min_clearance,
+    readback_idx1,
     readback_pairs,
     slot_geometry,
 )
@@ -445,8 +447,24 @@ def write_clip(
         gt.create_dataset("windows_env", data=np.asarray(windows_env, dtype=np.int32))
         gt.create_dataset("clip_start_env_step", data=np.int32(CLIP_START))
         gt.create_dataset("clip_len", data=np.int32(CLIP_LEN))
-        # ★ 本轮唯一的事件：窗口 1 移动的槽位对及其相对几何
+        # ★ 主标签轴：窗口 1 移动的槽位对（受最近邻约束，取值域 4 类）
         gt.create_dataset("event_slots", data=np.asarray(event_slots, dtype=np.int8))
+        gt.create_dataset("event_pair_index", data=np.int64(pair_index(event_slots)))
+        # ── 最近邻约束的自证：每条 clip 自带复核所需的一切，下游不必回头读 Phase 0 ──
+        legal_pairs = [tuple(pair) for pair in geometry["legal_event_pairs"]]
+        gt.create_dataset("is_nn_pair", data=np.int8(int(event_slots in legal_pairs)))
+        gt.create_dataset(
+            "slot_nearest_neighbor",
+            data=np.asarray(geometry["slot_nearest_neighbor"], dtype=np.int8),
+        )
+        gt.create_dataset(
+            "slot_nn_margin", data=np.asarray(geometry["slot_nn_margin"], dtype=np.float32)
+        )
+        gt.create_dataset(
+            "legal_event_slots", data=np.asarray(legal_pairs, dtype=np.int8)
+        )
+        # 协变量（非主标签轴）：最近邻子集里只出现 same_column / cross_aligned，
+        # cross_diagonal 恒空 —— 这是本 8 源的实测事实，不是几何必然。
         gt.create_dataset("topo_class", data=topo_class(event_slots), dtype=str_dtype)
         gt.create_dataset("pair_distance", data=np.float32(pair_info["distance"]))
         gt.create_dataset("pair_azimuth", data=np.float32(pair_info["azimuth"]))
@@ -545,6 +563,7 @@ def run_episode(job: ClipJob) -> dict[str, Any]:
     caught: BaseException | None = None
     error_traceback: str | None = None
     fingerprint: dict[str, Any] | None = None
+    readback_idx1_final: list[int | None] | None = None
     readback_after_inject: list | None = None
     readback_final: list | None = None
     last_step: int | None = None
@@ -656,6 +675,8 @@ def run_episode(job: ClipJob) -> dict[str, Any]:
         # rollout 后、close 前读回：control 模式此刻 idx2 已被最近邻全部回填（原始序列之源）；
         # clip 模式必须仍等于计划（防最近邻逻辑意外覆写）。
         readback_final = readback_pairs(unwrapped)
+        # 控制跑额外读回第一主角 idx1 —— 验收才能做「原版 idx2 == NN(idx1)」的有方向判据
+        readback_idx1_final = readback_idx1(unwrapped) if job.mode == "control" else None
         if job.mode == "clip":
             planned = [tuple(sorted(pair)) for pair in job.bin_pairs]
             if readback_final != planned:
@@ -702,7 +723,10 @@ def run_episode(job: ClipJob) -> dict[str, Any]:
         }
 
     try:
-        return _postprocess(job, raw_path, trace, fingerprint, readback_final, readback_after_inject, base)
+        return _postprocess(
+            job, raw_path, trace, fingerprint, readback_final,
+            readback_after_inject, readback_idx1_final, base,
+        )
     except Exception as exc:  # noqa: BLE001
         _discard_empty_h5(raw_path, job.wrapper_episode)
         return {
@@ -758,6 +782,7 @@ def _postprocess(
     fingerprint: Mapping[str, Any],
     readback_final: Sequence[tuple[int, int]],
     readback_after_inject: Sequence | None,
+    readback_idx1_final: Sequence[int | None] | None,
     base: Mapping[str, Any],
 ) -> dict[str, Any]:
     """成功路径的后处理：对账 → 槽位几何 → 裁剪/落 swap_gt → trace 落 npz。"""
@@ -805,12 +830,18 @@ def _postprocess(
         **bystanders,
         "contacts": contacts,
         "fingerprint": fingerprint,
+        "original_idx1": (
+            None if readback_idx1_final is None else list(readback_idx1_final)
+        ),
         "geometry": {
             "slot_xy": geometry["slot_xy"],
             "reference_axis_deg": geometry["reference_axis_deg"],
             "pairs": {
                 f"{i}{j}": info for (i, j), info in geometry["pairs"].items()
             },
+            "slot_nearest_neighbor": geometry["slot_nearest_neighbor"],
+            "slot_nn_margin": geometry["slot_nn_margin"],
+            "legal_event_pairs": geometry["legal_event_pairs"],
         },
     }
 

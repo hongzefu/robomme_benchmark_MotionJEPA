@@ -4,13 +4,18 @@
 不跑任何 rollout，纯函数层面校验，秒级完成。目的是在花掉小时级 rollout 之前就排除
 swap_times 复算、难度→bin 数映射、region4 模板、槽位换算、编号公式写错。
 
-本轮宗旨是「除了 bin 的初始位置和第一次 swap 的排列组合，其他全部保持一致」，
-所以最要紧的两条断言是：
+本轮宗旨是「除了 bin 的初始位置和第一次 swap 的排列组合，其他全部保持一致」，且第一次
+swap 的可选对受**最近邻约束**（idx2 恒为 idx1 的严格最近邻，见 clip_plan 模块 docstring）。
+所以最要紧的三条断言是：
 
-* ``test_tail_slot_pairs_invariant_across_variants``：窗口 ≥2 的**槽位**对跨全部 6 条
+* ``test_variant_specs_enumerates_only_nearest_neighbor_pairs``：只枚举最近邻可达对；
+* ``test_tail_slot_pairs_invariant_across_variants``：窗口 ≥2 的**槽位**对跨全部同源
   变体逐条相同 —— 后 30 帧不是第二个变化因子；
 * ``test_is_original_reproduces_original_bin_pairs``：is_original 变体的注入序列退化为
   原始 bin 对序列 —— 仍逐位复现官方 episode。
+
+几何常量（``MEASURED_SLOT_XY`` / ``MEASURED_ORIGINAL_BIN_PAIRS``）内嵌在本文件里，
+**不读 outputs/**，保证 lightweight 套件在任何机器上都能跑（AGENTS.md 规则 3）。
 
 运行（使用 uv）：
     uv run python -m pytest tests/lightweight/test_swap_clip_plan.py -q
@@ -54,8 +59,13 @@ from clip_plan import (  # noqa: E402
     clip_visible_windows,
     decode_staging_episode,
     decode_variant_seed,
+    load_slot_xy_index,
+    nearest_neighbor,
+    nearest_neighbor_margin,
+    nearest_neighbor_pairs,
     net_permutation,
     nominal_distance_video,
+    pair_index,
     plan_table,
     select_sources,
     signature_of,
@@ -226,16 +236,71 @@ def test_filters_actually_bite() -> None:
     assert [src.episode for src in per_task["VideoUnmaskSwap"]] == [91, 95, 98, 99]
 
 
-def test_plan_total_48() -> None:
-    table = plan_table()
+# ── Phase 0 实测几何（内嵌常量，不读 outputs/）─────────────────────────────
+#
+# 8 个入选源 reset 后的槽位 xy，取自 Phase 0 控制跑的 geometry.slot_xy。布局只由 env_seed
+# 决定、逐位可复现，所以可以安全地当常量钉在这里；与实际 Phase 0 产物的对拍见
+# test_measured_layouts_match_phase0_index（有产物才跑）。
+MEASURED_SLOT_XY = {
+    ("ButtonUnmaskSwap", 91): ((0.018860617652535439, -0.032360583543777466), (0.037674009799957275, 0.14158430695533752), (0.13856323063373566, 0.16328300535678864), (0.1379207968711853, -0.045993141829967499)),
+    ("ButtonUnmaskSwap", 95): ((0.0028231116011738777, -0.014349059201776981), (-0.026936819776892662, 0.15235261619091034), (0.1182674914598465, 0.19348432123661041), (0.1070883646607399, -0.009289667010307312)),
+    ("ButtonUnmaskSwap", 98): ((0.038808993995189667, -0.016091369092464447), (0.0010299879359081388, 0.22210311889648438), (0.12315738946199417, 0.13342700898647308), (0.069320403039455414, -0.13129152357578278)),
+    ("ButtonUnmaskSwap", 99): ((-0.028430763632059097, -0.074804984033107758), (0.033607639372348785, 0.18174615502357483), (0.11400412768125534, 0.1101541668176651), (0.096989408135414124, -0.11219239234924316)),
+    ("VideoUnmaskSwap", 91): ((0.081310369074344635, 0.065327830612659454), (-0.053857926279306412, -0.076493784785270691), (-0.15639244019985199, -0.022627763450145721), (-0.026895113289356232, 0.11353651434183121)),
+    ("VideoUnmaskSwap", 95): ((-0.037683755159378052, 0.13056036829948425), (0.069486118853092194, 0.019286032766103745), (0.0034428178332746029, -0.13628381490707397), (-0.16626280546188354, -0.0019962657243013382)),
+    ("VideoUnmaskSwap", 98): ((0.034369964152574539, 0.1008264422416687), (0.085645034909248352, -0.12671147286891937), (-0.13782745599746704, -0.10730509459972382), (-0.13243746757507324, 0.097971305251121521)),
+    ("VideoUnmaskSwap", 99): ((-0.054652493447065353, 0.059143904596567154), (0.10435368120670319, 0.061266347765922546), (0.06396271288394928, -0.12674188613891602), (-0.092229895293712616, -0.037124276161193848)),
+}
+
+# 各源 Phase 0 实测的原始 bin 对序列（窗口 ≥2 的 idx2 只能实跑读回，静态算不出）
+MEASURED_ORIGINAL_BIN_PAIRS = {
+    ("ButtonUnmaskSwap", 91): ((1, 2), (1, 2), (0, 3)),
+    ("ButtonUnmaskSwap", 95): ((0, 3), (1, 2)),
+    ("ButtonUnmaskSwap", 98): ((1, 2), (1, 2)),
+    ("ButtonUnmaskSwap", 99): ((0, 3), (1, 2), (0, 3)),
+    ("VideoUnmaskSwap", 91): ((0, 3), (1, 2)),
+    ("VideoUnmaskSwap", 95): ((0, 1), (0, 2)),
+    ("VideoUnmaskSwap", 98): ((0, 3), (1, 2)),
+    ("VideoUnmaskSwap", 99): ((0, 1), (0, 1)),
+}
+
+# 由上面几何按严格 argmin 推出的合法对集合 —— 本轮数据集的变体空间真值
+EXPECTED_LEGAL_PAIRS = {
+    ("ButtonUnmaskSwap", 91): [(0, 3), (1, 2)],
+    ("ButtonUnmaskSwap", 95): [(0, 3), (1, 2)],
+    ("ButtonUnmaskSwap", 98): [(0, 3), (1, 2)],
+    ("ButtonUnmaskSwap", 99): [(0, 3), (1, 2)],
+    ("VideoUnmaskSwap", 91): [(0, 3), (1, 2)],
+    ("VideoUnmaskSwap", 95): [(0, 1), (0, 3), (1, 2)],
+    ("VideoUnmaskSwap", 98): [(0, 3), (1, 2), (2, 3)],
+    ("VideoUnmaskSwap", 99): [(0, 1), (0, 3), (2, 3)],
+}
+
+EXPECTED_TOTAL_CLIPS = 19
+
+
+def test_plan_table_with_geometry_totals_19() -> None:
+    table = plan_table(geometry=MEASURED_SLOT_XY)
+    assert table["geometry_available"] is True
     per_task: dict[str, int] = {task: 0 for task in EVAL_TASKS}
     for row in table["rows"]:
         per_task[row["task"]] += row["variant_count"]
-    assert per_task["VideoUnmaskSwap"] == 24
-    assert per_task["ButtonUnmaskSwap"] == 24
-    assert table["total"] == 48
-    # 每源恒 6 条 —— 这是剔掉 3-bin 源换来的一致性
-    assert [row["variant_count"] for row in table["rows"]] == [6] * 8
+    assert per_task["VideoUnmaskSwap"] == 11
+    assert per_task["ButtonUnmaskSwap"] == 8
+    assert table["total"] == EXPECTED_TOTAL_CLIPS
+    # 每源 2~3 条，由该源布局的最近邻结构决定（不再是恒 6）
+    assert [row["variant_count"] for row in table["rows"]] == [2, 3, 3, 3, 2, 2, 2, 2]
+    assert all(row["variant_count_upper_bound"] == 6 for row in table["rows"])
+
+
+def test_plan_table_without_geometry_reports_upper_bound_only() -> None:
+    """没有实测几何时算不出真实变体数 —— 必须给 None，不能给一个像真值的 48。"""
+    table = plan_table()
+    assert table["geometry_available"] is False
+    assert table["total"] is None
+    assert table["total_upper_bound"] == 48
+    assert all(row["variant_count"] is None for row in table["rows"])
+    assert all(row["legal_pairs"] is None for row in table["rows"])
 
 
 # ── 槽位换算：本轮「后续窗口固定」的实现核心 ─────────────────────────────────
@@ -274,25 +339,73 @@ def test_slot_tracking_worked_example() -> None:
 # ── 变体构造：宗旨的两条机器判据 ─────────────────────────────────────────────
 
 # ButtonUnmaskSwap/ep91 的原始序列（Phase 0 实测，bin 口径）；k=3、4 bin。
-ORIGINAL_EP91 = ((1, 2), (1, 2), (0, 3))
+ORIGINAL_EP91 = MEASURED_ORIGINAL_BIN_PAIRS[("ButtonUnmaskSwap", 91)]
+SLOT_XY_EP91 = MEASURED_SLOT_XY[("ButtonUnmaskSwap", 91)]
 
 
 def _spec_fixture():
     src = source_episode("ButtonUnmaskSwap", 91)
-    return src, variant_specs(src, ORIGINAL_EP91)
+    return src, variant_specs(src, ORIGINAL_EP91, SLOT_XY_EP91)
 
 
-def test_variant_specs_shape() -> None:
+def test_variant_specs_enumerates_only_nearest_neighbor_pairs() -> None:
+    """★ 本轮核心判据：只枚举最近邻可达对，且 variant_idx 是槽位对的字典序下标。"""
     src, specs = _spec_fixture()
-    assert len(specs) == 6
-    assert [spec.variant_idx for spec in specs] == list(range(6))
+    legal = EXPECTED_LEGAL_PAIRS[("ButtonUnmaskSwap", 91)]
+    assert len(specs) == len(legal)
+    assert sorted(spec.event_slots for spec in specs) == legal
+    assert [spec.variant_idx for spec in specs] == [pair_index(pair) for pair in legal]
     assert all(spec.swap_times == src.swap_times for spec in specs)
-    # 窗口 1 的槽位对恰好枚举完 C(4,2)
-    assert sorted(spec.event_slots for spec in specs) == bin_pairs(4)
+    # 对角对结构上进不来（它们从来不是任何 bin 的最近邻）
+    assert not any(spec.event_slots in ((0, 2), (1, 3)) for spec in specs)
+
+
+@pytest.mark.parametrize("key", sorted(MEASURED_SLOT_XY))
+def test_measured_layouts_yield_expected_legal_pairs(key: tuple[str, int]) -> None:
+    """逐源钉死合法对集合与条数 —— 数据集规模的真值来源。"""
+    legal = nearest_neighbor_pairs(MEASURED_SLOT_XY[key])
+    assert legal == EXPECTED_LEGAL_PAIRS[key]
+    assert 2 <= len(legal) <= 3
+
+
+def test_measured_layouts_total_19_clips() -> None:
+    total = sum(len(pairs) for pairs in EXPECTED_LEGAL_PAIRS.values())
+    assert total == EXPECTED_TOTAL_CLIPS
+    video = sum(len(v) for k, v in EXPECTED_LEGAL_PAIRS.items() if k[0] == "VideoUnmaskSwap")
+    assert video == 11
+
+
+@pytest.mark.parametrize("key", sorted(MEASURED_ORIGINAL_BIN_PAIRS))
+def test_original_first_pair_is_always_legal(key: tuple[str, int]) -> None:
+    """原版 idx2 本就是最近邻回填 ⇒ 原始首对必落在合法集合内（8/8）。
+
+    这条不成立就说明本模块的最近邻复刻与 env 实际行为脱节。
+    """
+    first_slots = slot_pairs_from_bin_pairs(MEASURED_ORIGINAL_BIN_PAIRS[key], 4)[0]
+    assert first_slots in EXPECTED_LEGAL_PAIRS[key]
+
+
+def test_measured_layouts_match_phase0_index() -> None:
+    """有 Phase 0 产物时，与内嵌常量逐位对拍；没有则跳过（lightweight 不依赖数据集）。"""
+    path = (
+        REPO_ROOT
+        / "scripts"
+        / "data-generation-MotionJEPALabel"
+        / "outputs"
+        / "phase0"
+        / "original_index.json"
+    )
+    if not path.exists():
+        pytest.skip("没有 Phase 0 产物")
+    measured = load_slot_xy_index(path)
+    for key, expected in MEASURED_SLOT_XY.items():
+        assert key in measured, f"Phase 0 索引里缺 {key}"
+        for actual_row, expected_row in zip(measured[key], expected):
+            assert tuple(actual_row[:2]) == tuple(expected_row)
 
 
 def test_tail_slot_pairs_invariant_across_variants() -> None:
-    """★ 宗旨判据：窗口 ≥2 的槽位对跨全部 6 条变体逐条相同。
+    """★ 宗旨判据：窗口 ≥2 的槽位对跨同源全部变体逐条相同。
 
     这保证后 30 帧里第二次 swap 的 teleport 起止位置、被锁定旁观 bin 的位置集合
     完全一致 —— 后段不是第二个变化因子。
@@ -301,8 +414,19 @@ def test_tail_slot_pairs_invariant_across_variants() -> None:
     tails = {spec.slot_pairs[1:] for spec in specs}
     assert len(tails) == 1, f"窗口 ≥2 的槽位对出现了 {len(tails)} 种，应恒为 1 种"
     assert tails.pop() == slot_pairs_from_bin_pairs(ORIGINAL_EP91, 4)[1:]
-    # 而注入用的 bin 对在窗口 ≥2 上**本来就该跟着第一次 swap 变** —— 那是换算的结果
-    assert len({spec.bin_pairs[1:] for spec in specs}) > 1
+
+
+def test_tail_bin_pairs_follow_first_swap() -> None:
+    """窗口 ≥2 的**注入 bin 对**本来就该跟着第一次 swap 变 —— 那是槽位换算的结果。
+
+    这条原先挂在上面那个用例末尾（断言同源变体的 tail bin 对不止一种），但最近邻约束
+    下每源只剩 2~3 条，完全可能全部撞成同一种（实测 Button ep91 的两条变体 tail 都是
+    ((1,2),(0,3))）。所以改成对换算函数本身举手算样例，不依赖合法集合的大小。
+    """
+    tail = ((1, 2), (0, 3))
+    assert bin_pairs_from_slot_pairs(((0, 1),) + tail, 4) != bin_pairs_from_slot_pairs(
+        ((0, 2),) + tail, 4
+    )
 
 
 def test_is_original_reproduces_original_bin_pairs() -> None:
@@ -317,7 +441,79 @@ def test_is_original_reproduces_original_bin_pairs() -> None:
 def test_variant_specs_rejects_length_mismatch() -> None:
     src = source_episode("ButtonUnmaskSwap", 91)  # k=3
     with pytest.raises(ValueError):
-        variant_specs(src, ((0, 1), (2, 3)))  # 只给了 2 段
+        variant_specs(src, ((0, 1), (2, 3)), SLOT_XY_EP91)  # 只给了 2 段
+
+
+def test_variant_specs_rejects_illegal_original_first_pair() -> None:
+    """原始首对不在合法集合内 ⇒ fail-loud，绝不静默产出一个没有 is_original 的源。"""
+    src = source_episode("ButtonUnmaskSwap", 91)  # k=3
+    with pytest.raises(ValueError, match="不在最近邻合法集合"):
+        variant_specs(src, ((0, 2), (1, 2), (0, 3)), SLOT_XY_EP91)  # (0,2) 是对角对
+
+
+def test_variant_specs_requires_matching_slot_count() -> None:
+    src = source_episode("ButtonUnmaskSwap", 91)
+    with pytest.raises(ValueError):
+        variant_specs(src, ORIGINAL_EP91, SLOT_XY_EP91[:3])
+
+
+# ── 最近邻：与 env 运行时回填逐字同构 ────────────────────────────────────────
+
+
+def test_nearest_neighbor_breaks_ties_toward_lowest_index() -> None:
+    """env 的扫描是严格 ``dist < closest_dist`` + 按下标升序 ⇒ 平局取下标最小。
+
+    写成 ``<=`` 就变成取下标最大。实测布局的 argmin 余量都在 0.0089 以上、不会触发平局，
+    所以这条写反了**数据发现不了**，只能靠本用例钉住。
+    """
+    layout = ((0.0, 0.0), (1.0, 0.0), (-1.0, 0.0), (5.0, 5.0))
+    assert nearest_neighbor(layout, 0) == 1  # slot1 与 slot2 等距，取下标小的
+
+
+def test_nearest_neighbor_pairs_size_bounds() -> None:
+    """4 槽位下合法对数恒落在 [2,3]：全局最近的一对必互为最近邻并去重成 1 对。"""
+    import random
+
+    rng = random.Random(0)
+    for _ in range(500):
+        layout = tuple((rng.uniform(-0.3, 0.3), rng.uniform(-0.3, 0.3)) for _ in range(4))
+        assert 2 <= len(nearest_neighbor_pairs(layout)) <= 3
+
+
+def test_diagonal_can_be_nearest_neighbor_in_principle() -> None:
+    """★ 反例存在性：cross_diagonal 在本 8 源上恒为空是**实测事实、不是几何必然**。
+
+    有了这条，后人就不会把「只有两个拓扑类」硬编码成不变量。
+    """
+    # 把 slot0 与 slot2（对角）摆得比任何同列/同侧对都近
+    layout = ((0.0, 0.0), (0.0, 0.5), (0.01, 0.0), (0.5, 0.5))
+    legal = nearest_neighbor_pairs(layout)
+    assert (0, 2) in legal
+    assert topo_class((0, 2)) == TOPO_CROSS_DIAGONAL
+
+
+def test_nearest_neighbor_margin_matches_manual() -> None:
+    layout = ((0.0, 0.0), (1.0, 0.0), (3.0, 0.0), (7.0, 0.0))
+    margins = nearest_neighbor_margin(layout)
+    assert margins[0] == pytest.approx(2.0)  # slot0：最近 1.0、次近 3.0
+    assert margins[1] == pytest.approx(1.0)  # slot1：最近 1.0、次近 2.0
+
+
+def test_pair_index_is_inverse_of_bin_pairs() -> None:
+    for idx, pair in enumerate(bin_pairs(4)):
+        assert pair_index(pair) == idx
+        assert pair_index((pair[1], pair[0])) == idx  # 无序对，顺序无关
+
+
+def test_bin_pairs_still_returns_all_six() -> None:
+    """★ 回归守卫：bin_pairs 必须保持「全部对」语义。
+
+    swap_inject.slot_geometry 靠它枚举全部 6 对的几何协变量；一旦有人把它改成「只返回
+    合法对」，merge_clip_h5 取 pairs[f"{i}{j}"] 会缺项、pair_distance 静默变 None，
+    要等到出图阶段才炸。
+    """
+    assert bin_pairs(4) == [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
+    assert len(bin_pairs(4)) == 6
 
 
 def test_net_permutation() -> None:
@@ -432,16 +628,16 @@ def test_staging_and_seed_roundtrip() -> None:
 
 
 def test_variant_seed_unique_and_disjoint_from_env_seeds() -> None:
-    """全部 48 条的 variant_seed 互异，且不与任何源 env_seed 撞号。"""
+    """全部 19 条的 variant_seed 互异，且不与任何源 env_seed 撞号。"""
     seen: set[int] = set()
     selected = select_sources()
     for task in EVAL_TASKS:
         for src in selected[task]:
-            for idx in range(src.num_pairs):
-                seed = variant_seed(src.env_seed, idx)
+            for pair in EXPECTED_LEGAL_PAIRS[(task, src.episode)]:
+                seed = variant_seed(src.env_seed, pair_index(pair))
                 assert seed not in seen
                 seen.add(seed)
-    assert len(seen) == 48
+    assert len(seen) == EXPECTED_TOTAL_CLIPS
     assert not seen & {value[0] for value in EXPECTED_SOURCE.values()}
 
 

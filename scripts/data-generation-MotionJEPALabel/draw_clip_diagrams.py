@@ -5,11 +5,11 @@
 1. 四个槽位的实际布局（bin 的初始 xy，即「允许的变化维度 1」）；
 2. 这条 clip 的唯一事件 —— 第一次 swap 换了哪两个槽位（箭头 + 拓扑类别）；
 3. 哪一条是 is_original（与官方 episode 逐位一致的那条）；
-4. 这条 clip 里物理引擎**检测到了什么接触**（红框 = 容器互撞；机械臂 ↔ 容器实测 0/48）。
+4. 这条 clip 里物理引擎**检测到了什么接触**（红框 = 容器互撞；机械臂 ↔ 容器实测恒 0）。
 
 另出两张全局接触图：
 
-* `contact_overview.png` —— 48 条 clip 的接触矩阵（谁撞了、多重、撞了几帧）；
+* `contact_overview.png` —— 全部 clip 的接触矩阵（谁撞了、多重、撞了几帧）；
 * `contact_timeline.png` —— 每条 clip 的接触时间轴（接触落在 clip 的哪些帧）。
 
 输出目录：{gen_dir}/diagrams/
@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Sequence
@@ -39,7 +40,15 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from clip_plan import CLIP_LEN, CLIP_MARGIN, EVAL_TASKS, SLOT_ROLE, swap_windows_clip  # noqa: E402
+from clip_plan import (  # noqa: E402
+    CLIP_LEN,
+    CLIP_MARGIN,
+    EVAL_TASKS,
+    REQUIRED_BINS,
+    SLOT_ROLE,
+    bin_pairs,
+    swap_windows_clip,
+)
 
 TOPO_COLOR = {
     "same_column": "#1f77b4",
@@ -99,7 +108,7 @@ def draw_clip(ax, record: dict) -> None:
     for spine in ax.spines.values():
         spine.set_color("#cccccc")
 
-    # 接触检测：容器互撞用红色粗边框圈出（机械臂 ↔ 容器实测 0/48，若非 0 则另加标注）
+    # 接触检测：容器互撞用红色粗边框圈出（机械臂 ↔ 容器实测恒 0，若非 0 则另加标注）
     bb = record.get("contact_bin_bin_forceful_frames", 0)
     rb = record.get("contact_robot_bin_forceful_frames", 0)
     if bb:
@@ -129,25 +138,55 @@ def draw_clip(ax, record: dict) -> None:
 
 
 def draw_episode(task: str, src_episode: int, records: Sequence[dict], out_dir: Path) -> Path:
+    """每源一张图：6 个格子按 variant_idx（= 槽位对的字典序下标）落位。
+
+    最近邻约束下每源只有 2~3 条，空格子**本身就是信息** —— 它把「这个槽位对结构上进不来」
+    画了出来，所以刻意保留全部 6 格并逐一标注，而不是按实际条数缩成 2~3 格。
+    """
     records = sorted(records, key=lambda item: item["variant_idx"])
-    fig, axes = plt.subplots(2, 3, figsize=(9.6, 7.0))
-    for ax, record in zip(axes.flat, records):
-        draw_clip(ax, record)
-    for ax in axes.flat[len(records):]:
+    n_cols = 3
+    fig, axes = plt.subplots(2, n_cols, figsize=(9.6, 7.0))
+    all_pairs = bin_pairs(REQUIRED_BINS)
+    occupied = {}
+    for record in records:
+        idx = record["variant_idx"]
+        if idx >= axes.size:  # 取代 zip 的静默截断：格子不够必须炸，不能悄悄少画
+            raise SystemExit(
+                f"ERROR: {task}/ep{src_episode} 的 variant_idx={idx} 超出 {axes.size} 个格子"
+            )
+        occupied[idx] = record
+    for idx, ax in enumerate(axes.flat):
+        record = occupied.get(idx)
+        if record is not None:
+            draw_clip(ax, record)
+            continue
         ax.axis("off")
+        pair = all_pairs[idx] if idx < len(all_pairs) else None
+        if pair is not None:
+            ax.text(
+                0.5, 0.5,
+                f"var{idx}  {pair[0]}↔{pair[1]}\n（非最近邻对，结构上不入选）",
+                ha="center", va="center", fontsize=8.5, color="#999999",
+                transform=ax.transAxes,
+            )
 
     first = records[0]
     fig.suptitle(
         f"{task} / 源 ep{src_episode}（env_seed={first['env_seed']}，{first['difficulty']}，"
         f"swap_times={first['swap_times']}）\n"
-        f"每子图 = 一条 110 帧 clip；唯一事件 = 第一次 swap 换了哪两个槽位"
-        f"（后续窗口按槽位固定，跨变体一致）",
+        f"每子图 = 一条 110 帧 clip；唯一事件 = 第一次 swap 换了哪两个槽位\n"
+        f"只枚举「最近邻可达对」（idx2 恒为 idx1 的严格最近邻）；后续窗口按槽位固定、跨变体一致",
         fontsize=10, y=0.98,
     )
+    present = {record["topo_class"] for record in records}
     handles = [
         Line2D([0], [0], color=TOPO_COLOR[name], lw=2.4, label=TOPO_LABEL[name])
         for name in ("same_column", "cross_aligned", "cross_diagonal")
-    ] + [Patch(facecolor="none", edgecolor="#c00000", lw=2.2, label="红框=检测到容器互撞")]
+        if name in present
+    ] + [
+        Line2D([0], [0], color="#bbbbbb", lw=2.4, label="跨列对角：最近邻约束下恒为空"),
+        Patch(facecolor="none", edgecolor="#c00000", lw=2.2, label="红框=检测到容器互撞"),
+    ]
     fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=8, frameon=False)
     fig.tight_layout(rect=(0, 0.035, 1, 0.94))
 
@@ -162,10 +201,11 @@ def draw_episode(task: str, src_episode: int, records: Sequence[dict], out_dir: 
 
 
 def draw_contact_overview(records: list[dict], out_dir: Path) -> Path:
-    """48 条 clip 的接触矩阵：行 = (task, 源 ep)，列 = var0..5。
+    """全部 clip 的接触矩阵：行 = (task, 源 ep)，列 = var0..5（按 variant_idx 落位）。
 
-    格子填色按容器互撞的最大冲量（对数刻度），格内写事件槽位、撞了几帧、涉及哪些容器对。
-    机械臂 ↔ 容器接触若存在会用黑色粗边框圈出 —— 2026-08-18 实测 0/48，所以图上不会出现。
+    列号即槽位对的字典序下标，所以最近邻约束下 var1/var4（两个对角对）恒为空列 —— 空列
+    本身就说明「这两个对结构上进不来」。格子填色按容器互撞的最大冲量，格内写事件槽位、
+    撞了几帧、涉及哪些容器对。机械臂 ↔ 容器接触若存在会用黑色粗边框圈出 —— 实测恒 0。
     """
     groups: dict[tuple[str, int], dict[int, dict]] = {}
     for record in records:
@@ -173,10 +213,17 @@ def draw_contact_overview(records: list[dict], out_dir: Path) -> Path:
             record["variant_idx"]
         ] = record
     keys = sorted(groups, key=lambda k: (k[0], k[1]))
-    n_rows, n_cols = len(keys), 6
+    n_rows, n_cols = len(keys), math.comb(REQUIRED_BINS, 2)
 
-    impulses = [r.get("contact_bin_bin_impulse_max", 0.0) for r in records]
-    vmax = max(impulses) or 1.0
+    # 最近邻子集里互撞极少（实测 1/19）。只剩一条时 log10 色深刻度会把这唯一一格涂成满色深，
+    # 让人误以为很严重 —— 少于 2 条互撞就统一用固定浅色，不做刻度映射。
+    impulses = [
+        r.get("contact_bin_bin_impulse_max", 0.0)
+        for r in records
+        if r.get("contact_bin_bin_forceful_frames", 0)
+    ]
+    graded = len(impulses) >= 2
+    vmax = max(impulses) if impulses else 1.0
 
     fig, ax = plt.subplots(figsize=(13.0, 1.05 * n_rows + 2.4))
     n_rb = sum(1 for r in records if r.get("contact_robot_bin_forceful_frames", 0))
@@ -190,7 +237,12 @@ def draw_contact_overview(records: list[dict], out_dir: Path) -> Path:
             bb = record.get("contact_bin_bin_forceful_frames", 0)
             rb = record.get("contact_robot_bin_forceful_frames", 0)
             imp = record.get("contact_bin_bin_impulse_max", 0.0)
-            shade = 0.0 if not bb else 0.25 + 0.75 * (np.log10(imp + 1) / np.log10(vmax + 1))
+            if not bb:
+                shade = 0.0
+            elif graded:
+                shade = 0.25 + 0.75 * (np.log10(imp + 1) / np.log10(vmax + 1))
+            else:
+                shade = 0.6  # 样本太少，不做刻度映射
             face = (1.0, 1.0 - 0.72 * shade, 1.0 - 0.72 * shade) if bb else "#f2f2f2"
             ax.add_patch(plt.Rectangle(
                 (col, n_rows - row - 1), 1, 1, facecolor=face,
@@ -304,7 +356,7 @@ def draw_contact_timeline(gen_dir: Path, records: list[dict], out_dir: Path) -> 
         Line2D([0], [0], marker="s", color="#4a90d9", lw=0, markersize=5,
                label="机械臂 ↔ 按钮接触（任务本身，仅 Button）"),
         Line2D([0], [0], marker="x", color="#000000", lw=0, markersize=7,
-               label="机械臂 ↔ 容器接触：全 48 条实测 0 帧，故图上无此标记"),
+               label="机械臂 ↔ 容器接触：全部 clip 实测 0 帧，故图上无此标记"),
     ]
     fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=8, frameon=False)
     fig.tight_layout(rect=(0, 0.04, 1, 1))

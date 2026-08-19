@@ -110,6 +110,22 @@ def readback_pairs(task_env: Any) -> list[tuple[int | None, int | None]]:
     return result
 
 
+def readback_idx1(task_env: Any) -> list[int | None]:
+    """读回 ``swap_pair{1,2,3}_idx1`` 的 bin 下标（第一主角，``_load_scene`` 里定死）。
+
+    与 ``readback_pairs`` 的区别：那个返回的是规范化成 (小,大) 的**无序**对，静态分不出
+    谁是 idx1。有了本函数，验收才能做**有方向**的判据 —— 断言原版的 idx2 恰好是
+    ``nearest_neighbor(idx1)``，把「本轮复刻的规则 == 原版规则」证到底。
+
+    控制跑专用：变体跑里 idx1/idx2 都是注入的，读回没有意义。
+    """
+    result: list[int | None] = []
+    for k in range(1, 4):
+        actor = getattr(task_env, f"swap_pair{k}_idx1", None)
+        result.append(bin_index(task_env, actor) if actor is not None else None)
+    return result
+
+
 # sapien 的 entity.name 会带子场景前缀（如 "scene-0_bin_0"），而 spawned_bins 的 .name
 # 是裸名（"bin_0"）—— 匹配前必须先剥掉前缀，否则容器一侧永远匹配不上、接触统计恒为 0。
 _SCENE_PREFIX = re.compile(r"^scene-\d+_")
@@ -343,8 +359,18 @@ def slot_geometry(fingerprint: Mapping[str, Any]) -> dict:
     `rotate_points_random` 的角度，是因为：Video 的 angle 是 `_load_scene` 的局部变量、
     没存到 self 取不到；Button 压根没旋转（那行被注释）但两列有各自的随机 y 偏移。
     实测均值对两个 env 都成立，且天然把 ±0.07 的 rejection 抖动一并吸收。
+
+    ``pairs`` 恒含**全部** C(n,2) 对（协变量表，下游按 event_slots 取用）；
+    ``legal_event_pairs`` 才是最近邻约束下真正可达的那 2~3 对（本轮的变体空间）。
+    两者不可混用 —— 见 ``clip_plan.bin_pairs`` 的告警。
     """
-    from clip_plan import bin_pairs, topo_class
+    from clip_plan import (
+        bin_pairs,
+        nearest_neighbor,
+        nearest_neighbor_margin,
+        nearest_neighbor_pairs,
+        topo_class,
+    )
 
     slot_xy = np.asarray([entry["p"][:2] for entry in fingerprint["bins"]], dtype=np.float64)
     num_slots = len(slot_xy)
@@ -366,10 +392,15 @@ def slot_geometry(fingerprint: Mapping[str, Any]) -> dict:
             "azimuth_local": _wrap_deg(azimuth - alpha),
             "topo_class": topo_class(pair),
         }
+    slot_xy_list = [[float(x), float(y)] for x, y in slot_xy]
     return {
-        "slot_xy": [[float(x), float(y)] for x, y in slot_xy],
+        "slot_xy": slot_xy_list,
         "reference_axis_deg": _wrap_deg(alpha),
         "pairs": pairs,
+        # ── 最近邻约束：原版 env 运行时回填 idx2 的复刻结果 ──
+        "slot_nearest_neighbor": [nearest_neighbor(slot_xy_list, i) for i in range(num_slots)],
+        "slot_nn_margin": [float(m) for m in nearest_neighbor_margin(slot_xy_list)],
+        "legal_event_pairs": [list(pair) for pair in nearest_neighbor_pairs(slot_xy_list)],
     }
 
 

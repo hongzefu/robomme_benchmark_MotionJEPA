@@ -95,7 +95,16 @@ def merge_task(input_dir: Path, output_dir: Path, task: str, delete_source: bool
                     raw.copy(raw[staging_name], merged, name=f"episode_{dense}")
                 event_pair = tuple(sorted(record["event_slots"]))
                 geometry = record.get("geometry") or {}
-                pair_info = (geometry.get("pairs") or {}).get(f"{event_pair[0]}{event_pair[1]}", {})
+                # 缺项必须炸在这里：静默给 None 的话，要等到出图阶段格式化 pair_distance
+                # 才报错，中间隔了合并、标签两个阶段，排查成本极高。
+                pair_key = f"{event_pair[0]}{event_pair[1]}"
+                pair_info = (geometry.get("pairs") or {}).get(pair_key)
+                if not pair_info:
+                    raise MergeError(
+                        f"{task}/ep{record['src_episode']}/var{record['variant_idx']}: "
+                        f"geometry.pairs 缺 {pair_key} —— slot_geometry 必须枚举全部 C(n,2) 对，"
+                        "检查是否有人把 clip_plan.bin_pairs 改成了「只返回合法对」"
+                    )
                 episode_map.append(
                     {
                         "dense_episode": dense,
@@ -105,8 +114,13 @@ def merge_task(input_dir: Path, output_dir: Path, task: str, delete_source: bool
                         "variant_seed": record["variant_seed"],
                         "env_seed": record["env_seed"],
                         "difficulty": record["difficulty"],
-                        # ★ 事件标签
+                        # ★ 主标签轴：事件槽位对（受最近邻约束）
                         "event_slots": record["event_slots"],
+                        "event_pair_index": record["variant_idx"],
+                        "slot_nearest_neighbor": geometry.get("slot_nearest_neighbor"),
+                        "slot_nn_margin": geometry.get("slot_nn_margin"),
+                        "legal_event_slots": geometry.get("legal_event_pairs"),
+                        # 协变量（非主标签轴）
                         "topo_class": record["topo_class"],
                         "pair_distance": pair_info.get("distance"),
                         "pair_azimuth": pair_info.get("azimuth"),
