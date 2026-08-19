@@ -40,11 +40,14 @@ from clip_plan import (  # noqa: E402
     nearest_neighbor_margin,
     nearest_neighbor_pairs,
     pair_index,
+    slot_pairs_from_bin_pairs,
     swap_windows_clip,
+    topo_class,
     topo_table,
 )
 from clip_worker import CLIP_IS_DEMO, segment_lengths, sorted_timesteps  # noqa: E402
-from swap_inject import MOVED_NET_EPS  # noqa: E402
+from make_clip_labels import DEFAULT_EPSILON, chunk_progress, grid_starts  # noqa: E402
+from swap_inject import FORCEFUL_IMPULSE_EPS, MOVED_NET_EPS  # noqa: E402
 
 # 判据 3/4 期望逐位相同；实测若出现 ulp 级残差，降到这个阈值并在报告里单列实测值
 BITWISE_FALLBACK_TOL = 1e-9
@@ -68,9 +71,46 @@ def _sorted_positions(positions: np.ndarray) -> np.ndarray:
     return np.stack([frame[np.lexsort((frame[:, 1], frame[:, 0]))] for frame in positions])
 
 
-def load_episode(group: h5py.Group) -> dict:
+def _contact_aggregate(group: h5py.Group, names: Sequence[str], event_window) -> dict:
+    """从逐帧 contact 字段现算 clip 级聚合 —— 口径与 swap_inject.contact_summary 逐字一致。
+
+    2026-08-19 起 h5 只嵌逐帧的 count/impulse，`*_forceful_frames` / `*_impulse_max` /
+    `*_event_forceful_frames` 三类聚合量不再落盘（可复算 ⇒ 不冗余存）。
+    **判「真的撞上了」仍必须用冲量阈值**：PhysX 会把贴近但没使上力的物体也配成接触对，
+    所以 count > 0 没有判别力，一律看 impulse > FORCEFUL_IMPULSE_EPS。
+    """
+    out: dict = {}
+    for prefix in ("robot_bin", "bin_bin", "robot_button"):
+        impulses = np.array(
+            [
+                float(np.asarray(group[name]["swap_gt"][f"contact_{prefix}_impulse"]))
+                for name in names
+            ]
+        )
+        forceful = impulses > FORCEFUL_IMPULSE_EPS
+        out[f"{prefix}_forceful_frames"] = int(forceful.sum())
+        out[f"{prefix}_impulse_max"] = float(impulses.max()) if impulses.size else 0.0
+        a, b = event_window
+        out[f"{prefix}_event_forceful_frames"] = int(forceful[a:b].sum())
+    return out
+
+
+def load_episode(group: h5py.Group, entry: dict) -> dict:
+    """读一条 clip。h5 里只剩 10 个不可复算的 setup 字段，其余一律**现算**。
+
+    现算而不是读内嵌值，正是本轮精简的验收点：如果复算路径与生成期口径有任何出入，
+    判据 1/10/12 会立刻炸出来。质量指标（min_clearance / bystander_net_max）取自
+    `episode_map`（生成期用完整位姿 trace 实测，clip 只保留了区间内的帧）。
+    """
     names = sorted_timesteps(group)
     gt = group["setup"]["swap_gt"]
+    event_slots = tuple(np.asarray(gt["event_slots"]).tolist())
+    bin_pairs_seq = [tuple(pair) for pair in np.asarray(gt["bin_pairs"]).tolist()]
+    slot_xy = np.asarray(gt["slot_xy"], dtype=np.float64).tolist()
+    slot_pairs = slot_pairs_from_bin_pairs(bin_pairs_seq, len(slot_xy))
+    legal = nearest_neighbor_pairs(slot_xy)
+    event_window = swap_windows_clip(len(bin_pairs_seq))[0]
+    contacts = _contact_aggregate(group, names, event_window)
     return {
         "n": len(names),
         "joint_action": np.stack(
@@ -87,24 +127,27 @@ def load_episode(group: h5py.Group) -> dict:
         "rgb_event_end": hashlib.md5(
             np.asarray(group[f"timestep_{CLIP_MARGIN + 50 - 1}"]["obs"]["front_rgb"]).tobytes()
         ).hexdigest(),
-        "event_slots": tuple(np.asarray(gt["event_slots"]).tolist()),
-        "event_pair_index": int(np.asarray(gt["event_pair_index"])),
-        "is_nn_pair": int(np.asarray(gt["is_nn_pair"])),
-        "legal_event_slots": [tuple(row) for row in np.asarray(gt["legal_event_slots"]).tolist()],
-        "slot_nearest_neighbor": np.asarray(gt["slot_nearest_neighbor"]).tolist(),
-        "slot_nn_margin": np.asarray(gt["slot_nn_margin"], dtype=np.float64).tolist(),
-        "topo_class": gt["topo_class"][()].decode("utf-8"),
-        "bin_pairs": np.asarray(gt["bin_pairs"]).tolist(),
-        "slot_pairs": np.asarray(gt["slot_pairs"]).tolist(),
+        "event_slots": event_slots,
+        # ↓ 六项由 h5 的 event_slots / bin_pairs / slot_xy 现算
+        "event_pair_index": pair_index(event_slots, len(slot_xy)),
+        "is_nn_pair": int(tuple(sorted(event_slots)) in legal),
+        "legal_event_slots": legal,
+        "slot_nearest_neighbor": [nearest_neighbor(slot_xy, i) for i in range(len(slot_xy))],
+        "slot_nn_margin": nearest_neighbor_margin(slot_xy),
+        "topo_class": topo_class(event_slots),
+        "bin_pairs": [list(pair) for pair in bin_pairs_seq],
+        "slot_pairs": [list(pair) for pair in slot_pairs],
         "is_original": int(np.asarray(gt["is_original"])),
-        "min_clearance": float(np.asarray(gt["min_clearance"])),
-        "bystander_net_max": float(np.asarray(gt["bystander_net_max"])),
-        "n_bins": int(np.asarray(gt["slot_xy"]).shape[0]),
-        "contact_robot_bin": int(np.asarray(gt["contact_robot_bin_forceful_frames"])),
-        "contact_bin_bin": int(np.asarray(gt["contact_bin_bin_forceful_frames"])),
-        "contact_bin_bin_event": int(np.asarray(gt["contact_bin_bin_event_forceful_frames"])),
-        "contact_bin_bin_impulse": float(np.asarray(gt["contact_bin_bin_impulse_max"])),
-        "contact_robot_button": int(np.asarray(gt["contact_robot_button_forceful_frames"])),
+        "n_bins": len(slot_xy),
+        # 质量指标取自 episode_map（生成期实测，口径见 swap_inject.min_clearance）
+        "min_clearance": entry["min_clearance"],
+        "bystander_net_max": entry["bystander_net_max"],
+        # 接触：逐帧 impulse 现算聚合，判「真的撞上了」看 forceful（冲量 > 1e-9）
+        "contact_robot_bin": contacts["robot_bin_forceful_frames"],
+        "contact_bin_bin": contacts["bin_bin_forceful_frames"],
+        "contact_bin_bin_event": contacts["bin_bin_event_forceful_frames"],
+        "contact_bin_bin_impulse": contacts["bin_bin_impulse_max"],
+        "contact_robot_button": contacts["robot_button_forceful_frames"],
     }
 
 
@@ -119,8 +162,6 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
     directed_hits = [0]
     comparison_pairs = [0]
 
-    manifest_path = gen_dir / "clips_manifest.json"
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))["records"]
     baseline = {
         (record["task"], int(record["episode"])): record
         for record in json.loads(phase0_index.read_text(encoding="utf-8"))["records"]
@@ -157,7 +198,7 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
                 loaded = []
                 for entry in entries:
                     group = handle[f"episode_{entry['dense_episode']}"]
-                    data = load_episode(group)
+                    data = load_episode(group, entry)
                     loaded.append((entry, data))
                     total_clips += 1
                     topo_counts[data["topo_class"]] += 1
@@ -456,17 +497,25 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
             failures.append(f"[7] {key[0]}/ep{key[1]}: 事件末帧画面存在重复")
 
     # ── 判据 10：标签对账 ──
-    clip_labels = json.loads((gen_dir / "clip_events.json").read_text(encoding="utf-8"))
-    chunk_labels = json.loads((gen_dir / "swap_labels_clip.json").read_text(encoding="utf-8"))
-    if len(clip_labels["records"]) != total_clips:
+    # 标签侧的唯一载体是 episode_map_{Task}.json（2026-08-19 起 clip_events.json 等三个
+    # 标签文件不再落盘，clip 级字段全部并入 map）。这里仍然是**独立复核**：h5 侧的
+    # event_slots / topo_class 全部现算自 h5 内嵌的不可复算字段，与 map 里 merge 阶段
+    # 写下的值是两条独立路径，对不上就说明某一环串了。
+    label_records = []
+    for task in tasks:
+        for record in json.loads(
+            (gen_dir / f"episode_map_{task}.json").read_text(encoding="utf-8")
+        )["records"]:
+            label_records.append({"task": task, **record})
+    if len(label_records) != total_clips:
         failures.append(
-            f"[10] clip 级标签 {len(clip_labels['records'])} 条 ≠ clip 总数 {total_clips}"
+            f"[10] episode_map 记录 {len(label_records)} 条 ≠ clip 总数 {total_clips}"
         )
     # 10b：主轴 event_slots 与协变量 topo_class **双轴**对账（标签侧 vs h5 实测）
     label_counts: dict[str, int] = defaultdict(int)
     label_event_counts: dict[str, int] = defaultdict(int)
     label_by_source: dict[tuple[str, int], list] = defaultdict(list)
-    for record in clip_labels["records"]:
+    for record in label_records:
         label_counts[record["topo_class"]] += 1
         label_event_counts["".join(str(v) for v in record["event_slots"])] += 1
         label_by_source[(record["task"], record["src_episode"])].append(
@@ -504,10 +553,21 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
             f"[10] cross_diagonal 出现了 {label_counts['cross_diagonal']} 条 —— "
             "对角对本不该进得了最近邻集合，源集合或布局可能已变，下游分层口径需重审"
         )
-    expected_chunks = total_clips * len(range(0, max(0, CLIP_LEN - 32), 16))
-    if len(chunk_labels["records"]) != expected_chunks:
+    # 10d：chunk 级标签不再落盘（区分度极低，见 make_clip_labels 模块 docstring），
+    #      改为**现算一遍网格**做回归守卫：110 帧只有 5 个 chunk，按 ε=0.10 第 0 个判负、
+    #      其余 4 个判正。这是实测事实（窗口 1 恒为 clip [30,80)），窗口结构或 ε 一变就会炸。
+    starts = grid_starts(CLIP_LEN)
+    chunk_positive = 0
+    for record in label_records:
+        windows = swap_windows_clip(len(record["slot_pairs"]))
+        for start in starts:
+            progress, _ = chunk_progress(start, windows)
+            chunk_positive += int(progress > DEFAULT_EPSILON)
+    expected_positive = total_clips * (len(starts) - 1)
+    if chunk_positive != expected_positive:
         failures.append(
-            f"[10] chunk 标签 {len(chunk_labels['records'])} 条 ≠ 网格期望 {expected_chunks} 条"
+            f"[10] 现算 chunk 正例 {chunk_positive} 条 ≠ 期望 {expected_positive} 条"
+            f"（{total_clips} clip × {len(starts)} chunk，每条首 chunk 判负）"
         )
 
     for task in tasks:
@@ -546,7 +606,17 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
         f"判据 5（clip 末帧位置集合）：同上 {comparison_pairs[0]} 次比较全部通过，"
         f"最大差 {worst_endpoint:.3e}（阈值 {ENDPOINT_TOL}）"
     )
-    deviating = clip_labels["meta"].get("later_windows_deviating_from_native_nn") or []
+    deviating = [
+        {
+            "task": record["task"],
+            "src_episode": record["src_episode"],
+            "variant_idx": record["variant_idx"],
+            "fixed_later_slots": [list(pair) for pair in record["slot_pairs"][1:]],
+            "native_later_slots": record.get("later_windows_native_slots") or [],
+        }
+        for record in label_records
+        if record.get("later_windows_follow_native_nn") is False
+    ]
     notes.append(
         f"窗口 ≥2 的口径对账：{len(deviating)}/{total_clips} 条的「按槽位固定」与原版最近邻"
         "规则不重合"
@@ -562,7 +632,7 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
         )
         + "。**事件本身（第一次 swap）仍严格落在原版可达空间内**，不重合的只是后 30 帧露出的"
         "第二次 swap 换了哪一对 —— 这是「约束只作用于第一次 swap」这个决定的直接后果，"
-        "已逐条量化在 clip_events.json 的 later_windows_follow_native_nn 字段。"
+        "已逐条量化在 episode_map_{Task}.json 的 later_windows_follow_native_nn 字段。"
     )
     notes.append(
         f"判据 12（★ 最近邻不变量）：{total_clips}/{total_clips} 条 clip 的事件对满足"
@@ -615,7 +685,7 @@ def verify(gen_dir: Path, phase0_index: Path, tasks: Sequence[str]) -> dict:
         "nn_margin_min": global_min_margin[0],
         "is_original_hits": original_hits[0],
         "directed_nn_hits": directed_hits[0],
-        "chunk_label_count": len(chunk_labels["records"]),
+        "chunk_label_count": len(label_records) * len(starts),
         "contact_robot_bin_clips": len(rb_hit),
         "contact_bin_bin_clips": len(bb_hit),
         "contact_rows": contact_rows,
@@ -706,10 +776,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     else:
         lines += ["", "## 结论", "", "**全部十二条判据通过。**"]
 
+    # 验收只产出**最后报告**这一份（用户 2026-08-19 拍板）：机读版 verification_report.json
+    # 不再落盘 —— 报告里的每个数字都能靠重跑本脚本复现，留两份只是同一结论的两种编码。
     (gen_dir / "verification_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    (gen_dir / "verification_report.json").write_text(
-        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
     print("\n".join(lines))
     return 1 if report["failures"] else 0
 

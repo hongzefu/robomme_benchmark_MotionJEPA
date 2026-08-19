@@ -138,7 +138,7 @@ Video 侧的最近邻关系不总是配对（ep99 实测是「0 认 3、1 认 0�
 
 ⇒ **事件本身（第一次 swap）19/19 严格落在原版可达空间内**；不重合的只是后 30 帧露出的
 第二次 swap 换了哪一对。这是「约束只作用于第一次 swap」这个决定的直接后果，不作废数据，
-逐条量化在 `clip_events.json` 的 `later_windows_follow_native_nn` /
+逐条量化在 `episode_map_{Task}.json` 的 `later_windows_follow_native_nn` /
 `later_windows_native_slots` 字段与 meta 的 `later_windows_deviating_from_native_nn`。
 下游若要求**整条 clip 都原版可达**，按 `later_windows_follow_native_nn == true` 过滤，
 可得 **15/19 条**（Button 8 + Video 7）。
@@ -268,37 +268,53 @@ MotionJEPA `build_data_raw_from_h5` 对齐）：
 
 裁剪后删除 raw h5（clip 是唯一产物）。
 
-### h5 内嵌标注
+### h5 内嵌标注（2026-08-19 精简：62 → 18 个字段）
+
+口径是**只留不可复算的** —— 一个字段只有在「用本组其余字段 + `clip_plan.py` 的纯函数
+算不出来」时才落盘。保留清单与各自作用见 [README](README.md#h5-新增字段)：
 
 ```
-episode_N/timestep_t/swap_gt/   swap_active, swap_window_idx, swap_slots(int8[2]),
-                                swap_bins(int8[2]), swap_pair_pos(f32[2,3]),
-                                swap_progress, bins_pos(f32[n,3]), cubes_pos(f32[3,3]),
-                                env_step(int32),
+episode_N/setup/swap_gt/        env_seed, bin_pairs, event_slots, slot_xy,
+                                src_episode, variant_idx, is_original, difficulty,
+                                clip_start_env_step, clip_len                    （10 个）
+episode_N/timestep_t/swap_gt/   bins_pos(f32[n,3]), cubes_pos(f32[3,3]),
                                 contact_{robot_bin,bin_bin,robot_button}_{count,impulse}
-episode_N/setup/swap_gt/        env_seed, variant_seed, src_episode, variant_idx,
-                                is_original, difficulty, signature,
-                                slot_pairs/bin_pairs(int8[k,2]),
-                                windows_clip/windows_env(int32[k,2]),
-                                clip_start_env_step, clip_len,
-                                ★ event_slots(int8[2]), topo_class,
-                                pair_distance, pair_azimuth, pair_azimuth_local,
-                                slot_xy(f32[n,2]), reference_axis_deg,
-                                net_permutation, min_clearance,
-                                bystander_net_max/path_max, disturbed_bins,
-                                contact_*_frames / *_forceful_frames /
-                                *_event_forceful_frames / *_impulse_max /
-                                *_onset_clip_frame / bin_bin_(forceful_)pairs,
-                                bins_pos_traj(f32[110,n,3]), cubes_pos_traj
+                                                                                 （8 个）
 episode_N/setup/meta/           bin_colors, color_names, task_goal_color,
                                 button_left, button_right   ← 纯 metadata，不进标签
 ```
 
+实测每 episode 890 个 dataset、11.7 KiB（精简前 1697 个、25 KiB），占文件 **0.017%**。
+体积从来不是问题 —— 精简是为了**格式里没有一个字段是另一个字段的换算结果**。
+
+删掉的 37 + 7 个字段与复算路径（下游/验收需要时按此现算，`verify_clips.load_episode`
+就是这么做的）：
+
+| 删除 | 复算方式 |
+| --- | --- |
+| `event_pair_index` | ≡ `variant_idx`（`clip_plan.pair_index(event_slots)`） |
+| `variant_seed` | `clip_plan.variant_seed(env_seed, variant_idx)` |
+| `signature` | `clip_plan.signature_of(slot_pairs)` |
+| `slot_pairs` | `clip_plan.slot_pairs_from_bin_pairs(bin_pairs)`（互逆，单测穷举验证过） |
+| `windows_clip` / `windows_env` | `clip_plan.swap_windows_clip/env(len(bin_pairs))`，两者差 `clip_start_env_step` |
+| `is_nn_pair` / `legal_event_slots` / `slot_nearest_neighbor` / `slot_nn_margin` | `clip_plan.nearest_neighbor_pairs / nearest_neighbor / nearest_neighbor_margin(slot_xy)` |
+| `topo_class` | `clip_plan.topo_class(event_slots)` |
+| `pair_distance` / `pair_azimuth` / `pair_azimuth_local` / `reference_axis_deg` | `swap_inject.slot_geometry`，全部由 `slot_xy` 算 |
+| `net_permutation` | `clip_plan.net_permutation(slot_pairs)` |
+| `bins_pos_traj` / `cubes_pos_traj` | ≡ 逐帧 `bins_pos`/`cubes_pos` 堆叠（用户拍板：留逐帧、删 setup 层轨迹） |
+| `min_clearance` / `bystander_net_max/path_max` / `disturbed_bins` | 逐帧 `bins_pos` + `slot_pairs` 现算（`swap_inject.min_clearance` / `bystander_metrics`）；也直接躺在 `episode_map` 里 |
+| 15 个 `contact_*` 聚合量 | 逐帧 6 个 contact 字段按 `FORCEFUL_IMPULSE_EPS`=1e-9 聚合（`verify_clips._contact_aggregate`，口径与 `swap_inject.contact_summary` 逐字一致） |
+| 逐帧 `env_step` | = 帧号 + `clip_start_env_step` |
+| 逐帧 `swap_active` / `swap_window_idx` / `swap_progress` | = `swap_windows_clip(len(bin_pairs))` + 帧号 + smoothstep 解析式 |
+| 逐帧 `swap_slots` / `swap_bins` / `swap_pair_pos` | = `bin_pairs`/`slot_pairs` + 该帧 `bins_pos` |
+
+⚠ **派生标签与协变量一律去 `episode_map_{Task}.json` 取** —— 那里字段是齐的（merge 阶段
+从 manifest 写入，标签阶段再增补 6 个），h5 只负责「不可复算的原始事实」。
 合并（`raw.copy` 整组拷贝）自动带走全部标注，合并逻辑零改动。
 
 ## 七、标签设计
 
-**主标签轴 = `event_slots`**（`clip_events.json`，每条 clip 恰含一个事件）：窗口 1 移动的
+**主标签轴 = `event_slots`**（`episode_map_{Task}.json`，每条 clip 恰含一个事件）：窗口 1 移动的
 槽位对，取值域 4 类 —— 实测分布 `03:8 / 12:7 / 01:2 / 23:2`。**不含任何颜色字段。**
 
 协变量（非主轴）：`topo_class`、`pair_distance`、`pair_azimuth`、`pair_azimuth_local`、
@@ -309,7 +325,7 @@ episode_N/setup/meta/           bin_colors, color_names, task_goal_color,
 ⚠ **`topo_class` 已从主标签降级为协变量**：最近邻约束下 `cross_diagonal` 恒为空、
 Button 侧 8 条更是全部 `cross_aligned`（任务内零方差），实测分布 `cross_aligned 15 /
 same_column 4`。类别严重不均衡是**约束的结构性后果**，本数据集**不做重采样、不做类别
-平衡**（`clip_events.json` 的 meta 里有 `class_balance_note` 显式声明），下游若要平衡
+平衡**（`episode_map_{Task}.json` 的 `labels.class_balance_note` 显式声明），下游若要平衡
 须自行处理，可按 `per_source_legal_pairs` 做源内分层。
 
 ### 拓扑类别按槽位角色定义，不按距离
@@ -339,16 +355,31 @@ Video 下三类恰好对应 0.15 / 0.20 / 0.25 三档名义距离（单测交叉
 不去拟合 `rotate_points_random` 的角度 —— Video 的 angle 是 `_load_scene` 局部变量取不到，
 Button 压根没旋转。实测均值对两 env 都成立，且天然吸收 ±0.07 的 rejection 抖动。
 
-### chunk 级标签（兼容层）
+### 标签载体：只有 `episode_map_{Task}.json`（2026-08-19 收敛）
 
-`swap_labels_clip.json`（v7 同构，`load_manual_swap` 可直接读）与 `swap_events_clip.json`
-（富标签）。判正规则与旧链路逐字相同：chunk `[s,s+32]` 在任一窗口内推进的 smoothstep
-进度增量 > ε=0.10。**不能用简单窗口重叠** —— smooth 让窗口末尾几帧几乎不动，几何重叠
-会在窗口尾部多打假正例。规则须先过 `--regression`（对官方 ep90-99 复算、与 v7 人工资产
-逐条比对）。
+原先的三个标签文件（`clip_events.json` 主标签、`swap_labels_clip.json` chunk 级二值、
+`swap_events_clip.json` chunk 级富标签）**都不再落盘**：
 
-⚠ 在 clip 上区分度很低：`grid_starts(110) = [0,16,32,48,64]` 只有 5 个 chunk，
-按 ε=0.10 第 0 个为负、其余 4 个为正（19 clip → 95 条、76 正）。主用途是 clip 级多类判别。
+* **clip 级**全部并入 `episode_map_{Task}.json` —— 它在 merge 阶段就已带 `event_slots` /
+  `topo_class` / `pair_*` / `slot_xy` / 质量指标 / `contacts` 全套，`make_clip_labels.py`
+  只需再增补 **6 个不可复算的派生字段**：`action_group` / `action_group_size` /
+  `action_group_identifies_label` / `action_dev_max`（需跨同源变体逐位比 `joint_action`）、
+  `later_windows_follow_native_nn` / `later_windows_native_slots`（需 Phase 0 读回的
+  `original_idx1`）。原 `clip_events.json` 的 meta 说明块逐字搬进了 map 的 `labels` 键。
+  其余如 `is_nn_pair` / `event_window_clip` / `swap_times` / `has_*_contact` 都是一步推导，
+  按「只留不可复算的」不再冗余落盘。
+* **chunk 级**直接不产：110 帧 clip 的 `grid_starts(110) = [0,16,32,48,64]` 只有 5 个 chunk，
+  按 ε=0.10 第 0 个判负、其余 4 个判正（19 clip → 95 条、76 正），**区分度极低**；
+  判正规则是纯函数（`grid_starts` + `chunk_progress`），要用随时能从 h5 现算。
+  规则本身仍受 `make_clip_labels.py --regression` 守卫（对官方 ep90-99 复算、与 v7 人工
+  资产逐条比对，319/319），验收判据 10d 也改成**现算一遍网格**做回归守卫。
+
+⚠ 代价：`load_manual_swap` 的零改动兼容层断了。要恢复只需按 `grid_starts` +
+`chunk_progress` 现算一份 v7 schema 的 JSON，规则口径在 `make_clip_labels.py` 里唯一定义。
+
+判正规则（口径唯一定义处）：chunk `[s,s+32]` 在任一窗口内推进的 smoothstep 进度增量
+> ε=0.10。**不能用简单窗口重叠** —— smooth 让窗口末尾几帧几乎不动，几何重叠会在窗口
+尾部多打假正例。
 
 ## 八、接触检测与 ButtonUnmaskSwap 的动作通道泄露
 
@@ -425,7 +456,7 @@ Video 不受影响：demo 段 `solve_hold_obj` 开环发同一 qpos、**不做�
 ep91/ep99 各只有 2 条且分成 2 组，「同一组」只剩 1 条，等于关节角 100% 反推标签。
 **下游一律改用 `action_dev_max == 0` 筛选**，本轮可得 **15/19 条**（Video 全部 11 条
 + Button ep95/ep98 各 2 条）。验收报告会把这类源写进告警段并在
-`clip_events.json` 的 `meta.action_leak_sources` 里列名。
+`episode_map_{Task}.json` 的 `labels.action_leak_sources` 里列名。
 
 （对照：全枚举版 48 条时 Button 四个源都是 2 组、每组 3 条，最大差 1.598e-01；
 最近邻约束删掉了互撞最剧烈的对角/长距对，所以偏差量级也从 1.6e-1 降到 3.2e-2。）
@@ -433,7 +464,7 @@ ep91/ep99 各只有 2 条且分成 2 组，「同一组」只剩 1 条，等于�
 ## 九、命令用法（按 Phase 顺序）
 
 ```bash
-# P0a 纯函数单测（秒级，39 passed）
+# P0a 纯函数单测（秒级，69 passed）
 uv run python -m pytest tests/lightweight/test_swap_clip_plan.py -q
 # P0b 计划表（不生成数据）
 uv run python scripts/data-generation-MotionJEPALabel/clip_plan.py
@@ -458,6 +489,9 @@ uv run python scripts/data-generation-MotionJEPALabel/verify_clips.py \
   --gen-dir scripts/data-generation-MotionJEPALabel/outputs/event1
 uv run python scripts/data-generation-MotionJEPALabel/draw_clip_diagrams.py \
   --gen-dir scripts/data-generation-MotionJEPALabel/outputs/event1
+# P5 清理（验收退出码 0 之后再跑）：先确认 Phase 0 索引完整 = 链路可再次跑生成，
+#    再删过程产物。默认 dry-run 只列不删，--check-only 只做确认那一步。
+uv run python scripts/data-generation-MotionJEPALabel/prune_outputs.py --yes
 ```
 
 ## 十、验收判据（`verify_clips.py`，十二条全过才算数）
@@ -484,19 +518,25 @@ uv run python scripts/data-generation-MotionJEPALabel/draw_clip_diagrams.py \
    7a 的比较对数从 15/源 降到 1~3/源，判别力下降；
 8. **cube 可见性分段**：clip 帧 0-29 全部 z < 0.1（在容器内），帧 30-109 全部 z > 5（已藏走）；
 9. merged h5 结构：episode/timestep 密集连续、每条恰 110 帧、scope 段 == 110、swap_gt 齐全；
-10. **标签对账**：(a) clip 级标签数 == clip 总数；(b) `event_slots` 与 `topo_class`
-    **双轴**分布均与 h5 实测逐项相等；(c) 三条替代旧「三类均衡」的确定性判据 ——
-    **i** 标签侧逐源覆盖（从 `clip_events.json` 独立复核判据 1，防漏条/串源）；
+10. **标签对账**：(a) `episode_map` 记录数 == clip 总数；(b) `event_slots` 与
+    `topo_class` **双轴**分布均与 h5 实测逐项相等 —— h5 侧的两个值都**现算自** h5 内嵌的
+    `event_slots`/`slot_xy`（不再有内嵌的 `topo_class` 可读），与 map 里 merge 阶段写下的
+    值是两条独立路径，对不上即说明某一环串了；(c) 三条替代旧「三类均衡」的确定性判据 ——
+    **i** 标签侧逐源覆盖（从 `episode_map_{Task}.json` 独立复核判据 1，防漏条/串源）；
     **ii** 全局 `event_slots` 分布与「各源合法集合求并」的期望**逐项相等**
     （期望值代码现算，绝不写死数字）；**iii** `cross_diagonal == 0` 的回归守卫
     （notes 里注明这是实测事实、不是几何必然，非 0 即说明布局或源集合已变）；
-    (d) chunk 标签数 == 网格期望；
+    (d) chunk 级标签已不落盘，改为**现算一遍网格**做回归守卫：19 clip × 5 chunk = 95 条、
+    每条首 chunk 判负 ⇒ 正例恒为 76，窗口结构或 ε 一变就炸；
 11. **机械臂 ↔ 容器接触必须为 0**（物理引擎 `get_contacts` 实测）。本链路的前提是
     「机器人动作只由任务本身决定」；若机械臂真被 swap 中的容器碰到，clip 里就多了一条
     swap → 机器人的**直接**因果通路。实测 0/19；
 12. **★ 最近邻不变量**（本轮重构的核心判据）：
-    **a** 逐条 clip，`event_slots = (a,b)` 满足 `b == NN(a)` 或 `a == NN(b)`（用 Phase 0
-    实测几何复算），且 h5 内嵌的 `is_nn_pair` 为 1、`legal_event_slots` 与之一致；
+    **a** 逐条 clip，`event_slots = (a,b)` 满足 `b == NN(a)` 或 `a == NN(b)` —— 用
+    **两套几何各算一遍**：Phase 0 索引里的 `slot_xy`，以及这条 clip 自己 h5 内嵌的
+    `slot_xy`，两套算出的合法集合必须一致且都包含 `event_slots`。
+    （精简前这半条是「h5 内嵌的 `is_nn_pair`/`legal_event_slots` 与复算值一致」；那两个
+    字段可复算、已删除，再比就成了自己跟自己比，故改成两套几何互校）；
     **b** **物理侧交叉复核** —— 改用这条 clip **自己**在事件前一帧（clip 帧 29 = env 63）
     的实测 `bins_pos` 复算合法集合，必须与 Phase 0 基线一致。判据 2 只保证 reset 时刻，
     12b 保证进入 swap 窗口那一刻环境真正看到的几何仍给出同一组合法对；
@@ -590,3 +630,28 @@ Button 的 press1 结束于 110/121/115/117、press2 结束于 200~211，clip �
 | 类别 | 3 套互不相通的几何 | 1 套，三类各 16 条 | **1 套，两类 15/4（对角结构性消失）** |
 | 主标签 | chunk 级二值 | `topo_class` 三类 | **`event_slots` 四类（8/7/2/2）** |
 | 判据数 | — | 十一条 | **十二条 + 告警段** |
+
+## 十五、产物收敛与 h5 精简（2026-08-19，全链路重生实测）
+
+用户拍板「输出只要 diagram / h5 / video 三类」「h5 新增字段保持简洁」后的一轮重构。
+h5 结构变了 ⇒ **必须全链路重生**（不能只改文档），实测记录：
+
+| 阶段 | 结果 |
+| --- | --- |
+| 纯函数单测 | **69 passed** |
+| Phase 0 重跑（可再生确认） | 8/8 成功，31.4 s；与旧索引的 `original_bin_pairs` / `original_slot_pairs` / `original_idx1` / `fingerprint` / `geometry` **8 源 × 5 字段逐位相同** ⇒ 才敢删 phase0 的 2.1 GiB h5 与录像 |
+| 生成 | **19/19 成功，39.7 s（28.7 ep/min），零重试、零闸门失败** |
+| 合并 | Video 11 条 0.75 GiB + Button 8 条 0.55 GiB；结构校验全过 |
+| 标签 | 6 个派生字段并入两个 `episode_map`；分布与重构前逐项一致（`03:8/12:7/01:2/23:2`、`cross_aligned 15/same_column 4`、无泄露 15/19、窗口 ≥2 偏离 4/19） |
+| 判正规则回归 | 对官方 ep90-99 复算，**319/319** 全对（ε=0.10，不受本轮改动影响） |
+| 验收 | **十二条判据全过**（退出码 0），2 条告警；关键实测值与 §十三 逐项相同：判据 3 = 0.000e+00、判据 5 = 1.006e-06、判据 11 = 0/19、互撞 1/19、最小 argmin 余量 0.00893 m、Button 动作最大差 3.245e-02 |
+| 出图 | 10 张（8 张逐源 + 接触矩阵 + 接触时间轴） |
+| 清理 | 释放 **2.25 GiB**（phase0 的 h5 2.19 GiB + 录像 60.6 MiB + 两侧 trace/jsonl/manifest） |
+| h5 字段 | setup 47 → **10**、逐帧 15 → **8**；每 episode 1697 → **890 个 dataset**、25 → **11.7 KiB** |
+
+**「复算替代内嵌字段」没有改变任何结论** —— 这正是本轮唯一需要证明的事：验收报告里
+每一个数字都与精简前逐项相同，而 `topo_class` / `legal_event_slots` / contact 聚合量
+现在全是 `verify_clips.py` 从 10 + 8 个保留字段现算出来的。
+
+⚠ 清理后**验收仍可重跑**（实测退出码 0）：`verify_clips.py` 已去掉对 `clips_manifest.json`
+的依赖（那行读进来从未使用），现在只吃 `episode_map` + h5 + Phase 0 索引三样，全是保留项。

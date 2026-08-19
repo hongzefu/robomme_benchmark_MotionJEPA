@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""clip 级事件标签（主）+ chunk 级二值/富标签（兼容 MotionJEPA v7 schema）。
+"""clip 级事件标签：并入 episode_map，并守卫 chunk 级判正规则。
 
 **主标签轴是 `event_slots`**：每条 clip 恰好包含一个事件 —— 第一次 swap 换了哪两个槽位。
 标签由「物体的相对位置」描述（槽位对、中心距、方位角），**不含颜色**。`topo_class` 从
 主标签降级为**协变量**：最近邻约束下 cross_diagonal 恒为空、Button 侧更是单一取值，
 已不具备判别力（详见 clip_plan 模块 docstring 的「最近邻约束」一节）。
 
-chunk 级二值标签仍然出一份供 `load_manual_swap` 零改动读取，但要注意它在 clip 上区分度
-很低：`grid_starts(110) = [0,16,32,48,64]` 只有 5 个 chunk，按 ε=0.10 规则第 0 个为负、
-其余 4 个为正（19 clip → 95 条、76 正）。真正有信息量的是 clip 级事件类别。
+chunk 级标签**不再落盘**（2026-08-19）：在 110 帧 clip 上 `grid_starts(110) =
+[0,16,32,48,64]` 只有 5 个 chunk，按 ε=0.10 第 0 个为负、其余 4 个为正，区分度极低；
+判正规则是纯函数（`grid_starts` + `chunk_progress`），要用随时能从 h5 现算。真正有信息
+量的是 clip 级事件类别，它连同全部协变量并入 `episode_map_{Task}.json`。
 
 判正规则（与旧链路逐字相同，口径唯一定义处）：chunk `[s, s+span]` 在任一 swap 窗口
 `[a, b)` 内推进的 smoothstep 进度增量 `smoothstep((min(s+span,b)-a)/(b-a)) −
@@ -20,7 +21,7 @@ smoothstep((max(s,a)-a)/(b-a))` 的最大值 > ε 判 1。
 
 两种模式：
 * `--regression`：规则回归（只读官方 h5 与 v7 JSON，不动任何产物；用 **env step** 窗口）；
-* 默认：对 merge_clip_h5.py 的产物出三份标签 JSON（用 **clip 帧号**窗口）。
+* 默认：把派生标签增补进 merge_clip_h5.py 产出的 `episode_map_{Task}.json`。
 """
 
 from __future__ import annotations
@@ -45,7 +46,6 @@ from clip_plan import (  # noqa: E402
     compute_swap_times,
     load_train_record,
     native_window_slots,
-    swap_windows_clip,
     swap_windows_env,
 )
 from clip_worker import segment_lengths, sorted_timesteps  # noqa: E402
@@ -85,7 +85,7 @@ def grid_starts(segment_frames: int) -> list[int]:
 # ── 接触检测字段（物理引擎实测） ──────────────────────────────────────────────
 
 
-def _contact_fields(contacts: dict) -> dict:
+def contact_fields(contacts: dict) -> dict:
     """把 clip 的接触统计摊平进标签。判据说明见 swap_inject.contact_summary。
 
     * `contact_robot_bin_*` —— 机械臂连杆 ↔ 容器。2026-08-18 全量实测 **0/48 条**，
@@ -245,16 +245,31 @@ def run_regression(v7_path: Path, official_dir: Path, epsilon: float) -> int:
     return 0 if not mismatches else 1
 
 
-# ── 数据集模式：对合并产物出三份标签 JSON ─────────────────────────────────────
+# ── 数据集模式：把派生标签增补进 episode_map ──────────────────────────────────
 
 
-def build_labels(
+def augment_episode_maps(
     input_dir: Path,
-    dataset_name: str,
-    epsilon: float,
     tasks: Sequence[str],
     phase0_index: Path | None = None,
-):
+) -> dict:
+    """把 6 个**不可从 episode_map 现有字段推出**的派生标签增补进 `episode_map_{Task}.json`。
+
+    2026-08-19 起不再单独落 `clip_events.json` / `swap_labels_clip.json` /
+    `swap_events_clip.json`：clip 级标签全部并进 `episode_map_{Task}.json`（它本来就带
+    `event_slots` / `topo_class` / `pair_*` / 质量指标 / `contacts` 全套），它成为**唯一
+    标签载体**。chunk 级标签不再落盘 —— 在 110 帧 clip 上只有 5 个 chunk、区分度极低
+    （见模块 docstring），而判正规则是纯函数（`grid_starts` + `chunk_progress`），
+    任何时候都能从 h5 现算，且仍由 `--regression` 守卫。
+
+    增补的 6 个字段（其余如 `is_nn_pair` / `event_window_clip` / `swap_times` /
+    `has_*_contact` 都是 map 里已有字段的一步推导，按「只留不可复算的」不再冗余落盘）：
+
+    * `action_group` / `action_group_size` / `action_group_identifies_label` /
+      `action_dev_max` —— 需跨同源变体逐位比较 joint_action 才能得到；
+    * `later_windows_follow_native_nn` / `later_windows_native_slots` —— 需 Phase 0 读回的
+      `original_idx1` 才能算「原版那一刻会换哪对槽位」。
+    """
     # Phase 0 的 original_idx1：量化「窗口 ≥2 按槽位固定」对原版最近邻规则的偏离
     native_idx1: dict[tuple[str, int], list] = {}
     phase0_slot_xy: dict[tuple[str, int], list] = {}
@@ -264,15 +279,14 @@ def build_labels(
             native_idx1[key] = record.get("original_idx1") or []
             phase0_slot_xy[key] = (record.get("geometry") or {}).get("slot_xy") or []
 
-    clip_records = []
-    chunk_binary = []
-    chunk_rich = []
-    episode_ranges = []
+    all_records: list[dict] = []
+    written: list[Path] = []
     for task in sorted(tasks):
         map_path = input_dir / f"episode_map_{task}.json"
         if not map_path.is_file():
             raise SystemExit(f"ERROR: 缺少 {map_path} —— 先跑 merge_clip_h5.py")
-        episode_map = json.loads(map_path.read_text(encoding="utf-8"))["records"]
+        payload = json.loads(map_path.read_text(encoding="utf-8"))
+        episode_map = payload["records"]
         variant = SWAP_SCOPE[task]
         with h5py.File(input_dir / f"record_dataset_{task}.h5", "r") as handle:
             by_source: dict[int, list[dict]] = {}
@@ -292,7 +306,7 @@ def build_labels(
                 ):
                     raise SystemExit(
                         f"ERROR: {task}/episode_{dense} 段长与 episode_map 不符——"
-                        "manifest 与 h5 可能不是同批产物"
+                        "映射与 h5 可能不是同批产物"
                     )
                 frames = demo_prefix if variant == "demo" else exec_len
                 if frames != CLIP_LEN:
@@ -300,7 +314,6 @@ def build_labels(
                         f"ERROR: {task}/episode_{dense} scope 段 {frames} 帧 ≠ 整段 clip {CLIP_LEN}"
                     )
                 slot_pairs = [tuple(pair) for pair in entry["slot_pairs"]]
-                windows = swap_windows_clip(len(slot_pairs))
 
                 # 窗口 ≥2 的两种口径对账（见 clip_plan.native_window_slots）：
                 #   本链路 = 按槽位固定（后 30 帧跨变体一致的前提）
@@ -323,209 +336,119 @@ def build_labels(
                         if native != slot_pairs[widx]:
                             later_follows = False
 
-                # ── 主标签：clip 级事件（一条 clip 一个事件） ──
-                clip_records.append(
-                    {
-                        "task": task,
-                        "episode": f"ep{dense}",
-                        # ★ 主标签轴
-                        "event_slots": entry["event_slots"],
-                        "event_pair_index": entry["event_pair_index"],
-                        # 最近邻约束的自证（下游可零成本复核）
-                        "is_nn_pair": int(
-                            list(entry["event_slots"]) in
-                            [list(pair) for pair in (entry["legal_event_slots"] or [])]
-                        ),
-                        "legal_event_slots": entry["legal_event_slots"],
-                        "slot_nearest_neighbor": entry["slot_nearest_neighbor"],
-                        "nn_margin": (
-                            None if not entry.get("slot_nn_margin")
-                            else round(min(entry["slot_nn_margin"]), 6)
-                        ),
-                        # 窗口 ≥2 的口径对账：本链路按槽位固定 vs 原版最近邻规则
-                        "later_windows_follow_native_nn": later_follows,
-                        "later_windows_fixed_slots": [list(p) for p in slot_pairs[1:]],
-                        "later_windows_native_slots": later_native,
-                        # 协变量（非主标签轴）：本子集只出现 same_column / cross_aligned
-                        "topo_class": entry["topo_class"],
-                        "pair_distance": entry["pair_distance"],
-                        "pair_azimuth": entry["pair_azimuth"],
-                        "pair_azimuth_local": entry["pair_azimuth_local"],
-                        "event_window_clip": list(windows[0]),
-                        "slot_xy": entry["slot_xy"],
-                        "reference_axis_deg": entry["reference_axis_deg"],
-                        "src_episode": entry["src_episode"],
-                        "variant_idx": entry["variant_idx"],
-                        "env_seed": entry["env_seed"],
-                        "variant_seed": entry["variant_seed"],
-                        "is_original": entry["is_original"],
-                        # 协变量（跨源变化、非标签目标）
-                        "difficulty": entry["difficulty"],
-                        "swap_times": len(slot_pairs),
-                        "buttons": entry.get("buttons"),
-                        # 质量指标
-                        "min_clearance": entry["min_clearance"],
-                        "bystander_net_max": entry["bystander_net_max"],
-                        "disturbed_bins": entry["disturbed_bins"],
-                        # 动作通道泄露的量化：同组内 joint_action 逐位相同
-                        **deviation[(entry["src_episode"], entry["variant_idx"])],
-                        # 接触检测（物理引擎 get_contacts 实测，见 swap_inject）
-                        **_contact_fields(entry.get("contacts") or {}),
-                    }
-                )
+                entry["later_windows_follow_native_nn"] = later_follows
+                entry["later_windows_native_slots"] = later_native
+                entry.update(deviation[(entry["src_episode"], entry["variant_idx"])])
+                all_records.append({"task": task, **entry})
 
-                # ── 兼容标签：chunk 级二值 + 富标签 ──
-                for start in grid_starts(frames):
-                    progress, window_idx = chunk_progress(start, windows)
-                    swap = int(progress > epsilon)
-                    base = {
-                        "task": task,
-                        "episode": f"ep{dense}",
-                        "variant": variant,
-                        "start_frame": start,
-                    }
-                    chunk_binary.append({**base, "swap": swap, "labeled": True})
-                    chunk_rich.append(
-                        {
-                            **base,
-                            "swap": swap,
-                            "progress": round(progress, 4),
-                            "window_idx": window_idx,
-                            "slots": list(slot_pairs[window_idx]) if window_idx >= 0 else None,
-                            "is_event_window": window_idx == 0,
-                            "event_slots": entry["event_slots"],
-                            "event_pair_index": entry["event_pair_index"],
-                            "topo_class": entry["topo_class"],
-                            "signature": entry["signature"],
-                            "src_episode": entry["src_episode"],
-                            "variant_idx": entry["variant_idx"],
-                            "is_original": entry["is_original"],
-                            "min_clearance": entry["min_clearance"],
-                        }
-                    )
-        episode_ranges.append(f"{task}:0-{len(episode_map) - 1}")
+        payload["labels"] = _label_meta(task, episode_map)
+        temporary = map_path.with_suffix(".json.tmp")
+        temporary.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        temporary.replace(map_path)
+        written.append(map_path)
 
-    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    meta_common = {
-        "schema_version": 1,
-        "dataset": dataset_name,
-        "scope": dict(SWAP_SCOPE),
-        "episodes": ";".join(episode_ranges),
+    return {"records": all_records, "written": written}
+
+
+def _label_meta(task: str, episode_map: Sequence[dict]) -> dict:
+    """episode_map 里的标签说明块 —— 原 clip_events.json 的 meta，逐字保留。"""
+    class_counts: dict[str, int] = {}
+    topo_counts: dict[str, int] = {}
+    per_source_legal: dict[str, list[str]] = {}
+    for entry in episode_map:
+        key = "".join(str(v) for v in entry["event_slots"])
+        class_counts[key] = class_counts.get(key, 0) + 1
+        topo_counts[entry["topo_class"]] = topo_counts.get(entry["topo_class"], 0) + 1
+        per_source_legal[f"ep{entry['src_episode']}"] = [
+            "".join(str(v) for v in pair) for pair in (entry["legal_event_slots"] or [])
+        ]
+    native_deviation = [
+        {
+            "dense_episode": entry["dense_episode"],
+            "src_episode": entry["src_episode"],
+            "variant_idx": entry["variant_idx"],
+            "event_slots": entry["event_slots"],
+            "fixed_later_slots": [list(p) for p in entry["slot_pairs"][1:]],
+            "native_later_slots": entry["later_windows_native_slots"],
+        }
+        for entry in episode_map
+        if entry.get("later_windows_follow_native_nn") is False
+    ]
+    leaky_sources = sorted(
+        {
+            f"ep{entry['src_episode']}"
+            for entry in episode_map
+            if entry.get("action_group_identifies_label")
+        }
+    )
+    return {
+        "schema_version": 2,
+        "scope": SWAP_SCOPE[task],
         "clip_len": CLIP_LEN,
         "env_step_offset": CLIP_START,
         "event_source": {"swap": "oracle"},
         "annotator": "oracle-swap-clips",
-        "created_at": now,
-        "updated_at": now,
-    }
-    class_counts: dict[str, int] = {}
-    topo_counts: dict[str, int] = {}
-    per_source_legal: dict[str, list[str]] = {}
-    for record in clip_records:
-        key = "".join(str(v) for v in record["event_slots"])
-        class_counts[key] = class_counts.get(key, 0) + 1
-        topo_counts[record["topo_class"]] = topo_counts.get(record["topo_class"], 0) + 1
-        per_source_legal[f"{record['task']}/ep{record['src_episode']}"] = [
-            "".join(str(v) for v in pair) for pair in (record["legal_event_slots"] or [])
-        ]
-    native_deviation = [
-        {
-            "task": record["task"],
-            "episode": record["episode"],
-            "src_episode": record["src_episode"],
-            "variant_idx": record["variant_idx"],
-            "event_slots": record["event_slots"],
-            "fixed_later_slots": record["later_windows_fixed_slots"],
-            "native_later_slots": record["later_windows_native_slots"],
-        }
-        for record in clip_records
-        if record.get("later_windows_follow_native_nn") is False
-    ]
-    leaky_sources = sorted(
-        {
-            f"{record['task']}/ep{record['src_episode']}"
-            for record in clip_records
-            if record.get("action_group_identifies_label")
-        }
-    )
-    clip_payload = {
-        "meta": {
-            **meta_common,
-            "key": ["task", "episode"],
-            "label_axis": "event_slots",
-            "label": (
-                "event_slots —— 第一次 swap 换了哪两个槽位；受最近邻约束"
-                "（idx2 恒为 idx1 的严格最近邻），取值域 4 类：01/03/12/23"
+        "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "label_axis": "event_slots",
+        "label": (
+            "event_slots —— 第一次 swap 换了哪两个槽位；受最近邻约束"
+            "（idx2 恒为 idx1 的严格最近邻），取值域 4 类：01/03/12/23"
+        ),
+        "covariates": [
+            "topo_class", "pair_distance", "pair_azimuth", "pair_azimuth_local",
+            "difficulty", "buttons", "src_episode", "env_seed",
+        ],
+        "constraint": {
+            "name": "nearest_neighbor",
+            "rule": "第一次 swap 的两个槽位中，其一必为另一之严格最近邻（平局取下标最小）",
+            "source": "VideoUnmaskSwap.step / ButtonUnmaskSwap.step 的 pair_idx2 is None 分支",
+            "relaxation": "idx1 不受原版 randperm/target_bin 耦合限制，可为任意 bin",
+            "scope": "只作用于第一次 swap；窗口 ≥2 仍按槽位固定（后 30 帧跨变体一致）",
+            "dead_code_warning": (
+                "_compute_dynamic_swap_candidates / _select_swap_pair_from_positions"
+                "（取最近两个再随机）全仓无调用点，不是真实机制，不得采信"
             ),
-            "covariates": [
-                "topo_class", "pair_distance", "pair_azimuth", "pair_azimuth_local",
-                "difficulty", "buttons", "src_episode", "env_seed",
-            ],
-            "constraint": {
-                "name": "nearest_neighbor",
-                "rule": "第一次 swap 的两个槽位中，其一必为另一之严格最近邻（平局取下标最小）",
-                "source": "VideoUnmaskSwap.step / ButtonUnmaskSwap.step 的 pair_idx2 is None 分支",
-                "relaxation": "idx1 不受原版 randperm/target_bin 耦合限制，可为任意 bin",
-                "scope": "只作用于第一次 swap；窗口 ≥2 仍按槽位固定（后 30 帧跨变体一致）",
-                "dead_code_warning": (
-                    "_compute_dynamic_swap_candidates / _select_swap_pair_from_positions"
-                    "（取最近两个再随机）全仓无调用点，不是真实机制，不得采信"
-                ),
-            },
-            "per_source_legal_pairs": per_source_legal,
-            "class_counts": class_counts,
-            "class_balance_note": (
-                "类别分布不均衡是最近邻约束的结构性后果，本数据集不做重采样、不做类别平衡；"
-                "下游若要平衡须自行处理（可按 per_source_legal_pairs 做源内分层）"
-            ),
-            "topo_class_counts": topo_counts,
-            "cross_diagonal_note": (
-                "cross_diagonal 在本 8 源上恒为空 —— 这是实测事实、不是几何必然"
-                "（对角对从来不是任何 bin 的最近邻）。字段保留以便源集合变化时仍可用"
-            ),
-            "later_windows_deviating_from_native_nn": native_deviation,
-            "later_windows_note": (
-                "窗口 ≥2 本链路按槽位固定（后 30 帧跨变体一致的前提），原版则是拿该窗口"
-                "定死的 idx1(bin) 取当时的最近邻。窗口 1 可能已把那个 bin 挪了位，所以两者"
-                "不一定重合。上表逐条列出不重合的变体：它们的**事件本身**（第一次 swap）仍"
-                "严格落在原版可达空间内，只是后 30 帧露出的第二次 swap 换的不是原版会换的"
-                "那一对。下游若要求整条 clip 都原版可达，按 later_windows_follow_native_nn "
-                "== true 过滤"
-            ),
-            "action_leak_sources": leaky_sources,
-            "action_leak_note": (
-                "这些源的每个 action_group 只剩 1 条 ⇒ 关节角可完全反推标签。"
-                "要动作无泄露的子集，取 action_dev_max == 0 的记录，"
-                "**不要**沿用旧口径「取同一 action_group」——同源只有 2 条时那会退化成 1 条"
-            ),
-            "note": (
-                "每条 clip 恰含一个事件；标签只用相对位置，不含 cube 颜色；"
-                "主轴是 event_slots，topo_class 是它的 4→2 粗化协变量"
-            ),
-            "n_records": len(clip_records),
         },
-        "records": clip_records,
+        "per_source_legal_pairs": per_source_legal,
+        "class_counts": class_counts,
+        "class_balance_note": (
+            "类别分布不均衡是最近邻约束的结构性后果，本数据集不做重采样、不做类别平衡；"
+            "下游若要平衡须自行处理（可按 per_source_legal_pairs 做源内分层）"
+        ),
+        "topo_class_counts": topo_counts,
+        "cross_diagonal_note": (
+            "cross_diagonal 在本 8 源上恒为空 —— 这是实测事实、不是几何必然"
+            "（对角对从来不是任何 bin 的最近邻）。字段保留以便源集合变化时仍可用"
+        ),
+        "later_windows_deviating_from_native_nn": native_deviation,
+        "later_windows_note": (
+            "窗口 ≥2 本链路按槽位固定（后 30 帧跨变体一致的前提），原版则是拿该窗口"
+            "定死的 idx1(bin) 取当时的最近邻。窗口 1 可能已把那个 bin 挪了位，所以两者"
+            "不一定重合。上表逐条列出不重合的变体：它们的**事件本身**（第一次 swap）仍"
+            "严格落在原版可达空间内，只是后 30 帧露出的第二次 swap 换的不是原版会换的"
+            "那一对。下游若要求整条 clip 都原版可达，按 later_windows_follow_native_nn "
+            "== true 过滤"
+        ),
+        "action_leak_sources": leaky_sources,
+        "action_leak_note": (
+            "这些源的每个 action_group 只剩 1 条 ⇒ 关节角可完全反推标签。"
+            "要动作无泄露的子集，取 action_dev_max == 0 的记录，"
+            "**不要**沿用旧口径「取同一 action_group」——同源只有 2 条时那会退化成 1 条"
+        ),
+        "chunk_label_note": (
+            f"chunk 级标签不再落盘（110 帧 clip 只有 {len(grid_starts(CLIP_LEN))} 个 chunk、"
+            f"区分度极低）；判正规则是纯函数 grid_starts + chunk_progress（ε={DEFAULT_EPSILON}），"
+            "要用随时可从 h5 现算，规则本身由 make_clip_labels.py --regression 守卫"
+        ),
+        "note": (
+            "每条 episode 是一段 110 帧 clip，恰含一个事件；标签只用相对位置，不含 cube 颜色；"
+            "主轴是 event_slots，topo_class 是它的 4→2 粗化协变量。"
+            "h5 内只嵌不可复算的 10 个 setup 字段 + 8 个逐帧字段，派生标签一律以本文件为准"
+        ),
+        "n_records": len(episode_map),
     }
-    binary_payload = {
-        "meta": {
-            **meta_common,
-            "key": ["task", "episode", "variant", "start_frame"],
-            "chunk_span": CHUNK_SPAN,
-            "chunk_step": CHUNK_STEP,
-            "epsilon": epsilon,
-            "n_records": len(chunk_binary),
-        },
-        "records": chunk_binary,
-    }
-    rich_payload = {
-        "meta": {
-            **binary_payload["meta"],
-            "schema_note": "富标签；二值口径与同名 binary 文件逐条一致",
-            "n_records": len(chunk_rich),
-        },
-        "records": chunk_rich,
-    }
-    return clip_payload, binary_payload, rich_payload
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -538,7 +461,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--official-h5-dir", default="/data/hongzefu/robomme_data_h5")
     parser.add_argument("--input-dir", default=None, help="merge_clip_h5.py 的输出目录")
     parser.add_argument("--tasks", default=",".join(sorted(SWAP_SCOPE)))
-    parser.add_argument("--dataset-name", default="dataset-swapclip-event1")
     parser.add_argument("--epsilon", type=float, default=DEFAULT_EPSILON)
     parser.add_argument(
         "--phase0-index",
@@ -555,61 +477,71 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
     input_dir = Path(args.input_dir).resolve()
     tasks = [item.strip() for item in args.tasks.split(",") if item.strip()]
-    clip_payload, binary_payload, rich_payload = build_labels(
-        input_dir, args.dataset_name, args.epsilon, tasks, Path(args.phase0_index)
-    )
-    for name, payload in (
-        ("clip_events.json", clip_payload),
-        ("swap_labels_clip.json", binary_payload),
-        ("swap_events_clip.json", rich_payload),
-    ):
-        (input_dir / name).write_text(
-            json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
-        )
-    positives = sum(record["swap"] for record in binary_payload["records"])
-    meta = clip_payload["meta"]
+    result = augment_episode_maps(input_dir, tasks, Path(args.phase0_index))
+    records = result["records"]
+
+    class_counts: dict[str, int] = {}
+    topo_counts: dict[str, int] = {}
+    legal_pairs: dict[str, list[str]] = {}
+    for record in records:
+        key = "".join(str(v) for v in record["event_slots"])
+        class_counts[key] = class_counts.get(key, 0) + 1
+        topo_counts[record["topo_class"]] = topo_counts.get(record["topo_class"], 0) + 1
+        legal_pairs[f"{record['task']}/ep{record['src_episode']}"] = [
+            "".join(str(v) for v in pair) for pair in (record["legal_event_slots"] or [])
+        ]
     print(
-        f"clip 级事件标签 {len(clip_payload['records'])} 条 —— 主标签轴 event_slots："
-        + "、".join(f"{name} {count}" for name, count in sorted(meta["class_counts"].items()))
+        f"clip 级事件标签 {len(records)} 条 —— 主标签轴 event_slots："
+        + "、".join(f"{name} {count}" for name, count in sorted(class_counts.items()))
     )
     print(
         "  协变量 topo_class（非主轴）："
-        + "、".join(f"{name} {count}" for name, count in sorted(meta["topo_class_counts"].items()))
+        + "、".join(f"{name} {count}" for name, count in sorted(topo_counts.items()))
         + "；cross_diagonal 恒空（对角对结构上进不了最近邻）"
     )
     print("  逐源合法对：" + "  ".join(
-        f"{key}={','.join(pairs)}" for key, pairs in sorted(meta["per_source_legal_pairs"].items())
+        f"{key}={','.join(pairs)}" for key, pairs in sorted(legal_pairs.items())
     ))
-    print(
-        f"chunk 级标签 {len(binary_payload['records'])} 条（swap=1 有 {positives} 条）"
-        f"；三份 JSON 已写入 {input_dir}"
-    )
-    clean = [r for r in clip_payload["records"] if r["action_dev_max"] == 0.0]
+    print("标签已并入：" + "、".join(path.name for path in result["written"]))
+
+    clean = [r for r in records if r["action_dev_max"] == 0.0]
     by_task: dict[str, list[float]] = {}
-    for record in clip_payload["records"]:
+    for record in records:
         by_task.setdefault(record["task"], []).append(record["action_dev_max"])
     print("动作通道泄露量化（action_dev_max = 与同源其他变体的 joint_action 最大差，rad）：")
     for task, values in sorted(by_task.items()):
         zero = sum(1 for v in values if v == 0.0)
         print(f"  {task}: {zero}/{len(values)} 条为 0，最大 {max(values):.3e}")
-    print(f"  全体无泄露（action_dev_max==0）的 clip：{len(clean)}/{len(clip_payload['records'])} 条")
-    if meta["action_leak_sources"]:
+    print(f"  全体无泄露（action_dev_max==0）的 clip：{len(clean)}/{len(records)} 条")
+    leaky = sorted(
+        {
+            f"{r['task']}/ep{r['src_episode']}"
+            for r in records if r.get("action_group_identifies_label")
+        }
+    )
+    if leaky:
         print(
-            "  ⚠ 关节角可完全反推标签的源（每个 action_group 只剩 1 条）："
-            + "、".join(meta["action_leak_sources"])
+            "  ⚠ 关节角可完全反推标签的源（每个 action_group 只剩 1 条）：" + "、".join(leaky)
         )
-    total = len(clip_payload["records"])
-    rb = [r for r in clip_payload["records"] if r["has_robot_bin_contact"]]
-    bb = [r for r in clip_payload["records"] if r["has_bin_bin_contact"]]
+    native_dev = [r for r in records if r.get("later_windows_follow_native_nn") is False]
+    print(
+        f"窗口 ≥2 与原版最近邻规则不重合：{len(native_dev)}/{len(records)} 条"
+        "（事件本身仍全部落在原版可达空间内；要整条 clip 原版可达按 "
+        "later_windows_follow_native_nn == true 过滤）"
+    )
+
+    contacts = [(r, contact_fields(r.get("contacts") or {})) for r in records]
+    rb = [r for r, c in contacts if c["has_robot_bin_contact"]]
+    bb = [(r, c) for r, c in contacts if c["has_bin_bin_contact"]]
     print("接触检测（物理引擎 get_contacts 实测，冲量 > 1e-9 才算）：")
-    print(f"  机械臂 ↔ 容器：{len(rb)}/{total} 条 —— 机器人是否被 swap 中的容器碰到")
-    print(f"  容器 ↔ 容器  ：{len(bb)}/{total} 条，全部落在第一次 swap 窗口内")
+    print(f"  机械臂 ↔ 容器：{len(rb)}/{len(records)} 条 —— 机器人是否被 swap 中的容器碰到")
+    print(f"  容器 ↔ 容器  ：{len(bb)}/{len(records)} 条，全部落在第一次 swap 窗口内")
     # 最近邻子集里互撞条数极少，按 topo_class 分组统计已无意义 —— 直接逐条列出
-    for record in bb:
+    for record, fields in bb:
         print(
             f"    {record['task']}/ep{record['src_episode']}/var{record['variant_idx']}"
-            f" 事件={record['event_slots']} 互撞 {record['contact_bin_bin_forceful_frames']} 帧"
-            f"（最大冲量 {record['contact_bin_bin_impulse_max']:.4g}）"
+            f" 事件={record['event_slots']} 互撞 {fields['contact_bin_bin_forceful_frames']} 帧"
+            f"（最大冲量 {fields['contact_bin_bin_impulse_max']:.4g}）"
         )
     return 0
 

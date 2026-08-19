@@ -54,10 +54,8 @@ from clip_plan import (  # noqa: E402
     CLIP_START,
     clip_visible_windows,
     net_permutation,
-    pair_index,
     signature_of,
     slot_pairs_from_bin_pairs,
-    swap_windows_clip,
     swap_windows_env,
     topo_class,
 )
@@ -299,11 +297,6 @@ def subgoal_boundaries(episode_group: h5py.Group) -> list[dict]:
     return boundaries
 
 
-def _smoothstep(alpha: float) -> float:
-    alpha = min(max(alpha, 0.0), 1.0)
-    return alpha * alpha * (3.0 - 2.0 * alpha)
-
-
 def raw_h5_path(output_root: Path, job: ClipJob) -> Path:
     """RecordWrapper 的命名约定：{task}_ep{episode}_seed{seed}.h5。"""
     return (
@@ -333,9 +326,6 @@ def write_clip(
     trace: Sequence[dict],
     fingerprint: Mapping[str, Any],
     geometry: Mapping[str, Any],
-    clearance: float,
-    bystanders: Mapping[str, Any],
-    contacts: Mapping[str, Any],
 ) -> dict[str, Any]:
     """裁剪 + 改写 info + 写 swap_gt。返回 clip 的段长信息。
 
@@ -349,8 +339,6 @@ def write_clip(
     ⚠ Button 末帧的 `is_completed=True` 是**人为置位**，语义不是「任务完成」而是
     「clip 到此为止」—— 截断 rollout 时任务确实没做完。下游只把它当段尾标记用。
     """
-    windows_clip = swap_windows_clip(len(slot_pairs))
-    windows_env = swap_windows_env(len(slot_pairs))
     frames = {item["step"]: item for item in trace}
     str_dtype = h5py.string_dtype(encoding="utf-8")
     demo_flag = CLIP_IS_DEMO[job.task]
@@ -388,33 +376,15 @@ def write_clip(
                     del info[key]
                 info.create_dataset(key, data=bool(value))
 
-            active_idx = -1
-            progress = 0.0
-            for window_idx, (start, end) in enumerate(windows_clip):
-                if start <= index < end:
-                    active_idx = window_idx
-                    progress = _smoothstep((index - start) / (end - start))
-                    break
+            # 逐帧只写**物理引擎实测量**：位置与三类接触。窗口归属与交换对
+            # （swap_active / swap_window_idx / swap_progress / swap_slots / swap_bins /
+            # swap_pair_pos / env_step）一律不落盘 —— 全部可由 setup 的 bin_pairs + 帧号
+            # 复算（windows = swap_windows_clip(len(bin_pairs))，进度是 smoothstep 解析式，
+            # env_step = 帧号 + clip_start_env_step）。
             sample = frames[step]
-            if active_idx >= 0:
-                slots = slot_pairs[active_idx]
-                bins = bin_pairs_seq[active_idx]
-                pair_pos = np.stack([sample["bins"][bins[0]], sample["bins"][bins[1]]])
-            else:
-                slots = (-1, -1)
-                bins = (-1, -1)
-                pair_pos = np.full((2, 3), np.nan)
-
             gt = group.create_group("swap_gt")
-            gt.create_dataset("swap_active", data=bool(active_idx >= 0))
-            gt.create_dataset("swap_window_idx", data=np.int8(active_idx))
-            gt.create_dataset("swap_slots", data=np.asarray(slots, dtype=np.int8))
-            gt.create_dataset("swap_bins", data=np.asarray(bins, dtype=np.int8))
-            gt.create_dataset("swap_pair_pos", data=pair_pos.astype(np.float32))
-            gt.create_dataset("swap_progress", data=np.float32(progress))
             gt.create_dataset("bins_pos", data=sample["bins"].astype(np.float32))
             gt.create_dataset("cubes_pos", data=sample["cubes"].astype(np.float32))
-            gt.create_dataset("env_step", data=np.int32(step))
             # 逐帧接触分类（见 swap_inject._contact_snapshot）
             frame_contacts = sample.get("contacts") or {}
             for key in (
@@ -430,92 +400,32 @@ def write_clip(
                     f"contact_{key}", data=np.float32(frame_contacts.get(key, 0.0))
                 )
 
-        # ── setup 级：事件标签 + 槽位几何 + 质量指标 ──
+        # ── setup 级：只留**不可复算**的 10 个字段 ──
+        # 判据：一个字段只有在「用本组其余字段 + clip_plan.py 的纯函数算不出来」时才落盘。
+        # 被删掉的 37 个（topo_class / pair_* / legal_event_slots / slot_nn_margin /
+        # net_permutation / signature / variant_seed / windows_* / slot_pairs /
+        # bins_pos_traj / cubes_pos_traj / min_clearance / bystander_* / contact_* 聚合量）
+        # 的复算路径逐项列在 CLAUDE.md §六；派生标签与协变量一律去 episode_map_{Task}.json 取。
         event_slots = tuple(slot_pairs[0])
-        pair_info = geometry["pairs"][tuple(sorted(event_slots))]
         gt = setup.create_group("swap_gt")
+        # 复现根：必须用 env_seed 建环境再按 bin_pairs 注入（variant_seed 只是编号，复现不了）
         gt.create_dataset("env_seed", data=np.int64(job.env_seed))
-        gt.create_dataset("variant_seed", data=np.int64(job.variant_seed))
+        gt.create_dataset("bin_pairs", data=np.asarray(bin_pairs_seq, dtype=np.int8))
+        # ★ 主标签轴：窗口 1 移动的槽位对（受最近邻约束，取值域 4 类）。
+        # 它 == slot_pairs[0]，但标签不靠推、必须显式落盘。
+        gt.create_dataset("event_slots", data=np.asarray(event_slots, dtype=np.int8))
+        # 全部几何的复算根：最近邻集合、topo_class、pair_distance/azimuth、reference_axis_deg
+        gt.create_dataset("slot_xy", data=np.asarray(geometry["slot_xy"], dtype=np.float32))
+        # 同源分组的键（判据 3/4/5/7 都是同源变体之间的比较）与跨源可比的变体编号
         gt.create_dataset("src_episode", data=np.int64(job.src_episode))
         gt.create_dataset("variant_idx", data=np.int64(job.variant_idx))
+        # 需与原版序列比对才知道 —— h5 内没有原版序列，静态算不出
         gt.create_dataset("is_original", data=np.int8(int(job.is_original)))
+        # 读 train metadata 得来（ep98 的 seed 是历史 attempt 值 16801，公式反推不出）
         gt.create_dataset("difficulty", data=job.difficulty, dtype=str_dtype)
-        gt.create_dataset("signature", data=signature_of(slot_pairs), dtype=str_dtype)
-        gt.create_dataset("slot_pairs", data=np.asarray(slot_pairs, dtype=np.int8))
-        gt.create_dataset("bin_pairs", data=np.asarray(bin_pairs_seq, dtype=np.int8))
-        gt.create_dataset("windows_clip", data=np.asarray(windows_clip, dtype=np.int32))
-        gt.create_dataset("windows_env", data=np.asarray(windows_env, dtype=np.int32))
+        # clip 帧 ↔ env step 的换算基准与段长，保证 h5 自解释
         gt.create_dataset("clip_start_env_step", data=np.int32(CLIP_START))
         gt.create_dataset("clip_len", data=np.int32(CLIP_LEN))
-        # ★ 主标签轴：窗口 1 移动的槽位对（受最近邻约束，取值域 4 类）
-        gt.create_dataset("event_slots", data=np.asarray(event_slots, dtype=np.int8))
-        gt.create_dataset("event_pair_index", data=np.int64(pair_index(event_slots)))
-        # ── 最近邻约束的自证：每条 clip 自带复核所需的一切，下游不必回头读 Phase 0 ──
-        legal_pairs = [tuple(pair) for pair in geometry["legal_event_pairs"]]
-        gt.create_dataset("is_nn_pair", data=np.int8(int(event_slots in legal_pairs)))
-        gt.create_dataset(
-            "slot_nearest_neighbor",
-            data=np.asarray(geometry["slot_nearest_neighbor"], dtype=np.int8),
-        )
-        gt.create_dataset(
-            "slot_nn_margin", data=np.asarray(geometry["slot_nn_margin"], dtype=np.float32)
-        )
-        gt.create_dataset(
-            "legal_event_slots", data=np.asarray(legal_pairs, dtype=np.int8)
-        )
-        # 协变量（非主标签轴）：最近邻子集里只出现 same_column / cross_aligned，
-        # cross_diagonal 恒空 —— 这是本 8 源的实测事实，不是几何必然。
-        gt.create_dataset("topo_class", data=topo_class(event_slots), dtype=str_dtype)
-        gt.create_dataset("pair_distance", data=np.float32(pair_info["distance"]))
-        gt.create_dataset("pair_azimuth", data=np.float32(pair_info["azimuth"]))
-        gt.create_dataset("pair_azimuth_local", data=np.float32(pair_info["azimuth_local"]))
-        gt.create_dataset("slot_xy", data=np.asarray(geometry["slot_xy"], dtype=np.float32))
-        gt.create_dataset(
-            "reference_axis_deg", data=np.float32(geometry["reference_axis_deg"])
-        )
-        gt.create_dataset(
-            "net_permutation",
-            data=np.asarray(net_permutation(slot_pairs, job.num_bins), dtype=np.int8),
-        )
-        # ── 接触检测（clip 区间内，见 swap_inject.contact_summary）──
-        # robot_bin   ：机械臂连杆 ↔ 容器 —— 2026-08-18 全量实测 0 帧，从未发生；
-        # bin_bin     ：容器互撞 —— 实际发生的接触，也是 Button 动作分叉的真正源头；
-        # robot_button：机械臂 ↔ 按钮 —— 任务本身的接触，作为对照基线。
-        # *_frames 含零冲量的接触候选；判「真的撞上了」要用 *_forceful_frames。
-        for key in (
-            "robot_bin_frames", "robot_bin_forceful_frames", "robot_bin_event_forceful_frames",
-            "bin_bin_frames", "bin_bin_forceful_frames", "bin_bin_event_forceful_frames",
-            "robot_button_frames", "robot_button_forceful_frames",
-        ):
-            gt.create_dataset(f"contact_{key}", data=np.int32(contacts.get(key, 0)))
-        for key in ("robot_bin_impulse_max", "bin_bin_impulse_max", "robot_button_impulse_max"):
-            gt.create_dataset(f"contact_{key}", data=np.float32(contacts.get(key, 0.0)))
-        for prefix in ("robot_bin", "bin_bin"):
-            onset = contacts.get(f"{prefix}_onset_env_step", -1)
-            gt.create_dataset(
-                f"contact_{prefix}_onset_clip_frame",
-                data=np.int32(onset - CLIP_START if onset >= 0 else -1),
-            )
-        for key in ("bin_bin_pairs", "bin_bin_forceful_pairs"):
-            gt.create_dataset(
-                f"contact_{key}",
-                data=np.asarray(contacts.get(key) or [], dtype=np.int8).reshape(-1, 2),
-            )
-        gt.create_dataset("min_clearance", data=np.float32(clearance))
-        gt.create_dataset("bystander_net_max", data=np.float32(bystanders["bystander_net_max"]))
-        gt.create_dataset("bystander_path_max", data=np.float32(bystanders["bystander_path_max"]))
-        gt.create_dataset(
-            "disturbed_bins", data=np.asarray(bystanders["disturbed_bins"], dtype=np.int8)
-        )
-        order = list(range(CLIP_START, CLIP_END))
-        gt.create_dataset(
-            "bins_pos_traj",
-            data=np.stack([frames[step]["bins"] for step in order]).astype(np.float32),
-        )
-        gt.create_dataset(
-            "cubes_pos_traj",
-            data=np.stack([frames[step]["cubes"] for step in order]).astype(np.float32),
-        )
 
         # ── setup/meta：颜色等纯 metadata，**不进标签**（宗旨：颜色不管） ──
         meta = setup.create_group("meta")
@@ -859,7 +769,7 @@ def _postprocess(
         clip_path = clip_h5_path(output_root, job)
         segment = write_clip(
             raw_path, clip_path, job, slot_pairs, bin_pairs_seq, trace,
-            fingerprint, geometry, clearance, bystanders, contacts,
+            fingerprint, geometry,
         )
         if segment["n_timesteps"] != CLIP_LEN:
             raise ClipGenerationError(

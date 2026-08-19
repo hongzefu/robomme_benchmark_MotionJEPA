@@ -49,6 +49,7 @@ from clip_plan import (  # noqa: E402
     bin_pairs,
     swap_windows_clip,
 )
+from make_clip_labels import contact_fields  # noqa: E402
 
 TOPO_COLOR = {
     "same_column": "#1f77b4",
@@ -374,11 +375,27 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
 
     gen_dir = Path(args.gen_dir).resolve()
-    labels = json.loads((gen_dir / "clip_events.json").read_text(encoding="utf-8"))["records"]
+    tasks = [item.strip() for item in args.tasks.split(",") if item.strip()]
+    # 标签的唯一载体是 episode_map_{Task}.json（clip_events.json 已不再落盘）；
+    # 接触的聚合量同样不再内嵌，用 contact_fields 从 map 里的原始 contacts 现算。
+    labels = []
+    for task in tasks:
+        payload = json.loads((gen_dir / f"episode_map_{task}.json").read_text(encoding="utf-8"))
+        for entry in payload["records"]:
+            labels.append(
+                {
+                    "task": task,
+                    "episode": f"ep{entry['dense_episode']}",
+                    # swap_times 是 slot_pairs 的长度，属于「可复算 ⇒ 不落盘」的那一类
+                    "swap_times": len(entry["slot_pairs"]),
+                    **entry,
+                    **contact_fields(entry.get("contacts") or {}),
+                }
+            )
     out_dir = gen_dir / "diagrams"
 
     written = []
-    for task in (item.strip() for item in args.tasks.split(",") if item.strip()):
+    for task in tasks:
         by_source: dict[int, list[dict]] = {}
         for record in labels:
             if record["task"] == task:
