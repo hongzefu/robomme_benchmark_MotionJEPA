@@ -222,6 +222,11 @@ def main(argv=None) -> int:
         help="时长 JSON，可重复（多份会按源名合并）",
     )
     parser.add_argument("--out-dir", default=str(HERE / "reports"))
+    parser.add_argument(
+        "--eval-section",
+        default=str(HERE / "reports" / "eval_section.md"),
+        help="由 plot_eval_success.py 生成的成功率分析段落；存在则拼到总览末尾",
+    )
     args = parser.parse_args(argv)
 
     payload = json.loads(Path(args.derived).read_text(encoding="utf-8"))
@@ -238,7 +243,12 @@ def main(argv=None) -> int:
         text = build_source_report(key, rows, durations.get(key, {}))
         (out_dir / f"{key}.md").write_text(text, encoding="utf-8")
         print(f"已写出 {out_dir / (key + '.md')}")
-    (out_dir / "README.md").write_text(build_summary(payload, durations), encoding="utf-8")
+    summary = build_summary(payload, durations)
+    section_path = Path(args.eval_section) if args.eval_section else None
+    if section_path is not None and section_path.exists():
+        summary = summary.rstrip("\n") + "\n\n" + section_path.read_text(encoding="utf-8")
+        print(f"已拼入 {section_path}")
+    (out_dir / "README.md").write_text(summary, encoding="utf-8")
     print(f"已写出 {out_dir / 'README.md'}")
     return 0
 

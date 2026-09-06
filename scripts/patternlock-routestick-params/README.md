@@ -51,7 +51,8 @@
 | `derive_episode_params.py` | 离线复算 move 次数 / 坐标 / 动作语义，出 `outputs/derived_params.json` |
 | `extract_move_durations.py` | 从 h5 按子目标边界切段，出每次 move 的 timestep 时长 |
 | `cross_check.py` | 复算 vs h5 真值逐条对拍（seed、move 次数、语义串） |
-| `build_report.py` | 合成 `reports/` 下的 Markdown |
+| `plot_eval_success.py` | 把 policy 侧 eval 的逐集结果按动作参数分组，出成功率分布图与解读段落 |
+| `build_report.py` | 合成 `reports/` 下的 Markdown（存在 `reports/eval_section.md` 时自动拼进总览） |
 
 ```bash
 # 1. 离线复算四个源
@@ -82,6 +83,22 @@ uv run python scripts/patternlock-routestick-params/build_report.py \
   --durations scripts/patternlock-routestick-params/outputs/durations_val.json \
   --durations scripts/patternlock-routestick-params/outputs/durations_test.json
 ```
+
+## 成功率分析（跨仓库）
+
+`plot_eval_success.py` 读 policy 仓库的 eval 结果，按本目录复算出的动作参数分组画成功率分布：
+
+```bash
+uv run python scripts/patternlock-routestick-params/plot_eval_success.py
+uv run python scripts/patternlock-routestick-params/build_report.py \
+  --durations scripts/patternlock-routestick-params/outputs/durations_val.json \
+  --durations scripts/patternlock-routestick-params/outputs/durations_test.json
+```
+
+数据来自 `/data/hongzefu/robomme_policy_learning_MotionJEPA/docs/training-doc/eval-{medium,hard}-patternlock-routestick/`
+（只读），两个变体是 framesample 的 `modul` 与 `context`，共 192 条。join 键 `(task, split, episode)`，
+并逐条断言 seed 一致。图落在 `reports/figures/`，解读段落 `reports/eval_section.md` 由 `build_report.py`
+自动拼进 `reports/README.md` 末尾——所以改了 eval 结果后，先跑 `plot_eval_success.py` 再跑 `build_report.py`。
 
 ## 校验结果
 
