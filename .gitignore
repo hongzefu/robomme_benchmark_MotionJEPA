@@ -214,3 +214,6 @@ __marimo__/
 # 数据生成产物（h5 与视频体量巨大，不入 git）
 scripts/data-generation-newSeed/outputs/
 scripts/data-generation-MotionJEPALabel/outputs/
+
+# PatternLock/RouteStick 参数导出：只忽略实跑出来的大产物（h5/视频），outputs 下的 JSON 与 reports 照常跟踪
+scripts/patternlock-routestick-params/outputs/test-h5/
