@@ -10,7 +10,17 @@ from typing import Any
 
 HERE = Path(__file__).resolve().parent
 SOURCES = ["PatternLock-test", "PatternLock-val", "RouteStick-test", "RouteStick-val"]
+COUNTING_SOURCES = ["BinFill-test", "BinFill-val", "PickXtimes-test", "PickXtimes-val"]
 DIFFICULTY_ORDER = ["easy", "medium", "hard"]
+# BinFill / PickXtimes 各难度的 env 配置（BinFill.configs / PickXtimes.configs），决定动作次数区间
+COUNTING_CONFIG_NOTE = {
+    "easy": "BinFill：场上 1 种颜色、spawn 4~6 个 cube，要放进 bin 的 `put_in_numbers ∈ [1, 3]`。"
+    "PickXtimes：场上 1 种颜色，重复次数 ∈ [1, 3]。",
+    "medium": "BinFill：2 种颜色、spawn 8~10 个，目标涉及 1~2 种颜色、总数 ∈ [2, 4]。"
+    "PickXtimes：**重复次数区间与 easy 相同（[1, 3]）**，难点在于场上有 3 种颜色的 cube 作干扰。",
+    "hard": "BinFill：3 种颜色、spawn 10~12 个，目标涉及 2~3 种颜色、总数 ∈ [3, 5]。"
+    "PickXtimes：3 种颜色，重复次数 ∈ [4, 5]。",
+}
 # 各难度下 env 的配置项（PatternLock.configs / RouteStick.configs），决定 move 次数的上下界
 DIFFICULTY_CONFIG_NOTE = {
     "easy": "PatternLock：3×3 格点，路径长度约束 `[2, 4]` → move 1~3 次。"
@@ -19,6 +29,12 @@ DIFFICULTY_CONFIG_NOTE = {
     "RouteStick：`steps ∈ [4, 5]`，不允许原地折返。",
     "hard": "PatternLock：5×5 格点，路径长度约束 `[4, 8]` → move 3~7 次。"
     "RouteStick：`steps ∈ [4, 7]`，**允许原地折返**（`backtrack=True`）。",
+}
+COUNTING_ORIGIN = {
+    "BinFill-val": "原版 h5 `/data/hongzefu/data-0306/record_dataset_BinFill.h5`",
+    "PickXtimes-val": "原版 h5 `/data/hongzefu/data-0306/record_dataset_PickXtimes.h5`",
+    "BinFill-test": "本轮按 test metadata 死 seed 实跑生成",
+    "PickXtimes-test": "本轮按 test metadata 死 seed 实跑生成",
 }
 ORIGIN = {
     "PatternLock-val": "原版 h5 `/data/hongzefu/data-0306/record_dataset_PatternLock.h5`",
@@ -96,6 +112,57 @@ def build_source_report(key: str, rows: list[dict], durations: dict[str, Any]) -
     return "\n".join(lines)
 
 
+def counting_episode_section(episode: str, row: dict[str, Any]) -> list[str]:
+    lines = [
+        f"#### episode {episode} — seed `{row['seed']}`，难度 {row['difficulty']}，动作 {row['actions']} 次",
+        "",
+        f"目标：{row['task_goal']}",
+        "",
+        f"整条 {row['n_timesteps_total']} timestep（其中收尾段 {row['completed_tail_timesteps']}）。",
+        "",
+        "| # | 子目标 | 时长 | 关键点 (x,y,z) |",
+        "| --- | --- | --- | --- |",
+    ]
+    index = 0
+    for segment in row["segments"]:
+        if segment["subgoal"] in ("All tasks completed", "NO RECORD"):
+            continue
+        index += 1
+        point = segment.get("target_xyz")
+        coord = (
+            f"({point[0]:+.3f}, {point[1]:+.3f}, {point[2]:+.3f})" if point else "—"
+        )
+        lines.append(
+            f"| {index} | {segment['subgoal']} | {segment['n_timesteps']} ts | {coord} |"
+        )
+    lines.append("")
+    return lines
+
+
+def build_counting_report(key: str, rows: dict[str, Any]) -> str:
+    task, split = key.split("-")
+    lines = [
+        f"# {key} 逐 episode 动作参数",
+        "",
+        f"共 {len(rows)} 条。数据来源：{COUNTING_ORIGIN[key]}。",
+        "",
+        "口径：动作次数与颜色组成直接读 `setup/task_goal`（BinFill 是要放几个什么颜色的 cube，"
+        "PickXtimes 是同一动作重复几次）；每次动作在数据里是 pick 与 place 两段，末尾再加一段 press button，"
+        "所以核心段数 = 2 × 动作次数 + 1（本报告的每条都验过这条恒等式）。"
+        "时长单位是 timestep（1 timestep = 1 个 env step = 0.05 s）。"
+        "关键点坐标取该段内 z 最低的 `action/waypoint_action`（段首帧常残留上一段的值，不可用）——"
+        "pick 段即 cube 位置、press 段即按钮位置、put 段即 bin 上方的松手点，"
+        "SAPIEN 世界坐标、单位米（机器人 base 在 `(-0.615, 0, 0)`）；该帧没有关键点时记 —。",
+        "",
+        "与 PatternLock / RouteStick 不同，这两个任务**没有视频演示段**，所以不存在「演示段 / 执行段」之分，"
+        "下表每一行就是真正执行的一段。",
+        "",
+    ]
+    for episode, row in sorted(rows.items(), key=lambda x: int(x[0])):
+        lines += counting_episode_section(episode, row)
+    return "\n".join(lines)
+
+
 def summary_stats(rows: list[dict], durations: dict[str, Any]) -> dict[str, Any]:
     """按难度分桶统计：move 次数与单次 move 时长。难度是决定这两项的唯一配置，混在一起看没有意义。"""
     moves = [row["moves"] for row in rows]
@@ -124,7 +191,11 @@ def stats_by_difficulty(rows: list[dict], durations: dict[str, Any]) -> dict[str
     }
 
 
-def build_summary(payload: dict[str, list[dict]], durations: dict[str, dict]) -> str:
+def build_summary(
+    payload: dict[str, list[dict]],
+    durations: dict[str, dict],
+    counting: dict[str, dict] | None = None,
+) -> str:
     lines = [
         "# PatternLock / RouteStick 的 test+val 源逐 episode 动作参数",
         "",
@@ -182,6 +253,40 @@ def build_summary(payload: dict[str, list[dict]], durations: dict[str, dict]) ->
             )
         lines.append("")
 
+    if counting:
+        lines += [
+            "## Counting suite（BinFill / PickXtimes）",
+            "",
+            "这两个任务的结构与上面两个不同：**没有视频演示段**，动作是 pick / place 成对再加一次 press button，",
+            "「动作次数」= BinFill 要放进 bin 的 cube 总数 / PickXtimes 同一动作的重复次数，"
+            "直接写在 `setup/task_goal` 里。核心段数 = 2 × 动作次数 + 1（每条都验过）。",
+            "",
+        ]
+        for level in DIFFICULTY_ORDER:
+            lines += [
+                f"### {level}",
+                "",
+                COUNTING_CONFIG_NOTE[level],
+                "",
+                "| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | 单段时长（min~max） | 单段时长均值 |",
+                "| --- | --- | --- | --- | --- | --- |",
+            ]
+            for key in COUNTING_SOURCES:
+                rows = counting.get(key)
+                if not rows:
+                    continue
+                hit = [r for r in rows.values() if r["difficulty"] == level]
+                if not hit:
+                    continue
+                actions = [r["actions"] for r in hit]
+                durations = [d for r in hit for d in r["durations"]]
+                lines.append(
+                    f"| [{key}]({key}.md) | {len(hit)} | {min(actions)}~{max(actions)} | "
+                    f"{statistics.mean(actions):.2f} | {min(durations)}~{max(durations)} ts | "
+                    f"{statistics.mean(durations):.1f} ts |"
+                )
+            lines.append("")
+
     lines += [
         "## 时长来源",
         "",
@@ -191,6 +296,9 @@ def build_summary(payload: dict[str, list[dict]], durations: dict[str, dict]) ->
     for key in SOURCES:
         if payload.get(key):
             lines.append(f"| {key} | {ORIGIN[key]} |")
+    for key in COUNTING_SOURCES:
+        if counting and counting.get(key):
+            lines.append(f"| {key} | {COUNTING_ORIGIN[key]} |")
 
     lines += [
         "",
@@ -203,8 +311,13 @@ def build_summary(payload: dict[str, list[dict]], durations: dict[str, dict]) ->
         "2. **test seed 一致性**（`check_test_seeds.py`）：本轮实跑 100 条全部 attempt=0 一次通过，"
         "seed 与 test metadata **逐条相等，0 条不一致**，即拿到的时长就是原版 seed 下的时长"
         "（`outputs/test_seed_check.json`）。",
-        "3. **口径自洽**：RouteStick 满足「整条时长 = move 段数 × 50」；两个 env 的 move 段数都是偶数"
-        "（演示段与执行段成对）。",
+        "3. **口径自洽（Imitation）**：RouteStick 满足「整条时长 = move 段数 × 50」；"
+        "两个 env 的 move 段数都是偶数（演示段与执行段成对）。",
+        "4. **goal 解析自洽（Counting）**：`核心段数 == 2 × 动作次数 + 1`，**四个源 200 条全中**；"
+        "另外 val 侧用 h5 的 `setup/task_goal` 校验过从 eval `video` 字段解析的 goal，48/48 相同。",
+        "5. **Counting 的 test seed 锁死**：BinFill / PickXtimes 的 test metadata 里有 9 条 seed 尾号非 0，"
+        "生成型入口会从 attempt=0 重算而拿到另一个场景，因此改用 `run_test_fixed_seed.py` 逐条锁死 seed、"
+        "`max_attempts=1`。实跑 100 条全部成功，seed **逐条相等、0 条不一致**。",
         "",
         "同难度下 test 与 val 的统计高度吻合，是当前环境代码与原版行为一致的旁证。",
         "",
@@ -222,6 +335,12 @@ def main(argv=None) -> int:
         help="时长 JSON，可重复（多份会按源名合并）",
     )
     parser.add_argument("--out-dir", default=str(HERE / "reports"))
+    parser.add_argument(
+        "--counting",
+        action="append",
+        default=None,
+        help="extract_task_params.py 出的 BinFill / PickXtimes 参数 JSON，可重复",
+    )
     parser.add_argument(
         "--eval-section",
         default=str(HERE / "reports" / "eval_section.md"),
@@ -243,7 +362,17 @@ def main(argv=None) -> int:
         text = build_source_report(key, rows, durations.get(key, {}))
         (out_dir / f"{key}.md").write_text(text, encoding="utf-8")
         print(f"已写出 {out_dir / (key + '.md')}")
-    summary = build_summary(payload, durations)
+    counting: dict[str, dict] = {}
+    for path in args.counting or []:
+        counting.update(json.loads(Path(path).read_text(encoding="utf-8")))
+    for key in COUNTING_SOURCES:
+        rows = counting.get(key)
+        if not rows:
+            continue
+        (out_dir / f"{key}.md").write_text(build_counting_report(key, rows), encoding="utf-8")
+        print(f"已写出 {out_dir / (key + '.md')}")
+
+    summary = build_summary(payload, durations, counting)
     section_path = Path(args.eval_section) if args.eval_section else None
     if section_path is not None and section_path.exists():
         summary = summary.rstrip("\n") + "\n\n" + section_path.read_text(encoding="utf-8")

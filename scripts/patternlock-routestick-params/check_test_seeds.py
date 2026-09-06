@@ -22,18 +22,19 @@ def main(argv=None) -> int:
     parser.add_argument("--out", default=str(HERE / "outputs" / "test_seed_check.json"))
     args = parser.parse_args(argv)
 
-    expected: dict[tuple[str, int], int] = {}
-    for task in ("PatternLock", "RouteStick"):
-        path = METADATA_ROOT / args.split / f"record_dataset_{task}_metadata.json"
-        for record in json.loads(path.read_text(encoding="utf-8"))["records"]:
-            expected[(task, int(record["episode"]))] = int(record["seed"])
-
     rows = []
     with Path(args.results).open(encoding="utf-8") as handle:
         for line in handle:
             line = line.strip()
             if line:
                 rows.append(json.loads(line))
+
+    # 任务列表从结果里取，不写死——同一个脚本要同时服务 Imitation 与 Counting 两批
+    expected: dict[tuple[str, int], int] = {}
+    for task in sorted({row["task"] for row in rows}):
+        path = METADATA_ROOT / args.split / f"record_dataset_{task}_metadata.json"
+        for record in json.loads(path.read_text(encoding="utf-8"))["records"]:
+            expected[(task, int(record["episode"]))] = int(record["seed"])
 
     succeeded = [r for r in rows if r.get("ok")]
     mismatched = []
