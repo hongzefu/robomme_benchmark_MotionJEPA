@@ -78,6 +78,8 @@
 | `cross_check.py` | 复算 vs h5 真值逐条对拍（seed、move 次数、语义串） |
 | `extract_task_params.py` | BinFill / PickXtimes 的参数提取：goal 解析 + 段时长 + 段内目标点坐标 |
 | `run_test_fixed_seed.py` | 按 metadata 死 seed 实跑指定 split（不让 seed 漂移），复用生成链路的 worker |
+| `plot_sampling_windows.py` | 采样窗口时序数轴（四张 PNG，每任务 3 难度 × 最短/中位/最长） |
+| `build_sampling_artifact.py` | 同内容的交互版 HTML，发布为 artifact：[采样窗口数轴](https://claude.ai/code/artifact/093a467c-d567-466b-b57e-e4fdee2bcac0) |
 | `plot_eval_success.py` | 把 policy 侧三轮 eval 的逐集结果按动作参数分组，出成功率分布图与解读段落 |
 | `build_report.py` | 合成 `reports/` 下的 Markdown（存在 `reports/eval_section.md` 时自动拼进总览） |
 

@@ -145,6 +145,8 @@ BinFill：3 种颜色、spawn 10~12 个，目标涉及 2~3 种颜色、总数 �
 
 每张图 9 行 = 3 难度 × {最短, 中位, 最长}，同一任务内共用横轴。一行从下到上四层：**subgoal 分段**（灰色交替块，块内是压缩后的中文标签）、**帧路 N=8**（红点）、**motion 窗口**（demo 蓝 / exec 绿；窗口长 33、stride 16 有 50% 重叠，所以奇偶窗口分两行错开画，能直接数出个数）、**帧路 N=32**（紫色细竖线）。段短于 33 帧铺不出窗口，画成橙色虚线空框。
 
+> 同一份内容的**交互版**（难度档切换、悬停看 subgoal 原文、横轴跨档固定）：[采样窗口数轴](https://claude.ai/code/artifact/093a467c-d567-466b-b57e-e4fdee2bcac0)
+
 ![PatternLock 采样窗口时序数轴](figures/sampling_PatternLock.png)
 
 ![RouteStick 采样窗口时序数轴](figures/sampling_RouteStick.png)

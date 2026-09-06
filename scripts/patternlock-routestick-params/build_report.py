@@ -361,6 +361,9 @@ def build_length_section(lengths: dict[str, list[dict[str, Any]]]) -> list[str]:
         "所以奇偶窗口分两行错开画，能直接数出个数）、**帧路 N=32**（紫色细竖线）。"
         "段短于 33 帧铺不出窗口，画成橙色虚线空框。",
         "",
+        f"> 同一份内容的**交互版**（难度档切换、悬停看 subgoal 原文、横轴跨档固定）："
+        f"[采样窗口数轴](https://claude.ai/code/artifact/093a467c-d567-466b-b57e-e4fdee2bcac0)",
+        "",
     ]
     for task in keys:
         lines.append(f"![{task} 采样窗口时序数轴](figures/sampling_{task}.png)")
