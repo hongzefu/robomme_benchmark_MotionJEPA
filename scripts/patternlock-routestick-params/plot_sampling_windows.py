@@ -4,8 +4,9 @@
 
 1. **段底色**：demo 段与 exec 段（Counting 无 demo 段，整条都是 exec）；
 2. **subgoal 分段**：交替深浅块 + 边界线，块内写压缩后的中文短标签；
-3. **motion 窗口**：窗口 `[f, f+32]`、stride 16、**不跨段**，每段各自从段起点铺；
-   段短于 33 帧铺不出窗口，画成空槽并标注；
+3. **motion 窗口**：窗口 `[f, f+32]`、stride 16、**不跨段**，每段各自从段起点铺。
+   画法上每个窗口只占它 stride 宽（16 帧）的一格、格间留白，所以**格子数就是窗口数、可以直接数**；
+   窗口的真实跨度（33 帧、相邻重叠一半）另用一条细线示意。段短于 33 帧铺不出窗口，画成虚线空槽；
 4. **帧路**：上排 32 帧预算的采样点（细竖线），下排 8 帧预算（圆点），Δ = (T-1)/(N-1)。
 
 口径与 policy 侧 motion_store / even_sampling_indices 对齐，已用其 16 任务中位集逐条验证。
@@ -201,8 +202,10 @@ def draw_row(ax, y: float, item: dict[str, Any], xmax: int) -> None:
                 color="#3A4247",
             )
 
-    # 3) motion 窗口：每段各自铺。窗口重叠 50%（长 33、stride 16），
-    #    所以奇偶窗口分两行错开画，才数得出个数、也看得出重叠关系。
+    # 3) motion 窗口：每段各自铺。窗口长 33、stride 16，相邻重叠一半——
+    #    若按 33 帧全宽画，相邻窗口首尾相接会糊成一条实线、数不出个数。
+    #    所以每个窗口只画它 stride 宽（16 帧）的那一格，格间留白：格子数 == 窗口数，可以直接数。
+    #    窗口的真实跨度另用一条细线示意（见图例）。
     for start, length, kind in segments:
         starts = seg_windows(length)
         if not starts:
@@ -210,30 +213,38 @@ def draw_row(ax, y: float, item: dict[str, Any], xmax: int) -> None:
                 Rectangle(
                     (start, y + 0.10),
                     max(length, 1),
-                    0.115,
+                    0.10,
                     facecolor="none",
                     edgecolor=COLOR["empty"],
-                    lw=0.5,
+                    lw=0.6,
                     ls=(0, (2, 1.6)),
                 )
             )
             continue
-        for index, offset in enumerate(starts):
+        gap = max(xmax * 0.0012, 0.6)
+        for offset in starts:
             ax.add_patch(
                 Rectangle(
-                    (start + offset, y + 0.10 + (0.062 if index % 2 else 0.0)),
-                    WINDOW_FRAMES - 1,
-                    0.05,
+                    (start + offset + gap / 2, y + 0.105),
+                    WINDOW_STRIDE - gap,
+                    0.075,
                     facecolor=COLOR[kind],
-                    alpha=0.75,
-                    edgecolor="white",
-                    lw=0.25,
+                    alpha=0.85,
+                    lw=0,
                 )
             )
+        # 首个窗口的真实跨度（33 帧）示意线，说明格子之间是重叠的
+        ax.plot(
+            [start + starts[0], start + starts[0] + WINDOW_FRAMES - 1],
+            [y + 0.196, y + 0.196],
+            color=COLOR[kind],
+            lw=0.7,
+            solid_capstyle="butt",
+        )
 
     # 4) 帧路：32 帧竖线（上）、8 帧圆点（下）
     for index in frame_indices(total, 32):
-        ax.plot([index, index], [y + 0.235, y + 0.315], color=COLOR["frame32"], lw=0.45, alpha=0.85)
+        ax.plot([index, index], [y + 0.245, y + 0.325], color=COLOR["frame32"], lw=0.5, alpha=0.85)
     ax.plot(
         frame_indices(total, 8),
         [y + 0.052] * 8,
@@ -287,8 +298,9 @@ def plot_task(task: str, episodes: list[dict[str, Any]], out_path: Path) -> None
     )
 
     handles = [
-        Rectangle((0, 0), 1, 1, facecolor=COLOR["demo"], alpha=0.55, label="demo 段与其窗口"),
-        Rectangle((0, 0), 1, 1, facecolor=COLOR["exec"], alpha=0.55, label="exec 段与其窗口"),
+        Rectangle((0, 0), 1, 1, facecolor=COLOR["demo"], alpha=0.85, label="demo 段：每格 = 1 个窗口"),
+        Rectangle((0, 0), 1, 1, facecolor=COLOR["exec"], alpha=0.85, label="exec 段：每格 = 1 个窗口"),
+        plt.Line2D([], [], color="#666B6E", lw=1.0, label=f"首窗真实跨度 {WINDOW_FRAMES} 帧（相邻重叠 {WINDOW_STRIDE}）"),
         Rectangle((0, 0), 1, 1, facecolor=COLOR["sg_a"], edgecolor=COLOR["sg_line"], label="subgoal 分段"),
         Rectangle((0, 0), 1, 1, facecolor="none", edgecolor=COLOR["empty"], ls=(0, (2, 1.6)),
                   label=f"段 < {WINDOW_FRAMES} 帧，无窗口"),
@@ -300,11 +312,11 @@ def plot_task(task: str, episodes: list[dict[str, Any]], out_path: Path) -> None
         fontsize=6.4,
         loc="lower center",
         bbox_to_anchor=(0.5, -0.30 / (0.62 * len(picked) + 1.5) * 4),
-        ncol=6,
+        ncol=4,
         frameon=False,
     )
     fig.subplots_adjust(left=0.085, right=0.735, top=0.90, bottom=0.16)
-    fig.savefig(out_path, dpi=110)
+    fig.savefig(out_path, dpi=200)
     plt.close(fig)
     print(f"已写出 {out_path}")
 

@@ -311,7 +311,7 @@ def figure(specs: list[tuple], out_path: Path, suptitle: str, figsize: tuple) ->
     axes[0].legend(fontsize=7, loc="upper right", framealpha=0.9)
     fig.suptitle(suptitle, fontsize=10)
     fig.tight_layout(rect=(0, 0, 1, 0.94))
-    fig.savefig(out_path, dpi=110)
+    fig.savefig(out_path, dpi=200)
     plt.close(fig)
     print(f"已写出 {out_path}")
 
@@ -331,61 +331,33 @@ def rate(rows: list[dict], **filters: Any) -> tuple[int, int, str]:
 
 
 def write_section(rows: list[dict], out_path: Path, fig_dir_name: str) -> None:
-    """出一段可直接拼进 reports/README.md 的 Markdown（图 + 基于实测数字的解读）。"""
+    """出一段可直接拼进 reports/README.md 的 Markdown：口径 + 表 + 图，不写解读。"""
 
     def cell(**filters: Any) -> str:
         succ, total, pct = rate(rows, **filters)
         return f"{succ}/{total}（{pct}）"
 
-    def value_of(params: dict, dim: str) -> Any:
-        """dim 既可能是 params 里的现成字段，也可能是要现算的派生量。"""
-        if dim == "turns":
-            return dim_turns(params)
-        if dim == "backtracks":
-            return dim_backtracks(params)
-        return params.get(dim)
-
-    def bucket(task: str, variant: str, values: list[Any], dim: str = "actions") -> str:
-        hit = [
-            r
-            for r in rows
-            if r["task"] == task and r["variant"] == variant and value_of(r["params"], dim) in values
-        ]
-        succ = sum(1 for r in hit if r["success"])
-        pct = f"{succ / len(hit):.0%}" if hit else "—"
-        return f"{succ}/{len(hit)}（{pct}）"
-
-    def moves_cell(task: str, variant: str, moves: list[int]) -> str:
-        return bucket(task, variant, moves, dim="moves")
-
     lines = [
-        "## 这些参数怎么影响策略成功率",
-        "",
-        "把 policy 侧三轮 eval 的逐集结果按动作参数分组，就能看出成功率随哪些参数塌陷。",
+        "## eval 成功率",
         "",
         "- **数据来源**（只读）：`/data/hongzefu/robomme_policy_learning_MotionJEPA/docs/training-doc/` 下的",
         "  `eval-{medium,hard}-patternlock-routestick/records/{context,modul}/` 与",
         "  `eval-binfill-pickxtimes/records/{hard,medium}/{context,modul}/`（后者难度档在 records 下面一层）。",
-        "- **两个变体**：framesample 的官方两档 —— `perceptual-framesamp-modul`（上游脚本默认）与",
-        "  `perceptual-framesamp-context`（本基准原先锁死的那个）。三轮同一批 ckpt 79999、同 seed 42，",
-        "  policy 侧已用 `PARAM_TREE_EXACT=PASS n_model=61 n_ckpt=61` 证明权重同一。",
-        "- **覆盖范围**：四个任务完全相同 —— 每个 `(task, split)` 的 50 条 metadata 是 easy 26 / medium 12 / hard 12，",
-        "  eval 跑的是 **medium 全 12 条 + hard 全 12 条**（各难度跑满全集，不是抽样），**easy 26 条一条未跑**。",
-        "  每任务 test 24 + val 24 = 48 集，四任务合计 384 条（2 变体 × 2 难度 × 96）。",
-        "- **参数从哪来**：PatternLock / RouteStick 用 seed 离线复算（见上文）；",
-        "  BinFill / PickXtimes 直接解析 eval 记录里的 task_goal（要放几个什么颜色的 cube、重复几次），",
-        "  该解析已用 val 侧 h5 的 `setup/task_goal` 逐条校验，48/48 相同。",
-        "- **误差棒**：Wilson 95% 置信区间。每格只有个位数到十几条样本，",
-        "  0 成功的格子画出来是一根从 0 起的竖线（点估计 0，上界不为 0），不是缺数据。",
+        "- **两个变体**：`perceptual-framesamp-modul` 与 `perceptual-framesamp-context`，"
+        "同一批 ckpt 79999、同 seed 42。",
+        "- **覆盖范围**：每个 `(task, split)` 的 50 条 metadata 是 easy 26 / medium 12 / hard 12，"
+        "eval 跑 medium 全 12 条 + hard 全 12 条，**easy 未跑**。每任务 test 24 + val 24 = 48 集，"
+        "四任务合计 384 条。",
+        "- **分组参数**：PatternLock / RouteStick 由 seed 离线复算；BinFill / PickXtimes 解析 task_goal。",
+        "- **误差棒**：Wilson 95% 置信区间。0 成功的格子画成一根从 0 起的竖线（点估计 0，上界不为 0）。",
         "",
-        "### 总体（分难度）",
+        "### 分难度",
         "",
-        "每格 24 集（test 12 + val 12），suite 合计每格 48 集。easy 档未评测。",
+        "每格 24 集（test 12 + val 12），suite 合计每格 48 集。",
         "",
         "| suite | 任务 | 难度 | framesamp-modul | framesamp-context |",
         "| --- | --- | --- | --- | --- |",
     ]
-
     for suite, tasks in (("Imitation", IMITATION_TASKS), ("Counting", COUNTING_TASKS)):
         for task in tasks:
             for level in DIFFICULTIES_DISPLAY:
@@ -403,90 +375,27 @@ def write_section(rows: list[dict], out_path: Path, fig_dir_name: str) -> None:
 
     lines += [
         "",
-        "**变体差异是逐任务的，不是全局的。** BinFill 上两个变体统计上毫无差异",
-        "（policy 侧 result.md 的任务级 Fisher 单尾 p，hard 与 medium 两档**均为 0.50**），",
-        "而 PickXtimes 上差距悬殊。把两个任务平均成一个 suite 数字会把这个结构完全抹掉。",
-        "",
-        "**难度效应（medium 比 hard 高多少）是判断模型是否真在工作的关键量。** policy 侧对这八组做过",
-        "Fisher 检验：**四组里唯有 context-on-Imitation 失去了难度效应**（p = 0.247，不显著），",
-        "其余三组降低难度都带来显著提升。所以 context 的问题是**在 Imitation suite 上失灵**，",
-        "而不是普遍能力弱 —— 同一份权重在 Counting 的 medium 档达 43.75%，与 modul 在 Imitation",
-        "medium 的 47.92% 相当。",
-        "",
-        "### Imitation suite：成功率 vs move 次数",
+        "### 成功率 vs 动作次数",
         "",
         f"![Imitation 成功率 vs move 次数]({fig_dir_name}/success_by_moves_imitation.png)",
         "",
-        "两个任务都随 move 次数上行而塌陷（不是严格单调：PatternLock 的 2 次与 3 次基本持平，",
-        "RouteStick 的 6 次那格只有 3 条样本、置信区间几乎覆盖满量程）：",
-        "",
-        f"- PatternLock（modul）：2~3 次 move {moves_cell('PatternLock', 'modul', [2, 3])}，"
-        f"4 次掉到 {moves_cell('PatternLock', 'modul', [4])}，**5 次及以上 "
-        f"{moves_cell('PatternLock', 'modul', [5, 6, 7])}**。",
-        f"- RouteStick（modul）：4 次 {moves_cell('RouteStick', 'modul', [4])}，"
-        f"5 次 {moves_cell('RouteStick', 'modul', [5])}，"
-        f"6 次 {moves_cell('RouteStick', 'modul', [6])}（样本仅 3 条，不足以判读），"
-        f"7 次 {moves_cell('RouteStick', 'modul', [7])}。",
-        "",
-        "context 在这两个任务上几乎全零，没有可读的趋势。",
-        "",
-        "### Counting suite：成功率 vs 动作次数",
-        "",
         f"![Counting 成功率 vs 动作次数]({fig_dir_name}/success_by_actions_counting.png)",
         "",
-        "**这张图是两个变体最锋利的分界，而且两个任务的形状完全不同：**",
+        "Imitation 的 x 轴是 move 次数；Counting 的 x 轴是 BinFill 要放进 bin 的 cube 总数 / "
+        "PickXtimes 同一动作的重复次数。medium 与 hard 合并。",
         "",
-        f"- **BinFill**：两条曲线几乎重合 —— 放 2 个 cube 时 modul {bucket('BinFill', 'modul', [2])}、"
-        f"context {bucket('BinFill', 'context', [2])}（完全相同）；放 3 个就双双跌到 "
-        f"{bucket('BinFill', 'modul', [3])} 与 {bucket('BinFill', 'context', [3])}；"
-        f"4~5 个时 modul {bucket('BinFill', 'modul', [4, 5])}、context {bucket('BinFill', 'context', [4, 5])}。"
-        "**两个变体在这个任务上是同一条曲线**，瓶颈是任务本身而不是 framesample 策略。",
-        f"- **PickXtimes**：modul 几乎不随次数下降 —— 1 次 {bucket('PickXtimes', 'modul', [1])}、"
-        f"3 次 {bucket('PickXtimes', 'modul', [3])}、4~5 次 {bucket('PickXtimes', 'modul', [4, 5])}；"
-        f"而 context 随次数一路塌陷 —— 1 次 {bucket('PickXtimes', 'context', [1])}、"
-        f"3 次 {bucket('PickXtimes', 'context', [3])}、4~5 次 {bucket('PickXtimes', 'context', [4, 5])}。"
-        "**次数越多，两者差距越大**：这正是「要记住自己已经搬了几次」的能力差异。",
-        "",
-        "（PickXtimes modul 在 2 次那格反而低于 1 次和 3 次，只有 8 条样本，置信区间与两侧大幅重叠，不构成反例。）",
-        "",
-        "### Imitation suite：轨迹的曲折程度",
+        "### 成功率 vs 轨迹曲折程度（Imitation）",
         "",
         f"![Imitation 转角与折返]({fig_dir_name}/success_by_imitation_turns.png)",
         "",
-        "**转角次数**（相邻两步方向不同就算一次转向）比 move 次数更贴近「这条轨迹有多难跟」：",
+        "转角次数 = 相邻两步方向不同的次数；折返次数 = 路径中走到 j 又退回 i 的次数"
+        "（PatternLock 路径由 DFS 生成、不重复节点，折返恒为 0）。",
         "",
-        f"- PatternLock（modul）：1 次转角 {bucket('PatternLock', 'modul', [1], dim='turns')}，"
-        f"2 次 {bucket('PatternLock', 'modul', [2], dim='turns')}，"
-        f"3 次 {bucket('PatternLock', 'modul', [3], dim='turns')}，"
-        f"**4 次及以上 {bucket('PatternLock', 'modul', [4, 5, 6], dim='turns')}**。",
-        f"- RouteStick（modul）：0~3 次 {bucket('RouteStick', 'modul', [0, 1, 2, 3], dim='turns')}，"
-        f"**4 次及以上 {bucket('RouteStick', 'modul', [4, 5, 6], dim='turns')}**。",
-        "",
-        f"**折返次数**（走到 j 又退回 i）只有 RouteStick 有 —— PatternLock 的路径由 DFS 生成、"
-        f"不重复节点，折返恒为 0。RouteStick（modul）：0 次 "
-        f"{bucket('RouteStick', 'modul', [0], dim='backtracks')}，"
-        f"1 次 {bucket('RouteStick', 'modul', [1], dim='backtracks')}，"
-        f"2 次 {bucket('RouteStick', 'modul', [2], dim='backtracks')}，"
-        f"**3 次及以上 {bucket('RouteStick', 'modul', [3, 4, 5, 6], dim='backtracks')}**。",
-        "",
-        "折返 0~2 次之间没有明显差别，说明「退回原地」本身不难；难的是折返多了以后轨迹整体变长变绕。",
-        "",
-        "### BinFill：目标的颜色种类数",
+        "### 成功率 vs 目标颜色种类数（BinFill）",
         "",
         f"![BinFill 颜色种类数]({fig_dir_name}/success_by_binfill_color.png)",
         "",
-        f"这一项比 cube 总数更能说明 BinFill 难在哪：目标只涉及 1 种颜色时两个变体都是 "
-        f"{bucket('BinFill', 'modul', [1], dim='color_kinds')}；涉及 2 种时 modul "
-        f"{bucket('BinFill', 'modul', [2], dim='color_kinds')}、context "
-        f"{bucket('BinFill', 'context', [2], dim='color_kinds')}；3 种时两者都是 "
-        f"{bucket('BinFill', 'modul', [3], dim='color_kinds')}。",
-        "",
-        "**要同时按颜色分类并计数，两个变体都做不到**——这也解释了为什么 BinFill 上两个变体没有差异："
-        "瓶颈不在 framesample 怎么采帧，而在任务本身需要的组合能力。",
-        "",
-        "> 顺带一个 env 配置层面的注意点：PickXtimes 的 medium 与 easy 的重复次数范围相同（都是 1~3 次），",
-        "> medium 的难点在于场上同时有 3 种颜色的 cube 作干扰，而不是次数更多；hard 才是 4~5 次。",
-        "> 所以 PickXtimes 的难度档之间不能只按「次数」理解。",
+        "颜色种类数 = 该 episode 的目标里涉及几种颜色的 cube（1 / 2 / 3）。",
         "",
         "> 图与数字由 `plot_eval_success.py` 生成，改动 eval 结果后重跑即可。",
         "",
@@ -558,6 +467,79 @@ def main(argv=None) -> int:
     )
 
     write_section(rows, Path(args.out_dir).parent / "eval_section.md", Path(args.out_dir).name)
+
+    # 同一份聚合结果导出成 JSON，供交互版 artifact 内联（保证两处数字同源）
+    export = {
+        "difficulty_table": [
+            {
+                "suite": suite,
+                "task": task,
+                "difficulty": level,
+                "modul": rate(rows, variant="modul", task=task, difficulty=level)[:2],
+                "context": rate(rows, variant="context", task=task, difficulty=level)[:2],
+            }
+            for suite, tasks in (("Imitation", IMITATION_TASKS), ("Counting", COUNTING_TASKS))
+            for task in tasks
+            for level in DIFFICULTIES_DISPLAY
+        ],
+        "suite_totals": [
+            {
+                "suite": suite,
+                "difficulty": level,
+                "modul": rate(rows, variant="modul", task=tasks, difficulty=level)[:2],
+                "context": rate(rows, variant="context", task=tasks, difficulty=level)[:2],
+            }
+            for suite, tasks in (("Imitation", IMITATION_TASKS), ("Counting", COUNTING_TASKS))
+            for level in DIFFICULTIES_DISPLAY
+        ],
+        "charts": [
+            {
+                "id": "moves",
+                "title": "成功率 vs move 次数",
+                "panels": [
+                    {"task": t, "xlabel": "move 次数", "data": aggregate(rows, dim_moves, t)}
+                    for t in IMITATION_TASKS
+                ],
+            },
+            {
+                "id": "actions",
+                "title": "成功率 vs 动作次数",
+                "panels": [
+                    {"task": "BinFill", "xlabel": "要放进 bin 的 cube 总数",
+                     "data": aggregate(rows, dim_actions, "BinFill")},
+                    {"task": "PickXtimes", "xlabel": "同一动作重复次数",
+                     "data": aggregate(rows, dim_actions, "PickXtimes")},
+                ],
+            },
+            {
+                "id": "turns",
+                "title": "成功率 vs 轨迹曲折程度",
+                "panels": [
+                    {"task": "PatternLock", "xlabel": "转角次数",
+                     "data": aggregate(rows, dim_turns, "PatternLock")},
+                    {"task": "RouteStick", "xlabel": "转角次数",
+                     "data": aggregate(rows, dim_turns, "RouteStick")},
+                    {"task": "RouteStick", "xlabel": "折返次数",
+                     "data": aggregate(rows, dim_backtracks, "RouteStick")},
+                ],
+            },
+            {
+                "id": "color",
+                "title": "成功率 vs 目标颜色种类数",
+                "panels": [
+                    {"task": "BinFill", "xlabel": "颜色种类数",
+                     "data": aggregate(rows, dim_color_kinds, "BinFill")},
+                ],
+            },
+        ],
+    }
+    export_path = Path(args.out_dir).parents[1] / "outputs" / "eval_aggregate.json"
+    export_path.parent.mkdir(parents=True, exist_ok=True)
+    export_path.write_text(
+        json.dumps(export, ensure_ascii=False, default=lambda o: list(o) if isinstance(o, tuple) else o),
+        encoding="utf-8",
+    )
+    print(f"已写出 {export_path}")
     return 0
 
 

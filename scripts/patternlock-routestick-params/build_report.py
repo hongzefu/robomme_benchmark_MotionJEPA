@@ -320,31 +320,6 @@ def build_length_section(lengths: dict[str, list[dict[str, Any]]]) -> list[str]:
             f"{min(d32):.1f}~{max(d32):.1f} | {min(d8):.1f}~{max(d8):.1f} |"
         )
 
-    lines += [
-        "",
-        "### 每个任务每个难度的最短 / 中位 / 最长",
-        "",
-        "按整条长度 T 排序取三档，每格给出具体是哪一条（`split-ep号`），便于回查明细。",
-        "",
-        "| 任务 | 难度 | 档 | 来源 | seed | T | demo 段长 | demo窗+exec窗 | motion token | Δ(N=32) | Δ(N=8) | subgoal 段数 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
-    ]
-    for task in keys:
-        for level in DIFFICULTY_ORDER:
-            group = sorted(
-                [r for r in lengths[task] if r["difficulty"] == level], key=lambda r: r["total"]
-            )
-            if not group:
-                continue
-            picks = [("最短", group[0]), ("中位", group[len(group) // 2]), ("最长", group[-1])]
-            for label, r in picks:
-                lines.append(
-                    f"| {task} | {level} | {label} | {r['split']}-ep{r['episode']} | {r['seed']} | "
-                    f"{r['total']} | {r['demo']} | {r['demo_windows']}+{r['exec_windows']} | "
-                    f"{r['motion_tokens']} | {frame_delta(r['total'], 32):.1f} | "
-                    f"{frame_delta(r['total'], 8):.1f} | {r['n_segments']} |"
-                )
-
     zeros = [
         (task, r)
         for task in keys
@@ -355,11 +330,12 @@ def build_length_section(lengths: dict[str, list[dict[str, Any]]]) -> list[str]:
         "",
         "### 时序数轴：窗口、subgoal 与帧路叠在一根轴上",
         "",
-        "每张图 9 行 = 3 难度 × {最短, 中位, 最长}，同一任务内共用横轴。一行从下到上四层："
-        "**subgoal 分段**（灰色交替块，块内是压缩后的中文标签）、**帧路 N=8**（红点）、"
-        "**motion 窗口**（demo 蓝 / exec 绿；窗口长 33、stride 16 有 50% 重叠，"
-        "所以奇偶窗口分两行错开画，能直接数出个数）、**帧路 N=32**（紫色细竖线）。"
-        "段短于 33 帧铺不出窗口，画成橙色虚线空框。",
+        "每张图 9 行 = 3 难度 × {最短, 中位, 最长}（按整条长度 T 取），同一任务内共用横轴。"
+        "一行从下到上四层：**subgoal 分段**（灰色交替块，块内是压缩后的中文标签，图上标不下时省略）、"
+        "**帧路 N=8**（红点）、**motion 窗口**（demo 蓝 / exec 绿，**每格 = 1 个窗口**，"
+        "格宽即 stride 16；窗口真实跨度 33 帧、相邻重叠一半，用首窗上方的细线示意）、"
+        "**帧路 N=32**（紫色细竖线）。段短于 33 帧铺不出窗口，画成橙色虚线空框。"
+        "右侧标 T、`demo窗+exec窗`、两个 Δ。",
         "",
         f"> 同一份内容的**交互版**（难度档切换、悬停看 subgoal 原文、横轴跨档固定）："
         f"[采样窗口数轴](https://claude.ai/code/artifact/093a467c-d567-466b-b57e-e4fdee2bcac0)",
@@ -372,8 +348,7 @@ def build_length_section(lengths: dict[str, list[dict[str, Any]]]) -> list[str]:
     lines += ["### 产不出 motion token 的 episode", ""]
     if zeros:
         lines += [
-            "窗口长 33 帧，段短于 33 帧就一个窗口都铺不出来。这类 episode 在 motion store 里**没有任何 "
-            "motion token**，做窗口级训练/评测时要单独处理：",
+            "窗口长 33 帧，段短于 33 帧铺不出窗口，这些 episode 的 motion token 为 0：",
             "",
             "| 任务 | 来源 | seed | 难度 | T | demo 段长 | exec 段长 |",
             "| --- | --- | --- | --- | --- | --- | --- |",
@@ -392,9 +367,7 @@ def build_length_section(lengths: dict[str, list[dict[str, Any]]]) -> list[str]:
         lines += [
             "### demo 段占了 Imitation 的一半",
             "",
-            "PatternLock / RouteStick 的每条 episode 把同一组动作走了两遍——前一遍是给模型看的示范"
-            "（`is_video_demo=True`），后一遍才是真正执行。实测演示段**恰好占整条长度的 50%**，"
-            "而窗口不跨段，所以 demo 与 exec 的窗口数也基本对半：",
+            "PatternLock / RouteStick 的每条 episode 有 demo 与 exec 两段（`is_video_demo`），窗口不跨段：",
             "",
             "| 任务 | 演示段合计 | 执行段合计 | 演示占比 | demo 窗口合计 | exec 窗口合计 |",
             "| --- | --- | --- | --- | --- | --- |",
@@ -407,11 +380,7 @@ def build_length_section(lengths: dict[str, list[dict[str, Any]]]) -> list[str]:
                 f"| {task} | {demo} | {total - demo} | {demo / total:.1%} | "
                 f"{sum(r['demo_windows'] for r in rows)} | {sum(r['exec_windows'] for r in rows)} |"
             )
-        lines += [
-            "",
-            "BinFill / PickXtimes 没有演示段，整条都是 exec，所以 demo 窗口恒为 0。",
-            "",
-        ]
+        lines += ["", "BinFill / PickXtimes 无 demo 段，整条都是 exec。", ""]
     return lines
 
 
@@ -550,10 +519,8 @@ def build_summary(
                 )
             lines.append("")
         lines += [
-            "三类动作的性质不同，所以分开统计（表里给的是**均值（min~max）**，单位 timestep）：",
-            "`pick up` 要在一堆 cube 里找到指定的那个并抓起来；`put / place` 是把手里的东西送到一个",
-            "固定位置（BinFill 的 bin / PickXtimes 的 target）；`press` 只是按一下按钮。",
-            "每次动作产生一对 pick + place，每条 episode 末尾另有一段 press。",
+            "表里是**均值（min~max）**，单位 timestep。每次动作产生一对 pick + place，"
+            "每条 episode 末尾另有一段 press。",
             "",
         ]
 
@@ -590,10 +557,8 @@ def build_summary(
         "4. **goal 解析自洽（Counting）**：`核心段数 == 2 × 动作次数 + 1`，**四个源 200 条全中**；"
         "另外 val 侧用 h5 的 `setup/task_goal` 校验过从 eval `video` 字段解析的 goal，48/48 相同。",
         "5. **Counting 的 test seed 锁死**：BinFill / PickXtimes 的 test metadata 里有 9 条 seed 尾号非 0，"
-        "生成型入口会从 attempt=0 重算而拿到另一个场景，因此改用 `run_test_fixed_seed.py` 逐条锁死 seed、"
-        "`max_attempts=1`。实跑 100 条全部成功，seed **逐条相等、0 条不一致**。",
-        "",
-        "同难度下 test 与 val 的统计高度吻合，是当前环境代码与原版行为一致的旁证。",
+        "由 `run_test_fixed_seed.py` 逐条锁死 seed、`max_attempts=1` 实跑。100 条全部成功，"
+        "seed 与 metadata 逐条相等、0 条不一致。",
         "",
     ]
     return "\n".join(lines)

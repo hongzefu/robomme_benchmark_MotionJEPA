@@ -57,7 +57,7 @@ def pick(episodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return picked
 
 
-PAGE = """<title>采样窗口数轴</title>
+PAGE = """<title>采样窗口与 eval 成功率</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   :root{
@@ -144,7 +144,8 @@ PAGE = """<title>采样窗口数轴</title>
     font-size:9.5px; line-height:14px; text-align:center; overflow:hidden; white-space:nowrap;
     color:var(--ink-2); cursor:default;
   }
-  .track .win{position:absolute; height:5px; border-radius:1px; opacity:.8}
+  .track .win{position:absolute; height:7px; border-radius:1px; opacity:.9}
+  .track .win-span{position:absolute; height:1.5px; bottom:27px; opacity:.75}
   .track .win-empty{position:absolute; height:12px; border:1px dashed var(--empty); border-radius:2px}
   .track .f32{position:absolute; top:0; width:1px; height:9px; background:var(--f32); opacity:.85}
   .track .f8{position:absolute; width:4px; height:4px; border-radius:50%; background:var(--f8); margin-left:-2px}
@@ -164,6 +165,21 @@ PAGE = """<title>采样窗口数轴</title>
   .axis .tk i{position:absolute; left:0; top:-5px; width:1px; height:5px; background:var(--rule); display:block}
   footer{color:var(--ink-3); font-size:12px; border-top:1px solid var(--rule); padding-top:13px; line-height:1.75}
   footer code{color:var(--ink-2)}
+  .panel{background:var(--surface); border:1px solid var(--rule); border-radius:5px; padding:15px 17px;
+    display:flex; flex-direction:column; gap:13px}
+  .panel h2{font-size:15px; font-weight:600; margin:0; letter-spacing:-.01em}
+  .panel .note{color:var(--ink-2); font-size:12.5px; margin:0; max-width:80ch}
+  table{border-collapse:collapse; font-size:12.5px; font-variant-numeric:tabular-nums; width:100%}
+  th,td{text-align:left; padding:5px 10px; border-bottom:1px solid var(--rule-2)}
+  th{font-size:11px; font-weight:500; color:var(--ink-3); text-transform:uppercase; letter-spacing:.05em}
+  td.num{font-family:"IBM Plex Mono",monospace; text-align:right}
+  tr.total td{font-weight:600; background:var(--surface-2)}
+  .charts{display:flex; flex-direction:column; gap:16px}
+  .chart h3{font-size:13px; font-weight:600; margin:0 0 3px}
+  .chart .cap{font-size:11.5px; color:var(--ink-3); margin:0 0 7px}
+  .panels{display:flex; gap:14px; flex-wrap:wrap}
+  .cw{flex:1 1 300px; min-width:260px}
+  .cw .ct{font-size:11.5px; color:var(--ink-2); text-align:center; margin-bottom:2px}
   @media (max-width:900px){
     body{padding:20px 12px 36px}
     .row,.axis{grid-template-columns:104px 1fr 150px}
@@ -173,17 +189,19 @@ PAGE = """<title>采样窗口数轴</title>
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:9px">
-    <h1>采样窗口数轴</h1>
+    <h1>采样窗口与 eval 成功率</h1>
     <p class="sub">RoboMME 四个任务的 <b>test + val 合并</b>（每任务 100 条）里，按整条长度取
       <b>最短 / 中位 / 最长</b>三条，看 motion 窗口、subgoal 分段与两条帧路在同一根时间轴上怎么排布。
       横轴在四个难度档之间<b>固定不变</b>，可直接横比。悬停 subgoal 块看原文。</p>
     <div class="chips" id="chips"></div>
+    <div class="tabs" id="views"><span class="lbl">视图</span></div>
     <div class="tabs" id="tabs"><span class="lbl">难度档</span></div>
   </header>
 
   <div class="legend">
-    <div class="lg"><span class="sw demo"></span>demo 段与其窗口</div>
-    <div class="lg"><span class="sw exec"></span>exec 段与其窗口</div>
+    <div class="lg"><span class="sw demo"></span>demo 段：每格 = 1 个窗口</div>
+    <div class="lg"><span class="sw exec"></span>exec 段：每格 = 1 个窗口</div>
+    <div class="lg"><span class="sw" style="height:2px;background:var(--ink-3)"></span>首窗真实跨度 33 帧（相邻重叠 16）</div>
     <div class="lg"><span class="sw sg"></span>subgoal 分段（悬停看原文）</div>
     <div class="lg"><span class="sw f32"></span>帧路 N=32</div>
     <div class="lg"><span class="sw f8"></span>帧路 N=8</div>
@@ -191,6 +209,7 @@ PAGE = """<title>采样窗口数轴</title>
   </div>
 
   <div class="board" id="board"></div>
+  <div id="evalPane" hidden></div>
 
   <footer>
     窗口口径：<code>[f, f+32]</code>（33 帧）、stride <code>16</code>、<b>不跨段</b>——demo 与 exec 各自从段起点铺，
@@ -241,13 +260,14 @@ function track(row){
     if (len / XMAX > 0.035) d.textContent = shortLabel(text);
     el.appendChild(d);
   }
-  // 窗口重叠 50%，奇偶分两行错开才数得出个数
+  // 每个窗口只画它 stride 宽的一格、格间留白：格子数 == 窗口数，可以直接数。
+  // 窗口真实跨度 33 帧、相邻重叠一半，用首窗上方的一条细线示意。
   for (const [start, len, kind] of segs){
     const starts = winStarts(len);
     if (!starts.length){
       const e = document.createElement("div");
       e.className = "win-empty";
-      e.style.left = pct(start); e.style.width = pct(Math.max(len, 1)); e.style.bottom = "17px";
+      e.style.left = pct(start); e.style.width = pct(Math.max(len, 1)); e.style.bottom = "18px";
       e.title = `${kind} 段只有 ${len} 帧，短于窗口所需的 ${WIN} 帧，铺不出窗口`;
       el.appendChild(e);
       continue;
@@ -255,11 +275,18 @@ function track(row){
     starts.forEach((f, i) => {
       const w = document.createElement("div");
       w.className = "win";
-      w.style.left = pct(start + f); w.style.width = pct(WIN - 1);
-      w.style.bottom = (i % 2 ? 24 : 17) + "px";
+      w.style.left = pct(start + f); w.style.width = `calc(${pct(STRIDE)} - 1px)`;
+      w.style.bottom = "18px";
       w.style.background = `var(--${kind})`;
+      w.title = `${kind} 段第 ${i + 1} 个窗口：[${start + f}, ${start + f + WIN - 1}]`;
       el.appendChild(w);
     });
+    const span = document.createElement("div");
+    span.className = "win-span";
+    span.style.left = pct(start + starts[0]); span.style.width = pct(WIN - 1);
+    span.style.background = `var(--${kind})`;
+    span.title = `窗口真实跨度 ${WIN} 帧，相邻窗口重叠 ${STRIDE} 帧`;
+    el.appendChild(span);
   }
   for (const i of framePath(row.total, 32)){
     const f = document.createElement("div");
@@ -267,7 +294,7 @@ function track(row){
   }
   for (const i of framePath(row.total, 8)){
     const f = document.createElement("div");
-    f.className = "f8"; f.style.left = pct(i); f.style.bottom = "32px"; el.appendChild(f);
+    f.className = "f8"; f.style.left = pct(i); f.style.bottom = "33px"; el.appendChild(f);
   }
   return el;
 }
@@ -340,6 +367,81 @@ function render(diff){
     `当前显示 ${shown} 行，合计 ${tokens} 个 motion token。`;
 }
 
+const EVAL = __EVAL__;
+const VC = {modul:"var(--exec)", context:"var(--f8)"};
+
+function wilson(k, n){
+  if (!n) return [0, 0, 0];
+  const z = 1.96, p = k / n, d = 1 + z * z / n;
+  const c = (p + z * z / (2 * n)) / d;
+  const h = z * Math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d;
+  return [p, Math.max(0, c - h), Math.min(1, c + h)];
+}
+
+function chartSvg(panel){
+  const keys = [...new Set([...Object.keys(panel.data.modul || {}), ...Object.keys(panel.data.context || {})])]
+    .sort((a, b) => (isNaN(a) || isNaN(b)) ? String(a).localeCompare(String(b)) : a - b);
+  const W = 320, H = 190, L = 34, R = 6, T = 12, B = 34;
+  const iw = W - L - R, ih = H - T - B;
+  const yy = v => T + ih * (1 - v);
+  const bw = Math.min(16, iw / keys.length / 2.6);
+  let g = "";
+  for (const v of [0, 0.25, 0.5, 0.75, 1]){
+    g += `<line x1="${L}" y1="${yy(v)}" x2="${W - R}" y2="${yy(v)}" stroke="var(--rule-2)" stroke-width="1"/>` +
+         `<text x="${L - 5}" y="${yy(v) + 3}" text-anchor="end" font-size="9" fill="var(--ink-3)">${v * 100}</text>`;
+  }
+  keys.forEach((k, i) => {
+    const cx = L + iw * (i + 0.5) / keys.length;
+    ["modul", "context"].forEach((variant, vi) => {
+      const cell = (panel.data[variant] || {})[k];
+      if (!cell) return;
+      const [succ, total] = cell;
+      const [p, lo, hi] = wilson(succ, total);
+      const x = cx + (vi ? 1 : -1) * bw / 2 - bw / 2 + (vi ? 0.6 : -0.6);
+      g += `<rect x="${x}" y="${yy(p)}" width="${bw}" height="${Math.max(0, ih * p)}" fill="${VC[variant]}" opacity=".9">` +
+           `<title>${variant} · ${k}：${succ}/${total}（${(p * 100).toFixed(0)}%）</title></rect>`;
+      g += `<line x1="${x + bw / 2}" y1="${yy(lo)}" x2="${x + bw / 2}" y2="${yy(hi)}" stroke="var(--ink-3)" stroke-width="1"/>`;
+      g += `<text x="${x + bw / 2}" y="${yy(Math.max(p, hi)) - 3}" text-anchor="middle" font-size="8" fill="var(--ink-3)">${succ}/${total}</text>`;
+    });
+    g += `<text x="${cx}" y="${H - B + 14}" text-anchor="middle" font-size="10" fill="var(--ink-2)">${k}</text>`;
+  });
+  g += `<text x="${L + iw / 2}" y="${H - 4}" text-anchor="middle" font-size="10" fill="var(--ink-3)">${panel.xlabel}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${panel.task} ${panel.xlabel}">${g}</svg>`;
+}
+
+function renderEval(){
+  const pane = document.getElementById("evalPane");
+  const rowsHtml = EVAL.difficulty_table.map(r =>
+    `<tr><td>${r.suite}</td><td>${r.task}</td><td>${r.difficulty}</td>` +
+    `<td class="num">${r.modul[0]}/${r.modul[1]}（${(r.modul[0] / r.modul[1] * 100).toFixed(1)}%）</td>` +
+    `<td class="num">${r.context[0]}/${r.context[1]}（${(r.context[0] / r.context[1] * 100).toFixed(1)}%）</td></tr>`
+  ).join("");
+  const totalHtml = EVAL.suite_totals.map(r =>
+    `<tr class="total"><td>${r.suite} 合计</td><td></td><td>${r.difficulty}</td>` +
+    `<td class="num">${r.modul[0]}/${r.modul[1]}（${(r.modul[0] / r.modul[1] * 100).toFixed(1)}%）</td>` +
+    `<td class="num">${r.context[0]}/${r.context[1]}（${(r.context[0] / r.context[1] * 100).toFixed(1)}%）</td></tr>`
+  ).join("");
+  const charts = EVAL.charts.map(c =>
+    `<div class="chart"><h3>${c.title}</h3>` +
+    `<p class="cap">纵轴成功率 %，误差棒为 Wilson 95% CI，柱上数字是 成功/总数；medium 与 hard 合并。悬停看具体数值。</p>` +
+    `<div class="panels">${c.panels.map(p =>
+      `<div class="cw"><div class="ct">${p.task}</div>${chartSvg(p)}</div>`).join("")}</div></div>`
+  ).join("");
+  pane.innerHTML =
+    `<div class="panel"><h2>eval 成功率</h2>` +
+    `<p class="note">两个变体 <code>perceptual-framesamp-modul</code> 与 <code>perceptual-framesamp-context</code>，` +
+    `同一批 ckpt 79999、同 seed 42。每格 24 集（test 12 + val 12），suite 合计每格 48 集；` +
+    `easy 档未评测，四任务合计 384 条。</p>` +
+    `<div style="overflow-x:auto"><table><thead><tr><th>suite</th><th>任务</th><th>难度</th>` +
+    `<th style="text-align:right">framesamp-modul</th><th style="text-align:right">framesamp-context</th></tr></thead>` +
+    `<tbody>${rowsHtml}${totalHtml}</tbody></table></div>` +
+    `<div class="legend" style="border:none;padding:0;background:none">` +
+    `<div class="lg"><span class="sw" style="background:var(--exec)"></span>framesamp-modul</div>` +
+    `<div class="lg"><span class="sw" style="background:var(--f8)"></span>framesamp-context</div></div>` +
+    `<div class="charts">${charts}</div></div>`;
+}
+
+const views = document.getElementById("views");
 const tabs = document.getElementById("tabs");
 for (const d of DIFFS){
   const b = document.createElement("button");
@@ -351,6 +453,21 @@ for (const d of DIFFS){
   };
   tabs.appendChild(b);
 }
+for (const [key, label] of [["axis", "采样窗口数轴"], ["eval", "eval 成功率"]]){
+  const b = document.createElement("button");
+  b.className = "tab"; b.textContent = label; b.setAttribute("aria-pressed", key === "axis");
+  b.onclick = () => {
+    for (const t of views.querySelectorAll(".tab")) t.setAttribute("aria-pressed", "false");
+    b.setAttribute("aria-pressed", "true");
+    const isAxis = key === "axis";
+    document.getElementById("board").hidden = !isAxis;
+    document.querySelector(".legend").hidden = !isAxis;
+    tabs.hidden = !isAxis;
+    document.getElementById("evalPane").hidden = isAxis;
+  };
+  views.appendChild(b);
+}
+
 const all = Object.values(DATA).flat();
 document.getElementById("chips").innerHTML = [
   `任务 <b>${Object.keys(DATA).length}</b>`,
@@ -360,6 +477,7 @@ document.getElementById("chips").innerHTML = [
   `横轴 <b>0–${XMAX}</b> ts`,
 ].map(s => `<span class="chip">${s}</span>`).join("");
 render("all");
+if (EVAL) renderEval();
 </script>
 """
 
@@ -368,13 +486,18 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="生成采样窗口数轴的 artifact HTML")
     parser.add_argument("--imitation", action="append", required=True)
     parser.add_argument("--counting", action="append", required=True)
+    parser.add_argument("--eval", default=str(HERE / "outputs" / "eval_aggregate.json"))
     parser.add_argument("--out", default=str(HERE / "outputs" / "sampling_axis.html"))
     args = parser.parse_args(argv)
 
     episodes = load({"imitation": args.imitation, "counting": args.counting})
     data = {task: pick(episodes[task]) for task in TASKS if task in episodes}
-    html = PAGE.replace("__DATA__", json.dumps(data, ensure_ascii=False)).replace(
-        "__SUITES__", json.dumps(SUITES, ensure_ascii=False)
+    eval_path = Path(args.eval)
+    evaluation = json.loads(eval_path.read_text(encoding="utf-8")) if eval_path.exists() else None
+    html = (
+        PAGE.replace("__DATA__", json.dumps(data, ensure_ascii=False))
+        .replace("__SUITES__", json.dumps(SUITES, ensure_ascii=False))
+        .replace("__EVAL__", json.dumps(evaluation, ensure_ascii=False))
     )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
