@@ -10,6 +10,16 @@ from typing import Any
 
 HERE = Path(__file__).resolve().parent
 SOURCES = ["PatternLock-test", "PatternLock-val", "RouteStick-test", "RouteStick-val"]
+DIFFICULTY_ORDER = ["easy", "medium", "hard"]
+# 各难度下 env 的配置项（PatternLock.configs / RouteStick.configs），决定 move 次数的上下界
+DIFFICULTY_CONFIG_NOTE = {
+    "easy": "PatternLock：3×3 格点，路径长度约束 `[2, 4]` → move 1~3 次。"
+    "RouteStick：`steps ∈ [2, 3]`，不允许原地折返。",
+    "medium": "PatternLock：4×4 格点，路径长度约束 `[3, 5]` → move 2~4 次。"
+    "RouteStick：`steps ∈ [4, 5]`，不允许原地折返。",
+    "hard": "PatternLock：5×5 格点，路径长度约束 `[4, 8]` → move 3~7 次。"
+    "RouteStick：`steps ∈ [4, 7]`，**允许原地折返**（`backtrack=True`）。",
+}
 ORIGIN = {
     "PatternLock-val": "原版 h5 `/data/hongzefu/data-0306/record_dataset_PatternLock.h5`",
     "RouteStick-val": "原版 h5 `/data/hongzefu/data-0306/record_dataset_RouteStick.h5`",
@@ -87,30 +97,30 @@ def build_source_report(key: str, rows: list[dict], durations: dict[str, Any]) -
 
 
 def summary_stats(rows: list[dict], durations: dict[str, Any]) -> dict[str, Any]:
+    """按难度分桶统计：move 次数与单次 move 时长。难度是决定这两项的唯一配置，混在一起看没有意义。"""
     moves = [row["moves"] for row in rows]
     all_dur = [
         d
         for row in rows
         for d in (durations.get(str(row["episode"]), {}).get("exec_durations", []) if durations else [])
     ]
-    totals = [
-        durations[str(row["episode"])]["n_timesteps_total"]
-        for row in rows
-        if durations and str(row["episode"]) in durations
-    ]
-    difficulties: dict[str, int] = {}
-    for row in rows:
-        difficulties[row["difficulty"]] = difficulties.get(row["difficulty"], 0) + 1
     return {
         "episodes": len(rows),
-        "moves_total": sum(moves),
         "moves_range": (min(moves), max(moves)),
         "moves_mean": statistics.mean(moves),
-        "difficulties": difficulties,
-        "covered": len(totals),
         "dur_range": (min(all_dur), max(all_dur)) if all_dur else None,
         "dur_mean": statistics.mean(all_dur) if all_dur else None,
-        "total_range": (min(totals), max(totals)) if totals else None,
+    }
+
+
+def stats_by_difficulty(rows: list[dict], durations: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    buckets: dict[str, list[dict]] = {}
+    for row in rows:
+        buckets.setdefault(row["difficulty"], []).append(row)
+    return {
+        level: summary_stats(buckets[level], durations)
+        for level in DIFFICULTY_ORDER
+        if level in buckets
     }
 
 
@@ -132,32 +142,56 @@ def build_summary(payload: dict[str, list[dict]], durations: dict[str, dict]) ->
         "- **时长**：1 timestep = 1 个 env step = 0.05 s（控制频率 20 Hz），与数据集的采样频率一致。"
         "录像 fps=30 与 timestep 不等长，报告里不用视频帧。",
         "- **演示段 / 执行段**：同一组 move 在数据里出现两遍——前一遍 `is_video_demo=True` 是给模型看的示范，"
-        "后一遍才是真正 rollout。表中两列分开给。每条 episode 末尾还有一个几到十几 timestep 的收尾段，不算 move。",
+        "后一遍才是真正 rollout。下面的时长统计只算执行段。每条 episode 末尾还有一个几到十几 timestep 的收尾段，不算 move。",
         "",
-        "## 各源总览",
+        "## 按难度分组",
         "",
-        "| 源 | 条数 | 难度分布 | move 次数（min~max，均值） | move 总数 | 单次 move 时长 | 整条时长 | 时长来源 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        "难度是决定 move 次数的唯一配置项（env 的 `configs[difficulty]`），所以统计一律按难度分开看。"
+        "四个源的难度分布相同：easy 26 / medium 12 / hard 12（难度循环 `211`，按 `episode % 4`）。",
+        "",
+    ]
+
+    for level in DIFFICULTY_ORDER:
+        cfg_lines = DIFFICULTY_CONFIG_NOTE[level]
+        lines += [
+            f"### {level}",
+            "",
+            cfg_lines,
+            "",
+            "| 源 | 条数 | move 次数（min~max） | move 次数均值 | 单次 move 时长（min~max） | 单次 move 时长均值 |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+        for key in SOURCES:
+            rows = payload.get(key)
+            if not rows:
+                continue
+            by_level = stats_by_difficulty(rows, durations.get(key, {}))
+            stat = by_level.get(level)
+            if stat is None:
+                continue
+            dur = (
+                f"{stat['dur_range'][0]}~{stat['dur_range'][1]} ts"
+                if stat["dur_range"]
+                else "未生成"
+            )
+            dur_mean = f"{stat['dur_mean']:.1f} ts" if stat["dur_mean"] else "未生成"
+            lines.append(
+                f"| [{key}]({key}.md) | {stat['episodes']} | "
+                f"{stat['moves_range'][0]}~{stat['moves_range'][1]} | {stat['moves_mean']:.2f} | "
+                f"{dur} | {dur_mean} |"
+            )
+        lines.append("")
+
+    lines += [
+        "## 时长来源",
+        "",
+        "| 源 | 来源 |",
+        "| --- | --- |",
     ]
     for key in SOURCES:
-        rows = payload.get(key)
-        if not rows:
-            continue
-        stat = summary_stats(rows, durations.get(key, {}))
-        diff = "/".join(f"{k} {v}" for k, v in sorted(stat["difficulties"].items()))
-        dur = (
-            f"{stat['dur_range'][0]}~{stat['dur_range'][1]} ts（均值 {stat['dur_mean']:.1f}）"
-            if stat["dur_range"]
-            else "未生成"
-        )
-        total = (
-            f"{stat['total_range'][0]}~{stat['total_range'][1]} ts" if stat["total_range"] else "未生成"
-        )
-        lines.append(
-            f"| [{key}]({key}.md) | {stat['episodes']} | {diff} | "
-            f"{stat['moves_range'][0]}~{stat['moves_range'][1]}，{stat['moves_mean']:.2f} | "
-            f"{stat['moves_total']} | {dur} | {total} | {ORIGIN[key]} |"
-        )
+        if payload.get(key):
+            lines.append(f"| {key} | {ORIGIN[key]} |")
+
     lines += [
         "",
         "## 校验",
@@ -169,11 +203,10 @@ def build_summary(payload: dict[str, list[dict]], durations: dict[str, dict]) ->
         "2. **test seed 一致性**（`check_test_seeds.py`）：本轮实跑 100 条全部 attempt=0 一次通过，"
         "seed 与 test metadata **逐条相等，0 条不一致**，即拿到的时长就是原版 seed 下的时长"
         "（`outputs/test_seed_check.json`）。",
-        "3. **口径自洽**：RouteStick 满足「整条时长 = 段数 × 50」；两个 env 的 move 段数都是偶数"
+        "3. **口径自洽**：RouteStick 满足「整条时长 = move 段数 × 50」；两个 env 的 move 段数都是偶数"
         "（演示段与执行段成对）。",
         "",
-        "test 与 val 的统计高度吻合（PatternLock 单次 move 均值 30.5 vs 30.7，RouteStick 均为 48.1），"
-        "这是当前环境代码与原版行为一致的旁证。",
+        "同难度下 test 与 val 的统计高度吻合，是当前环境代码与原版行为一致的旁证。",
         "",
     ]
     return "\n".join(lines)
