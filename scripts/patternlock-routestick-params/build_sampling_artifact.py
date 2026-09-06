@@ -174,6 +174,7 @@ PAGE = """<title>采样窗口与 eval 成功率</title>
   th{font-size:11px; font-weight:500; color:var(--ink-3); text-transform:uppercase; letter-spacing:.05em}
   td.num{font-family:"IBM Plex Mono",monospace; text-align:right}
   tr.total td{font-weight:600; background:var(--surface-2)}
+  tr.sub td{font-weight:600; background:color-mix(in srgb, var(--surface-2) 60%, transparent)}
   .charts{display:flex; flex-direction:column; gap:26px}
   .chart h3{font-size:13px; font-weight:600; margin:0 0 3px}
   .chart .cap{font-size:11.5px; color:var(--ink-3); margin:0 0 7px}
@@ -439,15 +440,23 @@ function chartSvg(panel){
 
 function renderEval(){
   const pane = document.getElementById("evalPane");
-  const rowsHtml = EVAL.difficulty_table.map(r =>
-    `<tr><td>${r.suite}</td><td>${r.task}</td><td>${r.difficulty}</td>` +
-    `<td class="num">${r.modul[0]}/${r.modul[1]}（${(r.modul[0] / r.modul[1] * 100).toFixed(1)}%）</td>` +
-    `<td class="num">${r.context[0]}/${r.context[1]}（${(r.context[0] / r.context[1] * 100).toFixed(1)}%）</td></tr>`
-  ).join("");
+  const fmt = c => `${c[0]}/${c[1]}（${(c[0] / c[1] * 100).toFixed(1)}%）`;
+  const taskTotal = new Map((EVAL.task_totals || []).map(r => [r.task, r]));
+  // 每个任务的两行难度之后，紧跟一行该任务的 medium+hard 合计
+  const rowsHtml = EVAL.difficulty_table.map(r => {
+    const line =
+      `<tr><td>${r.suite}</td><td>${r.task}</td><td>${r.difficulty}</td>` +
+      `<td class="num">${fmt(r.modul)}</td><td class="num">${fmt(r.context)}</td></tr>`;
+    if (r.difficulty !== "hard") return line;
+    const t = taskTotal.get(r.task);
+    if (!t) return line;
+    return line +
+      `<tr class="sub"><td>${r.suite}</td><td>${r.task}</td><td>medium+hard</td>` +
+      `<td class="num">${fmt(t.modul)}</td><td class="num">${fmt(t.context)}</td></tr>`;
+  }).join("");
   const totalHtml = EVAL.suite_totals.map(r =>
     `<tr class="total"><td>${r.suite} 合计</td><td></td><td>${r.difficulty}</td>` +
-    `<td class="num">${r.modul[0]}/${r.modul[1]}（${(r.modul[0] / r.modul[1] * 100).toFixed(1)}%）</td>` +
-    `<td class="num">${r.context[0]}/${r.context[1]}（${(r.context[0] / r.context[1] * 100).toFixed(1)}%）</td></tr>`
+    `<td class="num">${fmt(r.modul)}</td><td class="num">${fmt(r.context)}</td></tr>`
   ).join("");
   const charts = EVAL.charts.map(c =>
     `<div class="chart"><h3>${c.title}</h3>` +
@@ -458,7 +467,7 @@ function renderEval(){
   pane.innerHTML =
     `<div class="panel"><h2>eval 成功率</h2>` +
     `<p class="note">两个变体 <code>perceptual-framesamp-modul</code> 与 <code>perceptual-framesamp-context</code>，` +
-    `同一批 ckpt 79999、同 seed 42。每格 24 集（test 12 + val 12），suite 合计每格 48 集；` +
+    `同一批 ckpt 79999、同 seed 42。每格 24 集（test 12 + val 12）；任务的 medium+hard 合计与 suite 合计各 48 集；` +
     `easy 档未评测，四任务合计 384 条。</p>` +
     `<div style="overflow-x:auto"><table><thead><tr><th>suite</th><th>任务</th><th>难度</th>` +
     `<th style="text-align:right">framesamp-modul</th><th style="text-align:right">framesamp-context</th></tr></thead>` +

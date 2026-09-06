@@ -161,20 +161,24 @@ BinFill / PickXtimes 无 demo 段，整条都是 exec。
 
 ### 分难度
 
-每格 24 集（test 12 + val 12），suite 合计每格 48 集。
+每格 24 集（test 12 + val 12）；任务的 medium+hard 合计每格 48 集，suite 合计每格 48 集。
 
 | suite | 任务 | 难度 | framesamp-modul | framesamp-context |
 | --- | --- | --- | --- | --- |
 | Imitation | PatternLock | medium | 13/24（54.2%） | 0/24（0.0%） |
 | Imitation | PatternLock | hard | 4/24（16.7%） | 0/24（0.0%） |
+| Imitation | **PatternLock** | **medium+hard** | **17/48（35.4%）** | **0/48（0.0%）** |
 | Imitation | RouteStick | medium | 10/24（41.7%） | 2/24（8.3%） |
 | Imitation | RouteStick | hard | 4/24（16.7%） | 0/24（0.0%） |
+| Imitation | **RouteStick** | **medium+hard** | **14/48（29.2%）** | **2/48（4.2%）** |
 | **Imitation 合计** | | **medium** | **23/48（47.9%）** | **2/48（4.2%）** |
 | **Imitation 合计** | | **hard** | **8/48（16.7%）** | **0/48（0.0%）** |
 | Counting | BinFill | medium | 10/24（41.7%） | 9/24（37.5%） |
 | Counting | BinFill | hard | 1/24（4.2%） | 0/24（0.0%） |
+| Counting | **BinFill** | **medium+hard** | **11/48（22.9%）** | **9/48（18.8%）** |
 | Counting | PickXtimes | medium | 21/24（87.5%） | 12/24（50.0%） |
 | Counting | PickXtimes | hard | 20/24（83.3%） | 4/24（16.7%） |
+| Counting | **PickXtimes** | **medium+hard** | **41/48（85.4%）** | **16/48（33.3%）** |
 | **Counting 合计** | | **medium** | **31/48（64.6%）** | **21/48（43.8%）** |
 | **Counting 合计** | | **hard** | **21/48（43.8%）** | **4/48（8.3%）** |
 

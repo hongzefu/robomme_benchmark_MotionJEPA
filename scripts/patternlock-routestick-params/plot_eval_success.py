@@ -367,7 +367,7 @@ def write_section(rows: list[dict], out_path: Path, fig_dir_name: str) -> None:
         "",
         "### 分难度",
         "",
-        "每格 24 集（test 12 + val 12），suite 合计每格 48 集。",
+        "每格 24 集（test 12 + val 12）；任务的 medium+hard 合计每格 48 集，suite 合计每格 48 集。",
         "",
         "| suite | 任务 | 难度 | framesamp-modul | framesamp-context |",
         "| --- | --- | --- | --- | --- |",
@@ -380,6 +380,11 @@ def write_section(rows: list[dict], out_path: Path, fig_dir_name: str) -> None:
                     f"{cell(variant='modul', task=task, difficulty=level)} | "
                     f"{cell(variant='context', task=task, difficulty=level)} |"
                 )
+            lines.append(
+                f"| {suite} | **{task}** | **medium+hard** | "
+                f"**{cell(variant='modul', task=task)}** | "
+                f"**{cell(variant='context', task=task)}** |"
+            )
         for level in DIFFICULTIES_DISPLAY:
             lines.append(
                 f"| **{suite} 合计** | | **{level}** | "
@@ -500,6 +505,16 @@ def main(argv=None) -> int:
             for suite, tasks in (("Imitation", IMITATION_TASKS), ("Counting", COUNTING_TASKS))
             for task in tasks
             for level in DIFFICULTIES_DISPLAY
+        ],
+        "task_totals": [
+            {
+                "suite": suite,
+                "task": task,
+                "modul": rate(rows, variant="modul", task=task)[:2],
+                "context": rate(rows, variant="context", task=task)[:2],
+            }
+            for suite, tasks in (("Imitation", IMITATION_TASKS), ("Counting", COUNTING_TASKS))
+            for task in tasks
         ],
         "suite_totals": [
             {
