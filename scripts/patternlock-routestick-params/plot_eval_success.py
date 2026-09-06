@@ -207,6 +207,18 @@ def dim_backtrack(params: dict) -> Any:
     return "有折返" if any(nodes[i] == nodes[i + 2] for i in range(len(nodes) - 2)) else "无折返"
 
 
+def dim_turns(params: dict) -> Any:
+    """相邻两步方向不同即算一次转向——比 move 次数更贴近「这条轨迹有多曲折」。"""
+    directions = params["move_directions"]
+    return sum(1 for a, b in zip(directions, directions[1:]) if a != b)
+
+
+def dim_backtracks(params: dict) -> Any:
+    """路径原地折返的次数（走到 j 又退回 i）。PatternLock 的 DFS 路径不重复节点，恒为 0。"""
+    nodes = params["path_nodes"]
+    return sum(1 for i in range(len(nodes) - 2) if nodes[i] == nodes[i + 2])
+
+
 def dim_actions(params: dict) -> Any:
     """BinFill：要放进 bin 的 cube 总数；PickXtimes：同一个动作重复几次。"""
     return params["actions"]
@@ -273,12 +285,12 @@ def draw_panel(
         )
         for x, value, (succ, total) in zip(xs, values, counts):
             if total:
-                ax.text(x, value + 2.5, f"{succ}/{total}", ha="center", va="bottom", fontsize=7.5)
+                ax.text(x, value + 2.5, f"{succ}/{total}", ha="center", va="bottom", fontsize=6)
     ax.set_xticks(list(positions))
-    ax.set_xticklabels([str(k) for k in keys], fontsize=9)
-    ax.set_xlabel(xlabel, fontsize=9)
-    ax.set_ylabel("成功率 (%)", fontsize=9)
-    ax.set_title(title, fontsize=10.5)
+    ax.set_xticklabels([str(k) for k in keys], fontsize=7.5)
+    ax.set_xlabel(xlabel, fontsize=8)
+    ax.set_ylabel("成功率 (%)", fontsize=8)
+    ax.set_title(title, fontsize=9)
     ax.set_ylim(0, 118)
     ax.grid(axis="y", alpha=0.25, linewidth=0.6)
     ax.set_axisbelow(True)
@@ -292,10 +304,12 @@ def figure(specs: list[tuple], out_path: Path, suptitle: str, figsize: tuple) ->
         agg, title, xlabel = spec[0], spec[1], spec[2]
         order = spec[3] if len(spec) > 3 else None
         draw_panel(ax, agg, title, xlabel, order)
-    axes[0].legend(fontsize=8.5, loc="upper right", framealpha=0.9)
-    fig.suptitle(suptitle, fontsize=12)
-    fig.tight_layout(rect=(0, 0, 1, 0.95))
-    fig.savefig(out_path, dpi=160)
+    for ax in axes:
+        ax.tick_params(axis="y", labelsize=7.5)
+    axes[0].legend(fontsize=7, loc="upper right", framealpha=0.9)
+    fig.suptitle(suptitle, fontsize=10)
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.savefig(out_path, dpi=110)
     plt.close(fig)
     print(f"已写出 {out_path}")
 
@@ -321,11 +335,19 @@ def write_section(rows: list[dict], out_path: Path, fig_dir_name: str) -> None:
         succ, total, pct = rate(rows, **filters)
         return f"{succ}/{total}（{pct}）"
 
+    def value_of(params: dict, dim: str) -> Any:
+        """dim 既可能是 params 里的现成字段，也可能是要现算的派生量。"""
+        if dim == "turns":
+            return dim_turns(params)
+        if dim == "backtracks":
+            return dim_backtracks(params)
+        return params.get(dim)
+
     def bucket(task: str, variant: str, values: list[Any], dim: str = "actions") -> str:
         hit = [
             r
             for r in rows
-            if r["task"] == task and r["variant"] == variant and r["params"].get(dim) in values
+            if r["task"] == task and r["variant"] == variant and value_of(r["params"], dim) in values
         ]
         succ = sum(1 for r in hit if r["success"])
         pct = f"{succ / len(hit):.0%}" if hit else "—"
@@ -410,49 +432,44 @@ def write_section(rows: list[dict], out_path: Path, fig_dir_name: str) -> None:
         "",
         "（PickXtimes modul 在 2 次那格反而低于 1 次和 3 次，只有 8 条样本，置信区间与两侧大幅重叠，不构成反例。）",
         "",
-        "### Counting suite：场景布局",
+        "### Imitation suite：轨迹的曲折程度",
         "",
-        f"![Counting 场景布局]({fig_dir_name}/success_by_counting_layout.png)",
+        f"![Imitation 转角与折返]({fig_dir_name}/success_by_imitation_turns.png)",
         "",
-        f"- **BinFill 的颜色种类数**比 cube 总数更能说明问题：目标只涉及 1 种颜色时两变体都是 "
+        "**转角次数**（相邻两步方向不同就算一次转向）比 move 次数更贴近「这条轨迹有多难跟」：",
+        "",
+        f"- PatternLock（modul）：1 次转角 {bucket('PatternLock', 'modul', [1], dim='turns')}，"
+        f"2 次 {bucket('PatternLock', 'modul', [2], dim='turns')}，"
+        f"3 次 {bucket('PatternLock', 'modul', [3], dim='turns')}，"
+        f"**4 次及以上 {bucket('PatternLock', 'modul', [4, 5, 6], dim='turns')}**。",
+        f"- RouteStick（modul）：0~3 次 {bucket('RouteStick', 'modul', [0, 1, 2, 3], dim='turns')}，"
+        f"**4 次及以上 {bucket('RouteStick', 'modul', [4, 5, 6], dim='turns')}**。",
+        "",
+        f"**折返次数**（走到 j 又退回 i）只有 RouteStick 有 —— PatternLock 的路径由 DFS 生成、"
+        f"不重复节点，折返恒为 0。RouteStick（modul）：0 次 "
+        f"{bucket('RouteStick', 'modul', [0], dim='backtracks')}，"
+        f"1 次 {bucket('RouteStick', 'modul', [1], dim='backtracks')}，"
+        f"2 次 {bucket('RouteStick', 'modul', [2], dim='backtracks')}，"
+        f"**3 次及以上 {bucket('RouteStick', 'modul', [3, 4, 5, 6], dim='backtracks')}**。",
+        "",
+        "折返 0~2 次之间没有明显差别，说明「退回原地」本身不难；难的是折返多了以后轨迹整体变长变绕。",
+        "",
+        "### BinFill：目标的颜色种类数",
+        "",
+        f"![BinFill 颜色种类数]({fig_dir_name}/success_by_binfill_color.png)",
+        "",
+        f"这一项比 cube 总数更能说明 BinFill 难在哪：目标只涉及 1 种颜色时两个变体都是 "
         f"{bucket('BinFill', 'modul', [1], dim='color_kinds')}；涉及 2 种时 modul "
         f"{bucket('BinFill', 'modul', [2], dim='color_kinds')}、context "
         f"{bucket('BinFill', 'context', [2], dim='color_kinds')}；3 种时两者都是 "
-        f"{bucket('BinFill', 'modul', [3], dim='color_kinds')}。"
-        "要同时按颜色分类并计数，两个变体都做不到。",
-        "- **PickXtimes 的 cube 颜色**没有信号（三种颜色成功率相当），这正是想要的对照结果 ——"
-        "  差异来自次数而不是颜色。",
+        f"{bucket('BinFill', 'modul', [3], dim='color_kinds')}。",
+        "",
+        "**要同时按颜色分类并计数，两个变体都做不到**——这也解释了为什么 BinFill 上两个变体没有差异："
+        "瓶颈不在 framesample 怎么采帧，而在任务本身需要的组合能力。",
         "",
         "> 顺带一个 env 配置层面的注意点：PickXtimes 的 medium 与 easy 的重复次数范围相同（都是 1~3 次），",
         "> medium 的难点在于场上同时有 3 种颜色的 cube 作干扰，而不是次数更多；hard 才是 4~5 次。",
         "> 所以 PickXtimes 的难度档之间不能只按「次数」理解。",
-        "",
-        "### 成功率 vs 难度档",
-        "",
-        f"![成功率 vs 难度档]({fig_dir_name}/success_by_difficulty.png)",
-        "",
-        "难度效应（medium 比 hard 好多少）是判断模型是否真在工作的关键量：",
-        "",
-        f"- Imitation：modul {cell(variant='modul', task=IMITATION_TASKS, difficulty='medium')} vs "
-        f"{cell(variant='modul', task=IMITATION_TASKS, difficulty='hard')}；"
-        f"context {cell(variant='context', task=IMITATION_TASKS, difficulty='medium')} vs "
-        f"{cell(variant='context', task=IMITATION_TASKS, difficulty='hard')}。",
-        f"- Counting：modul {cell(variant='modul', task=COUNTING_TASKS, difficulty='medium')} vs "
-        f"{cell(variant='modul', task=COUNTING_TASKS, difficulty='hard')}；"
-        f"context {cell(variant='context', task=COUNTING_TASKS, difficulty='medium')} vs "
-        f"{cell(variant='context', task=COUNTING_TASKS, difficulty='hard')}。",
-        "",
-        "policy 侧 result.md 对这八组做了 Fisher 检验：**四组里唯有 context-on-Imitation 失去了难度效应**",
-        "（p = 0.247，不显著），其余三组降低难度都带来显著提升。所以 context 的问题是",
-        "**在 Imitation suite 上失灵**，而不是普遍能力弱 —— 同一份权重在 Counting 的 medium 档达 43.75%，",
-        "与 modul 在 Imitation medium 的 47.92% 相当。",
-        "",
-        "### split 对照",
-        "",
-        f"![成功率 vs split]({fig_dir_name}/success_by_split.png)",
-        "",
-        "四个任务的 test 与 val 都接近，没有明显的 split 偏置 —— 两个 split 的参数分布本来就同源",
-        "（同一套难度循环、只是 seed 域不同），这张图是用来确认这一点的。",
         "",
         "> 图与数字由 `plot_eval_success.py` 生成，改动 eval 结果后重跑即可。",
         "",
@@ -486,7 +503,7 @@ def main(argv=None) -> int:
         ],
         out_dir / "success_by_moves_imitation.png",
         "Imitation suite：成功率 vs move 次数（medium + hard 合并，误差棒为 Wilson 95% CI）",
-        (11, 4.2),
+        (7.6, 3.1),
     )
 
     figure(
@@ -496,105 +513,31 @@ def main(argv=None) -> int:
         ],
         out_dir / "success_by_actions_counting.png",
         "Counting suite：成功率 vs 动作次数（medium + hard 合并，误差棒为 Wilson 95% CI）",
-        (11, 4.2),
+        (7.6, 3.1),
     )
 
     figure(
         [
-            (aggregate(rows, dim_color_kinds, "BinFill"), "BinFill：目标涉及几种颜色", "颜色种类数"),
+            (aggregate(rows, dim_turns, "PatternLock"), "PatternLock：转角次数", "转角次数"),
+            (aggregate(rows, dim_turns, "RouteStick"), "RouteStick：转角次数", "转角次数"),
+            (aggregate(rows, dim_backtracks, "RouteStick"), "RouteStick：折返次数", "折返次数"),
+        ],
+        out_dir / "success_by_imitation_turns.png",
+        "Imitation suite：成功率 vs 轨迹的曲折程度（转角 / 折返）",
+        (10.4, 3.1),
+    )
+
+    figure(
+        [
             (
-                aggregate(rows, dim_cube_color, "PickXtimes"),
-                "PickXtimes：要反复搬的 cube 颜色",
-                "cube 颜色",
-                ["red", "blue", "green"],
+                aggregate(rows, dim_color_kinds, "BinFill"),
+                "BinFill：目标涉及几种颜色",
+                "颜色种类数",
             ),
         ],
-        out_dir / "success_by_counting_layout.png",
-        "Counting suite：成功率 vs 场景布局",
-        (11, 4.2),
-    )
-
-    figure(
-        [
-            (
-                {
-                    v: {
-                        d: (
-                            sum(1 for r in rows if r["variant"] == v and r["task"] == task and r["difficulty"] == d and r["success"]),
-                            sum(1 for r in rows if r["variant"] == v and r["task"] == task and r["difficulty"] == d),
-                        )
-                        for d in DIFFICULTIES
-                    }
-                    for v in VARIANTS
-                },
-                task,
-                "难度档",
-            )
-            for task in TASKS
-        ],
-        out_dir / "success_by_difficulty.png",
-        "成功率 vs 难度档（四个任务；easy 档未评测）",
-        (17, 4.2),
-    )
-
-    figure(
-        [
-            (aggregate(rows, dim_direction_kinds, "PatternLock"), "路径用到几种方向", "方向种类数"),
-            (aggregate(rows, dim_span, "PatternLock"), "起终点跨了多远", "曼哈顿格距"),
-            (
-                aggregate(rows, dim_start_position, "PatternLock"),
-                "起点落在格点哪里",
-                "起点位置",
-                ["角", "边", "内部"],
-            ),
-        ],
-        out_dir / "success_by_patternlock_layout.png",
-        "PatternLock：成功率 vs 路径布局",
-        (14, 4.2),
-    )
-
-    figure(
-        [
-            (aggregate(rows, dim_swing_switch, "RouteStick"), "绕行方向换了几次", "顺/逆时针切换次数"),
-            (
-                aggregate(rows, dim_theta, "RouteStick"),
-                "整排旋转角",
-                "|θ|",
-                ["|θ| < 10°", "10° ≤ |θ| < 20°", "|θ| ≥ 20°"],
-            ),
-            (
-                aggregate(rows, dim_backtrack, "RouteStick"),
-                "路径是否原地折返",
-                "",
-                ["无折返", "有折返"],
-            ),
-        ],
-        out_dir / "success_by_routestick_layout.png",
-        "RouteStick：成功率 vs 路径布局",
-        (14, 4.2),
-    )
-
-    figure(
-        [
-            (
-                {
-                    v: {
-                        s: (
-                            sum(1 for r in rows if r["variant"] == v and r["task"] == task and r["split"] == s and r["success"]),
-                            sum(1 for r in rows if r["variant"] == v and r["task"] == task and r["split"] == s),
-                        )
-                        for s in ("test", "val")
-                    }
-                    for v in VARIANTS
-                },
-                task,
-                "split",
-            )
-            for task in TASKS
-        ],
-        out_dir / "success_by_split.png",
-        "成功率 vs split（检查是否存在 split 偏置）",
-        (17, 4.2),
+        out_dir / "success_by_binfill_color.png",
+        "BinFill：成功率 vs 目标的颜色种类数",
+        (4.4, 3.1),
     )
 
     write_section(rows, Path(args.out_dir).parent / "eval_section.md", Path(args.out_dir).name)

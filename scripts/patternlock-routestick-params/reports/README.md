@@ -165,36 +165,29 @@ context 在这两个任务上几乎全零，没有可读的趋势。
 
 （PickXtimes modul 在 2 次那格反而低于 1 次和 3 次，只有 8 条样本，置信区间与两侧大幅重叠，不构成反例。）
 
-### Counting suite：场景布局
+### Imitation suite：轨迹的曲折程度
 
-![Counting 场景布局](figures/success_by_counting_layout.png)
+![Imitation 转角与折返](figures/success_by_imitation_turns.png)
 
-- **BinFill 的颜色种类数**比 cube 总数更能说明问题：目标只涉及 1 种颜色时两变体都是 9/18（50%）；涉及 2 种时 modul 2/23（9%）、context 0/23（0%）；3 种时两者都是 0/7（0%）。要同时按颜色分类并计数，两个变体都做不到。
-- **PickXtimes 的 cube 颜色**没有信号（三种颜色成功率相当），这正是想要的对照结果 ——  差异来自次数而不是颜色。
+**转角次数**（相邻两步方向不同就算一次转向）比 move 次数更贴近「这条轨迹有多难跟」：
+
+- PatternLock（modul）：1 次转角 7/9（78%），2 次 8/17（47%），3 次 2/11（18%），**4 次及以上 0/11（0%）**。
+- RouteStick（modul）：0~3 次 14/35（40%），**4 次及以上 0/13（0%）**。
+
+**折返次数**（走到 j 又退回 i）只有 RouteStick 有 —— PatternLock 的路径由 DFS 生成、不重复节点，折返恒为 0。RouteStick（modul）：0 次 2/5（40%），1 次 9/24（38%），2 次 3/7（43%），**3 次及以上 0/12（0%）**。
+
+折返 0~2 次之间没有明显差别，说明「退回原地」本身不难；难的是折返多了以后轨迹整体变长变绕。
+
+### BinFill：目标的颜色种类数
+
+![BinFill 颜色种类数](figures/success_by_binfill_color.png)
+
+这一项比 cube 总数更能说明 BinFill 难在哪：目标只涉及 1 种颜色时两个变体都是 9/18（50%）；涉及 2 种时 modul 2/23（9%）、context 0/23（0%）；3 种时两者都是 0/7（0%）。
+
+**要同时按颜色分类并计数，两个变体都做不到**——这也解释了为什么 BinFill 上两个变体没有差异：瓶颈不在 framesample 怎么采帧，而在任务本身需要的组合能力。
 
 > 顺带一个 env 配置层面的注意点：PickXtimes 的 medium 与 easy 的重复次数范围相同（都是 1~3 次），
 > medium 的难点在于场上同时有 3 种颜色的 cube 作干扰，而不是次数更多；hard 才是 4~5 次。
 > 所以 PickXtimes 的难度档之间不能只按「次数」理解。
-
-### 成功率 vs 难度档
-
-![成功率 vs 难度档](figures/success_by_difficulty.png)
-
-难度效应（medium 比 hard 好多少）是判断模型是否真在工作的关键量：
-
-- Imitation：modul 23/48（47.9%） vs 8/48（16.7%）；context 2/48（4.2%） vs 0/48（0.0%）。
-- Counting：modul 31/48（64.6%） vs 21/48（43.8%）；context 21/48（43.8%） vs 4/48（8.3%）。
-
-policy 侧 result.md 对这八组做了 Fisher 检验：**四组里唯有 context-on-Imitation 失去了难度效应**
-（p = 0.247，不显著），其余三组降低难度都带来显著提升。所以 context 的问题是
-**在 Imitation suite 上失灵**，而不是普遍能力弱 —— 同一份权重在 Counting 的 medium 档达 43.75%，
-与 modul 在 Imitation medium 的 47.92% 相当。
-
-### split 对照
-
-![成功率 vs split](figures/success_by_split.png)
-
-四个任务的 test 与 val 都接近，没有明显的 split 偏置 —— 两个 split 的参数分布本来就同源
-（同一套难度循环、只是 seed 域不同），这张图是用来确认这一点的。
 
 > 图与数字由 `plot_eval_success.py` 生成，改动 eval 结果后重跑即可。
