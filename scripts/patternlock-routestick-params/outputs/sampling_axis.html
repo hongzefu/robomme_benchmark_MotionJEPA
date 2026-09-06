@@ -137,6 +137,7 @@
     <div class="chips" id="chips"></div>
     <div class="tabs" id="views"><span class="lbl">视图</span></div>
     <div class="tabs" id="tabs"><span class="lbl">难度档</span></div>
+    <div class="tabs" id="bands"><span class="lbl">长度档</span></div>
   </header>
 
   <div class="legend">
@@ -168,6 +169,9 @@ const DATA = {"PatternLock": [{"split": "val", "ep": 32, "seed": 1153200, "diff"
 const WIN = 33, STRIDE = 16, BUDGETS = [32, 8];
 const WIN_ROWS = Math.ceil(WIN / STRIDE);  // 同一行内窗口互不接触所需的行数
 const DIFFS = ["all", "easy", "medium", "hard"];
+// 长度档：每个 (任务, 难度) 里按整条长度 T 排序取的三条代表集
+const BANDS = ["全部", "最短", "中位", "最长"];
+let curDiff = "all", curBand = "全部";
 const SUITES = {"PatternLock": "Imitation", "RouteStick": "Imitation", "BinFill": "Counting", "PickXtimes": "Counting"};
 
 const winStarts = L => { const o = []; for (let f = 0; f + WIN - 1 < L; f += STRIDE) o.push(f); return o; };
@@ -259,13 +263,15 @@ function shortLabel(text){
   return text.slice(0, 6);
 }
 
-function render(diff){
+function render(){
   const board = document.getElementById("board");
   board.innerHTML = "";
   let shown = 0, tokens = 0;
+  const keep = r => (curDiff === "all" || r.diff === curDiff) &&
+                    (curBand === "全部" || r.band === curBand);
   for (const suite of ["Imitation", "Counting"]){
     const tasks = Object.keys(DATA).filter(t => SUITES[t] === suite);
-    const rows = tasks.flatMap(t => DATA[t].filter(r => diff === "all" || r.diff === diff).map(r => [t, r]));
+    const rows = tasks.flatMap(t => DATA[t].filter(keep).map(r => [t, r]));
     if (!rows.length) continue;
     const head = document.createElement("div");
     head.className = "suite";
@@ -292,6 +298,12 @@ function render(diff){
       el.appendChild(left); el.appendChild(track(row)); el.appendChild(right);
       board.appendChild(el);
     }
+  }
+  if (!shown){
+    const empty = document.createElement("div");
+    empty.className = "suite";
+    empty.innerHTML = `<span class="dt">当前筛选没有匹配的 episode</span>`;
+    board.appendChild(empty);
   }
   const axis = document.createElement("div");
   axis.className = "axis";
@@ -400,16 +412,23 @@ function renderEval(){
 
 const views = document.getElementById("views");
 const tabs = document.getElementById("tabs");
-for (const d of DIFFS){
-  const b = document.createElement("button");
-  b.className = "tab"; b.textContent = d; b.setAttribute("aria-pressed", d === "all");
-  b.onclick = () => {
-    for (const t of tabs.querySelectorAll(".tab")) t.setAttribute("aria-pressed", "false");
-    b.setAttribute("aria-pressed", "true");
-    render(d);
-  };
-  tabs.appendChild(b);
+const bands = document.getElementById("bands");
+function buildTabs(host, items, initial, onPick){
+  for (const item of items){
+    const b = document.createElement("button");
+    b.className = "tab"; b.textContent = item;
+    b.setAttribute("aria-pressed", String(item === initial));
+    b.onclick = () => {
+      for (const t of host.querySelectorAll(".tab")) t.setAttribute("aria-pressed", "false");
+      b.setAttribute("aria-pressed", "true");
+      onPick(item);
+      render();
+    };
+    host.appendChild(b);
+  }
 }
+buildTabs(tabs, DIFFS, curDiff, v => { curDiff = v; });
+buildTabs(bands, BANDS, curBand, v => { curBand = v; });
 for (const [key, label] of [["axis", "采样窗口数轴"], ["eval", "eval 成功率"]]){
   const b = document.createElement("button");
   b.className = "tab"; b.textContent = label; b.setAttribute("aria-pressed", key === "axis");
@@ -420,6 +439,7 @@ for (const [key, label] of [["axis", "采样窗口数轴"], ["eval", "eval 成�
     document.getElementById("board").hidden = !isAxis;
     document.querySelector(".legend").hidden = !isAxis;
     tabs.hidden = !isAxis;
+    document.getElementById("bands").hidden = !isAxis;
     document.getElementById("evalPane").hidden = isAxis;
   };
   views.appendChild(b);
@@ -429,10 +449,11 @@ const all = Object.values(DATA).flat();
 document.getElementById("chips").innerHTML = [
   `任务 <b>${Object.keys(DATA).length}</b>`,
   `代表集 <b>${all.length}</b>（4 任务 × 3 难度 × 最短/中位/最长）`,
+  `筛选 <b>难度档 × 长度档</b>`,
   `窗口 <b>[f, f+${WIN - 1}]</b> · stride <b>${STRIDE}</b>`,
   `帧预算 <b>${BUDGETS.join(" / ")}</b>`,
   `横轴 <b>0–${XMAX}</b> ts`,
 ].map(s => `<span class="chip">${s}</span>`).join("");
-render("all");
+render();
 if (EVAL) renderEval();
 </script>
