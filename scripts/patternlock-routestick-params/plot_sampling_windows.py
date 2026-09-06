@@ -5,8 +5,8 @@
 1. **段底色**：demo 段与 exec 段（Counting 无 demo 段，整条都是 exec）；
 2. **subgoal 分段**：交替深浅块 + 边界线，块内写压缩后的中文短标签；
 3. **motion 窗口**：窗口 `[f, f+32]`、stride 16、**不跨段**，每段各自从段起点铺。
-   画法上每个窗口只占它 stride 宽（16 帧）的一格、格间留白，所以**格子数就是窗口数、可以直接数**；
-   窗口的真实跨度（33 帧、相邻重叠一半）另用一条细线示意。段短于 33 帧铺不出窗口，画成虚线空槽；
+   窗口按 33 帧全宽画；相邻窗口只错开 16 帧、重叠一半，同一行会粘连，因此按 3 行轮流堆叠
+   （同一行内相邻窗口起点差 48 > 33，互不接触）。段短于 33 帧铺不出窗口，画成虚线空槽；
 4. **帧路**：上排 32 帧预算的采样点（细竖线），下排 8 帧预算（圆点），Δ = (T-1)/(N-1)。
 
 口径与 policy 侧 motion_store / even_sampling_indices 对齐，已用其 16 任务中位集逐条验证。
@@ -33,6 +33,8 @@ DIFFICULTIES = ["easy", "medium", "hard"]
 WINDOW_FRAMES = 33
 WINDOW_STRIDE = 16
 FRAME_BUDGETS = [32, 8]
+# 窗口 33 帧、stride 16，相邻重叠一半：要让同一行内的窗口互不接触，至少需要 ceil(33/16)=3 行
+WINDOW_ROWS = -(-WINDOW_FRAMES // WINDOW_STRIDE)
 
 COLOR = {
     "demo": "#3E8FAE",
@@ -175,9 +177,9 @@ def draw_row(ax, y: float, item: dict[str, Any], xmax: int) -> None:
         if length <= 0:
             continue
         ax.add_patch(
-            Rectangle((start, y - 0.30), length, 0.63, facecolor=COLOR[kind], alpha=0.10, lw=0)
+            Rectangle((start, y - 0.30), length, 0.65, facecolor=COLOR[kind], alpha=0.10, lw=0)
         )
-        ax.plot([start, start], [y - 0.30, y + 0.33], color=COLOR[kind], lw=1.0)
+        ax.plot([start, start], [y - 0.30, y + 0.35], color=COLOR[kind], lw=1.0)
 
     # 2) subgoal 分段
     for index, seg in enumerate(item["segments"]):
@@ -202,10 +204,9 @@ def draw_row(ax, y: float, item: dict[str, Any], xmax: int) -> None:
                 color="#3A4247",
             )
 
-    # 3) motion 窗口：每段各自铺。窗口长 33、stride 16，相邻重叠一半——
-    #    若按 33 帧全宽画，相邻窗口首尾相接会糊成一条实线、数不出个数。
-    #    所以每个窗口只画它 stride 宽（16 帧）的那一格，格间留白：格子数 == 窗口数，可以直接数。
-    #    窗口的真实跨度另用一条细线示意（见图例）。
+    # 3) motion 窗口：每段各自铺，窗口按 33 帧**全宽**画。
+    #    相邻窗口起点只差 stride 16、重叠一半，同一行画会首尾粘连，
+    #    所以按 ceil(33/16)=3 行轮流堆叠——同一行内相邻窗口起点差 48 > 33，互不接触，能逐个数清。
     for start, length, kind in segments:
         starts = seg_windows(length)
         if not starts:
@@ -213,7 +214,7 @@ def draw_row(ax, y: float, item: dict[str, Any], xmax: int) -> None:
                 Rectangle(
                     (start, y + 0.10),
                     max(length, 1),
-                    0.10,
+                    0.155,
                     facecolor="none",
                     edgecolor=COLOR["empty"],
                     lw=0.6,
@@ -221,30 +222,22 @@ def draw_row(ax, y: float, item: dict[str, Any], xmax: int) -> None:
                 )
             )
             continue
-        gap = max(xmax * 0.0012, 0.6)
-        for offset in starts:
+        for index, offset in enumerate(starts):
             ax.add_patch(
                 Rectangle(
-                    (start + offset + gap / 2, y + 0.105),
-                    WINDOW_STRIDE - gap,
-                    0.075,
+                    (start + offset, y + 0.102 + (index % WINDOW_ROWS) * 0.052),
+                    WINDOW_FRAMES - 1,
+                    0.042,
                     facecolor=COLOR[kind],
-                    alpha=0.85,
-                    lw=0,
+                    alpha=0.9,
+                    edgecolor="white",
+                    lw=0.3,
                 )
             )
-        # 首个窗口的真实跨度（33 帧）示意线，说明格子之间是重叠的
-        ax.plot(
-            [start + starts[0], start + starts[0] + WINDOW_FRAMES - 1],
-            [y + 0.196, y + 0.196],
-            color=COLOR[kind],
-            lw=0.7,
-            solid_capstyle="butt",
-        )
 
     # 4) 帧路：32 帧竖线（上）、8 帧圆点（下）
     for index in frame_indices(total, 32):
-        ax.plot([index, index], [y + 0.245, y + 0.325], color=COLOR["frame32"], lw=0.5, alpha=0.85)
+        ax.plot([index, index], [y + 0.275, y + 0.345], color=COLOR["frame32"], lw=0.5, alpha=0.85)
     ax.plot(
         frame_indices(total, 8),
         [y + 0.052] * 8,
@@ -258,7 +251,7 @@ def draw_row(ax, y: float, item: dict[str, Any], xmax: int) -> None:
 def plot_task(task: str, episodes: list[dict[str, Any]], out_path: Path) -> None:
     picked = pick_rows(episodes)
     xmax = max(item["total"] for _, _, item in picked)
-    fig, ax = plt.subplots(figsize=(11, 0.62 * len(picked) + 1.5))
+    fig, ax = plt.subplots(figsize=(11, 0.68 * len(picked) + 1.5))
 
     for row_index, (level, label, item) in enumerate(picked):
         y = len(picked) - row_index
@@ -298,9 +291,10 @@ def plot_task(task: str, episodes: list[dict[str, Any]], out_path: Path) -> None
     )
 
     handles = [
-        Rectangle((0, 0), 1, 1, facecolor=COLOR["demo"], alpha=0.85, label="demo 段：每格 = 1 个窗口"),
-        Rectangle((0, 0), 1, 1, facecolor=COLOR["exec"], alpha=0.85, label="exec 段：每格 = 1 个窗口"),
-        plt.Line2D([], [], color="#666B6E", lw=1.0, label=f"首窗真实跨度 {WINDOW_FRAMES} 帧（相邻重叠 {WINDOW_STRIDE}）"),
+        Rectangle((0, 0), 1, 1, facecolor=COLOR["demo"], alpha=0.9,
+                  label=f"demo 段窗口 [f, f+{WINDOW_FRAMES - 1}]"),
+        Rectangle((0, 0), 1, 1, facecolor=COLOR["exec"], alpha=0.9,
+                  label=f"exec 段窗口（相邻错 {WINDOW_STRIDE} 帧，堆 {WINDOW_ROWS} 行防粘连）"),
         Rectangle((0, 0), 1, 1, facecolor=COLOR["sg_a"], edgecolor=COLOR["sg_line"], label="subgoal 分段"),
         Rectangle((0, 0), 1, 1, facecolor="none", edgecolor=COLOR["empty"], ls=(0, (2, 1.6)),
                   label=f"段 < {WINDOW_FRAMES} 帧，无窗口"),
@@ -311,8 +305,8 @@ def plot_task(task: str, episodes: list[dict[str, Any]], out_path: Path) -> None
         handles=handles,
         fontsize=6.4,
         loc="lower center",
-        bbox_to_anchor=(0.5, -0.30 / (0.62 * len(picked) + 1.5) * 4),
-        ncol=4,
+        bbox_to_anchor=(0.5, -0.30 / (0.68 * len(picked) + 1.5) * 4),
+        ncol=5,
         frameon=False,
     )
     fig.subplots_adjust(left=0.085, right=0.735, top=0.90, bottom=0.16)

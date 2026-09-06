@@ -210,7 +210,11 @@ def dim_backtrack(params: dict) -> Any:
 
 
 def dim_turns(params: dict) -> Any:
-    """相邻两步方向不同即算一次转向——比 move 次数更贴近「这条轨迹有多曲折」。"""
+    """PatternLock 专用：相邻两步的 8 方位不同即算一次转向。
+
+    这个定义只对 PatternLock 成立——它的 move 是格点上的八方位移动，方向变了就是拐了个弯。
+    RouteStick 是在 1×9 一字排开的格点上左右走，没有「转角」这回事，不要把它套过去。
+    """
     directions = params["move_directions"]
     return sum(1 for a, b in zip(directions, directions[1:]) if a != b)
 
@@ -286,14 +290,24 @@ def draw_panel(
             xs, values, yerr=[lows, highs], fmt="none", ecolor="#444444", elinewidth=0.9, capsize=2.5
         )
         for x, value, (succ, total) in zip(xs, values, counts):
-            if total:
-                ax.text(x, value + 2.5, f"{succ}/{total}", ha="center", va="bottom", fontsize=6)
+            if not total:
+                continue
+            if succ:
+                ax.text(
+                    x, value + 8.5, f"{succ / total:.0%}", ha="center", va="bottom",
+                    fontsize=7, fontweight="bold",
+                )
+            # succ 为 0 时不再标 "0%"：0/9 本身就是 0%，两个变体的标注挨在一起会糊成一团
+            ax.text(
+                x, value + 2.0, f"{succ}/{total}", ha="center", va="bottom",
+                fontsize=5.6, color="#5A6266",
+            )
     ax.set_xticks(list(positions))
     ax.set_xticklabels([str(k) for k in keys], fontsize=7.5)
     ax.set_xlabel(xlabel, fontsize=8)
     ax.set_ylabel("成功率 (%)", fontsize=8)
     ax.set_title(title, fontsize=9)
-    ax.set_ylim(0, 118)
+    ax.set_ylim(0, 128)
     ax.grid(axis="y", alpha=0.25, linewidth=0.6)
     ax.set_axisbelow(True)
 
@@ -384,12 +398,18 @@ def write_section(rows: list[dict], out_path: Path, fig_dir_name: str) -> None:
         "Imitation 的 x 轴是 move 次数；Counting 的 x 轴是 BinFill 要放进 bin 的 cube 总数 / "
         "PickXtimes 同一动作的重复次数。medium 与 hard 合并。",
         "",
-        "### 成功率 vs 轨迹曲折程度（Imitation）",
+        "### 成功率 vs 路径形状（Imitation）",
         "",
-        f"![Imitation 转角与折返]({fig_dir_name}/success_by_imitation_turns.png)",
+        f"![Imitation 路径形状]({fig_dir_name}/success_by_imitation_turns.png)",
         "",
-        "转角次数 = 相邻两步方向不同的次数；折返次数 = 路径中走到 j 又退回 i 的次数"
-        "（PatternLock 路径由 DFS 生成、不重复节点，折返恒为 0）。",
+        "两个任务各用一个语义成立的维度：",
+        "",
+        "- **PatternLock 转角次数** = 相邻两步的 8 方位不同的次数。它的 move 是格点上的八方位移动，"
+        "方向变了就是拐了个弯。",
+        "- **RouteStick 折返次数** = 路径里走到 j 又退回 i 的次数。它是在 1×9 一字排开的格点上左右走，"
+        "**没有「转角」这回事**；另外「左右切换次数」与折返次数在 100 条上逐条相等（同一件事），故不重复列。",
+        "",
+        "PatternLock 的路径由 DFS 生成、不重复节点，折返恒为 0，所以它没有折返这一档。",
         "",
         "### 成功率 vs 目标颜色种类数（BinFill）",
         "",
@@ -429,7 +449,7 @@ def main(argv=None) -> int:
         ],
         out_dir / "success_by_moves_imitation.png",
         "Imitation suite：成功率 vs move 次数（medium + hard 合并，误差棒为 Wilson 95% CI）",
-        (7.6, 3.1),
+        (6.6, 2.9),
     )
 
     figure(
@@ -439,18 +459,17 @@ def main(argv=None) -> int:
         ],
         out_dir / "success_by_actions_counting.png",
         "Counting suite：成功率 vs 动作次数（medium + hard 合并，误差棒为 Wilson 95% CI）",
-        (7.6, 3.1),
+        (6.6, 2.9),
     )
 
     figure(
         [
-            (aggregate(rows, dim_turns, "PatternLock"), "PatternLock：转角次数", "转角次数"),
-            (aggregate(rows, dim_turns, "RouteStick"), "RouteStick：转角次数", "转角次数"),
-            (aggregate(rows, dim_backtracks, "RouteStick"), "RouteStick：折返次数", "折返次数"),
+            (aggregate(rows, dim_turns, "PatternLock"), "PatternLock：转角次数", "相邻两步方位不同的次数"),
+            (aggregate(rows, dim_backtracks, "RouteStick"), "RouteStick：折返次数", "走到 j 又退回 i 的次数"),
         ],
         out_dir / "success_by_imitation_turns.png",
-        "Imitation suite：成功率 vs 轨迹的曲折程度（转角 / 折返）",
-        (10.4, 3.1),
+        "Imitation suite：成功率 vs 路径形状",
+        (6.6, 2.9),
     )
 
     figure(
@@ -463,7 +482,7 @@ def main(argv=None) -> int:
         ],
         out_dir / "success_by_binfill_color.png",
         "BinFill：成功率 vs 目标的颜色种类数",
-        (4.4, 3.1),
+        (3.6, 2.9),
     )
 
     write_section(rows, Path(args.out_dir).parent / "eval_section.md", Path(args.out_dir).name)
@@ -513,13 +532,11 @@ def main(argv=None) -> int:
             },
             {
                 "id": "turns",
-                "title": "成功率 vs 轨迹曲折程度",
+                "title": "成功率 vs 路径形状",
                 "panels": [
-                    {"task": "PatternLock", "xlabel": "转角次数",
+                    {"task": "PatternLock", "xlabel": "转角次数（相邻两步方位不同）",
                      "data": aggregate(rows, dim_turns, "PatternLock")},
-                    {"task": "RouteStick", "xlabel": "转角次数",
-                     "data": aggregate(rows, dim_turns, "RouteStick")},
-                    {"task": "RouteStick", "xlabel": "折返次数",
+                    {"task": "RouteStick", "xlabel": "折返次数（走到 j 又退回 i）",
                      "data": aggregate(rows, dim_backtracks, "RouteStick")},
                 ],
             },

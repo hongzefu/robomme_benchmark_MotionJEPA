@@ -35,11 +35,16 @@
 
 Imitation 的 x 轴是 move 次数；Counting 的 x 轴是 BinFill 要放进 bin 的 cube 总数 / PickXtimes 同一动作的重复次数。medium 与 hard 合并。
 
-### 成功率 vs 轨迹曲折程度（Imitation）
+### 成功率 vs 路径形状（Imitation）
 
-![Imitation 转角与折返](figures/success_by_imitation_turns.png)
+![Imitation 路径形状](figures/success_by_imitation_turns.png)
 
-转角次数 = 相邻两步方向不同的次数；折返次数 = 路径中走到 j 又退回 i 的次数（PatternLock 路径由 DFS 生成、不重复节点，折返恒为 0）。
+两个任务各用一个语义成立的维度：
+
+- **PatternLock 转角次数** = 相邻两步的 8 方位不同的次数。它的 move 是格点上的八方位移动，方向变了就是拐了个弯。
+- **RouteStick 折返次数** = 路径里走到 j 又退回 i 的次数。它是在 1×9 一字排开的格点上左右走，**没有「转角」这回事**；另外「左右切换次数」与折返次数在 100 条上逐条相等（同一件事），故不重复列。
+
+PatternLock 的路径由 DFS 生成、不重复节点，折返恒为 0，所以它没有折返这一档。
 
 ### 成功率 vs 目标颜色种类数（BinFill）
 

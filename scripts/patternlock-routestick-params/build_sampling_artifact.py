@@ -136,7 +136,7 @@ PAGE = """<title>采样窗口与 eval 成功率</title>
   .rl{padding:9px 0 9px 15px; display:flex; flex-direction:column; gap:2px}
   .rl .bd{font-size:12.5px; font-weight:600}
   .rl .src{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3)}
-  .track{position:relative; height:52px; margin:5px 0}
+  .track{position:relative; height:58px; margin:5px 0}
   .track .seg-bg{position:absolute; top:0; height:100%; opacity:.09}
   .track .seg-edge{position:absolute; top:0; height:100%; width:1px}
   .track .sg{
@@ -144,8 +144,8 @@ PAGE = """<title>采样窗口与 eval 成功率</title>
     font-size:9.5px; line-height:14px; text-align:center; overflow:hidden; white-space:nowrap;
     color:var(--ink-2); cursor:default;
   }
-  .track .win{position:absolute; height:7px; border-radius:1px; opacity:.9}
-  .track .win-span{position:absolute; height:1.5px; bottom:27px; opacity:.75}
+  .track .win{position:absolute; height:4px; border-radius:1px; opacity:.9;
+    border-left:1px solid var(--surface); border-right:1px solid var(--surface)}
   .track .win-empty{position:absolute; height:12px; border:1px dashed var(--empty); border-radius:2px}
   .track .f32{position:absolute; top:0; width:1px; height:9px; background:var(--f32); opacity:.85}
   .track .f8{position:absolute; width:4px; height:4px; border-radius:50%; background:var(--f8); margin-left:-2px}
@@ -174,12 +174,12 @@ PAGE = """<title>采样窗口与 eval 成功率</title>
   th{font-size:11px; font-weight:500; color:var(--ink-3); text-transform:uppercase; letter-spacing:.05em}
   td.num{font-family:"IBM Plex Mono",monospace; text-align:right}
   tr.total td{font-weight:600; background:var(--surface-2)}
-  .charts{display:flex; flex-direction:column; gap:16px}
+  .charts{display:flex; flex-direction:column; gap:26px}
   .chart h3{font-size:13px; font-weight:600; margin:0 0 3px}
   .chart .cap{font-size:11.5px; color:var(--ink-3); margin:0 0 7px}
-  .panels{display:flex; gap:14px; flex-wrap:wrap}
-  .cw{flex:1 1 300px; min-width:260px}
-  .cw .ct{font-size:11.5px; color:var(--ink-2); text-align:center; margin-bottom:2px}
+  .panels{display:flex; gap:22px; flex-wrap:wrap}
+  .cw{flex:1 1 460px; min-width:380px; max-width:640px}
+  .cw .ct{font-size:13px; font-weight:600; color:var(--ink); text-align:center; margin-bottom:3px}
   @media (max-width:900px){
     body{padding:20px 12px 36px}
     .row,.axis{grid-template-columns:104px 1fr 150px}
@@ -199,9 +199,8 @@ PAGE = """<title>采样窗口与 eval 成功率</title>
   </header>
 
   <div class="legend">
-    <div class="lg"><span class="sw demo"></span>demo 段：每格 = 1 个窗口</div>
-    <div class="lg"><span class="sw exec"></span>exec 段：每格 = 1 个窗口</div>
-    <div class="lg"><span class="sw" style="height:2px;background:var(--ink-3)"></span>首窗真实跨度 33 帧（相邻重叠 16）</div>
+    <div class="lg"><span class="sw demo"></span>demo 段窗口 [f, f+32]</div>
+    <div class="lg"><span class="sw exec"></span>exec 段窗口（相邻错 16 帧，堆 3 行防粘连）</div>
     <div class="lg"><span class="sw sg"></span>subgoal 分段（悬停看原文）</div>
     <div class="lg"><span class="sw f32"></span>帧路 N=32</div>
     <div class="lg"><span class="sw f8"></span>帧路 N=8</div>
@@ -226,6 +225,7 @@ PAGE = """<title>采样窗口与 eval 成功率</title>
 <script>
 const DATA = __DATA__;
 const WIN = 33, STRIDE = 16, BUDGETS = [32, 8];
+const WIN_ROWS = Math.ceil(WIN / STRIDE);  // 同一行内窗口互不接触所需的行数
 const DIFFS = ["all", "easy", "medium", "hard"];
 const SUITES = __SUITES__;
 
@@ -260,8 +260,8 @@ function track(row){
     if (len / XMAX > 0.035) d.textContent = shortLabel(text);
     el.appendChild(d);
   }
-  // 每个窗口只画它 stride 宽的一格、格间留白：格子数 == 窗口数，可以直接数。
-  // 窗口真实跨度 33 帧、相邻重叠一半，用首窗上方的一条细线示意。
+  // 窗口按 33 帧全宽画；相邻只错 16 帧、重叠一半，同一行会粘连，
+  // 所以按 ceil(33/16)=3 行轮流堆叠——同一行内起点差 48 > 33，互不接触，能逐个数清。
   for (const [start, len, kind] of segs){
     const starts = winStarts(len);
     if (!starts.length){
@@ -275,18 +275,12 @@ function track(row){
     starts.forEach((f, i) => {
       const w = document.createElement("div");
       w.className = "win";
-      w.style.left = pct(start + f); w.style.width = `calc(${pct(STRIDE)} - 1px)`;
-      w.style.bottom = "18px";
+      w.style.left = pct(start + f); w.style.width = pct(WIN - 1);
+      w.style.bottom = (18 + (i % WIN_ROWS) * 6) + "px";
       w.style.background = `var(--${kind})`;
       w.title = `${kind} 段第 ${i + 1} 个窗口：[${start + f}, ${start + f + WIN - 1}]`;
       el.appendChild(w);
     });
-    const span = document.createElement("div");
-    span.className = "win-span";
-    span.style.left = pct(start + starts[0]); span.style.width = pct(WIN - 1);
-    span.style.background = `var(--${kind})`;
-    span.title = `窗口真实跨度 ${WIN} 帧，相邻窗口重叠 ${STRIDE} 帧`;
-    el.appendChild(span);
   }
   for (const i of framePath(row.total, 32)){
     const f = document.createElement("div");
@@ -294,7 +288,7 @@ function track(row){
   }
   for (const i of framePath(row.total, 8)){
     const f = document.createElement("div");
-    f.className = "f8"; f.style.left = pct(i); f.style.bottom = "33px"; el.appendChild(f);
+    f.className = "f8"; f.style.left = pct(i); f.style.bottom = "38px"; el.appendChild(f);
   }
   return el;
 }
@@ -381,14 +375,14 @@ function wilson(k, n){
 function chartSvg(panel){
   const keys = [...new Set([...Object.keys(panel.data.modul || {}), ...Object.keys(panel.data.context || {})])]
     .sort((a, b) => (isNaN(a) || isNaN(b)) ? String(a).localeCompare(String(b)) : a - b);
-  const W = 320, H = 190, L = 34, R = 6, T = 12, B = 34;
+  const W = 460, H = 300, L = 44, R = 10, T = 20, B = 46;
   const iw = W - L - R, ih = H - T - B;
   const yy = v => T + ih * (1 - v);
-  const bw = Math.min(16, iw / keys.length / 2.6);
+  const bw = Math.min(30, iw / keys.length / 2.5);
   let g = "";
   for (const v of [0, 0.25, 0.5, 0.75, 1]){
     g += `<line x1="${L}" y1="${yy(v)}" x2="${W - R}" y2="${yy(v)}" stroke="var(--rule-2)" stroke-width="1"/>` +
-         `<text x="${L - 5}" y="${yy(v) + 3}" text-anchor="end" font-size="9" fill="var(--ink-3)">${v * 100}</text>`;
+         `<text x="${L - 6}" y="${yy(v) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${v * 100}</text>`;
   }
   keys.forEach((k, i) => {
     const cx = L + iw * (i + 0.5) / keys.length;
@@ -401,11 +395,13 @@ function chartSvg(panel){
       g += `<rect x="${x}" y="${yy(p)}" width="${bw}" height="${Math.max(0, ih * p)}" fill="${VC[variant]}" opacity=".9">` +
            `<title>${variant} · ${k}：${succ}/${total}（${(p * 100).toFixed(0)}%）</title></rect>`;
       g += `<line x1="${x + bw / 2}" y1="${yy(lo)}" x2="${x + bw / 2}" y2="${yy(hi)}" stroke="var(--ink-3)" stroke-width="1"/>`;
-      g += `<text x="${x + bw / 2}" y="${yy(Math.max(p, hi)) - 3}" text-anchor="middle" font-size="8" fill="var(--ink-3)">${succ}/${total}</text>`;
+      const ty = yy(Math.max(p, hi));
+      if (succ) g += `<text x="${x + bw / 2}" y="${ty - 14}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">${(p * 100).toFixed(0)}%</text>`;
+      g += `<text x="${x + bw / 2}" y="${ty - 4}" text-anchor="middle" font-size="9.5" fill="var(--ink-3)">${succ}/${total}</text>`;
     });
-    g += `<text x="${cx}" y="${H - B + 14}" text-anchor="middle" font-size="10" fill="var(--ink-2)">${k}</text>`;
+    g += `<text x="${cx}" y="${H - B + 18}" text-anchor="middle" font-size="12" fill="var(--ink-2)">${k}</text>`;
   });
-  g += `<text x="${L + iw / 2}" y="${H - 4}" text-anchor="middle" font-size="10" fill="var(--ink-3)">${panel.xlabel}</text>`;
+  g += `<text x="${L + iw / 2}" y="${H - 6}" text-anchor="middle" font-size="11.5" fill="var(--ink-3)">${panel.xlabel}</text>`;
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${panel.task} ${panel.xlabel}">${g}</svg>`;
 }
 

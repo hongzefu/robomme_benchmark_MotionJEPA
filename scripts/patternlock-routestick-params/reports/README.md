@@ -97,9 +97,9 @@ BinFill：3 种颜色、spawn 10~12 个，目标涉及 2~3 种颜色、总数 �
 
 ### 时序数轴：窗口、subgoal 与帧路叠在一根轴上
 
-每张图 9 行 = 3 难度 × {最短, 中位, 最长}（按整条长度 T 取），同一任务内共用横轴。一行从下到上四层：**subgoal 分段**（灰色交替块，块内是压缩后的中文标签，图上标不下时省略）、**帧路 N=8**（红点）、**motion 窗口**（demo 蓝 / exec 绿，**每格 = 1 个窗口**，格宽即 stride 16；窗口真实跨度 33 帧、相邻重叠一半，用首窗上方的细线示意）、**帧路 N=32**（紫色细竖线）。段短于 33 帧铺不出窗口，画成橙色虚线空框。右侧标 T、`demo窗+exec窗`、两个 Δ。
+每张图 9 行 = 3 难度 × {最短, 中位, 最长}（按整条长度 T 取），同一任务内共用横轴。一行从下到上四层：**subgoal 分段**（灰色交替块，块内是压缩后的中文标签，图上标不下时省略）、**帧路 N=8**（红点）、**motion 窗口**（demo 蓝 / exec 绿，按 33 帧全宽画；相邻窗口只错开 16 帧、重叠一半，同一行会粘连，所以按 3 行轮流堆叠——同一行内起点差 48 > 33，互不接触，可以逐个数清）、**帧路 N=32**（紫色细竖线）。段短于 33 帧铺不出窗口，画成橙色虚线空框。右侧标 T、`demo窗+exec窗`、两个 Δ。
 
-> 同一份内容的**交互版**（难度档切换、悬停看 subgoal 原文、横轴跨档固定）：[采样窗口数轴](https://claude.ai/code/artifact/093a467c-d567-466b-b57e-e4fdee2bcac0)
+> **交互版**（难度档切换、悬停看 subgoal 原文与每个窗口的区间、横轴跨档固定，另含 eval 成功率视图）：[采样窗口与 eval 成功率](https://claude.ai/code/artifact/093a467c-d567-466b-b57e-e4fdee2bcac0)
 
 ![PatternLock 采样窗口时序数轴](figures/sampling_PatternLock.png)
 
@@ -186,11 +186,16 @@ BinFill / PickXtimes 无 demo 段，整条都是 exec。
 
 Imitation 的 x 轴是 move 次数；Counting 的 x 轴是 BinFill 要放进 bin 的 cube 总数 / PickXtimes 同一动作的重复次数。medium 与 hard 合并。
 
-### 成功率 vs 轨迹曲折程度（Imitation）
+### 成功率 vs 路径形状（Imitation）
 
-![Imitation 转角与折返](figures/success_by_imitation_turns.png)
+![Imitation 路径形状](figures/success_by_imitation_turns.png)
 
-转角次数 = 相邻两步方向不同的次数；折返次数 = 路径中走到 j 又退回 i 的次数（PatternLock 路径由 DFS 生成、不重复节点，折返恒为 0）。
+两个任务各用一个语义成立的维度：
+
+- **PatternLock 转角次数** = 相邻两步的 8 方位不同的次数。它的 move 是格点上的八方位移动，方向变了就是拐了个弯。
+- **RouteStick 折返次数** = 路径里走到 j 又退回 i 的次数。它是在 1×9 一字排开的格点上左右走，**没有「转角」这回事**；另外「左右切换次数」与折返次数在 100 条上逐条相等（同一件事），故不重复列。
+
+PatternLock 的路径由 DFS 生成、不重复节点，折返恒为 0，所以它没有折返这一档。
 
 ### 成功率 vs 目标颜色种类数（BinFill）
 
