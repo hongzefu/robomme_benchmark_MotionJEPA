@@ -9,8 +9,36 @@ from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent
-SOURCES = ["PatternLock-test", "PatternLock-val", "RouteStick-test", "RouteStick-val"]
-COUNTING_SOURCES = ["BinFill-test", "BinFill-val", "PickXtimes-test", "PickXtimes-val"]
+# 报告一律按「任务」组织，test 与 val 合并成一份（每任务 100 条）；
+# 每条记录仍带 split，明细里逐条标出来源，所以合并不丢信息。
+SOURCES = ["PatternLock", "RouteStick"]
+COUNTING_SOURCES = ["BinFill", "PickXtimes"]
+SPLITS = ["test", "val"]
+
+
+def merge_by_task(payload: dict[str, Any], tasks: list[str]) -> dict[str, list[dict[str, Any]]]:
+    """把 {"Task-split": ...} 归并成 {"Task": [row, ...]}，给每条补上 split 与 episode。
+
+    输入既可能是 list（derived_params）也可能是 dict（durations / counting_params 以 episode 为键）。
+    """
+    out: dict[str, list[dict[str, Any]]] = {task: [] for task in tasks}
+    for key, value in (payload or {}).items():
+        task, _, split = key.partition("-")
+        if task not in out:
+            continue
+        items = value if isinstance(value, list) else [
+            {**row, "episode": int(episode)} for episode, row in value.items()
+        ]
+        for row in items:
+            out[task].append({**row, "split": split})
+    for task in out:
+        out[task].sort(key=lambda r: (SPLITS.index(r["split"]), int(r["episode"])))
+    return {task: rows for task, rows in out.items() if rows}
+
+
+def tag(row: dict[str, Any]) -> str:
+    """明细里给每条 episode 的来源标识，如 test-ep17。"""
+    return f"{row['split']}-ep{row['episode']}"
 DIFFICULTY_ORDER = ["easy", "medium", "hard"]
 # BinFill / PickXtimes 各难度的 env 配置（BinFill.configs / PickXtimes.configs），决定动作次数区间
 COUNTING_CONFIG_NOTE = {
@@ -31,16 +59,18 @@ DIFFICULTY_CONFIG_NOTE = {
     "RouteStick：`steps ∈ [4, 7]`，**允许原地折返**（`backtrack=True`）。",
 }
 COUNTING_ORIGIN = {
-    "BinFill-val": "原版 h5 `/data/hongzefu/data-0306/record_dataset_BinFill.h5`",
-    "PickXtimes-val": "原版 h5 `/data/hongzefu/data-0306/record_dataset_PickXtimes.h5`",
-    "BinFill-test": "本轮按 test metadata 死 seed 实跑生成",
-    "PickXtimes-test": "本轮按 test metadata 死 seed 实跑生成",
+    task: (
+        f"val 来自原版 h5 `/data/hongzefu/data-0306/record_dataset_{task}.h5`；"
+        "test 本机无官方 h5，由本轮按 test metadata 死 seed 实跑生成"
+    )
+    for task in ("BinFill", "PickXtimes")
 }
 ORIGIN = {
-    "PatternLock-val": "原版 h5 `/data/hongzefu/data-0306/record_dataset_PatternLock.h5`",
-    "RouteStick-val": "原版 h5 `/data/hongzefu/data-0306/record_dataset_RouteStick.h5`",
-    "PatternLock-test": "本轮按 test metadata 死 seed 实跑生成",
-    "RouteStick-test": "本轮按 test metadata 死 seed 实跑生成",
+    task: (
+        f"val 来自原版 h5 `/data/hongzefu/data-0306/record_dataset_{task}.h5`；"
+        "test 本机无官方 h5，由本轮按 test metadata 死 seed 实跑生成"
+    )
+    for task in ("PatternLock", "RouteStick")
 }
 
 
@@ -51,7 +81,7 @@ def fmt_xyz(point: list[float]) -> str:
 def episode_section(row: dict[str, Any], dur: dict[str, Any] | None) -> list[str]:
     task = row["task"]
     lines = [
-        f"#### episode {row['episode']} — seed `{row['seed']}`，难度 {row['difficulty']}，move {row['moves']} 次",
+        f"#### {tag(row)} — seed `{row['seed']}`，难度 {row['difficulty']}，move {row['moves']} 次",
         "",
     ]
     if task == "RouteStick":
@@ -87,12 +117,11 @@ def episode_section(row: dict[str, Any], dur: dict[str, Any] | None) -> list[str
     return lines
 
 
-def build_source_report(key: str, rows: list[dict], durations: dict[str, Any]) -> str:
-    task, split = key.split("-")
+def build_source_report(task: str, rows: list[dict], durations: dict[str, list[dict]]) -> str:
     lines = [
-        f"# {key} 逐 episode 动作参数",
+        f"# {task} 逐 episode 动作参数",
         "",
-        f"共 {len(rows)} 条。时长来源：{ORIGIN[key]}。",
+        f"共 {len(rows)} 条（test 50 + val 50，每条标出来源）。数据来源：{ORIGIN[task]}。",
         "",
         "口径：坐标是 SAPIEN 世界坐标，单位米（机器人 base 在 `(-0.615, 0, 0)`），"
         "表中给的是按钮本身的位置；运动规划实际下发的终点高度统一抬到 `z=0.07`。"
@@ -106,8 +135,9 @@ def build_source_report(key: str, rows: list[dict], durations: dict[str, Any]) -
             "（横向偏移 0.2 m，顺/逆时针由 `swing_directions` 决定），因此单次 move 时长稳定在 50 timestep 上下。",
             "",
         ]
+    index = {(d["split"], int(d["episode"])): d for d in durations or []}
     for row in rows:
-        dur = durations.get(str(row["episode"])) if durations else None
+        dur = index.get((row["split"], int(row["episode"])))
         lines += episode_section(row, dur)
     return "\n".join(lines)
 
@@ -142,9 +172,9 @@ def durations_by_verb(rows: list[dict[str, Any]]) -> tuple[dict[str, list[int]],
     return buckets, unknown
 
 
-def counting_episode_section(episode: str, row: dict[str, Any]) -> list[str]:
+def counting_episode_section(row: dict[str, Any]) -> list[str]:
     lines = [
-        f"#### episode {episode} — seed `{row['seed']}`，难度 {row['difficulty']}，动作 {row['actions']} 次",
+        f"#### {tag(row)} — seed `{row['seed']}`，难度 {row['difficulty']}，动作 {row['actions']} 次",
         "",
         f"目标：{row['task_goal']}",
         "",
@@ -169,12 +199,11 @@ def counting_episode_section(episode: str, row: dict[str, Any]) -> list[str]:
     return lines
 
 
-def build_counting_report(key: str, rows: dict[str, Any]) -> str:
-    task, split = key.split("-")
+def build_counting_report(task: str, rows: list[dict[str, Any]]) -> str:
     lines = [
-        f"# {key} 逐 episode 动作参数",
+        f"# {task} 逐 episode 动作参数",
         "",
-        f"共 {len(rows)} 条。数据来源：{COUNTING_ORIGIN[key]}。",
+        f"共 {len(rows)} 条（test 50 + val 50，每条标出来源）。数据来源：{COUNTING_ORIGIN[task]}。",
         "",
         "口径：动作次数与颜色组成直接读 `setup/task_goal`（BinFill 是要放几个什么颜色的 cube，"
         "PickXtimes 是同一动作重复几次）；每次动作在数据里是 pick 与 place 两段，末尾再加一段 press button，"
@@ -190,145 +219,207 @@ def build_counting_report(key: str, rows: dict[str, Any]) -> str:
         "每次动作产生一对 pick + place，末尾另有一段 press。",
         "",
     ]
-    for episode, row in sorted(rows.items(), key=lambda x: int(x[0])):
-        lines += counting_episode_section(episode, row)
+    for row in rows:
+        lines += counting_episode_section(row)
     return "\n".join(lines)
 
 
-DELTAS = [32, 16, 8]
+# 采样口径与 policy 侧的 motion store / frame sampling 对齐（已用其 16 任务中位集逐条验证）：
+#   motion 窗口：[f, f+32]（33 帧），stride=16，不跨段——demo / exec 两段各自从段起点铺网格
+#   帧路：even_sampling_indices 在 t>=32 时做 linspace(0, t, N)，故 Δ = t/(N-1)，t = T-1
+WINDOW_FRAMES = 33
+WINDOW_STRIDE = 16
+FRAME_BUDGETS = [32, 8]
+
+
+def seg_windows(seg_len: int) -> int:
+    """一段能铺出的窗口数：len(range(0, max(0, L-32), 16))，与 motion_store.seg_num_grid 同式。"""
+    return len(range(0, max(0, seg_len - (WINDOW_FRAMES - 1)), WINDOW_STRIDE))
+
+
+def frame_delta(total: int, budget: int) -> float:
+    """帧路相邻采样帧的间隔 Δ = t/(N-1)，t = T-1。"""
+    return (total - 1) / (budget - 1)
 
 
 def collect_lengths(
-    durations: dict[str, dict], counting: dict[str, dict] | None
+    durations: dict[str, list[dict]], counting: dict[str, list[dict]] | None
 ) -> dict[str, list[dict[str, Any]]]:
-    """把八个源的整条长度收成统一形状：{源: [{difficulty, total, demo, exec}...]}。"""
+    """把四个任务的每条 episode 收成统一形状，供采样窗口一节使用。"""
     out: dict[str, list[dict[str, Any]]] = {}
-    for key, rows in (durations or {}).items():
-        out[key] = [
+    for task, rows in (durations or {}).items():
+        out[task] = [
             {
+                "split": r["split"],
+                "episode": int(r["episode"]),
+                "seed": r["seed"],
                 "difficulty": r["difficulty"],
                 "total": r["n_timesteps_total"],
                 "demo": sum(r["demo_durations"]),
-                "exec": sum(r["exec_durations"]),
+                "n_segments": r["n_move_segments"],
             }
-            for r in rows.values()
+            for r in rows
         ]
-    for key, rows in (counting or {}).items():
-        out[key] = [
+    for task, rows in (counting or {}).items():
+        out[task] = [
             {
+                "split": r["split"],
+                "episode": int(r["episode"]),
+                "seed": r["seed"],
                 "difficulty": r["difficulty"],
                 "total": r["n_timesteps_total"],
                 "demo": 0,
-                "exec": sum(r["durations"]),
+                "n_segments": r["n_core_segments"],
             }
-            for r in rows.values()
+            for r in rows
         ]
+    for rows in out.values():
+        for item in rows:
+            item["demo_windows"] = seg_windows(item["demo"])
+            item["exec_windows"] = seg_windows(item["total"] - item["demo"])
+            item["motion_tokens"] = item["demo_windows"] + item["exec_windows"]
     return out
 
 
 def build_length_section(lengths: dict[str, list[dict[str, Any]]]) -> list[str]:
     keys = [k for k in SOURCES + COUNTING_SOURCES if k in lengths]
     lines = [
-        "## 任务长度与可切分区间",
+        "## 采样窗口与帧路",
         "",
-        "整条 episode 的 timestep 数（1 timestep = 1 个 env step = 0.05 s），以及按固定 delta "
-        "**不重叠**切分时能切出多少个完整区间 —— 即 `floor(T / delta)`。",
+        "口径与 policy 侧的 motion store / frame sampling 对齐：",
         "",
-        "| 源 | 条数 | 整条长度 min~max | 均值 | 中位 | delta=32 | delta=16 | delta=8 |",
+        f"- **motion 窗口**：窗口 `[f, f+{WINDOW_FRAMES - 1}]`（{WINDOW_FRAMES} 帧），"
+        f"**stride = {WINDOW_STRIDE}**，且**不跨段** —— demo 与 exec 两段各自从自己的段起点铺网格。"
+        f"每段窗口数 `len(range(0, max(0, L - {WINDOW_FRAMES - 1}), {WINDOW_STRIDE}))`；"
+        "一条 episode 的 motion token 数 = demo 窗口数 + exec 窗口数。",
+        f"- **帧路**：`linspace(0, t, N)`（`t = T - 1`），相邻采样帧间隔 **Δ = t / (N - 1)**。"
+        f"帧预算 N 取 {FRAME_BUDGETS[0]}（`512 // (16 × 1)`）与 {FRAME_BUDGETS[1]}（`128 // (16 × 1)`）。"
+        "注意 32 / 8 是**帧预算**，16 才是窗口 stride，三者不是同一个东西。",
+        "",
+        "> 这套公式已用 policy 侧 16 个任务的中位集逐条验证：窗口数（demo+exec）与 Δ 全部一致，16/16。",
+        "",
+        "### 四个任务总表",
+        "",
+        "每任务 100 条（test 50 + val 50）。",
+        "",
+        "| 任务 | 条数 | 整条长度 min~中位~max | demo 窗口 | exec 窗口 | motion token（min~max，中位） | Δ(N=32) | Δ(N=8) |",
         "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
-    for key in keys:
-        totals = [item["total"] for item in lengths[key]]
-        cells = [
-            f"{min(t // d for t in totals)}~{max(t // d for t in totals)}" for d in DELTAS
-        ]
+    for task in keys:
+        rows = lengths[task]
+        totals = [r["total"] for r in rows]
+        dw = [r["demo_windows"] for r in rows]
+        ew = [r["exec_windows"] for r in rows]
+        mt = [r["motion_tokens"] for r in rows]
+        d32 = [frame_delta(t, 32) for t in totals]
+        d8 = [frame_delta(t, 8) for t in totals]
         lines.append(
-            f"| {key} | {len(totals)} | {min(totals)}~{max(totals)} | "
-            f"{statistics.mean(totals):.1f} | {statistics.median(totals):.0f} | "
-            + " | ".join(cells)
-            + " |"
+            f"| {task} | {len(rows)} | {min(totals)}~{statistics.median(totals):.0f}~{max(totals)} | "
+            f"{min(dw)}~{max(dw)} | {min(ew)}~{max(ew)} | "
+            f"{min(mt)}~{max(mt)}，中位 {statistics.median(mt):.0f} | "
+            f"{min(d32):.1f}~{max(d32):.1f} | {min(d8):.1f}~{max(d8):.1f} |"
         )
 
     lines += [
         "",
-        "整个源（50 条）合计能切出的区间数：",
+        "### 每个任务每个难度的最短 / 中位 / 最长",
         "",
-        "| 源 | timestep 合计 | delta=32 | delta=16 | delta=8 |",
-        "| --- | --- | --- | --- | --- |",
+        "按整条长度 T 排序取三档，每格给出具体是哪一条（`split-ep号`），便于回查明细。",
+        "",
+        "| 任务 | 难度 | 档 | 来源 | seed | T | demo 段长 | demo窗+exec窗 | motion token | Δ(N=32) | Δ(N=8) | subgoal 段数 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
-    for key in keys:
-        totals = [item["total"] for item in lengths[key]]
-        lines.append(
-            f"| {key} | {sum(totals)} | "
-            + " | ".join(str(sum(t // d for t in totals)) for d in DELTAS)
-            + " |"
-        )
+    for task in keys:
+        for level in DIFFICULTY_ORDER:
+            group = sorted(
+                [r for r in lengths[task] if r["difficulty"] == level], key=lambda r: r["total"]
+            )
+            if not group:
+                continue
+            picks = [("最短", group[0]), ("中位", group[len(group) // 2]), ("最长", group[-1])]
+            for label, r in picks:
+                lines.append(
+                    f"| {task} | {level} | {label} | {r['split']}-ep{r['episode']} | {r['seed']} | "
+                    f"{r['total']} | {r['demo']} | {r['demo_windows']}+{r['exec_windows']} | "
+                    f"{r['motion_tokens']} | {frame_delta(r['total'], 32):.1f} | "
+                    f"{frame_delta(r['total'], 8):.1f} | {r['n_segments']} |"
+                )
 
+    zeros = [
+        (task, r)
+        for task in keys
+        for r in lengths[task]
+        if r["motion_tokens"] == 0
+    ]
     lines += [
         "",
-        "### 按难度",
+        "### 时序数轴：窗口、subgoal 与帧路叠在一根轴上",
         "",
-        "长度基本由难度决定（难度直接配出动作次数），所以分档看：",
+        "每张图 9 行 = 3 难度 × {最短, 中位, 最长}，同一任务内共用横轴。一行从下到上四层："
+        "**subgoal 分段**（灰色交替块，块内是压缩后的中文标签）、**帧路 N=8**（红点）、"
+        "**motion 窗口**（demo 蓝 / exec 绿；窗口长 33、stride 16 有 50% 重叠，"
+        "所以奇偶窗口分两行错开画，能直接数出个数）、**帧路 N=32**（紫色细竖线）。"
+        "段短于 33 帧铺不出窗口，画成橙色虚线空框。",
         "",
     ]
-    for level in DIFFICULTY_ORDER:
+    for task in keys:
+        lines.append(f"![{task} 采样窗口时序数轴](figures/sampling_{task}.png)")
+        lines.append("")
+
+    lines += ["### 产不出 motion token 的 episode", ""]
+    if zeros:
         lines += [
-            f"**{level}**",
+            "窗口长 33 帧，段短于 33 帧就一个窗口都铺不出来。这类 episode 在 motion store 里**没有任何 "
+            "motion token**，做窗口级训练/评测时要单独处理：",
             "",
-            "| 源 | 条数 | 整条长度 min~max | 均值 | delta=32 | delta=16 | delta=8 |",
+            "| 任务 | 来源 | seed | 难度 | T | demo 段长 | exec 段长 |",
             "| --- | --- | --- | --- | --- | --- | --- |",
         ]
-        for key in keys:
-            totals = [item["total"] for item in lengths[key] if item["difficulty"] == level]
-            if not totals:
-                continue
-            cells = [
-                f"{min(t // d for t in totals)}~{max(t // d for t in totals)}" for d in DELTAS
-            ]
+        for task, r in zeros:
             lines.append(
-                f"| {key} | {len(totals)} | {min(totals)}~{max(totals)} | "
-                f"{statistics.mean(totals):.1f} | " + " | ".join(cells) + " |"
+                f"| {task} | {r['split']}-ep{r['episode']} | {r['seed']} | {r['difficulty']} | "
+                f"{r['total']} | {r['demo']} | {r['total'] - r['demo']} |"
             )
         lines.append("")
+    else:
+        lines += ["四个任务 400 条里没有窗口数为 0 的 episode。", ""]
 
     imitation = [k for k in SOURCES if k in lengths]
     if imitation:
         lines += [
-            "### 切片前必须注意：Imitation 的前一半是演示段",
+            "### demo 段占了 Imitation 的一半",
             "",
             "PatternLock / RouteStick 的每条 episode 把同一组动作走了两遍——前一遍是给模型看的示范"
-            "（`is_video_demo=True`），后一遍才是真正执行。实测演示段**恰好占整条长度的 50%**：",
+            "（`is_video_demo=True`），后一遍才是真正执行。实测演示段**恰好占整条长度的 50%**，"
+            "而窗口不跨段，所以 demo 与 exec 的窗口数也基本对半：",
             "",
-            "| 源 | 演示段 | 执行段 | 收尾段 | 合计 | 演示占比 |",
+            "| 任务 | 演示段合计 | 执行段合计 | 演示占比 | demo 窗口合计 | exec 窗口合计 |",
             "| --- | --- | --- | --- | --- | --- |",
         ]
-        for key in imitation:
-            demo = sum(item["demo"] for item in lengths[key])
-            ex = sum(item["exec"] for item in lengths[key])
-            total = sum(item["total"] for item in lengths[key])
+        for task in imitation:
+            rows = lengths[task]
+            demo = sum(r["demo"] for r in rows)
+            total = sum(r["total"] for r in rows)
             lines.append(
-                f"| {key} | {demo} | {ex} | {total - demo - ex} | {total} | {demo / total:.1%} |"
+                f"| {task} | {demo} | {total - demo} | {demo / total:.1%} | "
+                f"{sum(r['demo_windows'] for r in rows)} | {sum(r['exec_windows'] for r in rows)} |"
             )
         lines += [
             "",
-            "所以按上表的 delta 切 Imitation 的整条长度时，**约一半的区间落在演示段里**。"
-            "只想要真正执行的那部分，把长度按执行段重算即可（约为整条的一半）。"
-            "BinFill / PickXtimes 没有演示段，整条都是执行。",
-            "",
-            "> 换成滑动窗口时，窗长 `w`、步长 `s` 的窗口数是 `floor((T - w) / s) + 1`；"
-            "上表 `floor(T / delta)` 对应的是 `w = s = delta` 的不重叠切法。",
+            "BinFill / PickXtimes 没有演示段，整条都是 exec，所以 demo 窗口恒为 0。",
             "",
         ]
     return lines
 
 
-def summary_stats(rows: list[dict], durations: dict[str, Any]) -> dict[str, Any]:
+def summary_stats(rows: list[dict], durations: list[dict] | None) -> dict[str, Any]:
     """按难度分桶统计：move 次数与单次 move 时长。难度是决定这两项的唯一配置，混在一起看没有意义。"""
     moves = [row["moves"] for row in rows]
+    index = {(d["split"], int(d["episode"])): d for d in durations or []}
     all_dur = [
         d
         for row in rows
-        for d in (durations.get(str(row["episode"]), {}).get("exec_durations", []) if durations else [])
+        for d in index.get((row["split"], int(row["episode"])), {}).get("exec_durations", [])
     ]
     return {
         "episodes": len(rows),
@@ -339,7 +430,7 @@ def summary_stats(rows: list[dict], durations: dict[str, Any]) -> dict[str, Any]
     }
 
 
-def stats_by_difficulty(rows: list[dict], durations: dict[str, Any]) -> dict[str, dict[str, Any]]:
+def stats_by_difficulty(rows: list[dict], durations: list[dict] | None) -> dict[str, dict[str, Any]]:
     buckets: dict[str, list[dict]] = {}
     for row in rows:
         buckets.setdefault(row["difficulty"], []).append(row)
@@ -358,8 +449,8 @@ def build_summary(
     lines = [
         "# PatternLock / RouteStick 的 test+val 源逐 episode 动作参数",
         "",
-        "四个源各 50 条，共 200 个 episode。每个 episode 给出：move 了几次、每次 move 的起终点坐标、"
-        "每次 move 占多少 timestep。明细见同目录的四份分源报告。",
+        "四个任务各 100 条（test 50 + val 50 合并），共 400 个 episode。每个 episode 给出：做了几次动作、"
+        "每次动作的起终点坐标、每次动作占多少 timestep。明细见同目录的四份任务报告。",
         "",
         "## 口径",
         "",
@@ -377,7 +468,7 @@ def build_summary(
         "## 按难度分组",
         "",
         "难度是决定 move 次数的唯一配置项（env 的 `configs[difficulty]`），所以统计一律按难度分开看。"
-        "四个源的难度分布相同：easy 26 / medium 12 / hard 12（难度循环 `211`，按 `episode % 4`）。",
+        "四个任务的难度分布相同：easy 52 / medium 24 / hard 24（每 split easy 26 / medium 12 / hard 12，难度循环 `211`，按 `episode % 4`）。",
         "",
     ]
 
@@ -388,7 +479,7 @@ def build_summary(
             "",
             cfg_lines,
             "",
-            "| 源 | 条数 | move 次数（min~max） | move 次数均值 | 单次 move 时长（min~max） | 单次 move 时长均值 |",
+            "| 任务 | 条数 | move 次数（min~max） | move 次数均值 | 单次 move 时长（min~max） | 单次 move 时长均值 |",
             "| --- | --- | --- | --- | --- | --- |",
         ]
         for key in SOURCES:
@@ -427,7 +518,7 @@ def build_summary(
                 "",
                 COUNTING_CONFIG_NOTE[level],
                 "",
-                "| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | "
+                "| 任务 | 条数 | 动作次数（min~max） | 动作次数均值 | "
                 "pick up 时长 | put / place 时长 | press 时长 |",
                 "| --- | --- | --- | --- | --- | --- | --- |",
             ]
@@ -435,7 +526,7 @@ def build_summary(
                 rows = counting.get(key)
                 if not rows:
                     continue
-                hit = [r for r in rows.values() if r["difficulty"] == level]
+                hit = [r for r in rows if r["difficulty"] == level]
                 if not hit:
                     continue
                 actions = [r["actions"] for r in hit]
@@ -470,7 +561,7 @@ def build_summary(
     lines += [
         "## 时长来源",
         "",
-        "| 源 | 来源 |",
+        "| 任务 | 数据来源 |",
         "| --- | --- |",
     ]
     for key in SOURCES:
@@ -528,29 +619,34 @@ def main(argv=None) -> int:
     )
     args = parser.parse_args(argv)
 
-    payload = json.loads(Path(args.derived).read_text(encoding="utf-8"))
-    durations: dict[str, dict] = {}
+    raw_payload = json.loads(Path(args.derived).read_text(encoding="utf-8"))
+    raw_durations: dict[str, Any] = {}
     for path in args.durations or [str(HERE / "outputs" / "durations_val.json")]:
-        durations.update(json.loads(Path(path).read_text(encoding="utf-8")))
+        raw_durations.update(json.loads(Path(path).read_text(encoding="utf-8")))
+    raw_counting: dict[str, Any] = {}
+    for path in args.counting or []:
+        raw_counting.update(json.loads(Path(path).read_text(encoding="utf-8")))
+
+    # 一律先按任务把 test / val 合并；每条记录仍带 split，明细里逐条标出来源
+    payload = merge_by_task(raw_payload, SOURCES)
+    durations = merge_by_task(raw_durations, SOURCES)
+    counting = merge_by_task(raw_counting, COUNTING_SOURCES)
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    for key in SOURCES:
-        rows = payload.get(key)
+    for task in SOURCES:
+        rows = payload.get(task)
         if not rows:
             continue
-        text = build_source_report(key, rows, durations.get(key, {}))
-        (out_dir / f"{key}.md").write_text(text, encoding="utf-8")
-        print(f"已写出 {out_dir / (key + '.md')}")
-    counting: dict[str, dict] = {}
-    for path in args.counting or []:
-        counting.update(json.loads(Path(path).read_text(encoding="utf-8")))
-    for key in COUNTING_SOURCES:
-        rows = counting.get(key)
+        text = build_source_report(task, rows, durations.get(task, []))
+        (out_dir / f"{task}.md").write_text(text, encoding="utf-8")
+        print(f"已写出 {out_dir / (task + '.md')}")
+    for task in COUNTING_SOURCES:
+        rows = counting.get(task)
         if not rows:
             continue
-        (out_dir / f"{key}.md").write_text(build_counting_report(key, rows), encoding="utf-8")
-        print(f"已写出 {out_dir / (key + '.md')}")
+        (out_dir / f"{task}.md").write_text(build_counting_report(task, rows), encoding="utf-8")
+        print(f"已写出 {out_dir / (task + '.md')}")
 
     summary = build_summary(payload, durations, counting)
     section_path = Path(args.eval_section) if args.eval_section else None

@@ -1,6 +1,6 @@
 # PatternLock / RouteStick 的 test+val 源逐 episode 动作参数
 
-四个源各 50 条，共 200 个 episode。每个 episode 给出：move 了几次、每次 move 的起终点坐标、每次 move 占多少 timestep。明细见同目录的四份分源报告。
+四个任务各 100 条（test 50 + val 50 合并），共 400 个 episode。每个 episode 给出：做了几次动作、每次动作的起终点坐标、每次动作占多少 timestep。明细见同目录的四份任务报告。
 
 ## 口径
 
@@ -12,40 +12,34 @@
 
 ## 按难度分组
 
-难度是决定 move 次数的唯一配置项（env 的 `configs[difficulty]`），所以统计一律按难度分开看。四个源的难度分布相同：easy 26 / medium 12 / hard 12（难度循环 `211`，按 `episode % 4`）。
+难度是决定 move 次数的唯一配置项（env 的 `configs[difficulty]`），所以统计一律按难度分开看。四个任务的难度分布相同：easy 52 / medium 24 / hard 24（每 split easy 26 / medium 12 / hard 12，难度循环 `211`，按 `episode % 4`）。
 
 ### easy
 
 PatternLock：3×3 格点，路径长度约束 `[2, 4]` → move 1~3 次。RouteStick：`steps ∈ [2, 3]`，不允许原地折返。
 
-| 源 | 条数 | move 次数（min~max） | move 次数均值 | 单次 move 时长（min~max） | 单次 move 时长均值 |
+| 任务 | 条数 | move 次数（min~max） | move 次数均值 | 单次 move 时长（min~max） | 单次 move 时长均值 |
 | --- | --- | --- | --- | --- | --- |
-| [PatternLock-test](PatternLock-test.md) | 26 | 1~3 | 2.15 | 16~40 ts | 28.1 ts |
-| [PatternLock-val](PatternLock-val.md) | 26 | 1~3 | 1.96 | 15~38 ts | 28.2 ts |
-| [RouteStick-test](RouteStick-test.md) | 26 | 2~3 | 2.46 | 43~50 ts | 47.2 ts |
-| [RouteStick-val](RouteStick-val.md) | 26 | 2~3 | 2.50 | 43~50 ts | 47.2 ts |
+| [PatternLock](PatternLock.md) | 52 | 1~3 | 2.06 | 15~40 ts | 28.1 ts |
+| [RouteStick](RouteStick.md) | 52 | 2~3 | 2.48 | 43~50 ts | 47.2 ts |
 
 ### medium
 
 PatternLock：4×4 格点，路径长度约束 `[3, 5]` → move 2~4 次。RouteStick：`steps ∈ [4, 5]`，不允许原地折返。
 
-| 源 | 条数 | move 次数（min~max） | move 次数均值 | 单次 move 时长（min~max） | 单次 move 时长均值 |
+| 任务 | 条数 | move 次数（min~max） | move 次数均值 | 单次 move 时长（min~max） | 单次 move 时长均值 |
 | --- | --- | --- | --- | --- | --- |
-| [PatternLock-test](PatternLock-test.md) | 12 | 2~4 | 3.25 | 14~47 ts | 31.3 ts |
-| [PatternLock-val](PatternLock-val.md) | 12 | 2~4 | 3.00 | 14~47 ts | 30.0 ts |
-| [RouteStick-test](RouteStick-test.md) | 12 | 4~5 | 4.58 | 43~50 ts | 48.5 ts |
-| [RouteStick-val](RouteStick-val.md) | 12 | 4~5 | 4.42 | 43~50 ts | 48.4 ts |
+| [PatternLock](PatternLock.md) | 24 | 2~4 | 3.12 | 14~47 ts | 30.7 ts |
+| [RouteStick](RouteStick.md) | 24 | 4~5 | 4.50 | 43~50 ts | 48.4 ts |
 
 ### hard
 
 PatternLock：5×5 格点，路径长度约束 `[4, 8]` → move 3~7 次。RouteStick：`steps ∈ [4, 7]`，**允许原地折返**（`backtrack=True`）。
 
-| 源 | 条数 | move 次数（min~max） | move 次数均值 | 单次 move 时长（min~max） | 单次 move 时长均值 |
+| 任务 | 条数 | move 次数（min~max） | move 次数均值 | 单次 move 时长（min~max） | 单次 move 时长均值 |
 | --- | --- | --- | --- | --- | --- |
-| [PatternLock-test](PatternLock-test.md) | 12 | 3~7 | 5.00 | 17~52 ts | 32.2 ts |
-| [PatternLock-val](PatternLock-val.md) | 12 | 3~7 | 5.17 | 15~52 ts | 33.2 ts |
-| [RouteStick-test](RouteStick-test.md) | 12 | 4~7 | 5.33 | 43~50 ts | 48.7 ts |
-| [RouteStick-val](RouteStick-val.md) | 12 | 4~7 | 5.75 | 43~50 ts | 48.8 ts |
+| [PatternLock](PatternLock.md) | 24 | 3~7 | 5.08 | 15~52 ts | 32.7 ts |
+| [RouteStick](RouteStick.md) | 24 | 4~7 | 5.54 | 43~50 ts | 48.7 ts |
 
 ## Counting suite（BinFill / PickXtimes）
 
@@ -56,138 +50,140 @@ PatternLock：5×5 格点，路径长度约束 `[4, 8]` → move 3~7 次。Route
 
 BinFill：场上 1 种颜色、spawn 4~6 个 cube，要放进 bin 的 `put_in_numbers ∈ [1, 3]`。PickXtimes：场上 1 种颜色，重复次数 ∈ [1, 3]。
 
-| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | pick up 时长 | put / place 时长 | press 时长 |
+| 任务 | 条数 | 动作次数（min~max） | 动作次数均值 | pick up 时长 | put / place 时长 | press 时长 |
 | --- | --- | --- | --- | --- | --- | --- |
-| [BinFill-test](BinFill-test.md) | 26 | 1~3 | 1.96 | 115.7（78~210） | 69.8（54~93） | 63.2（42~80） |
-| [BinFill-val](BinFill-val.md) | 26 | 1~3 | 1.85 | 116.7（84~208） | 70.0（52~93） | 64.9（44~78） |
-| [PickXtimes-test](PickXtimes-test.md) | 26 | 1~3 | 1.92 | 103.1（69~200） | 76.2（53~103） | 61.5（44~73） |
-| [PickXtimes-val](PickXtimes-val.md) | 26 | 1~3 | 2.04 | 98.4（69~189） | 74.4（53~107） | 61.9（43~75） |
+| [BinFill](BinFill.md) | 52 | 1~3 | 1.90 | 116.2（78~210） | 69.9（52~93） | 64.0（42~80） |
+| [PickXtimes](PickXtimes.md) | 52 | 1~3 | 1.98 | 100.7（69~200） | 75.3（53~107） | 61.7（43~75） |
 
 ### medium
 
 BinFill：2 种颜色、spawn 8~10 个，目标涉及 1~2 种颜色、总数 ∈ [2, 4]。PickXtimes：**重复次数区间与 easy 相同（[1, 3]）**，难点在于场上有 3 种颜色的 cube 作干扰。
 
-| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | pick up 时长 | put / place 时长 | press 时长 |
+| 任务 | 条数 | 动作次数（min~max） | 动作次数均值 | pick up 时长 | put / place 时长 | press 时长 |
 | --- | --- | --- | --- | --- | --- | --- |
-| [BinFill-test](BinFill-test.md) | 12 | 2~4 | 3.17 | 107.7（76~151） | 67.4（52~92） | 62.6（48~80） |
-| [BinFill-val](BinFill-val.md) | 12 | 2~4 | 2.83 | 109.7（82~195） | 68.8（52~92） | 68.0（52~87） |
-| [PickXtimes-test](PickXtimes-test.md) | 12 | 1~3 | 1.83 | 96.6（70~163） | 76.3（53~110） | 63.9（54~75） |
-| [PickXtimes-val](PickXtimes-val.md) | 12 | 1~3 | 2.17 | 94.8（69~145） | 74.7（53~100） | 62.8（49~77） |
+| [BinFill](BinFill.md) | 24 | 2~4 | 3.00 | 108.7（76~195） | 68.1（52~92） | 65.3（48~87） |
+| [PickXtimes](PickXtimes.md) | 24 | 1~3 | 2.00 | 95.6（69~163） | 75.5（53~110） | 63.4（49~77） |
 
 ### hard
 
 BinFill：3 种颜色、spawn 10~12 个，目标涉及 2~3 种颜色、总数 ∈ [3, 5]。PickXtimes：3 种颜色，重复次数 ∈ [4, 5]。
 
-| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | pick up 时长 | put / place 时长 | press 时长 |
+| 任务 | 条数 | 动作次数（min~max） | 动作次数均值 | pick up 时长 | put / place 时长 | press 时长 |
 | --- | --- | --- | --- | --- | --- | --- |
-| [BinFill-test](BinFill-test.md) | 12 | 3~5 | 4.25 | 111.1（77~178） | 72.6（49~96） | 72.2（51~126） |
-| [BinFill-val](BinFill-val.md) | 12 | 3~5 | 4.17 | 106.9（80~182） | 71.6（53~99） | 64.1（50~79） |
-| [PickXtimes-test](PickXtimes-test.md) | 12 | 4~5 | 4.50 | 86.9（68~197） | 68.9（52~108） | 62.3（49~75） |
-| [PickXtimes-val](PickXtimes-val.md) | 12 | 4~5 | 4.50 | 85.0（69~162） | 66.2（53~111） | 61.3（42~74） |
+| [BinFill](BinFill.md) | 24 | 3~5 | 4.21 | 109.0（77~182） | 72.1（49~99） | 68.2（50~126） |
+| [PickXtimes](PickXtimes.md) | 24 | 4~5 | 4.50 | 85.9（68~197） | 67.5（52~111） | 61.8（42~75） |
 
 三类动作的性质不同，所以分开统计（表里给的是**均值（min~max）**，单位 timestep）：
 `pick up` 要在一堆 cube 里找到指定的那个并抓起来；`put / place` 是把手里的东西送到一个
 固定位置（BinFill 的 bin / PickXtimes 的 target）；`press` 只是按一下按钮。
 每次动作产生一对 pick + place，每条 episode 末尾另有一段 press。
 
-## 任务长度与可切分区间
+## 采样窗口与帧路
 
-整条 episode 的 timestep 数（1 timestep = 1 个 env step = 0.05 s），以及按固定 delta **不重叠**切分时能切出多少个完整区间 —— 即 `floor(T / delta)`。
+口径与 policy 侧的 motion store / frame sampling 对齐：
 
-| 源 | 条数 | 整条长度 min~max | 均值 | 中位 | delta=32 | delta=16 | delta=8 |
+- **motion 窗口**：窗口 `[f, f+32]`（33 帧），**stride = 16**，且**不跨段** —— demo 与 exec 两段各自从自己的段起点铺网格。每段窗口数 `len(range(0, max(0, L - 32), 16))`；一条 episode 的 motion token 数 = demo 窗口数 + exec 窗口数。
+- **帧路**：`linspace(0, t, N)`（`t = T - 1`），相邻采样帧间隔 **Δ = t / (N - 1)**。帧预算 N 取 32（`512 // (16 × 1)`）与 8（`128 // (16 × 1)`）。注意 32 / 8 是**帧预算**，16 才是窗口 stride，三者不是同一个东西。
+
+> 这套公式已用 policy 侧 16 个任务的中位集逐条验证：窗口数（demo+exec）与 Δ 全部一致，16/16。
+
+### 四个任务总表
+
+每任务 100 条（test 50 + val 50）。
+
+| 任务 | 条数 | 整条长度 min~中位~max | demo 窗口 | exec 窗口 | motion token（min~max，中位） | Δ(N=32) | Δ(N=8) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| PatternLock-test | 50 | 50~516 | 208.8 | 192 | 1~16 | 3~32 | 6~64 |
-| PatternLock-val | 50 | 50~510 | 201.0 | 186 | 1~15 | 3~31 | 6~63 |
-| RouteStick-test | 50 | 200~700 | 366.0 | 300 | 6~21 | 12~43 | 25~87 |
-| RouteStick-val | 50 | 200~700 | 374.0 | 300 | 6~21 | 12~43 | 25~87 |
-| BinFill-test | 50 | 249~1080 | 613.3 | 626 | 7~33 | 15~67 | 31~135 |
-| BinFill-val | 50 | 263~1097 | 583.2 | 599 | 8~34 | 16~68 | 32~137 |
-| PickXtimes-test | 50 | 283~928 | 524.6 | 523 | 8~29 | 17~58 | 35~116 |
-| PickXtimes-val | 50 | 270~1006 | 534.7 | 514 | 8~31 | 16~62 | 33~125 |
+| PatternLock | 100 | 50~187~516 | 0~15 | 0~15 | 0~30，中位 8 | 1.6~16.6 | 7.0~73.6 |
+| RouteStick | 100 | 200~300~700 | 5~20 | 5~20 | 10~40，中位 16 | 6.4~22.5 | 28.4~99.9 |
+| BinFill | 100 | 249~609~1097 | 0~0 | 14~67 | 14~67，中位 37 | 8.0~35.4 | 35.4~156.6 |
+| PickXtimes | 100 | 270~519~1006 | 0~0 | 15~61 | 15~61，中位 30 | 8.7~32.4 | 38.4~143.6 |
 
-整个源（50 条）合计能切出的区间数：
+### 每个任务每个难度的最短 / 中位 / 最长
 
-| 源 | timestep 合计 | delta=32 | delta=16 | delta=8 |
-| --- | --- | --- | --- | --- |
-| PatternLock-test | 10438 | 309 | 634 | 1289 |
-| PatternLock-val | 10050 | 292 | 608 | 1240 |
-| RouteStick-test | 18300 | 549 | 1122 | 2275 |
-| RouteStick-val | 18700 | 561 | 1146 | 2324 |
-| BinFill-test | 30663 | 932 | 1894 | 3812 |
-| BinFill-val | 29159 | 888 | 1801 | 3627 |
-| PickXtimes-test | 26230 | 796 | 1614 | 3257 |
-| PickXtimes-val | 26735 | 809 | 1645 | 3321 |
+按整条长度 T 排序取三档，每格给出具体是哪一条（`split-ep号`），便于回查明细。
 
-### 按难度
+| 任务 | 难度 | 档 | 来源 | seed | T | demo 段长 | demo窗+exec窗 | motion token | Δ(N=32) | Δ(N=8) | subgoal 段数 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| PatternLock | easy | 最短 | test-ep25 | 652500 | 50 | 25 | 0+0 | 0 | 1.6 | 7.0 | 2 |
+| PatternLock | easy | 中位 | val-ep13 | 1151300 | 138 | 69 | 3+3 | 6 | 4.4 | 19.6 | 4 |
+| PatternLock | easy | 最长 | val-ep41 | 1154100 | 226 | 113 | 6+6 | 12 | 7.3 | 32.1 | 6 |
+| PatternLock | medium | 最短 | val-ep10 | 1151000 | 112 | 56 | 2+2 | 4 | 3.6 | 15.9 | 4 |
+| PatternLock | medium | 中位 | val-ep14 | 1151400 | 210 | 105 | 5+5 | 10 | 6.7 | 29.9 | 6 |
+| PatternLock | medium | 最长 | test-ep22 | 652200 | 304 | 152 | 8+8 | 16 | 9.8 | 43.3 | 8 |
+| PatternLock | hard | 最短 | test-ep7 | 650700 | 184 | 92 | 4+4 | 8 | 5.9 | 26.1 | 6 |
+| PatternLock | hard | 中位 | test-ep19 | 651900 | 364 | 182 | 10+10 | 20 | 11.7 | 51.9 | 12 |
+| PatternLock | hard | 最长 | test-ep15 | 651500 | 516 | 258 | 15+15 | 30 | 16.6 | 73.6 | 12 |
+| RouteStick | easy | 最短 | test-ep1 | 660100 | 200 | 100 | 5+5 | 10 | 6.4 | 28.4 | 4 |
+| RouteStick | easy | 中位 | val-ep48 | 1164800 | 200 | 100 | 5+5 | 10 | 6.4 | 28.4 | 4 |
+| RouteStick | easy | 最长 | val-ep49 | 1164900 | 300 | 150 | 8+8 | 16 | 9.6 | 42.7 | 6 |
+| RouteStick | medium | 最短 | test-ep2 | 660200 | 400 | 200 | 11+11 | 22 | 12.9 | 57.0 | 8 |
+| RouteStick | medium | 中位 | test-ep14 | 661400 | 500 | 250 | 14+14 | 28 | 16.1 | 71.3 | 10 |
+| RouteStick | medium | 最长 | val-ep42 | 1164200 | 500 | 250 | 14+14 | 28 | 16.1 | 71.3 | 10 |
+| RouteStick | hard | 最短 | test-ep3 | 660300 | 400 | 200 | 11+11 | 22 | 12.9 | 57.0 | 8 |
+| RouteStick | hard | 中位 | val-ep47 | 1164700 | 500 | 250 | 14+14 | 28 | 16.1 | 71.3 | 10 |
+| RouteStick | hard | 最长 | val-ep43 | 1164300 | 700 | 350 | 20+20 | 40 | 22.5 | 99.9 | 14 |
+| BinFill | easy | 最短 | test-ep17 | 541700 | 249 | 0 | 0+14 | 14 | 8.0 | 35.4 | 3 |
+| BinFill | easy | 中位 | test-ep9 | 540900 | 455 | 0 | 0+27 | 27 | 14.6 | 64.9 | 5 |
+| BinFill | easy | 最长 | test-ep8 | 540800 | 699 | 0 | 0+42 | 42 | 22.5 | 99.7 | 7 |
+| BinFill | medium | 最短 | val-ep26 | 1042600 | 399 | 0 | 0+23 | 23 | 12.8 | 56.9 | 5 |
+| BinFill | medium | 中位 | test-ep46 | 544600 | 637 | 0 | 0+38 | 38 | 20.5 | 90.9 | 7 |
+| BinFill | medium | 最长 | test-ep2 | 540201 | 837 | 0 | 0+51 | 51 | 27.0 | 119.4 | 9 |
+| BinFill | hard | 最短 | val-ep43 | 1044300 | 608 | 0 | 0+36 | 36 | 19.6 | 86.7 | 7 |
+| BinFill | hard | 中位 | val-ep23 | 1042300 | 922 | 0 | 0+56 | 56 | 29.7 | 131.6 | 11 |
+| BinFill | hard | 最长 | val-ep11 | 1041100 | 1097 | 0 | 0+67 | 67 | 35.4 | 156.6 | 11 |
+| PickXtimes | easy | 最短 | val-ep32 | 1013200 | 270 | 0 | 0+15 | 15 | 8.7 | 38.4 | 3 |
+| PickXtimes | easy | 中位 | val-ep12 | 1011200 | 442 | 0 | 0+26 | 26 | 14.2 | 63.0 | 5 |
+| PickXtimes | easy | 最长 | test-ep0 | 510000 | 693 | 0 | 0+42 | 42 | 22.3 | 98.9 | 7 |
+| PickXtimes | medium | 最短 | test-ep10 | 511000 | 298 | 0 | 0+17 | 17 | 9.6 | 42.4 | 3 |
+| PickXtimes | medium | 中位 | val-ep18 | 1011800 | 432 | 0 | 0+25 | 25 | 13.9 | 61.6 | 5 |
+| PickXtimes | medium | 最长 | val-ep2 | 1010200 | 648 | 0 | 0+39 | 39 | 20.9 | 92.4 | 7 |
+| PickXtimes | hard | 最短 | val-ep43 | 1014300 | 677 | 0 | 0+41 | 41 | 21.8 | 96.6 | 9 |
+| PickXtimes | hard | 中位 | val-ep23 | 1012300 | 795 | 0 | 0+48 | 48 | 25.6 | 113.4 | 11 |
+| PickXtimes | hard | 最长 | val-ep27 | 1012700 | 1006 | 0 | 0+61 | 61 | 32.4 | 143.6 | 11 |
 
-长度基本由难度决定（难度直接配出动作次数），所以分档看：
+### 时序数轴：窗口、subgoal 与帧路叠在一根轴上
 
-**easy**
+每张图 9 行 = 3 难度 × {最短, 中位, 最长}，同一任务内共用横轴。一行从下到上四层：**subgoal 分段**（灰色交替块，块内是压缩后的中文标签）、**帧路 N=8**（红点）、**motion 窗口**（demo 蓝 / exec 绿；窗口长 33、stride 16 有 50% 重叠，所以奇偶窗口分两行错开画，能直接数出个数）、**帧路 N=32**（紫色细竖线）。段短于 33 帧铺不出窗口，画成橙色虚线空框。
 
-| 源 | 条数 | 整条长度 min~max | 均值 | delta=32 | delta=16 | delta=8 |
+![PatternLock 采样窗口时序数轴](figures/sampling_PatternLock.png)
+
+![RouteStick 采样窗口时序数轴](figures/sampling_RouteStick.png)
+
+![BinFill 采样窗口时序数轴](figures/sampling_BinFill.png)
+
+![PickXtimes 采样窗口时序数轴](figures/sampling_PickXtimes.png)
+
+### 产不出 motion token 的 episode
+
+窗口长 33 帧，段短于 33 帧就一个窗口都铺不出来。这类 episode 在 motion store 里**没有任何 motion token**，做窗口级训练/评测时要单独处理：
+
+| 任务 | 来源 | seed | 难度 | T | demo 段长 | exec 段长 |
 | --- | --- | --- | --- | --- | --- | --- |
-| PatternLock-test | 26 | 50~210 | 140.8 | 1~6 | 3~13 | 6~26 |
-| PatternLock-val | 26 | 50~226 | 127.9 | 1~7 | 3~14 | 6~28 |
-| RouteStick-test | 26 | 200~300 | 246.2 | 6~9 | 12~18 | 25~37 |
-| RouteStick-val | 26 | 200~300 | 250.0 | 6~9 | 12~18 | 25~37 |
-| BinFill-test | 26 | 249~699 | 464.7 | 7~21 | 15~43 | 31~87 |
-| BinFill-val | 26 | 263~689 | 448.0 | 8~21 | 16~43 | 32~86 |
-| PickXtimes-test | 26 | 283~693 | 444.7 | 8~21 | 17~43 | 35~86 |
-| PickXtimes-val | 26 | 270~661 | 452.0 | 8~20 | 16~41 | 33~82 |
+| PatternLock | test-ep25 | 652500 | easy | 50 | 25 | 25 |
+| PatternLock | test-ep29 | 652900 | easy | 64 | 32 | 32 |
+| PatternLock | val-ep25 | 1152500 | easy | 64 | 32 | 32 |
+| PatternLock | val-ep28 | 1152800 | easy | 64 | 32 | 32 |
+| PatternLock | val-ep32 | 1153200 | easy | 50 | 25 | 25 |
 
-**medium**
+### demo 段占了 Imitation 的一半
 
-| 源 | 条数 | 整条长度 min~max | 均值 | delta=32 | delta=16 | delta=8 |
-| --- | --- | --- | --- | --- | --- | --- |
-| PatternLock-test | 12 | 128~304 | 222.2 | 4~9 | 8~19 | 16~38 |
-| PatternLock-val | 12 | 112~302 | 199.2 | 3~9 | 7~18 | 14~37 |
-| RouteStick-test | 12 | 400~500 | 458.3 | 12~15 | 25~31 | 50~62 |
-| RouteStick-val | 12 | 400~500 | 441.7 | 12~15 | 25~31 | 50~62 |
-| BinFill-test | 12 | 420~837 | 655.4 | 13~26 | 26~52 | 52~104 |
-| BinFill-val | 12 | 399~828 | 612.2 | 12~25 | 24~51 | 49~103 |
-| PickXtimes-test | 12 | 298~619 | 419.8 | 9~19 | 18~38 | 37~77 |
-| PickXtimes-val | 12 | 306~648 | 468.9 | 9~20 | 19~40 | 38~81 |
+PatternLock / RouteStick 的每条 episode 把同一组动作走了两遍——前一遍是给模型看的示范（`is_video_demo=True`），后一遍才是真正执行。实测演示段**恰好占整条长度的 50%**，而窗口不跨段，所以 demo 与 exec 的窗口数也基本对半：
 
-**hard**
-
-| 源 | 条数 | 整条长度 min~max | 均值 | delta=32 | delta=16 | delta=8 |
-| --- | --- | --- | --- | --- | --- | --- |
-| PatternLock-test | 12 | 184~516 | 342.7 | 5~16 | 11~32 | 23~64 |
-| PatternLock-val | 12 | 186~510 | 361.2 | 5~15 | 11~31 | 23~63 |
-| RouteStick-test | 12 | 400~700 | 533.3 | 12~21 | 25~43 | 50~87 |
-| RouteStick-val | 12 | 400~700 | 575.0 | 12~21 | 25~43 | 50~87 |
-| BinFill-test | 12 | 626~1080 | 892.9 | 19~33 | 39~67 | 78~135 |
-| BinFill-val | 12 | 608~1097 | 847.1 | 19~34 | 38~68 | 76~137 |
-| PickXtimes-test | 12 | 686~928 | 802.5 | 21~29 | 42~58 | 85~116 |
-| PickXtimes-val | 12 | 677~1006 | 779.8 | 21~31 | 42~62 | 84~125 |
-
-### 切片前必须注意：Imitation 的前一半是演示段
-
-PatternLock / RouteStick 的每条 episode 把同一组动作走了两遍——前一遍是给模型看的示范（`is_video_demo=True`），后一遍才是真正执行。实测演示段**恰好占整条长度的 50%**：
-
-| 源 | 演示段 | 执行段 | 收尾段 | 合计 | 演示占比 |
+| 任务 | 演示段合计 | 执行段合计 | 演示占比 | demo 窗口合计 | exec 窗口合计 |
 | --- | --- | --- | --- | --- | --- |
-| PatternLock-test | 5219 | 4729 | 490 | 10438 | 50.0% |
-| PatternLock-val | 5025 | 4574 | 451 | 10050 | 50.0% |
-| RouteStick-test | 9150 | 8800 | 350 | 18300 | 50.0% |
-| RouteStick-val | 9350 | 9000 | 350 | 18700 | 50.0% |
+| PatternLock | 10244 | 10244 | 50.0% | 487 | 487 |
+| RouteStick | 18500 | 18500 | 50.0% | 1010 | 1010 |
 
-所以按上表的 delta 切 Imitation 的整条长度时，**约一半的区间落在演示段里**。只想要真正执行的那部分，把长度按执行段重算即可（约为整条的一半）。BinFill / PickXtimes 没有演示段，整条都是执行。
-
-> 换成滑动窗口时，窗长 `w`、步长 `s` 的窗口数是 `floor((T - w) / s) + 1`；上表 `floor(T / delta)` 对应的是 `w = s = delta` 的不重叠切法。
+BinFill / PickXtimes 没有演示段，整条都是 exec，所以 demo 窗口恒为 0。
 
 ## 时长来源
 
-| 源 | 来源 |
+| 任务 | 数据来源 |
 | --- | --- |
-| PatternLock-test | 本轮按 test metadata 死 seed 实跑生成 |
-| PatternLock-val | 原版 h5 `/data/hongzefu/data-0306/record_dataset_PatternLock.h5` |
-| RouteStick-test | 本轮按 test metadata 死 seed 实跑生成 |
-| RouteStick-val | 原版 h5 `/data/hongzefu/data-0306/record_dataset_RouteStick.h5` |
-| BinFill-test | 本轮按 test metadata 死 seed 实跑生成 |
-| BinFill-val | 原版 h5 `/data/hongzefu/data-0306/record_dataset_BinFill.h5` |
-| PickXtimes-test | 本轮按 test metadata 死 seed 实跑生成 |
-| PickXtimes-val | 原版 h5 `/data/hongzefu/data-0306/record_dataset_PickXtimes.h5` |
+| PatternLock | val 来自原版 h5 `/data/hongzefu/data-0306/record_dataset_PatternLock.h5`；test 本机无官方 h5，由本轮按 test metadata 死 seed 实跑生成 |
+| RouteStick | val 来自原版 h5 `/data/hongzefu/data-0306/record_dataset_RouteStick.h5`；test 本机无官方 h5，由本轮按 test metadata 死 seed 实跑生成 |
+| BinFill | val 来自原版 h5 `/data/hongzefu/data-0306/record_dataset_BinFill.h5`；test 本机无官方 h5，由本轮按 test metadata 死 seed 实跑生成 |
+| PickXtimes | val 来自原版 h5 `/data/hongzefu/data-0306/record_dataset_PickXtimes.h5`；test 本机无官方 h5，由本轮按 test metadata 死 seed 实跑生成 |
 
 ## 校验
 
