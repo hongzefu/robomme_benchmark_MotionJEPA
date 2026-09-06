@@ -112,6 +112,36 @@ def build_source_report(key: str, rows: list[dict], durations: dict[str, Any]) -
     return "\n".join(lines)
 
 
+# Counting 的段名只有三种句式，按前缀归类即可（实测 val+test 四源 1262 段全部命中）
+VERB_LABELS = [("pick", "pick up"), ("place", "put / place"), ("press", "press")]
+
+
+def verb_of(subgoal: str) -> str | None:
+    """把子目标名归到 pick / place / press 三类；不属于任何一类返回 None（不应出现）。"""
+    text = subgoal.lower()
+    if text.startswith("pick up"):
+        return "pick"
+    if text.startswith(("put ", "place ")):
+        return "place"
+    if text.startswith("press"):
+        return "press"
+    return None
+
+
+def durations_by_verb(rows: list[dict[str, Any]]) -> tuple[dict[str, list[int]], list[str]]:
+    """按动词聚合时长；同时返回归类失败的段名，供调用方断言。"""
+    buckets: dict[str, list[int]] = {verb: [] for verb, _ in VERB_LABELS}
+    unknown: list[str] = []
+    for row in rows:
+        for subgoal, duration in zip(row["subgoals"], row["durations"]):
+            verb = verb_of(subgoal)
+            if verb is None:
+                unknown.append(subgoal)
+            else:
+                buckets[verb].append(duration)
+    return buckets, unknown
+
+
 def counting_episode_section(episode: str, row: dict[str, Any]) -> list[str]:
     lines = [
         f"#### episode {episode} — seed `{row['seed']}`，难度 {row['difficulty']}，动作 {row['actions']} 次",
@@ -155,7 +185,9 @@ def build_counting_report(key: str, rows: dict[str, Any]) -> str:
         "SAPIEN 世界坐标、单位米（机器人 base 在 `(-0.615, 0, 0)`）；该帧没有关键点时记 —。",
         "",
         "与 PatternLock / RouteStick 不同，这两个任务**没有视频演示段**，所以不存在「演示段 / 执行段」之分，"
-        "下表每一行就是真正执行的一段。",
+        "下表每一行就是真正执行的一段。每行的子目标必是三类之一："
+        "`pick up …`（找到并抓起指定 cube）、`put / place …`（送到 bin 或 target）、`press …`（按按钮）；"
+        "每次动作产生一对 pick + place，末尾另有一段 press。",
         "",
     ]
     for episode, row in sorted(rows.items(), key=lambda x: int(x[0])):
@@ -268,8 +300,9 @@ def build_summary(
                 "",
                 COUNTING_CONFIG_NOTE[level],
                 "",
-                "| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | 单段时长（min~max） | 单段时长均值 |",
-                "| --- | --- | --- | --- | --- | --- |",
+                "| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | "
+                "pick up 时长 | put / place 时长 | press 时长 |",
+                "| --- | --- | --- | --- | --- | --- | --- |",
             ]
             for key in COUNTING_SOURCES:
                 rows = counting.get(key)
@@ -279,13 +312,29 @@ def build_summary(
                 if not hit:
                     continue
                 actions = [r["actions"] for r in hit]
-                durations = [d for r in hit for d in r["durations"]]
+                buckets, unknown = durations_by_verb(hit)
+                if unknown:
+                    raise ValueError(f"{key}/{level} 有归类不到动词的子目标：{sorted(set(unknown))}")
+                cells = []
+                for verb, _ in VERB_LABELS:
+                    values = buckets[verb]
+                    cells.append(
+                        f"{statistics.mean(values):.1f}（{min(values)}~{max(values)}）"
+                        if values
+                        else "—"
+                    )
                 lines.append(
                     f"| [{key}]({key}.md) | {len(hit)} | {min(actions)}~{max(actions)} | "
-                    f"{statistics.mean(actions):.2f} | {min(durations)}~{max(durations)} ts | "
-                    f"{statistics.mean(durations):.1f} ts |"
+                    f"{statistics.mean(actions):.2f} | " + " | ".join(cells) + " |"
                 )
             lines.append("")
+        lines += [
+            "三类动作的性质不同，所以分开统计（表里给的是**均值（min~max）**，单位 timestep）：",
+            "`pick up` 要在一堆 cube 里找到指定的那个并抓起来；`put / place` 是把手里的东西送到一个",
+            "固定位置（BinFill 的 bin / PickXtimes 的 target）；`press` 只是按一下按钮。",
+            "每次动作产生一对 pick + place，每条 episode 末尾另有一段 press。",
+            "",
+        ]
 
     lines += [
         "## 时长来源",

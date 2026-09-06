@@ -29,6 +29,8 @@ from matplotlib import font_manager  # noqa: E402
 HERE = Path(__file__).resolve().parent
 EVAL_ROOT = Path("/data/hongzefu/robomme_policy_learning_MotionJEPA/docs/training-doc")
 DIFFICULTIES = ["medium", "hard"]
+# 表格里按 medium → hard 展示（由易到难），与 DIFFICULTIES 的用途区分开
+DIFFICULTIES_DISPLAY = ["medium", "hard"]
 VARIANTS = ["modul", "context"]
 VARIANT_LABEL = {
     "modul": "framesamp-modul",
@@ -376,25 +378,40 @@ def write_section(rows: list[dict], out_path: Path, fig_dir_name: str) -> None:
         "- **误差棒**：Wilson 95% 置信区间。每格只有个位数到十几条样本，",
         "  0 成功的格子画出来是一根从 0 起的竖线（点估计 0，上界不为 0），不是缺数据。",
         "",
-        "### 总体",
+        "### 总体（分难度）",
         "",
-        "| suite | 任务 | framesamp-modul | framesamp-context |",
-        "| --- | --- | --- | --- |",
+        "每格 24 集（test 12 + val 12），suite 合计每格 48 集。easy 档未评测。",
+        "",
+        "| suite | 任务 | 难度 | framesamp-modul | framesamp-context |",
+        "| --- | --- | --- | --- | --- |",
     ]
+
     for suite, tasks in (("Imitation", IMITATION_TASKS), ("Counting", COUNTING_TASKS)):
         for task in tasks:
+            for level in DIFFICULTIES_DISPLAY:
+                lines.append(
+                    f"| {suite} | {task} | {level} | "
+                    f"{cell(variant='modul', task=task, difficulty=level)} | "
+                    f"{cell(variant='context', task=task, difficulty=level)} |"
+                )
+        for level in DIFFICULTIES_DISPLAY:
             lines.append(
-                f"| {suite} | {task} | {cell(variant='modul', task=task)} | {cell(variant='context', task=task)} |"
+                f"| **{suite} 合计** | | **{level}** | "
+                f"**{cell(variant='modul', task=tasks, difficulty=level)}** | "
+                f"**{cell(variant='context', task=tasks, difficulty=level)}** |"
             )
-        lines.append(
-            f"| **{suite} 合计** | | **{cell(variant='modul', task=tasks)}** | **{cell(variant='context', task=tasks)}** |"
-        )
 
     lines += [
         "",
-        "**最重要的一点：变体差异是逐任务的，不是全局的。** BinFill 上两个变体统计上毫无差异",
+        "**变体差异是逐任务的，不是全局的。** BinFill 上两个变体统计上毫无差异",
         "（policy 侧 result.md 的任务级 Fisher 单尾 p，hard 与 medium 两档**均为 0.50**），",
         "而 PickXtimes 上差距悬殊。把两个任务平均成一个 suite 数字会把这个结构完全抹掉。",
+        "",
+        "**难度效应（medium 比 hard 高多少）是判断模型是否真在工作的关键量。** policy 侧对这八组做过",
+        "Fisher 检验：**四组里唯有 context-on-Imitation 失去了难度效应**（p = 0.247，不显著），",
+        "其余三组降低难度都带来显著提升。所以 context 的问题是**在 Imitation suite 上失灵**，",
+        "而不是普遍能力弱 —— 同一份权重在 Counting 的 medium 档达 43.75%，与 modul 在 Imitation",
+        "medium 的 47.92% 相当。",
         "",
         "### Imitation suite：成功率 vs move 次数",
         "",

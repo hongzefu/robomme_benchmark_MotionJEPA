@@ -56,34 +56,39 @@ PatternLock：5×5 格点，路径长度约束 `[4, 8]` → move 3~7 次。Route
 
 BinFill：场上 1 种颜色、spawn 4~6 个 cube，要放进 bin 的 `put_in_numbers ∈ [1, 3]`。PickXtimes：场上 1 种颜色，重复次数 ∈ [1, 3]。
 
-| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | 单段时长（min~max） | 单段时长均值 |
-| --- | --- | --- | --- | --- | --- |
-| [BinFill-test](BinFill-test.md) | 26 | 1~3 | 1.96 | 42~210 ts | 86.7 ts |
-| [BinFill-val](BinFill-val.md) | 26 | 1~3 | 1.85 | 44~208 ts | 87.3 ts |
-| [PickXtimes-test](PickXtimes-test.md) | 26 | 1~3 | 1.92 | 44~200 ts | 83.8 ts |
-| [PickXtimes-val](PickXtimes-val.md) | 26 | 1~3 | 2.04 | 43~189 ts | 81.6 ts |
+| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | pick up 时长 | put / place 时长 | press 时长 |
+| --- | --- | --- | --- | --- | --- | --- |
+| [BinFill-test](BinFill-test.md) | 26 | 1~3 | 1.96 | 115.7（78~210） | 69.8（54~93） | 63.2（42~80） |
+| [BinFill-val](BinFill-val.md) | 26 | 1~3 | 1.85 | 116.7（84~208） | 70.0（52~93） | 64.9（44~78） |
+| [PickXtimes-test](PickXtimes-test.md) | 26 | 1~3 | 1.92 | 103.1（69~200） | 76.2（53~103） | 61.5（44~73） |
+| [PickXtimes-val](PickXtimes-val.md) | 26 | 1~3 | 2.04 | 98.4（69~189） | 74.4（53~107） | 61.9（43~75） |
 
 ### medium
 
 BinFill：2 种颜色、spawn 8~10 个，目标涉及 1~2 种颜色、总数 ∈ [2, 4]。PickXtimes：**重复次数区间与 easy 相同（[1, 3]）**，难点在于场上有 3 种颜色的 cube 作干扰。
 
-| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | 单段时长（min~max） | 单段时长均值 |
-| --- | --- | --- | --- | --- | --- |
-| [BinFill-test](BinFill-test.md) | 12 | 2~4 | 3.17 | 48~151 ts | 84.1 ts |
-| [BinFill-val](BinFill-val.md) | 12 | 2~4 | 2.83 | 52~195 ts | 86.1 ts |
-| [PickXtimes-test](PickXtimes-test.md) | 12 | 1~3 | 1.83 | 53~163 ts | 81.6 ts |
-| [PickXtimes-val](PickXtimes-val.md) | 12 | 1~3 | 2.17 | 49~145 ts | 80.7 ts |
+| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | pick up 时长 | put / place 时长 | press 时长 |
+| --- | --- | --- | --- | --- | --- | --- |
+| [BinFill-test](BinFill-test.md) | 12 | 2~4 | 3.17 | 107.7（76~151） | 67.4（52~92） | 62.6（48~80） |
+| [BinFill-val](BinFill-val.md) | 12 | 2~4 | 2.83 | 109.7（82~195） | 68.8（52~92） | 68.0（52~87） |
+| [PickXtimes-test](PickXtimes-test.md) | 12 | 1~3 | 1.83 | 96.6（70~163） | 76.3（53~110） | 63.9（54~75） |
+| [PickXtimes-val](PickXtimes-val.md) | 12 | 1~3 | 2.17 | 94.8（69~145） | 74.7（53~100） | 62.8（49~77） |
 
 ### hard
 
 BinFill：3 种颜色、spawn 10~12 个，目标涉及 2~3 种颜色、总数 ∈ [3, 5]。PickXtimes：3 种颜色，重复次数 ∈ [4, 5]。
 
-| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | 单段时长（min~max） | 单段时长均值 |
-| --- | --- | --- | --- | --- | --- |
-| [BinFill-test](BinFill-test.md) | 12 | 3~5 | 4.25 | 49~178 ts | 89.8 ts |
-| [BinFill-val](BinFill-val.md) | 12 | 3~5 | 4.17 | 50~182 ts | 86.6 ts |
-| [PickXtimes-test](PickXtimes-test.md) | 12 | 4~5 | 4.50 | 49~197 ts | 76.3 ts |
-| [PickXtimes-val](PickXtimes-val.md) | 12 | 4~5 | 4.50 | 42~162 ts | 74.2 ts |
+| 源 | 条数 | 动作次数（min~max） | 动作次数均值 | pick up 时长 | put / place 时长 | press 时长 |
+| --- | --- | --- | --- | --- | --- | --- |
+| [BinFill-test](BinFill-test.md) | 12 | 3~5 | 4.25 | 111.1（77~178） | 72.6（49~96） | 72.2（51~126） |
+| [BinFill-val](BinFill-val.md) | 12 | 3~5 | 4.17 | 106.9（80~182） | 71.6（53~99） | 64.1（50~79） |
+| [PickXtimes-test](PickXtimes-test.md) | 12 | 4~5 | 4.50 | 86.9（68~197） | 68.9（52~108） | 62.3（49~75） |
+| [PickXtimes-val](PickXtimes-val.md) | 12 | 4~5 | 4.50 | 85.0（69~162） | 66.2（53~111） | 61.3（42~74） |
+
+三类动作的性质不同，所以分开统计（表里给的是**均值（min~max）**，单位 timestep）：
+`pick up` 要在一堆 cube 里找到指定的那个并抓起来；`put / place` 是把手里的东西送到一个
+固定位置（BinFill 的 bin / PickXtimes 的 target）；`press` 只是按一下按钮。
+每次动作产生一对 pick + place，每条 episode 末尾另有一段 press。
 
 ## 时长来源
 
@@ -127,20 +132,34 @@ BinFill：3 种颜色、spawn 10~12 个，目标涉及 2~3 种颜色、总数 �
 - **误差棒**：Wilson 95% 置信区间。每格只有个位数到十几条样本，
   0 成功的格子画出来是一根从 0 起的竖线（点估计 0，上界不为 0），不是缺数据。
 
-### 总体
+### 总体（分难度）
 
-| suite | 任务 | framesamp-modul | framesamp-context |
-| --- | --- | --- | --- |
-| Imitation | PatternLock | 17/48（35.4%） | 0/48（0.0%） |
-| Imitation | RouteStick | 14/48（29.2%） | 2/48（4.2%） |
-| **Imitation 合计** | | **31/96（32.3%）** | **2/96（2.1%）** |
-| Counting | BinFill | 11/48（22.9%） | 9/48（18.8%） |
-| Counting | PickXtimes | 41/48（85.4%） | 16/48（33.3%） |
-| **Counting 合计** | | **52/96（54.2%）** | **25/96（26.0%）** |
+每格 24 集（test 12 + val 12），suite 合计每格 48 集。easy 档未评测。
 
-**最重要的一点：变体差异是逐任务的，不是全局的。** BinFill 上两个变体统计上毫无差异
+| suite | 任务 | 难度 | framesamp-modul | framesamp-context |
+| --- | --- | --- | --- | --- |
+| Imitation | PatternLock | medium | 13/24（54.2%） | 0/24（0.0%） |
+| Imitation | PatternLock | hard | 4/24（16.7%） | 0/24（0.0%） |
+| Imitation | RouteStick | medium | 10/24（41.7%） | 2/24（8.3%） |
+| Imitation | RouteStick | hard | 4/24（16.7%） | 0/24（0.0%） |
+| **Imitation 合计** | | **medium** | **23/48（47.9%）** | **2/48（4.2%）** |
+| **Imitation 合计** | | **hard** | **8/48（16.7%）** | **0/48（0.0%）** |
+| Counting | BinFill | medium | 10/24（41.7%） | 9/24（37.5%） |
+| Counting | BinFill | hard | 1/24（4.2%） | 0/24（0.0%） |
+| Counting | PickXtimes | medium | 21/24（87.5%） | 12/24（50.0%） |
+| Counting | PickXtimes | hard | 20/24（83.3%） | 4/24（16.7%） |
+| **Counting 合计** | | **medium** | **31/48（64.6%）** | **21/48（43.8%）** |
+| **Counting 合计** | | **hard** | **21/48（43.8%）** | **4/48（8.3%）** |
+
+**变体差异是逐任务的，不是全局的。** BinFill 上两个变体统计上毫无差异
 （policy 侧 result.md 的任务级 Fisher 单尾 p，hard 与 medium 两档**均为 0.50**），
 而 PickXtimes 上差距悬殊。把两个任务平均成一个 suite 数字会把这个结构完全抹掉。
+
+**难度效应（medium 比 hard 高多少）是判断模型是否真在工作的关键量。** policy 侧对这八组做过
+Fisher 检验：**四组里唯有 context-on-Imitation 失去了难度效应**（p = 0.247，不显著），
+其余三组降低难度都带来显著提升。所以 context 的问题是**在 Imitation suite 上失灵**，
+而不是普遍能力弱 —— 同一份权重在 Counting 的 medium 档达 43.75%，与 modul 在 Imitation
+medium 的 47.92% 相当。
 
 ### Imitation suite：成功率 vs move 次数
 

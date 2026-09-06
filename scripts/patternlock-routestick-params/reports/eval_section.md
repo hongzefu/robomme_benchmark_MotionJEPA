@@ -17,20 +17,34 @@
 - **误差棒**：Wilson 95% 置信区间。每格只有个位数到十几条样本，
   0 成功的格子画出来是一根从 0 起的竖线（点估计 0，上界不为 0），不是缺数据。
 
-### 总体
+### 总体（分难度）
 
-| suite | 任务 | framesamp-modul | framesamp-context |
-| --- | --- | --- | --- |
-| Imitation | PatternLock | 17/48（35.4%） | 0/48（0.0%） |
-| Imitation | RouteStick | 14/48（29.2%） | 2/48（4.2%） |
-| **Imitation 合计** | | **31/96（32.3%）** | **2/96（2.1%）** |
-| Counting | BinFill | 11/48（22.9%） | 9/48（18.8%） |
-| Counting | PickXtimes | 41/48（85.4%） | 16/48（33.3%） |
-| **Counting 合计** | | **52/96（54.2%）** | **25/96（26.0%）** |
+每格 24 集（test 12 + val 12），suite 合计每格 48 集。easy 档未评测。
 
-**最重要的一点：变体差异是逐任务的，不是全局的。** BinFill 上两个变体统计上毫无差异
+| suite | 任务 | 难度 | framesamp-modul | framesamp-context |
+| --- | --- | --- | --- | --- |
+| Imitation | PatternLock | medium | 13/24（54.2%） | 0/24（0.0%） |
+| Imitation | PatternLock | hard | 4/24（16.7%） | 0/24（0.0%） |
+| Imitation | RouteStick | medium | 10/24（41.7%） | 2/24（8.3%） |
+| Imitation | RouteStick | hard | 4/24（16.7%） | 0/24（0.0%） |
+| **Imitation 合计** | | **medium** | **23/48（47.9%）** | **2/48（4.2%）** |
+| **Imitation 合计** | | **hard** | **8/48（16.7%）** | **0/48（0.0%）** |
+| Counting | BinFill | medium | 10/24（41.7%） | 9/24（37.5%） |
+| Counting | BinFill | hard | 1/24（4.2%） | 0/24（0.0%） |
+| Counting | PickXtimes | medium | 21/24（87.5%） | 12/24（50.0%） |
+| Counting | PickXtimes | hard | 20/24（83.3%） | 4/24（16.7%） |
+| **Counting 合计** | | **medium** | **31/48（64.6%）** | **21/48（43.8%）** |
+| **Counting 合计** | | **hard** | **21/48（43.8%）** | **4/48（8.3%）** |
+
+**变体差异是逐任务的，不是全局的。** BinFill 上两个变体统计上毫无差异
 （policy 侧 result.md 的任务级 Fisher 单尾 p，hard 与 medium 两档**均为 0.50**），
 而 PickXtimes 上差距悬殊。把两个任务平均成一个 suite 数字会把这个结构完全抹掉。
+
+**难度效应（medium 比 hard 高多少）是判断模型是否真在工作的关键量。** policy 侧对这八组做过
+Fisher 检验：**四组里唯有 context-on-Imitation 失去了难度效应**（p = 0.247，不显著），
+其余三组降低难度都带来显著提升。所以 context 的问题是**在 Imitation suite 上失灵**，
+而不是普遍能力弱 —— 同一份权重在 Counting 的 medium 档达 43.75%，与 modul 在 Imitation
+medium 的 47.92% 相当。
 
 ### Imitation suite：成功率 vs move 次数
 
