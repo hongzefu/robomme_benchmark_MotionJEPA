@@ -195,6 +195,133 @@ def build_counting_report(key: str, rows: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+DELTAS = [32, 16, 8]
+
+
+def collect_lengths(
+    durations: dict[str, dict], counting: dict[str, dict] | None
+) -> dict[str, list[dict[str, Any]]]:
+    """把八个源的整条长度收成统一形状：{源: [{difficulty, total, demo, exec}...]}。"""
+    out: dict[str, list[dict[str, Any]]] = {}
+    for key, rows in (durations or {}).items():
+        out[key] = [
+            {
+                "difficulty": r["difficulty"],
+                "total": r["n_timesteps_total"],
+                "demo": sum(r["demo_durations"]),
+                "exec": sum(r["exec_durations"]),
+            }
+            for r in rows.values()
+        ]
+    for key, rows in (counting or {}).items():
+        out[key] = [
+            {
+                "difficulty": r["difficulty"],
+                "total": r["n_timesteps_total"],
+                "demo": 0,
+                "exec": sum(r["durations"]),
+            }
+            for r in rows.values()
+        ]
+    return out
+
+
+def build_length_section(lengths: dict[str, list[dict[str, Any]]]) -> list[str]:
+    keys = [k for k in SOURCES + COUNTING_SOURCES if k in lengths]
+    lines = [
+        "## 任务长度与可切分区间",
+        "",
+        "整条 episode 的 timestep 数（1 timestep = 1 个 env step = 0.05 s），以及按固定 delta "
+        "**不重叠**切分时能切出多少个完整区间 —— 即 `floor(T / delta)`。",
+        "",
+        "| 源 | 条数 | 整条长度 min~max | 均值 | 中位 | delta=32 | delta=16 | delta=8 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for key in keys:
+        totals = [item["total"] for item in lengths[key]]
+        cells = [
+            f"{min(t // d for t in totals)}~{max(t // d for t in totals)}" for d in DELTAS
+        ]
+        lines.append(
+            f"| {key} | {len(totals)} | {min(totals)}~{max(totals)} | "
+            f"{statistics.mean(totals):.1f} | {statistics.median(totals):.0f} | "
+            + " | ".join(cells)
+            + " |"
+        )
+
+    lines += [
+        "",
+        "整个源（50 条）合计能切出的区间数：",
+        "",
+        "| 源 | timestep 合计 | delta=32 | delta=16 | delta=8 |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for key in keys:
+        totals = [item["total"] for item in lengths[key]]
+        lines.append(
+            f"| {key} | {sum(totals)} | "
+            + " | ".join(str(sum(t // d for t in totals)) for d in DELTAS)
+            + " |"
+        )
+
+    lines += [
+        "",
+        "### 按难度",
+        "",
+        "长度基本由难度决定（难度直接配出动作次数），所以分档看：",
+        "",
+    ]
+    for level in DIFFICULTY_ORDER:
+        lines += [
+            f"**{level}**",
+            "",
+            "| 源 | 条数 | 整条长度 min~max | 均值 | delta=32 | delta=16 | delta=8 |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+        ]
+        for key in keys:
+            totals = [item["total"] for item in lengths[key] if item["difficulty"] == level]
+            if not totals:
+                continue
+            cells = [
+                f"{min(t // d for t in totals)}~{max(t // d for t in totals)}" for d in DELTAS
+            ]
+            lines.append(
+                f"| {key} | {len(totals)} | {min(totals)}~{max(totals)} | "
+                f"{statistics.mean(totals):.1f} | " + " | ".join(cells) + " |"
+            )
+        lines.append("")
+
+    imitation = [k for k in SOURCES if k in lengths]
+    if imitation:
+        lines += [
+            "### 切片前必须注意：Imitation 的前一半是演示段",
+            "",
+            "PatternLock / RouteStick 的每条 episode 把同一组动作走了两遍——前一遍是给模型看的示范"
+            "（`is_video_demo=True`），后一遍才是真正执行。实测演示段**恰好占整条长度的 50%**：",
+            "",
+            "| 源 | 演示段 | 执行段 | 收尾段 | 合计 | 演示占比 |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+        for key in imitation:
+            demo = sum(item["demo"] for item in lengths[key])
+            ex = sum(item["exec"] for item in lengths[key])
+            total = sum(item["total"] for item in lengths[key])
+            lines.append(
+                f"| {key} | {demo} | {ex} | {total - demo - ex} | {total} | {demo / total:.1%} |"
+            )
+        lines += [
+            "",
+            "所以按上表的 delta 切 Imitation 的整条长度时，**约一半的区间落在演示段里**。"
+            "只想要真正执行的那部分，把长度按执行段重算即可（约为整条的一半）。"
+            "BinFill / PickXtimes 没有演示段，整条都是执行。",
+            "",
+            "> 换成滑动窗口时，窗长 `w`、步长 `s` 的窗口数是 `floor((T - w) / s) + 1`；"
+            "上表 `floor(T / delta)` 对应的是 `w = s = delta` 的不重叠切法。",
+            "",
+        ]
+    return lines
+
+
 def summary_stats(rows: list[dict], durations: dict[str, Any]) -> dict[str, Any]:
     """按难度分桶统计：move 次数与单次 move 时长。难度是决定这两项的唯一配置，混在一起看没有意义。"""
     moves = [row["moves"] for row in rows]
@@ -335,6 +462,10 @@ def build_summary(
             "每次动作产生一对 pick + place，每条 episode 末尾另有一段 press。",
             "",
         ]
+
+    lengths = collect_lengths(durations, counting)
+    if lengths:
+        lines += build_length_section(lengths)
 
     lines += [
         "## 时长来源",
