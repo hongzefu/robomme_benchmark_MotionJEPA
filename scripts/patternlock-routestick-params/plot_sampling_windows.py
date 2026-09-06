@@ -193,11 +193,21 @@ def draw_row(ax, y: float, item: dict[str, Any], xmax: int) -> None:
                 lw=0.35,
             )
         )
-        if seg["len"] / xmax > 0.045:
+        # 能塞几个字取决于块宽和标签字数，不能用一刀切的比例阈值——
+        # 那会让不少短段的标签整个消失。按「字数 × 单字所需宽度」估，放不下就退到首字。
+        label = short_label(seg["text"])
+        per_char = xmax * 0.0135  # 一个汉字在当前图宽/字号下大致占的数据宽度
+        if seg["len"] >= len(label) * per_char:
+            shown = label
+        elif seg["len"] >= per_char:
+            shown = label[0]
+        else:
+            shown = ""
+        if shown:
             ax.text(
                 seg["start"] + seg["len"] / 2,
                 y - 0.20,
-                short_label(seg["text"]),
+                shown,
                 ha="center",
                 va="center",
                 fontsize=5.2,

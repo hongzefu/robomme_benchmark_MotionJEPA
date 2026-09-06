@@ -72,9 +72,9 @@
   .board > .suite:first-child{border-top:none}
   .suite .nm{font-size:13px; font-weight:600; letter-spacing:.03em}
   .suite .dt{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-3)}
-  .row{display:grid; grid-template-columns:132px 1fr 232px; border-bottom:1px solid var(--rule-2); align-items:center}
+  .row{display:grid; grid-template-columns:118px 1fr 214px; border-bottom:1px solid var(--rule-2); align-items:center}
   .row:last-child{border-bottom:none}
-  .rl{padding:9px 0 9px 15px; display:flex; flex-direction:column; gap:2px}
+  .rl{padding:9px 0 9px 13px; display:flex; flex-direction:column; gap:2px}
   .rl .bd{font-size:12.5px; font-weight:600}
   .rl .src{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3)}
   .track{position:relative; height:58px; margin:5px 0}
@@ -83,7 +83,7 @@
   .track .sg{
     position:absolute; bottom:0; height:15px; border:.5px solid var(--sg-line);
     font-size:9.5px; line-height:14px; text-align:center; overflow:hidden; white-space:nowrap;
-    color:var(--ink-2); cursor:default;
+    text-overflow:clip; color:var(--ink-2); cursor:default; padding:0 1px;
   }
   .track .win{position:absolute; height:4px; border-radius:1px; opacity:.9;
     border-left:1px solid var(--surface); border-right:1px solid var(--surface)}
@@ -98,7 +98,7 @@
   .rr b{color:var(--ink); font-weight:600}
   .rr .zero{color:var(--empty); font-weight:600}
   .axis{
-    display:grid; grid-template-columns:132px 1fr 232px; background:var(--surface-2);
+    display:grid; grid-template-columns:118px 1fr 214px; background:var(--surface-2);
     border-top:1px solid var(--rule);
   }
   .axis .ticks{position:relative; height:26px}
@@ -198,7 +198,8 @@ function track(row){
     d.style.left = pct(start); d.style.width = pct(len);
     d.style.background = i % 2 ? "var(--sg-b)" : "var(--sg-a)";
     d.title = text;
-    if (len / XMAX > 0.035) d.textContent = shortLabel(text);
+    d.dataset.full = shortLabel(text);
+    d.textContent = d.dataset.full;
     el.appendChild(d);
   }
   // 窗口按 33 帧全宽画；相邻只错 16 帧、重叠一半，同一行会粘连，
@@ -300,6 +301,25 @@ function render(diff){
   board.appendChild(axis);
   document.getElementById("foot").textContent =
     `当前显示 ${shown} 行，合计 ${tokens} 个 motion token。`;
+  fitLabels();
+}
+
+// subgoal 块的宽度随窗口宽和该段时长变化，用固定阈值一刀切会让不少短段的标签整个消失。
+// 改为渲染后按实际像素宽逐个判断：全标签放得下就留，放不下退到首字，仍放不下才清空
+//（原文始终在 title 里，不会丢信息）。
+function fitLabels(){
+  for (const el of document.querySelectorAll(".track .sg")){
+    const full = el.dataset.full || "";
+    if (!full) continue;
+    el.textContent = full;
+    if (el.scrollWidth <= el.clientWidth) continue;
+    el.textContent = full.slice(0, 1);
+    if (el.scrollWidth > el.clientWidth) el.textContent = "";
+  }
+}
+if (window.ResizeObserver){
+  const ro = new ResizeObserver(() => fitLabels());
+  ro.observe(document.getElementById("board"));
 }
 
 const EVAL = {"difficulty_table": [{"suite": "Imitation", "task": "PatternLock", "difficulty": "medium", "modul": [13, 24], "context": [0, 24]}, {"suite": "Imitation", "task": "PatternLock", "difficulty": "hard", "modul": [4, 24], "context": [0, 24]}, {"suite": "Imitation", "task": "RouteStick", "difficulty": "medium", "modul": [10, 24], "context": [2, 24]}, {"suite": "Imitation", "task": "RouteStick", "difficulty": "hard", "modul": [4, 24], "context": [0, 24]}, {"suite": "Counting", "task": "BinFill", "difficulty": "medium", "modul": [10, 24], "context": [9, 24]}, {"suite": "Counting", "task": "BinFill", "difficulty": "hard", "modul": [1, 24], "context": [0, 24]}, {"suite": "Counting", "task": "PickXtimes", "difficulty": "medium", "modul": [21, 24], "context": [12, 24]}, {"suite": "Counting", "task": "PickXtimes", "difficulty": "hard", "modul": [20, 24], "context": [4, 24]}], "suite_totals": [{"suite": "Imitation", "difficulty": "medium", "modul": [23, 48], "context": [2, 48]}, {"suite": "Imitation", "difficulty": "hard", "modul": [8, 48], "context": [0, 48]}, {"suite": "Counting", "difficulty": "medium", "modul": [31, 48], "context": [21, 48]}, {"suite": "Counting", "difficulty": "hard", "modul": [21, 48], "context": [4, 48]}], "charts": [{"id": "moves", "title": "成功率 vs move 次数", "panels": [{"task": "PatternLock", "xlabel": "move 次数", "data": {"modul": {"2": [5, 7], "3": [8, 11], "4": [4, 17], "5": [0, 2], "6": [0, 5], "7": [0, 6]}, "context": {"2": [0, 7], "3": [0, 11], "4": [0, 17], "5": [0, 2], "6": [0, 5], "7": [0, 6]}}}, {"task": "RouteStick", "xlabel": "move 次数", "data": {"modul": {"4": [10, 18], "5": [3, 19], "6": [1, 3], "7": [0, 8]}, "context": {"4": [2, 18], "5": [0, 19], "6": [0, 3], "7": [0, 8]}}}]}, {"id": "actions", "title": "成功率 vs 动作次数", "panels": [{"task": "BinFill", "xlabel": "要放进 bin 的 cube 总数", "data": {"modul": {"2": [6, 8], "3": [2, 14], "4": [2, 15], "5": [1, 11]}, "context": {"2": [6, 8], "3": [2, 14], "4": [1, 15], "5": [0, 11]}}}, {"task": "PickXtimes", "xlabel": "同一动作重复次数", "data": {"modul": {"1": [8, 8], "2": [5, 8], "3": [8, 8], "4": [10, 12], "5": [10, 12]}, "context": {"1": [7, 8], "2": [3, 8], "3": [2, 8], "4": [3, 12], "5": [1, 12]}}}]}, {"id": "turns", "title": "成功率 vs 路径形状", "panels": [{"task": "PatternLock", "xlabel": "转角次数（相邻两步方位不同）", "data": {"modul": {"1": [7, 9], "2": [8, 17], "3": [2, 11], "4": [0, 4], "5": [0, 3], "6": [0, 4]}, "context": {"1": [0, 9], "2": [0, 17], "3": [0, 11], "4": [0, 4], "5": [0, 3], "6": [0, 4]}}}, {"task": "RouteStick", "xlabel": "折返次数（走到 j 又退回 i）", "data": {"modul": {"0": [2, 5], "1": [9, 24], "2": [3, 7], "3": [0, 8], "4": [0, 2], "5": [0, 1], "6": [0, 1]}, "context": {"0": [1, 5], "1": [1, 24], "2": [0, 7], "3": [0, 8], "4": [0, 2], "5": [0, 1], "6": [0, 1]}}}]}, {"id": "color", "title": "成功率 vs 目标颜色种类数", "panels": [{"task": "BinFill", "xlabel": "颜色种类数", "data": {"modul": {"1": [9, 18], "2": [2, 23], "3": [0, 7]}, "context": {"1": [9, 18], "2": [0, 23], "3": [0, 7]}}}]}]};

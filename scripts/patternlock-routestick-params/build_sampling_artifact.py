@@ -131,9 +131,9 @@ PAGE = """<title>采样窗口与 eval 成功率</title>
   .board > .suite:first-child{border-top:none}
   .suite .nm{font-size:13px; font-weight:600; letter-spacing:.03em}
   .suite .dt{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-3)}
-  .row{display:grid; grid-template-columns:132px 1fr 232px; border-bottom:1px solid var(--rule-2); align-items:center}
+  .row{display:grid; grid-template-columns:118px 1fr 214px; border-bottom:1px solid var(--rule-2); align-items:center}
   .row:last-child{border-bottom:none}
-  .rl{padding:9px 0 9px 15px; display:flex; flex-direction:column; gap:2px}
+  .rl{padding:9px 0 9px 13px; display:flex; flex-direction:column; gap:2px}
   .rl .bd{font-size:12.5px; font-weight:600}
   .rl .src{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3)}
   .track{position:relative; height:58px; margin:5px 0}
@@ -142,7 +142,7 @@ PAGE = """<title>采样窗口与 eval 成功率</title>
   .track .sg{
     position:absolute; bottom:0; height:15px; border:.5px solid var(--sg-line);
     font-size:9.5px; line-height:14px; text-align:center; overflow:hidden; white-space:nowrap;
-    color:var(--ink-2); cursor:default;
+    text-overflow:clip; color:var(--ink-2); cursor:default; padding:0 1px;
   }
   .track .win{position:absolute; height:4px; border-radius:1px; opacity:.9;
     border-left:1px solid var(--surface); border-right:1px solid var(--surface)}
@@ -157,7 +157,7 @@ PAGE = """<title>采样窗口与 eval 成功率</title>
   .rr b{color:var(--ink); font-weight:600}
   .rr .zero{color:var(--empty); font-weight:600}
   .axis{
-    display:grid; grid-template-columns:132px 1fr 232px; background:var(--surface-2);
+    display:grid; grid-template-columns:118px 1fr 214px; background:var(--surface-2);
     border-top:1px solid var(--rule);
   }
   .axis .ticks{position:relative; height:26px}
@@ -257,7 +257,8 @@ function track(row){
     d.style.left = pct(start); d.style.width = pct(len);
     d.style.background = i % 2 ? "var(--sg-b)" : "var(--sg-a)";
     d.title = text;
-    if (len / XMAX > 0.035) d.textContent = shortLabel(text);
+    d.dataset.full = shortLabel(text);
+    d.textContent = d.dataset.full;
     el.appendChild(d);
   }
   // 窗口按 33 帧全宽画；相邻只错 16 帧、重叠一半，同一行会粘连，
@@ -359,6 +360,25 @@ function render(diff){
   board.appendChild(axis);
   document.getElementById("foot").textContent =
     `当前显示 ${shown} 行，合计 ${tokens} 个 motion token。`;
+  fitLabels();
+}
+
+// subgoal 块的宽度随窗口宽和该段时长变化，用固定阈值一刀切会让不少短段的标签整个消失。
+// 改为渲染后按实际像素宽逐个判断：全标签放得下就留，放不下退到首字，仍放不下才清空
+//（原文始终在 title 里，不会丢信息）。
+function fitLabels(){
+  for (const el of document.querySelectorAll(".track .sg")){
+    const full = el.dataset.full || "";
+    if (!full) continue;
+    el.textContent = full;
+    if (el.scrollWidth <= el.clientWidth) continue;
+    el.textContent = full.slice(0, 1);
+    if (el.scrollWidth > el.clientWidth) el.textContent = "";
+  }
+}
+if (window.ResizeObserver){
+  const ro = new ResizeObserver(() => fitLabels());
+  ro.observe(document.getElementById("board"));
 }
 
 const EVAL = __EVAL__;
