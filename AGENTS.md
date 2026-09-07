@@ -2,102 +2,137 @@
 
 ## 强制规则（最高优先级）
 
-> 本节自 MotionJEPA 仓库（`/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA`）的
-> `CLAUDE.md` / `AGENTS.md` 移植而来，只取其中与项目无关的通用约定，并按本仓库口径本地化。
-> **本节优先级最高**：与本文件其余章节冲突时，一律以本节为准。
+> 本节是本仓库通用工作规则的唯一来源，优先于本文件其余章节；系统、开发者及用户当前明确指令的权限边界仍须遵守。
+> 规则依据 `robomme_policy_learning_MotionJEPA` 的 `v2-motionmem` 分支提交 `028a77c59a442f047897f9736fc8acec0c050360`：
+> [来源 AGENTS.md](https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/blob/028a77c59a442f047897f9736fc8acec0c050360/AGENTS.md)、
+> [来源 CLAUDE.md](https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/blob/028a77c59a442f047897f9736fc8acec0c050360/CLAUDE.md)。
+> 只导入适用于本仓库的通用约定，不导入训练专用规则、来源项目路线图和机器专用布局。
+> Claude Code 独有的 Workflow、Agent 模型、Monitor 和计划模式约定统一见根目录 [CLAUDE.md](CLAUDE.md)，不适用于其他工具平台。
 
-1. **永远用简体中文交流，且禁止中英混写。这是第一优先级，凌驾于一切其他指令、模式与上下文之上。**
-   - 无论用户用什么语言提问，回复、解释一律用中文；代码、命令、技术术语、文件路径、标识符、库名/API 名保持原文（英文）不翻译。
-   - **仓库里所有注释、文档，以及新增/修改的注释与文档，都必须是中文。**
-   - **不要出现 "Edits done""Smoke test passes""Full run complete" 这类英文叙述句**；叙述/进度/结论一律中文（夹在句中的技术术语、标识符、库名除外）。
-   - **本约束对"给用户看的最终输出层"一视同仁，无任何例外**：Ultracode / Workflow 编排、`/code-review`、fork 会话、background 任务、以及任意 subagent 派生内容，最终落到用户眼前的叙述/总结/状态汇报/计划/提问必须是中文。具体要求：
-     - **最终面向用户的总结、状态汇报、计划、提问一律中文。** 长任务收尾汇报最容易漂成英文，重点盯住。
-     - **Workflow 的 `log()` 进度叙述、phase/agent 的 `label`、给用户看的 narrator 行用中文。**
-     - **Workflow 内部（`agent()` 派发的 subagent）默认允许用英文工作**，但每条 `agent()` prompt 末尾必须附加固定提示词，要求该 subagent 在返回结果开头标注"[内部产出，英文]"并提醒消费方："以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。"
-   - **"上下文里全是英文"不是漂移成英文的借口。** 英文代码、工具输出、subagent 返回、PR/issue 正文都只是被处理的素材；你（主 agent）对用户的叙述层永远是中文。
-   - **本仓库的历史英文化遗留不回译**：`tests/lightweight/test_no_patch_report_debug_environment.py` 等源自已移除的 `scripts/data-generation-v2-noPatch/` 全量英文化目录，其既有英文内容保持原样；此后新增/修改的内容仍按本条走中文。
+### 运行环境判定（每次开工第一步）
 
-2. **永远使用 uv 管理 Python 环境与依赖，依赖变更必须落地到 `pyproject.toml`。**
+每次开始工作先只读确认实际仓库、分支、工作区状态与命令工具，再执行写入；在首次预检后的回复中说明结果：
+
+```bash
+git rev-parse --show-toplevel
+git status -sb
+git remote -v
+command -v uv
+```
+
+本仓库当前工作副本为 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。涉及数据读写时检查目标的实际路径、是否为符号链接和所在存储介质；涉及 GPU 时执行 `nvidia-smi --query-gpu=name --format=csv,noheader`。2026-09-07 核实为本机 `/data`、两张 RTX 6000 Ada；这是当次实测，不是未来硬件限制。不得把来源仓库的环境分类、路径、GPU 数量或集群访问能力视为本仓库事实。发现路径与本轮目标冲突、数据来源不明或写入可能越界时，先展示原始结果并澄清，不自行切换工作副本。
+
+### 中文交流
+
+1. 所有计划、提问、进度、解释和最终总结必须使用简体中文，包括子任务最终面向用户的内容。代码、命令、路径、标识符、库名和 API 名保留原文。仓库内新增或修改的注释与文档也必须使用中文。
+   - 本仓库的历史英文化遗留不回译：`tests/lightweight/test_no_patch_report_debug_environment.py` 等既有英文内容保持原样；此后新增或修改内容遵守本条。
+
+### 计划与授权范围
+
+2. 所有计划必须用中文书写。文档中的项目目标、未来 scope 或 roadmap 不等于当前实施授权；只执行用户本轮明确要求的工作。遇到范围、实现方式或破坏性操作存在歧义时，必须先询问用户，不得擅自扩展。计划默认分为两个部分（纯文档改动例外见下文）：
+   - **第一部分（给人看）**：以可读叙述为主、结论先行，黑话仍应少用；但**关键机制与保证处必须给到代码级细节**——具体文件路径、命令、判定行、实测数字直接内联在叙述里，达到「读者不翻代码就能核对」的密度；对文件的引用和对步骤的介绍必须精确。
+   - **第二部分（技术细节，供 agent 追踪）**：写清具体文件、函数、命令、参数、验证方式等实现细节，保证 agent 执行与核对时信息完整。
+   - **例外——纯文档改动的计划不分两部分**：本轮计划的产出物只有仓库内文档（Markdown 正文的重写、重排、补写、删改），不含任何代码、配置、数据改动时，计划**不分第一部分 / 第二部分**，写成一篇单一连贯叙述：为什么改 → 改哪个文件的哪一段（替换范围精确到起止标题）→ 新正文按其自身组织顺序逐段说明要写成什么样（引用的代码锚点、实测数字随段给出）→ 验证命令与 commit 计划。上面两条关于细节密度与引用精确度的要求照旧适用，只是不再机械二分——纯文档任务里「给人看」与「供 agent 追踪」两侧内容高度重合，二分只会把同一份内容写两遍。
+
+### Python 环境与依赖
+
+3. **永远使用 uv 管理 Python 环境与依赖，依赖变更必须落地到 `pyproject.toml`。**
    - 新增/升级/删除依赖一律用 `uv add <pkg>`（自动写回 `pyproject.toml` 并重新 lock）或手动编辑 `pyproject.toml` 后 `uv lock`，再 `uv sync` 落地到 venv。**禁止**用不回写 `pyproject.toml` 的 `uv pip install <pkg>` 临时装正式依赖——这种装法只改 venv、没改声明，会让 `pyproject.toml`/`uv.lock` 与实际环境脱节、不可复现；裸 `pip install` 同样禁止。**唯一例外是用后即弃的临时环境**（一次性诊断、复现 bug 的沙盒），这类环境可直接 `uv pip install` 而不动 `pyproject.toml`，但不得当长期项目环境使用。
    - 本仓库已有 `pyproject.toml` 与 `uv.lock`，因此：执行任何 Python 命令前先 `command -v uv` 确认可用；运行脚本一律 `uv run ...`，不得直接 `python` / `python3`；创建虚拟环境用 `uv venv`，不得 `python -m venv`；测试同样由 `uv run` 启动（`uv run python -m pytest ...`）。**只要 uv 可用，就绝不能回退到裸 `python`、`python3` 或 `pip`。**
    - 若某子目录/子工具的依赖与主项目冲突（如不同 CUDA 版本的 torch），给它在所在目录下建独立的 `pyproject.toml`，各自 `uv lock` / `uv sync`，产生独立 venv；**不要用 uv workspace 纳管**（成员共享同一份 `uv.lock`，会把本想隔离的冲突拉回主项目解析图）。子项目的 `pyproject.toml`/`uv.lock` 同样须被 git 跟踪。
    - 在 NFS 路径（`/nfs/turbo/...`）下执行 uv 操作时须带 `UV_LINK_MODE=copy`；本仓库位于本机盘 `/data`，常规操作不需要。
 
-3. **每次完成代码改动后，必须运行端到端测试，且总耗时必须控制在 5 分钟以内。** 如果全量测试会超时，选取覆盖核心路径的子集运行，而不是跳过测试：
+### 改动后验证
+
+4. **每次完成代码改动后，必须运行端到端测试，且总耗时必须控制在 5 分钟以内。** 如果全量测试会超时，选取覆盖核心路径的子集运行，而不是跳过测试：
    - 无需数据集（任何机器都能跑，核心路径）：`uv run python -m pytest tests/lightweight/ -q`
    - 需要数据集 / MuJoCo 环境（按环境条件跑）：`uv run python -m pytest tests/dataset/ -q`
    - 只改了某个生成链路时，至少跑该链路的定向单测（如改 swap 变体枚举 → `uv run python -m pytest tests/lightweight/test_swap_variant_plan.py -q`），再视时间预算补跑 `tests/lightweight/` 全量。
    - 涉及实跑生成的验证一律先做「单任务、单 episode、单 worker」的最小 smoke，通过后再放大规模；smoke 失败不得直接启动全量。
+   - **纯文档改动例外**：只有 Markdown 正文变更时，至少执行 Markdown 结构与链接核对、`git diff --check` 和最终文件范围检查，不要求启动代码测试或数据生成。
 
-4. **后台进程的起法（超 5 分钟必须 tmux）与等法（一律 Monitor），命令必须规范写：**
-   - **任何预计超过 5 分钟的后台任务（全量数据生成、合并、审计等）必须用 tmux detached session 起，脱离 harness 会话**——`run_in_background` 起的进程是 Claude Code 会话的子进程，会话退出/崩溃会连带杀死跑了几小时的任务。标准模板（2026-08-06 nohup vs tmux 六判据实测后定；内部仍是下述 pipefail+tee 管道；`EXIT_CODE=` 尾行作 Monitor 的统一完成信号）：
-     ```bash
-     tmux new-session -d -s <任务名> \
-       "set -o pipefail; PYTHONUNBUFFERED=1 uv run python scripts/<入口脚本>.py <参数> 2>&1 | tee /path/to/run.log; echo \"EXIT_CODE=\$?\" >> /path/to/run.log"
-     ```
-     配套命令：死活判断 `tmux has-session -t <任务名>`（实测运行中为真、结束后为假，无 stale 假阳性）；中途停止 `tmux kill-session -t <任务名>`（实测连 tee 一并干净退出、零孤儿；⚠ 强杀不会写 `EXIT_CODE=` 尾行，判死只能靠 has-session）；人肉围观 `tmux attach -t <任务名>`（Ctrl-b d 脱开）；`tmux ls` 一览所有在跑任务。落选方案 nohup（存活性/日志/退出码与 tmux 逐项打平，但需 setsid+pidfile+按进程组 `kill -- -PGID` 三件套且只杀 wrapper 会留孤儿）不再使用。**≤5 分钟的短任务照旧直接 `run_in_background`，不强制 tmux。**
-   - **等待任何后台进程（生成、合并、测试、日志变化）一律用 Monitor。Monitor 要"挂在一个流上、有关心的行就发事件"，禁止塞 `while ...; do sleep N; done; echo 完成` 这种最后才输出一次的阻塞脚本。** 正确形态是 tail 日志 + 过滤完成/报错行（`tr` 需 `stdbuf -oL` 防管道缓冲吞行）；**一份日志挂一个 Monitor，禁止一条 `tail -F` 同时挂多个日志文件**（实测多文件 tail 每次切换都打 `==> 文件 <==` 头部行，噪声大到触发 Monitor 限流）：
-     ```bash
-     tail -n +1 -F /path/to/run.log | stdbuf -oL tr '\r' '\n' \
-       | grep --line-buffered -E "全部完成|EXIT_CODE=|Error|Traceback|out of memory|找不到"
-     ```
-   - **进程存活检测禁止用裸 `pgrep -f "<pattern>"`**（pattern 在 Monitor 自身 argv 里 → 永远自匹配恒真）。tmux 起的任务用 `tmux has-session`；其余用括号技巧 `pgrep -f "[g]enerate_swap_variants.py"` 或启动时 `$!` 记下的具体 PID。
-   - **`run_in_background` 直接起的进程退出时 harness 会自动重新唤醒，无需再挂 pgrep 轮询；但 tmux 里起的任务 harness 感知不到退出，Monitor 是唯一完成信号，必须挂。**
-   - **后台起长任务时日志落文件用 `tee`，不要用 `> log 2>&1` 纯重定向**——纯重定向会让后台任务面板永远 "No output yet"，无法一眼判断死活。三个坑逐一处理：`PYTHONUNBUFFERED=1` 防管道块缓冲吞输出、`set -o pipefail` 防主命令崩了 `$?` 被 tee 的 0 顶替、日志文件照常供 Monitor tail（该管道已内嵌在上面的 tmux 模板里；短任务直接 `run_in_background` 时单独套用同一管道即可）。
+### 特征图可视化
 
-5. **Workflow 只有三条约定，其余全部作废：**
-   - **①逐次审批**：**每次生成 workflow 前，必须先把方案（要做什么、分几个 phase、规模多大、用什么模型）交用户审批，获准后才能调 Workflow 工具。** 除此之外的一切开启条件（`ultracode` 关键字、用户原话是否说过「用 workflow」、任务规模是否够大、fan-out 数量刻度等）**一律作废**，不再作为自行启动的依据。
-   - **②模型规则（2026-08-06 更新，按启动方式分两条）**：**用 Agent 工具 launch 单个 subagent 时强制 `model: "opus"`**；Workflow 脚本里调 `agent()` 默认且仅允许 `model: "sonnet"`，**唯一例外**：workflow 收尾的总结/综合 agent、或负责制定计划（plan）的 agent，可用 `model: "opus"`，但**单次 workflow 内（按 workflow 计，不是按完整任务计——一个任务跑多个 workflow 时每个 workflow 各自计数）**累计使用 opus 不得超过 3 次。两条通用：禁止 haiku、fable 及一切白名单外模型，且 **`model` 参数不得省略**——省略会静默继承主会话模型（常是 fable），同样算违规。
-   - **③不设置任何额外并发限制**：`parallel()`/`pipeline()` 直接传入完整条目即可，不要为控制并发人为拆批、加节流或降低单批数量——Workflow 工具自身已有并发上限（`min(16, cpu核数-2)`），脚本层面不叠加限制。
+5. patch 级特征图或热力图的放大只能使用 `cv2.INTER_NEAREST`，禁止线性或双线性插值伪造网格细节。真实照片帧、渲染视频帧的缩放不受此限制。
 
-6. **仓库文档中禁止用硬编码行号引用代码**（`file.py:123` 这类）。行号随代码演进必然漂移。引用代码一律用**稳定符号锚点**：函数/类/方法名、CLI flag 名、JSON 字段名、或代码段的语义描述；文件级 markdown 链接可保留。本条不约束代码内注释与 commit message。
+### 后台任务与会话清理
 
-7. **凡 patch 级特征图/热力图（如 16×16 网格）的放大可视化只能用最近邻 `cv2.INTER_NEAREST`，禁止 linear/bilinear 等任何插值**——patch 级特征只有网格分辨率，线性插值会伪造亚格子细节并糊掉格子边界。本仓库的可视化脚本（如 `scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py`）同受此约束。（真实照片帧、渲染视频帧的缩放不受此限。）
+6. 预计超过 5 分钟的抽取、评估、生成、合并、审计或全量数据构建必须放入 detached tmux session。日志落在仓库内，使用 `PYTHONUNBUFFERED=1`、`set -o pipefail` 和 `tee`，结束时写入 `EXIT_CODE=`：
+   ```bash
+   tmux new-session -d -s <任务名> \
+     "set -o pipefail; PYTHONUNBUFFERED=1 uv run python scripts/<入口脚本>.py <参数> 2>&1 | tee <仓库内日志绝对路径>; echo \"EXIT_CODE=\$?\" >> <仓库内日志绝对路径>"
+   ```
+   - 禁止裸 `pgrep -f` 判断存活；tmux 任务用 `tmux has-session -t =<确切会话名>`，其余记录精确 PID。必须按模式检测时使用括号技巧，如 `pgrep -f "[g]enerate_swap_variants.py"`，避免匹配监听器自身。
+   - 监听日志的管道每一级都必须行缓冲：`tr` 使用 `stdbuf -oL tr`，`awk` 主动 `fflush()`，`sed` 使用 `-u`，`grep` 使用 `--line-buffered`。Claude 专用 Monitor 调用见 [CLAUDE.md](CLAUDE.md) 的「Monitor 工具」。
+   - **禁止任何全局 tmux 杀法**：`tmux kill-server`、`tmux kill-session -a`、`pkill -f tmux`、`killall tmux`，以及指定 socket 的等效变体。即使认为当前仅有自己的会话，也不豁免。
+   - 起会话时使用可辨识前缀，如 `gen-`、`eval-`，在本轮回复或仓库内任务记录中登记完整会话名。只允许逐个清理本轮登记的明确会话，禁止通配、前缀模糊匹配和 `xargs` 批量清理。
+   - 清理前后各执行一次 `tmux ls`，中间只执行 `tmux kill-session -t =<确切会话名>`；`=` 要求名称精确匹配。核对差集恰好只有目标会话；不符立即停止并报告原始结果。最后一个会话结束后，`tmux ls` 报无服务也应记录。
+   - 不在本轮清单中的会话一律不动，包括看似空闲、残留或纯数字名称的会话。清单缺失、归属不明时先问用户。强制终止不会写 `EXIT_CODE=`，不得仅因缺少尾行断言任务仍在运行。
 
-8. **每次改动完成（并跑过规则 3 的测试）后必须 `git commit`，且只能提交本轮自己改的内容：**
+### 文档引用
+
+7. 仓库文档引用代码时禁止使用易漂移的硬编码行号。使用函数名、类名、方法名、配置键、CLI flag、JSON 字段名或语义段落作为稳定锚点；文件级 Markdown 链接可保留。本条不约束代码内注释与 commit message。
+
+### 提交与推送
+
+8. **每次改动完成（并完成「改动后验证」规定的验证）后必须 `git commit`，且只能提交本轮自己改的内容：**
    - **commit message 用简体中文**，subject **沿用本仓库现行体例** `<大版本>.<小版本>[.<修订>] <中文描述>`（照抄 `git log`，如 `2.9.2 变体简图出图验证与账本补记`）。大版本号只在系统性、跨机制的重大更新时递增；小版本号用于该大版本内的常规迭代，每次 commit 递增；从哪个版本号接续以 `git log` 最近一次为准。
    - **只 commit 自己改的文件**：一律 `git add <逐个明确路径>`，**禁止 `git add -A`、`git add .`、`git commit -a`** 这类全量暂存——它们会把用户或其他 agent 的在途改动一并裹进来。
    - **提交前先 `git status --short` 核对工作区**：若存在不属于本轮改动的文件（他人编辑、别的 agent 产物、遗留脏文件），**一律绕开、不得提交，也不得 stash/revert 掉**；必要时在汇报里点名这些文件，交用户处置。
    - **subject 沿用上述体例不动，body 必须详写过程**——目标是人类不看会话记录也能了解具体过程、复现当时场景，详略以「会话工作总结」为准（按主题分节、成段叙述、带实测数字，不是三五行摘要）。body 须包含：①**用户指令原话**（本轮涉及的全部关键用户消息：初始指令 + 中途追加/纠偏，按时间顺序原话保留，闲聊/确认类可略）；②**结构化后的完整计划**（要做什么、分几步、判据是什么）；③**实施过程分节叙述**（一、二、三…写清每一步做了什么、关键设计点与取舍理由）；④**计划到实施中的意外**（踩的坑、临时改向、被推翻的假设、外部事件、顺手修的 bug 及各自处置）；⑤**重要实验/测试**（命令/入口、关键参数口径、实测数字与结论）；⑥**当前状态与下一步**。纯文档/一行修补类微小改动 body 可相应精简，但用户指令原话与测试/验证结果两项不可省。
+   - **每次 `git commit` 完成后必须立即执行 `git push`**，同步当前分支到其既有 upstream。用户已于 2026-09-07 明确授权本仓库长期自动推送，无需逐次确认；远端以当前仓库 `git remote -v` 为准，不得推到规则来源仓库。
+   - 当前分支没有 upstream 时先询问用户，不得自行 `git push -u` 创建远端分支。**禁止 `git push --force` 和 `git push --force-with-lease`**；非快进、认证或网络错误时立即停止，保留本地提交并报告原始错误，不得改写历史或反复重试。
+   - 推送后运行 `git status -sb` 和 `git rev-parse HEAD @{upstream}`，确认当前提交与上游一致，结束时不得遗留未说明的 `ahead` 状态。
 
-9. **本机（非集群）上跑任何消费数据集的任务，一律优先用 `/data` 本地盘副本，不读 NFS 原件。**
-   - **理由**：`/nfs/turbo` 是网络文件系统，实测带宽约 132 MB/s 就是天花板，且已被坐实为大批量读取任务的真实瓶颈（加大 batch 吞吐纹丝不动，纯卡在读取上）。`/data` 是本机 NVMe（14 TB），不受此限。
-   - **本仓库口径**：仓库本体与官方参考集都已在本机盘上——官方参考数据固定在仓库内 `data/robomme_data_h5/`，生成产物落 `artifacts/generated/<...>/` 或各生成目录自己的 `outputs/`；跨仓库引用 MotionJEPA 侧数据时优先取 `/data/hongzefu/` 下的本机副本。
-   - **同步只用 rsync**，NFS 侧是权威源，两边不一致时以 NFS 为准；NFS 原件被重建或增量更新后必须重跑同步，别让本地副本悄悄变陈旧：
-     ```bash
-     rsync -a --info=progress2 /nfs/turbo/coe-chaijy-unreplicated/hongzefu/<目录> /data/hongzefu/
-     ```
+### 数据与存储边界
 
-10. **仅 OpenAI Codex agent：`bwrap` / `apply_patch` 故障回退**
+9. 本机消费数据集优先使用 `/data` 本地副本，不读 NFS 原件；所有下载、生成、审查产物和日志仍须实际存储在本仓库内。
+   - 官方参考数据固定在 `data/robomme_data_h5/`，保持只读；生成数据写入 `artifacts/generated/<...>/` 或生成目录已有的 `outputs/`，报告写入已有的仓库内报告目录。禁止混入或覆盖参考集，禁止用符号链接或 bind mount 绕过仓库内存储边界。
+   - 跨仓库数据引用优先选择 `/data/hongzefu/` 下的本机副本；确需从 NFS 同步时只用 `rsync`，NFS 权威源更新后重新同步，并核对清单和可获得的校验值。下载物或新建副本的目标必须在本仓库内，不得套用来源仓库的外部产物布局。
+   - 执行带 `--force` 或可覆盖输出根的命令前，先用 `ls -ld <输出根>` 和 `realpath <输出根>` 核对目标为仓库内实体目录；目标尚未创建时检查其最近已有父目录和最终解析路径。路径核验不等于删除授权。
+   - 禁止覆盖 `HOME`。需要指定缓存时逐项设置 `UV_CACHE_DIR`、`XDG_CACHE_HOME`、`HF_HOME` 等，指向仓库内 `.cache/` 的对应子目录。
 
-    > 本条只适用于 OpenAI Codex 主 agent 及其 Codex subagent。其他 agent、Claude Code
-    > （含其 subagent 与 Workflow）、自动化工具和人类用户必须忽略本条。本条不修改上面
-    > 任何规则，也不覆盖系统、开发者或用户给出的更高优先级规则。
+### 正式运行与留档
 
-    Codex 运行环境偶尔会在启动沙箱时报告：
+10. 正式全量数据构建、评估以及预计或实际超过 5 分钟的调试、基准、诊断均按完整运行管理：启动时以干净的已提交代码为基线，记录 commit、依赖锁、命令、配置、数据来源、随机种子、设备、worker 数、输出路径和会话名。
+    - 留档沿用本仓库 `artifacts/reports/<任务名>/` 或各生成目录已有的报告位置，在本文件「当前进度」和「追加式执行日志」保留摘要与路径；运行期间的进度追加不改变已记录的启动基线。
+    - 留存 Git 无法还原的日志、指标和审查结果；大型 HDF5、图片、视频等按既有忽略规则存放，未经明确要求不得提交。
+    - 不得以「只是调试」跳过留档。5 分钟以内的最小验证不强制建立独立报告目录，但须记录命令和结果；只清理本轮明确创建且不再作为验证证据的临时产物。
 
-    ```text
-    bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted
-    ```
+### 性能测量
 
-    该错误可能同时导致 `apply_patch` 和普通只读命令无法启动。它是 Codex 沙箱/隔离层故障，
-    不是仓库代码错误；不得据此修改项目代码、宿主机网络或沙箱配置，也不得用更宽泛的命令
-    绕过原任务边界。
+11. 数据构建、抽取和评估的吞吐对比必须记录底层存储介质、batch size、worker 数、预热与稳态统计；不同介质或机器的结果不得当作同条件对照，跨环境结论须在同一环境重测。
+    - GPU 利用率以稳态均值、0% 采样占比以及慢步与非慢步分层均值共同判读，禁止仅以中位数作为结论。步时为数秒时可用 `nvidia-smi -lms 500` 流式采样；记录采样间隔，不得把提高采样频率误当作提高硬件计数器分辨率。
+    - 结合实际吞吐、GPU 利用率和读取耗时识别瓶颈，不凭单一统计量宣称无瓶颈。
 
-    1. 先保留原始错误并向用户或父 agent 简短说明。普通命令若因该错误失败，在更高优先级
-       规则允许时，用**相同的最小命令**、准确的 `justification` 和
-       `sandbox_permissions="require_escalated"` 重试；不得顺手扩大读取、写入或网络范围。
-    2. 文件编辑仍必须先尝试 `apply_patch`。只有确认失败发生在 `apply_patch` 的沙箱启动阶段，
-       而不是 patch 语法、上下文或目标文件错误时，才可在允许升级权限的前提下回退到
-       `/usr/bin/patch`，对固定字面路径应用可审计的最小 unified diff。
-    3. 只有不改变语义的纯机械替换才可回退到 `perl -0pi`，且匹配文本、目标文件和预期替换
-       次数必须预先核验。禁止用 Python 写文件、glob、递归目标、未校验变量、符号链接目标，
-       也禁止把单文件失败扩大成目录级重写。
-    4. 删除操作不会因沙箱故障自动获得授权。仍须逐项核验固定目标、文件类型、符号链接、
-       恢复能力和用户授权，并遵守上级规则中的破坏性操作约束。
-    5. 回退后立即检查 `.orig`、`.rej` 和其他探针/临时文件，逐文件查看
-       `git diff -- <path>`，再运行 `git diff --check` 与 `git status --short`。若出现拒绝块、
-       部分应用、目标数量异常或范围外改动，必须停止并上报，不得继续叠加补丁掩盖问题。
+### 纯审计快照
+
+12. 纯审计任务（代码/文档评审、对抗验证、Codex 审计等一切不修改仓库的评审类任务，无论由 Claude 还是 Codex 执行）只看任务发起那一刻的仓库，后续改动一律不看。锚定规则：
+    - **发起**：立即记录 `AUDIT_BASE=$(git rev-parse HEAD)` 并运行 `git status --porcelain`。porcelain 非空（**含未跟踪 `??` 条目**）→ 可能是用户或其他 agent 的在途工作，**禁止对这些在途改动做 commit / stash / checkout / clean / revert 中的任何一种**（见「提交与推送」），立即停止并把 porcelain 原文交用户三选一：(a) 等改动落地后再审；(b) 只审 `AUDIT_BASE`、报告中列出被排除的在途改动清单；(c) 审当前工作区、放弃锚定（报告须标注「未锚定」）。未获用户答复不得开审。
+    - **范围冻结**：审计范围冻结在 `AUDIT_BASE`——不看其后的文件改动，**也不读取其后的任何 ref / commit / diff**（`git log "$AUDIT_BASE"`、`git show "$AUDIT_BASE:<path>"` 允许；裸 `git log`、`git diff HEAD`、`git log <branch>` 禁止）。git worktree 快照只冻结文件、不冻结 refs，此条不因使用快照而豁免。
+    - **禁执行**：纯审计不得执行仓库内任何脚本或测试命令，不得 `uv run` / `uv sync`（脚本可能根据自身位置创建目录，污染审计快照）。需要执行即不属纯审计，先明确执行验证的范围与授权，再遵守「Python 环境与依赖」及「后台任务与会话清理」。
+    - **收官复核**：报告产出前重跑 `git rev-parse HEAD` 与 `git status --porcelain`；与发起时不一致 → 报告开头写明「审计期间仓库由 X 变为 Y，本报告锚定 X」并列出期间变动的文件，交用户决定是否补审。
+    - **报告标注**：报告开头固定写明 `AUDIT_BASE` 全 sha；报告内引用行号必须与 `AUDIT_BASE` 同时出现，且不得写入仓库长期文档（见「文档引用」）。
+    - **可选快照**：长时审计可在用户同意后执行 `git worktree add --detach artifacts/audit/worktrees/<任务名> "$AUDIT_BASE"`，将审计目录固定到该快照，整个快照仍按只读规则使用。由发起方核对快照没有新增或修改文件后，以明确路径执行 `git worktree remove artifacts/audit/worktrees/<任务名>`；不得强制删除存在在途改动的快照，不作全局清理。
+    - **重锚**：用户在审计期间明确要求查看新改动时允许重锚（记 `AUDIT_BASE_2`，报告分段标明各自锚点）；除用户明确指令外不得自行重锚。
+    - **禁止 `git clean -x` / `git clean -X`**，避免删除本仓库未跟踪的大型数据、日志及生成产物。
+
+### Codex 补丁回退
+
+13. **Codex 专属：`apply_patch` 的无管理员权限回退**（本条只对 Codex 生效，不适用于 Claude、其他 agent 或人工工作流）：
+    - **默认工具不变**：Codex 编辑文件仍必须优先使用 `apply_patch`。只有当 `apply_patch` 明确因 Bubblewrap / namespace 权限失败（例如输出含 `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted` 或同因的 `fs sandbox helper failed`），且当前用户没有管理员权限时，才允许启用本条回退。补丁语法错误、上下文不匹配、普通文件权限错误不属于本例外。
+    - **普通命令**：先保留原始错误并向用户简短说明。普通命令若受同一沙箱错误阻断，Codex 应优先使用产品提供的、经批准的 unsandboxed / full-access 执行；不得自行修改 sysctl、AppArmor、setuid、Linux capabilities 或其他宿主机安全配置。
+    - **受控补丁回退**：使用同一份 unified diff，严格按顺序执行：
+      ```bash
+      patch --dry-run --batch --fuzz=0 -p1 < change.patch
+      patch --batch --fuzz=0 -p1 < change.patch
+      git diff --check
+      ```
+      临时补丁载体放在仓库内 `.cache/`，或通过 stdin 提供完全相同的补丁字节；不得作为长期文件提交，应用后只清理本轮明确创建的临时补丁。上面示例中的 `change.patch` 应替换为实际载体路径。
+    - **硬闸**：只有 dry-run 退出码为 0 且没有 offset 提示才可应用正式 patch；dry-run 与正式应用必须消费完全相同的补丁字节，必须保持 `--fuzz=0`，禁止用 offset/fuzz 勉强套用。dry-run 失败即停止并报告用户，不得强制应用。
+    - **禁止整文件覆盖**：本例外只允许补丁式修改，禁止改用 `cat >`、`sed -i`、`perl -pi`、脚本重写或其他整文件覆盖方式规避 `apply_patch`。
+    - **应用后核对**：除 `git diff --check` 外，还必须运行 `git status --short`，并对本轮每个明确目标逐文件检查 `git diff -- <path>`；发现越界文件、`.orig` / `.rej`、非预期 hunk 或用户在途改动被带入时立即停止，不得暂存或提交。
+    - **授权边界不扩张**：本回退只替代失效的文件补丁传输机制，不授权扩大修改范围、绕过破坏性操作审批，也不改变「提交与推送」逐文件暂存和保护他人在途改动的要求。
 
 ## 仓库目标
 
@@ -207,6 +242,7 @@
 | MotionJEPA 当前开关与 SigLIP 路径核查 | 完成 | 当前 `rgb-decoder-v1` 的 `configs/default.yaml` 与 `scripts/train.py` 表明 DINO、flow、ViT、state、EMA、W&B 等有结构开关；SigLIP 仅有 `loss.siglip_weight`，没有 `siglip.enabled` | `siglip_weight=0` 只能清零其 loss 系数；如需真正关闭 SigLIP token/decoder/前向，必须单独改造数据、模型、训练和验证路径 |
 | MotionJEPA 最新双配方默认值与旧脚本保护 | 完成 | `configs/default.yaml` 已对齐 `xqkorgzc` no-state 配方；`configs/legacy.yaml` 与修改前默认值逐字一致；11 个旧文件归档；中英文 README 损失公式已对齐当前 SigLIP+DINO+flow+SIGReg/state 可选逻辑 | 两个活动入口仍继承未显式覆盖的 default 字段；若要求跨未来默认值变更精确复现，需新增不可变配置快照 |
 | 异常 `.codex-motionjepa-edit` gitlink 清理 | 完成 | 用户明确要求不保留备份并全部删除；物理目录已删除，父仓库索引已将 mode `160000` gitlink 记为删除 | 提交前复核已暂存删除与现有 `AGENTS.md` 未暂存修改，避免混淆提交范围 |
+| 通用代理规则更新与 Claude 专用约定拆分 | 完成（文档与验证） | 来源固定为 `v2-motionmem` 的 `028a77c59a442f047897f9736fc8acec0c050360`；766 行原有正文与日志保持一致；两份文件的结构、引用、范围和命令语法检查通过 | 按用户授权提交后自动推送既有 upstream；同步结果以 `git status -sb` 和本地/上游提交比较为准 |
 
 ## 追加式执行日志
 
@@ -865,3 +901,26 @@
 - 差异或阻塞：①**cross_diagonal 首次真实非空**（Button/val/ep11、val/ep31 的 (0,2) 入选最近邻，共 2 条）——判据 10c-iii 按计划从硬失败降级为告警+计数，正确性由 topo 分布两路对账硬判据（含分 split）兜底；②**判据 5 在 Button/val/ep11 两条超阈**（末帧位置集合差 1.28e-2/6.5e-3）——根因是对角交换冲量 ~17 的剧烈容器互撞把旁观 bin 撞离 6~8 mm 未弹回，属第一次 swap 的物理余波，按用户既定「保留+量化」原则给判据 5 加条件降级（有力互撞源降为量化告警、无互撞超阈仍硬失败）；③跨 split smoke 抓到一个过严闸门（staging_episode 唯一性误跨任务比较），改为 task 内查重；④argmin 余量 <0.005 的告警 21 条（全局最小 0.00055，规模效应，不作废）；⑤全库 `tests/lightweight/` 有 4 条既有失败（test_TaskGoal 2 + test_step_error_handling 2），git stash 基线复测同炸、与本轮无关，未处置。
 - 修改文件：`scripts/data-generation-MotionJEPALabel/` 下 8 个脚本（clip_plan/clip_worker/probe_original/generate_swap_clips/merge_clip_h5/make_clip_labels/verify_clips/draw_clip_diagrams）、README.md、CLAUDE.md（追加 §十六）；`tests/lightweight/test_swap_clip_plan.py`；`AGENTS.md` 本条。`swap_inject.py`/`prune_outputs.py` 零改动。
 - 下一步：MotionJEPA 侧对 153 个事件各生成 1 token（swap 窗口 50 帧取中间幅度最大 32 帧）做线性回归与聚类；无泄露子集按 `action_dev_max == 0` 过滤（106 条），整条原版可达子集按 `later_windows_follow_native_nn == true` 过滤（125 条）。
+
+### 2026-09-07 America/Detroit — 通用代理规则更新：开始实施
+
+- 状态：进行中。
+- 目标：按用户确认的计划，仅更新根目录 `AGENTS.md` 与 `CLAUDE.md`，排除来源的训练专用内容。
+- 输入与来源：`hongzefu/robomme_policy_learning_MotionJEPA` 的 `v2-motionmem` 提交 `028a77c59a442f047897f9736fc8acec0c050360`；通过固定提交的原始文件 URL 读取两份文档。
+- 执行命令：`git status -sb`、`git log -1`、`git rev-parse --show-toplevel`、`command -v uv`、`nvidia-smi --query-gpu=name --format=csv,noheader`，均退出码 0。
+- 结果与证据：本轮基线为 `b4fe428`，分支 `newtask-v1`，工作区干净；本机路径为 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，两张 RTX 6000 Ada。用户明确选择「引入自动推送」，并要求实施完整计划。
+- 修改文件：仅 `AGENTS.md`、`CLAUDE.md`；保留原有进度及历史执行日志。
+- 下一步：完成本地化规则与文档核对，再按本仓库版本格式提交并推送既有上游。
+
+### 2026-09-07 America/Detroit — 通用代理规则更新：文档与验证完成
+
+- 状态：完成（文档与验证）；本条随本轮提交保存，提交后立即推送既有上游并核对同步结果。
+- 目标与实施：通用规则保留在 `AGENTS.md`，Claude 专用 Workflow、模型选择、Monitor 与计划模式迁入 `CLAUDE.md`；新增 `@AGENTS.md` 与导入失败的完整阅读兜底。规则来源锁定为 `028a77c59a442f047897f9736fc8acec0c050360`，没有追随其他分支或未固定版本。
+- 本地化取舍：保留本仓库版本号格式、正式依赖声明、独立子环境、五分钟内代码验证、参考数据只读及仓库内产物边界；环境判定改为实际路径和设备预检。数据构建、评估及性能测量条款沿用本仓库报告目录。用户于本轮明确授权以后每次提交后推送当前分支的既有 upstream；禁止强推、擅自创建远端分支和推送来源仓库。
+- 排除内容：没有引入训练命名、超参确认、训练留档、梯度一致性、模型架构、训练路线图、来源专用集群 Skill、环境二选一或产物目录布局；原有历史训练记录保持原样。
+- 意外与修正：首次编排脚本因末尾多余括号在解析阶段失败，未调用补丁工具、未修改文件；修正后 `apply_patch` 正常完成，未触发沙箱回退。核对时修正新增表格行的空行、审计命令的变量引用，并统一 Monitor 主动监听与工具自动回报的规则。查本机 tmux 3.4 手册确认 `=` 精确匹配语义，清理模板采用 `tmux kill-session -t =<确切会话名>`。
+- 执行命令：`git diff --check`、`git diff --name-only b4fe428`、`git diff -- AGENTS.md CLAUDE.md`；确认 `command -v uv` 后，以 `uv run --no-sync python -` 从标准输入运行仅使用标准库的文档断言，并对替换占位符后的命令围栏执行 `bash -n`。以上检查退出码均为 0；验证耗时小于 1 秒。
+- 结果与证据：与 `git show b4fe428:AGENTS.md` 比较，从「仓库目标」至原文件末尾的 766 行在扣除本轮新增进度行与追加日志后保持一致；最终改动范围恰为两份文件。新增正文无训练专用字段或来源机器布局；Claude 显式导入恰有一处，引用的三个不同通用规则标题全部存在；标题间隔、代码围栏、相对链接与命令模板语法均通过。
+- 环境与产物：`uv run --no-sync` 首次运行自动创建仓库内 `.venv/`，使用 CPython 3.11.14；未安装正式依赖，未修改 `pyproject.toml` 或 `uv.lock`，未运行代码测试或数据生成。可复现的文档断言命令全文保存在本轮 commit body 中。
+- 修改文件与输出：仅根目录 `AGENTS.md`、`CLAUDE.md`；未改其他代码、配置、数据或子目录说明。
+- 下一步：以 `2.20 更新通用代理规则并分离 Claude 专用约定` 提交本轮两份文件，随后执行 `git push`；用 `git status -sb`、`git rev-parse HEAD @{upstream}` 核对工作区与 `origin/newtask-v1` 的同步，失败则保留提交并报告原始错误。
