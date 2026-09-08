@@ -230,6 +230,7 @@ command -v uv
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| ICL 生成环境分布独立文档 | 完成（文档与验证） | `scripts/ENVIRONMENT_DISTRIBUTION.md` 已覆盖五部分机制；20 个本地链接、21 个代码锚点及 4 条业务命令静态检查通过，仅三份 Markdown 变更 | 本条随文档提交；提交后立即推送既有上游并核对同步 |
 | 四个scripts入口及视频保存 | 全部验收及旧产物清理完成 | 96条/每遍63689帧、384份新HDF5逐位一致、192视频完整解码、四图和源码/依赖边界均通过；五阶段及主任务退出0；GPU0/1各48条；90根旧产物已清理、清理后复核通过 | 使用scripts四入口及scripts-v1批次；最终文档和清理记录提交后立即推送 |
 | robomme-ICL 独立四任务 | 全量实现与验收完成，旧批次已清理 | e34474a基线96条认证、32/16-worker生成、断点、回放、连续reset均逐位通过；每遍63689帧，两卡各48条；114轻量及4项显式真实复现通过；旧验收摘要保留在日志 | 当前交付改用scripts-v1；原版源码不变，旧物理产物按本轮指令清理 |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
@@ -249,6 +250,22 @@ command -v uv
 | 通用代理规则更新与 Claude 专用约定拆分 | 完成（文档与验证） | 来源固定为 `v2-motionmem` 的 `028a77c59a442f047897f9736fc8acec0c050360`；766 行原有正文与日志保持一致；两份文件的结构、引用、范围和命令语法检查通过 | 按用户授权提交后自动推送既有 upstream；同步结果以 `git status -sb` 和本地/上游提交比较为准 |
 
 ## 追加式执行日志
+
+### 2026-09-08 — ICL 生成环境分布独立文档：文档与验证完成
+
+- 交付：新增 `scripts/ENVIRONMENT_DISTRIBUTION.md`，按整体流程、任务配额、空间采样、认证冻结、配置与核对五部分说明当前实现；在 `scripts/README.md` 的「先生成环境清单」开头增加链接。默认数值明确来自当前 JSON 配置与代码推导，本轮未生成数据或宣称新的物理认证结果。
+- 关键机制：解释合法联合组合及余数配额、动静态优先均衡、seed 公式、逐组逐轴分层、完整旋转外形与位置层求交集、层内放置及认证失败边界；区分支持范围、实际计数、逐层覆盖与最终约束分布，避免把小样本或避碰后的分布称为全组合覆盖或联合均匀。
+- 核对与修正：明确 RouteStick 围绕世界原点旋转，候选编号可影响交换对象序列；核对 `select_specs` 后将初稿的「按 episode 编号排序」修正为实际「按清单现有顺序取每任务前 N 条」，不修改实现。区分编译器 `distribution_summary(slots)` 的零覆盖组合表和绘图 `_actual_distribution` 的实际参数/位置统计。
+- 验证命令：先 `command -v uv`，再通过 `uv run --no-sync python -` 执行标准库文档检查，全文保留于本轮 commit body；检查器仅解析文档及源码 AST，调用 `bash -n` 检查命令围栏，没有执行生成入口、仿真或代码测试。结果退出 0：5 个主要章节、3 个 Bash 围栏、20 个本地链接、21 个函数/类锚点、4 条业务命令的 CLI 参数均通过；README 原正文及 AGENTS 旧内容保持，最终文件集合恰为三份 Markdown。
+- 环境说明：uv 提示继承的 `VIRTUAL_ENV` 指向相邻仓库，与当前项目 `.venv` 不一致并自动忽略；未使用 `--active`，未安装依赖或改变锁文件，检查正常退出。
+- 文件范围与下一步：`git diff --check` 退出 0，逐文件 diff 核对通过；仅提交本轮 `AGENTS.md`、`scripts/README.md`、`scripts/ENVIRONMENT_DISTRIBUTION.md`。按当前版本以 `2.28 说明 ICL 生成环境分布与认证机制` 提交并立即 `git push`，最后用 `git status -sb` 和 `git rev-parse HEAD @{upstream}` 核对；此记录不提前宣称推送成功。
+
+### 2026-09-08 — ICL 生成环境分布独立文档：开始实施
+
+- 用户要求：“生成环境的分布如何实现的 要写单独的文档 放在/data/hongzefu/robomme\_benchmark\_MotionJEPANewTask/scripts/README.md旁边”；随后选择完整分布机制并明确要求实施确认后的计划。
+- 预检：`git rev-parse --show-toplevel`、`git status -sb`、`git remote -v`、`command -v uv` 均退出 0；当前仓库、`newtask-v1` 分支及 `origin/newtask-v1` 上游符合目标，工作区干净，基线 `8254d74`，uv 位于 `/home/hongzefu/.local/bin/uv`。
+- 范围：只新增分布文档、修改 `scripts/README.md` 的入口链接及本账本；依据当前代码说明四任务配额、空间分层、候选认证、冻结与实际统计，不修改代码、配置或数据，不启动仿真。
+- 下一步：按整体流程、任务配额、空间采样、认证冻结、配置与核对五部分写作；完成 Markdown 结构、链接、命令参数和改动范围验证后，仅提交本轮三份 Markdown 并立即推送既有上游。
 
 ### 2026-09-08 — 四个scripts入口、视频及分布图：开始实施
 

@@ -19,6 +19,8 @@ uv run scripts/prepare_suite.py --help
 
 ## 先生成环境清单
 
+任务难度与次数如何分配、物体位置如何分层采样，以及候选认证如何保持配额，见 [生成环境分布实现说明](ENVIRONMENT_DISTRIBUTION.md)。
+
 用默认两份配置生成新清单；默认四任务各24条、每档8条、两卡0/1及32 workers。`--task-config` 和 `--position-config` 可指定修改后的配置。单条控制过程墙钟上限默认1200秒。
 
 ```bash
