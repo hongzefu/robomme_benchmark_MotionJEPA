@@ -1,0 +1,29 @@
+{
+  "status": "interrupted_for_dual_gpu",
+  "user_request": "为什么不用2gpu尽可能并行生成？",
+  "session": "gen-icl-cert96-20260907-v1",
+  "certified_before_stop": 19,
+  "completed_lines": [
+    "已认证 BinFill/easy/0003：seed=2000000003，帧数=371",
+    "已认证 BinFill/easy/0000：seed=2000000000，帧数=600",
+    "已认证 BinFill/easy/0001：seed=2000000001，帧数=819",
+    "已认证 BinFill/easy/0004：seed=2000000004，帧数=832",
+    "已认证 BinFill/easy/0002：seed=2000000002，帧数=304",
+    "已认证 BinFill/easy/0006：seed=2000000006，帧数=312",
+    "已认证 BinFill/easy/0005：seed=2000000005，帧数=931",
+    "已认证 BinFill/easy/0007：seed=2000000007，帧数=588",
+    "已认证 BinFill/medium/0000：seed=2000000008，帧数=834",
+    "已认证 BinFill/medium/0001：seed=2000000009，帧数=906",
+    "已认证 BinFill/medium/0003：seed=2000000011，帧数=1132",
+    "已认证 BinFill/medium/0002：seed=2000000010，帧数=1078",
+    "已认证 BinFill/medium/0005：seed=2000000013，帧数=620",
+    "已认证 BinFill/medium/0004：seed=2000000012，帧数=1139",
+    "已认证 BinFill/medium/0006：seed=2000000014，帧数=817",
+    "已认证 BinFill/medium/0007：seed=2000000015，帧数=574",
+    "已认证 BinFill/hard/0000：seed=2000000016，帧数=848",
+    "已认证 BinFill/hard/0004：seed=2000000020，帧数=947",
+    "已认证 BinFill/hard/0002：seed=2000000018，帧数=1308"
+  ],
+  "full_suite_published": false,
+  "note": "只停止本轮登记的明确tmux会话，前后差集仅此一项；已记录的旧主进程和子进程均已退出。main.log尾部EXIT_CODE=0来自会话退出trap，不代表96条完成。停止前pane_pid查询返回空值未能记录进程树，原错误已保留在工具输出。"
+}

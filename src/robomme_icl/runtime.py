@@ -14,6 +14,8 @@ def repo_root():
 
 def configure_runtime():
     """对本进程固定线程；所有运行缓存均落在当前仓库。"""
+    if os.environ.get("CUDA_VISIBLE_DEVICES") is not None:
+        raise ValueError("固定 GPU 绑定使用物理序号；请清除 CUDA_VISIBLE_DEVICES，并通过 prepare --gpus 选择设备")
     root = repo_root()
     paths = {"UV_CACHE_DIR": "uv", "XDG_CACHE_HOME": "xdg", "HF_HOME": "huggingface",
              "MS_ASSET_DIR": "maniskill", "MPLCONFIGDIR": "matplotlib"}

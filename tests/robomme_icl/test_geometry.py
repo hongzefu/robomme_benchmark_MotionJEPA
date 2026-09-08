@@ -146,3 +146,15 @@ def test_swap_may_leave_an_actor_initial_support_window():
     assert report["min_clearance"] >= .005
     middle = pose_at_step(data, 25)["a"]["position"]
     assert middle[0] < data["actors"][0]["initial_xy_bounds"]["x"][0]
+
+
+def test_compiler_zero_width_support_rejection_cannot_be_rescued_by_tolerance():
+    cube = _actor("cube", 0, 0, "cube", .02)
+    cube["half_size"] = [.02]*3
+    cube["initial_xy_bounds"] = {"x": [-.02, .02], "y": [-.02, .02]}
+    assert validate_spec_geometry({"actors": [cube]})["ok"]
+    cube["initial_support_rejection"] = "固定中心层与旋转后完整物体可行域交集宽度为零"
+    report = validate_spec_geometry({"actors": [cube]})
+    assert not report["ok"]
+    assert any("初始支持层不可采样" in reason for reason in report["reasons"])
+    assert report["min_clearance"] > .005

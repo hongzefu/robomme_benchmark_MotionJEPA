@@ -9,15 +9,17 @@
 ```bash
 cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask
 uv sync --locked --extra dev
-uv run robomme-icl prepare --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24 --workers 4
+uv run robomme-icl prepare --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24 --gpus 0,1 --workers 32
 ```
 
 默认每任务 24 条，easy、medium、hard 各 8 条，共 96 个新 seed。首次验证应先使用 `--tasks BinFill --episodes-per-task 1 --workers 1`，对四任务分别完成最小 smoke，再运行整批。超过五分钟的运行按根 `AGENTS.md` 要求放入登记的 detached tmux。
 
+双 GPU 模式默认设备为 `0,1`、总并发32（本机每卡约16个名额）。每个seed按照有序GPU列表的固定取模规则绑定设备，绑定写入认证；生成、回放和reset继承同一设备，不因worker数或完成顺序改变。不要设置 `CUDA_VISIBLE_DEVICES`，避免将物理序号重新映射；用 `--gpus` 选择设备。并发数应结合本机CPU、内存和显存实测调整。
+
 任务分布和位置分布分别由 [task_distribution.json](configs/task_distribution.json) 和 [position_distribution.json](configs/position_distribution.json) 控制；可用 `--task-config`、`--position-config` 指向修改后的配置。次数配额和位置层在候选搜索前固定；拒绝候选不能改变次数、seed 或所属位置层。
 
 ```bash
-uv run robomme-icl generate --suite /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24 --output-dir /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dataset24 --workers 4
+uv run robomme-icl generate --suite /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24 --output-dir /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dataset24 --workers 32
 uv run robomme-icl replay --h5 /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dataset24/<实际记录名>.h5 --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/replay/<新记录名>.h5
 ```
 
@@ -57,7 +59,7 @@ VideoUnmaskSwap 始终有红绿蓝三个藏块；三容器全占用，四容器�
 
 所有失败保持到 reset，成功不能与失败同时成立。演示不能增加执行计数。夹爪抬起正确物体、逐色入孔、完整抓放转换、Route 目标顺序与绕行侧别由真实观测判定；oracle 不能直接写入成功或计数。
 
-固定单环境CPU物理、GPU0渲染和线程数。每次 reset 重建物理场景以清除求解器历史，恢复所有对象、控制器、计数器和动画缓存。动作使用固定 screw 或固定初值/迭代预算的 CLIK，失败不转入随机规划。
+固定单环境CPU物理、每seed绑定的GPU和线程数。每次 reset 重建物理场景以清除求解器历史，恢复所有对象、控制器、计数器和动画缓存。动作使用固定 screw 或固定初值/迭代预算的 CLIK，失败不转入随机规划。仿真与HDF5核对都在独立工作进程中执行，协调进程只接收摘要。
 
 场景记录与认证绑定配置、源代码、依赖锁、关键库和设备驱动指纹。比较内容包括两路原始RGB、机器人与物体状态、关节动作、任务事件和终止步；日志时间和视频封装字节不属于轨迹比较。复现差异必须停止认证，不能通过换 seed 或放宽容差继续发布。
 

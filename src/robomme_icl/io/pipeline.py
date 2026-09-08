@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import json
 import multiprocessing as mp
 import os
 from pathlib import Path
-import threading
 import time
 import traceback
 from typing import Any, Callable, Mapping, Sequence
@@ -73,27 +72,35 @@ def _replay_frames(env: Any, expected: EpisodeRecord) -> list[dict[str, Any]]:
     return frames
 
 
-def _child_run(connection: Any, spec_data: dict[str, Any], target: str, replay_source: str | None) -> None:
+def _child_run(connection: Any, spec_data: dict[str, Any], target: str, replay_source: str | None, render_gpu: int) -> None:
     """每次调用运行在一个全新的 spawn 进程中，管道只传小型状态。"""
     env = None
+    started = time.monotonic()
     try:
         from ..api import make_env_from_spec
         from ..oracle import run_episode
 
-        fingerprint = runtime_fingerprint()
+        fingerprint = runtime_fingerprint(render_gpu=render_gpu)
         commit = source_commit()
         spec = _spec_class().from_dict(spec_data)
-        env = make_env_from_spec(spec, record_demonstration=True)
+        env = make_env_from_spec(spec, record_demonstration=True, render_gpu=render_gpu)
+        built = time.monotonic()
         if replay_source is None:
             frames = run_episode(env)
         else:
             frames = _replay_frames(env, read_episode(replay_source))
         _check_terminal(frames)
+        executed = time.monotonic()
         env.close()
         env = None
-        assert_identical(fingerprint, runtime_fingerprint(), path="runtime_fingerprint")
+        assert_identical(fingerprint, runtime_fingerprint(render_gpu=render_gpu), path="runtime_fingerprint")
+        write_started = time.monotonic()
         write_episode(target, spec, frames, runtime_fingerprint=fingerprint, source_commit=commit)
-        connection.send({"ok": True, "path": target})
+        timings = {"build_seconds": built-started, "run_seconds": executed-built,
+                   "write_seconds": time.monotonic()-write_started}
+        # 耗时只进入日志和控制消息，不写入需要逐位相同的轨迹内容。
+        print(f"ICL_TIMING seed={spec.seed} GPU={render_gpu} frames={len(frames)} " + json.dumps(timings, sort_keys=True), flush=True)
+        connection.send({"ok": True, "path": target, "timings": timings})
     except BaseException as exc:
         from ..errors import ReproducibilityError as SharedReproducibilityError, SceneRejected, TaskExecutionError
 
@@ -122,10 +129,13 @@ def run_fresh_process(
     *,
     replay_source: str | Path | None = None,
     timeout_seconds: float = 240,
+    render_gpu: int = 0,
 ) -> Path:
     """独立进程执行完整 episode，不使用会残留 RNG 的常驻 worker。"""
     if timeout_seconds <= 0:
         raise ValueError("timeout_seconds 必须大于零")
+    if type(render_gpu) is not int or render_gpu < 0:
+        raise ValueError("render_gpu 必须为非负物理 GPU 编号")
     target = output_path(target, create_parent=True)
     if target.exists():
         raise FileExistsError(f"拒绝覆盖已有记录：{target}")
@@ -136,7 +146,7 @@ def run_fresh_process(
     receiver, sender = context.Pipe(duplex=False)
     process = context.Process(
         target=_child_run,
-        args=(sender, spec.to_dict(), str(target), str(replay_source) if replay_source else None),
+        args=(sender, spec.to_dict(), str(target), str(replay_source) if replay_source else None, render_gpu),
     )
     process.start()
     sender.close()
@@ -323,6 +333,115 @@ def _run_staged(
     return retry_same_spec(spec, attempt), reused[0]
 
 
+def _new_manager():
+    return mp.get_context("spawn").Manager()
+
+
+def _gpu_limits(manager: Any, gpus: Sequence[int], workers: int) -> dict[int, Any]:
+    """限制每卡真实渲染并发；少 worker 时仍能顺序使用全部指定卡。"""
+    return {gpu: manager.BoundedSemaphore(max(1, workers // len(gpus) + (index < workers % len(gpus))))
+            for index, gpu in enumerate(sorted(gpus))}
+
+
+def _run_process_jobs(operation: Callable, jobs: Sequence[dict], workers: int, stop: Any) -> list[Any]:
+    """主进程只接小摘要；几何、HDF5 解码和严格核对均在各 slot 进程。"""
+    results = [None] * len(jobs)
+    with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn"), max_tasks_per_child=1) as executor:
+        futures = {executor.submit(operation, job): index for index, job in enumerate(jobs)}
+        try:
+            for future in as_completed(futures):
+                results[futures[future]] = future.result()
+        except BaseException:
+            stop.set()
+            for future in futures:
+                future.cancel()
+            raise
+    return results
+
+
+def _certify_slot_job(job: dict) -> tuple[dict, dict]:
+    """一个全新 slot 进程负责编译、候选搜索及两次独立物理进程认证。"""
+    from ..geometry import validate_spec_geometry
+    from ..suite import candidate_for_slot
+
+    slot, output, stop = job["slot"], Path(job["output"]), job["stop"]
+    fingerprint, render_gpu = job["fingerprint"], job["render_gpu"]
+    assert_identical(fingerprint, runtime_fingerprint(render_gpu=render_gpu), path="runtime_fingerprint")
+    limit = min(int(slot.get("max_candidates", 1024)), job["max_candidates"] or 1024)
+    for candidate_index in range(limit):
+        if stop.is_set():
+            raise RecordError("其他配额槽已出现阻断错误，停止认证")
+        spec = candidate_for_slot(slot, candidate_index)
+        candidate_dir = output / "certification" / str(slot["slot_id"]) / f"candidate_{candidate_index:04d}"
+        try:
+            rejection_path = candidate_dir / "rejected.json"
+            if rejection_path.exists():
+                rejection = _read_json(rejection_path)
+                expected_identity = {"seed": spec.seed, "spec_hash": spec.spec_hash,
+                                     "candidate_index": candidate_index, "runtime_fingerprint": fingerprint}
+                assert_identical(expected_identity,
+                                 {key: rejection.get(key) for key in expected_identity}, path="已拒绝候选身份")
+                print(f"复用已拒绝候选：{slot['slot_id']} candidate={candidate_index}", flush=True)
+                continue
+            geometry_report = validate_spec_geometry(spec)
+            if not geometry_report["ok"]:
+                raise CandidateRejected("；".join(geometry_report["reasons"]))
+            paths = []
+            for repeat in range(2):
+                if stop.is_set():
+                    raise RecordError("其他配额槽已出现阻断错误，停止认证")
+                prefix = f"repeat_{repeat}_infra_"
+                indices = [int(path.stem.removeprefix(prefix)) for path in candidate_dir.glob(prefix + "*.h5")]
+                infra_attempt = [max(indices, default=-1) + 1]
+
+                def run(candidate: Any) -> Path:
+                    previous = _prior_complete(list(candidate_dir.glob(prefix + "*.h5")), candidate, fingerprint=fingerprint)
+                    if previous is not None:
+                        print(f"复用完整认证记录：{previous[0]}", flush=True)
+                        return previous[0]
+                    path = candidate_dir / f"repeat_{repeat}_infra_{infra_attempt[0]}.h5"
+                    infra_attempt[0] += 1
+                    with job["gpu_limit"]:
+                        if stop.is_set():
+                            raise RecordError("其他配额槽已失败，停止启动后续物理进程")
+                        return run_fresh_process(candidate, path, timeout_seconds=job["timeout_seconds"], render_gpu=render_gpu)
+
+                try:
+                    paths.append(retry_same_spec(spec, run))
+                except Exception as exc:
+                    from ..errors import SceneRejected, TaskExecutionError
+                    if repeat > 0 and isinstance(exc, (SceneRejected, TaskExecutionError, CandidateRejected)):
+                        raise ReproducibilityError("同一规格首次运行成功，重复运行失败，禁止换候选") from exc
+                    raise
+            verify_started = time.monotonic()
+            left, right = (read_episode(path) for path in paths)
+            assert_records_identical(left, right)
+            assert_identical(fingerprint, left.runtime_fingerprint, path="runtime_fingerprint")
+            print(f"ICL_VERIFY seed={spec.seed} GPU={render_gpu} seconds={time.monotonic()-verify_started:.6f}", flush=True)
+            certification = {
+                "passed": True, "repeat_equal": True, "fresh_process": True,
+                "comparison": "dtype_shape_bytes_all_frames_including_rgb",
+                "candidate_index": candidate_index, "render_gpu": render_gpu,
+                "record_paths": [str(path) for path in paths], "content_hash": left.content_hash,
+                "frame_count": len(left.frames), "geometry": geometry_report,
+                "runtime_fingerprint": fingerprint, "source_commit": job["source_commit"],
+            }
+            print(f"已认证 {slot['slot_id']}：seed={spec.seed} GPU={render_gpu}，帧数={len(left.frames)}", flush=True)
+            return spec.to_dict(), certification
+        except Exception as exc:
+            from ..errors import SceneRejected, TaskExecutionError
+            if not isinstance(exc, (SceneRejected, TaskExecutionError, CandidateRejected)):
+                stop.set()
+                raise
+            _exclusive_json(candidate_dir / "rejected.json", {
+                "seed": spec.seed, "spec_hash": spec.spec_hash,
+                "candidate_index": candidate_index, "runtime_fingerprint": fingerprint, "error": str(exc),
+            })
+            print(f"候选不满足任务要求：{slot['slot_id']} candidate={candidate_index}：{exc}", flush=True)
+    stop.set()
+    raise CandidateRejected(f"配额槽 {slot['slot_id']} 用尽 {limit} 个候选，未发布不完整套件")
+
+
 def prepare_suite(
     output_dir: str | Path,
     *,
@@ -330,16 +449,19 @@ def prepare_suite(
     position_config: str | Path | None = None,
     tasks: Sequence[str] | None = None,
     episodes_per_task: int | None = None,
-    workers: int = 1,
+    workers: int = 32,
     max_candidates: int | None = None,
     timeout_seconds: float = 240,
+    gpus: Sequence[int] = (0, 1),
 ) -> Path:
-    """先精确分配槽位，再认证候选；全部通过后才发布不可变套件。"""
-    from ..geometry import validate_spec_geometry
-    from ..suite import candidate_for_slot, load_configs, plan_slots, save_suite
+    """固定 seed 到物理 GPU 的映射，再并行认证；全部通过后才发布。"""
+    from ..suite import EpisodeSpec, load_configs, plan_slots, save_suite
 
     if workers < 1 or (max_candidates is not None and max_candidates < 1):
         raise ValueError("workers 和 max_candidates 必须大于零")
+    if not gpus or any(type(gpu) is not int or gpu < 0 for gpu in gpus) or len(set(gpus)) != len(gpus):
+        raise ValueError("gpus 必须包含不重复的非负物理 GPU 编号")
+    gpus = sorted(gpus)
     output = output_path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     manifest = output / "suite.json"
@@ -350,95 +472,24 @@ def prepare_suite(
     from ..runtime import configure_runtime
     configure_runtime()
     fingerprint = runtime_fingerprint()
+    gpu_fingerprints = {gpu: runtime_fingerprint(render_gpu=gpu) for gpu in gpus}
     commit = source_commit()
     _bind_context(output / "prepare_state.json", {
-        "schema_version": 1,
-        "configs": {"task": configs[0], "position": configs[1]},
-        "slots": slots,
-        "runtime_fingerprint": fingerprint,
+        "schema_version": 1, "configs": {"task": configs[0], "position": configs[1]},
+        "slots": slots, "runtime_fingerprint": fingerprint, "gpus": gpus,
     })
-    stop = threading.Event()
-
-    def certify_slot(slot: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
-        limit = min(int(slot.get("max_candidates", 1024)), max_candidates or 1024)
-        for candidate_index in range(limit):
-            if stop.is_set():
-                raise RecordError("其他配额槽已出现阻断错误，停止认证")
-            spec = candidate_for_slot(slot, candidate_index)
-            candidate_dir = output / "certification" / str(slot["slot_id"]) / f"candidate_{candidate_index:04d}"
-            try:
-                rejection_path = candidate_dir / "rejected.json"
-                if rejection_path.exists():
-                    rejection = _read_json(rejection_path)
-                    expected_identity = {"seed": spec.seed, "spec_hash": spec.spec_hash,
-                                         "candidate_index": candidate_index, "runtime_fingerprint": fingerprint}
-                    assert_identical(expected_identity,
-                                     {key: rejection.get(key) for key in expected_identity}, path="已拒绝候选身份")
-                    print(f"复用已拒绝候选：{slot['slot_id']} candidate={candidate_index}", flush=True)
-                    continue
-                geometry_report = validate_spec_geometry(spec)
-                if not geometry_report["ok"]:
-                    raise CandidateRejected("；".join(geometry_report["reasons"]))
-                paths = []
-                for repeat in range(2):
-                    if stop.is_set():
-                        raise RecordError("其他配额槽已出现阻断错误，停止认证")
-                    prefix = f"repeat_{repeat}_infra_"
-                    indices = [int(path.stem.removeprefix(prefix)) for path in candidate_dir.glob(prefix + "*.h5")]
-                    infra_attempt = [max(indices, default=-1) + 1]
-
-                    def run(candidate: Any) -> Path:
-                        previous = _prior_complete(list(candidate_dir.glob(prefix + "*.h5")), candidate, fingerprint=fingerprint)
-                        if previous is not None:
-                            print(f"复用完整认证记录：{previous[0]}", flush=True)
-                            return previous[0]
-                        path = candidate_dir / f"repeat_{repeat}_infra_{infra_attempt[0]}.h5"
-                        infra_attempt[0] += 1
-                        return run_fresh_process(candidate, path, timeout_seconds=timeout_seconds)
-
-                    try:
-                        paths.append(retry_same_spec(spec, run))
-                    except Exception as exc:
-                        from ..errors import SceneRejected, TaskExecutionError
-                        if repeat > 0 and isinstance(exc, (SceneRejected, TaskExecutionError, CandidateRejected)):
-                            raise ReproducibilityError("同一规格首次运行成功，重复运行失败，禁止换候选") from exc
-                        raise
-                left, right = (read_episode(path) for path in paths)
-                assert_records_identical(left, right)
-                assert_identical(fingerprint, left.runtime_fingerprint, path="runtime_fingerprint")
-                certification = {
-                    "passed": True,
-                    "repeat_equal": True,
-                    "fresh_process": True,
-                    "comparison": "dtype_shape_bytes_all_frames_including_rgb",
-                    "candidate_index": candidate_index,
-                    "record_paths": [str(path) for path in paths],
-                    "content_hash": left.content_hash,
-                    "frame_count": len(left.frames),
-                    "geometry": geometry_report,
-                    "runtime_fingerprint": fingerprint,
-                    "source_commit": commit,
-                }
-                print(f"已认证 {slot['slot_id']}：seed={spec.seed}，帧数={len(left.frames)}", flush=True)
-                return spec, certification
-            except Exception as exc:
-                from ..errors import SceneRejected, TaskExecutionError
-                if not isinstance(exc, (SceneRejected, TaskExecutionError, CandidateRejected)):
-                    stop.set()
-                    raise
-                _exclusive_json(candidate_dir / "rejected.json", {
-                    "seed": spec.seed, "spec_hash": spec.spec_hash,
-                    "candidate_index": candidate_index, "runtime_fingerprint": fingerprint, "error": str(exc),
-                })
-                print(f"候选不满足任务要求：{slot['slot_id']} candidate={candidate_index}：{exc}", flush=True)
-        stop.set()
-        raise CandidateRejected(f"配额槽 {slot['slot_id']} 用尽 {limit} 个候选，未发布不完整套件")
-
-    # 线程仅协调槽位；每个实际仿真始终使用上面的全新 spawn 进程。
-    with ThreadPoolExecutor(max_workers=workers) as executor:
-        results = list(executor.map(certify_slot, slots))
-    specs = [item[0] for item in results]
-    certification = {spec.spec_hash: report for spec, report in results}
+    with _new_manager() as manager:
+        stop = manager.Event()
+        gpu_limits = _gpu_limits(manager, gpus, workers)
+        jobs = [{"slot": slot, "output": str(output), "stop": stop,
+                 "render_gpu": gpus[int(slot["seed"]) % len(gpus)],
+                 "gpu_limit": gpu_limits[gpus[int(slot["seed"]) % len(gpus)]],
+                 "fingerprint": gpu_fingerprints[gpus[int(slot["seed"]) % len(gpus)]],
+                 "max_candidates": max_candidates, "timeout_seconds": timeout_seconds,
+                 "source_commit": commit} for slot in slots]
+        results = _run_process_jobs(_certify_slot_job, jobs, workers, stop)
+    specs = [EpisodeSpec.from_dict(item[0]) for item in results]
+    certification = {spec.spec_hash: result[1] for spec, result in zip(specs, results)}
     assert_identical(fingerprint, runtime_fingerprint(), path="runtime_fingerprint")
     save_suite(manifest, specs, configs, certification)
     return manifest
@@ -455,10 +506,50 @@ def generate_one(
 ) -> dict[str, Any]:
     """断点只接受完整且同规格的记录；任务失败不换 seed。"""
     target = output_path(path, create_parent=True)
-    operation = runner or (lambda candidate, destination: run_fresh_process(candidate, destination, timeout_seconds=timeout_seconds))
+    render_gpu = _render_gpu_from_fingerprint(expected_runtime_fingerprint) if expected_runtime_fingerprint is not None else 0
+    operation = runner or (lambda candidate, destination: run_fresh_process(candidate, destination, timeout_seconds=timeout_seconds, render_gpu=render_gpu))
     record, resumed = _run_staged(spec, target, operation, fingerprint=expected_runtime_fingerprint,
                                  content_hash=expected_content_hash)
     return {"seed": spec.seed, "spec_hash": spec.spec_hash, "path": str(target), "resumed": resumed, "content_hash": record.content_hash}
+
+
+def _render_gpu_from_fingerprint(fingerprint: dict[str, Any]) -> int:
+    gpu = fingerprint.get("render_gpu")
+    if type(gpu) is not int or gpu < 0:
+        raise RecordError("认证记录缺少有效物理 GPU 绑定，禁止换卡重建")
+    return gpu
+
+
+def _generate_spec_job(job: dict) -> dict[str, Any]:
+    """记录的读取、恢复和逐字节核对在独立进程内完成。"""
+    stop = job["stop"]
+    if stop.is_set():
+        raise RecordError("其他生成任务已失败，停止后续生成")
+    try:
+        spec = _spec_class().from_dict(job["episode_spec"])
+        certification = job["certification"]
+        fingerprint = certification.get("runtime_fingerprint")
+        if not fingerprint or not certification.get("content_hash"):
+            raise RecordError("套件认证缺少运行指纹或逐帧内容摘要")
+        render_gpu = _render_gpu_from_fingerprint(fingerprint)
+        if certification.get("render_gpu") != render_gpu:
+            raise RecordError("套件 GPU 绑定与认证指纹不一致")
+        assert_identical(fingerprint, runtime_fingerprint(render_gpu=render_gpu), path="runtime_fingerprint")
+        path = Path(job["output"]) / spec.task_kind / f"seed_{spec.seed}.h5"
+
+        def run(candidate: Any, destination: Path) -> Path:
+            with job["gpu_limit"]:
+                if stop.is_set():
+                    raise RecordError("其他生成任务已失败，停止启动后续物理进程")
+                return run_fresh_process(candidate, destination, timeout_seconds=job["timeout_seconds"], render_gpu=render_gpu)
+
+        result = generate_one(spec, path, expected_content_hash=certification["content_hash"],
+                              expected_runtime_fingerprint=fingerprint, runner=run, timeout_seconds=job["timeout_seconds"])
+        print(f"{'已复用' if result['resumed'] else '已生成'} {spec.task_kind} seed={spec.seed} GPU={render_gpu}", flush=True)
+        return {**result, "render_gpu": render_gpu}
+    except BaseException:
+        stop.set()
+        raise
 
 
 def generate_suite(
@@ -467,7 +558,7 @@ def generate_suite(
     *,
     tasks: Sequence[str] | None = None,
     episodes_per_task: int | None = None,
-    workers: int = 1,
+    workers: int = 32,
     timeout_seconds: float = 240,
 ) -> list[dict[str, Any]]:
     from ..suite import load_suite
@@ -498,21 +589,16 @@ def generate_suite(
     output = output_path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
 
-    def generate(spec: Any) -> dict[str, Any]:
-        path = output / spec.task_kind / f"seed_{spec.seed}.h5"
-        certification = suite["certification"][spec.spec_hash]
-        if not certification.get("content_hash"):
-            raise RecordError("套件认证缺少逐帧内容摘要")
-        if not certification.get("runtime_fingerprint"):
-            raise RecordError("套件认证缺少运行指纹")
-        assert_identical(certification["runtime_fingerprint"], fingerprint, path="runtime_fingerprint")
-        result = generate_one(spec, path, expected_content_hash=certification["content_hash"],
-                              expected_runtime_fingerprint=fingerprint, timeout_seconds=timeout_seconds)
-        print(f"{'已复用' if result['resumed'] else '已生成'} {spec.task_kind} seed={spec.seed}", flush=True)
-        return result
-
-    with ThreadPoolExecutor(max_workers=workers) as executor:
-        return list(executor.map(generate, specs))
+    with _new_manager() as manager:
+        stop = manager.Event()
+        gpus = sorted({_render_gpu_from_fingerprint(suite["certification"][spec.spec_hash]["runtime_fingerprint"]) for spec in specs})
+        gpu_limits = _gpu_limits(manager, gpus, workers)
+        jobs = [{"episode_spec": spec.to_dict(), "certification": suite["certification"][spec.spec_hash],
+                 "gpu_limit": gpu_limits[_render_gpu_from_fingerprint(suite["certification"][spec.spec_hash]["runtime_fingerprint"])],
+                 "output": str(output), "timeout_seconds": timeout_seconds, "stop": stop} for spec in specs]
+        results = _run_process_jobs(_generate_spec_job, jobs, workers, stop)
+    assert_identical(fingerprint, runtime_fingerprint(), path="runtime_fingerprint")
+    return results
 
 
 def replay_episode(path: str | Path, output_file: str | Path, *, timeout_seconds: float = 240) -> dict[str, Any]:
@@ -522,14 +608,15 @@ def replay_episode(path: str | Path, output_file: str | Path, *, timeout_seconds
     configure_runtime()
     if expected.runtime_fingerprint is None:
         raise RecordError("输入记录没有运行指纹，禁止进行认证回放")
-    assert_identical(expected.runtime_fingerprint, runtime_fingerprint(), path="runtime_fingerprint")
+    render_gpu = _render_gpu_from_fingerprint(expected.runtime_fingerprint)
+    assert_identical(expected.runtime_fingerprint, runtime_fingerprint(render_gpu=render_gpu), path="runtime_fingerprint")
     spec = _spec_class().from_dict(expected.episode_spec)
     target = output_path(output_file)
     actual, resumed = _run_staged(
         spec, target,
-        lambda candidate, staging: run_fresh_process(candidate, staging, replay_source=path, timeout_seconds=timeout_seconds),
+        lambda candidate, staging: run_fresh_process(candidate, staging, replay_source=path, timeout_seconds=timeout_seconds, render_gpu=render_gpu),
         fingerprint=expected.runtime_fingerprint, content_hash=expected.content_hash,
     )
     assert_records_identical(expected, actual)
     return {"passed": True, "seed": spec.seed, "spec_hash": spec.spec_hash,
-            "frame_count": len(actual.frames), "path": str(target), "resumed": resumed}
+            "frame_count": len(actual.frames), "path": str(target), "resumed": resumed, "render_gpu": render_gpu}

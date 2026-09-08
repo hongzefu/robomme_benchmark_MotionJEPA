@@ -28,12 +28,12 @@ def array(value):
 
 
 class ICLBaseEnv(BaseEnv):
-    """单环境 CPU 物理、固定 GPU 渲染和按子步执行的安全检查。"""
+    """单环境 CPU 物理、每局固定 GPU 渲染和按子步执行的安全检查。"""
 
     SUPPORTED_ROBOTS = ["panda_wristcam", "panda_stick"]
     TASK_KIND = None
 
-    def __init__(self, *, episode_spec, **kwargs):
+    def __init__(self, *, episode_spec, render_gpu=0, **kwargs):
         from ..suite import EpisodeSpec
 
         self.episode_spec = episode_spec if isinstance(episode_spec, EpisodeSpec) else EpisodeSpec.from_dict(episode_spec)
@@ -43,6 +43,9 @@ class ICLBaseEnv(BaseEnv):
         self.task_kind = self.definition["task_kind"]
         self.robot_kind = self.definition["robot_kind"]
         self.seed = self.definition["seed"]
+        if type(render_gpu) is not int or render_gpu < 0:
+            raise ValueError("render_gpu 必须是非负整数")
+        self.render_gpu = render_gpu
         self.cube_half_size = .02
         self.use_demonstrationwrapper = False
         self.robot_init_qpos_noise = 0
@@ -62,7 +65,7 @@ class ICLBaseEnv(BaseEnv):
         self._evaluation_origin = 0
         self._native_ready = False
         fixed = dict(num_envs=1, robot_uids=self.robot_kind, obs_mode="rgb", control_mode="pd_joint_pos",
-                     render_mode="rgb_array", sim_backend="physx_cpu", render_backend="cuda:0",
+                     render_mode="rgb_array", sim_backend="physx_cpu", render_backend=f"cuda:{render_gpu}",
                      enhanced_determinism=True, reward_mode="none",
                      sim_config={"sim_freq": self.definition["schedule"]["sim_freq"],
                                  "control_freq": self.definition["schedule"]["control_freq"], "scene_config": {
@@ -74,6 +77,15 @@ class ICLBaseEnv(BaseEnv):
         torch.set_num_threads(1)
         torch.use_deterministic_algorithms(True)
         super().__init__(**fixed)
+        actual_device = self.scene.sub_scenes[0].render_system.device
+        if actual_device.cuda_id != self.render_gpu:
+            raise RuntimeError(f"渲染实际设备 {actual_device.cuda_id} 与绑定 GPU {self.render_gpu} 不符")
+        self.render_gpu_pci = actual_device.pci_string
+        from ..io.fingerprint import runtime_fingerprint
+        expected_pci = runtime_fingerprint(render_gpu=self.render_gpu)["render_gpu_pci"]
+        if self.render_gpu_pci != expected_pci:
+            raise RuntimeError(f"渲染实际 PCI {self.render_gpu_pci} 与绑定设备 {expected_pci} 不符")
+        print(f"ICL_RENDER_GPU={self.render_gpu} PCI={self.render_gpu_pci} seed={self.seed}", flush=True)
         srdf = Path(self.agent.urdf_path).with_suffix(".srdf")
         self._allowed_robot_pairs = {frozenset((x.attrib["link1"], x.attrib["link2"]))
                                      for x in ET.parse(srdf).getroot().iter("disable_collisions")}

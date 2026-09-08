@@ -46,6 +46,20 @@ Panda资产随锁定包位于仓库内 `.venv`，GPU0原生渲染检查通过；
 
 实现和四任务小样本闭环已完成，完整96条真实物理认证尚未完成。不能将几何96/96或单条成功当作全量物理、全量复现或全量回放通过。四mode组合验收超过了最初五分钟预估；各模式独立日志、当前源码指纹与完整结果均已保存，后续同类组合不再前台启动。
 
-下一阶段以本轮已提交并推送的源码为基线，在 `gen-icl-cert96-20260907-v1` 会话中启动默认96条认证，套件目录为 `artifacts/generated/robomme-icl/validation24`；然后用已提交的 `run_acceptance.py` 执行跨调度生成、回放、reset和恢复。正式运行尚未启动，不能提前标为通过。
+首轮正式运行已从提交 `3e56b223607801ca0dd596dacbd17b4458d9981b` 启动，四任务基线 smoke 通过。随后默认96条已认证19条时，按用户新增的双GPU要求主动停止，完整套件未发布。旧记录保留于 `artifacts/generated/robomme-icl/validation24`，停止过程见 [stop_context.json](formal-v1/stop_context.json)。主日志 EXIT_CODE=0 来自退出trap，不能代替完整阶段成功证据。
 
 提交前暂存检查发现 `io/__init__.py` 的多余文件末尾空行，移除后运行逻辑不变，但原始字节指纹按设计改变；开发smoke仍保留为开发证据，正式会话会先从新提交重新完成四任务最小认证，再启动96条，不能绕过运行指纹。
+
+## 双GPU并行改造
+
+用户追加原话：“为什么不用2gpu尽可能并行生成？”当前改为 `--gpus 0,1 --workers 32`。每个seed按有序设备列表固定绑定GPU，每卡最多16个物理进程；候选搜索、HDF5读取和严格核对也移入独立进程，协调进程只接收摘要。物理仍为单环境CPU后端，双GPU分别承担对应记录的渲染。
+
+认证指纹现在保存物理GPU编号、UUID和PCI地址；实际SAPIEN渲染设备必须与记录一致。生成、回放、reset和进程重试继承该绑定，不因worker数、运行顺序或空闲设备改变。禁止使用 `CUDA_VISIBLE_DEVICES` 重新映射；设备选择由 `--gpus` 显式控制。
+
+双卡四任务 `prepare --episodes-per-task 1 --gpus 0,1 --workers 2 --max-candidates 64` 已退出0，目录为 `artifacts/generated/robomme-icl/dual-gpu-smoke`。BinFill641帧、VideoUnmaskSwap271帧在GPU0；RouteStick451帧、VideoRepick1045帧在GPU1。每条记录的两个独立物理进程逐位一致。`test_gpu_binding.py` 的三项真实设备检查全部通过，17.92秒；最终新版测试102 passed、4项需显式认证套件的检查skip，33.78秒。
+
+双卡逆序4-worker生成、4-worker回放、逆序4-worker同环境双reset、1-worker断点复用均4/4通过，所有帧与认证逐位一致。四份总结位于 `artifacts/generated/robomme-icl/dual-gpu-acceptance/acceptance/`，日志为 `dual-gpu-{generate,replay,reset,resume}.log`。
+
+`dual-gpu-smoke-samples.csv` 是500ms采样的局部40秒窗口，包含启动，不能用作稳态吞吐结论。正式双卡运行会记录完整资源曲线、每条轨迹的构建/执行/写入时间，以及CPU核数、存储介质、worker数和单episode batch size。
+
+下一次正式运行使用新的已提交基线、新套件目录 `artifacts/generated/robomme-icl/validation24-dualgpu` 和登记会话 `gen-icl-cert96-dualgpu-20260907-v2`。先完成双卡smoke闭环，再运行96条认证及跨调度验证；当前不宣称全量通过。

@@ -2,12 +2,15 @@
 
 from dataclasses import dataclass
 import copy
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import nullcontext
 from pathlib import Path
 import shutil
 import subprocess
 import tempfile
 import sys
 import types
+import threading
 
 import h5py
 import numpy as np
@@ -171,8 +174,9 @@ def _fake_suite(monkeypatch):
     """只替换清单编译入口，仍然跑真实认证调度及 HDF5 往返。"""
     module = types.ModuleType("robomme_icl.suite")
     module.load_configs = lambda *_: ({}, {})
-    module.plan_slots = lambda *_, **__: [{"slot_id": "BinFill-easy-0", "max_candidates": 3}]
+    module.plan_slots = lambda *_, **__: [{"slot_id": "BinFill-easy-0", "max_candidates": 3, "seed": 1900000001}]
     module.candidate_for_slot = lambda _, index: FakeSpec(seed=1900000001 + index)
+    module.EpisodeSpec = FakeSpec
     saved = []
 
     def save(path, specs, configs, certification):
@@ -182,8 +186,10 @@ def _fake_suite(monkeypatch):
     module.save_suite = save
     monkeypatch.setitem(sys.modules, "robomme_icl.suite", module)
     from robomme_icl.io import pipeline
-    monkeypatch.setattr(pipeline, "runtime_fingerprint", lambda: {"testing": "fixed"})
+    monkeypatch.setattr(pipeline, "runtime_fingerprint", lambda **kwargs: {"testing": "fixed", "render_gpu": kwargs.get("render_gpu")})
     monkeypatch.setattr(pipeline, "source_commit", lambda: "测试基线")
+    monkeypatch.setattr(pipeline, "_new_manager", lambda: nullcontext(types.SimpleNamespace(Event=threading.Event, BoundedSemaphore=threading.BoundedSemaphore)))
+    monkeypatch.setattr(pipeline, "ProcessPoolExecutor", lambda **kwargs: ThreadPoolExecutor(max_workers=min(kwargs["max_workers"], 2)))
     return saved
 
 
@@ -199,7 +205,7 @@ def test_prepare_rejects_geometry_then_certifies_same_slot_candidate(local_dir, 
 
     def run(spec, destination, **_):
         calls.append((spec.seed, spec.spec_hash))
-        return write_episode(destination, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed"})
+        return write_episode(destination, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
     monkeypatch.setattr(pipeline, "run_fresh_process", run)
     manifest = pipeline.prepare_suite(local_dir / "prepared", max_candidates=3)
@@ -221,7 +227,7 @@ def test_prepare_reproducibility_mismatch_never_tries_next_candidate(local_dir, 
         calls.append(spec.seed)
         frames = FakeEnv().frames()
         frames[0]["observation"]["base_rgb"][0, 0, 0] = len(calls)
-        return write_episode(destination, spec, frames, runtime_fingerprint={"testing": "fixed"})
+        return write_episode(destination, spec, frames, runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
     monkeypatch.setattr(pipeline, "run_fresh_process", run)
     with pytest.raises(ReproducibilityError, match="字节不同"):
@@ -252,6 +258,7 @@ def test_public_cli_flags_match_approved_interface():
     parser = build_parser()
     prepare = parser.parse_args(["prepare", "--output", "artifacts/prepared", "--tasks", "BinFill", "--episodes-per-task", "1"])
     assert prepare.output_dir == Path("artifacts/prepared") and prepare.tasks == ["BinFill"]
+    assert prepare.gpus == [0, 1] and prepare.workers == 32
     replay = parser.parse_args(["replay", "--h5", "artifacts/input.h5", "--output", "artifacts/replayed.h5"])
     assert replay.input == Path("artifacts/input.h5")
     generate = parser.parse_args(["generate", "--suite", "artifacts/suite.json", "--output-dir", "artifacts/generated"])
@@ -263,7 +270,7 @@ def test_public_api_uses_certified_spec_and_forwards_wrapper_options(monkeypatch
     from robomme_icl.io import fingerprint
 
     spec = FakeSpec()
-    catalog = {"certification": {spec.spec_hash: {"runtime_fingerprint": {"fixed": True}}}}
+    catalog = {"certification": {spec.spec_hash: {"runtime_fingerprint": {"fixed": True}, "render_gpu": 1}}}
     monkeypatch.setattr(api, "configure_runtime", lambda: None)
     monkeypatch.setattr(suite, "load_suite", lambda path: catalog)
     seen = []
@@ -273,10 +280,13 @@ def test_public_api_uses_certified_spec_and_forwards_wrapper_options(monkeypatch
         return spec
 
     monkeypatch.setattr(suite, "find_spec", find)
-    monkeypatch.setattr(fingerprint, "runtime_fingerprint", lambda: {"fixed": True})
+    monkeypatch.setattr(fingerprint, "runtime_fingerprint", lambda **kwargs: {"fixed": True})
     monkeypatch.setattr(api, "make_env_from_spec", lambda value, **kwargs: seen.append((value, kwargs)) or "新环境")
     assert api.make_env(task=spec.task_kind, seed=spec.seed, suite="suite.json", record_demonstration=False) == "新环境"
-    assert seen == [(spec, {"record_demonstration": False})]
+    assert seen == [(spec, {"record_demonstration": False, "render_gpu": 1})]
+    with pytest.raises(ValueError, match="不能更改"):
+        api.make_env(task=spec.task_kind, seed=spec.seed, suite="suite.json", render_gpu=0)
+    assert len(seen) == 1
 
 
 def test_public_api_rejects_changed_runtime_before_creating_environment(monkeypatch):
@@ -286,9 +296,9 @@ def test_public_api_rejects_changed_runtime_before_creating_environment(monkeypa
 
     spec = FakeSpec()
     monkeypatch.setattr(api, "configure_runtime", lambda: None)
-    monkeypatch.setattr(suite, "load_suite", lambda _: {"certification": {spec.spec_hash: {"runtime_fingerprint": {"driver": "原版本"}}}})
+    monkeypatch.setattr(suite, "load_suite", lambda _: {"certification": {spec.spec_hash: {"runtime_fingerprint": {"driver": "原版本"}, "render_gpu": 0}}})
     monkeypatch.setattr(suite, "find_spec", lambda *args, **kwargs: spec)
-    monkeypatch.setattr(fingerprint, "runtime_fingerprint", lambda: {"driver": "新版本"})
+    monkeypatch.setattr(fingerprint, "runtime_fingerprint", lambda **kwargs: {"driver": "新版本"})
     monkeypatch.setattr(api, "make_env_from_spec", lambda *_, **__: pytest.fail("指纹错误时禁止创建环境"))
     with pytest.raises(PublicReproducibilityError, match="指纹不同"):
         api.make_env(task=spec.task_kind, seed=spec.seed, suite="suite.json")
@@ -393,7 +403,7 @@ def test_prepare_resume_skips_rejected_candidate_and_completed_repeat(local_dir,
         calls.append((spec.seed, path.name))
         if path.name.startswith("repeat_1_"):
             raise RuntimeError("模拟认证父流程中断")
-        return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed"})
+        return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
     output = local_dir / "prepared"
     monkeypatch.setattr(pipeline, "run_fresh_process", first_run)
@@ -403,7 +413,7 @@ def test_prepare_resume_skips_rejected_candidate_and_completed_repeat(local_dir,
 
     def resumed_run(spec, path, **_):
         calls.append((spec.seed, path.name))
-        return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed"})
+        return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
     monkeypatch.setattr(pipeline, "run_fresh_process", resumed_run)
     manifest = pipeline.prepare_suite(output, max_candidates=3)
@@ -431,7 +441,7 @@ def test_prepare_resume_rejects_changed_fingerprint_before_running(local_dir, mo
     with pytest.raises(RuntimeError, match="认证中断"):
         pipeline.prepare_suite(output)
     if change == "fingerprint":
-        monkeypatch.setattr(pipeline, "runtime_fingerprint", lambda: {"testing": "changed"})
+        monkeypatch.setattr(pipeline, "runtime_fingerprint", lambda **kwargs: {"testing": "changed"})
     else:
         monkeypatch.setattr(sys.modules["robomme_icl.suite"], "load_configs", lambda *_: ({"changed": True}, {}))
     monkeypatch.setattr(pipeline, "run_fresh_process", lambda *_, **__: pytest.fail("错误指纹禁止运行"))
@@ -464,10 +474,10 @@ def test_partial_replay_retries_in_new_staging_with_same_spec_and_actions(local_
     from robomme_icl.io import pipeline
 
     spec, frames = FakeSpec(), FakeEnv().frames()
-    source = write_episode(local_dir / "source.h5", spec, frames, runtime_fingerprint={"testing": "fixed"})
+    source = write_episode(local_dir / "source.h5", spec, frames, runtime_fingerprint={"testing": "fixed", "render_gpu": 0})
     final = local_dir / "replayed.h5"
     monkeypatch.setattr(pipeline, "_spec_class", lambda: FakeSpec)
-    monkeypatch.setattr(pipeline, "runtime_fingerprint", lambda: {"testing": "fixed"})
+    monkeypatch.setattr(pipeline, "runtime_fingerprint", lambda **kwargs: {"testing": "fixed", "render_gpu": 0})
     calls = []
 
     def run(candidate, path, *, replay_source, **_):
@@ -477,7 +487,7 @@ def test_partial_replay_retries_in_new_staging_with_same_spec_and_actions(local_
             _write_partial(path)
             raise OSError("模拟回放写出中断")
         return write_episode(path, candidate, read_episode(replay_source).frames,
-                             runtime_fingerprint={"testing": "fixed"})
+                             runtime_fingerprint={"testing": "fixed", "render_gpu": 0})
 
     monkeypatch.setattr(pipeline, "run_fresh_process", run)
     result = pipeline.replay_episode(source, final)
@@ -500,7 +510,7 @@ def test_first_success_then_repeat_task_failure_stops_without_selecting_another_
         calls.append(spec.seed)
         if len(calls) == 2:
             raise TaskExecutionError("相同候选第二次物理执行失败")
-        return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed"})
+        return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
     monkeypatch.setattr(pipeline, "run_fresh_process", run)
     with pytest.raises(ReproducibilityError, match="首次运行成功"):
@@ -508,3 +518,79 @@ def test_first_success_then_repeat_task_failure_stops_without_selecting_another_
     assert calls == [1900000001, 1900000001]
     assert saved == []
     assert not list((local_dir / "prepared").rglob("rejected.json"))
+
+
+def test_gpu_binding_is_identical_across_worker_counts_and_gpu_argument_order(local_dir, monkeypatch):
+    from robomme_icl import geometry
+    from robomme_icl.io import pipeline
+
+    saved = _fake_suite(monkeypatch)
+    module = sys.modules["robomme_icl.suite"]
+    module.plan_slots = lambda *_, **__: [
+        {"slot_id": f"BinFill/easy/{index}", "max_candidates": 1, "seed": 1900000000 + index}
+        for index in range(2)
+    ]
+    module.candidate_for_slot = lambda slot, _: FakeSpec(seed=slot["seed"])
+    monkeypatch.setattr(geometry, "validate_spec_geometry", lambda _: {"ok": True, "reasons": []})
+    calls = []
+
+    def run(spec, path, *, render_gpu, **_):
+        assert render_gpu == spec.seed % 2
+        calls.append((spec.seed, render_gpu))
+        return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": render_gpu})
+
+    monkeypatch.setattr(pipeline, "run_fresh_process", run)
+    pipeline.prepare_suite(local_dir / "one", workers=1, gpus=[1, 0])
+    pipeline.prepare_suite(local_dir / "four", workers=4, gpus=[0, 1])
+    assert len(calls) == 8
+    assert set(calls) == {(1900000000, 0), (1900000001, 1)}
+    for specs, reports in saved:
+        assert [reports[spec.spec_hash]["render_gpu"] for spec in specs] == [0, 1]
+
+
+def test_gpu_slot_limits_cap_each_card_and_keep_single_worker_valid():
+    from robomme_icl.io.pipeline import _gpu_limits
+
+    capacities = []
+    manager = types.SimpleNamespace(BoundedSemaphore=lambda value: capacities.append(value) or value)
+    assert _gpu_limits(manager, [0, 1], 32) == {0: 16, 1: 16}
+    assert _gpu_limits(manager, [0, 1], 1) == {0: 1, 1: 1}
+    assert capacities == [16, 16, 1, 1]
+
+
+def test_generation_inherits_gpu_from_frozen_record_fingerprint(local_dir, monkeypatch):
+    from robomme_icl.io import pipeline
+
+    spec = FakeSpec()
+    fingerprint = {"render_gpu": 1, "render_gpu_uuid": "GPU-one", "render_gpu_pci": "0000:02:00.0"}
+    cards = []
+
+    def run(candidate, path, *, render_gpu, **_):
+        cards.append(render_gpu)
+        return write_episode(path, candidate, FakeEnv().frames(), runtime_fingerprint=fingerprint)
+
+    monkeypatch.setattr(pipeline, "run_fresh_process", run)
+    generate_one(spec, local_dir / "bound.h5", expected_runtime_fingerprint=fingerprint)
+    assert cards == [1]
+
+
+def test_per_gpu_fingerprint_normalizes_pci_and_rejects_cuda_mapping(monkeypatch):
+    from robomme_icl.io import fingerprint
+
+    monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
+    monkeypatch.setattr(fingerprint.subprocess, "run", lambda *args, **kwargs: types.SimpleNamespace(stdout=(
+        "0, GPU-zero, RTX, fixed-driver, 00000000:01:00.0\n"
+        "1, GPU-one, RTX, fixed-driver, 00000000:02:00.0\n")))
+    monkeypatch.setattr(fingerprint, "_tree_hash", lambda _: "source")
+    monkeypatch.setattr(fingerprint, "_file_hash", lambda _: "lock")
+    monkeypatch.setattr(fingerprint.importlib.metadata, "version", lambda _: "fixed-version")
+    common = fingerprint.runtime_fingerprint()
+    selected = fingerprint.runtime_fingerprint(render_gpu=1)
+    assert common["render_gpu"] is None and common["render_gpu_pci"] is None
+    assert selected["render_gpu"] == 1 and selected["render_gpu_uuid"] == "GPU-one"
+    assert selected["render_gpu_pci"] == "0000:02:00.0"
+    with pytest.raises(ValueError, match="可用的物理"):
+        fingerprint.runtime_fingerprint(render_gpu=2)
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "1")
+    with pytest.raises(ValueError, match="CUDA_VISIBLE_DEVICES"):
+        fingerprint.runtime_fingerprint(render_gpu=0)

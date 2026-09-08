@@ -282,6 +282,10 @@ def validate_spec_geometry(spec):
     reasons, minimum, subdivisions = [], math.inf, 0
     poses = {a["id"]: _pose(a) for a in actors}
     for actor in actors:
+        if "initial_support_rejection" in actor:
+            # 编译器已证明该位置层没有正宽可采区间；几何触边容差不能把
+            # 空交集或零宽层重新认证成合法的确定性聚点。
+            reasons.append(f"初始支持层不可采样: {actor['id']} {actor['initial_support_rejection']}")
         support = actor.get("initial_xy_bounds")
         if support is not None:
             # 初始支持框是位置分布的外框，不是障碍物；角点只需位于框内，

@@ -228,7 +228,7 @@ command -v uv
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| robomme-ICL 独立四任务 | 实现及小样本闭环完成；正式96条待启动 | 新版94项常规测试通过；当前源码四任务各一条双进程、生成、回放、连续reset和恢复均通过；物体几何96/96（29.636秒，仅几何）；旧源码及uv.lock保持不变 | 提交推送后登记 `gen-icl-cert96-20260907-v1`，从干净代码基线启动正式96条认证与跨调度验收 |
+| robomme-ICL 独立四任务 | 双GPU小样本闭环通过 | 已改固定seed→GPU绑定、32并发独立进程和分散HDF5核对；双卡四任务两次认证、生成/回放/连续reset/断点复用均4/4逐位通过；新版测试102 passed、4 skipped（33.78秒）；单卡正式19条证据保留 | 提交双卡新基线，运行完整96条认证及跨调度复现；原版源码不变 |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
 | 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
 | 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
@@ -266,6 +266,31 @@ command -v uv
 - 意外：首次独立位置层86/96，增加规划阶段约束配对；初始角点外框引出7个位置/yaw层冲突，保持边际层配额重新匹配。首次真实BinFill发生夹爪/孔板接触，改孔口上方释放；Route修目标高度语义；VUS双进程位姿曾分叉，修set遍历顺序与冻结端点。原失败报告/HDF5保留，未放宽安全或复现判据。
 - 运行管理修正：四mode小样本组合实际超过最初五分钟预估，全部原始证据已保存；后续组合和96条运行均在提交基线后放入tmux，不再前台启动。
 - 下一步：提交并立即推送本轮明确文件；确认干净同步后，登记完整会话名 `gen-icl-cert96-20260907-v1`，启动默认96条正式认证与完整验收。
+
+### 2026-09-07 22:14 America/Detroit — robomme-ICL 已提交源码基线的正式运行启动
+
+- 状态：运行中。提交 `3e56b223607801ca0dd596dacbd17b4458d9981b` 已推送 `origin/newtask-v1`；启动前 `git status -sb` 干净且 HEAD/upstream 相同，原版源码树仍为 `1d0154117e58c783cd3466dbad910aeaaff573a8`。
+- 会话：`gen-icl-cert96-20260907-v1`；只允许管理该明确登记会话，不碰启动前已存在的七个其他会话。会话创建后 `tmux has-session -t =gen-icl-cert96-20260907-v1` 成功。
+- 启动入口：`bash .cache/icl-formal-v1.sh`；脚本全文和SHA-256、源码、依赖、设备、配置、随机种子域、worker数已写入 `artifacts/reports/robomme-icl/formal-v1/run_context.json`。所有阶段使用uv、PYTHONUNBUFFERED、pipefail和tee，并写EXIT_CODE。
+- 顺序：提交基线四任务最小认证 → 默认96条prepare（4 workers）→ 逆序generate（1 worker）→ resume（4 workers）→ replay（4 workers）→ 逆序同环境reset（4 workers）。任一阶段失败立即停止后续阶段，不自动放宽判据。
+- 输出：`artifacts/generated/robomme-icl/validation24/` 与 `validation24-verification/`；日志 `artifacts/reports/robomme-icl/formal-v1/`。当前日志处于baseline-smoke阶段；尚无96条物理通过结论。
+
+### 2026-09-07 America/Detroit — 用户追加双GPU并行要求，停止单卡版本并改造调度
+
+- 用户原话：“为什么不用2gpu尽可能并行生成？”这项最新指令替代先前固定GPU0的运行选择，其余任务与安全/复现要求保留。
+- 现场：32个可用CPU核、约320GiB available内存；两张RTX6000 Ada各46,068MiB显存，采样时GPU0使用约4GiB、GPU1约9MiB。单次0%利用率采样不作为持续吞吐结论。
+- 停止：仅执行 `tmux kill-session -t =gen-icl-cert96-20260907-v1`，前后各 `tmux ls`，差集恰为本轮登记会话，其他七个会话不变；已记录的旧主进程及子进程检查均已退出。停止前尝试查询pane_pid返回空值，未能记录完整进程树，原错误保留；不因此清理任何未确认进程。
+- 保留证据：停止时已有19条双进程认证成功，未发布完整96条suite；目录和所有记录不删除。主日志退出trap写了EXIT_CODE=0，但没有完整阶段FINISH，必须按“用户要求中断”处理，不能标记全量成功。摘要见 `artifacts/reports/robomme-icl/formal-v1/stop_context.json`。
+- 改造：设备通过 `--gpus 0,1` 选择，每seed固定绑定GPU；认证/生成/回放恢复同一GPU及UUID指纹。默认总并发32，在各独立进程内完成仿真与HDF5验证，主进程只收摘要。先双卡小样本验证，再在新提交基线启动完整运行。
+
+### 2026-09-07 America/Detroit — 双GPU实现及小样本验证
+
+- 新机制：`prepare --gpus 0,1 --workers 32`，固定每seed物理设备编号、UUID和PCI；SAPIEN实际设备也核对PCI。禁止 `CUDA_VISIBLE_DEVICES` 映射，生成、回放、reset和进程重试都继承认证绑定。每卡最多16个物理进程，HDF5解码和严格验证分散到独立进程。
+- 真实smoke：`prepare --episodes-per-task 1 --gpus 0,1 --workers 2 --max-candidates 64` 退出0；GPU0的BinFill641帧/VUS271帧、GPU1的RouteStick451帧/VideoRepick1045帧，各两次独立进程逐位一致。`generate --workers 4` 逆序验收也4/4，与认证逐位一致。数据分别位于 `artifacts/generated/robomme-icl/dual-gpu-smoke`、`dual-gpu-acceptance`，日志位于 `artifacts/reports/robomme-icl/dual-gpu-*.log`。
+- 测试：`uv run --no-sync python -m pytest tests/robomme_icl/ -q` 为102 passed、4 skipped、33.78秒；包含3项真实双卡/重映射检查。4个skip要求显式认证套件，实际reset由正式验收补足。旧源码树仍为 `1d0154117e58c783cd3466dbad910aeaaff573a8`，uv.lock不变。
+- 编译证据：`PYTHONHASHSEED=0/1/42` 的三个uv新进程编译96条，全部spec_hash一致；见 `artifacts/reports/robomme-icl/compiler_hashseed_check.json`。新增可复现图表入口 `tests/robomme_icl/plot_suite.py`，只从认证suite绘制实际次数与位置，四任务smoke出图验证通过。
+- 闭环补验：4-worker回放、逆序4-worker同环境双reset、1-worker断点复用均4/4逐位通过；全部4种模式的summary.json保存于上述dual-gpu-acceptance/acceptance目录。失败后等待设备锁的任务增加停止检查，高并发墙钟超时通过driver显式记录；定向mock和help验证通过。
+- 下一步：提交并立即推送2.22基线；以登记会话 `gen-icl-cert96-dualgpu-20260907-v2` 运行96条，输出新目录 `validation24-dualgpu`，保留上一版中断产物，不复用不匹配的运行指纹。
 
 ### 2026-07-13 — `/init`
 

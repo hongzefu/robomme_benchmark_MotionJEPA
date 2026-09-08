@@ -35,18 +35,28 @@ def _tree_hash(root: Path) -> str:
     return hashlib.sha256(json.dumps(files, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
 
 
-def runtime_fingerprint() -> dict:
+def runtime_fingerprint(*, render_gpu: int | None = None) -> dict:
     """只读取本仓库源码、当前环境包元数据和本机设备，不访问 NFS。"""
     root = repository_root()
     result = subprocess.run(
-        ["nvidia-smi", "--query-gpu=uuid,name,driver_version", "--format=csv,noheader"],
+        ["nvidia-smi", "--query-gpu=index,uuid,name,driver_version,pci.bus_id", "--format=csv,noheader"],
         check=True, capture_output=True, text=True, timeout=10,
     )
     devices = sorted(line.strip() for line in result.stdout.splitlines() if line.strip())
     if not devices:
         raise RuntimeError("没有可认证的本机 GPU")
+    visibility = os.environ.get("CUDA_VISIBLE_DEVICES")
+    if visibility is not None:
+        raise ValueError("显式 render_gpu 使用物理 GPU 编号；当前设置了 CUDA_VISIBLE_DEVICES 映射，请清除映射后运行")
+    by_index = {}
+    for line in devices:
+        index, uuid, _, _, pci = [part.strip() for part in line.split(",")]
+        domain, bus, device = pci.lower().rsplit(":", 2)
+        by_index[int(index)] = {"uuid": uuid, "pci": f"{int(domain, 16):04x}:{bus.zfill(2)}:{device}"}
+    if render_gpu is not None and (type(render_gpu) is not int or render_gpu not in by_index):
+        raise ValueError(f"render_gpu 必须是可用的物理 GPU 编号：{sorted(by_index)}")
     return {
-        "fingerprint_version": 1,
+        "fingerprint_version": 2,
         "legacy_source_hash": _tree_hash(root / "src" / "robomme"),
         "icl_source_hash": _tree_hash(root / "src" / "robomme_icl"),
         "uv_lock_hash": _file_hash(root / "uv.lock"),
@@ -55,7 +65,10 @@ def runtime_fingerprint() -> dict:
         "machine": platform.machine(),
         "packages": {name: importlib.metadata.version(name) for name in _PACKAGES},
         "gpu_devices": devices,
-        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "cuda_visible_devices": visibility,
+        "render_gpu": render_gpu,
+        "render_gpu_uuid": None if render_gpu is None else by_index[render_gpu]["uuid"],
+        "render_gpu_pci": None if render_gpu is None else by_index[render_gpu]["pci"],
         "thread_environment": {name: os.environ.get(name) for name in (
             "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS",
         )},

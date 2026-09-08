@@ -12,16 +12,23 @@ def make_env(*, task, seed, suite, **kwargs):
     catalog = load_suite(suite)
     spec = find_spec(catalog, task=task, seed=seed)
     certification = catalog["certification"][spec.spec_hash]
-    fingerprint = runtime_fingerprint()
+    if "render_gpu" not in certification:
+        raise ValueError("旧认证未记录固定 GPU 绑定，请用当前版本重新 prepare")
+    render_gpu = certification["render_gpu"]
+    if "render_gpu" in kwargs and kwargs.pop("render_gpu") != render_gpu:
+        raise ValueError("不能更改已认证 seed 的 GPU 绑定")
+    fingerprint = runtime_fingerprint(render_gpu=render_gpu)
     if certification["runtime_fingerprint"] != fingerprint:
         from .errors import ReproducibilityError
         raise ReproducibilityError("当前运行环境与套件认证指纹不同")
-    return make_env_from_spec(spec, **kwargs)
+    return make_env_from_spec(spec, render_gpu=render_gpu, **kwargs)
 
 
-def make_env_from_spec(spec, *, record_demonstration=True):
+def make_env_from_spec(spec, *, record_demonstration=True, render_gpu=0):
     """认证器内部入口：创建待认证候选，不把其视作已发布清单。"""
     configure_runtime()
+    if type(render_gpu) is not int or render_gpu < 0:
+        raise ValueError("render_gpu 必须是非负的物理 GPU 序号")
     import gymnasium as gym
     from .envs import register_envs
     from .envs.wrapper import ICLJointAngleEnv
@@ -29,5 +36,5 @@ def make_env_from_spec(spec, *, record_demonstration=True):
 
     spec = spec if isinstance(spec, EpisodeSpec) else EpisodeSpec.from_dict(spec)
     register_envs()
-    raw = gym.make(spec.env_id, episode_spec=spec, disable_env_checker=True)
+    raw = gym.make(spec.env_id, episode_spec=spec, render_gpu=render_gpu, disable_env_checker=True)
     return ICLJointAngleEnv(raw, record_demonstration=record_demonstration)

@@ -15,6 +15,16 @@ def _task_list(value: str) -> list[str]:
     return names
 
 
+def _gpu_list(value: str) -> list[int]:
+    try:
+        values = [int(item.strip()) for item in value.split(",")]
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("gpus 必须是逗号分隔的非负物理 GPU 编号") from exc
+    if not values or any(item < 0 for item in values) or len(set(values)) != len(values):
+        raise argparse.ArgumentTypeError("gpus 必须包含不重复的非负编号")
+    return sorted(values)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="robomme-ICL：认证冻结套件，再生成和严格回放")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -23,13 +33,14 @@ def build_parser() -> argparse.ArgumentParser:
     prepare.add_argument("--position-config", type=Path)
     prepare.add_argument("--output", dest="output_dir", type=Path, required=True)
     prepare.add_argument("--max-candidates", type=int, help="诊断时缩小每个配额槽的候选上限")
+    prepare.add_argument("--gpus", type=_gpu_list, default=[0, 1], help="物理 GPU 编号，默认 0,1；按 seed 固定绑定")
     generate = commands.add_parser("generate", help="消费已认证套件；断点续跑不会改变 seed")
     generate.add_argument("--suite", type=Path, required=True)
     generate.add_argument("--output-dir", type=Path, required=True)
     for command in (prepare, generate):
         command.add_argument("--tasks", type=_task_list)
         command.add_argument("--episodes-per-task", type=int)
-        command.add_argument("--workers", type=int, default=1)
+        command.add_argument("--workers", type=int, default=32)
         command.add_argument("--timeout-seconds", type=float, default=240)
     replay = commands.add_parser("replay", help="从新版 HDF5 独立重建规格并逐帧严格回放")
     replay.add_argument("--h5", dest="input", type=Path, required=True)
@@ -49,6 +60,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.output_dir, task_config=args.task_config, position_config=args.position_config,
             tasks=args.tasks, episodes_per_task=args.episodes_per_task, workers=args.workers,
             max_candidates=args.max_candidates, timeout_seconds=args.timeout_seconds,
+            gpus=args.gpus,
         )
         print(f"已发布认证套件：{result}")
     elif args.command == "generate":
