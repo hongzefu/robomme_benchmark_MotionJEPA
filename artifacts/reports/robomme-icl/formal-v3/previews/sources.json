@@ -1,0 +1,74 @@
+[
+  {
+    "task": "BinFill",
+    "seed": 2000000000,
+    "spec_hash": "d3f78dde5b1882879dbc90f76194c56986e7e14839c6a6eed88b44ed1fad7932",
+    "frame": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3/certification/BinFill/easy/0000/candidate_0000/repeat_1_infra_0.h5",
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3/previews/BinFill-frame0.png",
+    "pixel_sha256": "0615725f0c2313ce5c7dec53512eab3ea30b10cce47ab5782d2da70486d802be"
+  },
+  {
+    "task": "BinFill",
+    "seed": 2000000000,
+    "spec_hash": "d3f78dde5b1882879dbc90f76194c56986e7e14839c6a6eed88b44ed1fad7932",
+    "frame": 150,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3/certification/BinFill/easy/0000/candidate_0000/repeat_1_infra_0.h5",
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3/previews/BinFill-frame150.png",
+    "pixel_sha256": "9ffde5a9659fc0a64350e70f2cca05515d199faeafb6e64a75de5791f8bb504e"
+  },
+  {
+    "task": "RouteStick",
+    "seed": 2000000024,
+    "spec_hash": "8e8d5ccf89f21e8c3d78638fd834904e69d0f44165fe66ff0bc3e8b7a2211382",
+    "frame": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3/certification/RouteStick/easy/0000/candidate_0000/repeat_1_infra_0.h5",
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3/previews/RouteStick-frame0.png",
+    "pixel_sha256": "63782b5a8d9f16447296c360cf3a1f58551913a307f84b5889cbd40ded0737b3"
+  },
+  {
+    "task": "RouteStick",
+    "seed": 2000000024,
+    "spec_hash": "8e8d5ccf89f21e8c3d78638fd834904e69d0f44165fe66ff0bc3e8b7a2211382",
+    "frame": 150,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3/certification/RouteStick/easy/0000/candidate_0000/repeat_1_infra_0.h5",
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3/previews/RouteStick-frame150.png",
+    "pixel_sha256": "da7bc64fa456d68547e3d0b826402a48f64c75aaec393da6930f8277c351defc"
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "seed": 2000000048,
+    "spec_hash": "4920d43c73a6eb28f64c80d2db9f1481775ffa4c7b40ae08132533c817801c89",
+    "frame": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3/certification/VideoUnmaskSwap/easy/0000/candidate_0000/repeat_1_infra_0.h5",
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3/previews/VideoUnmaskSwap-frame0.png",
+    "pixel_sha256": "21cf46e8f7ecf068fdaf7067bbb1716e0eb322c4463f06f73bd880ef7aec51bf"
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "seed": 2000000048,
+    "spec_hash": "4920d43c73a6eb28f64c80d2db9f1481775ffa4c7b40ae08132533c817801c89",
+    "frame": 150,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3/certification/VideoUnmaskSwap/easy/0000/candidate_0000/repeat_1_infra_0.h5",
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3/previews/VideoUnmaskSwap-frame150.png",
+    "pixel_sha256": "b0a9366c49987e6f139eb9d3c9c298dcd35e5130caf7db1e781eb01a03a04086"
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 2000000072,
+    "spec_hash": "4b87613f61b793e8f6afcf379946a74a8416c8524777a62ee4138e8c58a9c29c",
+    "frame": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3/certification/VideoRepick/easy/0000/candidate_0000/repeat_1_infra_0.h5",
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3/previews/VideoRepick-frame0.png",
+    "pixel_sha256": "ae2f8d33bb0c9144ebbad2d5b61040239c3762b26320537a27d3aec35706bfec"
+  },
+  {
+    "task": "VideoRepick",
+    "seed": 2000000072,
+    "spec_hash": "4b87613f61b793e8f6afcf379946a74a8416c8524777a62ee4138e8c58a9c29c",
+    "frame": 150,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3/certification/VideoRepick/easy/0000/candidate_0000/repeat_1_infra_0.h5",
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3/previews/VideoRepick-frame150.png",
+    "pixel_sha256": "03fdae4fef57925ce368324a6e04b5426b42a060c7a918421fe112b7a2957599"
+  }
+]

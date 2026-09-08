@@ -228,7 +228,7 @@ command -v uv
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| robomme-ICL 独立四任务 | 修复BinFill初始预填孔边界并复测 | 双卡32worker已认证84条后为修复明确边界优雅中断，退出130，完整suite未发布；已完成22个BinFill初态检查无预填；修复初始硬闸、孔外进入资格及CPU/I/O池取消开销 | 新源码四任务smoke及真实中断重试验证后提交新基线，重新认证96条并完成生成/回放/reset |
+| robomme-ICL 独立四任务 | 全量实现与验收完成 | e34474a基线96条认证、32/16-worker生成、断点、回放、连续reset均逐位通过；每遍63689帧，两卡各48条；114轻量及4项显式真实复现通过；正式图表/签名/480个HDF5头核对通过 | 以formal-v3/FINAL.md为交付证据；保持原版和旧数据不变；本轮报告提交后立即推送 |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
 | 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
 | 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
@@ -311,6 +311,54 @@ command -v uv
 - 性能证据：此前双卡32worker观测存在NVIDIA驱动写锁等待，32核总体未饱和、磁盘和显存未耗尽；不能声称32最优。数据与限制见formal-dualgpu-v2/performance_snapshot.md。
 - 修复后复测完成：新版114 passed、4 skipped（36.14秒）；新几何96/96（29.372秒）；smoke-v3四任务各两独立进程4/4逐位通过。显式套件的单pytest进程、跨两卡、各连续reset两次为4 passed（203.94秒）；四个合法smoke与修复前原始帧逐位相同，但源码指纹不同，不能复用旧认证。
 - 真实中断重试：`run_interruption.py --interrupt-after 12` 在GPU子进程已启动后强制超时，新版机制自动同seed/spec/GPU重试，271帧与认证一致，随后完整文件复用成功；报告interruption-v3.json。下一步提交2.23干净基线，再启动登记会话 `gen-icl-cert96-dualgpu-20260907-v3`；同一冻结96条安排32/16 worker逆序生成对照，不预先宣称哪个更快。
+
+### 2026-09-07 23:25 America/Detroit — v3双卡96条正式运行启动
+
+- 启动基线：`e34474a6304b917b44cedae129ac621ddd52a430` 已提交并立即推送，HEAD/upstream一致；启动脚本验证工作区干净、配置为4×24且每档8条、两卡指纹与smoke-v3相同，三个数据输出目录全新。
+- 会话：`gen-icl-cert96-dualgpu-20260907-v3`，主bash PID3734782、pane `%373`；其他七个会话未动。入口 `.cache/icl-formal-v3.sh e34474a6304b917b44cedae129ac621ddd52a430`，完整脚本/哈希和配置保存在 `artifacts/reports/robomme-icl/formal-v3/run_context.json`。
+- 顺序与口径：32-worker认证96条；同一冻结清单、同一逆序、同一GPU绑定分别32/16-worker全新生成；主输出resume4、replay32、连续reset32，最后绘图。物理CPU单环境、两卡GPU渲染、1200秒墙钟上限；phase_timings.tsv记录UTC纳秒起止与command/tee状态，两卡500ms采样和2秒iostat保留。相邻顺序测试仍可能受预热影响，不能预先认定32或16更快。
+- 输出：`artifacts/generated/robomme-icl/validation24-v3`、`validation24-v3-verification`、`validation24-v3-verification-w16`。当前处于认证阶段，完整套件尚未发布；旧中断目录不覆盖。
+- 打包：`uv build --wheel --out-dir .cache/icl-wheel-v3` 退出0，逐文件核对新旧两个包的wheel内容与实际源码字节一致，报告 `artifacts/reports/robomme-icl/wheel-v3.json`。
+
+### 2026-09-07 23:45 America/Detroit — v3正式96条认证全部通过
+
+- 结果：`prepare --gpus 0,1 --workers 32 --timeout-seconds 1200` 全96条通过，2026-09-08 03:25:44.624558 UTC至03:45:52.150354 UTC，约1207.53秒，阶段退出0。每任务24条、每难度8条，每条两次全新物理进程逐位相同；公开清单位于 `artifacts/generated/robomme-icl/validation24-v3/suite.json`。
+- 通过记录保留完整安全几何与任务终态；候选拒绝没有改变原配额、seed、位置层或5mm要求。最后完成的是VideoRepick困难密集布局，未因此改动oracle、降低方块数或放宽碰撞判据。
+- 图像抽查：四任务各导出第0与第150帧的真实base_rgb，无缩放；预览与逐帧像素SHA-256、spec_hash/HDF5来源保存在formal-v3/previews。显示物体、孔口、路线与容器正常；这是小样本目视检查，不替代全帧严格验证。
+- 当前阶段：同一公开清单的逆序32-worker生成已启动，随后16-worker独立输出对照、resume4、replay32、reset32及实际分布图。认证通过不提前记为后续生成/回放全部通过。
+
+### 2026-09-07 23:50 America/Detroit — 双GPU32-worker正式生成96/96通过
+
+- 结果：冻结清单逆序生成96/96，全部resumed=false，逐条与认证内容摘要及完整帧核对一致；阶段退出0，总耗时277.080352222秒（包含生成及严格核对）。主数据位于 `artifacts/generated/robomme-icl/validation24-v3-verification/data/`。
+- 对照：同一清单和逆序的16-worker生成已启动，输出独立 `validation24-v3-verification-w16`；尚未得出性能优劣结论。两轮均使用每episode batch size1、相同CPU物理、同seed固定GPU和本机NVMe，阶段时间及GPU/IO原始日志完整记录。
+- 图表预览：从已认证96条生成四张次数配额/单局布局/跨episode散点图，存于formal-v3/preview-figures，已目视核对；正式脚本结束时仍会在独立figures目录出图并做来源校验。
+
+### 2026-09-07 23:55 America/Detroit — 16-worker同批生成对照通过
+
+- 结果：相同96个spec、相同逆序、相同固定GPU的16-worker生成全96条通过，全部resumed=false，阶段退出0，耗时302.238754308秒。32-worker同批为277.080352222秒，本次32-worker少用25.158402086秒；这是一轮32后16的顺序对照，不能据此宣称全局最优。
+- 当前阶段：主输出的4-worker断点复用正在逐文件复核，随后自动进行全96条回放与同环境连续reset。用户询问“继续工作 做完了吗”后，已再次只读预检确认仍为newtask-v1、两张RTX6000 Ada、正式tmux存活，未提交文件均为本轮账本及报告；没有重启或覆盖现有运行。
+
+### 2026-09-08 00:05 America/Detroit — 全量断点与回放通过
+
+- 断点复用：96/96全部resumed=true，耗时282.981079124秒，阶段退出0；未重新生成或换seed。
+- 全量回放：96/96，耗时304.062711908秒，全部动作、原始RGB、记录的机器人/物体状态、事件及终止步与生成数据逐位一致，阶段退出0。原始回放HDF5和日志保存在主verification目录及formal-v3报告目录。
+- 独立轻量核查：固定清单96条、两卡各48、454个完整物体支持框、1594个位置参数保持原层、414个位置组/参数各层恰一次；BinFill198个方块初态均在孔投影外。192个认证HDF5头及末帧通过，未重复解码RGB；原版及uv.lock共103文件/1796952字节对初始1143477完全不变。可复现入口 `tests/robomme_icl/check_manifest.py`，实测报告formal-v3/manifest_check.json，退出0、核心核对0.362秒。
+- 下一步：连续reset的96条双运行验收已开始，结束后正式绘图、签名和HDF5头汇总，最后更新账本并提交推送报告。不能提前把reset标为完成。
+
+### 2026-09-08 00:11 America/Detroit — robomme-ICL全量闭环完成
+
+- 最终运行：连续reset96/96通过，354.317877495秒；正式绘图4/4通过，1.794秒。主脚本最终EXIT_CODE=0，登记会话自动退出，tmux只剩原七个其他会话；没有全局清理或终止他人会话。
+- 完整结论：96条、四任务各24、每档8、GPU0/1各48；每遍63689帧。认证两次新进程、32/16-worker全新生成、断点复用、动作回放和同环境双reset全部通过，原始图像、动作、记录的状态、事件和结束步逐位一致；正式生成未发生换seed。
+- 最终报告：`tests/robomme_icl/report_acceptance.py --report-dir artifacts/reports/robomme-icl/formal-v3` 全路径核对通过，签名记录五组各96条、480个HDF5头和四图来源一致，写出FINAL.json/FINAL.md；没有重新解码全量RGB，逐帧证据来自此前完整比较链。
+- 图表与产物：formal-v3/figures内四图均来源于96条真实spec，正式图与先前预览逐字节相同；主数据为validation24-v3-verification/data，回放为同根replay，16-worker对照独立存储。旧19条和84条中断数据/报告保留，没有覆盖参考数据。
+- 验证工具留档：新增check_manifest.py与report_acceptance.py，仅用于检查冻结数据与报告，不修改运行源码或指纹；check_manifest退出0、0.362秒，report_acceptance实际全量汇总退出0。当前shell附带的其他仓库VIRTUAL_ENV被uv忽略，已通过env -u VIRTUAL_ENV确认使用本仓库.venv；未创建或使用其他项目环境。
+- 收尾：更新IMPLEMENTATION.md的当前状态、验证表、数据入口和图表链接；逐文件暂存本轮新增检查工具/报告与账本，按2.24体例中文提交并立即推送已有origin/newtask-v1，随后核对HEAD/upstream相同。
+
+### 2026-09-07 23:55 America/Detroit — 双GPU16-worker同批生成对照通过
+
+- 结果：相同96个spec、相同逆序、相同GPU绑定，新目录16-worker生成96/96通过，全部resumed=false，全部与认证逐位一致；阶段退出0，用时约302.24秒。
+- 本次对照：32-worker约277.08秒、16-worker约302.24秒，32-worker的整批吞吐约高9.1%。这是32→16顺序执行的一轮比较，未单独切分预热/稳态，也没有逐控制步慢步GPU分层，不能宣称32为全局最优。维持已验证的32-worker回放/reset设置。
+- 当前阶段：4-worker从已有主数据重新核对完整内容和断点复用；随后完整回放与同环境reset。不得将两轮生成通过提前写成全部验收通过。
 
 ### 2026-07-13 — `/init`
 

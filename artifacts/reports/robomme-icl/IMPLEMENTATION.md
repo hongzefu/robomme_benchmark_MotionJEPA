@@ -30,25 +30,27 @@ Panda资产随锁定包位于仓库内 `.venv`，GPU0原生渲染检查通过；
 
 | 检查 | 命令或入口 | 结果 |
 | --- | --- | --- |
-| 新版轻量与导入隔离 | `uv run --no-sync python -m pytest tests/robomme_icl/ -q` | 最终94 passed、4 skipped（需显式套件的GPU检查），15.32秒 |
+| 新版轻量与导入隔离 | `uv run --no-sync python -m pytest tests/robomme_icl/ -q` | 修复后114 passed、4 skipped（需显式套件的GPU检查），36.14秒 |
 | 旧版轻量测试 | `uv run --no-sync python -m pytest tests/lightweight/ -q` | 203 passed、2 skipped、4 failed，175.01秒；四失败见下文 |
-| 打包 | `uv build --wheel --out-dir .cache/icl-wheel-check` | 退出0；打包范围包含新旧两个包 |
-| 最终默认物体几何 | `uv run --no-sync python -m robomme_icl.suite.preflight` | 96/96，29.636秒，最小净距下界5.010mm，仅物体几何；[报告](geometry_preflight-v3.json) |
-| 单条真实任务路径 | `oracle.run_episode` | 四任务分别成功；当前完整套件与多种复现条件继续验证 |
+| 打包 | `uv build --wheel --out-dir .cache/icl-wheel-v3` | 退出0；旧包102文件、新包31文件与源码逐字节一致；[报告](wheel-v3.json) |
+| 修复后默认物体几何 | `uv run --no-sync python -m robomme_icl.suite.preflight` | 96/96，29.372秒，仅物体几何；[报告](geometry_preflight-v4.json) |
+| 正式全量闭环 | `tests/robomme_icl/run_acceptance.py` | 96条认证、32/16-worker生成、断点、回放、连续reset全部通过；[最终报告](formal-v3/FINAL.md) |
 | 首次双进程认证 | `prepare .../smoke-four-v1 --episodes-per-task 1 --workers 1` | BinFill638帧、RouteStick451帧严格一致；VideoUnmaskSwap位姿分叉，认证正确停止 |
 | 动画确定性修复复测 | `prepare .../smoke-vus-v2 --tasks VideoUnmaskSwap --episodes-per-task 1 --workers 1` | 262帧两次独立进程逐位一致，退出0 |
-| 当前源码四任务认证 | `prepare .../smoke-release --episodes-per-task 1 --workers 4` | 4/4：BinFill641、RouteStick451、VideoUnmaskSwap271、VideoRepick1045帧，全部双进程逐位一致 |
-| 当前源码完整小样本验收 | `tests/robomme_icl/run_acceptance.py` 四个mode | generate逆序、replay、同环境reset、resume均4/4；[汇总](smoke_acceptance_release.json) |
+| 开发版本四任务认证 | `prepare .../smoke-release --episodes-per-task 1 --workers 4` | 4/4：BinFill641、RouteStick451、VideoUnmaskSwap271、VideoRepick1045帧，全部双进程逐位一致 |
+| 开发版本完整小样本验收 | `tests/robomme_icl/run_acceptance.py` 四个mode | generate逆序、replay、同环境reset、resume均4/4；[汇总](smoke_acceptance_release.json) |
 
 旧版四项失败为 `test_TaskGoal` 中未知任务返回值、SwingXtimes连字符文本，以及 `test_step_error_handling` 中旧wrapper/旧replay的错误处理结构断言。它们检查的旧代码和测试文件均未修改；不扩大本轮范围修复旧版。完整原始输出在 `legacy-lightweight.log`。
 
 ## 当前状态
 
-实现和四任务小样本闭环已完成，完整96条真实物理认证尚未完成。不能将几何96/96或单条成功当作全量物理、全量复现或全量回放通过。四mode组合验收超过了最初五分钟预估；各模式独立日志、当前源码指纹与完整结果均已保存，后续同类组合不再前台启动。
+实现和全量验收已完成。基线 `e34474a6304b917b44cedae129ac621ddd52a430` 的96条规格完成两次独立物理进程认证、32/16-worker两轮全新生成、断点复用、回放和同环境连续reset，全部逐位通过。每遍63,689帧，两卡各绑定48条；详细命令、阶段退出码、HDF5及图表来源见 [FINAL.md](formal-v3/FINAL.md) 和 [FINAL.json](formal-v3/FINAL.json)。以下保留实施中的诊断与中断历史。
+
+早期四mode组合验收超过了最初五分钟预估，各模式日志及结果均保留；后续完整运行均放入已登记tmux，从干净提交启动并写入完整退出状态。
 
 首轮正式运行已从提交 `3e56b223607801ca0dd596dacbd17b4458d9981b` 启动，四任务基线 smoke 通过。随后默认96条已认证19条时，按用户新增的双GPU要求主动停止，完整套件未发布。旧记录保留于 `artifacts/generated/robomme-icl/validation24`，停止过程见 [stop_context.json](formal-v1/stop_context.json)。主日志 EXIT_CODE=0 来自退出trap，不能代替完整阶段成功证据。
 
-提交前暂存检查发现 `io/__init__.py` 的多余文件末尾空行，移除后运行逻辑不变，但原始字节指纹按设计改变；开发smoke仍保留为开发证据，正式会话会先从新提交重新完成四任务最小认证，再启动96条，不能绕过运行指纹。
+首次提交前暂存检查发现 `io/__init__.py` 的多余文件末尾空行，移除后运行逻辑不变，但原始字节指纹按设计改变；后续已从新提交重新完成四任务最小认证及正式运行，没有绕过运行指纹。
 
 ## 双GPU并行改造
 
@@ -77,3 +79,14 @@ Panda资产随锁定包位于仓库内 `.venv`，GPU0原生渲染检查通过；
 真实故障注入使用 `tests/robomme_icl/run_interruption.py --interrupt-after 12`：先在已启动GPU的子进程运行中施加超时，再由正式重试机制以同seed/spec/GPU恢复；271帧与认证一致，再次调用直接复用完整记录。[interruption-v3.json](interruption-v3.json) 保存两次尝试路径、固定身份和结果。新正式输出使用 `validation24-v3`，旧中断产物继续保留。
 
 在单个pytest进程内依次运行四任务、跨两卡创建环境并各连续reset两次，显式 `ICL_TEST_SUITE=.../smoke-v3` 的四项真实检查全部通过，203.94秒。四个合法smoke的全部原始帧也与新增守卫前逐位一致；[valid_frames_v2_v3.json](valid_frames_v2_v3.json) 明确记录源码指纹不同，此对照不能替代新版本认证。
+
+## 正式交付与使用
+
+- 认证清单：`artifacts/generated/robomme-icl/validation24-v3/suite.json`，suite_hash 为 `e62bdd9e1dbe08d99d7e546c6412a2229848e16f45a34b543bdb3e17d68dc43d`；seed 为 `2000000000..2000000095`。
+- 主数据：`artifacts/generated/robomme-icl/validation24-v3-verification/data/`；回放位于同根 `replay/`；16-worker对照使用独立 `validation24-v3-verification-w16/data/`。
+- 两轮生成分别277.080秒与302.239秒，本次32-worker少用25.158秒；一次顺序对照不能证明全局最优，正式记录包含存储、设备、worker、采样、原始阶段时间及限制。
+- 全量连续reset96/96通过，354.318秒；最终汇总重新核对五组签名验收记录、480个HDF5头、图表来源和当前运行指纹，退出0。工具为 `tests/robomme_icl/report_acceptance.py`，不会用HDF5头检查替代此前完整帧比较。
+- `tests/robomme_icl/check_manifest.py` 独立确认454个完整物体支持框、1594个位置参数仍在原层、414个位置组/参数各层恰一次；最小物体净距5.010119mm；原版和锁文件共103文件、1796952字节对初始版本完全一致。[独立核对](formal-v3/manifest_check.json)。
+- [BinFill实际配额与散点](formal-v3/figures/binfill.png)、[RouteStick实际配额与散点](formal-v3/figures/routestick.png)、[VideoUnmaskSwap实际配额与散点](formal-v3/figures/videounmaskswap.png)、[VideoRepick实际配额与散点](formal-v3/figures/videorepick.png)；四张正式图与预览字节一致，没有补造采样点。
+
+新版的任务次数与位置在prepare时确定并冻结；正式运行以suite和seed定位spec及固定GPU，不重新随机抽样。使用入口和两份配置说明见 [源码包README](../../../src/robomme_icl/README.md)。原版四项既有轻量测试失败仍保留，不计为新版验收失败。
