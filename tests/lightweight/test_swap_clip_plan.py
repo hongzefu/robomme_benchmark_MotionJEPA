@@ -139,9 +139,31 @@ def _region4_expr(task: str) -> str:
     return found
 
 
+def _native_region4(task: str) -> list:
+    """newtask-v2 10.0 之后，两个 Video 任务的 region4 原值移到模块级 NATIVE_SAMPLING。
+
+    该字典同时是不传 sampling_config 时的运行默认值，``_load_scene`` 从实例副本读它，
+    所以取值来源仍然唯一；这里跟着改读原值字典，判据（必须逐字是那个固定模板）不变。
+    """
+    path = REPO_ROOT / "src" / "robomme" / "robomme_env" / f"{task}.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "NATIVE_SAMPLING":
+                    native = ast.literal_eval(node.value)
+                    return native["positions"]["containers"]["region4"]
+    raise AssertionError(f"{task}: 模块级没有 NATIVE_SAMPLING")
+
+
 def test_region4_video_is_the_fixed_template() -> None:
     """Video 的 region4 是固定字面量，REGION4_VIDEO 必须逐字一致。"""
-    assert _region4_expr("VideoUnmaskSwap") == "[[-0.05, -0.1], [-0.05, 0.1], [0.1, 0.1], [0.1, -0.1]]"
+    assert [list(point) for point in _native_region4("VideoUnmaskSwap")] == [
+        [-0.05, -0.1],
+        [-0.05, 0.1],
+        [0.1, 0.1],
+        [0.1, -0.1],
+    ]
     assert [list(point) for point in REGION4_VIDEO] == [
         [-0.05, -0.1],
         [-0.05, 0.1],
