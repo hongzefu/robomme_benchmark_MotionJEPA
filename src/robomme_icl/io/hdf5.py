@@ -134,6 +134,12 @@ def assert_identical(expected: Any, actual: Any, *, path: str = "frames") -> Non
 
 
 def _write_node(parent: h5py.Group, name: str, value: Any) -> None:
+    if name == "native_state" and isinstance(value, Mapping):
+        from .packed import pack_tree
+
+        node = parent.create_dataset(name, data=pack_tree(value), compression="lzf")
+        node.attrs["kind"] = "packed_tree_v1"
+        return
     if isinstance(value, np.ndarray):
         # 无损压缩不会改变原始 RGB 和数值字节，减少两次认证的存储开销。
         options = (
@@ -177,6 +183,10 @@ def _text(value: Any) -> str:
 
 def _read_node(node: h5py.Group | h5py.Dataset) -> Any:
     kind = _text(node.attrs["kind"])
+    if kind == "packed_tree_v1":
+        from .packed import unpack_tree
+
+        return unpack_tree(node[()])
     if kind == "array":
         return np.asarray(node[()], dtype=node.dtype)
     if kind == "numpy_scalar":

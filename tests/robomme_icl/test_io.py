@@ -97,6 +97,29 @@ def test_hdf5_roundtrip_preserves_every_dtype_shape_and_byte(local_dir):
     assert_identical(frames, actual.frames)
 
 
+def test_hdf5_packed_native_state_roundtrip(local_dir):
+    """走完整文件写入、摘要复核和读取链路，确认打包保留原版状态。"""
+    spec, frames = FakeSpec(), FakeEnv().frames()
+    frames[0]["native_state"] = {
+        "actor/target": {
+            "pose": np.array([-0.0, 0.2, 1.0], dtype=">f8"),
+            "visible": np.bool_(True),
+            "events": ("显现", 32),
+        }
+    }
+    path = write_episode(local_dir / "packed.h5", spec, frames)
+    with h5py.File(path, "r") as handle:
+        nodes = []
+        handle.visititems(
+            lambda name, node: nodes.append(node.name)
+            if node.attrs.get("kind") == "packed_tree_v1"
+            else None
+        )
+        assert len(nodes) == 1
+    actual = read_episode(path)
+    assert_identical(frames, actual.frames)
+
+
 def test_tampered_rgb_is_rejected_and_file_preserved(local_dir):
     path = write_episode(local_dir / "episode.h5", FakeSpec(), FakeEnv().frames())
     with h5py.File(path, "r+") as handle:
