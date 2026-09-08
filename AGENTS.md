@@ -230,6 +230,7 @@ command -v uv
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| ICL 与原版素材及行为对齐 | 进行中 | 基线 `76ae12bf1e71f79e1c3f608eede10ac7430b406f`；用户确认保留新版分布配置，素材、subgoal、显隐机制沿用原版；已确认 RouteStick 标记形状／数量、BinFill 孔板视觉、演示和事件流程存在差异 | 按 `artifacts/reports/robomme-icl/native-parity/PLAN.md` 建立原版对照、修正并真实验证；旧认证只证明新版自身复现，不证明原版行为一致 |
 | ICL 生成环境分布独立文档 | 完成（文档与验证） | `scripts/ENVIRONMENT_DISTRIBUTION.md` 已覆盖五部分机制；20 个本地链接、21 个代码锚点及 4 条业务命令静态检查通过，仅三份 Markdown 变更 | 本条随文档提交；提交后立即推送既有上游并核对同步 |
 | 四个scripts入口及视频保存 | 全部验收及旧产物清理完成 | 96条/每遍63689帧、384份新HDF5逐位一致、192视频完整解码、四图和源码/依赖边界均通过；五阶段及主任务退出0；GPU0/1各48条；90根旧产物已清理、清理后复核通过 | 使用scripts四入口及scripts-v1批次；最终文档和清理记录提交后立即推送 |
 | robomme-ICL 独立四任务 | 全量实现与验收完成，旧批次已清理 | e34474a基线96条认证、32/16-worker生成、断点、回放、连续reset均逐位通过；每遍63689帧，两卡各48条；114轻量及4项显式真实复现通过；旧验收摘要保留在日志 | 当前交付改用scripts-v1；原版源码不变，旧物理产物按本轮指令清理 |
@@ -250,6 +251,15 @@ command -v uv
 | 通用代理规则更新与 Claude 专用约定拆分 | 完成（文档与验证） | 来源固定为 `v2-motionmem` 的 `028a77c59a442f047897f9736fc8acec0c050360`；766 行原有正文与日志保持一致；两份文件的结构、引用、范围和命令语法检查通过 | 按用户授权提交后自动推送既有 upstream；同步结果以 `git status -sb` 和本地/上游提交比较为准 |
 
 ## 追加式执行日志
+
+### 2026-09-08 — ICL 原版素材、subgoal 与显隐对齐：开始
+
+- 用户原话：「对抗验证 当前新版与原版是否行为一致」「我目视检查了binfill/routestick的素材 并不一致」「你需要做到每个素材都一致 每个subgoal行为都一致 每个物体/事件出现消失情况的都一致」；追加确认：「保留新版分布配置；素材、subgoal 和显隐机制完全沿用原版」。
+- 启动基线：`76ae12bf1e71f79e1c3f608eede10ac7430b406f`，分支 `newtask-v1`，预检工作区干净，既有上游 `origin/newtask-v1`，远端 `https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git`。
+- 环境：`uv` 为 `/home/hongzefu/.local/bin/uv`；两张 RTX 6000 Ada；仓库与报告位于 `/dev/nvme1n1p1` 的本机 ext4；`data/robomme_data_h5/` 实际不存在。原版标准为本仓库 `src/robomme`，不使用不存在的官方 HDF5 声称验证完成。
+- 已证实差异：RouteStick 新版只有五个方形标记，原版九个灰白圆形标记；新版缺少原版 `NO RECORD` subgoal 的物理动作和高亮生命周期；BinFill 新版孔板没有原版黑色孔底视觉，且投入判定／移除逻辑独立；VideoUnmaskSwap 原版容器在绝对步 32 返回、步 64 开始交换，新版使用不同窗口；VideoRepick 的 swap 由 subgoal 特殊标志触发，新版使用独立时间线。
+- 当前任务包含用户明确要求的修复与真实验证，按实施任务管理，不套用纯只读审计的禁执行条款。正式长时运行仍须干净提交基线、登记 tmux、保存完整命令与退出码。
+- 完整计划与验收口径见 `artifacts/reports/robomme-icl/native-parity/PLAN.md`。本条不表示行为对齐已完成。
 
 ### 2026-09-08 — ICL 生成环境分布独立文档：文档与验证完成
 
