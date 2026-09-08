@@ -226,10 +226,12 @@ command -v uv
 
 ## 当前进度
 
+2026-09-08本轮按用户指令只保留 `artifacts/generated/robomme-icl/scripts-v1/` 及对应报告目录。下表旧阶段和历史日志中的产物路径记录当时执行情况，不代表旧文件仍存在；当前交付以 `artifacts/reports/robomme-icl/scripts-v1/FINAL.md` 为准。官方参考数据、原版源码与依赖环境未触碰。
+
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| 四个scripts入口及视频保存 | 实现及四任务视频闭环通过，待正式96条 | 新版170 passed/4 skipped；单任务/单episode/单worker真实认证通过，最终四任务生成/回放各4个HDF5与MP4及四图通过；旧入口归档、原版源码/锁不变 | 提交干净基线后完整96条认证与192视频验收，成功后清理旧生成产物/报告，保留官方参考集 |
-| robomme-ICL 独立四任务 | 全量实现与验收完成 | e34474a基线96条认证、32/16-worker生成、断点、回放、连续reset均逐位通过；每遍63689帧，两卡各48条；114轻量及4项显式真实复现通过；正式图表/签名/480个HDF5头核对通过 | 以formal-v3/FINAL.md为交付证据；保持原版和旧数据不变；本轮报告提交后立即推送 |
+| 四个scripts入口及视频保存 | 全部验收及旧产物清理完成 | 96条/每遍63689帧、384份新HDF5逐位一致、192视频完整解码、四图和源码/依赖边界均通过；五阶段及主任务退出0；GPU0/1各48条；90根旧产物已清理、清理后复核通过 | 使用scripts四入口及scripts-v1批次；最终文档和清理记录提交后立即推送 |
+| robomme-ICL 独立四任务 | 全量实现与验收完成，旧批次已清理 | e34474a基线96条认证、32/16-worker生成、断点、回放、连续reset均逐位通过；每遍63689帧，两卡各48条；114轻量及4项显式真实复现通过；旧验收摘要保留在日志 | 当前交付改用scripts-v1；原版源码不变，旧物理产物按本轮指令清理 |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
 | 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
 | 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
@@ -270,6 +272,49 @@ command -v uv
 - 真实检查：BinFill单条单worker与旧600帧两次新运行一致；四任务共8条源spec重认证通过；最终源码又完成四任务各一条双GPU重新认证、生成、回放，每阶段4/4。生成/回放各4个HDF5及4个20fps512×256 MP4，HDF5逐位一致，视频来源及哈希通过；独立plot入口同来源复用通过。
 - 恢复加固：批次本地清单与生成输入绑定、阶段失败总状态聚合、回放根隔离及扫描根嵌套拒绝；合法身份的中断attempt保留后同spec重试，明确任务或帧差异锁存，完整坏记录不当作中断。详细实现及开发日志保存于artifacts/reports/robomme-icl/scripts-v1。
 - 下一步：以2.26体例提交并立即推送已有上游；从干净基线启动登记会话gen-icl-scripts-v1-20260908，入口为scripts/legacy/robomme_icl/run_scripts_v1.sh，它依次调用四个主入口和只读维护验收工具。仅在所有96条与192视频通过后，才执行已授权旧产物清理。
+
+### 2026-09-08 — scripts-v1正式运行启动
+
+- 基线c139a522c2c05e8fc5d206ec0d32103f13fbd237已提交并立即推送，HEAD/upstream一致、工作区干净；原版src与锁文件未变。启动时记录配置、脚本全文及SHA、源码/设备指纹、GPU0/1、32 workers、视频4 workers、验证4 workers、100/20Hz物理与控制参数、1200秒墙钟上限及本地存储。
+- 登记会话gen-icl-scripts-v1-20260908，主bash PID4144570、pane%374；只允许管理本轮该明确会话。其他七个既有tmux会话保留。
+- 命令：bash scripts/legacy/robomme_icl/run_scripts_v1.sh c139a522c2c05e8fc5d206ec0d32103f13fbd237。先按v3原96个冻结spec重认证并逐位对照，再生成HDF5+MP4、严格回放HDF5+MP4、复核独立绘图、整包真实检查。日志实际存放scripts-v1/logs，控制记录位于本次reports/scripts-v1。
+- 旧产物清理仍未执行，源v3数据保持到全部新验证通过；本次来源清单快照会保存至新批次provenance。不得提前把运行中状态写成96条完成。
+
+### 2026-09-08 — scripts-v1重新认证完成
+
+- prepare于12:39:32 America/Detroit退出0，96/96条原冻结spec全部通过两次新物理运行与旧原始帧逐位比较，未更换seed、位置、次数或GPU绑定，未触发基础设施重试。
+- 同一登记会话继续运行正式生成，随后执行严格回放、视频和图表复核；此时尚未宣称生成与回放完成。
+- 清理工具已与主链路隔离，默认只做盘点，显式应用前要求384份新认证/生成/回放HDF5、192视频和四图完整通过；由独立agent核对保护目录、内部符号链接及暂存硬链接处理。旧数据尚未删除。
+
+### 2026-09-08 — scripts-v1生成完成，回放开始
+
+- generate于12:48:13 America/Detroit退出0，96份生成HDF5、96个20fps双路横拼MP4和四任务组合图均已发布；真实视频均经过帧数/FPS/尺寸及完整解码检查。
+- 已目视检查四图的中文文字、实际次数配额、单局几何布局和跨episode散点，来源均为本批96条已认证spec；随后同一会话自动开始双GPU严格回放。
+- 新增独立可重跑的清理维护回归：uv run --no-sync python -B -m pytest tests/robomme_icl/test_cleanup_outputs.py -q，18 passed，9.64秒。使用自造假目录和spec，未删除真实产物；详细记录保留于本次cleanup_tool_tests.json。
+
+### 2026-09-08 — scripts-v1回放与视频完成，独立整包验收开始
+
+- replay于12:57:07 America/Detroit退出0，96条严格回放均通过，生成与回放共192个MP4完整发布。随后plot入口对自动生成的四图同来源复核，退出0。
+- 同一已登记会话启动verify_scripts_bundle.py，4个工作进程重新读取384份认证/生成/回放HDF5、逐位比较所有帧并解码192个视频，同时复核spec/配置/seed/GPU、图表及原版源码和依赖锁；验收完成前仍不删除旧数据。
+
+### 2026-09-08 — scripts-v1全部验收完成，开始授权清理
+
+- verify于13:07:02 America/Detroit退出0；96条、每遍63689帧、384份新HDF5原始数据逐位一致，192个MP4完整解码及四图来源/配额/位置覆盖通过。原版src/robomme和uv.lock逐文件未变，GPU0/1各48条。
+- prepare/generate/replay/plot/verify耗时分别577.61/521.02/533.91/0.41/594.64秒，命令及tee全部退出0。登记tmux自然退出，主PID4144570及GPU采样PID4144609均已退出，其他七个原有tmux会话仍在。
+- 开始运行cleanup_previous_outputs.py默认盘点，只有整包验签、当前384份记录/192视频/四图实体再次核对及进程占用检查通过，才进入已授权的显式删除；新数据及官方参考集保持保护。详细证据见本次verification.json、verification.md和清理计划/结果。
+
+### 2026-09-08 — scripts-v1旧产物清理与后检完成
+
+- 默认盘点及显式--apply均退出0，按同一签名计划删除90个根，共3731项文件/目录操作，约265.05 GiB逻辑文件大小（包含硬链接名称，不等于实际释放空间）。全部旧生成批次、旧报告及临时smoke产物已删除，保留当前scripts-v1。
+- 追加按明确清单清理9个旧工具编译缓存和10个空目录，归档源码全部保留；补充清除13个临时记录/旧项目wheel/重复库存/字节码/已纳入development.json的日志和3个空缓存目录。未删除依赖缓存、配置、官方参考数据或仓库外文件。
+- post_cleanup.json确认旧来源192份物理记录已不存在，但新384份HDF5头/spec/内容摘要、192视频哈希、四图及运行/源码/依赖指纹均通过。生成和报告根各只剩scripts-v1；四个公开Python入口仍恰为prepare_suite、generate_dataset、replay_dataset和plot_distribution。
+- 最终使用说明与验收证据见artifacts/reports/robomme-icl/scripts-v1/FINAL.md。旧路径只保留为历史叙述，旧跟踪报告可从Git历史查看；清理后继续生成/回放使用本批新清单和记录。
+
+### 2026-09-08 — 清理后最终回归与连续reset通过
+
+- 清理后的uv pytest tests/robomme_icl/全目录188 passed、4 skipped，49.72秒；四个跳过项为需显式ICL_TEST_SUITE的同环境连续reset测试。随后将该变量指向本次scripts-v1/suite，四项真实测试全部通过，156.20秒；BinFill/RouteStick/VideoUnmaskSwap/VideoRepick首条各600/463/199/639帧与认证及第二次运行逐位一致，退出0。
+- 清理后plot_distribution入口再次复用本批四图，退出0；六份说明文档的代码围栏及本地链接通过。五个旧.cache维护源码已归档至scripts/legacy/robomme_icl/historical_helpers，仅修根路径和旧入口引用，10项语法/帮助检查通过；源码未当作生成产物删除。
+- final_tests.json、final_reset_tests.json、source_archive.json保留精确命令和结果。正式入口/环境源码与依赖指纹未变；以2.27体例逐文件提交本轮报告、归档、清理工具/测试及67个已授权跟踪删除，随后立即推送既有origin/newtask-v1并核对同步。
 
 ### 2026-09-07 America/Detroit — robomme-ICL 独立四任务：开始实施
 

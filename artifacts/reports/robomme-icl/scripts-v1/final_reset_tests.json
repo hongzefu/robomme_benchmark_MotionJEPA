@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "checked_at_utc": "2026-09-08T17:21:11.410191+00:00",
+  "command": "timeout 280s env -u VIRTUAL_ENV UV_CACHE_DIR=\"$PWD/.cache/uv\" ICL_TEST_SUITE=\"$PWD/artifacts/generated/robomme-icl/scripts-v1/suite\" uv run --no-sync python -B -m pytest tests/robomme_icl/test_runtime_repro.py -q",
+  "suite_hash": "2e19b64f8d7d839f5d643f69fb9f996fb8394d6b73cef401d6c530a0b5384e0f",
+  "cases": [
+    {
+      "task_kind": "BinFill",
+      "seed": 2000000000,
+      "spec_hash": "d3f78dde5b1882879dbc90f76194c56986e7e14839c6a6eed88b44ed1fad7932",
+      "frames_each_run": 600,
+      "render_gpu": 0,
+      "same_environment_runs": 2,
+      "certified_frames_equal": true,
+      "repeated_reset_frames_equal": true
+    },
+    {
+      "task_kind": "RouteStick",
+      "seed": 2000000024,
+      "spec_hash": "8e8d5ccf89f21e8c3d78638fd834904e69d0f44165fe66ff0bc3e8b7a2211382",
+      "frames_each_run": 463,
+      "render_gpu": 0,
+      "same_environment_runs": 2,
+      "certified_frames_equal": true,
+      "repeated_reset_frames_equal": true
+    },
+    {
+      "task_kind": "VideoUnmaskSwap",
+      "seed": 2000000048,
+      "spec_hash": "4920d43c73a6eb28f64c80d2db9f1481775ffa4c7b40ae08132533c817801c89",
+      "frames_each_run": 199,
+      "render_gpu": 0,
+      "same_environment_runs": 2,
+      "certified_frames_equal": true,
+      "repeated_reset_frames_equal": true
+    },
+    {
+      "task_kind": "VideoRepick",
+      "seed": 2000000072,
+      "spec_hash": "4b87613f61b793e8f6afcf379946a74a8416c8524777a62ee4138e8c58a9c29c",
+      "frames_each_run": 639,
+      "render_gpu": 0,
+      "same_environment_runs": 2,
+      "certified_frames_equal": true,
+      "repeated_reset_frames_equal": true
+    }
+  ],
+  "passed": 4,
+  "warnings": 13,
+  "seconds": 156.2,
+  "exit_code": 0,
+  "after_old_artifact_cleanup": true,
+  "log_sha256": "67ebb57e0ec07bef0c338b13b299a399825ac55b9f6d4efd7a07663a9aaa93a8",
+  "log": "....                                                                     [100%]\n=============================== warnings summary ===============================\ntests/robomme_icl/test_runtime_repro.py::test_same_environment_reset_reproduces_all_frames[BinFill]\n  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n    import pkg_resources\n\ntests/robomme_icl/test_runtime_repro.py::test_same_environment_reset_reproduces_all_frames[BinFill]\n  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.\n    import pynvml  # type: ignore[import]\n\ntests/robomme_icl/test_runtime_repro.py::test_same_environment_reset_reproduces_all_frames[BinFill]\n  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/random.py:187: UserWarning: CUDA reports that you have 2 available devices, and you have used fork_rng without explicitly specifying which devices are being used. For safety, we initialize *every* CUDA device by default, which can be quite slow if you have a lot of CUDAs. If you know that you are only making use of a few CUDA devices, set the environment variable CUDA_VISIBLE_DEVICES or the 'devices' keyword argument of fork_rng with the set of devices you are actually using. For example, if you are using CPU only, set device.upper()_VISIBLE_DEVICES= or devices=[]; if you are using device 0 only, set CUDA_VISIBLE_DEVICES=0 or devices=[0].  To initialize all devices and suppress this warning, set the 'devices' keyword argument to `range(torch.cuda.device_count())`.\n    warnings.warn(message)\n\ntests/robomme_icl/test_runtime_repro.py: 10 warnings\n  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/mani_skill/utils/geometry/trimesh_utils.py:113: DeprecationWarning: component.pose can be ambiguous thus deprecated. It is equivalent to component.entity_pose, which should be used instead\n    T = component.pose.to_transformation_matrix()\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n4 passed, 13 warnings in 156.20s (0:02:36)\nEXIT_CODE=0\n",
+  "report_hash": "6177ec11c2057a972472487e86cead662fffbe8410831911c0db3fa83df661d2"
+}

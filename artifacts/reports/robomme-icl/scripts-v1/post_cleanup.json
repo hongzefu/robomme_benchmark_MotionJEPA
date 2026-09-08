@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "checked_at_utc": "2026-09-08T17:10:45.132168+00:00",
+  "verification": {
+    "verification_hash": "232f162c07643551fdac67e7cdaffd39b3f5fe46af177227afa17a85ea5f8825",
+    "verification_file_sha256": "92a27a3587376b81a1bb6a3084698a7c975c23f82f8b7306f5a0857f0ed18d88",
+    "suite_hash": "2e19b64f8d7d839f5d643f69fb9f996fb8394d6b73cef401d6c530a0b5384e0f",
+    "source_suite_hash": "e62bdd9e1dbe08d99d7e546c6412a2229848e16f45a34b543bdb3e17d68dc43d",
+    "episodes": 96,
+    "hdf5_verified": 384,
+    "videos_verified": 192,
+    "figures_verified": 4
+  },
+  "legacy": {
+    "baseline_commit": "a69e9bc2692e5a16e8be78c4cfe779d9b8da6065",
+    "legacy_git_tree": "1d0154117e58c783cd3466dbad910aeaaff573a8",
+    "source_files": 102,
+    "legacy_source_unchanged": true,
+    "uv_lock_unchanged": true,
+    "uv_lock_sha256": "983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03"
+  },
+  "scripts_hash_unchanged": true,
+  "runtime_fingerprints_unchanged": true,
+  "public_entrypoints": [
+    "generate_dataset.py",
+    "plot_distribution.py",
+    "prepare_suite.py",
+    "replay_dataset.py"
+  ],
+  "old_candidate_roots_absent": 90,
+  "old_source_record_paths_absent": 192,
+  "remaining_generated_batches": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-v1"
+  ],
+  "remaining_report_batches": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/scripts-v1"
+  ],
+  "official_reference_touched": false,
+  "official_reference_exists_before": false,
+  "official_reference_exists_after": false,
+  "comparison_scope": "清理后重新核对384个HDF5头与spec/内容摘要、192视频文件哈希、四图、保留清单、源码与依赖指纹；不重新执行仿真或重复全帧比较。全帧和解码证据见verification.json。",
+  "report_hash": "bf7088bad49a15e76d16c1e0bbb66f4179dcb119dee01944a4b9e614f0f82b1f"
+}

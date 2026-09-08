@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "status": "inventory_complete_not_deleted",
+  "created_utc": "2026-09-08T16:49:27.757258+00:00",
+  "repository_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask",
+  "git_head": "c139a522c2c05e8fc5d206ec0d32103f13fbd237",
+  "scope": "仅盘点5个旧工具目录中不被90根产物库存覆盖的剩余文件；不修改工具，不执行删除",
+  "main_inventory": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/scripts-v1/cleanup_inventory.json",
+  "main_inventory_sha256": "3e6919f5d995edeebc92efeed7f0cf02a763d6d1764dcd29ec006409cad7b0d1",
+  "roots": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/patternlock-routestick-params",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/400ep-dataset"
+  ],
+  "summary": {
+    "remaining_files": 9,
+    "total_bytes": 313285,
+    "all_remaining_files_are_pyc": true,
+    "all_original_sources_archived": true,
+    "all_archived_sources_tracked": true,
+    "remaining_tracked_files": 0,
+    "empty_directory_removal_steps": 10
+  },
+  "files": [
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/__pycache__/clip_plan.cpython-311.pyc",
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/__pycache__/clip_plan.cpython-311.pyc",
+      "type": "regular_file",
+      "is_symlink": false,
+      "size_bytes": 51881,
+      "sha256": "c8a359fb697a2dc2b5b30eacda93a218cd9d8bc408390da2f6229f5633f002d9",
+      "device": 66305,
+      "inode": 244845201,
+      "mtime_ns": 1788830746040131253,
+      "tracked": false,
+      "original_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/clip_plan.py",
+      "original_source_exists": false,
+      "archived_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/data-generation-MotionJEPALabel/clip_plan.py",
+      "archived_source_exists": true,
+      "archived_source_tracked": true,
+      "archived_source_sha256": "8483f829ae743589d3ffa703b22837a1f9e4e6f57e95ba12c623c7eef75d92a4"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/__pycache__/clip_worker.cpython-311.pyc",
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/__pycache__/clip_worker.cpython-311.pyc",
+      "type": "regular_file",
+      "is_symlink": false,
+      "size_bytes": 58047,
+      "sha256": "f2e5f3f56ab9dfaf1146d71c8da1a9884570ceb9fb7ded576cf76daa472269a5",
+      "device": 66305,
+      "inode": 244845215,
+      "mtime_ns": 1788830917475847584,
+      "tracked": false,
+      "original_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/clip_worker.py",
+      "original_source_exists": false,
+      "archived_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/data-generation-MotionJEPALabel/clip_worker.py",
+      "archived_source_exists": true,
+      "archived_source_tracked": true,
+      "archived_source_sha256": "42f7ecd4380da346009a976dcb1134b52457f60f727ae674babcf1c76767c896"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/__pycache__/swap_inject.cpython-311.pyc",
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/__pycache__/swap_inject.cpython-311.pyc",
+      "type": "regular_file",
+      "is_symlink": false,
+      "size_bytes": 37798,
+      "sha256": "07c0f594978cd84284dad76d07245ebb4daed51332bc154dbdab0eb31651131f",
+      "device": 66305,
+      "inode": 244845216,
+      "mtime_ns": 1788830917478847579,
+      "tracked": false,
+      "original_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/swap_inject.py",
+      "original_source_exists": false,
+      "archived_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/data-generation-MotionJEPALabel/swap_inject.py",
+      "archived_source_exists": true,
+      "archived_source_tracked": true,
+      "archived_source_sha256": "8819a64aa10ea371484e3ee793159e20ae85d010ad362fc38572061fe9660523"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/__pycache__/seed_layout.cpython-311.pyc",
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/__pycache__/seed_layout.cpython-311.pyc",
+      "type": "regular_file",
+      "is_symlink": false,
+      "size_bytes": 7004,
+      "sha256": "6a45c9f5689689addfd4c734f1b91b17528826e7bb6024bd89636e77e514aaf8",
+      "device": 66305,
+      "inode": 244845198,
+      "mtime_ns": 1788830745989131338,
+      "tracked": false,
+      "original_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/seed_layout.py",
+      "original_source_exists": false,
+      "archived_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/data-generation-newSeed/seed_layout.py",
+      "archived_source_exists": true,
+      "archived_source_tracked": true,
+      "archived_source_sha256": "cb0fb3a85d2744f2cc8dff8865ff51a736988042d28c8636d888ba850feba4be"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/utils/__pycache__/append_train_metadata.cpython-311.pyc",
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/utils/__pycache__/append_train_metadata.cpython-311.pyc",
+      "type": "regular_file",
+      "is_symlink": false,
+      "size_bytes": 10058,
+      "sha256": "f3382e019f163b959ef55aa6598fc825184112e950d73b14f05c59f2911d5d60",
+      "device": 66305,
+      "inode": 244845186,
+      "mtime_ns": 1788830745828131608,
+      "tracked": false,
+      "original_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/utils/append_train_metadata.py",
+      "original_source_exists": false,
+      "archived_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/data-generation-newSeed/utils/append_train_metadata.py",
+      "archived_source_exists": true,
+      "archived_source_tracked": true,
+      "archived_source_sha256": "d10d067756c0969c3bdf04231f3db3b75d668fdb56f5d065d0c0d90876e81a15"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/__pycache__/compare_joint_actions.cpython-311.pyc",
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/__pycache__/compare_joint_actions.cpython-311.pyc",
+      "type": "regular_file",
+      "is_symlink": false,
+      "size_bytes": 11931,
+      "sha256": "14add57bffe9c5c3e522711bf7fb01f67125204d0fdd9c24c29b7a1faef4b61a",
+      "device": 66305,
+      "inode": 244845189,
+      "mtime_ns": 1788830745838131591,
+      "tracked": false,
+      "original_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/compare_joint_actions.py",
+      "original_source_exists": false,
+      "archived_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/data-generation/compare_joint_actions.py",
+      "archived_source_exists": true,
+      "archived_source_tracked": true,
+      "archived_source_sha256": "46fcd5b8833974ecf423dc0f180c047811632aab3d70d8866b23c29e0bac2ad9"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/__pycache__/generate_dataset.cpython-311.pyc",
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/__pycache__/generate_dataset.cpython-311.pyc",
+      "type": "regular_file",
+      "is_symlink": false,
+      "size_bytes": 32677,
+      "sha256": "0015a54f54d1ad259a1aa22879611bf20e41e28bc55913401f060e722979a9b9",
+      "device": 66305,
+      "inode": 244845193,
+      "mtime_ns": 1788830745966131377,
+      "tracked": false,
+      "original_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/generate_dataset.py",
+      "original_source_exists": false,
+      "archived_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/data-generation/generate_dataset.py",
+      "archived_source_exists": true,
+      "archived_source_tracked": true,
+      "archived_source_sha256": "4b6a2207bbd3e6d6a80292eff92de3fc9d2249ba40030730fa80f84142951549"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/__pycache__/validate_generated_dataset_contract.cpython-311.pyc",
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/__pycache__/validate_generated_dataset_contract.cpython-311.pyc",
+      "type": "regular_file",
+      "is_symlink": false,
+      "size_bytes": 30254,
+      "sha256": "8d4c2ed893ee49a54db1787b190f753d2e3b2dfeafa62ff6884cb6abecc98291",
+      "device": 66305,
+      "inode": 244845187,
+      "mtime_ns": 1788830745831131603,
+      "tracked": false,
+      "original_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/validate_generated_dataset_contract.py",
+      "original_source_exists": false,
+      "archived_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/data-generation/validate_generated_dataset_contract.py",
+      "archived_source_exists": true,
+      "archived_source_tracked": true,
+      "archived_source_sha256": "845bcc8d0882125a7c4162551a5ded386fd9dd6d0da3d3d4fd180e3687846b34"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/__pycache__/write_generation_report.cpython-311.pyc",
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/__pycache__/write_generation_report.cpython-311.pyc",
+      "type": "regular_file",
+      "is_symlink": false,
+      "size_bytes": 73635,
+      "sha256": "b0ba91eed59d3d645c29dc3f52bbffa992126638c2199718d2d7a2bb9c658f20",
+      "device": 66305,
+      "inode": 244845188,
+      "mtime_ns": 1788830745837131593,
+      "tracked": false,
+      "original_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/write_generation_report.py",
+      "original_source_exists": false,
+      "archived_source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/data-generation/write_generation_report.py",
+      "archived_source_exists": true,
+      "archived_source_tracked": true,
+      "archived_source_sha256": "2226b7b43d2642ba1d9303039cdb0732c86406ba410f4c40824d1ac7cf397cf1"
+    }
+  ],
+  "empty_directory_order": [
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/utils/__pycache__",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel/__pycache__",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/__pycache__",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/utils",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/__pycache__",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/400ep-dataset",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-MotionJEPALabel",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/patternlock-routestick-params",
+      "operation": "rmdir_only_if_empty",
+      "is_symlink": false,
+      "after": "先完成90根原产物清理并删除本表9个精确pyc文件；每一步重新确认目录为空，不递归删除未知文件"
+    }
+  ],
+  "covered_by_main_inventory": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/reports",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/reports",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/patternlock-routestick-params/reports",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/patternlock-routestick-params/outputs"
+  ],
+  "conditions": [
+    "当前只是盘点，没有删除任何真实文件。",
+    "先要求本批verification.json与cleanup-result.json明确通过，再按此附加清单操作。",
+    "只允许按files精确路径逐个核对实体、sha256和size后unlink；不使用通配删除或递归删除旧工具根。",
+    "pyc可重新生成；源代码已在scripts/legacy完整保留，禁止触及归档源码和其中运行缓存。",
+    "目录按empty_directory_order自深向浅尝试rmdir；任何目录仍含未知文件则停止并保留，不扩展清理范围。",
+    "官方data、最终scripts-v1数据与报告、.venv和依赖缓存不在本表内。"
+  ],
+  "report_hash": "ca497b675528fa1d3c430d1c752e14b89bd131170e9e926b436a14da7a230268"
+}

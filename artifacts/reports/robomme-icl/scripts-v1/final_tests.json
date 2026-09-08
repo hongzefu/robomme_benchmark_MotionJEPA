@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "checked_at_utc": "2026-09-08T17:16:46.512257+00:00",
+  "command": "timeout 280s env -u VIRTUAL_ENV UV_CACHE_DIR=\"$PWD/.cache/uv\" uv run --no-sync python -B -m pytest tests/robomme_icl/ -q",
+  "exit_code": 0,
+  "passed": 188,
+  "skipped": 4,
+  "warnings": 2,
+  "seconds": 49.72,
+  "after_old_artifact_cleanup": true,
+  "log_sha256": "1f9358d402dbbc84b21a93b1ddc26cee9f62dbdf5186c994ca6f001929d9b94c",
+  "log": "........................................................................ [ 37%]\n................................................................ssss.... [ 75%]\n................................................                         [100%]\n=============================== warnings summary ===============================\ntests/robomme_icl/test_env_contract.py::test_old_sixteen_ids_and_classes_are_unchanged\n  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n    import pkg_resources\n\ntests/robomme_icl/test_env_contract.py::test_old_sixteen_ids_and_classes_are_unchanged\n  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.\n    import pynvml  # type: ignore[import]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n188 passed, 4 skipped, 2 warnings in 49.72s\nEXIT_CODE=0\n",
+  "report_hash": "fdcab869fb4b777f25ea54d2ca3a2f5c1f007e12285158b770246307bbf474bc"
+}

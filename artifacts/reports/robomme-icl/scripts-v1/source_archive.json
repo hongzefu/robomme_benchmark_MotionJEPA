@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "created_utc": "2026-09-08T17:13:57.880559+00:00",
+  "scope": "5个缓存维护源码按库存SHA/size核对后先逐字移动，再仅修复根与入口路径；没有运行旧生成/绘图/仿真",
+  "source_inventory": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/scripts-v1/supplemental_cleanup_inventory.json",
+  "files": [
+    {
+      "original_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-final-report.py",
+      "archive_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/icl-final-report.py",
+      "original_sha256": "62209d5655bc92861f7fec96f5fec199ccd1a9cc1a2f225cdf8f44eb635de218",
+      "original_size_bytes": 28760,
+      "archive_sha256": "095d5bc707685cb9bf079eeb2e13ead498f3a4d2f8b2c50ebe6f580ebbaaf0e6",
+      "archive_size_bytes": 28760,
+      "is_symlink": false,
+      "original_path_absent": true,
+      "moved_bytes_equal_before_corrections": true,
+      "only_declared_path_corrections_verified": true,
+      "corrections": [
+        "ROOT的parents[1]改为parents[4]，定位到仓库根"
+      ],
+      "diff": "--- /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-final-report.py\n+++ /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/icl-final-report.py\n@@ -18,5 +18,5 @@\n \n \n-ROOT = Path(__file__).resolve().parents[1]\n+ROOT = Path(__file__).resolve().parents[4]\n EXPECTED_COMMIT = \"e34474a6304b917b44cedae129ac621ddd52a430\"\n PHASES = (\n"
+    },
+    {
+      "original_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plot-icl-certified.py",
+      "archive_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/plot-icl-certified.py",
+      "original_sha256": "985f0f8c5e64cfb50b72091e1fd2e9a7a81c204495c6ca9a11bb11d757594a5b",
+      "original_size_bytes": 18934,
+      "archive_sha256": "15a4d6767049cc5ef96266056b8c662d36c064ebb3deaf9037600c58b835f2ab",
+      "archive_size_bytes": 18934,
+      "is_symlink": false,
+      "original_path_absent": true,
+      "moved_bytes_equal_before_corrections": true,
+      "only_declared_path_corrections_verified": true,
+      "corrections": [
+        "ROOT的parents[1]改为parents[4]，定位到仓库根"
+      ],
+      "diff": "--- /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plot-icl-certified.py\n+++ /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/plot-icl-certified.py\n@@ -12,5 +12,5 @@\n \n \n-ROOT = Path(__file__).resolve().parents[1]\n+ROOT = Path(__file__).resolve().parents[4]\n os.environ.setdefault(\"MPLCONFIGDIR\", str(ROOT / \".cache\" / \"matplotlib-icl-certified\"))\n \n"
+    },
+    {
+      "original_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-v1.sh",
+      "archive_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/icl-formal-v1.sh",
+      "original_sha256": "647a377e3569de446ba558957e7c6010b1518de9551ad2d987063864bcddad85",
+      "original_size_bytes": 3847,
+      "archive_sha256": "541ad38fe12b52ddd48f2558c0caf01cc751f0c4f349c70e2458c800678a36d9",
+      "archive_size_bytes": 3980,
+      "is_symlink": false,
+      "original_path_absent": true,
+      "moved_bytes_equal_before_corrections": true,
+      "only_declared_path_corrections_verified": true,
+      "corrections": [
+        "自身.cache路径指向本归档文件",
+        "旧tests维护入口指向scripts/legacy/robomme_icl",
+        "旧robomme-icl控制台调用改为uv运行归档cli.py；参数保持不变"
+      ],
+      "diff": "--- /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-v1.sh\n+++ /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/icl-formal-v1.sh\n@@ -30,5 +30,5 @@\n if sha!='3e56b223607801ca0dd596dacbd17b4458d9981b':\n     raise RuntimeError('正式运行提交基线已改变：'+sha)\n-script=root/'.cache/icl-formal-v1.sh'\n+script=root/'scripts/legacy/robomme_icl/historical_helpers/icl-formal-v1.sh'\n record={\n  'source_commit':sha,'start_status':status,\n@@ -62,8 +62,8 @@\n \n # 首先在已提交源码重新完成四任务最小认证，再进入完整规模。\n-icl_phase baseline-smoke uv run --no-sync robomme-icl prepare --output \"$ICL_REPO_PATH/artifacts/generated/robomme-icl/baseline-smoke-3e56b22\" --episodes-per-task 1 --workers 4 --max-candidates 64\n-icl_phase certification96 uv run --no-sync robomme-icl prepare --output \"$ICL_SUITE\" --workers 4\n-icl_phase generate-reverse-w1 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode generate --workers 1 --reverse\n-icl_phase resume-forward-w4 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode resume --workers 4\n-icl_phase replay-forward-w4 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode replay --workers 4\n-icl_phase reset-reverse-w4 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode reset --workers 4 --reverse\n+icl_phase baseline-smoke uv run --no-sync python scripts/legacy/robomme_icl/cli.py prepare --output \"$ICL_REPO_PATH/artifacts/generated/robomme-icl/baseline-smoke-3e56b22\" --episodes-per-task 1 --workers 4 --max-candidates 64\n+icl_phase certification96 uv run --no-sync python scripts/legacy/robomme_icl/cli.py prepare --output \"$ICL_SUITE\" --workers 4\n+icl_phase generate-reverse-w1 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode generate --workers 1 --reverse\n+icl_phase resume-forward-w4 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode resume --workers 4\n+icl_phase replay-forward-w4 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode replay --workers 4\n+icl_phase reset-reverse-w4 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode reset --workers 4 --reverse\n"
+    },
+    {
+      "original_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-dualgpu-v2.sh",
+      "archive_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/icl-formal-dualgpu-v2.sh",
+      "original_sha256": "07939fb43755eb20a44e9f98d694c9750f1087819b81bdeb73d8b386d988b023",
+      "original_size_bytes": 5281,
+      "archive_sha256": "e73a28b5a77943e5c415512f571985ec64202156378fb75f942adec549752e62",
+      "archive_size_bytes": 5394,
+      "is_symlink": false,
+      "original_path_absent": true,
+      "moved_bytes_equal_before_corrections": true,
+      "only_declared_path_corrections_verified": true,
+      "corrections": [
+        "自身.cache路径指向本归档文件",
+        "旧tests维护入口指向scripts/legacy/robomme_icl",
+        "旧robomme-icl控制台调用改为uv运行归档cli.py；参数保持不变"
+      ],
+      "diff": "--- /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-dualgpu-v2.sh\n+++ /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/icl-formal-dualgpu-v2.sh\n@@ -38,5 +38,5 @@\n     if cert['runtime_fingerprint']!=fps[str(cert['render_gpu'])]:\n         raise RuntimeError('提交后源码与已通过的双卡smoke字节指纹不同')\n-script=root/'.cache/icl-formal-dualgpu-v2.sh'\n+script=root/'scripts/legacy/robomme_icl/historical_helpers/icl-formal-dualgpu-v2.sh'\n record={\n  'source_commit':sha,'start_status':status,\n@@ -90,8 +90,8 @@\n }\n \n-icl_phase certification96 uv run --no-sync robomme-icl prepare --output \"$ICL_SUITE\" --gpus 0,1 --workers 32 --timeout-seconds 1200\n-icl_phase generate-reverse-w32 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode generate --workers 32 --reverse --timeout-seconds 1200\n-icl_phase resume-forward-w4 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode resume --workers 4 --timeout-seconds 1200\n-icl_phase replay-forward-w32 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode replay --workers 32 --timeout-seconds 1200\n-icl_phase reset-reverse-w32 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode reset --workers 32 --reverse --timeout-seconds 1200\n-icl_phase plots uv run --no-sync python tests/robomme_icl/plot_suite.py --suite \"$ICL_SUITE\" --output \"$ICL_RUN_REPORT/figures\"\n+icl_phase certification96 uv run --no-sync python scripts/legacy/robomme_icl/cli.py prepare --output \"$ICL_SUITE\" --gpus 0,1 --workers 32 --timeout-seconds 1200\n+icl_phase generate-reverse-w32 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode generate --workers 32 --reverse --timeout-seconds 1200\n+icl_phase resume-forward-w4 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode resume --workers 4 --timeout-seconds 1200\n+icl_phase replay-forward-w32 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode replay --workers 32 --timeout-seconds 1200\n+icl_phase reset-reverse-w32 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode reset --workers 32 --reverse --timeout-seconds 1200\n+icl_phase plots uv run --no-sync python scripts/legacy/robomme_icl/plot_suite.py --suite \"$ICL_SUITE\" --output \"$ICL_RUN_REPORT/figures\"\n"
+    },
+    {
+      "original_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-v3.sh",
+      "archive_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/icl-formal-v3.sh",
+      "original_sha256": "4bad6a5ccb5feb0dba2b4b3c3d9651bb7c3fced6b9af60941302a88d52da3e29",
+      "original_size_bytes": 9544,
+      "archive_sha256": "de10b1daa7df441c5fc29e82191b7697332ade55c39a8afe3370c029e9764a62",
+      "archive_size_bytes": 9705,
+      "is_symlink": false,
+      "original_path_absent": true,
+      "moved_bytes_equal_before_corrections": true,
+      "only_declared_path_corrections_verified": true,
+      "corrections": [
+        "自身.cache路径指向本归档文件",
+        "旧tests维护入口指向scripts/legacy/robomme_icl",
+        "旧robomme-icl控制台调用改为uv运行归档cli.py；参数保持不变"
+      ],
+      "diff": "--- /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-v3.sh\n+++ /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/icl-formal-v3.sh\n@@ -3,5 +3,5 @@\n \n ICL_REPO_PATH=/data/hongzefu/robomme_benchmark_MotionJEPANewTask\n-ICL_EXPECTED_COMMIT=\"${1:?用法：bash .cache/icl-formal-v3.sh <已提交基线SHA>}\"\n+ICL_EXPECTED_COMMIT=\"${1:?用法：bash scripts/legacy/robomme_icl/historical_helpers/icl-formal-v3.sh <已提交基线SHA>}\"\n ICL_RUN_REPORT=\"$ICL_REPO_PATH/artifacts/reports/robomme-icl/formal-v3\"\n ICL_SUITE=\"$ICL_REPO_PATH/artifacts/generated/robomme-icl/validation24-v3\"\n@@ -75,5 +75,5 @@\n     raise RuntimeError(\"正式范围必须为四任务各24条、每难度8条，总计96条\")\n \n-script = root / \".cache/icl-formal-v3.sh\"\n+script = root / \"scripts/legacy/robomme_icl/historical_helpers/icl-formal-v3.sh\"\n record = {\n     \"source_commit\": sha,\n@@ -182,12 +182,12 @@\n }\n \n-icl_phase certification96 uv run --no-sync robomme-icl prepare --output \"$ICL_SUITE\" --gpus 0,1 --workers 32 --timeout-seconds 1200\n+icl_phase certification96 uv run --no-sync python scripts/legacy/robomme_icl/cli.py prepare --output \"$ICL_SUITE\" --gpus 0,1 --workers 32 --timeout-seconds 1200\n \n # 两轮生成使用同一套已认证规格、相同逆序和原 GPU 绑定，但各写全新独立目录。\n-icl_phase generate-reverse-w32 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode generate --workers 32 --reverse --timeout-seconds 1200\n-icl_phase generate-reverse-w16 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY_W16\" --mode generate --workers 16 --reverse --timeout-seconds 1200\n+icl_phase generate-reverse-w32 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode generate --workers 32 --reverse --timeout-seconds 1200\n+icl_phase generate-reverse-w16 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY_W16\" --mode generate --workers 16 --reverse --timeout-seconds 1200\n \n-icl_phase resume-forward-w4 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode resume --workers 4 --timeout-seconds 1200\n-icl_phase replay-forward-w32 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode replay --workers 32 --timeout-seconds 1200\n-icl_phase reset-reverse-w32 uv run --no-sync python tests/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode reset --workers 32 --reverse --timeout-seconds 1200\n-icl_phase plots uv run --no-sync python tests/robomme_icl/plot_suite.py --suite \"$ICL_SUITE\" --output \"$ICL_RUN_REPORT/figures\"\n+icl_phase resume-forward-w4 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode resume --workers 4 --timeout-seconds 1200\n+icl_phase replay-forward-w32 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode replay --workers 32 --timeout-seconds 1200\n+icl_phase reset-reverse-w32 uv run --no-sync python scripts/legacy/robomme_icl/run_acceptance.py --suite \"$ICL_SUITE\" --output \"$ICL_VERIFY\" --mode reset --workers 32 --reverse --timeout-seconds 1200\n+icl_phase plots uv run --no-sync python scripts/legacy/robomme_icl/plot_suite.py --suite \"$ICL_SUITE\" --output \"$ICL_RUN_REPORT/figures\"\n"
+    }
+  ],
+  "readme": {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/historical_helpers/README.md",
+    "sha256": "1f46acc56b66b40e8b3c8dd538dfd8ef8e76b6f9acec9487215b06d861e39092",
+    "main_scripts_readme_link_exists": true
+  },
+  "preserved": [
+    "5个源码文件全部归档保留",
+    "原实验默认参数、数据/报告默认旧路径、提交检查和实验语义保持原样"
+  ],
+  "executed_old_generation_or_simulation": false,
+  "tests": [
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/icl-final-report.py",
+      "check": "AST",
+      "exit_code": 0
+    },
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/icl-final-report.py",
+      "check": "--help",
+      "command": "uv run --no-sync python -B scripts/legacy/robomme_icl/historical_helpers/icl-final-report.py --help",
+      "exit_code": 0,
+      "seconds": 0.058,
+      "has_usage": true
+    },
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/plot-icl-certified.py",
+      "check": "AST",
+      "exit_code": 0
+    },
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/plot-icl-certified.py",
+      "check": "--help",
+      "command": "uv run --no-sync python -B scripts/legacy/robomme_icl/historical_helpers/plot-icl-certified.py --help",
+      "exit_code": 0,
+      "seconds": 0.345,
+      "has_usage": true
+    },
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/icl-formal-dualgpu-v2.sh",
+      "check": "bash -n",
+      "command": "bash -n scripts/legacy/robomme_icl/historical_helpers/icl-formal-dualgpu-v2.sh",
+      "exit_code": 0
+    },
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/icl-formal-dualgpu-v2.sh",
+      "check": "内嵌Python AST",
+      "exit_code": 0
+    },
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/icl-formal-v1.sh",
+      "check": "bash -n",
+      "command": "bash -n scripts/legacy/robomme_icl/historical_helpers/icl-formal-v1.sh",
+      "exit_code": 0
+    },
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/icl-formal-v1.sh",
+      "check": "内嵌Python AST",
+      "exit_code": 0
+    },
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/icl-formal-v3.sh",
+      "check": "bash -n",
+      "command": "bash -n scripts/legacy/robomme_icl/historical_helpers/icl-formal-v3.sh",
+      "exit_code": 0
+    },
+    {
+      "path": "scripts/legacy/robomme_icl/historical_helpers/icl-formal-v3.sh",
+      "check": "内嵌Python AST",
+      "exit_code": 0
+    }
+  ],
+  "test_summary": {
+    "checks": 10,
+    "exit_code": 0,
+    "python_help_passed": 2,
+    "python_ast_passed": 2,
+    "shell_syntax_passed": 3,
+    "embedded_python_ast_passed": 3
+  },
+  "report_hash": "3465eaffee49e7d3e96a5e5936b2cba80409d770ee50daaee77831d8fcc1e208"
+}

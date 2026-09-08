@@ -108,9 +108,9 @@ The environment input/output format is described in [doc/env_format.md](doc/env_
 
 > Currently, environment spawning is set up only for imitation learning. We are working on extending it to support more general parallel environments for reinforcement learning in the future.
 
-### 🔧 Data Generation
+### 🔧 原版归档生成
 
-The repository includes a complete 16-task × 100-episode HDF5 generation and validation workflow. It uses 20 workers and is locked to physical GPU 0. See [scripts/legacy/data-generation/README.md](scripts/legacy/data-generation/README.md) for the full workflow and artifact contract.
+当前robomme-ICL四任务使用 [scripts/README.md](scripts/README.md) 中的四个入口，默认双GPU、32 workers，并保存HDF5、视频和分布图。下面的16任务×100条、单GPU 0及20 workers命令属于原版归档流程，保留用于历史维护；说明见 [原版归档README](scripts/legacy/data-generation/README.md)。
 
 ```bash
 env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/legacy/data-generation/generate_dataset.py \

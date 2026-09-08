@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "created_utc": "2026-09-08T16:42:08.103909+00:00",
+  "scope": "清理工具的假夹具安全与行为测试；没有执行任何真实旧产物删除；不代表正式视频编码或仿真验收",
+  "tool": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy/robomme_icl/cleanup_previous_outputs.py",
+  "tool_sha256": "dcfc3560fdb300eafdb840b379ad5def28bb08f8e13fd34f554e3b467cdcda06",
+  "git_head_at_test": "c139a522c2c05e8fc5d206ec0d32103f13fbd237",
+  "test_cases_passed": 18,
+  "production_paths_deleted": false,
+  "temporary_fixture_policy": "两个tempfile.TemporaryDirectory均位于当前仓库.cache；假仓库有FAKE标识，验收JSON含test_fixture_only=true；退出后自动移除全部假夹具",
+  "commands": [
+    {
+      "purpose": "入口帮助和进程占用扫描",
+      "shell": "command -v uv\nenv -u VIRTUAL_ENV UV_CACHE_DIR=\"$PWD/.cache/uv\" uv run --no-sync python -B scripts/legacy/robomme_icl/cleanup_previous_outputs.py --help",
+      "exit_code": 0
+    },
+    {
+      "purpose": "第一批14项内联假夹具测试",
+      "shell": "command -v uv\nenv -u VIRTUAL_ENV UV_CACHE_DIR=\"$PWD/.cache/uv\" uv run --no-sync python -B -",
+      "stdin_description": "导入工具并仅在测试进程把ROOT指向.cache/icl-cleanup-fixture-*/FAKE_REPOSITORY_ONLY；复制冻结的96个spec和配置，写384个仅含所需头信息的假HDF5、192个含FAKE字样的假媒体和4个假图；签名测试报告并执行以下14个案例。没有公开测试模式或可绕过正式门禁的CLI参数。",
+      "exit_code": 0,
+      "cases": [
+        {
+          "case": "96规格、384个假HDF5头、192个假媒体文件的完整门禁",
+          "passed": true
+        },
+        {
+          "case": "拒绝失败验收",
+          "passed": true
+        },
+        {
+          "case": "拒绝191个视频的部分验收",
+          "passed": true
+        },
+        {
+          "case": "拒绝未签名验收",
+          "passed": true
+        },
+        {
+          "case": "拒绝最终批次祖先",
+          "passed": true
+        },
+        {
+          "case": "拒绝参考集",
+          "passed": true
+        },
+        {
+          "case": "拒绝依赖缓存",
+          "passed": true
+        },
+        {
+          "case": "拒绝假仓库之外路径",
+          "passed": true
+        },
+        {
+          "case": "拒绝库存扩张到未知范围",
+          "passed": true
+        },
+        {
+          "case": "拒绝候选目录混入源码",
+          "passed": true
+        },
+        {
+          "case": "默认只写计划而不删除",
+          "passed": true
+        },
+        {
+          "case": "显式apply仅删除假产物且不跟随内部符号链接",
+          "passed": true
+        },
+        {
+          "case": "计划和逐项删除结果可验签",
+          "passed": true
+        },
+        {
+          "case": "拒绝覆盖既有清理结果或已变化计划",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "purpose": "修正.staging计数和祖先路径打开后的4项补充内联假夹具测试",
+      "shell": "command -v uv\nenv -u VIRTUAL_ENV UV_CACHE_DIR=\"$PWD/.cache/uv\" uv run --no-sync python -B -",
+      "stdin_description": "在.cache/icl-cleanup-staging-fixture-*/FAKE_ONLY创建同规模假夹具，为每个生成/回放假HDF5增加.staging/<文件名>/attempt_0000.h5硬链接。先通过verify_gate，再增加一个非隐藏UNKNOWN.h5确认拒绝；恢复后运行默认cleanup及apply，只删除假old目录；最后验证_open_directory拒绝symlink-parent。",
+      "exit_code": 0,
+      "cases": [
+        {
+          "case": "正式生成和回放各96个.staging硬链接不计入正式集合",
+          "passed": true
+        },
+        {
+          "case": "新增未知正式HDF5会阻止清理",
+          "passed": true
+        },
+        {
+          "case": "从ROOT逐段打开父目录后仅删除临时假目录",
+          "passed": true
+        },
+        {
+          "case": "逐段O_NOFOLLOW拒绝符号链接祖先且保留目标",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "fixture_source_suite": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3/suite.json",
+  "observed_issues_and_fixes": [
+    {
+      "issue": "现存sd-pam目录属用户，但fd目录属root且不能读取",
+      "fix": "只扫描fd目录也属于当前用户的工作进程，仍对同用户工作进程权限异常停止"
+    },
+    {
+      "issue": "初版清理门禁把.staging硬链接误计入正式HDF5集合",
+      "fix": "与正式验证器一致排除相对路径任一隐藏部分；额外非隐藏HDF5仍拒绝"
+    },
+    {
+      "issue": "绝对路径O_NOFOLLOW只限制最终父目录，祖先存在并发替换窗口",
+      "fix": "从ROOT目录描述符开始逐段O_NOFOLLOW打开父目录，再按冻结名称删除"
+    }
+  ],
+  "limits": [
+    "媒体内容故意使用假字节；此处只验证清理门禁对验收字段、身份、哈希及实体集合的核对，不执行解码。正式verification.json由独立整批验证器执行真实解码后生成。",
+    "第一批14项发生在隐藏暂存/父目录打开修正前；第二批4项针对这两处最终改动回归，当前工具最终摘要见tool_sha256。",
+    "所有真实删除须由主任务在96条正式验证通过后显式追加--apply执行。"
+  ],
+  "repository_regression": {
+    "status": "passed",
+    "test_file": "tests/robomme_icl/test_cleanup_outputs.py",
+    "test_sha256": "d2fa2d9affd23ecd6943a09fb1f2a21860f3ae3f2efc905d0a694471ea2e1ea7",
+    "tool_sha256": "dcfc3560fdb300eafdb840b379ad5def28bb08f8e13fd34f554e3b467cdcda06",
+    "command": "command -v uv\nenv -u VIRTUAL_ENV UV_CACHE_DIR=\"$PWD/.cache/uv\" uv run --no-sync python -B -m pytest tests/robomme_icl/test_cleanup_outputs.py -q",
+    "result": "18 passed in 9.64s",
+    "exit_code": 0,
+    "wall_seconds_pytest": 9.64,
+    "passed": 18,
+    "failed": 0,
+    "old_suite_dependency": false,
+    "scope": "真实调用cleanup函数的门禁、计划、逐文件删除、签名结果及保护范围；自造96条最小规格、384个HDF5头、192个假媒体与隐藏重试硬链接；只在.cache/robomme_icl_tests/cleanup-fake-only-*中创建和删除夹具，退出自动清理",
+    "local_monkeypatches": [
+      "cleanup.ROOT指向每个测试自己的假仓库",
+      "robomme_icl.suite.load_suite仅读取自造最小规格；正式规格校验由现有suite测试负责",
+      "cleanup._active_users不读取宿主其他进程；路径/删除/报告/验签逻辑保持真实"
+    ],
+    "cases": [
+      "默认只盘点不删",
+      "明确apply仅删库存产物并保留未列出目录和符号链接目标",
+      "参数化8个保护位置：官方参考、新批次、生成及报告祖先、uv/ManiSkill依赖缓存、源码及入口共用实现",
+      "隐藏.staging硬链接不计正式集合，额外正式HDF5会阻止删除",
+      "参数化3个未通过验收：failed、95条、191视频",
+      "拒绝无签名验收",
+      "拒绝候选内源码",
+      "拒绝符号链接祖先",
+      "计划后增加新文件时拒绝apply并保留原计划"
+    ],
+    "first_run": {
+      "result": "2 failed, 16 passed in 8.88s",
+      "exit_code": 1,
+      "cause": "两个测试断言把.staging内名为seed_*.h5的目录也计为文件；清理逻辑未失败",
+      "fix": "仅将两个断言改为对glob结果调用is_file计数；未修改清理工具或正式源码"
+    },
+    "production_paths_deleted": false,
+    "previous_inline_report_hash": "bd2317ef63985e4d79d642efe60d40ce62f80313e7c4506392a2054977bd9046"
+  },
+  "report_hash": "94f81cc1e34e7c696c7ed7acf4721b75c263bd16e26a7c7b0043bdb4bb8d08c9"
+}

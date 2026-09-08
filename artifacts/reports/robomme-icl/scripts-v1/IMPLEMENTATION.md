@@ -34,4 +34,4 @@
 
 最终保留artifacts/generated/robomme-icl/scripts-v1和本报告目录；保留本次provenance/source_suite.json以说明原96条来源，旧原始大数据清理后不再声称可重做旧帧对照。新的认证、HDF5、MP4和回放保持自足。官方data路径、源码、配置、静态assets与依赖缓存不删；当前工作副本的data/robomme_data_h5实际不存在，不访问或清理仓库外副本。
 
-正式执行将从本轮已提交干净基线，在gen-icl-scripts-v1-20260908中运行；结果、清理清单及最终状态在完成后补充，不能只凭本文件认定全量成功。
+正式执行已从c139a522c2c05e8fc5d206ec0d32103f13fbd237干净基线，在gen-icl-scripts-v1-20260908完成，全部阶段退出0。96条、每遍63689帧、384份HDF5逐位一致、192个视频及四图均独立验收通过；90根旧产物清理和清理后复核也通过。最终路径、可复现命令与清理证据见[FINAL.md](FINAL.md)，逐条原始验收见[verification.json](verification.json)，清理后的保留检查见[post_cleanup.json](post_cleanup.json)。

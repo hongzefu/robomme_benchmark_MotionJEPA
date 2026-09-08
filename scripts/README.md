@@ -1,6 +1,6 @@
 # robomme-ICL 四个入口
 
-日常只使用本目录的四个脚本。`src/robomme_icl` 保留可导入的库实现，旧控制台命令和模块入口已经移除。旧工具位于 [legacy/](legacy/README.md)；`challenge_interface` 和原版 `src/robomme` 保持原样。用户要求只保留本次交付产物，旧生成数据和报告在新批次验收后清理，官方参考集不删除。
+日常只使用本目录的四个脚本。`src/robomme_icl` 保留可导入的库实现，旧控制台命令和模块入口已经移除。旧工具位于 [legacy/](legacy/README.md)；`challenge_interface` 和原版 `src/robomme` 保持原样。旧生成数据和报告已在新批次验收后清理，只保留本次交付产物；官方参考数据未触碰。
 
 | 入口 | 输入 | 输出 |
 | --- | --- | --- |
@@ -74,7 +74,7 @@ uv run scripts/plot_distribution.py \
   --output-dir artifacts/generated/robomme-icl/scripts-v1/distributions
 ```
 
-生成脚本会自动调用同一绘图实现；独立入口不运行仿真，也可读取原来的v3清单绘图。四任务各一张组合图，包含按难度的次数配额、单局布局、跨episode散点与支持范围。`distribution_summary.json` 记录实际计数、位置分层覆盖及来源哈希。同来源完整图可验证后复用，缺图可以补齐，不能把不同清单的图混入同一目录。
+生成脚本会自动调用同一绘图实现；独立入口不运行仿真，可读取本批清单，也可用保留的 `provenance/source_suite.json` 来源快照绘图。四任务各一张组合图，包含按难度的次数配额、单局布局、跨episode散点与支持范围。`distribution_summary.json` 记录实际计数、位置分层覆盖及来源哈希。同来源完整图可验证后复用，缺图可以补齐，不能把不同清单的图混入同一目录。
 
 ## 产物目录与恢复
 
@@ -96,6 +96,8 @@ artifacts/generated/robomme-icl/<批次>/
 按子集生成时额外保存 `selection/suite.json`，仅用于准确描述该子集。重新运行同一命令会检查数据身份与入口实现哈希；可调整并发参数，但不能在原输出目录中换清单、改配置或混入来源不明数据。相同输出目录不得同时启动两个控制进程。原版及参考数据目录禁止写入。
 
 本次交付统一放入 `scripts-v1/`，报告位于 `artifacts/reports/robomme-icl/scripts-v1/`。旧v3清单的来源快照保留在本次产物的 `provenance/` 中；原v3大数据及其他历史生成产物按用户指令清理。清理后的来源路径仅作历史说明，后续重新认证使用仍完整保留的本次 `suite/suite.json` 及其认证记录。
+
+本批96条环境已全部通过重新认证、生成和严格回放，每遍63,689帧原始记录逐位一致；96个生成视频、96个回放视频和四张分布图均已保存并独立验收。清理后再次核对本批完整性，详见 [最终交付报告](../artifacts/reports/robomme-icl/scripts-v1/FINAL.md)。
 
 ## 正式运行
 

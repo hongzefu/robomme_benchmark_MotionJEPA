@@ -34,13 +34,8 @@
 
 ## 历史数据与运行记录
 
-本次只移动代码和配套工具说明，`outputs/`、`reports/`、`run_*.json`、`run-log.md` 等历史数据和记录均保留原位，不重新写入或更名。
+用户追加要求只保留本次产物。旧 `outputs/`、`reports/`、`run_*.json`、`run-log.md` 等生成数据和报告已按验收后的明确清单删除；官方参考数据未触碰。
 
-- No-Patch 历史报告：[scripts/data-generation/reports/](../data-generation/reports/)。
-- newSeed 历史输出：[scripts/data-generation-newSeed/](../data-generation-newSeed/)。
-- MotionJEPA 标签历史输出：[scripts/data-generation-MotionJEPALabel/](../data-generation-MotionJEPALabel/)。
-- 400 episode 运行记录：[scripts/400ep-dataset/](../400ep-dataset/)。
-- 任务参数与旧图：[scripts/patternlock-routestick-params/](../patternlock-routestick-params/)。
-- ICL 既有批次：[artifacts/generated/robomme-icl/](../../artifacts/generated/robomme-icl/)；既有报告：[artifacts/reports/robomme-icl/](../../artifacts/reports/robomme-icl/)。
+当前产物统一位于 [scripts-v1数据目录](../../artifacts/generated/robomme-icl/scripts-v1/)，本次执行与清理证据位于 [scripts-v1报告目录](../../artifacts/reports/robomme-icl/scripts-v1/)。本目录和根账本中的旧数据路径、历史结论仅记录当时执行情况，不表示旧文件仍然存在；已跟踪的历史报告可从Git历史查询。
 
-源码导入路径指向归档目录；由脚本位置推导的仓库根、默认输入和历史报告目录已经分别修正。归档文档中的历史数据路径与结论保留原口径；旧命令的代码路径已改为归档路径。
+源码导入路径指向归档目录；由脚本位置推导的仓库根、默认输入和历史报告目录已经分别修正。旧命令的代码路径已改为归档路径，重新运行归档工具时须明确指定新的仓库内输出目录。
