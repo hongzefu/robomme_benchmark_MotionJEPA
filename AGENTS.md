@@ -252,6 +252,15 @@ command -v uv
 
 ## 追加式执行日志
 
+### 2026-09-08 — 原版对齐重构：用户批准实施
+
+- 用户本轮明确指令为「PLEASE IMPLEMENT THIS PLAN: # RoboMME-ICL 可读性重构与原版行为对齐」，批准完整八项计划，包括配置边界、四任务原版行为、模块拆分、原版复用、版本2记录、六阶段实施、三路独立对照及96条验收。先前等待确认已结束。
+- 保留两个 JSON 的次数／位置分布；几何与时序交回原版；BinFill 目标颜色数采用原版颜色池口径；不通过禁用原版行为换取测试通过。
+- 本轮开工：`95656a09c71e260b619e50b6316185fb6a7e981b`，工作区干净，既有 upstream 正常；两张 RTX 6000 Ada；uv 可用，使用本仓库 `.venv`。环境变量中另一仓库的 VIRTUAL_ENV 被 uv 正确忽略。
+- 首次真实原版 BinFill 创建诊断退出0：seed=0、easy、单环境CPU物理、GPU0渲染；实测 sim_freq=100、control_freq=20；孔板5个visual、4个collision，明确黑底仅为视觉组件。命令经 `uv run --no-sync python` 执行，耗时小于五分钟，未修改原版或依赖。
+- 开始建立真实素材组件读取器和缺组件／改颜色／改尺寸的反例；后续依序完成配置、任务、记录与全量验收。本记录不宣称重构完成。
+- 素材采集器验证：`uv run --no-sync python -m pytest tests/robomme_icl/test_native_assets.py -q` 为3 passed；真实入口 `uv run --no-sync scripts/verify_native_parity.py --source original --task BinFill --output-dir artifacts/generated/robomme-icl/native-parity/baseline-original-binfill-v3` 退出0，采集26个对象／关节链接，含两路RGB、视觉／碰撞组件和子网格材质。前两次诊断分别暴露多材质网格不能读单一material、articulation link的底层对象不是entity，均已修正，未屏蔽字段。`git diff --check` 退出0。
+
 ### 2026-09-08 — ICL 原版素材、subgoal 与显隐对齐：开始
 
 - 用户原话：「对抗验证 当前新版与原版是否行为一致」「我目视检查了binfill/routestick的素材 并不一致」「你需要做到每个素材都一致 每个subgoal行为都一致 每个物体/事件出现消失情况的都一致」；追加确认：「保留新版分布配置；素材、subgoal 和显隐机制完全沿用原版」。
