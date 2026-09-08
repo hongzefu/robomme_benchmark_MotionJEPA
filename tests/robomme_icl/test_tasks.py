@@ -16,7 +16,7 @@ def _snapshot(spec, step=0, **extra):
     return {"step": step, "poses": {a["id"]: {"position": list(a["position"]), "quaternion": list(a["quaternion"])} for a in spec["actors"]},
             "linear_velocities": {a["id"]: [0, 0, 0] for a in spec["actors"]},
             "angular_velocities": {a["id"]: [0, 0, 0] for a in spec["actors"]},
-            "grasped_ids": [], "phase": "evaluation", "button_pressed": False,
+            "grasped_ids": [], "parked_ids": [], "phase": "evaluation", "button_pressed": False,
             "forbidden_collision": False, "tcp_position": [0, 0, .02], **extra}
 
 
@@ -122,7 +122,8 @@ def test_binfill_order_free_unique_counts_and_button():
     spec = _binfill()
     evaluator = TaskEvaluator(spec)
     obs = _snapshot(spec)
-    step = 0
+    evaluator.update(obs)
+    step = 1
     for actor_id in ("blue", "red"):
         obs["poses"][actor_id]["position"] = [0, 0, .015]
         for _ in range(3):
@@ -184,12 +185,14 @@ def test_binfill_parked_inserted_cube_keeps_its_count():
     spec = _binfill()
     evaluator = TaskEvaluator(spec)
     obs = _snapshot(spec)
+    evaluator.update(obs)
     obs["poses"]["red"]["position"] = [0, 0, .015]
-    for step in range(3):
+    for step in range(1, 4):
         obs["step"] = step
         evaluator.update(obs)
     obs["poses"]["red"]["position"] = [10, 10, 10]
-    for step in range(3, 7):
+    obs["parked_ids"] = ["red"]
+    for step in range(4, 8):
         obs["step"] = step
         result = evaluator.update(obs)
         assert result["color_counts"] == {"red": 1}
@@ -197,6 +200,92 @@ def test_binfill_parked_inserted_cube_keeps_its_count():
     assert not result["success"]
     evaluator.reset()
     assert evaluator.update(_snapshot(spec))["inserted_ids"] == []
+
+
+def _single_color_binfill():
+    spec = _binfill()
+    spec["actors"] = [actor for actor in spec["actors"] if actor["id"] != "blue"]
+    spec["task_parameters"]["target_counts"] = {"red": 1}
+    return spec
+
+
+def test_binfill_initial_prefill_does_not_count_without_an_observed_entry():
+    spec = _single_color_binfill()
+    spec["actors"][1]["position"] = [0, 0, .015]
+    evaluator = TaskEvaluator(spec)
+    for step in range(5):
+        result = evaluator.update(_snapshot(spec, step))
+        assert result["inserted_ids"] == []
+        assert result["color_counts"] == {}
+    result = evaluator.update(_snapshot(spec, 5, button_pressed=True))
+    assert result["fail"] and not result["success"]
+
+
+def test_binfill_initial_prefill_can_be_removed_and_reinserted_without_grasp_requirement():
+    spec = _single_color_binfill()
+    spec["actors"][1]["position"] = [0, 0, .015]
+    evaluator = TaskEvaluator(spec)
+    obs = _snapshot(spec)
+    assert evaluator.update(obs)["inserted_ids"] == []
+    # 垂直取出即可提供真实孔外证据，不要求方块必须沿 XY 移出孔投影。
+    obs["step"] = 1
+    obs["poses"]["red"]["position"][2] = .10
+    evaluator.update(obs)
+    obs["poses"]["red"]["position"][2] = .015
+    for step in range(2, 5):
+        obs["step"] = step
+        result = evaluator.update(obs)
+    assert result["inserted_ids"] == ["red"]
+    assert not obs["grasped_ids"]
+    obs.update(step=5, button_pressed=True)
+    assert evaluator.update(obs)["success"]
+
+
+def test_binfill_parking_clears_eligibility_and_direct_in_hole_reveal_does_not_count():
+    spec = _single_color_binfill()
+    evaluator = TaskEvaluator(spec)
+    obs = _snapshot(spec)
+    evaluator.update(obs)
+    assert "red" in evaluator.state.eligible_insert_ids
+    obs.update(step=1, parked_ids=["red"])
+    obs["poses"]["red"]["position"] = [10, 10, 10]
+    evaluator.update(obs)
+    assert "red" not in evaluator.state.eligible_insert_ids
+    obs["parked_ids"] = []
+    obs["poses"]["red"]["position"] = [0, 0, .015]
+    for step in range(2, 6):
+        obs["step"] = step
+        assert evaluator.update(obs)["inserted_ids"] == []
+
+
+def test_binfill_dynamic_outside_reveal_then_entry_counts_normally():
+    spec = _single_color_binfill()
+    evaluator = TaskEvaluator(spec)
+    obs = _snapshot(spec, parked_ids=["red"])
+    obs["poses"]["red"]["position"] = [10, 10, 10]
+    evaluator.update(obs)
+    obs.update(step=1, parked_ids=[])
+    obs["poses"]["red"]["position"] = [-.15, 0, .015]
+    evaluator.update(obs)
+    obs["poses"]["red"]["position"] = [0, 0, .015]
+    for step in range(2, 5):
+        obs["step"] = step
+        result = evaluator.update(obs)
+    assert result["color_counts"] == {"red": 1}
+    obs.update(step=5, button_pressed=True)
+    assert evaluator.update(obs)["success"]
+
+
+def test_binfill_reset_does_not_reuse_prior_entry_eligibility():
+    spec = _single_color_binfill()
+    evaluator = TaskEvaluator(spec)
+    evaluator.update(_snapshot(spec))
+    evaluator.reset()
+    obs = _snapshot(spec)
+    obs["poses"]["red"]["position"] = [0, 0, .015]
+    for step in range(4):
+        obs["step"] = step
+        assert evaluator.update(obs)["inserted_ids"] == []
 
 
 def test_unmask_demonstration_pick_does_not_advance_evaluation():

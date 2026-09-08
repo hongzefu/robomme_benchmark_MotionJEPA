@@ -167,6 +167,40 @@ def box_clearance(first, second):
     return max(gaps)
 
 
+def actor_occupies_binfill_hole(actor, board, geometry=None, poses=None, *, projected=False):
+    """检查真实方块与孔空腔重叠，或与开口的平面投影重叠。
+
+    projected=True 用于初始认证：连孔正上方的方块也拒绝，避免零操作
+    直接落入。运行期间使用三维空腔，允许已在孔内的方块被提起再投入。
+    虚拟空腔不属于实体障碍，不能参与物理最小净距统计。
+    """
+    geometry = geometry or {}
+    board_pose = poses[board["id"]] if poses is not None else board
+    actor_pose = poses[actor["id"]] if poses is not None else actor
+    hole_half = float(board.get("hole_half_size", geometry.get("hole_side", .080)/2))
+    axes = tuple(zip(*quaternion_matrix(board_pose["quaternion"])))
+    hole = Box(tuple(board_pose["position"]), axes, (hole_half, hole_half, board["half_size"][2]))
+    for box in actor_boxes(actor, geometry, actor_pose):
+        if not projected:
+            if box_clearance(box, hole) < -1e-10:
+                return True
+            continue
+        # 检查两个投影凸多边形的分离轴：孔边法线与方块三条边投影的
+        # 平面法线。无需人为把孔柱的高度设成一个很大的有限常数。
+        plane_axes = list(hole.axes[:2])+[_cross(hole.axes[2], axis) for axis in box.axes]
+        delta = _sub(box.center, hole.center)
+        gaps = []
+        for candidate in plane_axes:
+            length = _norm(candidate)
+            if length <= 1e-12:
+                continue
+            axis = _scale(candidate, 1/length)
+            gaps.append(abs(_dot(delta, axis))-box.radius_on(axis)-hole.radius_on(axis))
+        if max(gaps) < -1e-10:
+            return True
+    return False
+
+
 def _as_dict(spec):
     return spec.to_dict() if hasattr(spec, "to_dict") else spec
 
@@ -282,6 +316,9 @@ def validate_spec_geometry(spec):
     reasons, minimum, subdivisions = [], math.inf, 0
     poses = {a["id"]: _pose(a) for a in actors}
     for actor in actors:
+        if data.get("task_kind") == "BinFill" and actor["kind"] == "cube":
+            if actor_occupies_binfill_hole(actor, by_id["board"], geometry, poses, projected=True):
+                reasons.append(f"BinFill 初始方块占据目标孔投影（含孔内及上方）: {actor['id']}")
         if "initial_support_rejection" in actor:
             # 编译器已证明该位置层没有正宽可采区间；几何触边容差不能把
             # 空交集或零宽层重新认证成合法的确定性聚点。

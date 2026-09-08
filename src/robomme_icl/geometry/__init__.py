@@ -3,6 +3,7 @@
 from .collision import (
     Box,
     actor_boxes,
+    actor_occupies_binfill_hole,
     box_clearance,
     box_components,
     pose_at_step,
@@ -13,6 +14,6 @@ from .collision import (
 )
 
 __all__ = [
-    "Box", "actor_boxes", "box_clearance", "box_components", "pose_at_step",
+    "Box", "actor_boxes", "actor_occupies_binfill_hole", "box_clearance", "box_components", "pose_at_step",
     "quaternion_matrix", "rotate", "swap_poses", "validate_spec_geometry",
 ]

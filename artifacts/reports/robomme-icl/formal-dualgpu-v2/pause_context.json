@@ -1,0 +1,363 @@
+{
+  "reason": "发现BinFill初始方块已在孔内可提前计数；添加初始化硬闸与转换负例前优雅停止",
+  "root_pid": 3687873,
+  "tree": [
+    {
+      "pid": 3687873,
+      "ppid": 3680251,
+      "args": "bash /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-dualgpu-v2.sh f2500c6fa91e9019e96aec819f4e08c2c9e5bbd9"
+    },
+    {
+      "pid": 3687896,
+      "ppid": 3687873,
+      "args": "nvidia-smi --query-gpu=timestamp,index,utilization.gpu,memory.used --format=csv,noheader -lms 500"
+    },
+    {
+      "pid": 3687897,
+      "ppid": 3687873,
+      "args": "iostat -xz -y 2"
+    },
+    {
+      "pid": 3687901,
+      "ppid": 3687873,
+      "args": "uv run --no-sync robomme-icl prepare --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-dualgpu --gpus 0,1 --workers 32 --timeout-seconds 1200"
+    },
+    {
+      "pid": 3687902,
+      "ppid": 3687873,
+      "args": "tee /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-dualgpu-v2/certification96.log"
+    },
+    {
+      "pid": 3687906,
+      "ppid": 3687901,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/robomme-icl prepare --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-dualgpu --gpus 0,1 --workers 32 --timeout-seconds 1200"
+    },
+    {
+      "pid": 3687924,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.resource_tracker import main;main(6)"
+    },
+    {
+      "pid": 3687925,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork"
+    },
+    {
+      "pid": 3687941,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork"
+    },
+    {
+      "pid": 3687943,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=25) --multiprocessing-fork"
+    },
+    {
+      "pid": 3687947,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=33) --multiprocessing-fork"
+    },
+    {
+      "pid": 3687954,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=47) --multiprocessing-fork"
+    },
+    {
+      "pid": 3687957,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=53) --multiprocessing-fork"
+    },
+    {
+      "pid": 3700847,
+      "ppid": 3687957,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3703824,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=51) --multiprocessing-fork"
+    },
+    {
+      "pid": 3704206,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=50) --multiprocessing-fork"
+    },
+    {
+      "pid": 3704371,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=63) --multiprocessing-fork"
+    },
+    {
+      "pid": 3704458,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=50) --multiprocessing-fork"
+    },
+    {
+      "pid": 3704503,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=42) --multiprocessing-fork"
+    },
+    {
+      "pid": 3704881,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork"
+    },
+    {
+      "pid": 3705048,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=61) --multiprocessing-fork"
+    },
+    {
+      "pid": 3705056,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork"
+    },
+    {
+      "pid": 3705545,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork"
+    },
+    {
+      "pid": 3706179,
+      "ppid": 3687943,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3706854,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=40) --multiprocessing-fork"
+    },
+    {
+      "pid": 3707067,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=66) --multiprocessing-fork"
+    },
+    {
+      "pid": 3707085,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=62) --multiprocessing-fork"
+    },
+    {
+      "pid": 3707264,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=62) --multiprocessing-fork"
+    },
+    {
+      "pid": 3707509,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork"
+    },
+    {
+      "pid": 3707864,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork"
+    },
+    {
+      "pid": 3708086,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork"
+    },
+    {
+      "pid": 3708189,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=59) --multiprocessing-fork"
+    },
+    {
+      "pid": 3708317,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=59) --multiprocessing-fork"
+    },
+    {
+      "pid": 3708339,
+      "ppid": 3708317,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3708449,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=59) --multiprocessing-fork"
+    },
+    {
+      "pid": 3708713,
+      "ppid": 3704206,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3708899,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=59) --multiprocessing-fork"
+    },
+    {
+      "pid": 3708922,
+      "ppid": 3704503,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3708945,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=58) --multiprocessing-fork"
+    },
+    {
+      "pid": 3709232,
+      "ppid": 3708945,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3709259,
+      "ppid": 3704881,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3709628,
+      "ppid": 3704458,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3709782,
+      "ppid": 3705545,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3709935,
+      "ppid": 3705056,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3709937,
+      "ppid": 3705048,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3709947,
+      "ppid": 3706854,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3710026,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=56) --multiprocessing-fork"
+    },
+    {
+      "pid": 3710064,
+      "ppid": 3710026,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3710337,
+      "ppid": 3687947,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3710526,
+      "ppid": 3707085,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3710778,
+      "ppid": 3687954,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711058,
+      "ppid": 3707509,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711076,
+      "ppid": 3704371,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711202,
+      "ppid": 3703824,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711267,
+      "ppid": 3707067,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711479,
+      "ppid": 3708189,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711524,
+      "ppid": 3707264,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711564,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711647,
+      "ppid": 3711564,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711657,
+      "ppid": 3708449,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711824,
+      "ppid": 3708086,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711869,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711875,
+      "ppid": 3707864,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3711912,
+      "ppid": 3711869,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3712006,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=56) --multiprocessing-fork"
+    },
+    {
+      "pid": 3712044,
+      "ppid": 3712006,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3712058,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=46) --multiprocessing-fork"
+    },
+    {
+      "pid": 3712093,
+      "ppid": 3712058,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3712139,
+      "ppid": 3708899,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    },
+    {
+      "pid": 3712152,
+      "ppid": 3687906,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=55) --multiprocessing-fork"
+    },
+    {
+      "pid": 3712239,
+      "ppid": 3712152,
+      "args": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=16) --multiprocessing-fork"
+    }
+  ],
+  "certified_count": 63,
+  "suite_published": false
+}

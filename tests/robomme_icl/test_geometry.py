@@ -5,7 +5,7 @@ import math
 
 import pytest
 
-from robomme_icl.geometry import actor_boxes, box_clearance, box_components, pose_at_step, validate_spec_geometry
+from robomme_icl.geometry import actor_boxes, actor_occupies_binfill_hole, box_clearance, box_components, pose_at_step, validate_spec_geometry
 
 
 def _actor(name, x, y, kind="container", z=.036):
@@ -158,3 +158,35 @@ def test_compiler_zero_width_support_rejection_cannot_be_rescued_by_tolerance():
     assert not report["ok"]
     assert any("初始支持层不可采样" in reason for reason in report["reasons"])
     assert report["min_clearance"] > .005
+
+
+def _binfill_candidate(cube_position):
+    board = _actor("board", 0, 0, "board", .025)
+    board["half_size"] = [.05, .05, .025]
+    cube = _actor("cube", *cube_position[:2], "cube", cube_position[2])
+    cube["half_size"] = [.02]*3
+    return {"task_kind": "BinFill", "actors": [board, cube], "geometry": {"hole_side": .08}}
+
+
+@pytest.mark.parametrize("height", [.02, .20])
+def test_binfill_initial_prefill_or_cube_above_hole_is_rejected(height):
+    spec = _binfill_candidate((0, 0, height))
+    report = validate_spec_geometry(spec)
+    assert not report["ok"]
+    assert any("初始方块占据目标孔投影" in reason for reason in report["reasons"])
+    assert report["min_clearance"] > .005
+    board, cube = spec["actors"]
+    assert actor_occupies_binfill_hole(cube, board, spec["geometry"], projected=True)
+    assert actor_occupies_binfill_hole(cube, board, spec["geometry"]) == (height == .02)
+
+
+def test_binfill_initial_partial_hole_projection_is_rejected_before_falling():
+    spec = _binfill_candidate((.05, 0, .20))
+    report = validate_spec_geometry(spec)
+    assert not report["ok"]
+    assert any("初始方块占据目标孔投影" in reason for reason in report["reasons"])
+
+
+def test_binfill_cube_outside_hole_remains_a_valid_initial_candidate():
+    spec = _binfill_candidate((-.15, 0, .02))
+    assert validate_spec_geometry(spec)["ok"]

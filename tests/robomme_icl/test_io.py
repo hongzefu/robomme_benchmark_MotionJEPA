@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 import copy
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import nullcontext
 from pathlib import Path
 import shutil
@@ -594,3 +594,92 @@ def test_per_gpu_fingerprint_normalizes_pci_and_rejects_cuda_mapping(monkeypatch
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "1")
     with pytest.raises(ValueError, match="CUDA_VISIBLE_DEVICES"):
         fingerprint.runtime_fingerprint(render_gpu=0)
+
+
+def test_io_pool_reuses_workers_and_preserves_input_order_after_out_of_order_completion(monkeypatch):
+    from robomme_icl.io import pipeline
+
+    observed, options, shutdown_calls = [], [], []
+    ready = threading.Event()
+
+    class Pool:
+        def __init__(self, **kwargs):
+            options.append(kwargs)
+            self.pool = ThreadPoolExecutor(max_workers=kwargs["max_workers"])
+
+        def submit(self, operation, job):
+            return self.pool.submit(operation, job)
+
+        def shutdown(self, **kwargs):
+            shutdown_calls.append(kwargs)
+            return self.pool.shutdown(**kwargs)
+
+    def operation(job):
+        index = job["index"]
+        if index == 0:
+            assert ready.wait(2), "第二个工作项应能独立完成"
+        observed.append(index)
+        if index == 1:
+            ready.set()
+        return index
+
+    monkeypatch.setattr(pipeline, "ProcessPoolExecutor", Pool)
+    result = pipeline._run_process_jobs(operation, [{"index": i} for i in range(5)], 2, threading.Event())
+    assert result == list(range(5)) and observed[0] == 1
+    assert "max_tasks_per_child" not in options[0]
+    assert shutdown_calls == [{"wait": True, "cancel_futures": True}]
+
+
+def test_io_pool_bounds_submissions_and_does_not_refill_after_failure(monkeypatch):
+    from robomme_icl.io import pipeline
+
+    submitted, unconsumed, peak, shutdown_calls = [], [0], [0], []
+
+    class CompletedFuture(Future):
+        def result(self, timeout=None):
+            unconsumed[0] -= 1
+            return super().result(timeout=timeout)
+
+    class Pool:
+        def __init__(self, **kwargs):
+            assert "max_tasks_per_child" not in kwargs
+
+        def submit(self, operation, job):
+            submitted.append(job["index"])
+            unconsumed[0] += 1
+            peak[0] = max(peak[0], unconsumed[0])
+            future = CompletedFuture()
+            try:
+                future.set_result(operation(job))
+            except Exception as exc:
+                future.set_exception(exc)
+            return future
+
+        def shutdown(self, **kwargs):
+            shutdown_calls.append(kwargs)
+
+    def operation(job):
+        if job["index"] == 1:
+            raise RuntimeError("模拟工作项失败")
+        return job["index"]
+
+    stop = threading.Event()
+    monkeypatch.setattr(pipeline, "ProcessPoolExecutor", Pool)
+    with pytest.raises(RuntimeError, match="工作项失败"):
+        pipeline._run_process_jobs(operation, [{"index": i} for i in range(10)], 2, stop)
+    assert submitted == [0, 1] and peak[0] == 2
+    assert stop.is_set() and shutdown_calls == [{"wait": True, "cancel_futures": True}]
+
+
+def test_io_pool_does_not_submit_when_already_stopped(monkeypatch):
+    from robomme_icl.io import pipeline
+
+    shutdown_calls = []
+    pool = types.SimpleNamespace(submit=lambda *args: pytest.fail("停止后不得提交"),
+                                 shutdown=lambda **kwargs: shutdown_calls.append(kwargs))
+    monkeypatch.setattr(pipeline, "ProcessPoolExecutor", lambda **kwargs: pool)
+    stop = threading.Event()
+    stop.set()
+    with pytest.raises(RecordError, match="调度已停止"):
+        pipeline._run_process_jobs(lambda job: job, [{"index": 0}], 2, stop)
+    assert shutdown_calls == [{"wait": True, "cancel_futures": True}]

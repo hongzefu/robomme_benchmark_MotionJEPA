@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 import json
 import multiprocessing as mp
 import os
@@ -344,23 +344,42 @@ def _gpu_limits(manager: Any, gpus: Sequence[int], workers: int) -> dict[int, An
 
 
 def _run_process_jobs(operation: Callable, jobs: Sequence[dict], workers: int, stop: Any) -> list[Any]:
-    """主进程只接小摘要；几何、HDF5 解码和严格核对均在各 slot 进程。"""
+    """复用纯 CPU/I/O worker，并限制在途数量，避免停止时补建无用进程。"""
     results = [None] * len(jobs)
-    with ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn"), max_tasks_per_child=1) as executor:
-        futures = {executor.submit(operation, job): index for index, job in enumerate(jobs)}
-        try:
-            for future in as_completed(futures):
-                results[futures[future]] = future.result()
-        except BaseException:
-            stop.set()
-            for future in futures:
-                future.cancel()
-            raise
-    return results
+    executor = ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn"))
+    futures = {}
+    next_index = 0
+
+    def fill_available() -> None:
+        nonlocal next_index
+        while next_index < len(jobs) and len(futures) < workers and not stop.is_set():
+            future = executor.submit(operation, jobs[next_index])
+            futures[future] = next_index
+            next_index += 1
+
+    try:
+        fill_available()
+        while futures:
+            completed, _ = wait(futures, return_when=FIRST_COMPLETED)
+            # 先处理这一批全部结果；任何失败都不能触发后续队列补充。
+            for future in sorted(completed, key=lambda item: futures[item]):
+                index = futures.pop(future)
+                results[index] = future.result()
+            fill_available()
+        if next_index < len(jobs):
+            raise RecordError("调度已停止，未提交剩余 CPU/I/O 任务")
+        return results
+    except BaseException:
+        stop.set()
+        for future in futures:
+            future.cancel()
+        raise
+    finally:
+        executor.shutdown(wait=True, cancel_futures=True)
 
 
 def _certify_slot_job(job: dict) -> tuple[dict, dict]:
-    """一个全新 slot 进程负责编译、候选搜索及两次独立物理进程认证。"""
+    """CPU/I/O worker 处理一个槽位；两次真实物理运行仍各自独立新进程。"""
     from ..geometry import validate_spec_geometry
     from ..suite import candidate_for_slot
 

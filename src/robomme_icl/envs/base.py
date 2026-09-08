@@ -208,6 +208,7 @@ class ICLBaseEnv(BaseEnv):
         return {"step": int(self.elapsed_steps.item()), "poses": poses,
                 "linear_velocities": linear, "angular_velocities": angular,
                 "grasped_ids": grasped,
+                "parked_ids": sorted(self._parked),
                 "button_pressed": any(float(array(b.get_qpos()).reshape(-1)[0]) < -.005 for b in self.icl_buttons.values()),
                 "tcp_position": array(self.agent.tcp.pose.p).reshape(-1, 3)[0].tolist(),
                 "forbidden_collision": bool(self._forbidden_contacts), "phase": self._phase}

@@ -223,5 +223,6 @@ artifacts/generated/robomme-icl/
 artifacts/reports/robomme-icl/**/*.log
 artifacts/reports/robomme-icl/**/*.h5
 artifacts/reports/robomme-icl/**/*.mp4
+artifacts/reports/robomme-icl/**/*.png
 # 初版独立分层的逐候选失败明细约7MiB，保留本机证据，版本库保存摘要与最终报告。
 artifacts/reports/robomme-icl/geometry_preflight_independent_layers.json

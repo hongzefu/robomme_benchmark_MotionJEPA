@@ -9,7 +9,7 @@
 ```bash
 cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask
 uv sync --locked --extra dev
-uv run robomme-icl prepare --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24 --gpus 0,1 --workers 32
+uv run robomme-icl prepare --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3 --gpus 0,1 --workers 32
 ```
 
 默认每任务 24 条，easy、medium、hard 各 8 条，共 96 个新 seed。首次验证应先使用 `--tasks BinFill --episodes-per-task 1 --workers 1`，对四任务分别完成最小 smoke，再运行整批。超过五分钟的运行按根 `AGENTS.md` 要求放入登记的 detached tmux。
@@ -19,7 +19,7 @@ uv run robomme-icl prepare --output /data/hongzefu/robomme_benchmark_MotionJEPAN
 任务分布和位置分布分别由 [task_distribution.json](configs/task_distribution.json) 和 [position_distribution.json](configs/position_distribution.json) 控制；可用 `--task-config`、`--position-config` 指向修改后的配置。次数配额和位置层在候选搜索前固定；拒绝候选不能改变次数、seed 或所属位置层。
 
 ```bash
-uv run robomme-icl generate --suite /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24 --output-dir /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dataset24 --workers 32
+uv run robomme-icl generate --suite /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3 --output-dir /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dataset24 --workers 32
 uv run robomme-icl replay --h5 /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dataset24/<实际记录名>.h5 --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/replay/<新记录名>.h5
 ```
 
@@ -31,7 +31,7 @@ import robomme_icl
 env = robomme_icl.make_env(
     task="BinFill",
     seed=2_000_000_000,
-    suite="/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24",
+    suite="/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3",
 )
 obs, info = env.reset()
 demonstration = info["demonstration"]
@@ -57,7 +57,7 @@ VideoUnmaskSwap 始终有红绿蓝三个藏块；三容器全占用，四容器�
 
 容器视觉和碰撞使用同一份 compound 几何定义。中央 box 厚度30mm、顶部72mm，藏块尺寸不变，名义顶部净距8.67mm。初始布局与完整 swap 路径采用连续运动上界检查，另在物理子步中检查实际接触；正常支撑、抓取、投入和按按钮按角色允许，其他接触导致失败。接触读取异常不能视为安全。
 
-所有失败保持到 reset，成功不能与失败同时成立。演示不能增加执行计数。夹爪抬起正确物体、逐色入孔、完整抓放转换、Route 目标顺序与绕行侧别由真实观测判定；oracle 不能直接写入成功或计数。
+所有失败保持到 reset，成功不能与失败同时成立。演示不能增加执行计数。BinFill 初态必须空孔，方块实际从孔外进入并落稳后才能计数；隐藏对象的停车位不提供孔外观测证据。夹爪抬起正确物体、逐色入孔、完整抓放转换、Route 目标顺序与绕行侧别由真实观测判定；oracle 不能直接写入成功或计数。
 
 固定单环境CPU物理、每seed绑定的GPU和线程数。每次 reset 重建物理场景以清除求解器历史，恢复所有对象、控制器、计数器和动画缓存。动作使用固定 screw 或固定初值/迭代预算的 CLIK，失败不转入随机规划。仿真与HDF5核对都在独立工作进程中执行，协调进程只接收摘要。
 

@@ -9,7 +9,7 @@ button_pressed、tcp_position、forbidden_collision 和 phase。
 from dataclasses import dataclass, field
 import math
 
-from robomme_icl.geometry import actor_boxes, quaternion_matrix
+from robomme_icl.geometry import actor_boxes, actor_occupies_binfill_hole, quaternion_matrix
 
 
 # 阈值集中在此；清单 task_parameters.evaluation_thresholds 可固定覆写。
@@ -64,6 +64,7 @@ class TaskState:
     cursor: int = 0
     repeat_count: int = 0
     inserted_ids: set = field(default_factory=set)
+    eligible_insert_ids: set = field(default_factory=set)
     color_counts: dict = field(default_factory=dict)
     stable_counts: dict = field(default_factory=dict)
     lifted: bool = False
@@ -170,9 +171,17 @@ class TaskEvaluator:
         hole = float(board.get("hole_half_size", self.geometry.get("hole_side", .080)/2))
         half_height = float(board["half_size"][2])
         grasped = set(observation.get("grasped_ids", ()))
+        parked = set(observation.get("parked_ids", ()))
         for actor_id, actor in self.actors.items():
             if actor["kind"] != "cube" or actor_id in self.state.inserted_ids:
                 continue
+            if actor_id in parked:
+                # 停车位不提供“曾在孔外”的证据；显现后必须重新取得资格。
+                self.state.eligible_insert_ids.discard(actor_id)
+                self.state.stable_counts.pop(actor_id, None)
+                continue
+            if not actor_occupies_binfill_hole(actor, board, self.geometry, observation["poses"]):
+                self.state.eligible_insert_ids.add(actor_id)
             cube = actor_boxes(actor, self.geometry, observation["poses"][actor_id])[0]
             # 所有角点必须落在孔内，而非只看 cube 中心距离。
             vertices = []
@@ -185,7 +194,7 @@ class TaskEvaluator:
                        and max(v[2] for v in vertices) <= half_height+self.thresholds["table_tolerance"]
                        and self._bottom(actor_id, observation) >= -.001
                        and actor_id not in grasped)
-            if self._stable(actor_id, observation, in_hole):
+            if self._stable(actor_id, observation, in_hole and actor_id in self.state.eligible_insert_ids):
                 color = _color_name(actor)
                 self.state.inserted_ids.add(actor_id)
                 self.state.color_counts[color] = self.state.color_counts.get(color, 0)+1

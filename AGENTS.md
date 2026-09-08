@@ -228,7 +228,7 @@ command -v uv
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| robomme-ICL 独立四任务 | 双GPU小样本闭环通过 | 已改固定seed→GPU绑定、32并发独立进程和分散HDF5核对；双卡四任务两次认证、生成/回放/连续reset/断点复用均4/4逐位通过；新版测试102 passed、4 skipped（33.78秒）；单卡正式19条证据保留 | 提交双卡新基线，运行完整96条认证及跨调度复现；原版源码不变 |
+| robomme-ICL 独立四任务 | 修复BinFill初始预填孔边界并复测 | 双卡32worker已认证84条后为修复明确边界优雅中断，退出130，完整suite未发布；已完成22个BinFill初态检查无预填；修复初始硬闸、孔外进入资格及CPU/I/O池取消开销 | 新源码四任务smoke及真实中断重试验证后提交新基线，重新认证96条并完成生成/回放/reset |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
 | 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
 | 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
@@ -291,6 +291,26 @@ command -v uv
 - 编译证据：`PYTHONHASHSEED=0/1/42` 的三个uv新进程编译96条，全部spec_hash一致；见 `artifacts/reports/robomme-icl/compiler_hashseed_check.json`。新增可复现图表入口 `tests/robomme_icl/plot_suite.py`，只从认证suite绘制实际次数与位置，四任务smoke出图验证通过。
 - 闭环补验：4-worker回放、逆序4-worker同环境双reset、1-worker断点复用均4/4逐位通过；全部4种模式的summary.json保存于上述dual-gpu-acceptance/acceptance目录。失败后等待设备锁的任务增加停止检查，高并发墙钟超时通过driver显式记录；定向mock和help验证通过。
 - 下一步：提交并立即推送2.22基线；以登记会话 `gen-icl-cert96-dualgpu-20260907-v2` 运行96条，输出新目录 `validation24-dualgpu`，保留上一版中断产物，不复用不匹配的运行指纹。
+
+### 2026-09-07 23:00 America/Detroit — 双GPU正式96条启动
+
+- 启动基线：`f2500c6fa91e9019e96aec819f4e08c2c9e5bbd9` 已提交并推送，HEAD与upstream一致；启动脚本核对工作区干净、原版源码树不变、两卡源码/运行指纹与已通过smoke完全相同。
+- 登记会话：`gen-icl-cert96-dualgpu-20260907-v2`，主bash PID3687873、pane `%372`；通过 `tmux list-panes -t =gen-icl-cert96-dualgpu-20260907-v2` 获得，后续只允许管理本轮登记的该会话。其他七个会话未变。
+- 完整入口：`.cache/icl-formal-dualgpu-v2.sh f2500c6fa91e9019e96aec819f4e08c2c9e5bbd9`；脚本全文、SHA-256、依赖、两卡UUID/PCI、配置、32核亲和性、worker数和存储记录于 `artifacts/reports/robomme-icl/formal-dualgpu-v2/run_context.json`。
+- 顺序：双卡32-worker prepare96 → 逆序32-worker generate → 4-worker resume → 32-worker replay → 逆序32-worker连续reset → 实际记录图表。单episode物理进程墙钟上限1200秒；控制频率、控制步和确定性规划预算不变。任何阶段错误阻止后续阶段，日志写明EXIT_CODE。
+- 资源：两卡500ms GPU采样与2秒iostat同步记录，本脚本两个采样进程PID保存在sampler_pids.log并由退出trap精确清理；不依据单点0%判断瓶颈。输出为 `validation24-dualgpu` 和 `validation24-dualgpu-verification`，旧目录保持不变。
+- 当前结果：认证阶段刚启动，尚未发布96条suite，不提前记为通过。
+
+### 2026-09-07 23:12 America/Detroit — BinFill预填孔边界修复与优雅中断
+
+- 发现：独立检查 `BinFill/hard/0001 candidate3`，其cube_2初始已完整位于孔内，判定器提前计数；此候选后续已因真实任务失败拒绝，没有发布。只读核查22个已完成双跑的BinFill spec，初态预填0个，不能说已有84条认证数据已发现错误。
+- 停止：保存主bash PID3687873的进程树及当时63条完成记录后，仅向prepare主PID3687906发送SIGINT；现有任务自然收尾，最终84条认证，23:12:50阶段及主日志均EXIT_CODE=130，没有完整suite。会话自动结束，tmux恢复原七个会话，未清理他人会话；见formal-dualgpu-v2的pause_context.json、stop_result.json。
+- 修复：初始认证拒绝任意方块覆盖孔XY开口投影，包含孔内、悬在上方和动态预定位置；TaskState新增活动孔外资格，实际进入并落稳才计数，不要求抓取历史。停车不能提供资格；初始孔内必须真正取出再放回，已计数方块停车保留累计。snapshot增加parked_ids，原版不变。
+- 取消路径：Python3.11.14在max_tasks_per_child=1的worker退出后先补进程再查shutdown，取消时已入队任务可导致无用重生。本次父进程最终正常退出，不能描述为永久死锁。纯CPU/I/O池改为复用worker、在途不超过workers、停止不补交、显式cancel_futures；每次真实物理仍独立spawn，reset机制不变。
+- 定向验证：geometry/tasks/env_contract共56 passed、6.50秒；I/O共31 passed、0.59秒。新增初始预填/高处/部分投影、动态停车显现、真实孔外进入、reset清零及有界提交/失败取消负例。四任务真实smoke、全部新版测试及新几何预检正在运行。
+- 性能证据：此前双卡32worker观测存在NVIDIA驱动写锁等待，32核总体未饱和、磁盘和显存未耗尽；不能声称32最优。数据与限制见formal-dualgpu-v2/performance_snapshot.md。
+- 修复后复测完成：新版114 passed、4 skipped（36.14秒）；新几何96/96（29.372秒）；smoke-v3四任务各两独立进程4/4逐位通过。显式套件的单pytest进程、跨两卡、各连续reset两次为4 passed（203.94秒）；四个合法smoke与修复前原始帧逐位相同，但源码指纹不同，不能复用旧认证。
+- 真实中断重试：`run_interruption.py --interrupt-after 12` 在GPU子进程已启动后强制超时，新版机制自动同seed/spec/GPU重试，271帧与认证一致，随后完整文件复用成功；报告interruption-v3.json。下一步提交2.23干净基线，再启动登记会话 `gen-icl-cert96-dualgpu-20260907-v3`；同一冻结96条安排32/16 worker逆序生成对照，不预先宣称哪个更快。
 
 ### 2026-07-13 — `/init`
 

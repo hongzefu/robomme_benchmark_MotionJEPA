@@ -1,0 +1,37 @@
+{
+  "purpose": "核对新增初态与进入资格守卫未改变四个合法smoke的原始帧；源码指纹按设计不同，不能据此复用旧认证",
+  "rows": [
+    {
+      "task": "BinFill",
+      "seed": 2000000000,
+      "spec_hash": "117447c34d16aa040a29cdad8301600c5c1e1bbfa9608e6fae73940d5ad91369",
+      "frames": 641,
+      "frames_bit_equal": true,
+      "runtime_fingerprint_equal": false
+    },
+    {
+      "task": "RouteStick",
+      "seed": 2000000001,
+      "spec_hash": "1aa1df15c8dcb9095c97caab8ab8080c5d9448fd299ed6a72917c652c723bce5",
+      "frames": 451,
+      "frames_bit_equal": true,
+      "runtime_fingerprint_equal": false
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "seed": 2000000002,
+      "spec_hash": "c660d910649dd83a385b21c711af5021e72742894a04ed18b8c703f304c427f2",
+      "frames": 271,
+      "frames_bit_equal": true,
+      "runtime_fingerprint_equal": false
+    },
+    {
+      "task": "VideoRepick",
+      "seed": 2000000003,
+      "spec_hash": "3b590162836511c329837502352f785f868168473b713c8dbc23dcf0dd19ce48",
+      "frames": 1045,
+      "frames_bit_equal": true,
+      "runtime_fingerprint_equal": false
+    }
+  ]
+}

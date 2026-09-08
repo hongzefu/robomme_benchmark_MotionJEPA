@@ -1,0 +1,13 @@
+{
+  "initial_recorded_tree_live": [
+    {
+      "pid": 3687873,
+      "args": "",
+      "observed_state": "Zs",
+      "running": false
+    }
+  ],
+  "final_certified": 84,
+  "main_log": "START certification96 2026-09-07T23:00:30-04:00\nFINISH certification96 EXIT_CODE=130 2026-09-07T23:12:50-04:00\nEXIT_CODE=130\n",
+  "complete_suite_published": false
+}

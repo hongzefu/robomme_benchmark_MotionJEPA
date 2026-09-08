@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "source_commit": "f2500c6fa91e9019e96aec819f4e08c2c9e5bbd9",
+  "seed": 2000000002,
+  "spec_hash": "c660d910649dd83a385b21c711af5021e72742894a04ed18b8c703f304c427f2",
+  "render_gpu": 0,
+  "runtime_fingerprint": {
+    "cuda_visible_devices": null,
+    "fingerprint_version": 2,
+    "gpu_devices": [
+      "0, GPU-590b693c-56db-a2b6-c4e3-5e20108f92d7, NVIDIA RTX 6000 Ada Generation, 570.211.01, 00000000:01:00.0",
+      "1, GPU-c58b7cba-c0e5-971b-e77a-0dd73bf26a9e, NVIDIA RTX 6000 Ada Generation, 570.211.01, 00000000:02:00.0"
+    ],
+    "icl_source_hash": "f921ecc6823ed35836600e977cc326650dd105ae9980ee4c1ae30a27c7492384",
+    "legacy_source_hash": "84244136a262eec164e60beac38abb02a1f630f8de4b6ddb908b33e1d3e00378",
+    "machine": "x86_64",
+    "packages": {
+      "gymnasium": "0.29.1",
+      "h5py": "3.15.1",
+      "mani-skill": "3.0.0b21",
+      "mplib": "0.1.1",
+      "numpy": "1.26.4",
+      "opencv-python": "4.11.0.86",
+      "sapien": "3.0.2",
+      "scipy": "1.17.0",
+      "torch": "2.9.1",
+      "transforms3d": "0.4.2",
+      "trimesh": "4.11.2"
+    },
+    "python": "3.11.14",
+    "python_implementation": "CPython",
+    "render_gpu": 0,
+    "render_gpu_pci": "0000:01:00.0",
+    "render_gpu_uuid": "GPU-590b693c-56db-a2b6-c4e3-5e20108f92d7",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "uv_lock_hash": "983de83f7b22c98b96c3c25a39958b4f5920e3232cfaa209c89542ef5639ac03"
+  },
+  "interrupt_after_seconds": 12.0,
+  "attempts": [
+    {
+      "seed": 2000000002,
+      "spec_hash": "c660d910649dd83a385b21c711af5021e72742894a04ed18b8c703f304c427f2",
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/interruption-v3/.staging/seed_2000000002.h5/attempt_0000.h5",
+      "forced_interruption": "子进程无结果，seed=2000000002，exitcode=None"
+    },
+    {
+      "seed": 2000000002,
+      "spec_hash": "c660d910649dd83a385b21c711af5021e72742894a04ed18b8c703f304c427f2",
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/interruption-v3/.staging/seed_2000000002.h5/attempt_0001.h5"
+    }
+  ],
+  "generated": {
+    "seed": 2000000002,
+    "spec_hash": "c660d910649dd83a385b21c711af5021e72742894a04ed18b8c703f304c427f2",
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/interruption-v3/seed_2000000002.h5",
+    "resumed": false,
+    "content_hash": "6349b9130f9fb9df58c5f3aa6f72e8fd528f0aaac3eaf4c69cb8b4181f8d1751"
+  },
+  "resumed": {
+    "seed": 2000000002,
+    "spec_hash": "c660d910649dd83a385b21c711af5021e72742894a04ed18b8c703f304c427f2",
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/interruption-v3/seed_2000000002.h5",
+    "resumed": true,
+    "content_hash": "6349b9130f9fb9df58c5f3aa6f72e8fd528f0aaac3eaf4c69cb8b4181f8d1751"
+  }
+}

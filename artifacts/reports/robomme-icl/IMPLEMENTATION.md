@@ -62,4 +62,18 @@ Panda资产随锁定包位于仓库内 `.venv`，GPU0原生渲染检查通过；
 
 `dual-gpu-smoke-samples.csv` 是500ms采样的局部40秒窗口，包含启动，不能用作稳态吞吐结论。正式双卡运行会记录完整资源曲线、每条轨迹的构建/执行/写入时间，以及CPU核数、存储介质、worker数和单episode batch size。
 
-下一次正式运行使用新的已提交基线、新套件目录 `artifacts/generated/robomme-icl/validation24-dualgpu` 和登记会话 `gen-icl-cert96-dualgpu-20260907-v2`。先完成双卡smoke闭环，再运行96条认证及跨调度验证；当前不宣称全量通过。
+双卡正式运行从 `f2500c6fa91e9019e96aec819f4e08c2c9e5bbd9` 启动；随后因下述初始化边界需要修复而优雅中断，最终保留84条双进程认证，完整suite没有发布。记录位于 `artifacts/reports/robomme-icl/formal-dualgpu-v2/`，阶段和主日志退出码均130。
+
+## BinFill初态与进入转换修复
+
+一个已拒绝候选的方块初态完整在孔内，旧判定器会提前计数；后续oracle失败并不能替代初始化合法性检查。只读核对22个已完成第二次运行的BinFill spec，初态预填为0，不能推断旧84条中存在坏样本。具体坐标、候选哈希和检查范围见 [binfill_entry_guard.md](binfill_entry_guard.md)。
+
+现在几何认证直接拒绝初始方块覆盖孔XY开口投影，包括悬在孔上方和动态物体的预定出现位置。判定器只在观察到活动方块完整处于孔外后，才允许它进入并落稳计数；停车不能提供资格，已投入方块停车后保留累计。初始孔内的方块必须真正移出再放回，不新增抓取历史条件。
+
+优雅中断期间观察到Python3.11.14的 `max_tasks_per_child=1` 在worker退出后先补进程、再检查shutdown。原进程最终正常退出，不能称为永久死锁。外层纯CPU/I/O池改为复用worker、限制在途数量并显式取消未开始任务；每次物理仿真仍使用全新spawn进程。
+
+新增负例及完整新版测试为114 passed、4 skipped，36.14秒；默认96个槽的新几何预检全部通过，29.372秒，配置哈希未变，报告见 [geometry_preflight-v4.json](geometry_preflight-v4.json)。`smoke-v3` 四任务各两次新进程均逐位一致，帧数仍为641、451、271、1045。
+
+真实故障注入使用 `tests/robomme_icl/run_interruption.py --interrupt-after 12`：先在已启动GPU的子进程运行中施加超时，再由正式重试机制以同seed/spec/GPU恢复；271帧与认证一致，再次调用直接复用完整记录。[interruption-v3.json](interruption-v3.json) 保存两次尝试路径、固定身份和结果。新正式输出使用 `validation24-v3`，旧中断产物继续保留。
+
+在单个pytest进程内依次运行四任务、跨两卡创建环境并各连续reset两次，显式 `ICL_TEST_SUITE=.../smoke-v3` 的四项真实检查全部通过，203.94秒。四个合法smoke的全部原始帧也与新增守卫前逐位一致；[valid_frames_v2_v3.json](valid_frames_v2_v3.json) 明确记录源码指纹不同，此对照不能替代新版本认证。
