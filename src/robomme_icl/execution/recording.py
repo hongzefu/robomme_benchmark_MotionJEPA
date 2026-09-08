@@ -4,8 +4,9 @@ import copy
 
 import gymnasium as gym
 
-from ..io.observations import normalized_info, normalized_observation, task_inventory
+from ..io.observations import normalized_info, normalized_observation, task_inventory, state_snapshot, copy_tree, native_parameters
 from ..validation.assets import array_copy, actor_asset, scene_assets
+from ..io.identities import scene_names
 
 
 class RecordingEnv(gym.Wrapper):
@@ -13,22 +14,34 @@ class RecordingEnv(gym.Wrapper):
         super().__init__(env)
         self.frames = []
         self.known_actors = set()
+        self.runtime_names = {}
 
     def reset(self, **kwargs):
         raw, info = self.env.reset(**kwargs)
         self.frames = []
-        self.known_actors = set(self.unwrapped.scene.actors)
+        self.runtime_names = scene_names(self.unwrapped)
+        self.known_actors = set(self.runtime_names.values())
         self.initial_assets = scene_assets(self.unwrapped)
         self.initial_tasks = task_inventory(self.unwrapped)
+        self.initial_state = state_snapshot(self.unwrapped)
+        self.initial_sensor_parameters = copy_tree(raw["sensor_param"])
+        self.native_parameters = native_parameters(self.unwrapped)
+        from ..native.imports import task_goal
+        task_id = getattr(self.unwrapped, "native_task_id", self.unwrapped.spec.id)
+        self.task_goals = task_goal.get_language_goal(self, task_id)
         return raw, info
 
     def _record(self, raw, native_info, action, operation, **details):
         base = self.unwrapped
         info = normalized_info(native_info, base)
+        info["task_goal"] = copy.deepcopy(self.task_goals)
         info.update(details)
         info["operation"] = operation
         added = {}
-        for name, actor in base.scene.actors.items():
+        names = scene_names(base)
+        self.runtime_names.update(names)
+        for raw_name, actor in base.scene.actors.items():
+            name = names[raw_name]
             if name not in self.known_actors:
                 added[name] = actor_asset(actor)
                 self.known_actors.add(name)
@@ -41,8 +54,9 @@ class RecordingEnv(gym.Wrapper):
         return frame
 
     def step(self, action):
+        before = int(self.unwrapped.elapsed_steps.item())
         raw, reward, terminated, truncated, info = self.env.step(action)
-        self._record(raw, info, action, "step")
+        self._record(raw, info, action, "step", control_step_before=before)
         return raw, reward, terminated, truncated, info
 
     def evaluate(self, solve_complete_eval=False):
@@ -55,6 +69,9 @@ class RecordingEnv(gym.Wrapper):
     def reset_marker(self):
         frame = self._record(self.unwrapped.get_obs(), {}, None, "reset_complete")
         frame["info"]["initial_assets"] = self.initial_assets
+        frame["info"]["initial_state"] = self.initial_state
+        frame["info"]["initial_sensor_parameters"] = self.initial_sensor_parameters
+        frame["info"]["native_parameters"] = self.native_parameters
         frame["info"]["task_inventory"] = self.initial_tasks
         frame["info"]["native_runtime"] = {"sim_freq": self.unwrapped.sim_freq,
                                              "control_freq": self.unwrapped.control_freq,

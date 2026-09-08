@@ -146,7 +146,8 @@ class DemonstrationWrapper(gym.Wrapper):
     @property
     def task_id(self):
         """独立注册的原版子类可以声明任务身份，旧环境仍使用原ID。"""
-        return getattr(self.unwrapped, "native_task_id", self.unwrapped.spec.id)
+        return (getattr(self.unwrapped, "native_task_id", None)
+                or getattr(getattr(self.unwrapped, "spec", None), "id", "<unknown_env>"))
 
     def reset(self, **kwargs):
         """Reset environment and generate demonstration trajectory, then execute one initial action step and return unified batch."""

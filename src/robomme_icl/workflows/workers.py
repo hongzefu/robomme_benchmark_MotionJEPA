@@ -49,11 +49,13 @@ def _child_run(connection: Any, spec_data: dict[str, Any], target: str, replay_s
             frames = replay_frames(env, read_episode(replay_source))
         check_terminal(frames)
         executed = time.monotonic()
+        names = dict(env.recorder.runtime_names)
         env.close()
         env = None
         assert_identical(fingerprint, runtime_fingerprint(render_gpu=render_gpu), path="runtime_fingerprint")
         write_started = time.monotonic()
-        write_episode(target, spec, frames, runtime_fingerprint=fingerprint, source_commit=commit)
+        write_episode(target, spec, frames, runtime_fingerprint=fingerprint, source_commit=commit,
+                      runtime_name_mapping=names)
         timings = {"build_seconds": built-started, "run_seconds": executed-built,
                    "write_seconds": time.monotonic()-write_started}
         # 耗时只进入日志和控制消息，不写入需要逐位相同的轨迹内容。

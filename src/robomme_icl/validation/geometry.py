@@ -167,6 +167,32 @@ def validate_scene_geometry(base, spec):
                 radius = box.radius_on(direction)
                 if box.center[index] - radius < bounds[axis][0] or box.center[index] + radius > bounds[axis][1]:
                     reasons.append(f"{name} 超出桌面{axis}边界")
+    layout = definition["layout"]
+    supports = layout.get("supports", {})
+    if spec.task_kind == "BinFill":
+        placed = base.all_cubes
+    elif spec.task_kind == "VideoRepick":
+        placed = base.spawned_cubes
+    elif spec.task_kind == "VideoUnmaskSwap":
+        placed = base.spawned_bins
+    else:
+        placed = []
+    for number, actor in enumerate(placed):
+        if layout["topology"] == "field":
+            prefix = f"cube_{number}"
+        else:
+            group = "containers" if spec.task_kind == "VideoUnmaskSwap" else "cubes"
+            prefix = f"{group}_{number}"
+        for index, axis in enumerate(("x", "y")):
+            support = supports.get(prefix)
+            if support is None:
+                continue
+            low, high = support[axis]
+            direction = (1, 0, 0) if index == 0 else (0, 1, 0)
+            for box in boxes[actor.name]:
+                radius = box.radius_on(direction)
+                if box.center[index] - radius < low or box.center[index] + radius > high:
+                    reasons.append(f"{actor.name} 完整碰撞形状超出配置{axis}外框")
     return {"ok": not reasons, "reasons": reasons, "minimum_clearance": minimum,
             "required_clearance": clearance, "source": "native_collision_shapes",
             "scope": "initial_layout", "object_count": len(objects)}

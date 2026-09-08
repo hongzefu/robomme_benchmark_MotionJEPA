@@ -46,9 +46,10 @@ class VideoRepickParameters:
 PARAMETER_TYPES = dict(zip(TASKS, (BinFillParameters, RouteStickParameters, VideoUnmaskSwapParameters, VideoRepickParameters)))
 
 
-class Placement(TypedDict):
-    x: float
-    y: float
+class PlacementSample(TypedDict):
+    """在原版实际几何决定的合法中心区间内，固定两个分层分位数。"""
+    x_fraction: float
+    y_fraction: float
     yaw_degrees: float
 
 
@@ -105,8 +106,12 @@ class EpisodeSpec:
             if not isinstance(placements, list):
                 raise ValueError("位置组必须为列表")
             for point in placements:
-                if set(point) != {"x", "y", "yaw_degrees"} or any(type(x) not in (float, int) or not math.isfinite(x) for x in point.values()):
-                    raise ValueError("位置须含有限的x、y和yaw_degrees")
+                if set(point) != {"x_fraction", "y_fraction", "yaw_degrees"} or any(type(x) not in (float, int) or not math.isfinite(x) for x in point.values()):
+                    raise ValueError("位置须含有限分位数x_fraction/y_fraction和yaw_degrees")
+                if not 0 <= point["x_fraction"] <= 1 or not 0 <= point["y_fraction"] <= 1:
+                    raise ValueError("位置分位数必须位于[0,1]")
+        if value["layout"].get("coordinate_mode") != "native_support_fraction":
+            raise ValueError("位置协议不同，请按当前原版几何重新编译认证")
         object.__setattr__(self, "_json", canonical_json(value))
 
     @classmethod

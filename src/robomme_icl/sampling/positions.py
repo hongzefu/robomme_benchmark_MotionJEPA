@@ -5,15 +5,18 @@ import math
 from .random import _Stream
 
 
-def sample_interval(slot, candidate_index, field, bounds):
+def sample_interval(slot, candidate_index, field, bounds, strata=None):
     count = slot["position_count"]
     layers = list(range(count))
     seed = slot["position_config"]["compiler_seed"]
-    group = (slot["task_kind"], slot["difficulty"])
+    group = slot["position_group"]
     _Stream(seed, group, field, "layers").shuffle(layers)
     layer = layers[slot["position_rank"]]
     low, high = bounds
     width = (high - low) / count
+    if strata is not None:
+        strata[field] = {"index": layer, "count": count, "support": list(bounds),
+                         "bounds": [low + layer * width, low + (layer + 1) * width]}
     offset = _Stream(seed, slot["slot_id"], candidate_index, field, "offset").uniform()
     return low + (layer + offset) * width
 
@@ -23,20 +26,24 @@ def sample_placements(slot, candidate_index):
     config = slot["position_config"]
     parameters = slot["parameters"]
     placements = {}
+    strata = {}
     layout = {"sampling": "stratified", "rank": slot["position_rank"],
               "count": slot["position_count"], "safety_clearance": config["safety_clearance"],
-              "table_bounds": config["table_bounds"]}
+              "table_bounds": config["table_bounds"], "topology": slot["topology"],
+              "position_group": slot["position_group"], "strata": strata,
+              "coordinate_mode": "native_support_fraction", "supports": {}}
 
     def point(name, bounds, angles=None):
-        yaw = sample_interval(slot, candidate_index, name + ".yaw", angles or bounds.get("yaw_degrees", [0., 0.]))
-        return {"x": sample_interval(slot, candidate_index, name + ".x", bounds["x"]),
-                "y": sample_interval(slot, candidate_index, name + ".y", bounds["y"]),
+        yaw = sample_interval(slot, candidate_index, name + ".yaw", angles or bounds.get("yaw_degrees", [0., 0.]), strata)
+        layout["supports"][name] = {axis: list(bounds[axis]) for axis in ("x", "y")}
+        return {"x_fraction": sample_interval(slot, candidate_index, name + ".x", [0., 1.], strata),
+                "y_fraction": sample_interval(slot, candidate_index, name + ".y", [0., 1.], strata),
                 "yaw_degrees": yaw}
 
     if task == "RouteStick":
         route = config[task]
         layout.update(center=route["center"], spacing=route["spacing"],
-                      yaw_degrees=sample_interval(slot, candidate_index, "route.yaw", route["yaw_degrees"]))
+                      yaw_degrees=sample_interval(slot, candidate_index, "route.yaw", route["yaw_degrees"], strata))
         return placements, layout
     if task in ("BinFill", "VideoRepick"):
         placements["button"] = [point("button", config[task]["button"])]
@@ -50,12 +57,8 @@ def sample_placements(slot, candidate_index):
     else:
         video = config["video_layouts"]
         count = parameters.get("container_count", parameters.get("spawn_count"))
-        if count == 4:
-            topology = "rectangle"
-        else:
-            topologies = video["three_object_topologies"]
-            topology = topologies[slot["position_rank"] % len(topologies)]
-        angle = sample_interval(slot, candidate_index, "layout.yaw", video["yaw_degrees"])
+        topology = slot["topology"]
+        angle = sample_interval(slot, candidate_index, "layout.yaw", video["yaw_degrees"], strata)
         theta = math.radians(angle)
         anchors = [(x * math.cos(theta) - y * math.sin(theta),
                     x * math.sin(theta) + y * math.cos(theta)) for x, y in video[topology]]
@@ -64,9 +67,9 @@ def sample_placements(slot, candidate_index):
         angle_field = "container_yaw_degrees" if kind == "containers" else "cube_yaw_degrees"
         placements[kind] = []
         for index, (x, y) in enumerate(anchors):
-            bounds = {"x": [x - half_window, x + half_window],
-                      "y": [y - half_window, y + half_window]}
-            placements[kind].append(point(f"{kind}_{index}", bounds, video[angle_field]))
+            bounds = {"x": [x - half_window, x + half_window], "y": [y - half_window, y + half_window]}
+            sampled = point(f"{kind}_{index}", bounds, video[angle_field])
+            placements[kind].append(sampled)
         layout.update(topology=topology, anchors=anchors, yaw_degrees=angle,
                       window_half_size=half_window)
     return placements, layout

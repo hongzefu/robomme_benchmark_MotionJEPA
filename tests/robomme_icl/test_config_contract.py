@@ -1,6 +1,7 @@
 """版本2只冻结分布输入，素材和任务行为不得从配置覆盖。"""
 
 import copy
+from collections import defaultdict
 
 import pytest
 
@@ -57,3 +58,30 @@ def test_accessors_do_not_leak_mutable_state():
     detached = spec.to_dict()
     detached["placements"].clear()
     assert spec.to_dict() == before
+
+
+def test_every_position_group_covers_each_layer_exactly_once():
+    groups = defaultdict(list)
+    for slot in plan_slots(*load_configs()):
+        groups[tuple(slot["position_group"])].append(candidate_for_slot(slot, 0).to_dict())
+    for rows in groups.values():
+        fields = set(rows[0]["layout"]["strata"])
+        assert all(set(row["layout"]["strata"]) == fields for row in rows)
+        for field in fields:
+            layers = [row["layout"]["strata"][field] for row in rows]
+            assert sorted(layer["index"] for layer in layers) == list(range(len(rows)))
+            assert all(layer["count"] == len(rows) for layer in layers)
+            assert all(layer["support"] == layers[0]["support"] for layer in layers)
+
+
+def test_position_seed_does_not_change_task_choices_or_episode_seeds():
+    task, position = load_configs()
+    original = plan_slots(task, position)
+    changed_position = copy.deepcopy(position)
+    changed_position["compiler_seed"] += 1
+    changed = plan_slots(task, changed_position)
+    for before, after in zip(original, changed):
+        assert before["parameters"] == after["parameters"]
+        assert before["seed"] == after["seed"]
+        assert before["position_group"] == after["position_group"]
+        assert candidate_for_slot(before, 0).to_dict()["layout"]["strata"] != {} or before["task_kind"] == "RouteStick"

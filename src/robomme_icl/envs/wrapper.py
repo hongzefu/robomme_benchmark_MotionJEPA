@@ -6,6 +6,7 @@ import gymnasium as gym
 import numpy as np
 
 from ..execution.recording import RecordingEnv
+from ..io.observations import normalized_info, normalized_observation
 from ..native.imports import DemonstrationWrapper, task_goal
 
 
@@ -23,7 +24,8 @@ class ICLJointAngleEnv(gym.Wrapper):
     def _build_wrappers(self):
         self.recorder = RecordingEnv(self.raw_factory())
         self.native_wrapper = DemonstrationWrapper(
-            self.recorder, max_steps_without_demonstration=10000, gui_render=False
+            self.recorder, max_steps_without_demonstration=10000, gui_render=False,
+            include_maniskill_obs=True,
         )
 
     def reset(self, *, seed=None, options=None):
@@ -33,7 +35,7 @@ class ICLJointAngleEnv(gym.Wrapper):
             self.native_wrapper.close()
             self._build_wrappers()
             self.env = self.native_wrapper
-        self.native_wrapper.reset(seed=self.seed, options=options)
+        batch, native_info = self.native_wrapper.reset(seed=self.seed, options=options)
         self.has_reset = True
         marker = self.recorder.reset_marker()
         if hasattr(self, "geometry_report"):
@@ -42,12 +44,16 @@ class ICLJointAngleEnv(gym.Wrapper):
         goals = task_goal.get_language_goal(self.native_wrapper, self.task_kind)
         info["task_goal"] = goals
         info["demonstration"] = copy.deepcopy(self.recorder.frames[:-1]) if self.record_demonstration else []
-        return marker["observation"], info
+        observation = normalized_observation(batch["maniskill_obs"][-1], self.unwrapped)
+        return observation, info
 
     def step(self, action):
         value = np.asarray(action, dtype=np.float64)
         if value.shape != (self.action_dimension,) or not np.isfinite(value).all():
             raise ValueError(f"joint_angle 必须是{self.action_dimension}维有限数组")
-        _, reward, terminated, truncated, _ = self.native_wrapper.step(value)
-        frame = self.recorder.frames[-1]
-        return frame["observation"], float(reward), bool(terminated), bool(truncated), copy.deepcopy(frame["info"])
+        batch, reward, terminated, truncated, native_info = self.native_wrapper.step(value)
+        # 原版终止时会额外执行一步，但返回外层调用的图像，不能替换为内部末帧。
+        observation = normalized_observation(batch["maniskill_obs"][-1], self.unwrapped)
+        info = normalized_info(native_info, self.unwrapped)
+        info["task_goal"] = native_info["task_goal"]
+        return observation, float(reward), bool(terminated), bool(truncated), info

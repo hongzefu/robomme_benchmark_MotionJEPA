@@ -1,6 +1,6 @@
 """先固定每档任务配额，再为位置采样提供独立名额。"""
 
-from collections import Counter
+from collections import Counter, defaultdict
 import copy
 import itertools
 
@@ -80,6 +80,16 @@ def plan_slots(task_config, position_config, tasks=None, episodes_per_task=None)
             if not _legal_combinations(task, choices):
                 raise ValueError(f"{task}.{difficulty} 没有合法参数组合")
             for rank, parameters in enumerate(_quota_rows(task, choices, count, stream)):
+                object_count = parameters.get("container_count", parameters.get("spawn_count", 0))
+                if task == "BinFill" or object_count == 15:
+                    topology = "field"
+                elif task == "RouteStick":
+                    topology = "route"
+                elif object_count == 4:
+                    topology = "rectangle"
+                else:
+                    topologies = position_config["video_layouts"]["three_object_topologies"]
+                    topology = topologies[rank % len(topologies)]
                 slots.append({
                     "slot_id": f"{task}/{difficulty}/{rank}",
                     "task_kind": task,
@@ -87,6 +97,7 @@ def plan_slots(task_config, position_config, tasks=None, episodes_per_task=None)
                     "episode": episode,
                     "seed": task_config["episode_seed_start"] + task_index * per_task + episode,
                     "parameters": parameters,
+                    "topology": topology,
                     "position_rank": rank,
                     "position_count": count,
                     "max_candidates": position_config["max_candidates"],
@@ -94,6 +105,16 @@ def plan_slots(task_config, position_config, tasks=None, episodes_per_task=None)
                     "position_config": copy.deepcopy(position_config),
                 })
                 episode += 1
+    groups = defaultdict(list)
+    for slot in slots:
+        object_count = slot["parameters"].get("spawn_count", slot["parameters"].get("container_count", 0))
+        group = (slot["task_kind"], slot["difficulty"], slot["topology"], object_count)
+        groups[group].append(slot)
+    for group, members in groups.items():
+        for rank, slot in enumerate(members):
+            slot["position_group"] = list(group)
+            slot["position_rank"] = rank
+            slot["position_count"] = len(members)
     return slots
 
 

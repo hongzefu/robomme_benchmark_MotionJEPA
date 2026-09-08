@@ -36,6 +36,7 @@ class EpisodeRecord:
     frames: list[dict[str, Any]]
     content_hash: str
     runtime_fingerprint: dict[str, Any] | None = None
+    runtime_name_mapping: dict[str, str] | None = None
 
 
 def _json(value: Any) -> str:
@@ -181,6 +182,7 @@ def _read_node(node: h5py.Group | h5py.Dataset) -> Any:
 def write_episode(
     path: str | Path, spec: Any, frames: Sequence[dict[str, Any]], *,
     runtime_fingerprint: dict[str, Any] | None = None, source_commit: str | None = None,
+    runtime_name_mapping: dict[str, str] | None = None,
 ) -> Path:
     """独占创建文件，写入失败保留不完整证据，绝不覆盖已有产物。"""
     target = output_path(path, create_parent=True)
@@ -200,6 +202,10 @@ def write_episode(
         setup.create_dataset("seed", data=int(spec.seed if hasattr(spec, "seed") else payload["seed"]))
         setup.create_dataset("runtime_fingerprint", data=_json(runtime_fingerprint), dtype=h5py.string_dtype("utf-8"))
         setup.create_dataset("source_commit", data=source_commit or "", dtype=h5py.string_dtype("utf-8"))
+        # 原版对象名含进程地址；保存可核查映射，独立校验但不混入跨进程轨迹摘要。
+        names = runtime_name_mapping or {}
+        setup.create_dataset("runtime_name_mapping", data=_json(names), dtype=h5py.string_dtype("utf-8"))
+        setup.attrs["runtime_name_mapping_hash"] = tree_hash(names)
         _write_node(handle, "steps", frame_list)
         handle.attrs["content_hash"] = content_hash
         handle.attrs["complete"] = True
@@ -221,6 +227,13 @@ def read_episode(path: str | Path) -> EpisodeRecord:
             frames = _read_node(handle["steps"])
             content_hash = _text(handle.attrs["content_hash"])
             fingerprint = json.loads(_text(handle["setup/runtime_fingerprint"][()]))
+            names = {}
+            if "runtime_name_mapping" in handle["setup"]:
+                names = json.loads(_text(handle["setup/runtime_name_mapping"][()]))
+                if tree_hash(names) != handle["setup"].attrs.get("runtime_name_mapping_hash"):
+                    raise RecordError("原版对象名映射摘要不匹配")
+                if not isinstance(names, dict) or len(set(names.values())) != len(names):
+                    raise RecordError("原版对象名映射不是一一对应")
             if str(payload.get("spec_hash", spec_hash)) != spec_hash:
                 raise RecordError(f"规格摘要字段不一致：{target}")
             if int(handle["setup/seed"][()]) != int(payload["seed"]) or _text(handle["setup/env_id"][()]) != payload["env_id"]:
@@ -229,7 +242,7 @@ def read_episode(path: str | Path) -> EpisodeRecord:
                 raise RecordError(f"HDF5 内容摘要不匹配：{target}")
             if not frames:
                 raise RecordError(f"HDF5 没有帧：{target}")
-            return EpisodeRecord(payload, spec_hash, frames, content_hash, fingerprint)
+            return EpisodeRecord(payload, spec_hash, frames, content_hash, fingerprint, names)
     except (OSError, KeyError, ValueError, TypeError) as exc:
         raise RecordError(f"无法读取 HDF5，已保留原文件：{target}：{exc}") from exc
 

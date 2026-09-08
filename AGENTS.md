@@ -253,6 +253,16 @@ command -v uv
 
 ## 追加式执行日志
 
+### 2026-09-08 — 独立原版首例对照与分层初始位姿修正
+
+- 独立原版对照入口已实现：`scripts/verify_native_parity.py --capture episode --source original --input-record ... --reference-root artifacts/generated/robomme-icl/native-parity/reference-v1`。在新进程逐个校验102个原版Git blob，只注入批准的次数和位置输入，不调用新版任务子类或NativePlacements。
+- 第一条原版对照证据：`reference-episode-binfill/episode.h5` 与 `workflow-smoke-binfill/suite/certification/BinFill/easy/0/candidate_0001/repeat_0_infra_0.h5` 的规格及完整502操作逐位相同，frames_hash均为 `c31f64ebe97f2d32f2e510a666b6fafc5ff7fc5a8b146ce7934a1fc5f3547428`。此证据属于当时的中间位置协议；下面修正后的最终协议必须重新完成对照，不能直接沿用旧认证。
+- 分层复核：恢复按任务/难度/拓扑/物体数分组，逐组各维度每层一次。发现把整个窗口直接当中心区间会使边缘层放不下完整物体；改为冻结分层分位数，在原版实际碰撞形状决定的合法中心范围内解析。窗口、原版几何、次数均不变；最终实际初态另存initial_state，避免图表把演示后的交换位置误作初始分布。
+- 初始化反例：ManiSkill.scene._setup会用Actor.initial_pose覆盖set_pose；曾导致所有方块返回临时构建中心。`workflow-smoke-binfill-v3`八个候选全部被真实几何筛选拒绝，未发布。修正为同时写入最终initial_pose与当前pose，并加入实际初始位置一致性和物体不重合断言。最新BinFill候选1通过完整smoke：481操作/470步，success=True/fail=False，8.17s。此前只检查任务完成的smoke不足以证明配置位置正确，最终不使用这些早期结果作为配置验收。
+- 记录边界：原版RouteStick高亮名包含id(obj)，新增一一映射为所属目标/实例号，原名映射独立校验保存在HDF5，不改原版对象；未知所属对象或标识冲突直接失败。额外保存原版任务语言、模板、参数结果、交换计划和相机参数。接口返回原版外层观测，不能用终止时内部额外一步的图像替换。
+- 静态与轻量验证：55项配置、分层、原版方法/任务词典AST、共享原版函数字节、I/O负例和身份映射测试通过；另10项注册/继承/动作接口及身份测试通过，重叠身份测试不重复计数。原版6份共享素材/事件/判定/规划/语言/失败规划工具仍逐字节等于固定基线。
+- 尚未完成：其余三任务在最新分层协议上的重新验收、版本2绘图/源清单重认证迁移、删除旧任务/几何实现、全部现有测试适配、完整原版对照和96条批次、最终scripts/NATIVE_PARITY.md。原版行为存在的限制不能用新版额外规则掩盖。
+
 ### 2026-09-08 — 四任务单局与版本2认证回放闭环
 
 - 四任务真实单局均已通过：`ICL_NATIVE_SMOKE=1 uv run --no-sync python -m pytest tests/robomme_icl/test_native_runtime.py -k <任务名> -q -s`；BinFill480操作/469步（8.90s），RouteStick641操作/622步（14.64s），VideoUnmaskSwap292操作/287步（6.48s），VideoRepick911操作/884步（11.21s）。这四项只验证首个easy候选，不替代三难度和原版独立对照。

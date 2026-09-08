@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 
 from ..validation.assets import array_copy, pose_value, actor_asset
+from .identities import scene_names
 
 
 def scalar(value):
@@ -13,9 +14,38 @@ def scalar(value):
     return value
 
 
+def copy_tree(value):
+    if isinstance(value, dict):
+        return {key: copy_tree(child) for key, child in value.items()}
+    if isinstance(value, list):
+        return [copy_tree(child) for child in value]
+    if isinstance(value, tuple):
+        return tuple(copy_tree(child) for child in value)
+    if isinstance(value, np.ndarray) or hasattr(value, "detach"):
+        return array_copy(value)
+    return value
+
+
+def native_parameters(base):
+    """保存原版实际解析结果，不从目标列表反推计数或颜色。"""
+    values = {}
+    for field in ("dynamic", "num_repeats", "swap_times", "pick_times", "cube_half_size",
+                  "red_cubes_target_number", "blue_cubes_target_number", "green_cubes_target_number",
+                  "red_cubes_spawn_number", "blue_cubes_spawn_number", "green_cubes_spawn_number",
+                  "binfill_language_sequence", "color_names", "selected_bin_indices", "swing_directions"):
+        if hasattr(base, field):
+            values[field] = copy_tree(getattr(base, field))
+    for field in ("selected_buttons", "selected_bins"):
+        if hasattr(base, field):
+            values[field] = [actor.name for actor in getattr(base, field)]
+    return values
+
+
 def state_snapshot(base):
     actors = {}
-    for name, actor in sorted(base.scene.actors.items()):
+    names = scene_names(base)
+    for raw_name, actor in sorted(base.scene.actors.items()):
+        name = names[raw_name]
         bodies = actor._bodies
         body = bodies[0]
         actors[name] = {"pose": pose_value(actor.pose), "visibility": []}
@@ -36,6 +66,9 @@ def state_snapshot(base):
                  "red_cubes_in_bin", "blue_cubes_in_bin", "green_cubes_in_bin", "static_flag", "start_step"):
         if hasattr(base, name):
             counters[name] = scalar(getattr(base, name))
+    if hasattr(base, "swap_schedule"):
+        counters["swap_schedule"] = [[getattr(first, "name", None), getattr(second, "name", None), int(start), int(end)]
+                                     for first, second, start, end in base.swap_schedule]
     return {"actors": actors, "articulations": articulations, "task_state": counters}
 
 
@@ -58,6 +91,8 @@ def normalized_info(native_info, base):
             "is_demonstration": demonstration,
             "subgoal_index": int(getattr(base, "current_task_index", 0)),
             "subgoal": subgoal,
+            "subgoal_segment": getattr(base, "current_subgoal_segment", None),
+            "choice_label": getattr(base, "current_choice_label", None),
             "deliver_frame": subgoal != "NO RECORD",
             "specialflag": getattr(base, "current_task_specialflag", None)}
 
