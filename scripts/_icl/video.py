@@ -105,14 +105,19 @@ def export_video(h5_path, video_path) -> dict:
         raise ValueError("视频输出必须使用 .mp4 后缀")
     sidecar = _safe_output(target.with_suffix(".json"))
     record = read_episode(source)
-    fps = record.episode_spec["schedule"]["control_freq"]
+    marker = next(frame for frame in record.frames if frame["info"].get("operation") == "reset_complete")
+    fps = marker["info"]["native_runtime"]["control_freq"]
+    frames = [frame for frame in record.frames if frame["info"].get("deliver_frame", False)]
+    if not frames:
+        raise ValueError("记录没有可交付的物理帧")
     if isinstance(fps, bool) or not isinstance(fps, (int, float)) or not np.isfinite(fps) or fps <= 0:
-        raise ValueError("spec.schedule.control_freq 必须为正数")
-    first = compose_frame(record.frames[0])
+        raise ValueError("原版运行快照的control_freq必须为正数")
+    first = compose_frame(frames[0])
     height, width = first.shape[:2]
     version = subprocess.run([FFMPEG, "-version"], check=True, capture_output=True, text=True).stdout.splitlines()[0]
     identity = {"source_content_hash": record.content_hash, "spec_hash": record.spec_hash,
-                "frames": len(record.frames), "fps": fps, "width": width, "height": height,
+                "source_operation_count": len(record.frames),
+                "frames": len(frames), "fps": fps, "width": width, "height": height,
                 "encoding": dict(ENCODING), "ffmpeg_version": version}
     metadata = _read_sidecar(sidecar, identity) if sidecar.exists() else None
     if target.exists():
@@ -135,7 +140,7 @@ def export_video(h5_path, video_path) -> dict:
                                         "-pix_fmt", "yuv420p", "-crf", "18", "-threads", "1", "-movflags", "+faststart",
                                         str(temporary_video)], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=errors)
             try:
-                for index, frame in enumerate(record.frames):
+                for index, frame in enumerate(frames):
                     rgb = first if index == 0 else compose_frame(frame)
                     if rgb.shape != first.shape:
                         raise ValueError(f"视频帧 {index} 的分辨率与首帧不同")
@@ -149,7 +154,7 @@ def export_video(h5_path, video_path) -> dict:
             if code != 0:
                 errors.seek(0)
                 raise RuntimeError(f"FFmpeg 编码退出 {code}：{errors.read().decode(errors='replace')}")
-        verification = _probe(temporary_video, frames=len(record.frames), fps=fps, width=width, height=height)
+        verification = _probe(temporary_video, frames=len(frames), fps=fps, width=width, height=height)
         result = {"schema_version": 1, **identity, "source_h5": str(source),
                   "video_sha256": _sha256(temporary_video), "verification": verification}
         if metadata is not None and metadata["video_sha256"] != result["video_sha256"]:

@@ -617,8 +617,7 @@ class DemonstrationWrapper(gym.Wrapper):
         - PatternLock/RouteStick: accept len>=7 and pass first 7 dims.
         - Other envs: accept len>=8 and pass first 8 dims.
         """
-        env_spec = getattr(self.unwrapped, "spec", None)
-        env_id = getattr(env_spec, "id", "<unknown_env>")
+        env_id = self.task_id
         action_arr = np.asarray(action, dtype=np.float64).flatten()
         if env_id in self._STICK_ENV_IDS:
             if action_arr.size < 7:

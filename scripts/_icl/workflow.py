@@ -28,10 +28,10 @@ def _brief(row):
 
 
 def _generate_job(job):
-    from robomme_icl.io.pipeline import _generate_spec_job
+    from robomme_icl.workflows.generate import generate_spec_job
 
     try:
-        result = _generate_spec_job(job)
+        result = generate_spec_job(job)
         result = {**_brief(header(result["path"])), **result}
         append_event(job["run_root"], {"stage": "generate", "passed": True, **result})
         return result
@@ -42,14 +42,14 @@ def _generate_job(job):
 
 
 def generate_records(suite, specs, output, *, workers, timeout_seconds):
-    from robomme_icl.io.pipeline import _gpu_limits, _new_manager, _run_process_jobs
+    from robomme_icl.workflows.workers import gpu_limits, new_manager, run_jobs
 
     output = safe_output(output)
     certifications = suite["certification"]
     gpus = validate_bindings([certifications[spec.spec_hash]["runtime_fingerprint"] for spec in specs])
-    with _new_manager() as manager:
+    with new_manager() as manager:
         stop = manager.Event()
-        limits = _gpu_limits(manager, gpus, workers)
+        limits = gpu_limits(manager, gpus, workers)
         jobs = []
         for spec in specs:
             cert = certifications[spec.spec_hash]
@@ -59,7 +59,7 @@ def generate_records(suite, specs, output, *, workers, timeout_seconds):
                          "output": str(output / "hdf5_files"), "run_root": str(output),
                          "timeout_seconds": timeout_seconds, "stop": stop,
                          "gpu_limit": limits[cert["render_gpu"]]})
-        return _run_process_jobs(_generate_job, jobs, workers, stop)
+        return run_jobs(_generate_job, jobs, workers, stop)
 
 
 def check_generation_suite(suite, output):
@@ -127,7 +127,7 @@ def check_replay_destinations(rows, output, *, scan_root=None):
 
 
 def _replay_job(job):
-    from robomme_icl.io.pipeline import replay_episode
+    from robomme_icl.workflows.replay import replay_episode
 
     row = job["input"]
     try:
@@ -148,16 +148,16 @@ def _replay_job(job):
 
 
 def replay_records(rows, output, *, workers, timeout_seconds, scan_root=None):
-    from robomme_icl.io.pipeline import _gpu_limits, _new_manager, _run_process_jobs
+    from robomme_icl.workflows.workers import gpu_limits, new_manager, run_jobs
 
     check_replay_destinations(rows, output, scan_root=scan_root)
     gpus = validate_bindings([row["runtime_fingerprint"] for row in rows])
-    with _new_manager() as manager:
+    with new_manager() as manager:
         stop = manager.Event()
-        limits = _gpu_limits(manager, gpus, workers)
+        limits = gpu_limits(manager, gpus, workers)
         jobs = [{"input": row, "output": str(output), "stop": stop,
                  "gpu_limit": limits[row["render_gpu"]], "timeout_seconds": timeout_seconds} for row in rows]
-        return _run_process_jobs(_replay_job, jobs, workers, stop)
+        return run_jobs(_replay_job, jobs, workers, stop)
 
 
 def _video_job(job):
@@ -170,7 +170,7 @@ def _video_job(job):
         path = Path(job["output"]) / "videos" / row["task_kind"] / f"seed_{row['seed']}.mp4"
         result = export_video(row["path"], path)
         if (result["spec_hash"] != row["spec_hash"] or result["source_content_hash"] != row["content_hash"]
-                or result["frames"] != row["frame_count"]):
+                or result["source_operation_count"] != row["frame_count"]):
             raise ValueError("视频来源或帧数与本条已核对 HDF5 不一致")
         result.update(task_kind=row["task_kind"], seed=row["seed"], render_gpu=row["render_gpu"])
         append_event(job["output"], {"stage": "video", "passed": True, **result})
@@ -184,9 +184,9 @@ def _video_job(job):
 
 
 def export_videos(records, output, *, workers):
-    from robomme_icl.io.pipeline import _new_manager, _run_process_jobs
+    from robomme_icl.workflows.workers import new_manager, run_jobs
 
-    with _new_manager() as manager:
+    with new_manager() as manager:
         stop = manager.Event()
         jobs = [{"record": row, "output": str(output), "stop": stop} for row in records]
-        return _run_process_jobs(_video_job, jobs, workers, stop)
+        return run_jobs(_video_job, jobs, workers, stop)

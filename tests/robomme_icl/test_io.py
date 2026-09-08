@@ -25,7 +25,8 @@ from robomme_icl.io.hdf5 import (
     write_episode,
 )
 from robomme_icl.io.paths import output_path, repository_root
-from robomme_icl.io.pipeline import generate_one, retry_same_spec
+from robomme_icl.workflows.generate import generate_one
+from robomme_icl.workflows.workers import retry_same_spec
 
 
 @pytest.fixture
@@ -71,6 +72,7 @@ class FakeEnv:
             "joint_action": None,
             "info": {"success": True, "fail": False, "is_demonstration": False,
                      "phase": "evaluation", "step": 0, "task_events": ["完成"],
+                     "operation": "reset_complete", "geometry_report": {"ok": True},
                      "numpy_flag": np.bool_(True), "tuple": (1, "x"), "raw": b"\x00\xff"},
         }]
 
@@ -131,7 +133,7 @@ def test_generation_retry_and_resume_keep_identical_spec_seed(local_dir):
 def test_incomplete_resume_stops_without_overwrite(local_dir):
     path = local_dir / "incomplete.h5"
     with h5py.File(path, "x") as handle:
-        handle.attrs["schema_version"] = 1
+        handle.attrs["schema_version"] = 2
         handle.attrs["complete"] = False
     before = path.read_bytes()
     with pytest.raises(RecordError, match="不完整"):
@@ -185,17 +187,25 @@ def _fake_suite(monkeypatch):
 
     module.save_suite = save
     monkeypatch.setitem(sys.modules, "robomme_icl.suite", module)
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import prepare as pipeline, workers
+    from robomme_icl import config
+    from robomme_icl.sampling import tasks, compiler
+    from robomme_icl.io import suite as storage
+    monkeypatch.setattr(config, "load_configs", lambda *args: module.load_configs(*args))
+    monkeypatch.setattr(tasks, "plan_slots", lambda *args, **kwargs: module.plan_slots(*args, **kwargs))
+    monkeypatch.setattr(compiler, "candidate_for_slot", lambda *args: module.candidate_for_slot(*args))
+    monkeypatch.setattr(storage, "save_suite", save)
+    monkeypatch.setattr(pipeline, "EpisodeSpec", FakeSpec)
     monkeypatch.setattr(pipeline, "runtime_fingerprint", lambda **kwargs: {"testing": "fixed", "render_gpu": kwargs.get("render_gpu")})
     monkeypatch.setattr(pipeline, "source_commit", lambda: "测试基线")
-    monkeypatch.setattr(pipeline, "_new_manager", lambda: nullcontext(types.SimpleNamespace(Event=threading.Event, BoundedSemaphore=threading.BoundedSemaphore)))
-    monkeypatch.setattr(pipeline, "ProcessPoolExecutor", lambda **kwargs: ThreadPoolExecutor(max_workers=min(kwargs["max_workers"], 2)))
+    monkeypatch.setattr(pipeline, "new_manager", lambda: nullcontext(types.SimpleNamespace(Event=threading.Event, BoundedSemaphore=threading.BoundedSemaphore)))
+    monkeypatch.setattr(workers, "ProcessPoolExecutor", lambda **kwargs: ThreadPoolExecutor(max_workers=min(kwargs["max_workers"], 2)))
     return saved
 
 
 def test_prepare_rejects_geometry_then_certifies_same_slot_candidate(local_dir, monkeypatch):
     from robomme_icl import geometry
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import prepare as pipeline
 
     saved = _fake_suite(monkeypatch)
     monkeypatch.setattr(geometry, "validate_spec_geometry", lambda spec: {
@@ -204,10 +214,13 @@ def test_prepare_rejects_geometry_then_certifies_same_slot_candidate(local_dir, 
     calls = []
 
     def run(spec, destination, **_):
+        if spec.seed == 1900000001:
+            from robomme_icl.errors import CandidateRejected
+            raise CandidateRejected("模拟真实初始碰撞")
         calls.append((spec.seed, spec.spec_hash))
         return write_episode(destination, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
-    monkeypatch.setattr(pipeline, "run_fresh_process", run)
+    monkeypatch.setattr(pipeline, "run_episode_process", run)
     manifest = pipeline.prepare_suite(local_dir / "prepared", max_candidates=3)
     assert manifest.exists()
     assert calls == [(1900000002, FakeSpec(seed=1900000002).spec_hash)] * 2
@@ -217,7 +230,7 @@ def test_prepare_rejects_geometry_then_certifies_same_slot_candidate(local_dir, 
 
 def test_prepare_reproducibility_mismatch_never_tries_next_candidate(local_dir, monkeypatch):
     from robomme_icl import geometry
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import prepare as pipeline
 
     saved = _fake_suite(monkeypatch)
     monkeypatch.setattr(geometry, "validate_spec_geometry", lambda _: {"ok": True, "reasons": []})
@@ -229,7 +242,7 @@ def test_prepare_reproducibility_mismatch_never_tries_next_candidate(local_dir, 
         frames[0]["observation"]["base_rgb"][0, 0, 0] = len(calls)
         return write_episode(destination, spec, frames, runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
-    monkeypatch.setattr(pipeline, "run_fresh_process", run)
+    monkeypatch.setattr(pipeline, "run_episode_process", run)
     with pytest.raises(ReproducibilityError, match="字节不同"):
         pipeline.prepare_suite(local_dir / "prepared", max_candidates=3)
     assert calls == [1900000001, 1900000001]
@@ -330,43 +343,47 @@ def test_config_and_api_import_do_not_register_legacy_tasks():
 
 
 def test_replay_restores_demo_and_drives_only_recorded_evaluation_actions(local_dir, monkeypatch):
-    from robomme_icl.io import pipeline
-
-    def frame_record(observation, action, info):
-        return {"observation": copy.deepcopy(observation),
-                "joint_action": None if action is None else np.array(action, dtype=np.float64),
-                "info": copy.deepcopy({key: value for key, value in info.items() if key != "demonstration"})}
-
-    oracle = types.ModuleType("robomme_icl.oracle")
-    oracle.frame_record = frame_record
-    monkeypatch.setitem(sys.modules, "robomme_icl.oracle", oracle)
-    observation = FakeEnv().frames()[0]["observation"]
-    demo = frame_record(observation, np.zeros(8), {"success": False, "fail": False, "is_demonstration": True, "phase": "demonstration", "step": 0, "task_events": []})
-    initial_info = {"success": False, "fail": False, "is_demonstration": False, "phase": "evaluation", "step": 1, "task_events": []}
-    terminal_info = {**initial_info, "success": True, "step": 2, "task_events": ["完成"]}
-    action = np.linspace(0, 1, 8, dtype=np.float64)
-    frames = [demo, frame_record(observation, None, initial_info), frame_record(observation, action, terminal_info)]
-    expected = read_episode(write_episode(local_dir / "source.h5", FakeSpec(), frames))
+    from robomme_icl.validation.reproducibility import replay_frames
+    initial = FakeEnv().frames()[0]
+    initial["info"]["success"] = False
+    physical = copy.deepcopy(initial)
+    physical["info"].update(operation="step", step=1)
+    physical["joint_action"] = np.linspace(0, 1, 8)
+    terminal = copy.deepcopy(physical)
+    terminal["joint_action"] = None
+    terminal["info"].update(operation="evaluate", solve_complete_eval=True, success=True)
+    expected = types.SimpleNamespace(frames=[initial, physical, terminal])
     actions = []
 
+    class Recorder:
+        def __init__(self):
+            self.frames = []
+
+        def step(self, action):
+            actions.append(action.copy())
+            self.frames.append(copy.deepcopy(physical))
+
+        def evaluate(self, *, solve_complete_eval):
+            assert solve_complete_eval is True
+            self.frames.append(copy.deepcopy(terminal))
+
     class ReplayEnv:
+        def __init__(self):
+            self.recorder = Recorder()
+
         def reset(self):
-            return observation, {**initial_info, "demonstration": [demo]}
+            self.recorder.frames = [copy.deepcopy(initial)]
 
-        def step(self, value):
-            actions.append(value.copy())
-            return observation, 0.0, True, False, terminal_info
-
-    actual = pipeline._replay_frames(ReplayEnv(), expected)
-    assert_identical(expected.frames, actual)
+    result = replay_frames(ReplayEnv(), expected)
+    assert_identical(expected.frames, result)
     assert len(actions) == 1
-    assert_identical(actions[0], action)
+    assert_identical(actions[0], physical["joint_action"])
 
 
 def _write_partial(path):
     path.parent.mkdir(parents=True, exist_ok=True)
     with h5py.File(path, "x") as handle:
-        handle.attrs["schema_version"] = 1
+        handle.attrs["schema_version"] = 2
         handle.attrs["complete"] = False
         handle.create_dataset("partial", data=np.arange(3))
 
@@ -395,7 +412,7 @@ def test_partial_generation_retries_same_seed_in_new_staging_and_publishes_only_
 
 def test_prepare_resume_skips_rejected_candidate_and_completed_repeat(local_dir, monkeypatch):
     from robomme_icl import geometry
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import prepare as pipeline
 
     saved = _fake_suite(monkeypatch)
     geometry_calls = []
@@ -408,13 +425,16 @@ def test_prepare_resume_skips_rejected_candidate_and_completed_repeat(local_dir,
     calls = []
 
     def first_run(spec, path, **_):
+        if not geometry_check(spec)["ok"]:
+            from robomme_icl.errors import CandidateRejected
+            raise CandidateRejected("模拟真实几何拒绝")
         calls.append((spec.seed, path.name))
         if path.name.startswith("repeat_1_"):
             raise RuntimeError("模拟认证父流程中断")
         return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
     output = local_dir / "prepared"
-    monkeypatch.setattr(pipeline, "run_fresh_process", first_run)
+    monkeypatch.setattr(pipeline, "run_episode_process", first_run)
     with pytest.raises(RuntimeError, match="父流程中断"):
         pipeline.prepare_suite(output, max_candidates=3)
     assert not (output / "suite.json").exists()
@@ -423,7 +443,7 @@ def test_prepare_resume_skips_rejected_candidate_and_completed_repeat(local_dir,
         calls.append((spec.seed, path.name))
         return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
-    monkeypatch.setattr(pipeline, "run_fresh_process", resumed_run)
+    monkeypatch.setattr(pipeline, "run_episode_process", resumed_run)
     manifest = pipeline.prepare_suite(output, max_candidates=3)
     assert manifest.exists() and len(saved) == 1
     assert sum(name.startswith("repeat_0_") for _, name in calls) == 1
@@ -436,7 +456,7 @@ def test_prepare_resume_skips_rejected_candidate_and_completed_repeat(local_dir,
 @pytest.mark.parametrize("change", ["fingerprint", "config"])
 def test_prepare_resume_rejects_changed_fingerprint_before_running(local_dir, monkeypatch, change):
     from robomme_icl import geometry
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import prepare as pipeline
 
     _fake_suite(monkeypatch)
     monkeypatch.setattr(geometry, "validate_spec_geometry", lambda _: {"ok": True, "reasons": []})
@@ -445,21 +465,21 @@ def test_prepare_resume_rejects_changed_fingerprint_before_running(local_dir, mo
         raise RuntimeError("模拟认证中断")
 
     output = local_dir / "prepared"
-    monkeypatch.setattr(pipeline, "run_fresh_process", interrupted)
+    monkeypatch.setattr(pipeline, "run_episode_process", interrupted)
     with pytest.raises(RuntimeError, match="认证中断"):
         pipeline.prepare_suite(output)
     if change == "fingerprint":
         monkeypatch.setattr(pipeline, "runtime_fingerprint", lambda **kwargs: {"testing": "changed"})
     else:
         monkeypatch.setattr(sys.modules["robomme_icl.suite"], "load_configs", lambda *_: ({"changed": True}, {}))
-    monkeypatch.setattr(pipeline, "run_fresh_process", lambda *_, **__: pytest.fail("错误指纹禁止运行"))
+    monkeypatch.setattr(pipeline, "run_episode_process", lambda *_, **__: pytest.fail("错误指纹禁止运行"))
     with pytest.raises(ReproducibilityError, match="恢复上下文"):
         pipeline.prepare_suite(output)
 
 
 def test_prepare_resume_rejects_complete_repeat_with_wrong_fingerprint(local_dir, monkeypatch):
     from robomme_icl import geometry
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import prepare as pipeline
 
     _fake_suite(monkeypatch)
     monkeypatch.setattr(geometry, "validate_spec_geometry", lambda _: {"ok": True, "reasons": []})
@@ -469,22 +489,22 @@ def test_prepare_resume_rejects_complete_repeat_with_wrong_fingerprint(local_dir
         raise RuntimeError("模拟留下另一运行环境的完整记录")
 
     output = local_dir / "prepared"
-    monkeypatch.setattr(pipeline, "run_fresh_process", interrupted)
+    monkeypatch.setattr(pipeline, "run_episode_process", interrupted)
     with pytest.raises(RuntimeError, match="另一运行环境"):
         pipeline.prepare_suite(output)
-    monkeypatch.setattr(pipeline, "run_fresh_process", lambda *_, **__: pytest.fail("不能绕过错误指纹重跑"))
+    monkeypatch.setattr(pipeline, "run_episode_process", lambda *_, **__: pytest.fail("不能绕过错误指纹重跑"))
     with pytest.raises(ReproducibilityError, match="runtime_fingerprint"):
         pipeline.prepare_suite(output)
     assert len(list(output.rglob("*.h5"))) == 1
 
 
 def test_partial_replay_retries_in_new_staging_with_same_spec_and_actions(local_dir, monkeypatch):
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import replay as pipeline
 
     spec, frames = FakeSpec(), FakeEnv().frames()
     source = write_episode(local_dir / "source.h5", spec, frames, runtime_fingerprint={"testing": "fixed", "render_gpu": 0})
     final = local_dir / "replayed.h5"
-    monkeypatch.setattr(pipeline, "_spec_class", lambda: FakeSpec)
+    monkeypatch.setattr(pipeline, "EpisodeSpec", FakeSpec)
     monkeypatch.setattr(pipeline, "runtime_fingerprint", lambda **kwargs: {"testing": "fixed", "render_gpu": 0})
     calls = []
 
@@ -497,7 +517,7 @@ def test_partial_replay_retries_in_new_staging_with_same_spec_and_actions(local_
         return write_episode(path, candidate, read_episode(replay_source).frames,
                              runtime_fingerprint={"testing": "fixed", "render_gpu": 0})
 
-    monkeypatch.setattr(pipeline, "run_fresh_process", run)
+    monkeypatch.setattr(pipeline, "run_episode_process", run)
     result = pipeline.replay_episode(source, final)
     assert result["passed"] is True and final.exists()
     assert [row[:2] for row in calls] == [(spec.seed, spec.spec_hash)] * 2
@@ -508,7 +528,7 @@ def test_partial_replay_retries_in_new_staging_with_same_spec_and_actions(local_
 def test_first_success_then_repeat_task_failure_stops_without_selecting_another_seed(local_dir, monkeypatch):
     from robomme_icl import geometry
     from robomme_icl.errors import TaskExecutionError
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import prepare as pipeline
 
     saved = _fake_suite(monkeypatch)
     monkeypatch.setattr(geometry, "validate_spec_geometry", lambda _: {"ok": True, "reasons": []})
@@ -520,7 +540,7 @@ def test_first_success_then_repeat_task_failure_stops_without_selecting_another_
             raise TaskExecutionError("相同候选第二次物理执行失败")
         return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": 1})
 
-    monkeypatch.setattr(pipeline, "run_fresh_process", run)
+    monkeypatch.setattr(pipeline, "run_episode_process", run)
     with pytest.raises(ReproducibilityError, match="首次运行成功"):
         pipeline.prepare_suite(local_dir / "prepared", max_candidates=3)
     assert calls == [1900000001, 1900000001]
@@ -530,7 +550,7 @@ def test_first_success_then_repeat_task_failure_stops_without_selecting_another_
 
 def test_gpu_binding_is_identical_across_worker_counts_and_gpu_argument_order(local_dir, monkeypatch):
     from robomme_icl import geometry
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import prepare as pipeline
 
     saved = _fake_suite(monkeypatch)
     module = sys.modules["robomme_icl.suite"]
@@ -547,7 +567,7 @@ def test_gpu_binding_is_identical_across_worker_counts_and_gpu_argument_order(lo
         calls.append((spec.seed, render_gpu))
         return write_episode(path, spec, FakeEnv().frames(), runtime_fingerprint={"testing": "fixed", "render_gpu": render_gpu})
 
-    monkeypatch.setattr(pipeline, "run_fresh_process", run)
+    monkeypatch.setattr(pipeline, "run_episode_process", run)
     pipeline.prepare_suite(local_dir / "one", workers=1, gpus=[1, 0])
     pipeline.prepare_suite(local_dir / "four", workers=4, gpus=[0, 1])
     assert len(calls) == 8
@@ -557,17 +577,17 @@ def test_gpu_binding_is_identical_across_worker_counts_and_gpu_argument_order(lo
 
 
 def test_gpu_slot_limits_cap_each_card_and_keep_single_worker_valid():
-    from robomme_icl.io.pipeline import _gpu_limits
+    from robomme_icl.workflows.workers import gpu_limits
 
     capacities = []
     manager = types.SimpleNamespace(BoundedSemaphore=lambda value: capacities.append(value) or value)
-    assert _gpu_limits(manager, [0, 1], 32) == {0: 16, 1: 16}
-    assert _gpu_limits(manager, [0, 1], 1) == {0: 1, 1: 1}
+    assert gpu_limits(manager, [0, 1], 32) == {0: 16, 1: 16}
+    assert gpu_limits(manager, [0, 1], 1) == {0: 1, 1: 1}
     assert capacities == [16, 16, 1, 1]
 
 
 def test_generation_inherits_gpu_from_frozen_record_fingerprint(local_dir, monkeypatch):
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import generate as pipeline
 
     spec = FakeSpec()
     fingerprint = {"render_gpu": 1, "render_gpu_uuid": "GPU-one", "render_gpu_pci": "0000:02:00.0"}
@@ -577,7 +597,7 @@ def test_generation_inherits_gpu_from_frozen_record_fingerprint(local_dir, monke
         cards.append(render_gpu)
         return write_episode(path, candidate, FakeEnv().frames(), runtime_fingerprint=fingerprint)
 
-    monkeypatch.setattr(pipeline, "run_fresh_process", run)
+    monkeypatch.setattr(pipeline, "run_episode_process", run)
     generate_one(spec, local_dir / "bound.h5", expected_runtime_fingerprint=fingerprint)
     assert cards == [1]
 
@@ -605,7 +625,7 @@ def test_per_gpu_fingerprint_normalizes_pci_and_rejects_cuda_mapping(monkeypatch
 
 
 def test_io_pool_reuses_workers_and_preserves_input_order_after_out_of_order_completion(monkeypatch):
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import workers as pipeline
 
     observed, options, shutdown_calls = [], [], []
     ready = threading.Event()
@@ -632,14 +652,14 @@ def test_io_pool_reuses_workers_and_preserves_input_order_after_out_of_order_com
         return index
 
     monkeypatch.setattr(pipeline, "ProcessPoolExecutor", Pool)
-    result = pipeline._run_process_jobs(operation, [{"index": i} for i in range(5)], 2, threading.Event())
+    result = pipeline.run_jobs(operation, [{"index": i} for i in range(5)], 2, threading.Event())
     assert result == list(range(5)) and observed[0] == 1
     assert "max_tasks_per_child" not in options[0]
     assert shutdown_calls == [{"wait": True, "cancel_futures": True}]
 
 
 def test_io_pool_bounds_submissions_and_does_not_refill_after_failure(monkeypatch):
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import workers as pipeline
 
     submitted, unconsumed, peak, shutdown_calls = [], [0], [0], []
 
@@ -674,13 +694,13 @@ def test_io_pool_bounds_submissions_and_does_not_refill_after_failure(monkeypatc
     stop = threading.Event()
     monkeypatch.setattr(pipeline, "ProcessPoolExecutor", Pool)
     with pytest.raises(RuntimeError, match="工作项失败"):
-        pipeline._run_process_jobs(operation, [{"index": i} for i in range(10)], 2, stop)
+        pipeline.run_jobs(operation, [{"index": i} for i in range(10)], 2, stop)
     assert submitted == [0, 1] and peak[0] == 2
     assert stop.is_set() and shutdown_calls == [{"wait": True, "cancel_futures": True}]
 
 
 def test_io_pool_does_not_submit_when_already_stopped(monkeypatch):
-    from robomme_icl.io import pipeline
+    from robomme_icl.workflows import workers as pipeline
 
     shutdown_calls = []
     pool = types.SimpleNamespace(submit=lambda *args: pytest.fail("停止后不得提交"),
@@ -689,5 +709,5 @@ def test_io_pool_does_not_submit_when_already_stopped(monkeypatch):
     stop = threading.Event()
     stop.set()
     with pytest.raises(RecordError, match="调度已停止"):
-        pipeline._run_process_jobs(lambda job: job, [{"index": 0}], 2, stop)
+        pipeline.run_jobs(lambda job: job, [{"index": 0}], 2, stop)
     assert shutdown_calls == [{"wait": True, "cancel_futures": True}]

@@ -1,11 +1,7 @@
-"""不导入仿真库的新版配置与冻结清单 API。"""
+"""分布和套件的公共导入；实现分别位于config、sampling、specs和io。"""
 
-from .compiler import candidate_for_slot, distribution_summary, load_configs, plan_slots, validate_configs
-from .spec import COMPILER_VERSION, DIFFICULTIES, TASKS, EpisodeSpec, canonical_json, content_hash
-from .storage import find_spec, load_suite, save_suite
-
-__all__ = [
-    "COMPILER_VERSION", "DIFFICULTIES", "TASKS", "EpisodeSpec", "canonical_json", "content_hash",
-    "candidate_for_slot", "distribution_summary", "find_spec", "load_configs", "load_suite",
-    "plan_slots", "save_suite", "validate_configs",
-]
+from ..config import TASKS, DIFFICULTIES, load_configs, validate_configs
+from ..specs import EpisodeSpec, COMPILER_VERSION, canonical_json, content_hash
+from ..sampling.tasks import plan_slots, distribution_summary
+from ..sampling.compiler import candidate_for_slot
+from ..io.suite import load_suite, save_suite, find_spec

@@ -11,3 +11,11 @@ class TaskExecutionError(SceneRejected):
 
 class ReproducibilityError(RuntimeError):
     """同一场景重复运行不一致，必须停止发布。"""
+
+
+class CandidateRejected(SceneRejected):
+    """认证时的候选布局或任务失败，不可冒充基础设施重试。"""
+
+
+class InfrastructureError(OSError):
+    """工作进程或设备异常，只允许重试同一个规格。"""

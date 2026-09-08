@@ -16,7 +16,7 @@ from ..errors import ReproducibilityError as SharedReproducibilityError
 from .paths import output_path
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 class RecordError(RuntimeError):

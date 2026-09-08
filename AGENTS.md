@@ -253,6 +253,16 @@ command -v uv
 
 ## 追加式执行日志
 
+### 2026-09-08 — 四任务单局与版本2认证回放闭环
+
+- 四任务真实单局均已通过：`ICL_NATIVE_SMOKE=1 uv run --no-sync python -m pytest tests/robomme_icl/test_native_runtime.py -k <任务名> -q -s`；BinFill480操作/469步（8.90s），RouteStick641操作/622步（14.64s），VideoUnmaskSwap292操作/287步（6.48s），VideoRepick911操作/884步（11.21s）。这四项只验证首个easy候选，不替代三难度和原版独立对照。
+- 已拆分 `workflows/{prepare,generate,replay,workers,staging}.py` 和 `io/{state,suite}.py`，版本2 HDF5保存物理step、显式evaluate及reset边界；回放按记录操作逐位核对。初态几何筛选读取原版实际碰撞组件，不再使用新版独立素材定义。
+- 认证命令：`uv run --no-sync scripts/prepare_suite.py --tasks BinFill --episodes-per-task 1 --workers 1 --gpus 0 --max-candidates 4 --timeout-seconds 90 --output-dir artifacts/generated/robomme-icl/native-parity/workflow-smoke-binfill`，退出0。候选0净距0.00171767小于0.005被拒绝；候选1两次新进程各502操作逐位相同，原始HDF5各约209MiB。每次构建约4.3s、运行3.5s、写出10s；两份逐位比较17.5s。
+- 回放命令：`uv run --no-sync scripts/replay_dataset.py --input artifacts/generated/robomme-icl/native-parity/workflow-smoke-binfill/suite/certification/BinFill/easy/0/candidate_0001/repeat_0_infra_0.h5 --output-dir artifacts/generated/robomme-icl/native-parity/replay-smoke-binfill-v2 --workers 1 --video-workers 1 --timeout-seconds 90`，退出0，1份逐位回放HDF5和1份MP4完整导出。
+- 意外：RouteStick原版包装器另有一个通过env_id判断7维动作的入口，改为已添加的原版任务身份属性后通过；首次视频导出把交付帧数与完整操作数混比，已分别记录source_operation_count和视频frames，不丢失evaluate/NO RECORD原始操作。首次回放的成功HDF5及失败汇总保留，完整闭环写入独立v2目录。
+- 43项I/O、恢复、设备绑定调度、版本2配置、原版方法与素材反例测试通过（0.84s），`git diff --check`通过。测试迁移保留损坏文件、错误指纹、中断重试、首次成功后重复失败即停止等原有覆盖，没有用删测试换通过。
+- 原版参考源码已从dcf0b45提取到 `artifacts/generated/robomme-icl/native-parity/reference-v1/src/robomme/`；`git diff 76ae12bf dcf0b45 -- src/robomme`为空，仍是批准的固定原版。剩余：独立同场景/动作/事件对照、分布分组复核、删除旧实现、全库测试、96条验收与scripts参数文档。
+
 ### 2026-09-08 — 原版对齐：分布拆分与BinFill完整单局
 
 - 完成内容：新增 `config.py`、`specs.py`、`sampling/`；位置配置版本2删除geometry/schedule，保留所有位置范围、配额和次数候选；BinFill颜色池口径按批准计划恢复原版。新增四个对应原版子类；原版仅提取可注入布局的构建入口及Route/Swap任务列表，step/evaluate/初始化任务函数AST与固定基线一致。

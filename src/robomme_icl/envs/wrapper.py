@@ -36,6 +36,8 @@ class ICLJointAngleEnv(gym.Wrapper):
         self.native_wrapper.reset(seed=self.seed, options=options)
         self.has_reset = True
         marker = self.recorder.reset_marker()
+        if hasattr(self, "geometry_report"):
+            marker["info"]["geometry_report"] = copy.deepcopy(self.geometry_report)
         info = copy.deepcopy(marker["info"])
         goals = task_goal.get_language_goal(self.native_wrapper, self.task_kind)
         info["task_goal"] = goals
