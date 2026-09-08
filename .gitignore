@@ -217,3 +217,11 @@ scripts/data-generation-MotionJEPALabel/outputs/
 
 # PatternLock/RouteStick 参数导出：只忽略实跑出来的大产物（h5/视频），outputs 下的 JSON 与 reports 照常跟踪
 scripts/patternlock-routestick-params/outputs/test-h5*/
+
+# 新版独立生成的数据、视频和运行中间文件；报告正文单独留档。
+artifacts/generated/robomme-icl/
+artifacts/reports/robomme-icl/**/*.log
+artifacts/reports/robomme-icl/**/*.h5
+artifacts/reports/robomme-icl/**/*.mp4
+# 初版独立分层的逐候选失败明细约7MiB，保留本机证据，版本库保存摘要与最终报告。
+artifacts/reports/robomme-icl/geometry_preflight_independent_layers.json

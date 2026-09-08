@@ -228,6 +228,7 @@ command -v uv
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| robomme-ICL 独立四任务 | 实现及小样本闭环完成；正式96条待启动 | 新版94项常规测试通过；当前源码四任务各一条双进程、生成、回放、连续reset和恢复均通过；物体几何96/96（29.636秒，仅几何）；旧源码及uv.lock保持不变 | 提交推送后登记 `gen-icl-cert96-20260907-v1`，从干净代码基线启动正式96条认证与跨调度验收 |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
 | 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
 | 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
@@ -245,6 +246,26 @@ command -v uv
 | 通用代理规则更新与 Claude 专用约定拆分 | 完成（文档与验证） | 来源固定为 `v2-motionmem` 的 `028a77c59a442f047897f9736fc8acec0c050360`；766 行原有正文与日志保持一致；两份文件的结构、引用、范围和命令语法检查通过 | 按用户授权提交后自动推送既有 upstream；同步结果以 `git status -sb` 和本地/上游提交比较为准 |
 
 ## 追加式执行日志
+
+### 2026-09-07 America/Detroit — robomme-ICL 独立四任务：开始实施
+
+- 用户明确指令：实施《robomme-ICL 独立源码包方案》；仅新增并列源码包，共享根依赖环境，先完成四任务 joint_angle 闭环。此前明确要求次数与位置由独立 config 决定、生成新 seed、固定环境逐位复现、预设轨迹无碰撞；容器和藏块都保留，通过减薄容器中央部分消除穿透。
+- 启动基线：`1143477cba681bbb803b52324828634719a3f5a0`，`newtask-v1` 跟踪 `origin/newtask-v1`，工作区干净；原版源码树 `1d0154117e58c783cd3466dbad910aeaaff573a8`。
+- 预检：`git rev-parse --show-toplevel`、`git status -sb`、`git remote -v`、`command -v uv`、GPU 查询、`findmnt -T .`、`df -h .` 均退出 0。本机 `/data` 位于 NVMe/ext4，剩余约 2.8 TiB；两张 RTX 6000 Ada，预检 GPU 利用率均为 0%。
+- 实施分工：新版 suite/configs、geometry/tasks、io/cli 并行实现；根任务负责 envs/oracle/legacy_bridge/api、打包、集成验证与提交。禁止修改原版 `src/robomme`、原版生成器、metadata 和回放脚本。
+- 验收计划：轻量协议及负例 → 四任务逐个单 episode/单 worker smoke → 已提交代码基线的 96 条认证及复现检查。未完成实际仿真时不得宣称安全或逐位复现通过。
+- 产物边界：新版数据在 `artifacts/generated/robomme-icl/`，日志和报告在 `artifacts/reports/robomme-icl/`，缓存实际位于仓库内 `.cache/`；正式依赖由根 `pyproject.toml`、`uv.lock` 管理。
+
+### 2026-09-07 America/Detroit — robomme-ICL 实现与当前源码小样本闭环完成
+
+- 状态：实现及小样本验证完成；正式96条物理认证尚未开始。本轮不提前声称全量通过。
+- 实施：新增独立源码包、四任务、两份config、不可变spec、连续几何、状态机、确定性oracle、HDF5、运行指纹与prepare/generate/replay；原版源码和uv.lock未修改。详细说明见 `src/robomme_icl/README.md`，实施记录见 `artifacts/reports/robomme-icl/IMPLEMENTATION.md`。
+- 验证：新版94 passed、4个需显式套件GPU测试默认skip（15.32秒）；旧轻量203 passed、2 skipped、4项既有失败（175.01秒）。旧失败相关源码、测试和uv.lock共7文件与启动提交字节一致。
+- 几何：默认96/96通过（29.636秒），最小净距下界5.010mm；这是完整物体运动的几何证据，不代表机械臂认证。报告 `artifacts/reports/robomme-icl/geometry_preflight-v3.json`。
+- 当前源码真实闭环：`smoke-release`四任务各一条，双独立进程逐位一致，帧数依次BinFill641、RouteStick451、VideoUnmaskSwap271、VideoRepick1045；验收driver的逆序生成、回放、同环境连续reset、断点复用均4/4通过。汇总 `artifacts/reports/robomme-icl/smoke_acceptance_release.json`。
+- 意外：首次独立位置层86/96，增加规划阶段约束配对；初始角点外框引出7个位置/yaw层冲突，保持边际层配额重新匹配。首次真实BinFill发生夹爪/孔板接触，改孔口上方释放；Route修目标高度语义；VUS双进程位姿曾分叉，修set遍历顺序与冻结端点。原失败报告/HDF5保留，未放宽安全或复现判据。
+- 运行管理修正：四mode小样本组合实际超过最初五分钟预估，全部原始证据已保存；后续组合和96条运行均在提交基线后放入tmux，不再前台启动。
+- 下一步：提交并立即推送本轮明确文件；确认干净同步后，登记完整会话名 `gen-icl-cert96-20260907-v1`，启动默认96条正式认证与完整验收。
 
 ### 2026-07-13 — `/init`
 

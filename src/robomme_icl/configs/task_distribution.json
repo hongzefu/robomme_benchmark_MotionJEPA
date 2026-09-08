@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "compiler_seed": 20260907,
+  "episode_seed_start": 2000000000,
+  "task_order": ["BinFill", "RouteStick", "VideoUnmaskSwap", "VideoRepick"],
+  "episodes_by_difficulty": {"easy": 8, "medium": 8, "hard": 8},
+  "tasks": {
+    "BinFill": {
+      "easy": {"pick_count": [1, 2, 3], "spawn_count": [4, 5, 6], "target_color_count": [1], "scene_color_count": [1], "dynamic": [false, true]},
+      "medium": {"pick_count": [2, 3, 4], "spawn_count": [8, 9, 10], "target_color_count": [1, 2], "scene_color_count": [2], "dynamic": [false, true]},
+      "hard": {"pick_count": [3, 4, 5], "spawn_count": [10, 11, 12], "target_color_count": [2, 3], "scene_color_count": [3], "dynamic": [false, true]}
+    },
+    "RouteStick": {
+      "easy": {"walk_steps": [2, 3], "allow_backtracking": [false]},
+      "medium": {"walk_steps": [4, 5], "allow_backtracking": [false]},
+      "hard": {"walk_steps": [4, 5, 6, 7], "allow_backtracking": [true]}
+    },
+    "VideoUnmaskSwap": {
+      "easy": {"container_count": [3], "pick_count": [1, 2], "swap_count": [1, 2]},
+      "medium": {"container_count": [4], "pick_count": [1], "swap_count": [1, 2]},
+      "hard": {"container_count": [4], "pick_count": [2], "swap_count": [2, 3]}
+    },
+    "VideoRepick": {
+      "easy": {"spawn_count": [3], "repeat_count": [1, 2, 3], "swap_count": [1, 2]},
+      "medium": {"spawn_count": [3], "repeat_count": [1, 2, 3], "swap_count": [2, 3]},
+      "hard": {"spawn_count": [15], "repeat_count": [1, 2, 3], "swap_count": [0]}
+    }
+  }
+}

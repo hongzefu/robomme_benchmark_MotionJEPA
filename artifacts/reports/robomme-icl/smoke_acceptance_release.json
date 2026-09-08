@@ -1,0 +1,22 @@
+{
+  "generate-reverse-w4": {
+    "status": "passed",
+    "completed": 4,
+    "report": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-acceptance-release/acceptance/generate-reverse-w4/summary.json"
+  },
+  "replay-forward-w4": {
+    "status": "passed",
+    "completed": 4,
+    "report": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-acceptance-release/acceptance/replay-forward-w4/summary.json"
+  },
+  "reset-forward-w4": {
+    "status": "passed",
+    "completed": 4,
+    "report": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-acceptance-release/acceptance/reset-forward-w4/summary.json"
+  },
+  "resume-reverse-w4": {
+    "status": "passed",
+    "completed": 4,
+    "report": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-acceptance-release/acceptance/resume-reverse-w4/summary.json"
+  }
+}

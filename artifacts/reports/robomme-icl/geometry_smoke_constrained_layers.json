@@ -1,0 +1,394 @@
+{
+  "coverage": "compound_geometry_only",
+  "status": "diagnostic_only",
+  "elapsed_seconds": 0.3499469421803951,
+  "expected_slots": 4,
+  "examined_slots": 4,
+  "passed_slots": 4,
+  "task_config_hash": "605514320bc559bb3bcef117682871f36523bfb5febf330ab0aad146c5a2cf38",
+  "position_config_hash": "424fcde00d32021f15fa5236d4eb67a5b8350e0ba6c68d67e0cf746210d5f79c",
+  "distribution": {
+    "BinFill/easy": {
+      "episodes": 1,
+      "topologies": {
+        "field": 1
+      },
+      "combinations": [
+        {
+          "parameters": {
+            "dynamic": false,
+            "pick_count": 1,
+            "spawn_count": 4,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": false,
+            "pick_count": 1,
+            "spawn_count": 5,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": false,
+            "pick_count": 1,
+            "spawn_count": 6,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": false,
+            "pick_count": 2,
+            "spawn_count": 4,
+            "target_color_count": 1
+          },
+          "count": 1
+        },
+        {
+          "parameters": {
+            "dynamic": false,
+            "pick_count": 2,
+            "spawn_count": 5,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": false,
+            "pick_count": 2,
+            "spawn_count": 6,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": false,
+            "pick_count": 3,
+            "spawn_count": 4,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": false,
+            "pick_count": 3,
+            "spawn_count": 5,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": false,
+            "pick_count": 3,
+            "spawn_count": 6,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": true,
+            "pick_count": 1,
+            "spawn_count": 4,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": true,
+            "pick_count": 1,
+            "spawn_count": 5,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": true,
+            "pick_count": 1,
+            "spawn_count": 6,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": true,
+            "pick_count": 2,
+            "spawn_count": 4,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": true,
+            "pick_count": 2,
+            "spawn_count": 5,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": true,
+            "pick_count": 2,
+            "spawn_count": 6,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": true,
+            "pick_count": 3,
+            "spawn_count": 4,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": true,
+            "pick_count": 3,
+            "spawn_count": 5,
+            "target_color_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "dynamic": true,
+            "pick_count": 3,
+            "spawn_count": 6,
+            "target_color_count": 1
+          },
+          "count": 0
+        }
+      ]
+    },
+    "RouteStick/easy": {
+      "episodes": 1,
+      "topologies": {
+        "route": 1
+      },
+      "combinations": [
+        {
+          "parameters": {
+            "allow_backtracking": false,
+            "walk_steps": 2
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "allow_backtracking": false,
+            "walk_steps": 3
+          },
+          "count": 1
+        }
+      ]
+    },
+    "VideoUnmaskSwap/easy": {
+      "episodes": 1,
+      "topologies": {
+        "triangle": 1
+      },
+      "combinations": [
+        {
+          "parameters": {
+            "container_count": 3,
+            "pick_count": 1,
+            "swap_count": 1
+          },
+          "count": 1
+        },
+        {
+          "parameters": {
+            "container_count": 3,
+            "pick_count": 1,
+            "swap_count": 2
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "container_count": 3,
+            "pick_count": 2,
+            "swap_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "container_count": 3,
+            "pick_count": 2,
+            "swap_count": 2
+          },
+          "count": 0
+        }
+      ]
+    },
+    "VideoRepick/easy": {
+      "episodes": 1,
+      "topologies": {
+        "triangle": 1
+      },
+      "combinations": [
+        {
+          "parameters": {
+            "repeat_count": 1,
+            "spawn_count": 3,
+            "swap_count": 1
+          },
+          "count": 1
+        },
+        {
+          "parameters": {
+            "repeat_count": 1,
+            "spawn_count": 3,
+            "swap_count": 2
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "repeat_count": 2,
+            "spawn_count": 3,
+            "swap_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "repeat_count": 2,
+            "spawn_count": 3,
+            "swap_count": 2
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "repeat_count": 3,
+            "spawn_count": 3,
+            "swap_count": 1
+          },
+          "count": 0
+        },
+        {
+          "parameters": {
+            "repeat_count": 3,
+            "spawn_count": 3,
+            "swap_count": 2
+          },
+          "count": 0
+        }
+      ]
+    }
+  },
+  "slots": [
+    {
+      "task": "BinFill",
+      "slot_id": "BinFill/easy/0000",
+      "seed": 2000000000,
+      "parameters": {
+        "dynamic": false,
+        "pick_count": 2,
+        "spawn_count": 4,
+        "target_color_count": 1
+      },
+      "accepted": {
+        "candidate_index": 0,
+        "spec_hash": "d0c8b42e514ed7f70aa86edf8aa77006f0834d146f750fd0833c9347c4137774",
+        "geometry": {
+          "ok": true,
+          "reasons": [],
+          "min_clearance": 0.02297540795483154,
+          "subdivisions": 0,
+          "coverage": "compound_geometry_only"
+        }
+      },
+      "rejects": [],
+      "elapsed_seconds": 0.006346222013235092
+    },
+    {
+      "task": "RouteStick",
+      "slot_id": "RouteStick/easy/0000",
+      "seed": 2000000024,
+      "parameters": {
+        "allow_backtracking": false,
+        "walk_steps": 3
+      },
+      "accepted": {
+        "candidate_index": 0,
+        "spec_hash": "da76e66afb402c555d3c0300680818a41cd24cbac95df365fe47f52e8182acd0",
+        "geometry": {
+          "ok": true,
+          "reasons": [],
+          "min_clearance": 0.035,
+          "subdivisions": 0,
+          "coverage": "compound_geometry_only"
+        }
+      },
+      "rejects": [],
+      "elapsed_seconds": 0.0031481869518756866
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "slot_id": "VideoUnmaskSwap/easy/0000",
+      "seed": 2000000048,
+      "parameters": {
+        "container_count": 3,
+        "pick_count": 1,
+        "swap_count": 1
+      },
+      "accepted": {
+        "candidate_index": 0,
+        "spec_hash": "47f58bc392cb5716a4d2a8ec2d87d1e7a682039e122c96b238f18c8e3aa13887",
+        "geometry": {
+          "ok": true,
+          "reasons": [],
+          "min_clearance": 0.006949455305500278,
+          "subdivisions": 15,
+          "coverage": "compound_geometry_only"
+        }
+      },
+      "rejects": [],
+      "elapsed_seconds": 0.3108321502804756
+    },
+    {
+      "task": "VideoRepick",
+      "slot_id": "VideoRepick/easy/0000",
+      "seed": 2000000072,
+      "parameters": {
+        "repeat_count": 1,
+        "spawn_count": 3,
+        "swap_count": 1
+      },
+      "accepted": {
+        "candidate_index": 0,
+        "spec_hash": "49940c12a809a38e052c974293c2f7785e7378ead88438f2d2f94659418c6a0b",
+        "geometry": {
+          "ok": true,
+          "reasons": [],
+          "min_clearance": 0.006399135682972651,
+          "subdivisions": 10,
+          "coverage": "compound_geometry_only"
+        }
+      },
+      "rejects": [],
+      "elapsed_seconds": 0.013710159808397293
+    }
+  ]
+}
