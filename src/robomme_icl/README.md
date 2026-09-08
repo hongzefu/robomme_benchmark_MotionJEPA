@@ -1,26 +1,27 @@
 # robomme-ICL
 
-新版与原版 `robomme` 并列安装，共享根目录的 `pyproject.toml`、`uv.lock` 和 `.venv`。四个新版环境直接继承 ManiSkill 基类，不继承旧任务；旧任务、生成器、metadata 和回放入口不变。
+新版与原版 `robomme` 并列安装，共享根目录的 `pyproject.toml`、`uv.lock` 和 `.venv`。四个新版环境直接继承 ManiSkill 基类，不继承旧任务；原版任务源码保持不变，旧生成与回放脚本已归档至 `scripts/legacy/`。数据与报告按批次独立管理。
 
 ## 使用流程
 
-在本仓库根目录运行以下命令。`prepare` 先搜索候选，检查完整物体运动几何，再分别在两个全新进程中执行真实机器人轨迹；只有所有帧、任务结果和原始图像逐位相同才发布 `suite.json`。
+所有业务命令只放在仓库根目录的 `scripts/`。四个入口的参数、输出结构、视频和断点规则见 [scripts/README.md](../../scripts/README.md)。本包只提供可导入的实现，不注册控制台命令或模块运行入口。
 
 ```bash
 cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask
 uv sync --locked --extra dev
-uv run robomme-icl prepare --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3 --gpus 0,1 --workers 32
+uv run scripts/prepare_suite.py --output-dir artifacts/generated/robomme-icl/my-run --gpus 0,1 --workers 32
+uv run scripts/generate_dataset.py --suite artifacts/generated/robomme-icl/my-run/suite --output-dir artifacts/generated/robomme-icl/my-run
 ```
 
-默认每任务 24 条，easy、medium、hard 各 8 条，共 96 个新 seed。首次验证应先使用 `--tasks BinFill --episodes-per-task 1 --workers 1`，对四任务分别完成最小 smoke，再运行整批。超过五分钟的运行按根 `AGENTS.md` 要求放入登记的 detached tmux。
+默认每任务24条、每档8条，共96个seed；先验证几何，再用两个新进程严格比较全部帧后发布清单。首次验证使用 `--tasks BinFill --episodes-per-task 1 --workers 1`。超过五分钟的运行按根 `AGENTS.md` 放入登记的detached tmux。
 
-双 GPU 模式默认设备为 `0,1`、总并发32（本机每卡约16个名额）。每个seed按照有序GPU列表的固定取模规则绑定设备，绑定写入认证；生成、回放和reset继承同一设备，不因worker数或完成顺序改变。不要设置 `CUDA_VISIBLE_DEVICES`，避免将物理序号重新映射；用 `--gpus` 选择设备。并发数应结合本机CPU、内存和显存实测调整。
+双GPU默认0,1、总并发32。每seed固定物理设备，生成、回放和reset继承绑定，不因worker数或完成顺序改变。不要设置 `CUDA_VISIBLE_DEVICES`；新配置认证通过 `--gpus` 选卡，源清单重新认证保持原卡。
 
 任务分布和位置分布分别由 [task_distribution.json](configs/task_distribution.json) 和 [position_distribution.json](configs/position_distribution.json) 控制；可用 `--task-config`、`--position-config` 指向修改后的配置。次数配额和位置层在候选搜索前固定；拒绝候选不能改变次数、seed 或所属位置层。
 
 ```bash
-uv run robomme-icl generate --suite /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3 --output-dir /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dataset24 --workers 32
-uv run robomme-icl replay --h5 /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dataset24/<实际记录名>.h5 --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/replay/<新记录名>.h5
+uv run scripts/replay_dataset.py --input artifacts/generated/robomme-icl/my-run/hdf5_files --output-dir artifacts/generated/robomme-icl/my-run/replay
+uv run scripts/plot_distribution.py --suite artifacts/generated/robomme-icl/my-run/suite --output-dir artifacts/generated/robomme-icl/my-run/distributions
 ```
 
 生成失败保留证据且不换 seed。已完成文件仅在完整内容与认证信息核对通过后才能断点复用；坏文件或来源不明的文件不自动删除。回放读取 HDF5 自带的完整场景记录，不使用旧 train metadata。
@@ -31,7 +32,7 @@ import robomme_icl
 env = robomme_icl.make_env(
     task="BinFill",
     seed=2_000_000_000,
-    suite="/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3",
+    suite="/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-v1/suite",
 )
 obs, info = env.reset()
 demonstration = info["demonstration"]
@@ -67,9 +68,9 @@ VideoUnmaskSwap 始终有红绿蓝三个藏块；三容器全占用，四容器�
 
 ```bash
 uv run python -m pytest tests/robomme_icl/ -q
-uv run python -m robomme_icl.suite.preflight --output /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/<新几何报告名>.json
+uv run scripts/legacy/robomme_icl/preflight.py --output artifacts/reports/robomme-icl/<新几何报告名>.json
 ```
 
-`suite.preflight` 仅证明记录中物体的几何条件，不创建认证套件，不代表机器人可达或真实物理通过。正式认证必须使用 `prepare`。
+归档的 `preflight.py` 只做几何诊断，不创建认证套件。正式认证使用 `scripts/prepare_suite.py`。入口迁移引起源码指纹变化时，使用它的 `--source-suite` 对旧清单原spec重新认证并与旧记录逐位比较；不能覆盖旧数据或跳过版本检查。
 
 原版调用只允许集中在 `legacy_bridge`；纯配置解析和编译不会导入旧环境或仿真库。首版只实现 joint_angle，不提供 ee_pose、waypoint 或 multi_choice 兼容分支。

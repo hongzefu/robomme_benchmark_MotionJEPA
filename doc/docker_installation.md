@@ -1,5 +1,7 @@
 # Docker Installation for RoboMME
 
+robomme-ICL的四个业务入口与HDF5/视频保存方式见 [scripts/README.md](../scripts/README.md)；下文保留原版Docker安装说明和归档示例入口。
+
 This guide sets up Docker and NVIDIA GPU support so you can build and run the RoboMME image.
 
 ## 1) Install Docker Engine
@@ -70,7 +72,7 @@ You can adapt these parameters to your needs. Inside the container, `/app` is th
 
 Run a sample script to verify the setup:
 ```bash
-uv run ./scripts/run_example.py
+uv run ./scripts/legacy/run_example.py
 ```
 
 ## 4) Other Hints

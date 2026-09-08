@@ -22,7 +22,7 @@ from tests._shared.repo_paths import find_repo_root
 pytestmark = [pytest.mark.lightweight]
 
 REPO_ROOT = find_repo_root(__file__)
-sys.path.insert(0, str(REPO_ROOT / "scripts" / "data-generation-newSeed"))
+sys.path.insert(0, str(REPO_ROOT / "scripts" / "legacy" / "data-generation-newSeed"))
 
 from seed_layout import (  # noqa: E402
     DEFAULT_LAYOUT,

@@ -41,7 +41,7 @@ from tests._shared.repo_paths import find_repo_root
 pytestmark = [pytest.mark.lightweight]
 
 REPO_ROOT = find_repo_root(__file__)
-sys.path.insert(0, str(REPO_ROOT / "scripts" / "data-generation-MotionJEPALabel"))
+sys.path.insert(0, str(REPO_ROOT / "scripts" / "legacy" / "data-generation-MotionJEPALabel"))
 
 from clip_plan import (  # noqa: E402
     CANDIDATE_EPISODES_BY_SPLIT,

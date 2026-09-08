@@ -252,17 +252,23 @@ def test_runtime_fingerprint_is_part_of_hdf5_integrity(local_dir):
         read_episode(path)
 
 
-def test_public_cli_flags_match_approved_interface():
-    from robomme_icl.cli import build_parser
+def test_public_cli_flags_match_approved_interface(monkeypatch):
+    monkeypatch.syspath_prepend(str(repository_root() / "scripts"))
+    import prepare_suite
+    import generate_dataset
+    import replay_dataset
+    import plot_distribution
 
-    parser = build_parser()
-    prepare = parser.parse_args(["prepare", "--output", "artifacts/prepared", "--tasks", "BinFill", "--episodes-per-task", "1"])
+    prepare = prepare_suite.build_parser().parse_args(["--output-dir", "artifacts/prepared", "--tasks", "BinFill", "--episodes-per-task", "1"])
     assert prepare.output_dir == Path("artifacts/prepared") and prepare.tasks == ["BinFill"]
-    assert prepare.gpus == [0, 1] and prepare.workers == 32
-    replay = parser.parse_args(["replay", "--h5", "artifacts/input.h5", "--output", "artifacts/replayed.h5"])
+    assert prepare.gpus is None and prepare.workers == 32 and prepare.timeout_seconds == 1200
+    replay = replay_dataset.build_parser().parse_args(["--input", "artifacts/input.h5", "--output-dir", "artifacts/replayed"])
     assert replay.input == Path("artifacts/input.h5")
-    generate = parser.parse_args(["generate", "--suite", "artifacts/suite.json", "--output-dir", "artifacts/generated"])
+    generate = generate_dataset.build_parser().parse_args(["--suite", "artifacts/suite.json", "--output-dir", "artifacts/generated"])
     assert generate.output_dir == Path("artifacts/generated")
+    assert generate.video_workers == replay.video_workers == 4
+    plot = plot_distribution.build_parser().parse_args(["--suite", "artifacts/suite.json", "--output-dir", "artifacts/plots"])
+    assert plot.output_dir == Path("artifacts/plots")
 
 
 def test_public_api_uses_certified_spec_and_forwards_wrapper_options(monkeypatch):
@@ -310,7 +316,9 @@ def test_config_and_api_import_do_not_register_legacy_tasks():
     assert uv is not None, "必须由 uv 启动隔离验证"
     code = "\n".join([
         "import sys",
-        "import robomme_icl.api, robomme_icl.cli, robomme_icl.suite",
+        f"sys.path.insert(0, {str(repository_root() / 'scripts')!r})",
+        "import robomme_icl.api, robomme_icl.suite",
+        "import prepare_suite, generate_dataset, replay_dataset, plot_distribution",
         "assert not any(name.startswith('robomme.robomme_env') for name in sys.modules)",
         "assert 'torch' not in sys.modules",
         "assert 'sapien' not in sys.modules",

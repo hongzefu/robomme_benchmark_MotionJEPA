@@ -44,7 +44,7 @@ def _load_step_source() -> str:
 
 
 def _script_path(name: str) -> Path:
-    return _PROJECT_ROOT / "scripts" / name
+    return _PROJECT_ROOT / "scripts" / "legacy" / name
 
 
 # ---------------------------------------------------------------------------

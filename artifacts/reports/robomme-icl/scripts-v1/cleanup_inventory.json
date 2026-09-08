@@ -1,0 +1,2081 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-09-08T16:22:08.173607+00:00",
+  "repository_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask",
+  "git_head": "a69e9bc2692e5a16e8be78c4cfe779d9b8da6065",
+  "mode": "inventory_only_no_deletion",
+  "output_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-cleanup-inventory.json",
+  "filesystem": {
+    "source": "/dev/nvme1n1p1",
+    "type": "ext4",
+    "mount": "/data"
+  },
+  "protected_paths": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-v1",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/scripts-v1",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/data",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/src",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/legacy",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/_icl",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/tests",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/assets",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/doc",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv"
+  ],
+  "official_reference": {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/data/robomme_data_h5",
+    "exists": false,
+    "policy": "绝对保留；当前路径不存在，未探查或修改仓库外参考集"
+  },
+  "safety_notes": [
+    "只盘点，不执行删除",
+    "不允许删除任何仓库外路径或跟随符号链接",
+    "保留scripts/legacy源码、src、配置、静态assets/doc、.venv及依赖缓存",
+    "当前目录可能继续产生smoke日志和测试产物，清理前应按相同保护边界补充清单",
+    "allocated统计按inode去重；HDF5硬链接可能跨候选根，实际可释放空间还取决于未删除目录的硬链接"
+  ],
+  "summary": {
+    "candidate_roots": 90,
+    "regular_files": 2137,
+    "apparent_file_bytes": 280985437112,
+    "allocated_unique_inode_bytes_all_candidates": 200878587904,
+    "tracked_paths_count": 67
+  },
+  "candidates": [
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/baseline-smoke-3e56b22",
+      "relative_path": "artifacts/generated/robomme-icl/baseline-smoke-3e56b22",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/baseline-smoke-3e56b22",
+      "apparent_file_bytes": 1880738413,
+      "allocated_unique_inode_bytes_within_root": 1880760320,
+      "regular_files": 10,
+      "extensions": {
+        ".h5": 8,
+        ".json": 2
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dual-gpu-acceptance",
+      "relative_path": "artifacts/generated/robomme-icl/dual-gpu-acceptance",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dual-gpu-acceptance",
+      "apparent_file_bytes": 3761447752,
+      "allocated_unique_inode_bytes_within_root": 1880838144,
+      "regular_files": 36,
+      "extensions": {
+        ".h5": 16,
+        ".json": 16,
+        ".jsonl": 4
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dual-gpu-smoke",
+      "relative_path": "artifacts/generated/robomme-icl/dual-gpu-smoke",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/dual-gpu-smoke",
+      "apparent_file_bytes": 1880741001,
+      "allocated_unique_inode_bytes_within_root": 1880780800,
+      "regular_files": 10,
+      "extensions": {
+        ".h5": 8,
+        ".json": 2
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/interruption-v3",
+      "relative_path": "artifacts/generated/robomme-icl/interruption-v3",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/interruption-v3",
+      "apparent_file_bytes": 214345004,
+      "allocated_unique_inode_bytes_within_root": 107180032,
+      "regular_files": 3,
+      "extensions": {
+        ".h5": 2,
+        ".json": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-smoke-bin",
+      "relative_path": "artifacts/generated/robomme-icl/scripts-smoke-bin",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-smoke-bin",
+      "apparent_file_bytes": 463383545,
+      "allocated_unique_inode_bytes_within_root": 463409152,
+      "regular_files": 13,
+      "extensions": {
+        ".h5": 2,
+        ".json": 11
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "本次开发smoke证据，且进程可能仍在写入；最终验收成功并收录摘要后再删"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-smoke-final",
+      "relative_path": "artifacts/generated/robomme-icl/scripts-smoke-final",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-smoke-final",
+      "apparent_file_bytes": 2053815954,
+      "allocated_unique_inode_bytes_within_root": 2053943296,
+      "regular_files": 50,
+      "extensions": {
+        ".h5": 9,
+        ".json": 41
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "本次开发smoke证据，且进程可能仍在写入；最终验收成功并收录摘要后再删"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-smoke-four",
+      "relative_path": "artifacts/generated/robomme-icl/scripts-smoke-four",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-smoke-four",
+      "apparent_file_bytes": 3441449918,
+      "allocated_unique_inode_bytes_within_root": 3441647616,
+      "regular_files": 69,
+      "extensions": {
+        ".h5": 16,
+        ".json": 53
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "本次开发smoke证据，且进程可能仍在写入；最终验收成功并收录摘要后再删"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-acceptance-release",
+      "relative_path": "artifacts/generated/robomme-icl/smoke-acceptance-release",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-acceptance-release",
+      "apparent_file_bytes": 3761441894,
+      "allocated_unique_inode_bytes_within_root": 1880838144,
+      "regular_files": 36,
+      "extensions": {
+        ".h5": 16,
+        ".json": 16,
+        ".jsonl": 4
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-final",
+      "relative_path": "artifacts/generated/robomme-icl/smoke-final",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-final",
+      "apparent_file_bytes": 1906629885,
+      "allocated_unique_inode_bytes_within_root": 1906696192,
+      "regular_files": 16,
+      "extensions": {
+        ".h5": 8,
+        ".json": 8
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-four-v1",
+      "relative_path": "artifacts/generated/robomme-icl/smoke-four-v1",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-four-v1",
+      "apparent_file_bytes": 1053369792,
+      "allocated_unique_inode_bytes_within_root": 1053401088,
+      "regular_files": 6,
+      "extensions": {
+        ".h5": 6
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-generated-final",
+      "relative_path": "artifacts/generated/robomme-icl/smoke-generated-final",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-generated-final",
+      "apparent_file_bytes": 1906588090,
+      "allocated_unique_inode_bytes_within_root": 953335808,
+      "regular_files": 12,
+      "extensions": {
+        ".h5": 8,
+        ".json": 4
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-release",
+      "relative_path": "artifacts/generated/robomme-icl/smoke-release",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-release",
+      "apparent_file_bytes": 1880739522,
+      "allocated_unique_inode_bytes_within_root": 1880780800,
+      "regular_files": 10,
+      "extensions": {
+        ".h5": 8,
+        ".json": 2
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-replay-final",
+      "relative_path": "artifacts/generated/robomme-icl/smoke-replay-final",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-replay-final",
+      "apparent_file_bytes": 1906572660,
+      "allocated_unique_inode_bytes_within_root": 953323520,
+      "regular_files": 12,
+      "extensions": {
+        ".h5": 8,
+        ".json": 4
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-v3",
+      "relative_path": "artifacts/generated/robomme-icl/smoke-v3",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-v3",
+      "apparent_file_bytes": 1880740452,
+      "allocated_unique_inode_bytes_within_root": 1880793088,
+      "regular_files": 10,
+      "extensions": {
+        ".h5": 8,
+        ".json": 2
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-vus-v2",
+      "relative_path": "artifacts/generated/robomme-icl/smoke-vus-v2",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/smoke-vus-v2",
+      "apparent_file_bytes": 206857657,
+      "allocated_unique_inode_bytes_within_root": 206864384,
+      "regular_files": 3,
+      "extensions": {
+        ".h5": 2,
+        ".json": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24",
+      "relative_path": "artifacts/generated/robomme-icl/validation24",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24",
+      "apparent_file_bytes": 12262565320,
+      "allocated_unique_inode_bytes_within_root": 12261859328,
+      "regular_files": 71,
+      "extensions": {
+        ".h5": 40,
+        ".json": 31
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-dualgpu",
+      "relative_path": "artifacts/generated/robomme-icl/validation24-dualgpu",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-dualgpu",
+      "apparent_file_bytes": 42259583218,
+      "allocated_unique_inode_bytes_within_root": 42260299776,
+      "regular_files": 306,
+      "extensions": {
+        ".h5": 172,
+        ".json": 134
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3",
+      "relative_path": "artifacts/generated/robomme-icl/validation24-v3",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3",
+      "apparent_file_bytes": 49559387138,
+      "allocated_unique_inode_bytes_within_root": 49560375296,
+      "regular_files": 403,
+      "extensions": {
+        ".h5": 192,
+        ".json": 211
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "当前 prepare_suite --source-suite 的完整spec及两次认证HDF5输入；新批次独立认证与verify_scripts_bundle完成前禁止删除",
+        "scripts/legacy/robomme_icl/run_scripts_v1.sh及check_manifest.py的旧默认输入路径"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3-verification",
+      "relative_path": "artifacts/generated/robomme-icl/validation24-v3-verification",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3-verification",
+      "apparent_file_bytes": 99117431978,
+      "allocated_unique_inode_bytes_within_root": 49561493504,
+      "regular_files": 588,
+      "extensions": {
+        ".h5": 384,
+        ".json": 200,
+        ".jsonl": 4
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3-verification-w16",
+      "relative_path": "artifacts/generated/robomme-icl/validation24-v3-verification-w16",
+      "category": "旧生成产物",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/validation24-v3-verification-w16",
+      "apparent_file_bytes": 49558722779,
+      "allocated_unique_inode_bytes_within_root": 24780611584,
+      "regular_files": 291,
+      "extensions": {
+        ".h5": 192,
+        ".json": 98,
+        ".jsonl": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/IMPLEMENTATION.md",
+      "relative_path": "artifacts/reports/robomme-icl/IMPLEMENTATION.md",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/IMPLEMENTATION.md",
+      "apparent_file_bytes": 12759,
+      "allocated_unique_inode_bytes_within_root": 16384,
+      "regular_files": 1,
+      "extensions": {
+        ".md": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/IMPLEMENTATION.md"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/acceptance-smoke-generate.log",
+      "relative_path": "artifacts/reports/robomme-icl/acceptance-smoke-generate.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/acceptance-smoke-generate.log",
+      "apparent_file_bytes": 8071,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/acceptance-smoke-replay.log",
+      "relative_path": "artifacts/reports/robomme-icl/acceptance-smoke-replay.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/acceptance-smoke-replay.log",
+      "apparent_file_bytes": 7551,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/acceptance-smoke-reset.log",
+      "relative_path": "artifacts/reports/robomme-icl/acceptance-smoke-reset.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/acceptance-smoke-reset.log",
+      "apparent_file_bytes": 9069,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/acceptance-smoke-resume.log",
+      "relative_path": "artifacts/reports/robomme-icl/acceptance-smoke-resume.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/acceptance-smoke-resume.log",
+      "apparent_file_bytes": 523,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/binfill_entry_guard.md",
+      "relative_path": "artifacts/reports/robomme-icl/binfill_entry_guard.md",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/binfill_entry_guard.md",
+      "apparent_file_bytes": 7043,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".md": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/binfill_entry_guard.md"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/compiler_hashseed_check.json",
+      "relative_path": "artifacts/reports/robomme-icl/compiler_hashseed_check.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/compiler_hashseed_check.json",
+      "apparent_file_bytes": 56855,
+      "allocated_unique_inode_bytes_within_root": 57344,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/compiler_hashseed_check.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dependency-sync.log",
+      "relative_path": "artifacts/reports/robomme-icl/dependency-sync.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dependency-sync.log",
+      "apparent_file_bytes": 5418,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-generate.log",
+      "relative_path": "artifacts/reports/robomme-icl/dual-gpu-generate.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-generate.log",
+      "apparent_file_bytes": 8895,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-replay.log",
+      "relative_path": "artifacts/reports/robomme-icl/dual-gpu-replay.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-replay.log",
+      "apparent_file_bytes": 8378,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-reset.log",
+      "relative_path": "artifacts/reports/robomme-icl/dual-gpu-reset.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-reset.log",
+      "apparent_file_bytes": 9288,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-resume.log",
+      "relative_path": "artifacts/reports/robomme-icl/dual-gpu-resume.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-resume.log",
+      "apparent_file_bytes": 542,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-smoke-samples.csv",
+      "relative_path": "artifacts/reports/robomme-icl/dual-gpu-smoke-samples.csv",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-smoke-samples.csv",
+      "apparent_file_bytes": 5427,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".csv": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/dual-gpu-smoke-samples.csv"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-smoke.log",
+      "relative_path": "artifacts/reports/robomme-icl/dual-gpu-smoke.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/dual-gpu-smoke.log",
+      "apparent_file_bytes": 17293,
+      "allocated_unique_inode_bytes_within_root": 20480,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-dualgpu-v2",
+      "relative_path": "artifacts/reports/robomme-icl/formal-dualgpu-v2",
+      "category": "旧生成报告",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-dualgpu-v2",
+      "apparent_file_bytes": 963097,
+      "allocated_unique_inode_bytes_within_root": 999424,
+      "regular_files": 9,
+      "extensions": {
+        ".csv": 1,
+        ".json": 3,
+        ".log": 4,
+        ".md": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/formal-dualgpu-v2/gpu_samples.csv",
+        "artifacts/reports/robomme-icl/formal-dualgpu-v2/pause_context.json",
+        "artifacts/reports/robomme-icl/formal-dualgpu-v2/performance_snapshot.md",
+        "artifacts/reports/robomme-icl/formal-dualgpu-v2/run_context.json",
+        "artifacts/reports/robomme-icl/formal-dualgpu-v2/stop_result.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v1",
+      "relative_path": "artifacts/reports/robomme-icl/formal-v1",
+      "category": "旧生成报告",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v1",
+      "apparent_file_bytes": 226383,
+      "allocated_unique_inode_bytes_within_root": 241664,
+      "regular_files": 5,
+      "extensions": {
+        ".json": 2,
+        ".log": 3
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/formal-v1/run_context.json",
+        "artifacts/reports/robomme-icl/formal-v1/stop_context.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3",
+      "relative_path": "artifacts/reports/robomme-icl/formal-v3",
+      "category": "旧生成报告",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/formal-v3",
+      "apparent_file_bytes": 8688065,
+      "allocated_unique_inode_bytes_within_root": 8794112,
+      "regular_files": 38,
+      "extensions": {
+        ".csv": 1,
+        ".json": 7,
+        ".log": 11,
+        ".md": 2,
+        ".png": 16,
+        ".tsv": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/formal-v3/FINAL.json",
+        "artifacts/reports/robomme-icl/formal-v3/FINAL.md",
+        "artifacts/reports/robomme-icl/formal-v3/VERIFIED_ROOT.json",
+        "artifacts/reports/robomme-icl/formal-v3/VERIFIED_ROOT.md",
+        "artifacts/reports/robomme-icl/formal-v3/figures/figure_sources.json",
+        "artifacts/reports/robomme-icl/formal-v3/gpu_samples.csv",
+        "artifacts/reports/robomme-icl/formal-v3/manifest_check.json",
+        "artifacts/reports/robomme-icl/formal-v3/phase_timings.tsv",
+        "artifacts/reports/robomme-icl/formal-v3/preview-figures/figure_sources.json",
+        "artifacts/reports/robomme-icl/formal-v3/previews/sources.json",
+        "artifacts/reports/robomme-icl/formal-v3/run_context.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "旧完整验收证据；AGENTS历史日志及legacy/report_acceptance旧默认报告路径会保留历史引用"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight-v2.json",
+      "relative_path": "artifacts/reports/robomme-icl/geometry_preflight-v2.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight-v2.json",
+      "apparent_file_bytes": 105704,
+      "allocated_unique_inode_bytes_within_root": 106496,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/geometry_preflight-v2.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight-v3.json",
+      "relative_path": "artifacts/reports/robomme-icl/geometry_preflight-v3.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight-v3.json",
+      "apparent_file_bytes": 104506,
+      "allocated_unique_inode_bytes_within_root": 106496,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/geometry_preflight-v3.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight-v4.json",
+      "relative_path": "artifacts/reports/robomme-icl/geometry_preflight-v4.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight-v4.json",
+      "apparent_file_bytes": 104874,
+      "allocated_unique_inode_bytes_within_root": 106496,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/geometry_preflight-v4.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight.json",
+      "relative_path": "artifacts/reports/robomme-icl/geometry_preflight.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight.json",
+      "apparent_file_bytes": 105401,
+      "allocated_unique_inode_bytes_within_root": 106496,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/geometry_preflight.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight_independent_layers.json",
+      "relative_path": "artifacts/reports/robomme-icl/geometry_preflight_independent_layers.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_preflight_independent_layers.json",
+      "apparent_file_bytes": 7284923,
+      "allocated_unique_inode_bytes_within_root": 7286784,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_smoke-v2.json",
+      "relative_path": "artifacts/reports/robomme-icl/geometry_smoke-v2.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_smoke-v2.json",
+      "apparent_file_bytes": 9887,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/geometry_smoke-v2.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_smoke-v3.json",
+      "relative_path": "artifacts/reports/robomme-icl/geometry_smoke-v3.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_smoke-v3.json",
+      "apparent_file_bytes": 9888,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/geometry_smoke-v3.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_smoke.json",
+      "relative_path": "artifacts/reports/robomme-icl/geometry_smoke.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_smoke.json",
+      "apparent_file_bytes": 4778,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/geometry_smoke.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_smoke_constrained_layers.json",
+      "relative_path": "artifacts/reports/robomme-icl/geometry_smoke_constrained_layers.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/geometry_smoke_constrained_layers.json",
+      "apparent_file_bytes": 9208,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/geometry_smoke_constrained_layers.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/interruption-v3.json",
+      "relative_path": "artifacts/reports/robomme-icl/interruption-v3.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/interruption-v3.json",
+      "apparent_file_bytes": 2991,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/interruption-v3.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/interruption-v3.log",
+      "relative_path": "artifacts/reports/robomme-icl/interruption-v3.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/interruption-v3.log",
+      "apparent_file_bytes": 3840,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/legacy-lightweight.log",
+      "relative_path": "artifacts/reports/robomme-icl/legacy-lightweight.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/legacy-lightweight.log",
+      "apparent_file_bytes": 25859,
+      "allocated_unique_inode_bytes_within_root": 28672,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/reproducibility_failure_vus_v1.md",
+      "relative_path": "artifacts/reports/robomme-icl/reproducibility_failure_vus_v1.md",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/reproducibility_failure_vus_v1.md",
+      "apparent_file_bytes": 9240,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".md": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/reproducibility_failure_vus_v1.md"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/runtime-repro-v3.log",
+      "relative_path": "artifacts/reports/robomme-icl/runtime-repro-v3.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/runtime-repro-v3.log",
+      "apparent_file_bytes": 2601,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/same-env-reset-final.log",
+      "relative_path": "artifacts/reports/robomme-icl/same-env-reset-final.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/same-env-reset-final.log",
+      "apparent_file_bytes": 2600,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-binfill-01.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-binfill-01.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-binfill-01.log",
+      "apparent_file_bytes": 3467,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-binfill-02.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-binfill-02.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-binfill-02.log",
+      "apparent_file_bytes": 4310,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-binfill-03.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-binfill-03.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-binfill-03.log",
+      "apparent_file_bytes": 2330,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-final.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-final.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-final.log",
+      "apparent_file_bytes": 16255,
+      "allocated_unique_inode_bytes_within_root": 16384,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-four-v1.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-four-v1.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-four-v1.log",
+      "apparent_file_bytes": 14922,
+      "allocated_unique_inode_bytes_within_root": 16384,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-generate-final.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-generate-final.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-generate-final.log",
+      "apparent_file_bytes": 9197,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-release.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-release.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-release.log",
+      "apparent_file_bytes": 15448,
+      "allocated_unique_inode_bytes_within_root": 16384,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-replay-BinFill.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-replay-BinFill.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-replay-BinFill.log",
+      "apparent_file_bytes": 1939,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-replay-RouteStick.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-replay-RouteStick.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-replay-RouteStick.log",
+      "apparent_file_bytes": 2450,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-replay-VideoRepick.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-replay-VideoRepick.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-replay-VideoRepick.log",
+      "apparent_file_bytes": 1944,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-replay-VideoUnmaskSwap.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-replay-VideoUnmaskSwap.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-replay-VideoUnmaskSwap.log",
+      "apparent_file_bytes": 1947,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-routestick-02.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-routestick-02.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-routestick-02.log",
+      "apparent_file_bytes": 3427,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-three-tasks-01.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-three-tasks-01.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-three-tasks-01.log",
+      "apparent_file_bytes": 4732,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-v3.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-v3.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-v3.log",
+      "apparent_file_bytes": 17290,
+      "allocated_unique_inode_bytes_within_root": 20480,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-vus-v2.log",
+      "relative_path": "artifacts/reports/robomme-icl/smoke-vus-v2.log",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke-vus-v2.log",
+      "apparent_file_bytes": 3456,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke_acceptance_release.json",
+      "relative_path": "artifacts/reports/robomme-icl/smoke_acceptance_release.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/smoke_acceptance_release.json",
+      "apparent_file_bytes": 964,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/smoke_acceptance_release.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/valid_frames_v2_v3.json",
+      "relative_path": "artifacts/reports/robomme-icl/valid_frames_v2_v3.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/valid_frames_v2_v3.json",
+      "apparent_file_bytes": 1168,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/valid_frames_v2_v3.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/wheel-v3.json",
+      "relative_path": "artifacts/reports/robomme-icl/wheel-v3.json",
+      "category": "旧生成报告",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/reports/robomme-icl/wheel-v3.json",
+      "apparent_file_bytes": 306,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "artifacts/reports/robomme-icl/wheel-v3.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/reports",
+      "relative_path": "scripts/data-generation/reports",
+      "category": "scripts历史产物与运行记录",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation/reports",
+      "apparent_file_bytes": 1558015,
+      "allocated_unique_inode_bytes_within_root": 1564672,
+      "regular_files": 2,
+      "extensions": {
+        ".json": 1,
+        ".md": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "scripts/data-generation/reports/generation_report.json",
+        "scripts/data-generation/reports/generation_report.md"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "归档工具可能默认读取此历史路径；清理后历史例子仅作参考，需显式指定新输入",
+        "归档README中的历史产物链接将在清理后失效，主任务需更新当前说明"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/reports",
+      "relative_path": "scripts/data-generation-newSeed/reports",
+      "category": "scripts历史产物与运行记录",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/data-generation-newSeed/reports",
+      "apparent_file_bytes": 26427,
+      "allocated_unique_inode_bytes_within_root": 28672,
+      "regular_files": 1,
+      "extensions": {
+        ".md": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "scripts/data-generation-newSeed/reports/joint_action_diff_full.md"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "归档工具可能默认读取此历史路径；清理后历史例子仅作参考，需显式指定新输入",
+        "归档README中的历史产物链接将在清理后失效，主任务需更新当前说明"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/patternlock-routestick-params/outputs",
+      "relative_path": "scripts/patternlock-routestick-params/outputs",
+      "category": "scripts历史产物与运行记录",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/patternlock-routestick-params/outputs",
+      "apparent_file_bytes": 1440210,
+      "allocated_unique_inode_bytes_within_root": 1462272,
+      "regular_files": 11,
+      "extensions": {
+        ".html": 1,
+        ".json": 10
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "scripts/patternlock-routestick-params/outputs/counting_params_test.json",
+        "scripts/patternlock-routestick-params/outputs/counting_params_val.json",
+        "scripts/patternlock-routestick-params/outputs/cross_check.json",
+        "scripts/patternlock-routestick-params/outputs/cross_check_test.json",
+        "scripts/patternlock-routestick-params/outputs/derived_params.json",
+        "scripts/patternlock-routestick-params/outputs/durations_test.json",
+        "scripts/patternlock-routestick-params/outputs/durations_val.json",
+        "scripts/patternlock-routestick-params/outputs/eval_aggregate.json",
+        "scripts/patternlock-routestick-params/outputs/sampling_axis.html",
+        "scripts/patternlock-routestick-params/outputs/test_seed_check.json",
+        "scripts/patternlock-routestick-params/outputs/test_seed_check_counting.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "归档工具可能默认读取此历史路径；清理后历史例子仅作参考，需显式指定新输入",
+        "归档README中的历史产物链接将在清理后失效，主任务需更新当前说明"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/patternlock-routestick-params/reports",
+      "relative_path": "scripts/patternlock-routestick-params/reports",
+      "category": "scripts历史产物与运行记录",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/patternlock-routestick-params/reports",
+      "apparent_file_bytes": 1676907,
+      "allocated_unique_inode_bytes_within_root": 1712128,
+      "regular_files": 15,
+      "extensions": {
+        ".md": 6,
+        ".png": 9
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "scripts/patternlock-routestick-params/reports/BinFill.md",
+        "scripts/patternlock-routestick-params/reports/PatternLock.md",
+        "scripts/patternlock-routestick-params/reports/PickXtimes.md",
+        "scripts/patternlock-routestick-params/reports/README.md",
+        "scripts/patternlock-routestick-params/reports/RouteStick.md",
+        "scripts/patternlock-routestick-params/reports/eval_section.md",
+        "scripts/patternlock-routestick-params/reports/figures/length_dist_persistent.png",
+        "scripts/patternlock-routestick-params/reports/figures/sampling_BinFill.png",
+        "scripts/patternlock-routestick-params/reports/figures/sampling_PatternLock.png",
+        "scripts/patternlock-routestick-params/reports/figures/sampling_PickXtimes.png",
+        "scripts/patternlock-routestick-params/reports/figures/sampling_RouteStick.png",
+        "scripts/patternlock-routestick-params/reports/figures/success_by_actions_counting.png",
+        "scripts/patternlock-routestick-params/reports/figures/success_by_binfill_color.png",
+        "scripts/patternlock-routestick-params/reports/figures/success_by_imitation_turns.png",
+        "scripts/patternlock-routestick-params/reports/figures/success_by_moves_imitation.png"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "归档工具可能默认读取此历史路径；清理后历史例子仅作参考，需显式指定新输入",
+        "归档README中的历史产物链接将在清理后失效，主任务需更新当前说明"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/400ep-dataset/run-log.md",
+      "relative_path": "scripts/400ep-dataset/run-log.md",
+      "category": "scripts历史产物与运行记录",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/400ep-dataset/run-log.md",
+      "apparent_file_bytes": 8856,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".md": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "scripts/400ep-dataset/run-log.md"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "归档工具可能默认读取此历史路径；清理后历史例子仅作参考，需显式指定新输入",
+        "归档README中的历史产物链接将在清理后失效，主任务需更新当前说明"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/400ep-dataset/run_parameters.json",
+      "relative_path": "scripts/400ep-dataset/run_parameters.json",
+      "category": "scripts历史产物与运行记录",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/400ep-dataset/run_parameters.json",
+      "apparent_file_bytes": 647,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "scripts/400ep-dataset/run_parameters.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "归档工具可能默认读取此历史路径；清理后历史例子仅作参考，需显式指定新输入",
+        "归档README中的历史产物链接将在清理后失效，主任务需更新当前说明"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/400ep-dataset/run_summary.json",
+      "relative_path": "scripts/400ep-dataset/run_summary.json",
+      "category": "scripts历史产物与运行记录",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/400ep-dataset/run_summary.json",
+      "apparent_file_bytes": 881,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": true,
+      "tracked_paths": [
+        "scripts/400ep-dataset/run_summary.json"
+      ],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "归档工具可能默认读取此历史路径；清理后历史例子仅作参考，需显式指定新输入",
+        "归档README中的历史产物链接将在清理后失效，主任务需更新当前说明"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plan-visuals-20260907-v1",
+      "relative_path": ".cache/plan-visuals-20260907-v1",
+      "category": "缓存旧图和图表来源",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plan-visuals-20260907-v1",
+      "apparent_file_bytes": 1586943,
+      "allocated_unique_inode_bytes_within_root": 1601536,
+      "regular_files": 9,
+      "extensions": {
+        ".json": 1,
+        ".pdf": 4,
+        ".png": 4
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plot-smoke-check",
+      "relative_path": ".cache/plot-smoke-check",
+      "category": "缓存旧图和图表来源",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plot-smoke-check",
+      "apparent_file_bytes": 1492238,
+      "allocated_unique_inode_bytes_within_root": 1503232,
+      "regular_files": 5,
+      "extensions": {
+        ".json": 1,
+        ".png": 4
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plot-smoke-check-final",
+      "relative_path": ".cache/plot-smoke-check-final",
+      "category": "缓存旧图和图表来源",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plot-smoke-check-final",
+      "apparent_file_bytes": 1500038,
+      "allocated_unique_inode_bytes_within_root": 1511424,
+      "regular_files": 5,
+      "extensions": {
+        ".json": 1,
+        ".png": 4
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plot-tracked-entry-smoke",
+      "relative_path": ".cache/plot-tracked-entry-smoke",
+      "category": "缓存旧图和图表来源",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plot-tracked-entry-smoke",
+      "apparent_file_bytes": 1500046,
+      "allocated_unique_inode_bytes_within_root": 1511424,
+      "regular_files": 5,
+      "extensions": {
+        ".json": 1,
+        ".png": 4
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-icl-integration",
+      "relative_path": ".cache/pytest-icl-integration",
+      "category": "旧诊断生成夹具",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-icl-integration",
+      "apparent_file_bytes": 8536,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-icl-integration/test_suite_requires_certificatcurrent",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-icl-integration/test_suite_requires_certificat0",
+          "target_inside_repository": true
+        }
+      ],
+      "potential_dependencies": [
+        "测试临时产物；目录中有符号链接时只删除链接自身，不跟随"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-icl-suite",
+      "relative_path": ".cache/pytest-icl-suite",
+      "category": "旧诊断生成夹具",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-icl-suite",
+      "apparent_file_bytes": 8761,
+      "allocated_unique_inode_bytes_within_root": 12288,
+      "regular_files": 1,
+      "extensions": {
+        ".json": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-icl-suite/test_suite_requires_certificatcurrent",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-icl-suite/test_suite_requires_certificat0",
+          "target_inside_repository": true
+        }
+      ],
+      "potential_dependencies": [
+        "测试临时产物；目录中有符号链接时只删除链接自身，不跟随"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline",
+      "relative_path": ".cache/pytest-legacy-baseline",
+      "category": "旧诊断生成夹具",
+      "type": "directory",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline",
+      "apparent_file_bytes": 80873,
+      "allocated_unique_inode_bytes_within_root": 143360,
+      "regular_files": 19,
+      "extensions": {
+        ".h5": 4,
+        ".json": 13,
+        ".md": 2
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_episode_dataset_resolver_current",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_episode_dataset_resolver_0",
+          "target_inside_repository": true
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_cli_appends_all_taskscurrent",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_cli_appends_all_tasks0",
+          "target_inside_repository": true
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_cli_two_phase_writes_nothcurrent",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_cli_two_phase_writes_noth0",
+          "target_inside_repository": true
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_complete_artifact_manifescurrent",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_complete_artifact_manifes0",
+          "target_inside_repository": true
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_choice_action_is_keyframecurrent",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_choice_action_is_keyframe0",
+          "target_inside_repository": true
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_snapshot_schema_markdown_current",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_snapshot_schema_markdown_0",
+          "target_inside_repository": true
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_failed_gpu_torch_and_packcurrent",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_failed_gpu_torch_and_pack0",
+          "target_inside_repository": true
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_cli_dry_run_writes_nothincurrent",
+          "target": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/pytest-legacy-baseline/test_cli_dry_run_writes_nothin0",
+          "target_inside_repository": true
+        }
+      ],
+      "potential_dependencies": [
+        "测试临时产物；目录中有符号链接时只删除链接自身，不跟随"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-known-legacy.log",
+      "relative_path": ".cache/icl-scripts-known-legacy.log",
+      "category": "本次开发阶段临时日志",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-known-legacy.log",
+      "apparent_file_bytes": 5990,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "本次最终报告保留测试结果后可删；正在写入的日志须先等对应进程退出"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-lightweight.log",
+      "relative_path": ".cache/icl-scripts-lightweight.log",
+      "category": "本次开发阶段临时日志",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-lightweight.log",
+      "apparent_file_bytes": 92,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "本次最终报告保留测试结果后可删；正在写入的日志须先等对应进程退出"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-smoke-final-generate.log",
+      "relative_path": ".cache/icl-scripts-smoke-final-generate.log",
+      "category": "本次开发阶段临时日志",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-smoke-final-generate.log",
+      "apparent_file_bytes": 7883,
+      "allocated_unique_inode_bytes_within_root": 8192,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "本次最终报告保留测试结果后可删；正在写入的日志须先等对应进程退出"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-smoke-final-prepare.log",
+      "relative_path": ".cache/icl-scripts-smoke-final-prepare.log",
+      "category": "本次开发阶段临时日志",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-smoke-final-prepare.log",
+      "apparent_file_bytes": 17186,
+      "allocated_unique_inode_bytes_within_root": 20480,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "本次最终报告保留测试结果后可删；正在写入的日志须先等对应进程退出"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-smoke-four-prepare.log",
+      "relative_path": ".cache/icl-scripts-smoke-four-prepare.log",
+      "category": "本次开发阶段临时日志",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-smoke-four-prepare.log",
+      "apparent_file_bytes": 34209,
+      "allocated_unique_inode_bytes_within_root": 40960,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "本次最终报告保留测试结果后可删；正在写入的日志须先等对应进程退出"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-smoke-prepare.log",
+      "relative_path": ".cache/icl-scripts-smoke-prepare.log",
+      "category": "本次开发阶段临时日志",
+      "type": "file",
+      "is_symlink": false,
+      "realpath": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-scripts-smoke-prepare.log",
+      "apparent_file_bytes": 3893,
+      "allocated_unique_inode_bytes_within_root": 4096,
+      "regular_files": 1,
+      "extensions": {
+        ".log": 1
+      },
+      "tracked": false,
+      "tracked_paths": [],
+      "contained_symlinks": [],
+      "potential_dependencies": [
+        "本次最终报告保留测试结果后可删；正在写入的日志须先等对应进程退出"
+      ],
+      "delete_gate": "本次96条重新认证、生成、回放、视频与图表全部验证成功后；删除前重新确认路径与当前在用状态"
+    }
+  ],
+  "preserved_or_skipped": [
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/__pycache__",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/huggingface",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-commit-2.22.txt",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-commit-2.23.txt",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-commit-2.24.txt",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-commit-2.25.txt",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-commit-message.txt",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-final-report.py",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-dualgpu-v2.sh",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-v1.sh",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-formal-v3.sh",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-wheel-check",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/icl-wheel-v3",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/maniskill",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/matplotlib",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/matplotlib-icl-certified",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/matplotlib-plan",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/plot-icl-certified.py",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/robomme_icl_tests",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/uv",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.cache/xdg",
+      "reason": "保留：依赖/字体/安装缓存、源码/运行脚本、提交消息或当前空测试目录，不属于本次旧生成图/HDF5/实验报告清理范围"
+    }
+  ]
+}

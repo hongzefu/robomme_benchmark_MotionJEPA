@@ -5,6 +5,10 @@
 ### 🚀 Join Our Community: [Wechat Group](doc/Wechat.jpg) | [Discord](https://discord.gg/mGYRqFGz)
 ![Robomme bench](assets/robomme_bench.jpg)
 
+## robomme-ICL 四个入口
+
+新版环境清单、数据生成、严格回放和分布图分别使用 `scripts/prepare_suite.py`、`scripts/generate_dataset.py`、`scripts/replay_dataset.py`、`scripts/plot_distribution.py`。生成与回放均保存HDF5和MP4，完整命令及产物位置见 [scripts/README.md](scripts/README.md)。旧工具已归档至 [scripts/legacy/](scripts/legacy/README.md)，原版任务源码保持原样，产物按批次集中管理。
+
 ## 📢 Announcements
 
 [05/2026] 🎉 RoboMME has been selected for ICML 2026 Oral presentation (Top 0.7%)!   
@@ -47,7 +51,7 @@ More Docker options (mounting datasets, troubleshooting, etc.) are in [doc/docke
 Start an environment with a specified setup:
 
 ```bash
-uv run scripts/run_example.py
+uv run scripts/legacy/run_example.py
 ```
 
 This generates a rollout video in the `sample_run_videos` directory.
@@ -76,7 +80,7 @@ Training data can be downloaded [here](https://huggingface.co/datasets/Yinpei/ro
 After downloading, replay the dataset for a sanity check:
 
 ```bash
-uv run scripts/dataset_replay.py --h5-data-dir <your_downloaded_data_dir>
+uv run scripts/legacy/dataset_replay.py --h5-data-dir <your_downloaded_data_dir>
 ```
 
 ### 📊 Evaluation
@@ -106,10 +110,10 @@ The environment input/output format is described in [doc/env_format.md](doc/env_
 
 ### 🔧 Data Generation
 
-The repository includes a complete 16-task × 100-episode HDF5 generation and validation workflow. It uses 20 workers and is locked to physical GPU 0. See [scripts/data-generation/README.md](scripts/data-generation/README.md) for the full workflow and artifact contract.
+The repository includes a complete 16-task × 100-episode HDF5 generation and validation workflow. It uses 20 workers and is locked to physical GPU 0. See [scripts/legacy/data-generation/README.md](scripts/legacy/data-generation/README.md) for the full workflow and artifact contract.
 
 ```bash
-env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/data-generation/generate_dataset.py \
+env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/legacy/data-generation/generate_dataset.py \
   --output-dir artifacts/generated/no-patch-full-16x100 \
   --env all \
   --episodes 100 \
@@ -139,7 +143,7 @@ The [MME Policy Learning](https://github.com/RoboMME/robomme_policy_learning) re
 
 
 ## 🏆 Submit Your Models
-Want to add your model? Download the [dataset](https://huggingface.co/datasets/Yinpei/robomme_data_h5) from Hugging Face, run evaluation using our [eval scripts](scripts/evaluation.py), then submit a PR with your results by adding `<your_model>.md` to the `doc/submission/` [directory](https://github.com/RoboMME/robomme_benchmark/tree/main/doc/submission). We will review it and update our leaderboard.
+Want to add your model? Download the [dataset](https://huggingface.co/datasets/Yinpei/robomme_data_h5) from Hugging Face, run evaluation using our [eval scripts](scripts/legacy/evaluation.py), then submit a PR with your results by adding `<your_model>.md` to the `doc/submission/` [directory](https://github.com/RoboMME/robomme_benchmark/tree/main/doc/submission). We will review it and update our leaderboard.
 
 
 ## 🔧 Troubleshooting

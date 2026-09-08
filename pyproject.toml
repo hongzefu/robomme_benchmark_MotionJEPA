@@ -12,9 +12,6 @@ dependencies = [
     "torchvision==0.24.1",
 ]
 
-[project.scripts]
-robomme-icl = "robomme_icl.cli:main"
-
 [project.optional-dependencies]
 dev = ["opencv-python", "pytest"]
 
