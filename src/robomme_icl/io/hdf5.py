@@ -40,11 +40,18 @@ class EpisodeRecord:
 
 
 def _json(value: Any) -> str:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
 
 
 def _tagged_hash(value: Any, digest: Any) -> None:
     """类型标签与长度前缀避免不同树结构拥有相同字节拼接。"""
+
     def add(data: bytes) -> None:
         digest.update(len(data).to_bytes(8, "big"))
         digest.update(data)
@@ -99,7 +106,10 @@ def assert_identical(expected: Any, actual: Any, *, path: str = "frames") -> Non
             raise ReproducibilityError(
                 f"{path}: dtype/shape 不同：{expected.dtype}{expected.shape} != {actual.dtype}{actual.shape}"
             )
-        if np.ascontiguousarray(expected).tobytes() != np.ascontiguousarray(actual).tobytes():
+        if (
+            np.ascontiguousarray(expected).tobytes()
+            != np.ascontiguousarray(actual).tobytes()
+        ):
             raise ReproducibilityError(f"{path}: 数组字节不同")
         return
     if isinstance(expected, np.generic):
@@ -126,7 +136,11 @@ def assert_identical(expected: Any, actual: Any, *, path: str = "frames") -> Non
 def _write_node(parent: h5py.Group, name: str, value: Any) -> None:
     if isinstance(value, np.ndarray):
         # 无损压缩不会改变原始 RGB 和数值字节，减少两次认证的存储开销。
-        options = {"compression": "lzf", "shuffle": True} if value.ndim > 0 and value.nbytes >= 1024 else {}
+        options = (
+            {"compression": "lzf", "shuffle": True}
+            if value.ndim > 0 and value.nbytes >= 1024
+            else {}
+        )
         node = parent.create_dataset(name, data=value, **options)
         node.attrs["kind"] = "array"
     elif isinstance(value, np.generic):
@@ -151,7 +165,9 @@ def _write_node(parent: h5py.Group, name: str, value: Any) -> None:
         node = parent.create_dataset(name, data=np.frombuffer(value, dtype=np.uint8))
         node.attrs["kind"] = "bytes"
     else:
-        node = parent.create_dataset(name, data=_json(value), dtype=h5py.string_dtype("utf-8"))
+        node = parent.create_dataset(
+            name, data=_json(value), dtype=h5py.string_dtype("utf-8")
+        )
         node.attrs["kind"] = "json_scalar"
 
 
@@ -166,9 +182,15 @@ def _read_node(node: h5py.Group | h5py.Dataset) -> Any:
     if kind == "numpy_scalar":
         return node[()]
     if kind == "mapping":
-        return {key: _read_node(node[quote(key, safe="") or "%EMPTY"]) for key in json.loads(node.attrs["keys"])}
+        return {
+            key: _read_node(node[quote(key, safe="") or "%EMPTY"])
+            for key in json.loads(node.attrs["keys"])
+        }
     if kind in {"list", "tuple"}:
-        values = [_read_node(node[f"{index:08d}"]) for index in range(int(node.attrs["length"]))]
+        values = [
+            _read_node(node[f"{index:08d}"])
+            for index in range(int(node.attrs["length"]))
+        ]
         return tuple(values) if kind == "tuple" else values
     if kind == "none":
         return None
@@ -180,8 +202,12 @@ def _read_node(node: h5py.Group | h5py.Dataset) -> Any:
 
 
 def write_episode(
-    path: str | Path, spec: Any, frames: Sequence[dict[str, Any]], *,
-    runtime_fingerprint: dict[str, Any] | None = None, source_commit: str | None = None,
+    path: str | Path,
+    spec: Any,
+    frames: Sequence[dict[str, Any]],
+    *,
+    runtime_fingerprint: dict[str, Any] | None = None,
+    source_commit: str | None = None,
     runtime_name_mapping: dict[str, str] | None = None,
 ) -> Path:
     """独占创建文件，写入失败保留不完整证据，绝不覆盖已有产物。"""
@@ -191,20 +217,42 @@ def write_episode(
     frame_list = list(frames)
     if not frame_list:
         raise RecordError("不能记录空 episode")
-    content_hash = tree_hash({"episode_spec": payload, "frames": frame_list, "runtime_fingerprint": runtime_fingerprint})
+    content_hash = tree_hash(
+        {
+            "episode_spec": payload,
+            "frames": frame_list,
+            "runtime_fingerprint": runtime_fingerprint,
+        }
+    )
     with h5py.File(target, "x") as handle:
         handle.attrs["schema_version"] = SCHEMA_VERSION
         handle.attrs["complete"] = False
         setup = handle.create_group("setup")
-        setup.create_dataset("episode_spec", data=_json(payload), dtype=h5py.string_dtype("utf-8"))
-        setup.create_dataset("spec_hash", data=spec_hash, dtype=h5py.string_dtype("utf-8"))
-        setup.create_dataset("env_id", data=spec.env_id if hasattr(spec, "env_id") else payload["env_id"])
-        setup.create_dataset("seed", data=int(spec.seed if hasattr(spec, "seed") else payload["seed"]))
-        setup.create_dataset("runtime_fingerprint", data=_json(runtime_fingerprint), dtype=h5py.string_dtype("utf-8"))
-        setup.create_dataset("source_commit", data=source_commit or "", dtype=h5py.string_dtype("utf-8"))
+        setup.create_dataset(
+            "episode_spec", data=_json(payload), dtype=h5py.string_dtype("utf-8")
+        )
+        setup.create_dataset(
+            "spec_hash", data=spec_hash, dtype=h5py.string_dtype("utf-8")
+        )
+        setup.create_dataset(
+            "env_id", data=spec.env_id if hasattr(spec, "env_id") else payload["env_id"]
+        )
+        setup.create_dataset(
+            "seed", data=int(spec.seed if hasattr(spec, "seed") else payload["seed"])
+        )
+        setup.create_dataset(
+            "runtime_fingerprint",
+            data=_json(runtime_fingerprint),
+            dtype=h5py.string_dtype("utf-8"),
+        )
+        setup.create_dataset(
+            "source_commit", data=source_commit or "", dtype=h5py.string_dtype("utf-8")
+        )
         # 原版对象名含进程地址；保存可核查映射，独立校验但不混入跨进程轨迹摘要。
         names = runtime_name_mapping or {}
-        setup.create_dataset("runtime_name_mapping", data=_json(names), dtype=h5py.string_dtype("utf-8"))
+        setup.create_dataset(
+            "runtime_name_mapping", data=_json(names), dtype=h5py.string_dtype("utf-8")
+        )
         setup.attrs["runtime_name_mapping_hash"] = tree_hash(names)
         _write_node(handle, "steps", frame_list)
         handle.attrs["content_hash"] = content_hash
@@ -230,19 +278,37 @@ def read_episode(path: str | Path) -> EpisodeRecord:
             names = {}
             if "runtime_name_mapping" in handle["setup"]:
                 names = json.loads(_text(handle["setup/runtime_name_mapping"][()]))
-                if tree_hash(names) != handle["setup"].attrs.get("runtime_name_mapping_hash"):
+                if tree_hash(names) != handle["setup"].attrs.get(
+                    "runtime_name_mapping_hash"
+                ):
                     raise RecordError("原版对象名映射摘要不匹配")
-                if not isinstance(names, dict) or len(set(names.values())) != len(names):
+                if not isinstance(names, dict) or len(set(names.values())) != len(
+                    names
+                ):
                     raise RecordError("原版对象名映射不是一一对应")
             if str(payload.get("spec_hash", spec_hash)) != spec_hash:
                 raise RecordError(f"规格摘要字段不一致：{target}")
-            if int(handle["setup/seed"][()]) != int(payload["seed"]) or _text(handle["setup/env_id"][()]) != payload["env_id"]:
+            if (
+                int(handle["setup/seed"][()]) != int(payload["seed"])
+                or _text(handle["setup/env_id"][()]) != payload["env_id"]
+            ):
                 raise RecordError(f"setup seed/env_id 与规格快照不一致：{target}")
-            if tree_hash({"episode_spec": payload, "frames": frames, "runtime_fingerprint": fingerprint}) != content_hash:
+            if (
+                tree_hash(
+                    {
+                        "episode_spec": payload,
+                        "frames": frames,
+                        "runtime_fingerprint": fingerprint,
+                    }
+                )
+                != content_hash
+            ):
                 raise RecordError(f"HDF5 内容摘要不匹配：{target}")
             if not frames:
                 raise RecordError(f"HDF5 没有帧：{target}")
-            return EpisodeRecord(payload, spec_hash, frames, content_hash, fingerprint, names)
+            return EpisodeRecord(
+                payload, spec_hash, frames, content_hash, fingerprint, names
+            )
     except (OSError, KeyError, ValueError, TypeError) as exc:
         raise RecordError(f"无法读取 HDF5，已保留原文件：{target}：{exc}") from exc
 
@@ -251,5 +317,7 @@ def assert_records_identical(left: EpisodeRecord, right: EpisodeRecord) -> None:
     if left.spec_hash != right.spec_hash:
         raise ReproducibilityError("两次运行的 spec_hash 不同")
     assert_identical(left.episode_spec, right.episode_spec, path="episode_spec")
-    assert_identical(left.runtime_fingerprint, right.runtime_fingerprint, path="runtime_fingerprint")
+    assert_identical(
+        left.runtime_fingerprint, right.runtime_fingerprint, path="runtime_fingerprint"
+    )
     assert_identical(left.frames, right.frames)

@@ -1,6 +1,6 @@
 # robomme-ICL 四个入口
 
-日常只使用本目录的四个脚本。`src/robomme_icl` 保留可导入的库实现，旧控制台命令和模块入口已经移除。旧工具位于 [legacy/](legacy/README.md)；`challenge_interface` 和原版 `src/robomme` 保持原样。旧生成数据和报告已在新批次验收后清理，只保留本次交付产物；官方参考数据未触碰。
+日常只使用本目录的四个脚本。`src/robomme_icl` 保留可导入的库实现，旧控制台命令和模块入口已经移除。旧工具位于 [legacy/](legacy/README.md)。原版只增加必要的布局接入方法；四任务的动作、判定与事件函数保持原版。新批次使用版本2清单，保留旧数据。独立对抗验证入口为 [verify_native_parity.py](verify_native_parity.py)。
 
 | 入口 | 输入 | 输出 |
 | --- | --- | --- |
@@ -31,29 +31,29 @@ uv run scripts/prepare_suite.py \
   --gpus 0,1 --workers 32
 ```
 
-入口迁移会改变源码指纹。已有认证清单可按下面的方式创建下一批：保持原spec全文、seed、位置、次数和GPU绑定，每条当前两次物理运行都与来源记录的原始帧严格比较，不重新搜索候选。输入批次与输出批次必须分开。
+入口迁移会改变源码指纹。已有版本2认证清单可按下面的方式创建下一批：保持原spec全文、seed、位置、次数和GPU绑定，每条当前两次物理运行都与来源记录的原始帧严格比较，不重新搜索候选。输入批次与输出批次必须分开。
 
 ```bash
 uv run scripts/prepare_suite.py \
-  --source-suite artifacts/generated/robomme-icl/scripts-v1/suite/suite.json \
+  --source-suite artifacts/generated/robomme-icl/native-v2/suite/suite.json \
   --output-dir artifacts/generated/robomme-icl/next-run \
   --workers 32
 ```
 
-`--source-suite` 不能与两份新配置或候选上限同时使用。新配置模式允许 `--max-candidates` 缩小诊断搜索上限；源清单模式不搜索候选。首次真实验证先使用 `--tasks BinFill --episodes-per-task 1 --workers 1`，随后再扩大范围。
+版本1与旧位置协议不能使用 `--source-suite` 直接迁移，必须从两份配置重新编译。`--source-suite` 不能与两份新配置或候选上限同时使用。新配置模式允许 `--max-candidates` 缩小诊断搜索上限；源清单模式不搜索候选。首次真实验证先使用 `--tasks BinFill --episodes-per-task 1 --workers 1`，随后再扩大范围。
 
 ## 生成HDF5、视频和分布图
 
 ```bash
 uv run scripts/generate_dataset.py \
-  --suite artifacts/generated/robomme-icl/scripts-v1/suite \
-  --output-dir artifacts/generated/robomme-icl/scripts-v1 \
+  --suite artifacts/generated/robomme-icl/native-v2/suite \
+  --output-dir artifacts/generated/robomme-icl/native-v2 \
   --workers 32 --video-workers 4
 ```
 
 必须先有认证清单。生成阶段不会重编译场景、替换seed或改变任务配额。`--tasks`、`--episodes-per-task` 可选择清单中的子集，沿用原seed；绘图使用同一子集，并明确标出没有样本的任务/难度。
 
-保持当前ICL HDF5的 `setup/steps` 结构，不合并为任务级文件。视频是前视与腕部RGB横拼、演示红框，当前为512×256、20fps；FPS来自spec控制频率。编码使用FFmpeg、libx264、yuv420p、CRF18、单编码线程。原始RGB不被修改，逐位一致性仍比较HDF5数据，MP4用于观看。
+版本2 HDF5保持 `setup/steps` 结构，不合并为任务级文件。视频是前视与腕部RGB横拼、演示红框，当前为512×256、20fps；FPS来自原版运行配置快照；视频只导出deliver_frame标记的帧，完整操作数单独保留。编码使用FFmpeg、libx264、yuv420p、CRF18、单编码线程。原始RGB不被修改，逐位一致性仍比较HDF5数据，MP4用于观看。
 
 视频必须成功保存后，整批生成才标记完成。每条视频的同名JSON保存输入内容哈希、spec_hash、帧数、FPS、编码参数和视频哈希。编码失败保留已完成HDF5，重复相同命令会校验后复用完整记录，只补缺失媒体；未知或不匹配文件不会被覆盖。
 
@@ -61,8 +61,8 @@ uv run scripts/generate_dataset.py \
 
 ```bash
 uv run scripts/replay_dataset.py \
-  --input artifacts/generated/robomme-icl/scripts-v1/hdf5_files \
-  --output-dir artifacts/generated/robomme-icl/scripts-v1/replay \
+  --input artifacts/generated/robomme-icl/native-v2/hdf5_files \
+  --output-dir artifacts/generated/robomme-icl/native-v2/replay \
   --workers 32 --video-workers 4
 ```
 
@@ -72,8 +72,8 @@ uv run scripts/replay_dataset.py \
 
 ```bash
 uv run scripts/plot_distribution.py \
-  --suite artifacts/generated/robomme-icl/scripts-v1/suite \
-  --output-dir artifacts/generated/robomme-icl/scripts-v1/distributions
+  --suite artifacts/generated/robomme-icl/native-v2/suite \
+  --output-dir artifacts/generated/robomme-icl/native-v2/distributions
 ```
 
 生成脚本会自动调用同一绘图实现；独立入口不运行仿真，可读取本批清单，也可用保留的 `provenance/source_suite.json` 来源快照绘图。四任务各一张组合图，包含按难度的次数配额、单局布局、跨episode散点与支持范围。`distribution_summary.json` 记录实际计数、位置分层覆盖及来源哈希。同来源完整图可验证后复用，缺图可以补齐，不能把不同清单的图混入同一目录。
@@ -106,9 +106,9 @@ artifacts/generated/robomme-icl/<批次>/
 预计超过五分钟的命令按根 `AGENTS.md` 放入已登记的detached tmux，从干净提交启动。以下是生成阶段的形式，其余入口同样处理：
 
 ```bash
-mkdir -p artifacts/generated/robomme-icl/scripts-v1/logs
+mkdir -p artifacts/generated/robomme-icl/native-v2/logs
 tmux new-session -d -s gen-icl-scripts-v1 \
-  'set -o pipefail; cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask; PYTHONUNBUFFERED=1 uv run scripts/generate_dataset.py --suite artifacts/generated/robomme-icl/scripts-v1/suite --output-dir artifacts/generated/robomme-icl/scripts-v1 --workers 32 --video-workers 4 2>&1 | tee artifacts/generated/robomme-icl/scripts-v1/logs/generate.log; echo "EXIT_CODE=$?" >> artifacts/generated/robomme-icl/scripts-v1/logs/generate.log'
+  'set -o pipefail; cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask; PYTHONUNBUFFERED=1 uv run scripts/generate_dataset.py --suite artifacts/generated/robomme-icl/native-v2/suite --output-dir artifacts/generated/robomme-icl/native-v2 --workers 32 --video-workers 4 2>&1 | tee artifacts/generated/robomme-icl/native-v2/logs/generate.log; echo "EXIT_CODE=$?" >> artifacts/generated/robomme-icl/native-v2/logs/generate.log'
 ```
 
 生成/回放默认32个物理工作名额、视频导出4个CPU工作进程；实际物理仍为CPU单环境，GPU只按冻结绑定选择。不要设置 `CUDA_VISIBLE_DEVICES` 重新编号。所有输出必须是仓库内实体路径，不能覆盖参考集或通过符号链接写到仓库外。

@@ -15,19 +15,32 @@ def check_terminal(frames):
 def replay_frames(env, expected):
     env.reset()
     recorded = env.recorder.frames
-    assert_identical(expected.frames[:len(recorded)], recorded, path="reset")
-    for index in range(len(recorded), len(expected.frames)):
+    assert_identical(expected.frames[: len(recorded)], recorded, path="reset")
+    index = len(recorded)
+    while index < len(expected.frames):
         frame = expected.frames[index]
         operation = frame["info"]["operation"]
         if operation == "step":
             if frame["joint_action"] is None:
                 raise RecordError(f"第{index}个物理步缺少动作")
-            # 回放内部物理步，原包装器的额外终止步已经单独记录。
-            env.recorder.step(frame["joint_action"])
+            # 调用原版包装器，让额外终止步自然产生，不能把它当另一条外部动作。
+            if frame["info"].get("internal_terminal_step", False):
+                raise RecordError("内部终止步缺少对应的外部动作")
+            env.native_wrapper.step(frame["joint_action"])
         elif operation == "evaluate":
-            env.recorder.evaluate(solve_complete_eval=frame["info"]["solve_complete_eval"])
+            env.recorder.evaluate(
+                solve_complete_eval=frame["info"]["solve_complete_eval"]
+            )
         else:
             raise RecordError(f"reset之后存在未知操作：{operation}")
-        assert_identical(frame, recorded[-1], path=f"frames/{index}")
+        end = len(recorded)
+        if end <= index or end > len(expected.frames):
+            raise RecordError("回放产生的内部操作数量不匹配")
+        assert_identical(
+            expected.frames[index:end],
+            recorded[index:end],
+            path=f"frames/{index}:{end}",
+        )
+        index = end
     check_terminal(recorded)
     return recorded

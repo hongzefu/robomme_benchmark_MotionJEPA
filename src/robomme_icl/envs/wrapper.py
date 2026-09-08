@@ -24,9 +24,12 @@ class ICLJointAngleEnv(gym.Wrapper):
     def _build_wrappers(self):
         self.recorder = RecordingEnv(self.raw_factory())
         self.native_wrapper = DemonstrationWrapper(
-            self.recorder, max_steps_without_demonstration=10000, gui_render=False,
+            self.recorder,
+            max_steps_without_demonstration=10000,
+            gui_render=False,
             include_maniskill_obs=True,
         )
+        self.recorder.delivery_context = self.native_wrapper
 
     def reset(self, *, seed=None, options=None):
         if seed is not None and seed != self.seed:
@@ -43,7 +46,11 @@ class ICLJointAngleEnv(gym.Wrapper):
         info = copy.deepcopy(marker["info"])
         goals = task_goal.get_language_goal(self.native_wrapper, self.task_kind)
         info["task_goal"] = goals
-        info["demonstration"] = copy.deepcopy(self.recorder.frames[:-1]) if self.record_demonstration else []
+        info["demonstration"] = (
+            copy.deepcopy(self.recorder.frames[:-1])
+            if self.record_demonstration
+            else []
+        )
         observation = normalized_observation(batch["maniskill_obs"][-1], self.unwrapped)
         return observation, info
 
@@ -51,7 +58,9 @@ class ICLJointAngleEnv(gym.Wrapper):
         value = np.asarray(action, dtype=np.float64)
         if value.shape != (self.action_dimension,) or not np.isfinite(value).all():
             raise ValueError(f"joint_angle 必须是{self.action_dimension}维有限数组")
-        batch, reward, terminated, truncated, native_info = self.native_wrapper.step(value)
+        batch, reward, terminated, truncated, native_info = self.native_wrapper.step(
+            value
+        )
         # 原版终止时会额外执行一步，但返回外层调用的图像，不能替换为内部末帧。
         observation = normalized_observation(batch["maniskill_obs"][-1], self.unwrapped)
         info = normalized_info(native_info, self.unwrapped)

@@ -20,8 +20,18 @@ def pose_value(pose):
 
 def material_asset(material):
     result = {}
-    for field in ("base_color", "emission", "metallic", "roughness", "specular",
-                  "transmission", "ior", "static_friction", "dynamic_friction", "restitution"):
+    for field in (
+        "base_color",
+        "emission",
+        "metallic",
+        "roughness",
+        "specular",
+        "transmission",
+        "ior",
+        "static_friction",
+        "dynamic_friction",
+        "restitution",
+    ):
         if hasattr(material, field):
             result[field] = array_copy(getattr(material, field))
     return result
@@ -30,8 +40,17 @@ def material_asset(material):
 def shape_asset(shape):
     """保留形状局部坐标、实际几何、材质与接触参数。"""
     result = {"type": type(shape).__name__, "pose": pose_value(shape.local_pose)}
-    for field in ("half_size", "radius", "half_length", "scale", "vertices", "triangles",
-                  "contact_offset", "rest_offset", "collision_groups"):
+    for field in (
+        "half_size",
+        "radius",
+        "half_length",
+        "scale",
+        "vertices",
+        "triangles",
+        "contact_offset",
+        "rest_offset",
+        "collision_groups",
+    ):
         if hasattr(shape, field):
             result[field] = array_copy(getattr(shape, field))
     if hasattr(shape, "parts"):
@@ -41,8 +60,12 @@ def shape_asset(shape):
             for field in ("vertices", "triangles", "normals", "uv"):
                 if hasattr(part, field):
                     geometry[field] = array_copy(getattr(part, field))
-            result["mesh_parts"].append({"geometry_hash": tree_hash(geometry),
-                                         "material": material_asset(part.material)})
+            result["mesh_parts"].append(
+                {
+                    "geometry_hash": tree_hash(geometry),
+                    "material": material_asset(part.material),
+                }
+            )
     elif hasattr(shape, "material"):
         result["material"] = material_asset(shape.material)
     return result
@@ -56,13 +79,23 @@ def actor_asset(actor):
             entity = entity.entity
         components = []
         for component in entity.components:
-            if not hasattr(component, "render_shapes") and not hasattr(component, "collision_shapes"):
+            if not hasattr(component, "render_shapes") and not hasattr(
+                component, "collision_shapes"
+            ):
                 continue
             entry = {"type": type(component).__name__}
             for field in ("render_shapes", "collision_shapes"):
                 if hasattr(component, field):
-                    entry[field] = [shape_asset(shape) for shape in getattr(component, field)]
-            for field in ("mass", "inertia", "kinematic", "linear_damping", "angular_damping"):
+                    entry[field] = [
+                        shape_asset(shape) for shape in getattr(component, field)
+                    ]
+            for field in (
+                "mass",
+                "inertia",
+                "kinematic",
+                "linear_damping",
+                "angular_damping",
+            ):
                 if hasattr(component, field):
                     entry[field] = array_copy(getattr(component, field))
             if hasattr(component, "cmass_local_pose"):
@@ -74,7 +107,9 @@ def actor_asset(actor):
 
 def scene_assets(env):
     """每次读取当前场景；包含后来创建的轨迹和高亮对象。"""
-    assets = {name: actor_asset(actor) for name, actor in sorted(env.scene.actors.items())}
+    assets = {
+        name: actor_asset(actor) for name, actor in sorted(env.scene.actors.items())
+    }
     for name, articulation in sorted(env.scene.articulations.items()):
         for link in articulation.get_links():
             assets[f"{name}/{link.name}"] = actor_asset(link)

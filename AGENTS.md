@@ -253,6 +253,17 @@ command -v uv
 
 ## 追加式执行日志
 
+### 2026-09-08 — 原版重构代码收敛，准备三档12局正式链路验证
+
+- 已移除旧ICLBaseEnv、独立TaskEvaluator、Oracle四任务分支、旧交换动画和旧几何/编译器；四个任务文件直接继承原版。认证/生成/回放/重认证/进程管理分开，图表从带独立摘要的真实初态读取；原版6份共享素材、动作、事件、判定和语言工具仍与固定基线逐字节一致。
+- 观察器检查修正：ManiSkill.get_obs默认会隐式get_info/evaluate，现传入已有info，单次显式判定严格只求值一次；reset标记不求值。新增回归测试。原版内部终止额外一步完整保存，交付标记按包装器是否返回该帧区分；回放经原版包装器自然产生额外步。此前比较报告证明当时两路相同，不能替代本次修正后重新完成最终对照。
+- 四任务最新真实smoke通过（33.82s）：BinFill候选1，481操作/470步；RouteStick候选0，641操作/622步；VideoUnmaskSwap候选0，292操作/287步；VideoRepick候选0，894操作/867步。普通ICL全套178 passed/8 skipped（34.67s），跳过项是需显式开启的真实smoke/套件reset；另新增5项完整HDF5对抗检查器反例及成功对照通过。
+- 全仓轻量测试为203 passed、4 failed、2 skipped（173.68s）。四项失败已在76ae12bf的冻结源码/测试/脚本副本中逐项复现（0.08s），日志为 `artifacts/reports/robomme-icl/native-parity/baseline-known-failures.log`；不为本轮去修改原版行为或无关历史测试。
+- 代码格式使用一次性工具：`UV_CACHE_DIR="$PWD/.cache/uv" uv run --no-project --isolated --with ruff==0.14.10 ruff ...`；只整理新版模块、测试和本轮脚本，清理69项未使用导入，未改pyproject/uv.lock或原版任务函数。F821/F822检查、Markdown结构与本地链接、git diff --check均通过。
+- 新增独立错误动作策略和整套对照入口，计划覆盖提前按钮、错目标、错顺序、错方向、未完成次数和错误数量；这些策略仅经原版规划器/物理动作执行，不直接改成功标志。正常帧、素材、初态、相机、任务表、参数、事件分别对照，未验证项仍不标通过。
+- 正式12局链路计划：提交本阶段后，以干净提交为启动基线，登记会话 `eval-native-parity-smoke-12`；完整命令载体 `.cache/run-native-parity-smoke-12.sh`，先prepare每任务3条/4 workers/双GPU/32候选/单子进程180秒，再原版对照、生成、回放和四任务连续reset。输出为 `artifacts/generated/robomme-icl/native-parity/smoke-12/` 及 `smoke-12-reference/`；控制台日志在 `artifacts/reports/robomme-icl/native-parity/smoke-12.log`，结束写EXIT_CODE。单任务单局smoke已通过，12局通过后才进入默认96条与错误动作全验收。
+- 尚未完成：12局及96条正式链路、所有分支与真实错误动作对照、最终scripts/NATIVE_PARITY.md和最终报告。不得以普通测试通过宣称目标完成。
+
 ### 2026-09-08 — 独立原版首例对照与分层初始位姿修正
 
 - 独立原版对照入口已实现：`scripts/verify_native_parity.py --capture episode --source original --input-record ... --reference-root artifacts/generated/robomme-icl/native-parity/reference-v1`。在新进程逐个校验102个原版Git blob，只注入批准的次数和位置输入，不调用新版任务子类或NativePlacements。

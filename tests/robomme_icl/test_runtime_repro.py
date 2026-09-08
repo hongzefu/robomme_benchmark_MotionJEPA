@@ -6,7 +6,9 @@ import pytest
 
 
 @pytest.mark.gpu
-@pytest.mark.parametrize("task", ["BinFill", "RouteStick", "VideoUnmaskSwap", "VideoRepick"])
+@pytest.mark.parametrize(
+    "task", ["BinFill", "RouteStick", "VideoUnmaskSwap", "VideoRepick"]
+)
 def test_same_environment_reset_reproduces_all_frames(task):
     """显式设置 ICL_TEST_SUITE 后运行，不能以纯逻辑 mock 替代。"""
     path = os.environ.get("ICL_TEST_SUITE")
@@ -14,7 +16,7 @@ def test_same_environment_reset_reproduces_all_frames(task):
         pytest.skip("真实复现测试需要 ICL_TEST_SUITE 指向已认证套件")
     from robomme_icl import make_env
     from robomme_icl.io.hdf5 import assert_identical, read_episode
-    from robomme_icl.oracle import run_episode
+    from robomme_icl.execution.episode import run_episode
     from robomme_icl.suite import load_suite
 
     suite = load_suite(path)
@@ -26,7 +28,11 @@ def test_same_environment_reset_reproduces_all_frames(task):
         assert first[-1]["info"]["success"] is True
         assert first[-1]["info"]["fail"] is False
         certified = suite["certification"][spec["spec_hash"]]["record_paths"][0]
-        assert_identical(read_episode(certified).frames, first, path=f"{task}/certified_vs_same_process")
+        assert_identical(
+            read_episode(certified).frames,
+            first,
+            path=f"{task}/certified_vs_same_process",
+        )
         assert_identical(first, second, path=f"{task}/same_env_reset")
     finally:
         env.close()

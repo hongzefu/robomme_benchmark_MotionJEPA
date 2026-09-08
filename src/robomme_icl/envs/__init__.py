@@ -4,4 +4,5 @@
 def register_envs():
     """幂等注册四任务，不覆盖任何原版注册。"""
     from .registry import register_envs as register
+
     register()

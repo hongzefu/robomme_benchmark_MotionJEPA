@@ -6,7 +6,9 @@ from pathlib import Path
 def repository_root() -> Path:
     """沿源码位置寻找本仓库，不根据调用者的工作目录猜测。"""
     for parent in Path(__file__).resolve().parents:
-        if (parent / "pyproject.toml").is_file() and (parent / "src" / "robomme").is_dir():
+        if (parent / "pyproject.toml").is_file() and (
+            parent / "src" / "robomme"
+        ).is_dir():
             return parent
     raise ValueError("无法从 robomme_icl 源码位置定位仓库根目录")
 

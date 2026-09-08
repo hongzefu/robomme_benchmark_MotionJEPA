@@ -7,8 +7,12 @@ from .route_stick import ICLRouteStick
 from .video_unmask_swap import ICLVideoUnmaskSwap
 from .video_repick import ICLVideoRepick
 
-ENVIRONMENT_CLASSES = {"BinFill": ICLBinFill, "RouteStick": ICLRouteStick,
-                       "VideoUnmaskSwap": ICLVideoUnmaskSwap, "VideoRepick": ICLVideoRepick}
+ENVIRONMENT_CLASSES = {
+    "BinFill": ICLBinFill,
+    "RouteStick": ICLRouteStick,
+    "VideoUnmaskSwap": ICLVideoUnmaskSwap,
+    "VideoRepick": ICLVideoRepick,
+}
 
 
 def register_envs():

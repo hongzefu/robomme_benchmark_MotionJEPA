@@ -20,6 +20,7 @@ def make_env(*, task, seed, suite, **kwargs):
     fingerprint = runtime_fingerprint(render_gpu=render_gpu)
     if certification["runtime_fingerprint"] != fingerprint:
         from .errors import ReproducibilityError
+
         raise ReproducibilityError("当前运行环境与套件认证指纹不同")
     return make_env_from_spec(spec, render_gpu=render_gpu, **kwargs)
 
@@ -36,8 +37,29 @@ def make_env_from_spec(spec, *, record_demonstration=True, render_gpu=0):
 
     spec = spec if isinstance(spec, EpisodeSpec) else EpisodeSpec.from_dict(spec)
     register_envs()
-    def raw_factory():
-        return gym.make(spec.env_id, episode_spec=spec, render_gpu=render_gpu, disable_env_checker=True)
+    from .io.fingerprint import runtime_fingerprint
 
-    return ICLJointAngleEnv(raw_factory, task_kind=spec.task_kind, seed=spec.seed,
-                            record_demonstration=record_demonstration)
+    expected_device = runtime_fingerprint(render_gpu=render_gpu)
+
+    def raw_factory():
+        raw = gym.make(
+            spec.env_id,
+            episode_spec=spec,
+            render_gpu=render_gpu,
+            disable_env_checker=True,
+        )
+        actual = raw.unwrapped.scene.sub_scenes[0].render_system.device
+        if (
+            actual.cuda_id != render_gpu
+            or actual.pci_string != expected_device["render_gpu_pci"]
+        ):
+            raw.close()
+            raise RuntimeError("实际渲染GPU与冻结的物理设备绑定不一致")
+        return raw
+
+    return ICLJointAngleEnv(
+        raw_factory,
+        task_kind=spec.task_kind,
+        seed=spec.seed,
+        record_demonstration=record_demonstration,
+    )

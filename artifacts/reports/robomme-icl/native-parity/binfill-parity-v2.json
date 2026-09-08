@@ -1,0 +1,145 @@
+{
+  "reference": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/native-parity/reference-episode-binfill-v2/episode.h5",
+  "actual": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/native-parity/workflow-smoke-binfill-v4/suite/certification/BinFill/easy/0/candidate_0001/repeat_0_infra_0.h5",
+  "native_reference": "76ae12bf1e71f79e1c3f608eede10ac7430b406f",
+  "checks": {
+    "runtime": true,
+    "spec": true,
+    "initial_assets": true,
+    "initial_state": true,
+    "initial_sensor_parameters": true,
+    "task_inventory": true,
+    "native_parameters": true,
+    "events": true,
+    "all_frames_exact": true
+  },
+  "passed": true,
+  "operations": 481,
+  "frame_hash": "d5a8a5ccb11ae35b64398fae361a649211e8433689ba3901d6c70a230fb8b889",
+  "event_count": 15,
+  "events": [
+    {
+      "operation_index": 0,
+      "step": 1,
+      "kind": "subgoal",
+      "value": [
+        0,
+        "pick up the first blue cube",
+        false
+      ]
+    },
+    {
+      "operation_index": 0,
+      "step": 1,
+      "kind": "created",
+      "actor": "board_with_hole",
+      "visible": true
+    },
+    {
+      "operation_index": 0,
+      "step": 1,
+      "kind": "created",
+      "actor": "cube_blue_0",
+      "visible": true
+    },
+    {
+      "operation_index": 0,
+      "step": 1,
+      "kind": "created",
+      "actor": "cube_blue_1",
+      "visible": true
+    },
+    {
+      "operation_index": 0,
+      "step": 1,
+      "kind": "created",
+      "actor": "cube_blue_2",
+      "visible": true
+    },
+    {
+      "operation_index": 0,
+      "step": 1,
+      "kind": "created",
+      "actor": "cube_blue_3",
+      "visible": true
+    },
+    {
+      "operation_index": 0,
+      "step": 1,
+      "kind": "created",
+      "actor": "ground",
+      "visible": true
+    },
+    {
+      "operation_index": 0,
+      "step": 1,
+      "kind": "created",
+      "actor": "table-workspace",
+      "visible": true
+    },
+    {
+      "operation_index": 101,
+      "step": 100,
+      "kind": "subgoal",
+      "value": [
+        1,
+        "put it into the bin",
+        false
+      ]
+    },
+    {
+      "operation_index": 149,
+      "step": 146,
+      "kind": "visibility",
+      "actor": "cube_blue_0",
+      "visible": false
+    },
+    {
+      "operation_index": 150,
+      "step": 147,
+      "kind": "subgoal",
+      "value": [
+        2,
+        "pick up the second blue cube",
+        false
+      ]
+    },
+    {
+      "operation_index": 260,
+      "step": 255,
+      "kind": "subgoal",
+      "value": [
+        3,
+        "put it into the bin",
+        false
+      ]
+    },
+    {
+      "operation_index": 320,
+      "step": 313,
+      "kind": "visibility",
+      "actor": "cube_blue_1",
+      "visible": false
+    },
+    {
+      "operation_index": 321,
+      "step": 314,
+      "kind": "subgoal",
+      "value": [
+        4,
+        "press the button",
+        false
+      ]
+    },
+    {
+      "operation_index": 410,
+      "step": 401,
+      "kind": "subgoal",
+      "value": [
+        5,
+        "All tasks completed",
+        false
+      ]
+    }
+  ]
+}

@@ -3,6 +3,7 @@
 import hashlib
 from ..specs import canonical_json
 
+
 class _Stream:
     """SHA-256 计数器随机流，避免全局 RNG 和进程调度影响候选。"""
 

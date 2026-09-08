@@ -1,76 +1,80 @@
 # robomme-ICL
 
-新版与原版 `robomme` 并列安装，共享根目录的 `pyproject.toml`、`uv.lock` 和 `.venv`。四个新版环境直接继承 ManiSkill 基类，不继承旧任务；原版任务源码保持不变，旧生成与回放脚本已归档至 `scripts/legacy/`。数据与报告按批次独立管理。
+新版只负责分布输入、记录和数据流程。四个任务分别继承原版 `BinFill`、`RouteStick`、`VideoUnmaskSwap`、`VideoRepick`；素材、任务列表、动作、判定与显隐事件来自原版。
 
-## 使用流程
+## 从哪里读代码
 
-所有业务命令只放在仓库根目录的 `scripts/`。四个入口的参数、输出结构、视频和断点规则见 [scripts/README.md](../../scripts/README.md)。本包只提供可导入的实现，不注册控制台命令或模块运行入口。
+| 问题 | 入口 |
+| --- | --- |
+| 两个 JSON 固定哪些输入 | [config.py](config.py)、[configs/](configs/) |
+| 次数、seed 和位置层如何分配 | [sampling/tasks.py](sampling/tasks.py)、[sampling/positions.py](sampling/positions.py) |
+| 一局环境保存什么 | [specs.py](specs.py) 的 `EpisodeSpec` |
+| BinFill 如何接原版 | [envs/bin_fill.py](envs/bin_fill.py) |
+| 另外三个任务如何接原版 | [envs/route_stick.py](envs/route_stick.py)、[envs/video_unmask_swap.py](envs/video_unmask_swap.py)、[envs/video_repick.py](envs/video_repick.py) |
+| 位置如何套到真实素材 | [native/parameters.py](native/parameters.py) 的 `NativePlacements` |
+| 演示与执行怎样运行 | [envs/wrapper.py](envs/wrapper.py)、[execution/episode.py](execution/episode.py) |
+| 哪些步骤会被保存 | [execution/recording.py](execution/recording.py) |
+| 认证、生成、回放与进程调度 | [workflows/](workflows/) |
+| 原版对照与逐位验证 | [native/reference.py](native/reference.py)、[validation/](validation/) |
+| HDF5、套件和恢复凭证 | [io/](io/) |
 
-```bash
-cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask
-uv sync --locked --extra dev
-uv run scripts/prepare_suite.py --output-dir artifacts/generated/robomme-icl/my-run --gpus 0,1 --workers 32
-uv run scripts/generate_dataset.py --suite artifacts/generated/robomme-icl/my-run/suite --output-dir artifacts/generated/robomme-icl/my-run
+调用顺序为：
+
+```text
+两份 JSON → 任务配额 → 位置分位数 → EpisodeSpec
+         → 对应原版子类 → 原版 task_list/solve/evaluate/step
+         → 完整操作记录 → 认证、生成、回放与视频
 ```
 
-默认每任务24条、每档8条，共96个seed；先验证几何，再用两个新进程严格比较全部帧后发布清单。首次验证使用 `--tasks BinFill --episodes-per-task 1 --workers 1`。超过五分钟的运行按根 `AGENTS.md` 放入登记的detached tmux。
+## 配置边界
 
-双GPU默认0,1、总并发32。每seed固定物理设备，生成、回放和reset继承绑定，不因worker数或完成顺序改变。不要设置 `CUDA_VISIBLE_DEVICES`；新配置认证通过 `--gpus` 选卡，源清单重新认证保持原卡。
+任务 JSON 保留任务顺序、各难度条数、次数候选和 seed 分配。默认每任务三档各8条，共96条。BinFill 的 `target_color_count` 是原版选中的目标颜色池大小；实际非零目标颜色数可能更少，记录原版分配结果。
 
-任务分布和位置分布分别由 [task_distribution.json](configs/task_distribution.json) 和 [position_distribution.json](configs/position_distribution.json) 控制；可用 `--task-config`、`--position-config` 指向修改后的配置。次数配额和位置层在候选搜索前固定；拒绝候选不能改变次数、seed 或所属位置层。
+位置 JSON 为版本2，保留范围、角度、拓扑、分层及候选预算；不再包含 `geometry` 或 `schedule`。按钮和孔板配置中心位置；方块和容器配置完整物体支持区域。位置分位数先固定，创建素材后根据原版真实碰撞组件的旋转投影计算合法中心区间。每个候选只能在原层内取值，不改变任务次数或 seed。
 
-```bash
-uv run scripts/replay_dataset.py --input artifacts/generated/robomme-icl/my-run/hdf5_files --output-dir artifacts/generated/robomme-icl/my-run/replay
-uv run scripts/plot_distribution.py --suite artifacts/generated/robomme-icl/my-run/suite --output-dir artifacts/generated/robomme-icl/my-run/distributions
-```
+原版对象的最终位置同时写入 `initial_pose` 和当前 pose，确保 ManiSkill 建场景时不会恢复到临时位置。实际初态保存在记录的 `initial_state`，不是从配额或演示结束位置推测。
 
-生成失败保留证据且不换 seed。已完成文件仅在完整内容与认证信息核对通过后才能断点复用；坏文件或来源不明的文件不自动删除。回放读取 HDF5 自带的完整场景记录，不使用旧 train metadata。
+`safety_clearance` 只用于初态候选筛选。运行时遵守原版成功／失败条件，不额外增加新版碰撞、落稳或抓持判据。
+
+## 接口和版本
+
+公开入口保持 `make_env(task, seed, suite)`，仅接受已认证、指纹匹配的版本2套件。旧清单必须重新编译认证，旧数据保留。
 
 ```python
-import robomme_icl
+from robomme_icl import make_env
 
-env = robomme_icl.make_env(
-    task="BinFill",
-    seed=2_000_000_000,
-    suite="/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/generated/robomme-icl/scripts-v1/suite",
-)
-obs, info = env.reset()
+env = make_env(task="BinFill", seed=2000000000, suite="artifacts/generated/robomme-icl/native-v2/suite")
+observation, info = env.reset()
 demonstration = info["demonstration"]
-# RouteStick 动作为 7 维关节角；其余任务为 7 维关节角加 1 维夹爪控制。
-# action 必须是精确维度的有限数组；env.step(action) 返回标准五项结果。
 env.close()
 ```
 
-## 配置与任务语义
+RouteStick 使用7维关节动作；其余任务使用7维关节角加1维夹爪动作。演示由原版 `DemonstrationWrapper` 在 reset 内执行。再次 reset 会重建原版实例，以清除上一局对象、计数器和事件缓存。
 
-| 任务 | easy | medium | hard |
-| --- | --- | --- | --- |
-| BinFill | 放入1–3个；场上4–6个、1色；目标1色 | 放入2–4个；场上8–10个、2色；目标1–2色 | 放入3–5个；场上10–12个、3色；目标2–3色 |
-| RouteStick | 游走2–3段，非边界不立即折返 | 游走4–5段，非边界不立即折返 | 游走4–7段，允许立即折返 |
-| VideoUnmaskSwap | 3容器；pick1–2；swap1–2 | 4容器；pick1；swap1–2 | 4容器；pick2；swap2–3 |
-| VideoRepick | 3个同色方块；重复抓放1–3；swap1–2 | 3个同色方块；重复抓放1–3；swap2–3 | 三色各5个方块；重复抓放1–3；swap0 |
+四个业务脚本、参数及命令见 [scripts/README.md](../../scripts/README.md)。
 
-VideoUnmaskSwap 始终有红绿蓝三个藏块；三容器全占用，四容器有一个空容器，空容器角色按场景轮转。VideoRepick 的重复次数只统计评测阶段，演示阶段另有一次抓放。BinFill 保留任意颜色顺序，按实际投入的唯一方块逐色严格计数，再按按钮结束；动态出现时间也写入场景记录。
+## 记录协议
 
-位置按任务的合法自由参数分层：BinFill 分别配置按钮、孔板、方块区域；RouteStick 保持九点拓扑并整排旋转；Video 任务保留指定布局及锚点附近窗口。候选只在原层内调整，位置均匀不表示任意工作台位置均可用。小样本未覆盖的次数组合会在报告中明确列出。
+版本2 HDF5保留 `setup/steps`，每项操作的 `info.operation` 为：
 
-## 几何、判定与复现
+- `step`：真实物理步，保留输入动作、原始双路RGB和完整状态。
+- `evaluate`：调用方原本就需要的显式判定，保留 `solve_complete_eval`。
+- `reset_complete`：演示结束的边界，附初始素材、状态、相机参数、任务列表、原版参数和运行配置。
 
-容器视觉和碰撞使用同一份 compound 几何定义。中央 box 厚度30mm、顶部72mm，藏块尺寸不变，名义顶部净距8.67mm。初始布局与完整 swap 路径采用连续运动上界检查，另在物理子步中检查实际接触；正常支撑、抓取、投入和按按钮按角色允许，其他接触导致失败。接触读取异常不能视为安全。
+记录器给 `get_obs` 传入已有 info，避免它隐式再调用 evaluate。原版 `NO RECORD` 与终止时的内部额外一步仍完整保存；`deliver_frame` 控制视频交付。回放使用原版包装器，使额外终止步自然产生，逐项核对整段内部操作。
 
-所有失败保持到 reset，成功不能与失败同时成立。演示不能增加执行计数。BinFill 初态必须空孔，方块实际从孔外进入并落稳后才能计数；隐藏对象的停车位不提供孔外观测证据。夹爪抬起正确物体、逐色入孔、完整抓放转换、Route 目标顺序与绕行侧别由真实观测判定；oracle 不能直接写入成功或计数。
+原版高亮对象名包含进程地址。记录层按“所属目标＋实例号”建立一一对应的稳定标识，不修改原版对象；原始名字映射在 HDF5 中独立保存和校验。
 
-固定单环境CPU物理、每seed绑定的GPU和线程数。每次 reset 重建物理场景以清除求解器历史，恢复所有对象、控制器、计数器和动画缓存。动作使用固定 screw 或固定初值/迭代预算的 CLIK，失败不转入随机规划。仿真与HDF5核对都在独立工作进程中执行，协调进程只接收摘要。
+## 验证口径
 
-场景记录与认证绑定配置、源代码、依赖锁、关键库和设备驱动指纹。比较内容包括两路原始RGB、机器人与物体状态、关节动作、任务事件和终止步；日志时间和视频封装字节不属于轨迹比较。复现差异必须停止认证，不能通过换 seed 或放宽容差继续发布。
+固定原版为 `76ae12bf1e71f79e1c3f608eede10ac7430b406f`。原版对照在独立进程中逐个校验源码 blob，只注入允许覆盖的输入，不调用新版任务子类。
 
-## 检查入口与实现边界
+素材、初态、相机参数、任务列表、实际参数、事件时间线、所有操作和原始RGB分别比较。原版自身有特殊判据时保留原判据，例如容器抓起只按原版高度条件判断。自身重复运行相同与原版行为相同分别报告。
 
 ```bash
+command -v uv
 uv run python -m pytest tests/robomme_icl/ -q
-uv run scripts/legacy/robomme_icl/preflight.py --output artifacts/reports/robomme-icl/<新几何报告名>.json
+ICL_NATIVE_SMOKE=1 uv run python -m pytest tests/robomme_icl/test_native_runtime.py -q
 ```
 
-归档的 `preflight.py` 只做几何诊断，不创建认证套件。正式认证使用 `scripts/prepare_suite.py`。入口迁移引起源码指纹变化时，使用它的 `--source-suite` 对旧清单原spec重新认证并与旧记录逐位比较；不能覆盖旧数据或跳过版本检查。
-
-原版调用只允许集中在 `legacy_bridge`；纯配置解析和编译不会导入旧环境或仿真库。首版只实现 joint_angle，不提供 ee_pose、waypoint 或 multi_choice 兼容分支。
+普通测试中的真实运行跳过项不算验收通过；正式批次还需完成原版对照、回放和连续 reset。

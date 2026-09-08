@@ -43,11 +43,22 @@ class VideoRepickParameters:
     swap_count: int
 
 
-PARAMETER_TYPES = dict(zip(TASKS, (BinFillParameters, RouteStickParameters, VideoUnmaskSwapParameters, VideoRepickParameters)))
+PARAMETER_TYPES = dict(
+    zip(
+        TASKS,
+        (
+            BinFillParameters,
+            RouteStickParameters,
+            VideoUnmaskSwapParameters,
+            VideoRepickParameters,
+        ),
+    )
+)
 
 
 class PlacementSample(TypedDict):
     """在原版实际几何决定的合法中心区间内，固定两个分层分位数。"""
+
     x_fraction: float
     y_fraction: float
     yaw_degrees: float
@@ -60,7 +71,13 @@ class FrameRecord(TypedDict):
 
 
 def canonical_json(value) -> str:
-    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+    return json.dumps(
+        value,
+        sort_keys=True,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
 
 
 def content_hash(value) -> str:
@@ -75,7 +92,19 @@ class EpisodeSpec:
 
     def __post_init__(self):
         value = json.loads(self._json)
-        expected = {"schema_version", "task_kind", "seed", "episode", "difficulty", "robot_kind", "env_id", "task_parameters", "placements", "layout", "provenance"}
+        expected = {
+            "schema_version",
+            "task_kind",
+            "seed",
+            "episode",
+            "difficulty",
+            "robot_kind",
+            "env_id",
+            "task_parameters",
+            "placements",
+            "layout",
+            "provenance",
+        }
         if set(value) != expected or value["schema_version"] != 2:
             raise ValueError("仅接受版本2场景；旧素材／时序清单必须重新编译认证")
         task = value["task_kind"]
@@ -96,7 +125,9 @@ class EpisodeSpec:
             if key in ("dynamic", "allow_backtracking"):
                 valid = type(number) is bool
             else:
-                valid = type(number) is int and number >= (0 if key == "swap_count" else 1)
+                valid = type(number) is int and number >= (
+                    0 if key == "swap_count" else 1
+                )
             if not valid:
                 raise ValueError(f"任务参数 {key} 非法")
         asdict(PARAMETER_TYPES[task](**parameters))
@@ -106,9 +137,17 @@ class EpisodeSpec:
             if not isinstance(placements, list):
                 raise ValueError("位置组必须为列表")
             for point in placements:
-                if set(point) != {"x_fraction", "y_fraction", "yaw_degrees"} or any(type(x) not in (float, int) or not math.isfinite(x) for x in point.values()):
-                    raise ValueError("位置须含有限分位数x_fraction/y_fraction和yaw_degrees")
-                if not 0 <= point["x_fraction"] <= 1 or not 0 <= point["y_fraction"] <= 1:
+                if set(point) != {"x_fraction", "y_fraction", "yaw_degrees"} or any(
+                    type(x) not in (float, int) or not math.isfinite(x)
+                    for x in point.values()
+                ):
+                    raise ValueError(
+                        "位置须含有限分位数x_fraction/y_fraction和yaw_degrees"
+                    )
+                if (
+                    not 0 <= point["x_fraction"] <= 1
+                    or not 0 <= point["y_fraction"] <= 1
+                ):
                     raise ValueError("位置分位数必须位于[0,1]")
         if value["layout"].get("coordinate_mode") != "native_support_fraction":
             raise ValueError("位置协议不同，请按当前原版几何重新编译认证")

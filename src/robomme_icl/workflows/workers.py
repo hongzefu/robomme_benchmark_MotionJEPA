@@ -4,19 +4,20 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
-import os
 import time
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Callable, Sequence
 
-import h5py
 
 from ..errors import CandidateRejected, InfrastructureError
 from ..specs import EpisodeSpec
 from ..io.paths import output_path
 from ..io.fingerprint import runtime_fingerprint, source_commit
 from ..io.hdf5 import (
-    EpisodeRecord, RecordError, ReproducibilityError, assert_identical,
-    assert_records_identical, read_episode, write_episode,
+    RecordError,
+    ReproducibilityError,
+    assert_identical,
+    read_episode,
+    write_episode,
 )
 from ..validation.reproducibility import check_terminal
 
@@ -25,54 +26,121 @@ import traceback
 from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from ..validation.reproducibility import replay_frames
 
-def _child_run(connection: Any, spec_data: dict[str, Any], target: str, replay_source: str | None, render_gpu: int) -> None:
+
+def _child_run(
+    connection: Any,
+    spec_data: dict[str, Any],
+    target: str,
+    replay_source: str | None,
+    render_gpu: int,
+    reference_root: str | None = None,
+    probe: str | None = None,
+) -> None:
     """每次调用运行在一个全新的 spawn 进程中，管道只传小型状态。"""
     env = None
     started = time.monotonic()
     try:
-        from ..api import make_env_from_spec
-        from ..execution.episode import run_episode
+        from ..runtime import configure_runtime
 
+        configure_runtime()
         fingerprint = runtime_fingerprint(render_gpu=render_gpu)
         commit = source_commit()
         spec = EpisodeSpec.from_dict(spec_data)
-        env = make_env_from_spec(spec, record_demonstration=True, render_gpu=render_gpu)
-        from ..validation.geometry import validate_scene_geometry
-        geometry = validate_scene_geometry(env.unwrapped, spec)
-        if not geometry["ok"]:
-            raise CandidateRejected("；".join(geometry["reasons"]))
-        env.geometry_report = geometry
-        built = time.monotonic()
-        if replay_source is None:
-            frames = run_episode(env)
+        reference = None
+        if reference_root is not None:
+            from ..native.reference import load_reference, run_reference_episode
+
+            reference = load_reference(reference_root)
+            frames, names = run_reference_episode(spec, render_gpu, probe=probe)
+            built = None
         else:
-            frames = replay_frames(env, read_episode(replay_source))
-        check_terminal(frames)
+            from ..api import make_env_from_spec
+            from ..execution.episode import run_episode
+            from ..validation.geometry import validate_scene_geometry
+
+            env = make_env_from_spec(
+                spec, record_demonstration=True, render_gpu=render_gpu
+            )
+            geometry = validate_scene_geometry(env.unwrapped, spec)
+            if not geometry["ok"]:
+                raise CandidateRejected("；".join(geometry["reasons"]))
+            env.geometry_report = geometry
+            built = time.monotonic()
+            if probe is not None:
+                from ..native.probes import execute_probe
+
+                env.reset()
+                frames = execute_probe(env, probe)
+            elif replay_source is not None:
+                frames = replay_frames(env, read_episode(replay_source))
+            else:
+                frames = run_episode(env)
+            names = dict(env.recorder.runtime_names)
+            env.close()
+            env = None
+        if probe is None:
+            check_terminal(frames)
         executed = time.monotonic()
-        names = dict(env.recorder.runtime_names)
-        env.close()
-        env = None
-        assert_identical(fingerprint, runtime_fingerprint(render_gpu=render_gpu), path="runtime_fingerprint")
+        assert_identical(
+            fingerprint,
+            runtime_fingerprint(render_gpu=render_gpu),
+            path="runtime_fingerprint",
+        )
+        if reference is not None:
+            from ..io.fingerprint import _tree_hash
+
+            fingerprint["legacy_source_hash"] = _tree_hash(
+                Path(reference_root) / "src/robomme"
+            )
+            fingerprint["reference_commit"] = reference["commit"]
         write_started = time.monotonic()
-        write_episode(target, spec, frames, runtime_fingerprint=fingerprint, source_commit=commit,
-                      runtime_name_mapping=names)
-        timings = {"build_seconds": built-started, "run_seconds": executed-built,
-                   "write_seconds": time.monotonic()-write_started}
+        write_episode(
+            target,
+            spec,
+            frames,
+            runtime_fingerprint=fingerprint,
+            source_commit=commit,
+            runtime_name_mapping=names,
+        )
+        timings = {
+            "execute_seconds": executed - started,
+            "write_seconds": time.monotonic() - write_started,
+        }
+        if built is not None:
+            timings.update(build_seconds=built - started, run_seconds=executed - built)
         # 耗时只进入日志和控制消息，不写入需要逐位相同的轨迹内容。
-        print(f"ICL_TIMING seed={spec.seed} GPU={render_gpu} frames={len(frames)} " + json.dumps(timings, sort_keys=True), flush=True)
+        print(
+            f"ICL_TIMING seed={spec.seed} GPU={render_gpu} frames={len(frames)} "
+            + json.dumps(timings, sort_keys=True),
+            flush=True,
+        )
         connection.send({"ok": True, "path": target, "timings": timings})
     except BaseException as exc:
-        from ..errors import ReproducibilityError as SharedReproducibilityError, SceneRejected, TaskExecutionError
+        from ..errors import (
+            ReproducibilityError as SharedReproducibilityError,
+            SceneRejected,
+            TaskExecutionError,
+        )
 
         if isinstance(exc, (SceneRejected, TaskExecutionError, CandidateRejected)):
             kind = "candidate"
         elif isinstance(exc, SharedReproducibilityError):
             kind = "reproducibility"
-        elif isinstance(exc, (OSError, TimeoutError, InterruptedError)) and not isinstance(exc, FileExistsError):
+        elif isinstance(
+            exc, (OSError, TimeoutError, InterruptedError)
+        ) and not isinstance(exc, FileExistsError):
             kind = "infrastructure"
         else:
             kind = "fatal"
-        connection.send({"ok": False, "kind": kind, "error": str(exc), "type": type(exc).__name__, "traceback": traceback.format_exc()})
+        connection.send(
+            {
+                "ok": False,
+                "kind": kind,
+                "error": str(exc),
+                "type": type(exc).__name__,
+                "traceback": traceback.format_exc(),
+            }
+        )
     finally:
         if env is not None:
             try:
@@ -90,8 +158,12 @@ def run_episode_process(
     replay_source: str | Path | None = None,
     timeout_seconds: float = 240,
     render_gpu: int = 0,
+    reference_root: str | Path | None = None,
+    probe: str | None = None,
 ) -> Path:
     """独立进程执行完整 episode，不使用会残留 RNG 的常驻 worker。"""
+    if replay_source is not None and (reference_root is not None or probe is not None):
+        raise ValueError("回放不能同时执行原版对照或错误动作策略")
     if timeout_seconds <= 0:
         raise ValueError("timeout_seconds 必须大于零")
     if type(render_gpu) is not int or render_gpu < 0:
@@ -101,12 +173,21 @@ def run_episode_process(
         raise FileExistsError(f"拒绝覆盖已有记录：{target}")
     # spawn 进程导入 numpy 之前便继承这些线程和缓存配置。
     from ..runtime import configure_runtime
+
     configure_runtime()
     context = mp.get_context("spawn")
     receiver, sender = context.Pipe(duplex=False)
     process = context.Process(
         target=_child_run,
-        args=(sender, spec.to_dict(), str(target), str(replay_source) if replay_source else None, render_gpu),
+        args=(
+            sender,
+            spec.to_dict(),
+            str(target),
+            str(replay_source) if replay_source else None,
+            render_gpu,
+            str(reference_root) if reference_root else None,
+            probe,
+        ),
     )
     process.start()
     sender.close()
@@ -123,7 +204,9 @@ def run_episode_process(
             if not process.is_alive():
                 break
         if message is None:
-            raise InfrastructureError(f"子进程无结果，seed={spec.seed}，exitcode={process.exitcode}")
+            raise InfrastructureError(
+                f"子进程无结果，seed={spec.seed}，exitcode={process.exitcode}"
+            )
     finally:
         receiver.close()
         process.join(timeout=1)
@@ -144,7 +227,9 @@ def run_episode_process(
     return Path(message["path"])
 
 
-def retry_same_spec(spec: Any, operation: Callable[[Any], Any], *, retries: int = 2) -> Any:
+def retry_same_spec(
+    spec: Any, operation: Callable[[Any], Any], *, retries: int = 2
+) -> Any:
     """基础设施最多额外重试两次，绝不换 seed 或重新编译配置。"""
     for attempt in range(retries + 1):
         try:
@@ -152,7 +237,10 @@ def retry_same_spec(spec: Any, operation: Callable[[Any], Any], *, retries: int 
         except (OSError, TimeoutError, InterruptedError) as exc:
             if isinstance(exc, FileExistsError) or attempt == retries:
                 raise
-            print(f"基础设施重试 {attempt + 1}/{retries}：seed={spec.seed} spec_hash={spec.spec_hash}：{exc}", flush=True)
+            print(
+                f"基础设施重试 {attempt + 1}/{retries}：seed={spec.seed} spec_hash={spec.spec_hash}：{exc}",
+                flush=True,
+            )
     raise AssertionError("基础设施重试循环不应落空")
 
 
@@ -162,14 +250,22 @@ def new_manager():
 
 def gpu_limits(manager: Any, gpus: Sequence[int], workers: int) -> dict[int, Any]:
     """限制每卡真实渲染并发；少 worker 时仍能顺序使用全部指定卡。"""
-    return {gpu: manager.BoundedSemaphore(max(1, workers // len(gpus) + (index < workers % len(gpus))))
-            for index, gpu in enumerate(sorted(gpus))}
+    return {
+        gpu: manager.BoundedSemaphore(
+            max(1, workers // len(gpus) + (index < workers % len(gpus)))
+        )
+        for index, gpu in enumerate(sorted(gpus))
+    }
 
 
-def run_jobs(operation: Callable, jobs: Sequence[dict], workers: int, stop: Any) -> list[Any]:
+def run_jobs(
+    operation: Callable, jobs: Sequence[dict], workers: int, stop: Any
+) -> list[Any]:
     """复用纯 CPU/I/O worker，并限制在途数量，避免停止时补建无用进程。"""
     results = [None] * len(jobs)
-    executor = ProcessPoolExecutor(max_workers=workers, mp_context=mp.get_context("spawn"))
+    executor = ProcessPoolExecutor(
+        max_workers=workers, mp_context=mp.get_context("spawn")
+    )
     futures = {}
     next_index = 0
 

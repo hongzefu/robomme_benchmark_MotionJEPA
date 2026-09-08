@@ -35,7 +35,11 @@ def _check_manifest(value: dict) -> list[EpisodeSpec]:
         if report.get("passed") is not True or report.get("repeat_equal") is not True:
             raise ValueError("碰撞／任务／重复运行认证未通过，禁止发布")
         provenance = spec.to_dict()["provenance"]
-        if provenance.get("task_config_hash") != content_hash(configs["task"]) or provenance.get("position_config_hash") != content_hash(configs["position"]):
+        if provenance.get("task_config_hash") != content_hash(
+            configs["task"]
+        ) or provenance.get("position_config_hash") != content_hash(
+            configs["position"]
+        ):
             raise ValueError("spec 所用配置与套件内配置快照不一致")
     return specs
 
@@ -46,9 +50,11 @@ def save_suite(path, specs, configs, certification) -> Path:
 
     task_config, position_config = configs
     value = {
-        "schema_version": 2, "status": "certified",
+        "schema_version": 2,
+        "status": "certified",
         "configs": {"task": task_config, "position": position_config},
-        "episodes": [spec.to_dict() for spec in specs], "certification": certification,
+        "episodes": [spec.to_dict() for spec in specs],
+        "certification": certification,
     }
     _check_manifest(value)
     value["suite_hash"] = content_hash(value)
@@ -72,7 +78,9 @@ def load_suite(path) -> dict:
 
 def find_spec(suite_or_path, task, seed) -> EpisodeSpec:
     """按任务和 seed 严格解析，不缺省读取旧 train metadata。"""
-    value = suite_or_path if isinstance(suite_or_path, dict) else load_suite(suite_or_path)
+    value = (
+        suite_or_path if isinstance(suite_or_path, dict) else load_suite(suite_or_path)
+    )
     # dict 入口同样校验，避免内存修改绕过文件入口的完整性检查。
     unhashed = {key: item for key, item in value.items() if key != "suite_hash"}
     if value.get("suite_hash") != content_hash(unhashed):

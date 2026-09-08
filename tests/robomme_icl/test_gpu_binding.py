@@ -30,7 +30,9 @@ def gpu_inventory():
         pytest.skip("双物理卡验证要求主测试进程未设置 CUDA_VISIBLE_DEVICES")
     queried = subprocess.run(
         ["nvidia-smi", "--query-gpu=index,uuid,pci.bus_id", "--format=csv,noheader"],
-        capture_output=True, text=True, timeout=15,
+        capture_output=True,
+        text=True,
+        timeout=15,
     )
     if queried.returncode:
         pytest.skip(f"nvidia-smi 无法读取 GPU 清单: {queried.stderr.strip()}")
@@ -47,7 +49,7 @@ def gpu_inventory():
     return uv, devices
 
 
-_PROBE = r'''
+_PROBE = r"""
 import json
 import os
 import sys
@@ -83,7 +85,7 @@ result = {
     "unmapped_error": unmapped_error,
 }
 print("GPU_BINDING_RESULT=" + json.dumps(result, sort_keys=True))
-'''
+"""
 
 
 def _run_probe(uv, requested, *, visibility=None):
@@ -93,11 +95,20 @@ def _run_probe(uv, requested, *, visibility=None):
         env["CUDA_VISIBLE_DEVICES"] = visibility
     result = subprocess.run(
         [uv, "run", "--no-sync", "python", "-c", _PROBE, str(requested)],
-        cwd=ROOT, env=env, capture_output=True, text=True, timeout=60,
+        cwd=ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=60,
     )
-    assert result.returncode == 0, f"GPU 检查子进程失败:\n{result.stdout}\n{result.stderr}"
-    records = [line.removeprefix("GPU_BINDING_RESULT=") for line in result.stdout.splitlines()
-               if line.startswith("GPU_BINDING_RESULT=")]
+    assert result.returncode == 0, (
+        f"GPU 检查子进程失败:\n{result.stdout}\n{result.stderr}"
+    )
+    records = [
+        line.removeprefix("GPU_BINDING_RESULT=")
+        for line in result.stdout.splitlines()
+        if line.startswith("GPU_BINDING_RESULT=")
+    ]
     assert len(records) == 1, f"没有唯一的设备绑定证据: {result.stdout}"
     return json.loads(records[0])
 

@@ -19,12 +19,20 @@ def validate_bindings(fingerprints):
             raise ValueError("记录没有有效的固定物理 GPU 绑定")
         if gpu not in checked:
             checked[gpu] = runtime_fingerprint(render_gpu=gpu)
-        assert_identical(fingerprint, checked[gpu], path="运行指纹；旧版清单请先用 prepare_suite.py --source-suite 重新认证")
+        assert_identical(
+            fingerprint,
+            checked[gpu],
+            path="运行指纹；旧版清单请先用 prepare_suite.py --source-suite 重新认证",
+        )
     return sorted(checked)
 
 
 def _brief(row):
-    return {key: value for key, value in row.items() if key not in ("episode_spec", "runtime_fingerprint")}
+    return {
+        key: value
+        for key, value in row.items()
+        if key not in ("episode_spec", "runtime_fingerprint")
+    }
 
 
 def _generate_job(job):
@@ -36,8 +44,15 @@ def _generate_job(job):
         append_event(job["run_root"], {"stage": "generate", "passed": True, **result})
         return result
     except BaseException:
-        append_event(job["run_root"], {"stage": "generate", "passed": False,
-                                      "seed": job["episode_spec"]["seed"], "error": traceback.format_exc()})
+        append_event(
+            job["run_root"],
+            {
+                "stage": "generate",
+                "passed": False,
+                "seed": job["episode_spec"]["seed"],
+                "error": traceback.format_exc(),
+            },
+        )
         raise
 
 
@@ -46,7 +61,9 @@ def generate_records(suite, specs, output, *, workers, timeout_seconds):
 
     output = safe_output(output)
     certifications = suite["certification"]
-    gpus = validate_bindings([certifications[spec.spec_hash]["runtime_fingerprint"] for spec in specs])
+    gpus = validate_bindings(
+        [certifications[spec.spec_hash]["runtime_fingerprint"] for spec in specs]
+    )
     with new_manager() as manager:
         stop = manager.Event()
         limits = gpu_limits(manager, gpus, workers)
@@ -55,10 +72,17 @@ def generate_records(suite, specs, output, *, workers, timeout_seconds):
             cert = certifications[spec.spec_hash]
             if cert["render_gpu"] != cert["runtime_fingerprint"]["render_gpu"]:
                 raise ValueError("认证 GPU 与运行指纹不同")
-            jobs.append({"episode_spec": spec.to_dict(), "certification": cert,
-                         "output": str(output / "hdf5_files"), "run_root": str(output),
-                         "timeout_seconds": timeout_seconds, "stop": stop,
-                         "gpu_limit": limits[cert["render_gpu"]]})
+            jobs.append(
+                {
+                    "episode_spec": spec.to_dict(),
+                    "certification": cert,
+                    "output": str(output / "hdf5_files"),
+                    "run_root": str(output),
+                    "timeout_seconds": timeout_seconds,
+                    "stop": stop,
+                    "gpu_limit": limits[cert["render_gpu"]],
+                }
+            )
         return run_jobs(_generate_job, jobs, workers, stop)
 
 
@@ -67,7 +91,10 @@ def check_generation_suite(suite, output):
     from robomme_icl.suite import load_suite
 
     local_manifest = safe_output(Path(output) / "suite" / "suite.json")
-    if local_manifest.exists() and load_suite(local_manifest)["suite_hash"] != suite["suite_hash"]:
+    if (
+        local_manifest.exists()
+        and load_suite(local_manifest)["suite_hash"] != suite["suite_hash"]
+    ):
         raise ValueError("输出根中的环境清单与 --suite 不同，禁止混合两批场景")
 
 
@@ -79,7 +106,16 @@ def replay_scan_root(value):
     if source.is_file():
         return None
     if source.is_dir():
-        return output_path(next((source / name for name in ("hdf5_files", "data") if (source / name).is_dir()), source))
+        return output_path(
+            next(
+                (
+                    source / name
+                    for name in ("hdf5_files", "data")
+                    if (source / name).is_dir()
+                ),
+                source,
+            )
+        )
     raise FileNotFoundError(f"回放输入不存在：{source}")
 
 
@@ -92,9 +128,14 @@ def discover_inputs(value, *, tasks=None, episodes_per_task=None):
     if base is None:
         paths = [source]
     else:
-        paths = [path for path in base.rglob("*.h5")
-                 if not any(part.startswith(".") or part in ("certification", "replay", "suite")
-                            for part in path.relative_to(base).parts)]
+        paths = [
+            path
+            for path in base.rglob("*.h5")
+            if not any(
+                part.startswith(".") or part in ("certification", "replay", "suite")
+                for part in path.relative_to(base).parts
+            )
+        ]
     rows = [header(path) for path in sorted(paths)]
     if not rows:
         raise ValueError("输入中没有完整 ICL HDF5")
@@ -105,7 +146,9 @@ def discover_inputs(value, *, tasks=None, episodes_per_task=None):
         if not set(tasks).issubset({row["task_kind"] for row in rows}):
             raise ValueError("输入缺少指定任务")
         rows = [row for row in rows if row["task_kind"] in tasks]
-    rows.sort(key=lambda row: (TASKS.index(row["task_kind"]), row["episode"], row["seed"]))
+    rows.sort(
+        key=lambda row: (TASKS.index(row["task_kind"]), row["episode"], row["seed"])
+    )
     counts, selected = {}, []
     for row in rows:
         count = counts.get(row["task_kind"], 0)
@@ -134,16 +177,37 @@ def _replay_job(job):
         with job["gpu_limit"]:
             if job["stop"].is_set():
                 raise RuntimeError("其他回放任务已失败，停止启动后续物理进程")
-            target = Path(job["output"]) / "hdf5_files" / row["task_kind"] / f"seed_{row['seed']}.h5"
-            result = replay_episode(row["path"], target, timeout_seconds=job["timeout_seconds"])
-        result = {**_brief(header(result["path"])), **result, "source_path": row["path"]}
+            target = (
+                Path(job["output"])
+                / "hdf5_files"
+                / row["task_kind"]
+                / f"seed_{row['seed']}.h5"
+            )
+            result = replay_episode(
+                row["path"], target, timeout_seconds=job["timeout_seconds"]
+            )
+        result = {
+            **_brief(header(result["path"])),
+            **result,
+            "source_path": row["path"],
+        }
         append_event(job["output"], {"stage": "replay", **result})
-        print(f"已回放 {row['task_kind']} seed={row['seed']} GPU={row['render_gpu']}", flush=True)
+        print(
+            f"已回放 {row['task_kind']} seed={row['seed']} GPU={row['render_gpu']}",
+            flush=True,
+        )
         return result
     except BaseException:
         job["stop"].set()
-        append_event(job["output"], {"stage": "replay", "passed": False,
-                                    "seed": row["seed"], "error": traceback.format_exc()})
+        append_event(
+            job["output"],
+            {
+                "stage": "replay",
+                "passed": False,
+                "seed": row["seed"],
+                "error": traceback.format_exc(),
+            },
+        )
         raise
 
 
@@ -155,8 +219,16 @@ def replay_records(rows, output, *, workers, timeout_seconds, scan_root=None):
     with new_manager() as manager:
         stop = manager.Event()
         limits = gpu_limits(manager, gpus, workers)
-        jobs = [{"input": row, "output": str(output), "stop": stop,
-                 "gpu_limit": limits[row["render_gpu"]], "timeout_seconds": timeout_seconds} for row in rows]
+        jobs = [
+            {
+                "input": row,
+                "output": str(output),
+                "stop": stop,
+                "gpu_limit": limits[row["render_gpu"]],
+                "timeout_seconds": timeout_seconds,
+            }
+            for row in rows
+        ]
         return run_jobs(_replay_job, jobs, workers, stop)
 
 
@@ -167,19 +239,36 @@ def _video_job(job):
         raise RuntimeError("其他视频导出失败，停止后续编码")
     row = job["record"]
     try:
-        path = Path(job["output"]) / "videos" / row["task_kind"] / f"seed_{row['seed']}.mp4"
+        path = (
+            Path(job["output"])
+            / "videos"
+            / row["task_kind"]
+            / f"seed_{row['seed']}.mp4"
+        )
         result = export_video(row["path"], path)
-        if (result["spec_hash"] != row["spec_hash"] or result["source_content_hash"] != row["content_hash"]
-                or result["source_operation_count"] != row["frame_count"]):
+        if (
+            result["spec_hash"] != row["spec_hash"]
+            or result["source_content_hash"] != row["content_hash"]
+            or result["source_operation_count"] != row["frame_count"]
+        ):
             raise ValueError("视频来源或帧数与本条已核对 HDF5 不一致")
-        result.update(task_kind=row["task_kind"], seed=row["seed"], render_gpu=row["render_gpu"])
+        result.update(
+            task_kind=row["task_kind"], seed=row["seed"], render_gpu=row["render_gpu"]
+        )
         append_event(job["output"], {"stage": "video", "passed": True, **result})
         print(f"已保存视频 {row['task_kind']} seed={row['seed']}：{path}", flush=True)
         return result
     except BaseException:
         job["stop"].set()
-        append_event(job["output"], {"stage": "video", "passed": False,
-                                    "seed": row["seed"], "error": traceback.format_exc()})
+        append_event(
+            job["output"],
+            {
+                "stage": "video",
+                "passed": False,
+                "seed": row["seed"],
+                "error": traceback.format_exc(),
+            },
+        )
         raise
 
 

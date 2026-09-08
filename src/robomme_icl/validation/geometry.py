@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from itertools import combinations
 import math
 
-import numpy as np
 
 from .assets import array_copy
+
 
 def _dot(a, b):
     return sum(x * y for x, y in zip(a, b))
@@ -29,7 +29,11 @@ def _norm(a):
 
 
 def _cross(a, b):
-    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+    return (
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
 
 
 def _unit_quaternion(q):
@@ -65,7 +69,12 @@ def _inverse_rotate(q, vector):
 def _multiply(q, r):
     w, x, y, z = q
     a, b, c, d = r
-    return (w*a-x*b-y*c-z*d, w*b+x*a+y*d-z*c, w*c-x*d+y*a+z*b, w*d+x*c-y*b+z*a)
+    return (
+        w * a - x * b - y * c - z * d,
+        w * b + x * a + y * d - z * c,
+        w * c - x * d + y * a + z * b,
+        w * d + x * c - y * b + z * a,
+    )
 
 
 def _slerp(q, r, t):
@@ -74,9 +83,12 @@ def _slerp(q, r, t):
     if cosine < 0:
         r, cosine = _scale(r, -1), -cosine
     if cosine > 1 - 1e-12:
-        return _unit_quaternion(_add(_scale(q, 1-t), _scale(r, t)))
+        return _unit_quaternion(_add(_scale(q, 1 - t), _scale(r, t)))
     angle = math.acos(min(1.0, cosine))
-    return _add(_scale(q, math.sin((1-t)*angle)/math.sin(angle)), _scale(r, math.sin(t*angle)/math.sin(angle)))
+    return _add(
+        _scale(q, math.sin((1 - t) * angle) / math.sin(angle)),
+        _scale(r, math.sin(t * angle) / math.sin(angle)),
+    )
 
 
 @dataclass(frozen=True)
@@ -89,7 +101,6 @@ class Box:
 
     def radius_on(self, axis):
         return sum(h * abs(_dot(v, axis)) for h, v in zip(self.half_size, self.axes))
-
 
 
 def box_clearance(first, second):
@@ -106,10 +117,11 @@ def box_clearance(first, second):
         size = _norm(raw)
         if size <= 1e-12:
             continue
-        axis = _scale(raw, 1/size)
-        gaps.append(abs(_dot(delta, axis)) - first.radius_on(axis) - second.radius_on(axis))
+        axis = _scale(raw, 1 / size)
+        gaps.append(
+            abs(_dot(delta, axis)) - first.radius_on(axis) - second.radius_on(axis)
+        )
     return max(gaps)
-
 
 
 def actual_boxes(actor):
@@ -123,9 +135,15 @@ def actual_boxes(actor):
             if hasattr(shape, "half_size"):
                 half_size = tuple(float(value) for value in shape.half_size)
             elif hasattr(shape, "radius") and hasattr(shape, "half_length"):
-                half_size = (float(shape.half_length), float(shape.radius), float(shape.radius))
+                half_size = (
+                    float(shape.half_length),
+                    float(shape.radius),
+                    float(shape.radius),
+                )
             else:
-                raise ValueError(f"任务素材存在尚未支持的碰撞形状：{type(shape).__name__}")
+                raise ValueError(
+                    f"任务素材存在尚未支持的碰撞形状：{type(shape).__name__}"
+                )
             world_quaternion = _multiply(quaternion, local.q)
             center = _add(position, rotate(quaternion, local.p))
             axes = tuple(zip(*quaternion_matrix(world_quaternion)))
@@ -138,15 +156,20 @@ def validate_scene_geometry(base, spec):
     definition = spec.to_dict()
     clearance = definition["layout"]["safety_clearance"]
     bounds = definition["layout"]["table_bounds"]
-    objects = {name: actor for name, actor in base.scene.actors.items()
-               if name not in {"table-workspace", "ground"}}
+    objects = {
+        name: actor
+        for name, actor in base.scene.actors.items()
+        if name not in {"table-workspace", "ground"}
+    }
     for name, articulation in base.scene.articulations.items():
         if name.startswith("button"):
             for link in articulation.get_links():
                 objects[f"{name}/{link.name}"] = link
     boxes = {name: actual_boxes(actor) for name, actor in objects.items()}
-    allowed = {frozenset((cube.name, container.name))
-               for cube, container in getattr(base, "cube_bin_pairs", [])}
+    allowed = {
+        frozenset((cube.name, container.name))
+        for cube, container in getattr(base, "cube_bin_pairs", [])
+    }
     reasons = []
     minimum = None
     for first, second in combinations(boxes, 2):
@@ -165,7 +188,10 @@ def validate_scene_geometry(base, spec):
             for index, axis in enumerate(("x", "y")):
                 direction = (1, 0, 0) if index == 0 else (0, 1, 0)
                 radius = box.radius_on(direction)
-                if box.center[index] - radius < bounds[axis][0] or box.center[index] + radius > bounds[axis][1]:
+                if (
+                    box.center[index] - radius < bounds[axis][0]
+                    or box.center[index] + radius > bounds[axis][1]
+                ):
                     reasons.append(f"{name} 超出桌面{axis}边界")
     layout = definition["layout"]
     supports = layout.get("supports", {})
@@ -191,8 +217,17 @@ def validate_scene_geometry(base, spec):
             direction = (1, 0, 0) if index == 0 else (0, 1, 0)
             for box in boxes[actor.name]:
                 radius = box.radius_on(direction)
-                if box.center[index] - radius < low or box.center[index] + radius > high:
+                if (
+                    box.center[index] - radius < low
+                    or box.center[index] + radius > high
+                ):
                     reasons.append(f"{actor.name} 完整碰撞形状超出配置{axis}外框")
-    return {"ok": not reasons, "reasons": reasons, "minimum_clearance": minimum,
-            "required_clearance": clearance, "source": "native_collision_shapes",
-            "scope": "initial_layout", "object_count": len(objects)}
+    return {
+        "ok": not reasons,
+        "reasons": reasons,
+        "minimum_clearance": minimum,
+        "required_clearance": clearance,
+        "source": "native_collision_shapes",
+        "scope": "initial_layout",
+        "object_count": len(objects),
+    }

@@ -18,7 +18,13 @@ def test_default_quota_and_deterministic_candidates():
     assert len({row["seed"] for row in slots}) == 96
     for task in configs[0]["task_order"]:
         for difficulty in ("easy", "medium", "hard"):
-            assert sum(row["task_kind"] == task and row["difficulty"] == difficulty for row in slots) == 8
+            assert (
+                sum(
+                    row["task_kind"] == task and row["difficulty"] == difficulty
+                    for row in slots
+                )
+                == 8
+            )
     for slot in slots:
         first = candidate_for_slot(slot, 0)
         repeated = candidate_for_slot(slot, 0)
@@ -63,7 +69,9 @@ def test_accessors_do_not_leak_mutable_state():
 def test_every_position_group_covers_each_layer_exactly_once():
     groups = defaultdict(list)
     for slot in plan_slots(*load_configs()):
-        groups[tuple(slot["position_group"])].append(candidate_for_slot(slot, 0).to_dict())
+        groups[tuple(slot["position_group"])].append(
+            candidate_for_slot(slot, 0).to_dict()
+        )
     for rows in groups.values():
         fields = set(rows[0]["layout"]["strata"])
         assert all(set(row["layout"]["strata"]) == fields for row in rows)
@@ -84,4 +92,7 @@ def test_position_seed_does_not_change_task_choices_or_episode_seeds():
         assert before["parameters"] == after["parameters"]
         assert before["seed"] == after["seed"]
         assert before["position_group"] == after["position_group"]
-        assert candidate_for_slot(before, 0).to_dict()["layout"]["strata"] != {} or before["task_kind"] == "RouteStick"
+        assert (
+            candidate_for_slot(before, 0).to_dict()["layout"]["strata"] != {}
+            or before["task_kind"] == "RouteStick"
+        )

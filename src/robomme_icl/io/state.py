@@ -5,20 +5,22 @@ from __future__ import annotations
 from pathlib import Path
 import json
 import os
-import time
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Sequence
 
 import h5py
 
-from ..errors import CandidateRejected, InfrastructureError
-from ..specs import EpisodeSpec
+from ..errors import CandidateRejected
 from ..io.paths import output_path
-from ..io.fingerprint import runtime_fingerprint, source_commit
 from ..io.hdf5 import (
-    EpisodeRecord, RecordError, ReproducibilityError, assert_identical,
-    assert_records_identical, read_episode, write_episode,
+    EpisodeRecord,
+    RecordError,
+    ReproducibilityError,
+    assert_identical,
+    assert_records_identical,
+    read_episode,
 )
 from ..validation.reproducibility import check_terminal
+
 
 def _exclusive_json(path: Path, payload: Any) -> None:
     target = output_path(path, create_parent=True)
@@ -42,7 +44,9 @@ def _bind_context(path: Path, expected: dict[str, Any]) -> None:
         assert_identical(expected, _read_json(path), path=f"恢复上下文/{path.name}")
     else:
         if any(path.parent.iterdir()):
-            raise RecordError(f"已有产物缺少恢复上下文，无法证明配置和运行指纹相同：{path.parent}")
+            raise RecordError(
+                f"已有产物缺少恢复上下文，无法证明配置和运行指纹相同：{path.parent}"
+            )
         _exclusive_json(path, expected)
 
 
@@ -70,7 +74,9 @@ def _validate_record(
         raise RecordError(f"已有记录规格不符，拒绝覆盖：{path}")
     assert_identical(spec.to_dict(), record.episode_spec, path="episode_spec")
     if fingerprint is not None:
-        assert_identical(fingerprint, record.runtime_fingerprint, path="runtime_fingerprint")
+        assert_identical(
+            fingerprint, record.runtime_fingerprint, path="runtime_fingerprint"
+        )
     try:
         check_terminal(record.frames)
     except CandidateRejected as exc:
@@ -80,7 +86,10 @@ def _validate_record(
 
 
 def _prior_complete(
-    paths: Sequence[Path], spec: Any, *, fingerprint: dict[str, Any] | None,
+    paths: Sequence[Path],
+    spec: Any,
+    *,
+    fingerprint: dict[str, Any] | None,
     content_hash: str | None = None,
 ) -> tuple[Path, EpisodeRecord] | None:
     """未知退出状态下，完整产物可复用；多个完整产物也必须相互一致。"""
@@ -89,7 +98,9 @@ def _prior_complete(
         record = _complete_record(path)
         if record is None:
             continue
-        _validate_record(record, spec, fingerprint=fingerprint, content_hash=content_hash, path=path)
+        _validate_record(
+            record, spec, fingerprint=fingerprint, content_hash=content_hash, path=path
+        )
         if result is None:
             result = (path, record)
         else:
