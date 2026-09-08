@@ -143,6 +143,11 @@ class DemonstrationWrapper(gym.Wrapper):
 
 
 
+    @property
+    def task_id(self):
+        """独立注册的原版子类可以声明任务身份，旧环境仍使用原ID。"""
+        return getattr(self.unwrapped, "native_task_id", self.unwrapped.spec.id)
+
     def reset(self, **kwargs):
         """Reset environment and generate demonstration trajectory, then execute one initial action step and return unified batch."""
         # Reset latch state
@@ -162,11 +167,11 @@ class DemonstrationWrapper(gym.Wrapper):
         demo_batch = self.get_demonstration_trajectory()
 
         # Select gripper and initial action based on environment: PatternLock/RouteStick use stick and require online generated action
-        if self.unwrapped.spec.id == "PatternLock" or self.unwrapped.spec.id == "RouteStick":
+        if self.task_id == "PatternLock" or self.task_id == "RouteStick":
             gripper = "stick"
         else:
             gripper = None
-        if self.unwrapped.spec.id == "PatternLock" or self.unwrapped.spec.id == "RouteStick":
+        if self.task_id == "PatternLock" or self.task_id == "RouteStick":
             action = self.unwrapped.swing_qpos  # These two types of environments require online generated initial action
         else:
             action = reset_panda.get_reset_panda_param("action", gripper=gripper)
@@ -253,10 +258,10 @@ class DemonstrationWrapper(gym.Wrapper):
 
     def _augment_obs_and_info(self, obs, info, action):
         """Extract current step data directly from obs and merge into obs and info to return, bypassing list buffer intermediate."""
-        language_goal = task_goal.get_language_goal(self.env, self.unwrapped.spec.id)
+        language_goal = task_goal.get_language_goal(self.env, self.task_id)
 
         base_obs = obs if isinstance(obs, dict) else {}
-        env_id = self.unwrapped.spec.id
+        env_id = self.task_id
         subgoal_text = getattr(self, 'current_task_name', 'Unknown')
         grounded_subgoal = self.current_subgoal_segment_filled
 
@@ -300,7 +305,7 @@ class DemonstrationWrapper(gym.Wrapper):
         # Extract gripper state from the last 2 dims of joint positions
         state_flat = state.detach().cpu().numpy().flatten() if hasattr(state, 'cpu') else np.asarray(state).flatten()
 
-        is_stick_env = self.unwrapped.spec.id in ("PatternLock", "RouteStick")
+        is_stick_env = self.task_id in ("PatternLock", "RouteStick")
         if is_stick_env:
             gripper_state = np.zeros(2, dtype=np.float64)
         else:
@@ -735,7 +740,7 @@ class DemonstrationWrapper(gym.Wrapper):
             ScrewPlanFailure = RuntimeError
 
         # Select motion planner by environment: PatternLock/RouteStick use stick planner, others use arm planner
-        if self.unwrapped.spec.id == "PatternLock" or self.unwrapped.spec.id == "RouteStick":
+        if self.task_id == "PatternLock" or self.task_id == "RouteStick":
             planner = FailAwarePandaStickMotionPlanningSolver(
                 self,
                 debug=False,

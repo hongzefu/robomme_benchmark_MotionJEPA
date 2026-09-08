@@ -32,9 +32,12 @@ def make_env_from_spec(spec, *, record_demonstration=True, render_gpu=0):
     import gymnasium as gym
     from .envs import register_envs
     from .envs.wrapper import ICLJointAngleEnv
-    from .suite import EpisodeSpec
+    from .specs import EpisodeSpec
 
     spec = spec if isinstance(spec, EpisodeSpec) else EpisodeSpec.from_dict(spec)
     register_envs()
-    raw = gym.make(spec.env_id, episode_spec=spec, render_gpu=render_gpu, disable_env_checker=True)
-    return ICLJointAngleEnv(raw, record_demonstration=record_demonstration)
+    def raw_factory():
+        return gym.make(spec.env_id, episode_spec=spec, render_gpu=render_gpu, disable_env_checker=True)
+
+    return ICLJointAngleEnv(raw_factory, task_kind=spec.task_kind, seed=spec.seed,
+                            record_demonstration=record_demonstration)

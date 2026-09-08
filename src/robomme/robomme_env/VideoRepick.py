@@ -173,13 +173,20 @@ class VideoRepick(BaseEnv):
         super()._load_agent(options, sapien.Pose(p=[-0.615, 0, 0]))
 
     def _load_scene(self, options: dict):
+        """默认入口保持原版随机布局，参数化子类只替换布局采样。"""
+        self._build_scene(options)
+
+    def _build_scene(self, options: dict, placements=None):
+        """允许注入位置；素材构建、随机任务选择及后续行为保持原版。"""
+        spawn_cube = spawn_random_cube if placements is None else placements.spawn_cube
+        build_finish_button = build_button if placements is None else placements.build_button
         try:
             self.table_scene = TableSceneBuilder(
                 self, robot_init_qpos_noise=self.robot_init_qpos_noise
             )
             self.table_scene.build()
 
-            button_obb_1 = build_button(
+            button_obb_1 = build_finish_button(
                 self,
                 center_xy=(-0.2, 0),
                 scale=1.5,
@@ -207,7 +214,7 @@ class VideoRepick(BaseEnv):
                     new_options = [options[i] for i in shuffle_indices]
                     for group in new_options:
                         try:
-                            cube = spawn_random_cube(
+                            cube = spawn_cube(
                                 self,
                                 color=group["color"],
                                 avoid=avoid,
@@ -261,7 +268,7 @@ class VideoRepick(BaseEnv):
 
                 for i in range(self.configs[self.difficulty]['cube']):
                     try:
-                        cube_actor = spawn_random_cube(
+                        cube_actor = spawn_cube(
                             self,
                             avoid=avoid,
                             region_center=region[i],

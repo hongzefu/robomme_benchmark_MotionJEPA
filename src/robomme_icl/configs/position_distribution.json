@@ -1,48 +1,159 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "compiler_seed": 20260908,
   "max_candidates": 1024,
   "sampling": "stratified",
   "safety_clearance": 0.005,
-  "table_bounds": {"x": [-0.6, 0.6], "y": [-0.6, 0.6]},
-  "schedule": {"control_freq": 20, "sim_freq": 100, "swap_steps": 50, "swap_start_step": 20, "swap_gap_steps": 10, "settle_steps": 20, "max_episode_steps": 3000, "dynamic_reveal_interval_steps": 50},
-  "geometry": {
-    "cube_half_size": 0.02,
-    "container_half_size": [0.03, 0.03, 0.036],
-    "container_center_z": 0.036,
-    "central_box_thickness": 0.03,
-    "central_box_top_z": 0.072,
-    "original_central_local_z": -0.005,
-    "hidden_cube_half_size": 0.016666666666666666,
-    "board_side": 0.1,
-    "hole_side": 0.08,
-    "board_thickness": 0.05,
-    "button_half_size": [0.0375, 0.0375, 0.0075],
-    "button_root_z": 0.0075,
-    "button_cap_radius": 0.0225,
-    "button_cap_half_length": 0.009,
-    "route_obstacle_half_size": [0.03, 0.015, 0.05],
-    "route_target_radius": 0.02,
-    "swap_lane_offset": 0.07
+  "table_bounds": {
+    "x": [
+      -0.6,
+      0.6
+    ],
+    "y": [
+      -0.6,
+      0.6
+    ]
   },
   "BinFill": {
-    "button": {"x": [-0.25, -0.15], "y": [-0.2, 0.2]},
-    "board": {"x": [-0.05, 0.15], "y": [-0.2, 0.2], "yaw_degrees": [-20.0, 20.0]},
-    "cubes": {"x": [-0.3, 0.1], "y": [-0.25, 0.25], "yaw_degrees": [0.0, 360.0]}
+    "button": {
+      "x": [
+        -0.25,
+        -0.15
+      ],
+      "y": [
+        -0.2,
+        0.2
+      ]
+    },
+    "board": {
+      "x": [
+        -0.05,
+        0.15
+      ],
+      "y": [
+        -0.2,
+        0.2
+      ],
+      "yaw_degrees": [
+        -20,
+        20
+      ]
+    },
+    "cubes": {
+      "x": [
+        -0.3,
+        0.1
+      ],
+      "y": [
+        -0.25,
+        0.25
+      ],
+      "yaw_degrees": [
+        0,
+        360
+      ]
+    }
   },
-  "RouteStick": {"center": [-0.1, 0.0], "spacing": 0.07, "yaw_degrees": [-30.0, 30.0]},
+  "RouteStick": {
+    "center": [
+      -0.1,
+      0
+    ],
+    "spacing": 0.07,
+    "yaw_degrees": [
+      -30,
+      30
+    ]
+  },
   "video_layouts": {
-    "three_object_topologies": ["triangle", "line"],
-    "triangle": [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0.0]],
-    "line": [[0.0, -0.15], [0.0, 0.15], [0.0, 0.0]],
-    "rectangle": [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0.1], [0.1, -0.1]],
+    "three_object_topologies": [
+      "triangle",
+      "line"
+    ],
+    "triangle": [
+      [
+        -0.05,
+        -0.1
+      ],
+      [
+        -0.05,
+        0.1
+      ],
+      [
+        0.1,
+        0
+      ]
+    ],
+    "line": [
+      [
+        0,
+        -0.15
+      ],
+      [
+        0,
+        0.15
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "rectangle": [
+      [
+        -0.05,
+        -0.1
+      ],
+      [
+        -0.05,
+        0.1
+      ],
+      [
+        0.1,
+        0.1
+      ],
+      [
+        0.1,
+        -0.1
+      ]
+    ],
     "window_half_size": 0.07,
-    "yaw_degrees": [0.0, 180.0],
-    "container_yaw_degrees": [0.0, 90.0],
-    "cube_yaw_degrees": [0.0, 360.0]
+    "yaw_degrees": [
+      0,
+      180
+    ],
+    "container_yaw_degrees": [
+      0,
+      90
+    ],
+    "cube_yaw_degrees": [
+      0,
+      360
+    ]
   },
   "VideoRepick": {
-    "button": {"x": [-0.25, -0.15], "y": [-0.05, 0.05]},
-    "hard_cubes": {"x": [-0.3, 0.1], "y": [-0.25, 0.25], "yaw_degrees": [0.0, 360.0]}
+    "button": {
+      "x": [
+        -0.25,
+        -0.15
+      ],
+      "y": [
+        -0.05,
+        0.05
+      ]
+    },
+    "hard_cubes": {
+      "x": [
+        -0.3,
+        0.1
+      ],
+      "y": [
+        -0.25,
+        0.25
+      ],
+      "yaw_degrees": [
+        0,
+        360
+      ]
+    }
   }
 }

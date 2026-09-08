@@ -231,6 +231,7 @@ command -v uv
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | ICL 与原版素材及行为对齐 | 进行中 | 基线 `76ae12bf1e71f79e1c3f608eede10ac7430b406f`；用户确认保留新版分布配置，素材、subgoal、显隐机制沿用原版；已确认 RouteStick 标记形状／数量、BinFill 孔板视觉、演示和事件流程存在差异 | 按 `artifacts/reports/robomme-icl/native-parity/PLAN.md` 建立原版对照、修正并真实验证；旧认证只证明新版自身复现，不证明原版行为一致 |
+| 原版对齐重构实施 | 进行中（配置及BinFill链路） | 版本2配置／场景类型与四个原版子类已接入；12项定向测试通过；BinFill原版提取前后26对象及双路RGB逐位相同；新版BinFill完整单局480操作/469物理步成功 | 完成其他三任务单局、工作流迁移、独立原版动作／事件对照、96条认证及scripts参数验收文档 |
 | ICL 生成环境分布独立文档 | 完成（文档与验证） | `scripts/ENVIRONMENT_DISTRIBUTION.md` 已覆盖五部分机制；20 个本地链接、21 个代码锚点及 4 条业务命令静态检查通过，仅三份 Markdown 变更 | 本条随文档提交；提交后立即推送既有上游并核对同步 |
 | 四个scripts入口及视频保存 | 全部验收及旧产物清理完成 | 96条/每遍63689帧、384份新HDF5逐位一致、192视频完整解码、四图和源码/依赖边界均通过；五阶段及主任务退出0；GPU0/1各48条；90根旧产物已清理、清理后复核通过 | 使用scripts四入口及scripts-v1批次；最终文档和清理记录提交后立即推送 |
 | robomme-ICL 独立四任务 | 全量实现与验收完成，旧批次已清理 | e34474a基线96条认证、32/16-worker生成、断点、回放、连续reset均逐位通过；每遍63689帧，两卡各48条；114轻量及4项显式真实复现通过；旧验收摘要保留在日志 | 当前交付改用scripts-v1；原版源码不变，旧物理产物按本轮指令清理 |
@@ -251,6 +252,16 @@ command -v uv
 | 通用代理规则更新与 Claude 专用约定拆分 | 完成（文档与验证） | 来源固定为 `v2-motionmem` 的 `028a77c59a442f047897f9736fc8acec0c050360`；766 行原有正文与日志保持一致；两份文件的结构、引用、范围和命令语法检查通过 | 按用户授权提交后自动推送既有 upstream；同步结果以 `git status -sb` 和本地/上游提交比较为准 |
 
 ## 追加式执行日志
+
+### 2026-09-08 — 原版对齐：分布拆分与BinFill完整单局
+
+- 完成内容：新增 `config.py`、`specs.py`、`sampling/`；位置配置版本2删除geometry/schedule，保留所有位置范围、配额和次数候选；BinFill颜色池口径按批准计划恢复原版。新增四个对应原版子类；原版仅提取可注入布局的构建入口及Route/Swap任务列表，step/evaluate/初始化任务函数AST与固定基线一致。
+- 记录与执行：使用原版DemonstrationWrapper和规划回退，新增内部物理步/显式evaluate操作记录，NO RECORD动作保留；记录器不额外判定。重复reset通过重新创建原版实例清理旧状态。原版DemonstrationWrapper新增任务身份属性，旧ID默认不变。
+- 真实结果：新版BinFill，seed=2000000000、easy、候选0、单worker/GPU0，原版规划出现3次screw失败后按原策略回退，完整执行480操作/469物理步，success=True/fail=False。方块4个，subgoal5个，孔板5visual/4collision。原版BinFill seed0提取前后全部26对象/链接与双相机RGB逐位比较通过，证据分别在 `artifacts/generated/robomme-icl/native-parity/baseline-original-binfill-v3/` 和 `extracted-original-binfill/`。
+- 测试：`uv run --no-sync python -m pytest tests/robomme_icl/test_config_contract.py tests/robomme_icl/test_native_source.py tests/robomme_icl/test_native_assets.py -q` 为12 passed（0.28s）；`git diff --check`通过。每次真实验证小于五分钟。未执行正式全量运行，尚不能声称行为全量一致。
+- 意外：原版spawn_random_cube在零宽中心区间会因浮点消去误差误报区域过小，给其采样外框增加1e-9米，再设置冻结的精确位姿；没有改方块大小、材质或原版函数。一次补丁因hunk顺序不匹配被拒绝，重排后正常应用。
+- 用户追加原话：「实现完毕后/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts加入一个md 写你固定的那些参数 检查了那些参数和原版一致」。最终将交付 `scripts/NATIVE_PARITY.md`，逐项列实际证据，不把未验证项写成通过。
+- 当前过渡状态：旧suite/io/pipeline与旧重复实现尚待迁移删除；公开已认证套件流程尚未完成版本2适配，不能消费旧suite。下一步是其他三任务smoke、工作流和回放闭环。
 
 ### 2026-09-08 — 原版对齐重构：用户批准实施
 

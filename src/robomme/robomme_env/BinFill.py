@@ -181,6 +181,14 @@ class BinFill(BaseEnv):
         super()._load_agent(options, sapien.Pose(p=[-0.615, 0, 0]))
 
     def _load_scene(self, options: dict):
+        """默认入口保持原版随机布局，参数化子类只替换布局采样。"""
+        self._build_scene(options)
+
+    def _build_scene(self, options: dict, placements=None):
+        """允许注入位置；素材构建、随机任务选择及后续行为保持原版。"""
+        spawn_cube = spawn_random_cube if placements is None else placements.spawn_cube
+        build_finish_button = build_button if placements is None else placements.build_button
+        build_board = build_board_with_hole if placements is None else placements.build_board
         self.table_scene = TableSceneBuilder(
             self, robot_init_qpos_noise=self.robot_init_qpos_noise
         )
@@ -189,7 +197,7 @@ class BinFill(BaseEnv):
         # Create generator for all randomization
         generator = self.generator
 
-        button_obb = build_button(
+        button_obb = build_finish_button(
             self,
             center_xy=(-0.2, 0),
             scale=1.5,
@@ -205,7 +213,7 @@ class BinFill(BaseEnv):
         # Create rotation quaternion for z-axis rotation
         rot_mat = euler_angles_to_matrix(torch.tensor([[0.0, 0.0, z_rot_rad]]), convention="XYZ")
         rot_quat = matrix_to_quaternion(rot_mat)[0]  # [w, x, y, z]
-        self.board_with_hole = build_board_with_hole(
+        self.board_with_hole = build_board(
             self,
             board_side=0.1,  # Side length of square board
             hole_side=0.08,   # Side length of square hole, slightly larger than cube for passing
@@ -320,7 +328,7 @@ class BinFill(BaseEnv):
         # Spawn cubes in shuffled order
         for task in cube_tasks:
             try:
-                cube = spawn_random_cube(
+                cube = spawn_cube(
                     self, color=task["color"], avoid=avoid,
                     include_existing=False, include_goal=False,
                     region_center=[-0.1, 0], region_half_size=[0.2, 0.25],

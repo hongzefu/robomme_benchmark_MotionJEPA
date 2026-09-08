@@ -183,6 +183,11 @@ class RouteStick(BaseEnv):
         super()._load_agent(options, sapien.Pose(p=[-0.615, 0, 0]))
 
     def _load_scene(self, options: dict):
+        """默认入口保持原版随机布局，参数化子类只替换布局采样。"""
+        self._build_scene(options)
+
+    def _build_scene(self, options: dict, placements=None):
+        """允许注入位置；素材构建、随机任务选择及后续行为保持原版。"""
         generator = torch.Generator()
         generator.manual_seed(self.seed)
 
@@ -192,9 +197,9 @@ class RouteStick(BaseEnv):
         self.table_scene.build()
 
         # Generate 3x3 grid of buttons
-        grid_center = [-0.1, 0]  # Grid center position
-        grid_spacing_x = 0.07 # Spacing between buttons
-        grid_spacing_y=0.07
+        grid_center = [-0.1, 0] if placements is None else placements.route_center
+        grid_spacing_x = 0.07 if placements is None else placements.route_spacing
+        grid_spacing_y = grid_spacing_x
 
         self.buttons_grid = []
         self.button_joints_grid = []
@@ -209,6 +214,8 @@ class RouteStick(BaseEnv):
         theta = math.radians(
         (torch.rand(1, generator=generator).item() * 60) - 30
             )
+        if placements is not None:
+            theta = placements.route_angle
         #theta=0
         for row in range(num_rows):
             for col in range(num_cols):  # Columns (y direction)
@@ -323,11 +330,11 @@ class RouteStick(BaseEnv):
             self.target_cubes[target_idx] = cube_actor
             setattr(self, f"target_cube_{target_idx}", cube_actor)
 
+        self._build_task_list(generator)
+
+    def _build_task_list(self, generator):
+        """共享原版全部演示、复位和正式绕行任务。"""
         tasks = []
-
-
-
-        tasks=[]
 
         # Use the actual button actors corresponding to indices 0,2,4,6,8
         button_indices = [0, 2, 4, 6, 8]

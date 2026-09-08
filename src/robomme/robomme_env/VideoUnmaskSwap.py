@@ -174,6 +174,12 @@ class VideoUnmaskSwap(BaseEnv):
         super()._load_agent(options, sapien.Pose(p=[-0.615, 0, 0]))
 
     def _load_scene(self, options: dict):
+        """默认入口保持原版随机布局，参数化子类只替换布局采样。"""
+        self._build_scene(options)
+
+    def _build_scene(self, options: dict, placements=None):
+        """允许注入位置；素材构建、随机任务选择及后续行为保持原版。"""
+        spawn_bin = spawn_random_bin if placements is None else placements.spawn_bin
         generator = torch.Generator()
         generator.manual_seed(self.seed)
     
@@ -203,7 +209,7 @@ class VideoUnmaskSwap(BaseEnv):
         
         for i in range(self.configs[self.difficulty]['bin']):
             try:
-                bin_actor = spawn_random_bin(
+                bin_actor = spawn_bin(
                     self,
                     avoid=avoid,  # Use current avoidance list, containing all spawned objects
                     region_center=region[i],
@@ -346,6 +352,10 @@ class VideoUnmaskSwap(BaseEnv):
         self.swap_pair3_idx2=None
         self._refresh_swap_schedule()
 
+        self._build_task_list(generator)
+
+    def _build_task_list(self, generator):
+        """共享原版等待、抓起和放下容器任务。"""
         tasks = [
              {
                         "func": lambda: static_check(self, timestep=int(self.elapsed_steps), static_steps=self.swap_schedule[-1][3]),
