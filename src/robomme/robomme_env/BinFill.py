@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -30,6 +31,78 @@ from .utils import subgoal_language
 from .utils.difficulty import normalize_robomme_difficulty
 
 from ..logging_utils import logger
+
+
+# ── 原版采样输入的原值快照（newtask-v2 10.0）────────────────────────────────────
+# 本字典就是不传 sampling_config 时的运行默认值，同时也是
+# `scripts/generate_dataset_newseed.py --extract-config` 的 AST 提取目标，
+# 因此「提取到的原值」与「实际跑的默认值」永远是同一处，不存在双真值。
+# 难度字典不在这里重复，仍以类属性 config_easy / config_medium / config_hard 为准。
+# 表达式与来源说明字段只作核查用，运行时不消费。
+NATIVE_SAMPLING = {
+    "parameters": {
+        "dynamic": {
+            "sampler": "torch.randint",
+            "low": 0,
+            "high_exclusive": 2,
+            "shape": [1],
+            "cast": "bool",
+        },
+    },
+    "positions": {
+        "button": {
+            "center_xy": [-0.2, 0],
+            "randomize": True,
+            "randomize_range": [0.1, 0.4],
+            "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range",
+            "scale": 1.5,
+            "randomize_range_origin": "原值取自 build_button 形参默认值；原调用点未传，现由本快照显式传入",
+        },
+        "board": {
+            "base_position": [0.15, 0, 0],
+            "x_offset": {"scale": 0.2, "subtract": 0.2},
+            "y_offset": {"scale": 0.4, "subtract": 0.2},
+            "yaw_deg": {"scale": 40, "subtract": 20},
+            "x_expression": "0.15 + (u * 0.2 - 0.2)",
+            "y_expression": "u * 0.4 - 0.2",
+            "yaw_expression": "u * 40.0 - 20.0",
+            "board_side": 0.1,
+            "hole_side": 0.08,
+            "thickness": 0.05,
+            "consumer": "build_board_with_hole 只是位置接收方，内部无随机",
+        },
+        "cubes": {
+            "region_center": [-0.1, 0],
+            "region_half_size": [0.2, 0.25],
+            "random_yaw": True,
+            "yaw_range_rad": [0, 6.283185307179586],
+            "yaw_expression": "yaw_sample * 2 * np.pi",
+            "min_gap": "self.cube_half_size",
+            "min_gap_value": 0.02,
+            "include_existing": False,
+            "include_goal": False,
+            "rng_per_trial": ["x", "y", "yaw"],
+        },
+    },
+}
+
+
+def _resolve_sampling_config(cls, override):
+    """准备本实例专属的采样配置副本。
+
+    只做取值、字段校验与深拷贝：全程不调用任何随机数，且必须在 torch.Generator()
+    创建之前完成 —— 在这里多抽或少抽一次会平移其后全部取值。
+    gymnasium 会把 kwargs 字典的引用存进 env.unwrapped.spec.kwargs，
+    因此独立副本只能由这里的 deepcopy 保证。
+    """
+    if override is None:
+        resolved = copy.deepcopy(NATIVE_SAMPLING)
+    else:
+        if not isinstance(override, dict) or set(override) != {"parameters", "positions"}:
+            raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
+        resolved = copy.deepcopy(override)
+    resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    return resolved
 
 
 @register_env("BinFill")
@@ -99,7 +172,10 @@ class BinFill(BaseEnv):
     }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.robot_init_qpos_noise = robot_init_qpos_noise
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
@@ -145,7 +221,8 @@ class BinFill(BaseEnv):
         self.seed = seed
         self.generator = torch.Generator()
         self.generator.manual_seed(seed)
-        self.dynamic=bool(torch.randint(0, 2, (1,), generator=self.generator).item())
+        dynamic_cfg = self._sampling["parameters"]["dynamic"]
+        self.dynamic=bool(torch.randint(dynamic_cfg["low"], dynamic_cfg["high_exclusive"], tuple(dynamic_cfg["shape"]), generator=self.generator).item())
 
         # Track the color order and counts used to describe the language goal.
         self.binfill_language_sequence = []
@@ -189,28 +266,36 @@ class BinFill(BaseEnv):
         # Create generator for all randomization
         generator = self.generator
 
+        button_cfg = self._sampling["positions"]["button"]
         button_obb = build_button(
             self,
-            center_xy=(-0.2, 0),
-            scale=1.5,
+            center_xy=tuple(button_cfg["center_xy"]),
+            scale=button_cfg["scale"],
             generator=generator,
+            randomize=button_cfg["randomize"],
+            randomize_range=tuple(button_cfg["randomize_range"]),
         )
         avoid = [button_obb]
 
         # Create square board with square hole
-        x_var = torch.rand(1, generator=generator).item() * 0.2 - 0.2  # [-0.25, 0.25]
-        y_var = torch.rand(1, generator=generator).item() * 0.4 - 0.2  # [-0.25, 0.25]
-        z_rot_deg = (torch.rand(1, generator=generator).item() * 40.0 - 20.0)  # [-20, 20] degrees
+        board_cfg = self._sampling["positions"]["board"]
+        board_x = board_cfg["x_offset"]
+        board_y = board_cfg["y_offset"]
+        board_yaw = board_cfg["yaw_deg"]
+        board_base = board_cfg["base_position"]
+        x_var = torch.rand(1, generator=generator).item() * board_x["scale"] - board_x["subtract"]  # [-0.25, 0.25]
+        y_var = torch.rand(1, generator=generator).item() * board_y["scale"] - board_y["subtract"]  # [-0.25, 0.25]
+        z_rot_deg = (torch.rand(1, generator=generator).item() * board_yaw["scale"] - board_yaw["subtract"])  # [-20, 20] degrees
         z_rot_rad = torch.deg2rad(torch.tensor(z_rot_deg))
         # Create rotation quaternion for z-axis rotation
         rot_mat = euler_angles_to_matrix(torch.tensor([[0.0, 0.0, z_rot_rad]]), convention="XYZ")
         rot_quat = matrix_to_quaternion(rot_mat)[0]  # [w, x, y, z]
         self.board_with_hole = build_board_with_hole(
             self,
-            board_side=0.1,  # Side length of square board
-            hole_side=0.08,   # Side length of square hole, slightly larger than cube for passing
-            thickness=0.05,   # Board thickness
-            position=[0.15 + x_var, 0.0 + y_var, 0.0],  # Board position
+            board_side=board_cfg["board_side"],  # Side length of square board
+            hole_side=board_cfg["hole_side"],   # Side length of square hole, slightly larger than cube for passing
+            thickness=board_cfg["thickness"],   # Board thickness
+            position=[float(board_base[0]) + x_var, float(board_base[1]) + y_var, float(board_base[2])],  # Board position
             rotation_quat=rot_quat.tolist(),  # z-axis rotation
             name="board_with_hole"
         )
@@ -234,7 +319,7 @@ class BinFill(BaseEnv):
 
 
         # Get configuration for current difficulty
-        config = self.configs[self.difficulty]
+        config = self._sampling["parameters"]["configs"][self.difficulty]
         num_colors = config['color']  # 1 or 3
         spawn_range = config['spawn_cubes']  # [min, max]
         put_in_color_range = config['put_in_color']
@@ -318,14 +403,15 @@ class BinFill(BaseEnv):
         cube_tasks = [cube_tasks[i] for i in shuffle_order]
 
         # Spawn cubes in shuffled order
+        cubes_cfg = self._sampling["positions"]["cubes"]
         for task in cube_tasks:
             try:
                 cube = spawn_random_cube(
                     self, color=task["color"], avoid=avoid,
-                    include_existing=False, include_goal=False,
-                    region_center=[-0.1, 0], region_half_size=[0.2, 0.25],
+                    include_existing=cubes_cfg["include_existing"], include_goal=cubes_cfg["include_goal"],
+                    region_center=list(cubes_cfg["region_center"]), region_half_size=list(cubes_cfg["region_half_size"]),
                     half_size=self.cube_half_size, min_gap=self.cube_half_size,
-                    random_yaw=True, name_prefix=f"cube_{task['name']}_{task['idx']}",
+                    random_yaw=cubes_cfg["random_yaw"], name_prefix=f"cube_{task['name']}_{task['idx']}",
                     generator=generator,
                 )
                 self.all_cubes.append(cube)

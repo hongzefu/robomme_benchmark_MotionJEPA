@@ -1,0 +1,705 @@
+{
+  "schema_version": 2,
+  "source_commit": "94449db0a068a6b454b55a13ebd48f0394d89cc8（原值基线）；本文件的 sources.sha256 对应接入 sampling_config 之后的工作树源码",
+  "target_version": "10.0",
+  "status": "已提取并接入运行：不传 --sampling-config 时由各任务模块的 NATIVE_SAMPLING 提供同一份原值",
+  "scope": [
+    "BinFill",
+    "RouteStick",
+    "VideoUnmaskSwap",
+    "VideoRepick"
+  ],
+  "extraction_note": "难度字典由类属性 config_easy/medium/hard 的 AST 字面量提取；其余原值来自各任务模块顶层的 NATIVE_SAMPLING 字面量，该字典同时是不传配置时的运行默认值，因此提取值与运行值同源。build_button 的 randomize_range、spawn_random_bin 的 yaw_scale_deg 由跨文件形参默认值交叉核对。表达式与来源说明字段仅供核查，不执行 eval，运行时不消费。",
+  "units": {
+    "position": "m",
+    "angles": "字段后缀 rad 为弧度，deg 为度；两个 Video 任务的整体旋转原值为 0 到 180 弧度"
+  },
+  "sources": {
+    "BinFill": {
+      "path": "src/robomme/robomme_env/BinFill.py",
+      "sha256": "760f34202fd170e0b475737ce80dd0bfda41c0bae6276c6a5801e289a0542429",
+      "anchors": [
+        "config_easy",
+        "config_medium",
+        "config_hard",
+        "__init__",
+        "_load_scene",
+        "_initialize_episode"
+      ]
+    },
+    "RouteStick": {
+      "path": "src/robomme/robomme_env/RouteStick.py",
+      "sha256": "36ea27507dc905cc53b1936df37e988832ed2c7d64d57b5fb32386bd1d4f9ff2",
+      "anchors": [
+        "config_easy",
+        "config_medium",
+        "config_hard",
+        "__init__",
+        "_load_scene",
+        "_initialize_episode"
+      ]
+    },
+    "VideoUnmaskSwap": {
+      "path": "src/robomme/robomme_env/VideoUnmaskSwap.py",
+      "sha256": "384efa669a45dd447bf1d3e93e5c6e6cc598360fc0e57c254f013b1b5b9a68cc",
+      "anchors": [
+        "config_easy",
+        "config_medium",
+        "config_hard",
+        "__init__",
+        "_load_scene",
+        "_initialize_episode"
+      ]
+    },
+    "VideoRepick": {
+      "path": "src/robomme/robomme_env/VideoRepick.py",
+      "sha256": "81d185c0e8af78494ed4fa950d0d5eacb82076174a794cefd1bde5f1107b0ec0",
+      "anchors": [
+        "config_easy",
+        "config_medium",
+        "config_hard",
+        "__init__",
+        "_load_scene",
+        "_initialize_episode"
+      ]
+    },
+    "object_generation": {
+      "path": "src/robomme/robomme_env/utils/object_generation.py",
+      "sha256": "ab92c30445b167215cdee9cea73f8e42fb64fc53155d10b523279c203ee27966",
+      "anchors": [
+        "build_button",
+        "spawn_random_cube",
+        "spawn_random_bin",
+        "build_bin",
+        "build_board_with_hole",
+        "spawn_fixed_cube",
+        "build_gray_white_target"
+      ]
+    },
+    "statechange": {
+      "path": "src/robomme/robomme_env/utils/statechange.py",
+      "sha256": "c159096bd3e0b6ac3ce530f413615eeb1fadd54cce202f71728f5a4028e8bd05",
+      "anchors": [
+        "rotate_points_random"
+      ]
+    },
+    "route": {
+      "path": "src/robomme/robomme_env/utils/route.py",
+      "sha256": "9a6a07703056b3b3bfa2f6814659748749b9cdaf3dcc45038e3e547f10047878",
+      "anchors": [
+        "generate_dynamic_walk"
+      ]
+    }
+  },
+  "parameters": {
+    "BinFill": {
+      "configs": {
+        "easy": {
+          "color": 1,
+          "spawn_cubes": [
+            4,
+            6
+          ],
+          "put_in_color": [
+            1,
+            1
+          ],
+          "put_in_numbers": [
+            1,
+            3
+          ]
+        },
+        "medium": {
+          "color": 2,
+          "spawn_cubes": [
+            8,
+            10
+          ],
+          "put_in_color": [
+            1,
+            2
+          ],
+          "put_in_numbers": [
+            2,
+            4
+          ]
+        },
+        "hard": {
+          "color": 3,
+          "spawn_cubes": [
+            10,
+            12
+          ],
+          "put_in_color": [
+            2,
+            3
+          ],
+          "put_in_numbers": [
+            3,
+            5
+          ]
+        }
+      },
+      "dynamic": {
+        "sampler": "torch.randint",
+        "low": 0,
+        "high_exclusive": 2,
+        "shape": [
+          1
+        ],
+        "cast": "bool"
+      }
+    },
+    "RouteStick": {
+      "configs": {
+        "easy": {
+          "length": [
+            2,
+            3
+          ],
+          "backtrack": false
+        },
+        "medium": {
+          "length": [
+            4,
+            5
+          ],
+          "backtrack": false
+        },
+        "hard": {
+          "length": [
+            4,
+            7
+          ],
+          "backtrack": true
+        }
+      },
+      "configs_fallback_difficulty": "easy"
+    },
+    "VideoUnmaskSwap": {
+      "configs": {
+        "easy": {
+          "bin": 3,
+          "swap_min": 1,
+          "swap_max": 2,
+          "pick_min": 1,
+          "pick_max": 2
+        },
+        "medium": {
+          "bin": 4,
+          "swap_min": 1,
+          "swap_max": 2,
+          "pick_min": 1,
+          "pick_max": 1
+        },
+        "hard": {
+          "bin": 4,
+          "swap_min": 2,
+          "swap_max": 3,
+          "pick_min": 2,
+          "pick_max": 2
+        }
+      }
+    },
+    "VideoRepick": {
+      "configs": {
+        "easy": {
+          "cube": 3,
+          "swap_min": 1,
+          "swap_max": 2
+        },
+        "medium": {
+          "cube": 3,
+          "swap_min": 2,
+          "swap_max": 3
+        },
+        "hard": {
+          "cluster": true,
+          "swap": null,
+          "swap_min": 0,
+          "swap_max": 0
+        }
+      },
+      "num_repeats": {
+        "sampler": "torch.randint",
+        "low": 1,
+        "high_exclusive": 4,
+        "shape": [
+          1
+        ]
+      },
+      "hard_spawn_rounds": 5
+    }
+  },
+  "positions": {
+    "BinFill": {
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "randomize": true,
+        "randomize_range": [
+          0.1,
+          0.4
+        ],
+        "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range",
+        "scale": 1.5,
+        "randomize_range_origin": "原值取自 build_button 形参默认值；原调用点未传，现由本快照显式传入"
+      },
+      "board": {
+        "base_position": [
+          0.15,
+          0,
+          0
+        ],
+        "x_offset": {
+          "scale": 0.2,
+          "subtract": 0.2
+        },
+        "y_offset": {
+          "scale": 0.4,
+          "subtract": 0.2
+        },
+        "yaw_deg": {
+          "scale": 40,
+          "subtract": 20
+        },
+        "x_expression": "0.15 + (u * 0.2 - 0.2)",
+        "y_expression": "u * 0.4 - 0.2",
+        "yaw_expression": "u * 40.0 - 20.0",
+        "board_side": 0.1,
+        "hole_side": 0.08,
+        "thickness": 0.05,
+        "consumer": "build_board_with_hole 只是位置接收方，内部无随机"
+      },
+      "cubes": {
+        "region_center": [
+          -0.1,
+          0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ],
+        "random_yaw": true,
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi",
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "include_existing": false,
+        "include_goal": false,
+        "rng_per_trial": [
+          "x",
+          "y",
+          "yaw"
+        ]
+      }
+    },
+    "RouteStick": {
+      "grid_center": [
+        -0.1,
+        0
+      ],
+      "grid_spacing_x": 0.07,
+      "grid_spacing_y": 0.07,
+      "rotation_center": [
+        0,
+        0
+      ],
+      "yaw_deg": {
+        "scale": 60,
+        "subtract": 30
+      },
+      "yaw_expression": "math.radians(u * 60 - 30)",
+      "grid_spacing_x_effect": "num_rows=1 使 row 偏移恒为 0，该参数对结果无影响（死参数）",
+      "target_builder": "build_gray_white_target",
+      "obstacle_builder": "_load_scene 内联 create_actor_builder",
+      "cylinder_radius": 0.015,
+      "cylinder_height": 0.1,
+      "obstacle_color": {
+        "sampler": "torch.rand",
+        "shape": [
+          3
+        ],
+        "count": 4,
+        "position_in_stream": "theta 之后、steps 之前，每根障碍柱一次"
+      },
+      "walk_start": {
+        "sampler": "torch.randint",
+        "low": 0,
+        "high_exclusive": 5,
+        "note": "generate_dynamic_walk 未传 start_idx 时抽取，是路线随机流的第一次抽取"
+      }
+    },
+    "VideoUnmaskSwap": {
+      "containers": {
+        "region3_tri": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0
+          ]
+        ],
+        "region3_line": [
+          [
+            0,
+            -0.15
+          ],
+          [
+            0,
+            0.15
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "region4": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0.1
+          ],
+          [
+            0.1,
+            -0.1
+          ]
+        ],
+        "region3_choice": {
+          "sampler": "torch.randint",
+          "low": 0,
+          "high_exclusive": 2,
+          "order": [
+            "region3_tri",
+            "region3_line"
+          ]
+        },
+        "layout_rotation_range_rad": [
+          0,
+          180
+        ],
+        "region_half_size": 0.07,
+        "yaw_scale_deg": 90.0,
+        "yaw_expression": "u * 90.0",
+        "rotation_center": [
+          0,
+          0
+        ],
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "spawn_random_bin_default_min_gap": 0.05,
+        "spawn_random_bin_has_include_flags": false
+      }
+    },
+    "VideoRepick": {
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "randomize": true,
+        "randomize_range": [
+          0.1,
+          0.1
+        ],
+        "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range",
+        "scale": 1.5,
+        "randomize_range_origin": "VideoRepick 调用点显式传入"
+      },
+      "easy_medium_cubes": {
+        "region3_tri": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0
+          ]
+        ],
+        "region3_line": [
+          [
+            0,
+            -0.15
+          ],
+          [
+            0,
+            0.15
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "region4": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0.1
+          ],
+          [
+            0.1,
+            -0.1
+          ]
+        ],
+        "region3_choice": {
+          "sampler": "torch.randint",
+          "low": 0,
+          "high_exclusive": 2,
+          "order": [
+            "region3_tri",
+            "region3_line"
+          ]
+        },
+        "layout_rotation_range_rad": [
+          0,
+          180
+        ],
+        "region_half_size": 0.07,
+        "random_yaw": true,
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi",
+        "rotation_center": [
+          0,
+          0
+        ],
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "include_existing": true,
+        "include_goal": true,
+        "include_flags_origin": "原值取自 spawn_random_cube 形参默认 True；原调用点未传，现由本快照显式传入",
+        "region4_reachable": false
+      },
+      "hard_cubes": {
+        "region_center": [
+          -0.1,
+          0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ],
+        "random_yaw": true,
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi",
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "include_existing": false,
+        "include_goal": false
+      }
+    }
+  },
+  "native_semantics": {
+    "note": "本块只记录原逻辑和几何约束，不作为新增可调开关；parameters 中原字典的闲置字段也不得获得新语义。",
+    "BinFill": {
+      "spawn_color_order": [
+        "red",
+        "blue",
+        "green"
+      ],
+      "initialize_color_order": [
+        "blue",
+        "red",
+        "green"
+      ],
+      "target_color_may_have_zero_count": true,
+      "generator_lifecycle": "__init__ 创建 self.generator，dynamic 后继续用于 _load_scene 和 _initialize_episode",
+      "load_scene_rng_order": [
+        "build_button 偏移 torch.rand(2)",
+        "板 x、y、yaw 各一次 torch.rand(1)",
+        "torch.randperm(3) 选目标色池",
+        "put_in_color randint",
+        "目标数分配（dynamic 分支决定单色或总数+变长 randint 循环）",
+        "spawn_cubes 总数 randint 与分配循环",
+        "torch.randperm(len(cube_tasks)) 打乱生成序",
+        "每块方块 spawn_random_cube 拒绝采样（每次尝试 x、y、yaw）"
+      ],
+      "initialize_color_order_shuffle": "torch.randperm(3, generator=self.generator)，定义表为 blue/red/green",
+      "initialize_episode_call_count": 2,
+      "initialize_episode_note": "构造期内部 reset 与外层 record_env.reset() 各执行一次，task_list 以第二次为准"
+    },
+    "RouteStick": {
+      "num_rows": 1,
+      "num_cols": 9,
+      "route_button_indices": [
+        0,
+        2,
+        4,
+        6,
+        8
+      ],
+      "obstacle_indices": [
+        1,
+        3,
+        5,
+        7
+      ],
+      "raised_z": 0.01,
+      "other_z": -0.01,
+      "obstacle_z": 0.05,
+      "walk_node_count": "steps + 1",
+      "swing_directions": {
+        "sampler": "torch.rand",
+        "shape": [
+          1
+        ],
+        "threshold": 0.5,
+        "less_than": "clockwise",
+        "otherwise": "counterclockwise",
+        "order": "依次遍历 self.selected_buttons[1:]，每段抽取一次"
+      },
+      "backtrack_false_can_force_reverse_at_endpoint": true,
+      "difficulty_without_override": "easy",
+      "generator_lifecycle": "_load_scene 新建局部 generator 并以 self.seed 初始化",
+      "load_scene_rng_order": [
+        "theta torch.rand(1)",
+        "4 根障碍柱各一次 torch.rand(3) 颜色",
+        "steps randint(length_min, length_max+1)",
+        "walk 起点 randint(0, 5)",
+        "walk 各步 randint",
+        "swing_directions 每段 torch.rand(1)"
+      ],
+      "difficulty_override_statement": "__init__ 的 seed % 3 推导分支末尾无条件 self.difficulty = \"easy\"，当前因生成器总传 difficulty 而不生效",
+      "unused_init_generator": true,
+      "initialize_episode_consumes_task_rng": false
+    },
+    "VideoUnmaskSwap": {
+      "color_order": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "hidden_bin_permutation_size": 3,
+      "hidden_cube_xy": "所属容器当前 xy",
+      "hidden_cube_half_size": "self.cube_half_size / 1.2",
+      "hidden_cube_yaw": 0,
+      "consume_region3_choice_with_four_bins": true,
+      "generator_lifecycle": "__init__ 与 _load_scene 各建局部 generator，均以原 seed 初始化；保留其余事件随机流",
+      "color_shuffle": "torch.randperm(3) 打乱红绿蓝顺序；与选藏块容器的 randperm(3) 是两次独立抽样",
+      "hidden_bin_permutation": "torch.randperm(3)[:min(3, len(bins))]，字面量 3 硬编码，bin=4 时第 4 个容器无藏块",
+      "hidden_cube_inherits_bin_yaw": false,
+      "generator_is_local": true,
+      "dead_code_generator": "_select_swap_pair_from_positions 内惰性创建 self._swap_rng，该方法无调用者",
+      "initialize_episode_consumes_task_rng": false
+    },
+    "VideoRepick": {
+      "color_order": [
+        "red",
+        "blue",
+        "green"
+      ],
+      "hard_spawn_count": 15,
+      "hard_branch_condition": "self.difficulty == \"hard\"",
+      "easy_medium_same_color_shuffle_size": 4,
+      "hard_consumes_zero_swap_draw": true,
+      "numpy_seed_side_effect": "np.random.seed(seed)",
+      "generator_lifecycle": "__init__ 创建 self.generator，重复次数、交换次数后继续用于 _load_scene",
+      "numpy_seed_position": "__init__ 内，难度判定与 generator 创建之前；进程级全局副作用，全仓唯一全局播种点",
+      "per_round_color_shuffle": "hard 每轮先 torch.randperm(3) 打乱红蓝绿",
+      "initialize_episode_call_count": 2,
+      "dead_config_fields": [
+        "cluster",
+        "swap"
+      ],
+      "region4_branch_reachable": false,
+      "dead_code_generator": "_select_swap_pair_from_positions 无调用者"
+    },
+    "object_generation": {
+      "max_trials": 256,
+      "min_gap": "四任务相关 cube/bin 调用保持 self.cube_half_size，不新增全局净距",
+      "cube_center_bounds": "center - area_half + hs_new 到 center + area_half - hs_new",
+      "bin_half_size": "(self.cube_half_size * 2.5 + 0.005) * 0.5",
+      "cube_rng_order": "每次尝试 x、y、yaw 后碰撞判断",
+      "bin_rng_order": "每次尝试 x、y，碰撞通过后才抽 yaw",
+      "failure_handling": "BinFill 继续后续方块；VideoUnmaskSwap 中断容器循环；VideoRepick 抛 SceneGenerationError",
+      "min_gap_value": 0.02,
+      "cube_half_size_source": "mani_skill PICK_CUBE_CONFIGS[\"panda\"]；四任务 robot_uids 不在其键中，走 else 分支取 panda 项",
+      "default_min_gap": {
+        "spawn_random_cube": 0.005,
+        "spawn_random_bin": 0.05
+      },
+      "include_flags_by_call": {
+        "BinFill.cubes": {
+          "include_existing": false,
+          "include_goal": false
+        },
+        "VideoRepick.easy_medium_cubes": {
+          "include_existing": true,
+          "include_goal": true
+        },
+        "VideoRepick.hard_cubes": {
+          "include_existing": false,
+          "include_goal": false
+        },
+        "VideoUnmaskSwap.containers": "spawn_random_bin 无此参数"
+      },
+      "bin_collision_ignores_yaw": true,
+      "build_bin_overrides_inner_side": "inner_side 与 wall_height 被无条件覆盖为 cube_half_size * 2.5，spawn_random_bin 独立重算同一表达式",
+      "generator_none_guard": {
+        "spawn_random_cube": true,
+        "build_button": false,
+        "spawn_random_bin": false,
+        "rotate_points_random": false
+      },
+      "spawned_cubes_cache": "spawn_random_cube 在 env 实例上维护 self._spawned_cubes / self._spawned_count，只初始化不清空",
+      "rotate_points_random_center": [
+        0,
+        0
+      ]
+    },
+    "recovery": {
+      "recovery_mode_by_episode": {
+        "0-2": "z",
+        "3-5": "xy",
+        "other": null
+      },
+      "gym_make_extra_kwargs": [
+        "robomme_failure_recovery",
+        "robomme_failure_recovery_mode"
+      ],
+      "inject_fail_grasp_consumes_task_generator": true,
+      "inject_fail_grasp_runs_per_initialize_episode": true
+    },
+    "seed_entry": {
+      "task_seed": "gym.make kwarg seed=job.seed，任务 __init__ 形参接收",
+      "record_env_reset": "无参，不传 seed",
+      "maniskill_episode_rng": "BaseEnv.__init__ 内部 reset 硬编码 seed 2022，与 job.seed 无关",
+      "reproducibility_premise": "四任务与工具内每处 torch.rand* 都带 generator，且 robot_init_qpos_noise=0"
+    }
+  }
+}

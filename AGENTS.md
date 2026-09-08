@@ -207,6 +207,10 @@
 | MotionJEPA 当前开关与 SigLIP 路径核查 | 完成 | 当前 `rgb-decoder-v1` 的 `configs/default.yaml` 与 `scripts/train.py` 表明 DINO、flow、ViT、state、EMA、W&B 等有结构开关；SigLIP 仅有 `loss.siglip_weight`，没有 `siglip.enabled` | `siglip_weight=0` 只能清零其 loss 系数；如需真正关闭 SigLIP token/decoder/前向，必须单独改造数据、模型、训练和验证路径 |
 | MotionJEPA 最新双配方默认值与旧脚本保护 | 完成 | `configs/default.yaml` 已对齐 `xqkorgzc` no-state 配方；`configs/legacy.yaml` 与修改前默认值逐字一致；11 个旧文件归档；中英文 README 损失公式已对齐当前 SigLIP+DINO+flow+SIGReg/state 可选逻辑 | 两个活动入口仍继承未显式覆盖的 default 字段；若要求跨未来默认值变更精确复现，需新增不可变配置快照 |
 | 异常 `.codex-motionjepa-edit` gitlink 清理 | 完成 | 用户明确要求不保留备份并全部删除；物理目录已删除，父仓库索引已将 mode `160000` gitlink 记为删除 | 提交前复核已暂存删除与现有 `AGENTS.md` 未暂存修改，避免混淆提交范围 |
+| newtask-v2 重建方案与原值提取 | 完成（仅方案及静态配置） | 根目录 `NEWTASK_V2_PLAN.md` 和 `scripts/configs/newtask-v2/native_sampling.json` 已落盘；12 份难度字典、6 个布局数组、7 份来源散列和文档检查通过 | 后续获准实施后从固定 `94449db0a068a6b454b55a13ebd48f0394d89cc8` 建立 `newtask-v2`，首个实现 `10.0`；本轮未实现或生成 |
+| newtask-v2 两文件平铺与清理计划修订 | 完成（仅文档） | 已明确两个生成侧文件平铺、必要函数归属和旧目录清理顺序；4 条主文件命令与 6 个文档链接检查通过，原值 JSON、源码及历史账本未变 | 后续实施以修订后的 `NEWTASK_V2_PLAN.md` 为准，首个实现仍为 `10.0`；本轮未迁移、删除或生成 |
+| newtask-v2 五项对拍与留档计划展开（2.23） | 完成（仅文档，当时未记账） | 第四步展开为共用校准、五项编号对拍、15 格矩阵、三种操作与 docs 留档规范；静态检查退出码 0 | 已被 2.24 修订取代 |
+| newtask-v2 计划对抗审查与修订（2.24） | 完成（文档、快照补录、账本） | 11 路只读对抗审查；补齐随机流清单与疑似旧错误清单，改写 seed 入口、两次 reset、导入顺序因果链、防漂移检查对象；按用户决策改写确定性退出路径、预算口径、PNG 留档、①依赖③、旧测试工厂保留、12 任务保留、A 路 worktree、清理后抽样复验；JSON 只增不改 | 等用户授权后按修订计划实施；本轮未创建分支或 worktree、未生成、未对拍 |
 
 ## 追加式执行日志
 
@@ -865,3 +869,92 @@
 - 差异或阻塞：①**cross_diagonal 首次真实非空**（Button/val/ep11、val/ep31 的 (0,2) 入选最近邻，共 2 条）——判据 10c-iii 按计划从硬失败降级为告警+计数，正确性由 topo 分布两路对账硬判据（含分 split）兜底；②**判据 5 在 Button/val/ep11 两条超阈**（末帧位置集合差 1.28e-2/6.5e-3）——根因是对角交换冲量 ~17 的剧烈容器互撞把旁观 bin 撞离 6~8 mm 未弹回，属第一次 swap 的物理余波，按用户既定「保留+量化」原则给判据 5 加条件降级（有力互撞源降为量化告警、无互撞超阈仍硬失败）；③跨 split smoke 抓到一个过严闸门（staging_episode 唯一性误跨任务比较），改为 task 内查重；④argmin 余量 <0.005 的告警 21 条（全局最小 0.00055，规模效应，不作废）；⑤全库 `tests/lightweight/` 有 4 条既有失败（test_TaskGoal 2 + test_step_error_handling 2），git stash 基线复测同炸、与本轮无关，未处置。
 - 修改文件：`scripts/data-generation-MotionJEPALabel/` 下 8 个脚本（clip_plan/clip_worker/probe_original/generate_swap_clips/merge_clip_h5/make_clip_labels/verify_clips/draw_clip_diagrams）、README.md、CLAUDE.md（追加 §十六）；`tests/lightweight/test_swap_clip_plan.py`；`AGENTS.md` 本条。`swap_inject.py`/`prune_outputs.py` 零改动。
 - 下一步：MotionJEPA 侧对 153 个事件各生成 1 token（swap 窗口 50 帧取中间幅度最大 32 帧）做线性回归与聚类；无泄露子集按 `action_dev_max == 0` 过滤（106 条），整条原版可达子集按 `later_windows_follow_native_nn == true` 过滤（125 条）。
+
+### 2026-09-08 America/Detroit — newtask-v2 重建方案：开始只读核查
+
+- 状态：进行中，仅编写方案，未执行重建。
+- 目标：从 `dataset-gen-NewSeed` 重新规划 `newtask-v2`，首个实现版本从 `10.0` 开始；仅将原任务的位置分布和参数候选变成显式输入，原始取值及执行调用链保持不变。
+- 用户范围：已确认沿用 `BinFill`、`RouteStick`、`VideoUnmaskSwap`、`VideoRepick` 四个任务；初始指令要求只写根目录 Markdown，不修改实现、不创建目标分支、不运行生成。
+- 执行命令：`git status --short`、`git branch -a`、`git rev-parse HEAD origin/dataset-gen-NewSeed newtask-v1 origin/newtask-v1`、`git show`、`rg`、`sed`，均为只读核查。
+- 输入与来源：本地基线与本地远端跟踪引用均为 `94449db0a068a6b454b55a13ebd48f0394d89cc8`；`newtask-v1` 为 `be7a59db07ffd50011576dda9c432f81903e031b`，仅作差异参照；本轮没有刷新远端服务器状态。
+- 输出路径：根目录 `NEWTASK_V2_PLAN.md`。
+- 结果与证据：开始时工作区干净；已确认 newSeed 入口直接使用 `gym.make`、`RobommeRecordWrapper` 和原任务 `task_list`，不能用 v1 的独立执行链替代。
+- 差异或阻塞：尚未进行运行时一致性验证；四任务显式配置的初值须从基线源码提取，不能复制 v1 已改变的候选或位置配置。
+- 修改文件：本账本及方案文档。
+- 下一步：完成源码参数清单、ASCII 调用图、最小注入边界和后续验收计划。
+
+### 2026-09-08 America/Detroit — newtask-v2 重建方案：纳入入口约束并提前提取原配置
+
+- 状态：进行中，等待静态对账收尾；没有开始实现。
+- 用户追加：要求所有入口放在仓库根 `scripts/`，用于提取配置和生成新 dataset；并明确允许制定计划时先简单提取原版配置。
+- 实施：方案增加 `scripts/extract_native_config.py`、`scripts/generate_dataset.py`、`scripts/merge_dataset.py` 三个拟建顶层入口；后两者只转交基线已有生成、合并实现。现在只落盘原值 JSON，不实现入口。
+- 执行命令：先 `command -v uv`，再 `uv run --no-sync python -`，用标准库 AST 读取四个 task 的难度字典、布局和网格字面量，以 SHA-256 固定七份来源文件；其余构造参数、位置公式和工具默认值逐项核对源码后用 `apply_patch` 落盘。
+- 输出路径：`NEWTASK_V2_PLAN.md`、`scripts/configs/newtask-v2/native_sampling.json`。
+- 结果与证据：12 份难度字典已提取，保留原字段、原整数区间、原锚点顺序；记录两个 Video 任务整体旋转 `(0,180)` 实际为弧度、单值 `randint` 仍消耗随机数、RouteStick 的原布局为 `1 x 9` 等保真边界。
+- 意外与处理：`uv` 提示继承的 `VIRTUAL_ENV` 指向另一工作副本，并按默认规则忽略它，实际使用当前项目环境；未加 `--active`，未安装或修改依赖。一次文档补丁因上下文不匹配被整体拒绝，修正匹配后正常应用，未使用编辑回退。
+- 修改文件：仅根目录方案、配置 JSON 与本账本。
+- 下一步：检查快照对账、文档链接和最终 diff；只提交这三个文件，不创建 `newtask-v2`，不生成数据。
+
+### 2026-09-08 America/Detroit — newtask-v2 重建方案与原版配置快照交付
+
+- 状态：完成，仅指方案和静态配置快照交付；新版实现及运行时一致性仍未验证。
+- 输出：根目录 `NEWTASK_V2_PLAN.md` 包含原版完整调用图、配置输入支路、三个顶层 `scripts/` 入口、四任务候选与位置表、实施白名单、五步实施及三路对照计划；`scripts/configs/newtask-v2/native_sampling.json` 保存当前原值，尚未接入生成器。
+- 复核修正：补齐 `_execute_tasks` 循环结束后的原求值、异常 attempt 不进入 `_raw_summary` 的分支、RouteStick 方向候选与阈值。纯配置模块改为拟建 `src/robomme/sampling_config.py`，避免父进程经过环境包初始化提前导入仿真依赖。
+- 执行命令：`command -v uv` 后以 `uv run --no-sync python -` 运行标准库静态断言，检查配置与源码 AST、SHA-256、Markdown 链接、`bash -n` 命令围栏和历史账本保留；`git diff --check` 退出码 0。完整检查程序保存在本轮提交正文，可按固定基线复现。
+- 实测结果：12 份难度字典、6 个布局数组、7 份来源文件散列、6 个文档链接和 2 个命令围栏全部通过，静态检查退出码 0；检查耗时小于 1 秒；三个拟建脚本均未创建。首次文档链接检查误把代码里的 `entry["solve"](...)` 识别为链接，改为先排除代码围栏及行内代码后通过，未据此修改原代码。
+- 修改范围：仅 `AGENTS.md`、`NEWTASK_V2_PLAN.md`、`scripts/configs/newtask-v2/native_sampling.json`。没有新增或修改运行源码，没有依赖变更，没有创建目标分支，没有启动数据生成、回放或仿真。
+- 版本边界：本轮计划与原值提取按源分支 `2.21` 提交；`newtask-v2` 首个实现版本仍保留为 `10.0`。
+- 下一步：等待用户对方案的后续指令；不能把本条交付状态视作重建或生成授权。
+
+### 2026-09-08 America/Detroit — newtask-v2 计划修订：只保留两个生成侧 Python 并平铺
+
+- 状态：进行中，仅修改方案和账本。
+- 用户指令：保留 `generate_dataset_newseed.py` 和 `seed_layout.py`，将实际需要的函数及依赖迁入这两个文件；不放在 `data-generation-newSeed/` 内，直接与其他三个原有 Python 脚本平铺到根 `scripts/`；本轮要求“修改计划”。
+- 方案调整：最终产品脚本为两个生成侧文件加 `dataset_replay.py`、`evaluation.py`、`run_example.py`，共五个；原值 JSON 保留。撤销独立的提取、生成转交、合并和配置辅助 Python 文件设计。
+- 依赖分工：seed 文件吸收原任务规范、默认 episode 数、任务解析和异常定义；主文件吸收原 timestep/末帧检查、原子写入、配置提取与校验；原最小合并函数并入主文件的按需分支，生成后不自动合并。
+- 路径约束：迁移后主文件的 `REPO_ROOT` 改从 `SCRIPT_DIR.parent` 计算；删除旧 `CONTRACT_DIR` 依赖；保留原线程／绑卡导入顺序与顶层 spawn worker 定义；四个 task 不反向导入脚本。
+- 清理约束：明确先迁移依赖并验证，再清理旧脚本目录、孤立测试与文档引用；不保留旧目录兼容层、不新增其他辅助 Python 文件；不清理根数据、生成产物及历史账本。
+- 执行命令：`git status --short`、`git log`、`rg`、`sed` 只读核查；通过 `apply_patch` 更新根目录文档。
+- 修改文件：`NEWTASK_V2_PLAN.md`、`AGENTS.md`。
+- 下一步：检查所有图、目标结构、函数归属和命令一致，验证纯文档改动范围并提交；不执行计划。
+
+### 2026-09-08 America/Detroit — 两文件平铺计划修订完成
+
+- 状态：完成，仅文档修订交付。
+- 结果：根目录方案中的配置支路、最终目录、两文件职责、最小依赖表、六步实施顺序和全部使用命令已统一；四任务原参数、位置说明和 JSON 快照保持不变。独立只读复核没有发现残留的独立新入口或辅助 Python 实施安排。
+- 验证：确认 `command -v uv` 后，用 `uv run --no-sync python -` 执行标准库文档检查，4 条运行命令都指向平铺主文件、2 个命令围栏通过 `bash -n`、6 个文件链接有效；原 JSON 与七份来源源码散列未变、三个原脚本未变、历史账本保留；退出码 0，耗时小于 1 秒。`git diff --check` 退出码 0。
+- 修改范围：只有 `NEWTASK_V2_PLAN.md` 和 `AGENTS.md`；没有执行源码迁移、删除、配置改写、测试改写或数据生成。本轮为纯文档变更，不运行仿真或实现测试。
+- 提交口径：源分支文档版本接续为 `2.22`，不占用目标分支首个实现 `10.0`；仅逐路径暂存并提交本轮两份文档，验证程序随提交正文保存。
+- 下一步：按用户后续指令实施，不能把清理清单视为本轮删除授权。
+
+### 2026-09-08 America/Detroit — newtask-v2 五项对拍与留档计划展开（2.23，补记）
+
+- 状态：完成，仅文档修订；本条为补记。当时用户限定"只改这一份计划"，因此 2.23 提交未更新本账本，与本文件"每阶段必须更新账本"的规则冲突，现按用户 2.24 决策补记。
+- 用户指令：要求把对照写成逐层验证；点名①关键帧目视、②变量跳变／物体位置／产生消失、③HDF5 产物一致为用户关心的重要对拍；确认④随机流、⑤连续 worker 列入；要求对拍作为可复现测试并写 docs、保留轻量证据；轻量证据纳入 Git；最终限定只改 `NEWTASK_V2_PLAN.md`。
+- 结果：计划第四步展开为 4.0 共用校准、4.1–4.5 五项编号对拍、4.6 15 格矩阵与预算、4.7 三种操作与测试入口、4.8 docs 与轻量证据规范。
+- 验证：`uv run --no-sync python -` 标准库静态检查退出码 0（0.046 秒）；6 个链接、2 个围栏、4 条命令、5 项对拍、6 个步骤计数通过；第二至第六节逐字未变；JSON 与 7 份来源散列未变。
+- 修改范围：仅 `NEWTASK_V2_PLAN.md`。中途曾误创建临时分支与平铺文件，按用户纠偏全部撤回。
+- 下一步：已被 2.24 的对抗审查与修订取代。
+
+### 2026-09-08 America/Detroit — newtask-v2 计划对抗审查与修订（2.24）
+
+- 状态：完成，仅文档、快照补录与账本；未实施、未生成、未对拍。
+- 用户指令：对计划做对抗验证，不启动 workflow，尽可能并行 subagent；随后要求给出修复方案并指出需用户决策项；决策结果：RRT* 触发局换 episode 补足、穷尽再议容差；smoke ≤5 分钟 + 全量走 tmux；PNG 全部不入 Git；①全部保留但在③通过后执行；保留旧测试工厂、新对拍不用；其余 12 任务生成能力保证；本轮同时补录 JSON 与更新账本；清理后抽样复验。
+- 审查方式：11 个只读 subagent 并行核查（两任务参数 ×2、位置分布、调用链与 seed、迁移清理、JSON 快照、注入可行性、CLI 命令、对拍方法论、v1 分支与历史版本、纯文本自洽）。仓库未被 checkout、修改或运行生成。
+- 审查结论：数值层（12 份难度字典、位置常量、6 个锚点数组、7 份散列、seed 公式、env_code、弧度判定）全部正确。高严重度问题：随机流清单遗漏（RouteStick 障碍颜色 `torch.rand(3)`×4、walk 随机起点、VideoRepick 全局 `np.random.seed`、BinFill `_initialize_episode` 的 `randperm(3)` 两次执行、ManiSkill 环境级随机流与 job.seed 正交）；验收判据死锁（screw→RRTStar 回退不可播种且有 1 秒墙钟预算，历史同 seed 重跑约 1/20 分叉，与"逐位一致、受阻即不通过、全部通过才提交"互锁）；A 路源码来源留白（第三步后工作区不再等于基线）；`--check-config` 只比固定 ref 不读工作树；第三节第 7 条导入顺序因果链写错（spawn 子进程重跑主模块顶层早于绑卡）。中严重度：`min_gap` 实际值 0.02 未记、`include_*` 三种取值被抹平、`_spawned_cubes` 缓存污染路径、`readme.md` 死链未点名、merge CLI 参数不符、`--difficulty` 语义未解释、`--output-dir` required 未处理、现有测试工厂与 4.0 禁令冲突、v1 教训未引用、多处内部自相矛盾。
+- 修订内容：`NEWTASK_V2_PLAN.md` 逐节修订（第一节基线表、第二节调用图与两次 reset 差异表、第三节八条硬约束、第四节随机消费顺序与疑似旧错误清单、第五节 `min_gap`/`include_*`/工具清单、第六节随机流生命周期表、第七节迁移与清理补项、第八节退出路径／预算／PNG／顺序／抽样复验、第九节 `--no-sync` 与 ratio 说明、第十节自检项）；`native_sampling.json` 以标准库脚本只增不改补录（`schema_version` 1→2，旧值递归子集断言通过）；本账本补 2.23 与 2.24 两条。
+- 验证：见本轮提交正文中的静态检查程序与实测数字。
+- 修改范围：`NEWTASK_V2_PLAN.md`、`scripts/configs/newtask-v2/native_sampling.json`、`AGENTS.md`；源码、测试、依赖未变；未创建分支或 worktree。
+- 下一步：等用户授权后按修订计划第一步起实施；A 路须先在 `artifacts/` 下建 detached worktree。
+
+### 2026-09-08 America/Detroit — newtask-v2 第一至三步：建分支、两文件平铺、四任务接入原采样输入
+
+- 状态：完成第一至第三步与首轮 smoke；第四步五项对拍、第五步清理、第六步范围核对尚未完成。
+- 用户指令：「开始实现该计划 有问题停下来问用户 越早越好」；开工前经用户逐项决策：实施位置为直接在 NewTask 克隆切分支、本轮一路做到第六步 10.0 提交、授权 `git push -u origin newtask-v2`。
+- 第一步：核对源提交 `3a5951a`、基线 `94449db`、`newtask-v2` 本地与 origin 均不存在、工作区干净；记录 `uv.lock` SHA-256 `983de83f…`、`pyproject.toml` `bc2346e4…`。从基线创建 `newtask-v2`，逐文件复制带入 `NEWTASK_V2_PLAN.md`、`native_sampling.json` 与含 newtask-v2 账本条目的 `AGENTS.md`（与源分支逐字节相同），未 cherry-pick、未合并源分支文档提交。
+- 第二步：`seed_layout.py`、`generate_dataset_newseed.py` 迁到根 `scripts/`；`ALL_TASKS`/`MAX_EPISODES`/`DatasetContractError`/`parse_tasks` 迁入 seed 文件（迁入后只依赖标准库）；`TIMESTEP_RE`/`timestep_indices`/`inspect_episode_terminal`/`write_text_atomic`/`MergeError`/`_sources`/`merge_task` 迁入主文件；`REPO_ROOT` 改为 `SCRIPT_DIR.parent`，删 `CONTRACT_DIR`，保留 `SCRIPT_DIR` 的 `sys.path` 插入。主文件新增 `--extract-config`/`--check-config`/`--source-ref`/`--merge-only`/`--sampling-config`，`--output-dir` 由 required 改为分流后各自校验。
+- 第三步：四任务各新增模块级 `NATIVE_SAMPLING` 原值字典（即不传配置时的运行默认值，也是 AST 提取目标，与难度类属性不重复）与 `_resolve_sampling_config`；`__init__` 增加 `sampling_config=None` 形参并在任何随机数调用与 `super().__init__()` 之前取深拷贝副本；9 处类级 `configs` 读点全部改读实例副本；`spawn_random_bin` 增加 `yaw_scale_deg=90.0`（默认即原内联常量，另外三个范围外任务不受影响）。
+- 实测：`--check-config` 对工作树一致；`--check-config --source-ref 94449db` 用旧式（基线内联源码）提取器还原 61 项操作元，与快照逐项一致 —— 即接入过程没有改动任何原值。`tests/lightweight/test_seed_layout.py` 8 passed。BinFill easy ep0（seed 4000、attempt 0、workers 1、GPU 0）三路各跑一局：A 22.91s、B 23.13s、C 22.87s 全部成功；A↔B、A↔C、B↔C 的 HDF5 全字段逐元素比较均为 0 差异（13758 个对象、11556 个 dataset、550 个 timestep）。
+- 意外与处置：JSON 按方案第三节第 3 条把折算过的 `yaw_range_deg:[0,90]` 改写为运算元形式 `yaw_scale_deg:90.0`；新增 `configs_fallback_difficulty:"easy"`（RouteStick 兜底分支显式化）；两处 `*_origin` 说明文字随「现由快照显式传入」更新；七份来源 SHA-256 随源码改动刷新。数值操作元一项未变。提交编号按 `AGENTS.md` 强制规则「改完即提交」拆为 `10.0`（平铺+接入）与后续 `10.1`+，不把数小时工作堆在工作区。
+- 修改文件：`scripts/{generate_dataset_newseed,seed_layout}.py`（新增）、`scripts/configs/newtask-v2/native_sampling.json`、`src/robomme/robomme_env/{BinFill,RouteStick,VideoUnmaskSwap,VideoRepick}.py`、`src/robomme/robomme_env/utils/object_generation.py`、`tests/lightweight/test_seed_layout.py`、`tests/_shared/native_sampling_parity.py`（新增）、`NEWTASK_V2_PLAN.md`、本账本。旧目录尚未清理（第五步）。
+- 下一步：第四步五项对拍的观察器与证据框架、15 格实测；随后第五步清理与第六步范围核对。

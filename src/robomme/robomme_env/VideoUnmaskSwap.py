@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -47,6 +48,49 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 """
 
 
+# ── 原版采样输入的原值快照（newtask-v2 10.0）────────────────────────────────────
+# 说明同 BinFill：本字典即不传 sampling_config 时的默认值，也是 --extract-config 的提取目标。
+# 本类没有 self.generator：__init__ 与 _load_scene 各自建局部流、各自用同一个 seed 重播种，
+# 不得为统一接口把它提升为实例属性。
+NATIVE_SAMPLING = {
+    "parameters": {},
+    "positions": {
+        "containers": {
+            "region3_tri": [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0]],
+            "region3_line": [[0, -0.15], [0, 0.15], [0, 0]],
+            "region4": [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0.1], [0.1, -0.1]],
+            "region3_choice": {
+                "sampler": "torch.randint",
+                "low": 0,
+                "high_exclusive": 2,
+                "order": ["region3_tri", "region3_line"],
+            },
+            "layout_rotation_range_rad": [0, 180],
+            "region_half_size": 0.07,
+            "yaw_scale_deg": 90.0,
+            "yaw_expression": "u * 90.0",
+            "rotation_center": [0, 0],
+            "min_gap": "self.cube_half_size",
+            "min_gap_value": 0.02,
+            "spawn_random_bin_default_min_gap": 0.05,
+            "spawn_random_bin_has_include_flags": False,
+        },
+    },
+}
+
+
+def _resolve_sampling_config(cls, override):
+    """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
+    if override is None:
+        resolved = copy.deepcopy(NATIVE_SAMPLING)
+    else:
+        if not isinstance(override, dict) or set(override) != {"parameters", "positions"}:
+            raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
+        resolved = copy.deepcopy(override)
+    resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    return resolved
+
+
 @register_env("VideoUnmaskSwap")
 class VideoUnmaskSwap(BaseEnv):
 
@@ -94,7 +138,10 @@ class VideoUnmaskSwap(BaseEnv):
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -140,11 +187,12 @@ class VideoUnmaskSwap(BaseEnv):
         # Use seed to randomly determine number of repetitions (1-5)
         generator = torch.Generator()
         generator.manual_seed(seed)
-        self.swap_times = torch.randint(self.configs[self.difficulty]['swap_min'], self.configs[self.difficulty]['swap_max']+1, (1,), generator=generator).item()
+        difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
+        self.swap_times = torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=generator).item()
         logger.debug(f"Task will swap {self.swap_times} times")
 
 
-        self.pick_times = torch.randint(self.configs[self.difficulty]['pick_min'], self.configs[self.difficulty]['pick_max']+1, (1,), generator=generator).item()
+        self.pick_times = torch.randint(difficulty_cfg['pick_min'], difficulty_cfg['pick_max']+1, (1,), generator=generator).item()
         logger.debug(f"Task will pick {self.pick_times} times")
 
 
@@ -187,31 +235,35 @@ class VideoUnmaskSwap(BaseEnv):
 
           # Generate 3 bins
         self.spawned_bins = []
-        region4=[[-0.05,-0.1],[-0.05,0.1],[0.1,0.1],[0.1,-0.1]]
-        region3_tri=[[-0.05,-0.1],[-0.05,0.1],[0.1,0]]
-        region3_line=[[0,-0.15],[0,0.15],[0,0]]
+        containers_cfg = self._sampling["positions"]["containers"]
+        difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
+        region4=[list(point) for point in containers_cfg["region4"]]
+        region3_tri=[list(point) for point in containers_cfg["region3_tri"]]
+        region3_line=[list(point) for point in containers_cfg["region3_line"]]
 
         # Use generator to randomly select region3_tri or region3_line
-        region3_choice = torch.randint(0, 2, (1,), generator=generator).item()
+        choice_cfg = containers_cfg["region3_choice"]
+        region3_choice = torch.randint(choice_cfg["low"], choice_cfg["high_exclusive"], (1,), generator=generator).item()
         region3 = region3_tri if region3_choice == 0 else region3_line
 
-        if self.configs[self.difficulty]['bin']==4:
+        if difficulty_cfg['bin']==4:
             region=region4
         else:
              region=region3
-        angle, region = rotate_points_random(region,(0,180),generator)
+        angle, region = rotate_points_random(region,tuple(containers_cfg["layout_rotation_range_rad"]),generator)
         
-        for i in range(self.configs[self.difficulty]['bin']):
+        for i in range(difficulty_cfg['bin']):
             try:
                 bin_actor = spawn_random_bin(
                     self,
                     avoid=avoid,  # Use current avoidance list, containing all spawned objects
                     region_center=region[i],
-                    region_half_size=0.07,
+                    region_half_size=containers_cfg["region_half_size"],
                     min_gap=self.cube_half_size*1,  # bins need larger gap, increased to 6x to avoid collision
                     name_prefix=f"bin_{i}",
                     max_trials=256,
-                    generator=generator
+                    generator=generator,
+                    yaw_scale_deg=containers_cfg["yaw_scale_deg"]
                 )
             except RuntimeError as e:
                 break

@@ -1,6 +1,7 @@
 
 
 
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -53,6 +54,53 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 
 # If direction is reversed, modify evaluate and solve
 
+# ── 原版采样输入的原值快照（newtask-v2 10.0）────────────────────────────────────
+# 说明同 BinFill：本字典即不传 sampling_config 时的默认值，也是 --extract-config 的提取目标；
+# 难度字典仍以类属性 config_easy / config_medium / config_hard 为准，不在这里重复。
+NATIVE_SAMPLING = {
+    "parameters": {
+        "configs_fallback_difficulty": "easy",
+    },
+    "positions": {
+        "grid_center": [-0.1, 0],
+        "grid_spacing_x": 0.07,
+        "grid_spacing_y": 0.07,
+        "rotation_center": [0, 0],
+        "yaw_deg": {"scale": 60, "subtract": 30},
+        "yaw_expression": "math.radians(u * 60 - 30)",
+        "grid_spacing_x_effect": "num_rows=1 使 row 偏移恒为 0，该参数对结果无影响（死参数）",
+        "target_builder": "build_gray_white_target",
+        "obstacle_builder": "_load_scene 内联 create_actor_builder",
+        "cylinder_radius": 0.015,
+        "cylinder_height": 0.1,
+        "obstacle_color": {
+            "sampler": "torch.rand",
+            "shape": [3],
+            "count": 4,
+            "position_in_stream": "theta 之后、steps 之前，每根障碍柱一次",
+        },
+        "walk_start": {
+            "sampler": "torch.randint",
+            "low": 0,
+            "high_exclusive": 5,
+            "note": "generate_dynamic_walk 未传 start_idx 时抽取，是路线随机流的第一次抽取",
+        },
+    },
+}
+
+
+def _resolve_sampling_config(cls, override):
+    """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
+    if override is None:
+        resolved = copy.deepcopy(NATIVE_SAMPLING)
+    else:
+        if not isinstance(override, dict) or set(override) != {"parameters", "positions"}:
+            raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
+        resolved = copy.deepcopy(override)
+    resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    return resolved
+
+
 @register_env("RouteStick")
 class RouteStick(BaseEnv):
 
@@ -92,7 +140,10 @@ class RouteStick(BaseEnv):
     }
 
     def __init__(self, *args, robot_uids="panda_stick", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.achieved_list=[]
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
@@ -191,10 +242,11 @@ class RouteStick(BaseEnv):
         )
         self.table_scene.build()
 
-        # Generate 3x3 grid of buttons
-        grid_center = [-0.1, 0]  # Grid center position
-        grid_spacing_x = 0.07 # Spacing between buttons
-        grid_spacing_y=0.07
+        # Generate 3x3 grid of buttons（注释与实际不符：原布局是 1 x 9，按实际记录）
+        layout_cfg = self._sampling["positions"]
+        grid_center = list(layout_cfg["grid_center"])  # Grid center position
+        grid_spacing_x = layout_cfg["grid_spacing_x"] # Spacing between buttons
+        grid_spacing_y=layout_cfg["grid_spacing_y"]
 
         self.buttons_grid = []
         self.button_joints_grid = []
@@ -206,8 +258,9 @@ class RouteStick(BaseEnv):
         col_center = (num_cols - 1) / 2
 
 
+        yaw_cfg = layout_cfg["yaw_deg"]
         theta = math.radians(
-        (torch.rand(1, generator=generator).item() * 60) - 30
+        (torch.rand(1, generator=generator).item() * yaw_cfg["scale"]) - yaw_cfg["subtract"]
             )
         #theta=0
         for row in range(num_rows):
@@ -273,8 +326,8 @@ class RouteStick(BaseEnv):
 
             cube_position = [float(target_pos[0]), float(target_pos[1])]
 
-            cylinder_radius = 0.015
-            cylinder_height = 0.1
+            cylinder_radius = layout_cfg["cylinder_radius"]
+            cylinder_height = layout_cfg["cylinder_height"]
             cylinder_half_length = cylinder_height / 2.0
 
             # Keep the cylinder centered so that it stands upright on the table surface.
@@ -333,7 +386,9 @@ class RouteStick(BaseEnv):
         button_indices = [0, 2, 4, 6, 8]
         self.route_button_indices = button_indices
 
-        cfg = self.configs.get(getattr(self, "difficulty", "easy"), self.config_easy)
+        sampling_configs = self._sampling["parameters"]["configs"]
+        fallback_difficulty = self._sampling["parameters"]["configs_fallback_difficulty"]
+        cfg = sampling_configs.get(getattr(self, "difficulty", "easy"), sampling_configs[fallback_difficulty])
         length_min, length_max = cfg.get("length")
         steps = int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item())
         allow_backtracking = bool(cfg.get("backtrack", True))

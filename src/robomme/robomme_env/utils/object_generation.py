@@ -923,7 +923,8 @@ def spawn_random_bin(
         min_gap=0.05,
         name_prefix="bin",
         max_trials=256,
-        generator=None
+        generator=None,
+        yaw_scale_deg=90.0
 ):
     """
     Drop a bin in rectangular region using rejection sampling, and return the bin actor.
@@ -1000,7 +1001,8 @@ def spawn_random_bin(
             continue
 
         # Passing detection, create bin (at specified position), with random z-axis rotation
-        z_rotation = float(torch.rand(1, generator=generator).item() * 90.0)  # 0-360 degrees
+        # yaw_scale_deg 的默认值即原来的内联常量 90.0，范围外的任务照原样调用不受影响
+        z_rotation = float(torch.rand(1, generator=generator).item() * yaw_scale_deg)  # 0-360 degrees
         bin_actor = build_bin(self, callsign=name_prefix, position=[x, y, 0.002], z_rotation_deg=z_rotation)
 
         return bin_actor

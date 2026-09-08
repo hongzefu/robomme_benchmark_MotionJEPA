@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -49,6 +50,78 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 """
 
 
+# ── 原版采样输入的原值快照（newtask-v2 10.0）────────────────────────────────────
+# 说明同 BinFill：本字典即不传 sampling_config 时的默认值，也是 --extract-config 的提取目标。
+# 注意 __init__ 里的 np.random.seed(seed) 是全仓唯一的进程级全局播种点，位置不得移动。
+NATIVE_SAMPLING = {
+    "parameters": {
+        "num_repeats": {
+            "sampler": "torch.randint",
+            "low": 1,
+            "high_exclusive": 4,
+            "shape": [1],
+        },
+        "hard_spawn_rounds": 5,
+    },
+    "positions": {
+        "button": {
+            "center_xy": [-0.2, 0],
+            "randomize": True,
+            "randomize_range": [0.1, 0.1],
+            "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range",
+            "scale": 1.5,
+            "randomize_range_origin": "VideoRepick 调用点显式传入",
+        },
+        "easy_medium_cubes": {
+            "region3_tri": [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0]],
+            "region3_line": [[0, -0.15], [0, 0.15], [0, 0]],
+            "region4": [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0.1], [0.1, -0.1]],
+            "region3_choice": {
+                "sampler": "torch.randint",
+                "low": 0,
+                "high_exclusive": 2,
+                "order": ["region3_tri", "region3_line"],
+            },
+            "layout_rotation_range_rad": [0, 180],
+            "region_half_size": 0.07,
+            "random_yaw": True,
+            "yaw_range_rad": [0, 6.283185307179586],
+            "yaw_expression": "yaw_sample * 2 * np.pi",
+            "rotation_center": [0, 0],
+            "min_gap": "self.cube_half_size",
+            "min_gap_value": 0.02,
+            "include_existing": True,
+            "include_goal": True,
+            "include_flags_origin": "原值取自 spawn_random_cube 形参默认 True；原调用点未传，现由本快照显式传入",
+            "region4_reachable": False,
+        },
+        "hard_cubes": {
+            "region_center": [-0.1, 0],
+            "region_half_size": [0.2, 0.25],
+            "random_yaw": True,
+            "yaw_range_rad": [0, 6.283185307179586],
+            "yaw_expression": "yaw_sample * 2 * np.pi",
+            "min_gap": "self.cube_half_size",
+            "min_gap_value": 0.02,
+            "include_existing": False,
+            "include_goal": False,
+        },
+    },
+}
+
+
+def _resolve_sampling_config(cls, override):
+    """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
+    if override is None:
+        resolved = copy.deepcopy(NATIVE_SAMPLING)
+    else:
+        if not isinstance(override, dict) or set(override) != {"parameters", "positions"}:
+            raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
+        resolved = copy.deepcopy(override)
+    resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    return resolved
+
+
 @register_env("VideoRepick")
 class VideoRepick(BaseEnv):
 
@@ -91,7 +164,10 @@ class VideoRepick(BaseEnv):
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用（含 np.random.seed）与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -139,10 +215,12 @@ class VideoRepick(BaseEnv):
         # Use seed to randomly determine number of repetitions (1-5)
         self.generator = torch.Generator()
         self.generator.manual_seed(seed)
-        self.num_repeats = torch.randint(1, 4, (1,), generator=self.generator).item()
+        repeats_cfg = self._sampling["parameters"]["num_repeats"]
+        self.num_repeats = torch.randint(repeats_cfg["low"], repeats_cfg["high_exclusive"], tuple(repeats_cfg["shape"]), generator=self.generator).item()
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
 
-        self.swap_times = torch.randint(self.configs[self.difficulty]['swap_min'], self.configs[self.difficulty]['swap_max']+1, (1,), generator=self.generator).item()
+        difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
+        self.swap_times = torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=self.generator).item()
         logger.debug(f"Task will swap {self.swap_times} times")
 
 
@@ -179,14 +257,15 @@ class VideoRepick(BaseEnv):
             )
             self.table_scene.build()
 
+            button_cfg = self._sampling["positions"]["button"]
             button_obb_1 = build_button(
                 self,
-                center_xy=(-0.2, 0),
-                scale=1.5,
+                center_xy=tuple(button_cfg["center_xy"]),
+                scale=button_cfg["scale"],
                 generator=self.generator,
                 name="button",
-                randomize=True,
-                randomize_range=(0.1, 0.1)
+                randomize=button_cfg["randomize"],
+                randomize_range=tuple(button_cfg["randomize_range"])
             )
             # Store first button before building second one
             self.button_left = self.button
@@ -202,7 +281,8 @@ class VideoRepick(BaseEnv):
             if self.difficulty == "hard":
                 self.spawned_cubes = []
 
-                for idx in range(5):
+                hard_cfg = self._sampling["positions"]["hard_cubes"]
+                for idx in range(self._sampling["parameters"]["hard_spawn_rounds"]):
                     shuffle_indices = torch.randperm(len(options), generator=self.generator).tolist()
                     new_options = [options[i] for i in shuffle_indices]
                     for group in new_options:
@@ -211,13 +291,13 @@ class VideoRepick(BaseEnv):
                                 self,
                                 color=group["color"],
                                 avoid=avoid,
-                                include_existing=False,
-                                include_goal=False,
-                                region_center=[-0.1, 0],
-                                region_half_size=[0.2, 0.25],
+                                include_existing=hard_cfg["include_existing"],
+                                include_goal=hard_cfg["include_goal"],
+                                region_center=list(hard_cfg["region_center"]),
+                                region_half_size=list(hard_cfg["region_half_size"]),
                                 half_size=self.cube_half_size,
                                 min_gap=self.cube_half_size,
-                                random_yaw=True,
+                                random_yaw=hard_cfg["random_yaw"],
                                 name_prefix=f"cube_{group['name']}_{idx}",
                                 generator=self.generator,
                             )
@@ -246,31 +326,37 @@ class VideoRepick(BaseEnv):
 
                 self.spawned_cubes = []
 
-                region4 = [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0.1], [0.1, -0.1]]
-                region3_tri = [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0]]
-                region3_line = [[0, -0.15], [0, 0.15], [0, 0]]
+                plain_cfg = self._sampling["positions"]["easy_medium_cubes"]
+                difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
+                region4 = [list(point) for point in plain_cfg["region4"]]
+                region3_tri = [list(point) for point in plain_cfg["region3_tri"]]
+                region3_line = [list(point) for point in plain_cfg["region3_line"]]
 
-                region3_choice = torch.randint(0, 2, (1,), generator=self.generator).item()
+                choice_cfg = plain_cfg["region3_choice"]
+                region3_choice = torch.randint(choice_cfg["low"], choice_cfg["high_exclusive"], (1,), generator=self.generator).item()
                 region3 = region3_tri if region3_choice == 0 else region3_line
 
-                if self.configs[self.difficulty]['cube'] == 4:
+                if difficulty_cfg['cube'] == 4:
                     region = region4
                 else:
                     region = region3
-                angle, region = rotate_points_random(region, (0, 180), self.generator)
+                angle, region = rotate_points_random(region, tuple(plain_cfg["layout_rotation_range_rad"]), self.generator)
 
-                for i in range(self.configs[self.difficulty]['cube']):
+                for i in range(difficulty_cfg['cube']):
                     try:
                         cube_actor = spawn_random_cube(
                             self,
                             avoid=avoid,
                             region_center=region[i],
-                            region_half_size=0.07,
+                            region_half_size=plain_cfg["region_half_size"],
                             min_gap=self.cube_half_size * 1,
                             half_size=self.cube_half_size,
                             name_prefix=f"bin_{i}",
                             max_trials=256,
                             color=cube_colors[i],
+                            random_yaw=plain_cfg["random_yaw"],
+                            include_existing=plain_cfg["include_existing"],
+                            include_goal=plain_cfg["include_goal"],
                             generator=self.generator
 
                         )
