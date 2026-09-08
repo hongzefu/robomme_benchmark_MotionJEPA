@@ -1,0 +1,551 @@
+{
+  "schema_version": 1,
+  "source_commit": "94449db0a068a6b454b55a13ebd48f0394d89cc8",
+  "target_version": "10.0",
+  "status": "已提取，尚未接入运行",
+  "scope": [
+    "BinFill",
+    "RouteStick",
+    "VideoUnmaskSwap",
+    "VideoRepick"
+  ],
+  "extraction_note": "难度字典、锚点与网格常量由 AST 字面量提取；构造参数、位置表达式和工具默认值经源码逐项核对。本文件不改变现有生成器行为。表达式字符串仅供核查，不执行 eval。",
+  "units": {
+    "position": "m",
+    "angles": "字段后缀 rad 为弧度，deg 为度；两个 Video 任务的整体旋转原值为 0 到 180 弧度"
+  },
+  "sources": {
+    "BinFill": {
+      "path": "src/robomme/robomme_env/BinFill.py",
+      "sha256": "8aea134ab670d23703bf01662df0a95a578a3b415918492b02522bc28a72cbb9",
+      "anchors": [
+        "config_easy",
+        "config_medium",
+        "config_hard",
+        "__init__",
+        "_load_scene",
+        "_initialize_episode"
+      ]
+    },
+    "RouteStick": {
+      "path": "src/robomme/robomme_env/RouteStick.py",
+      "sha256": "4a02a052be72971032df4a0f6cb1acdcf552abfc86d4de31762fe4e04a30472e",
+      "anchors": [
+        "config_easy",
+        "config_medium",
+        "config_hard",
+        "__init__",
+        "_load_scene",
+        "_initialize_episode"
+      ]
+    },
+    "VideoUnmaskSwap": {
+      "path": "src/robomme/robomme_env/VideoUnmaskSwap.py",
+      "sha256": "dee98c4f048b4c3f3f7eb7ff1956a24efac41ee65d26140b872926bcf38fd34d",
+      "anchors": [
+        "config_easy",
+        "config_medium",
+        "config_hard",
+        "__init__",
+        "_load_scene",
+        "_initialize_episode"
+      ]
+    },
+    "VideoRepick": {
+      "path": "src/robomme/robomme_env/VideoRepick.py",
+      "sha256": "e4f4a6856d85de42e25d17398afcc90595dd74e3f17328bff138772d1651ef3c",
+      "anchors": [
+        "config_easy",
+        "config_medium",
+        "config_hard",
+        "__init__",
+        "_load_scene",
+        "_initialize_episode"
+      ]
+    },
+    "object_generation": {
+      "path": "src/robomme/robomme_env/utils/object_generation.py",
+      "sha256": "c782464428bd552063f139f9c2684b114f4cd724d2e7967d56ee40d57e830163",
+      "anchors": [
+        "build_button",
+        "spawn_random_cube",
+        "spawn_random_bin"
+      ]
+    },
+    "statechange": {
+      "path": "src/robomme/robomme_env/utils/statechange.py",
+      "sha256": "c159096bd3e0b6ac3ce530f413615eeb1fadd54cce202f71728f5a4028e8bd05",
+      "anchors": [
+        "rotate_points_random"
+      ]
+    },
+    "route": {
+      "path": "src/robomme/robomme_env/utils/route.py",
+      "sha256": "9a6a07703056b3b3bfa2f6814659748749b9cdaf3dcc45038e3e547f10047878",
+      "anchors": [
+        "generate_dynamic_walk"
+      ]
+    }
+  },
+  "parameters": {
+    "BinFill": {
+      "configs": {
+        "easy": {
+          "color": 1,
+          "spawn_cubes": [
+            4,
+            6
+          ],
+          "put_in_color": [
+            1,
+            1
+          ],
+          "put_in_numbers": [
+            1,
+            3
+          ]
+        },
+        "medium": {
+          "color": 2,
+          "spawn_cubes": [
+            8,
+            10
+          ],
+          "put_in_color": [
+            1,
+            2
+          ],
+          "put_in_numbers": [
+            2,
+            4
+          ]
+        },
+        "hard": {
+          "color": 3,
+          "spawn_cubes": [
+            10,
+            12
+          ],
+          "put_in_color": [
+            2,
+            3
+          ],
+          "put_in_numbers": [
+            3,
+            5
+          ]
+        }
+      },
+      "dynamic": {
+        "sampler": "torch.randint",
+        "low": 0,
+        "high_exclusive": 2,
+        "shape": [
+          1
+        ],
+        "cast": "bool"
+      }
+    },
+    "RouteStick": {
+      "configs": {
+        "easy": {
+          "length": [
+            2,
+            3
+          ],
+          "backtrack": false
+        },
+        "medium": {
+          "length": [
+            4,
+            5
+          ],
+          "backtrack": false
+        },
+        "hard": {
+          "length": [
+            4,
+            7
+          ],
+          "backtrack": true
+        }
+      }
+    },
+    "VideoUnmaskSwap": {
+      "configs": {
+        "easy": {
+          "bin": 3,
+          "swap_min": 1,
+          "swap_max": 2,
+          "pick_min": 1,
+          "pick_max": 2
+        },
+        "medium": {
+          "bin": 4,
+          "swap_min": 1,
+          "swap_max": 2,
+          "pick_min": 1,
+          "pick_max": 1
+        },
+        "hard": {
+          "bin": 4,
+          "swap_min": 2,
+          "swap_max": 3,
+          "pick_min": 2,
+          "pick_max": 2
+        }
+      }
+    },
+    "VideoRepick": {
+      "configs": {
+        "easy": {
+          "cube": 3,
+          "swap_min": 1,
+          "swap_max": 2
+        },
+        "medium": {
+          "cube": 3,
+          "swap_min": 2,
+          "swap_max": 3
+        },
+        "hard": {
+          "cluster": true,
+          "swap": null,
+          "swap_min": 0,
+          "swap_max": 0
+        }
+      },
+      "num_repeats": {
+        "sampler": "torch.randint",
+        "low": 1,
+        "high_exclusive": 4,
+        "shape": [
+          1
+        ]
+      },
+      "hard_spawn_rounds": 5
+    }
+  },
+  "positions": {
+    "BinFill": {
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "randomize": true,
+        "randomize_range": [
+          0.1,
+          0.4
+        ],
+        "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range"
+      },
+      "board": {
+        "base_position": [
+          0.15,
+          0,
+          0
+        ],
+        "x_offset": {
+          "scale": 0.2,
+          "subtract": 0.2
+        },
+        "y_offset": {
+          "scale": 0.4,
+          "subtract": 0.2
+        },
+        "yaw_deg": {
+          "scale": 40,
+          "subtract": 20
+        },
+        "x_expression": "0.15 + (u * 0.2 - 0.2)",
+        "y_expression": "u * 0.4 - 0.2",
+        "yaw_expression": "u * 40.0 - 20.0"
+      },
+      "cubes": {
+        "region_center": [
+          -0.1,
+          0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ],
+        "random_yaw": true,
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi"
+      }
+    },
+    "RouteStick": {
+      "grid_center": [
+        -0.1,
+        0
+      ],
+      "grid_spacing_x": 0.07,
+      "grid_spacing_y": 0.07,
+      "rotation_center": [
+        0,
+        0
+      ],
+      "yaw_deg": {
+        "scale": 60,
+        "subtract": 30
+      },
+      "yaw_expression": "math.radians(u * 60 - 30)"
+    },
+    "VideoUnmaskSwap": {
+      "containers": {
+        "region3_tri": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0
+          ]
+        ],
+        "region3_line": [
+          [
+            0,
+            -0.15
+          ],
+          [
+            0,
+            0.15
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "region4": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0.1
+          ],
+          [
+            0.1,
+            -0.1
+          ]
+        ],
+        "region3_choice": {
+          "sampler": "torch.randint",
+          "low": 0,
+          "high_exclusive": 2,
+          "order": [
+            "region3_tri",
+            "region3_line"
+          ]
+        },
+        "layout_rotation_range_rad": [
+          0,
+          180
+        ],
+        "region_half_size": 0.07,
+        "yaw_range_deg": [
+          0,
+          90
+        ],
+        "yaw_expression": "u * 90.0"
+      }
+    },
+    "VideoRepick": {
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "randomize": true,
+        "randomize_range": [
+          0.1,
+          0.1
+        ],
+        "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range"
+      },
+      "easy_medium_cubes": {
+        "region3_tri": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0
+          ]
+        ],
+        "region3_line": [
+          [
+            0,
+            -0.15
+          ],
+          [
+            0,
+            0.15
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "region4": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0.1
+          ],
+          [
+            0.1,
+            -0.1
+          ]
+        ],
+        "region3_choice": {
+          "sampler": "torch.randint",
+          "low": 0,
+          "high_exclusive": 2,
+          "order": [
+            "region3_tri",
+            "region3_line"
+          ]
+        },
+        "layout_rotation_range_rad": [
+          0,
+          180
+        ],
+        "region_half_size": 0.07,
+        "random_yaw": true,
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi"
+      },
+      "hard_cubes": {
+        "region_center": [
+          -0.1,
+          0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ],
+        "random_yaw": true,
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi"
+      }
+    }
+  },
+  "native_semantics": {
+    "note": "本块只记录原逻辑和几何约束，不作为新增可调开关；parameters 中原字典的闲置字段也不得获得新语义。",
+    "BinFill": {
+      "spawn_color_order": [
+        "red",
+        "blue",
+        "green"
+      ],
+      "initialize_color_order": [
+        "blue",
+        "red",
+        "green"
+      ],
+      "target_color_may_have_zero_count": true,
+      "generator_lifecycle": "__init__ 创建 self.generator，dynamic 后继续用于 _load_scene 和 _initialize_episode"
+    },
+    "RouteStick": {
+      "num_rows": 1,
+      "num_cols": 9,
+      "route_button_indices": [
+        0,
+        2,
+        4,
+        6,
+        8
+      ],
+      "obstacle_indices": [
+        1,
+        3,
+        5,
+        7
+      ],
+      "raised_z": 0.01,
+      "other_z": -0.01,
+      "obstacle_z": 0.05,
+      "walk_node_count": "steps + 1",
+      "swing_directions": {
+        "sampler": "torch.rand",
+        "shape": [1],
+        "threshold": 0.5,
+        "less_than": "clockwise",
+        "otherwise": "counterclockwise",
+        "order": "依次遍历 self.selected_buttons[1:]，每段抽取一次"
+      },
+      "backtrack_false_can_force_reverse_at_endpoint": true,
+      "difficulty_without_override": "easy",
+      "generator_lifecycle": "_load_scene 新建局部 generator 并以 self.seed 初始化"
+    },
+    "VideoUnmaskSwap": {
+      "color_order": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "hidden_bin_permutation_size": 3,
+      "hidden_cube_xy": "所属容器当前 xy",
+      "hidden_cube_half_size": "self.cube_half_size / 1.2",
+      "hidden_cube_yaw": 0,
+      "consume_region3_choice_with_four_bins": true,
+      "generator_lifecycle": "__init__ 与 _load_scene 各建局部 generator，均以原 seed 初始化；保留其余事件随机流"
+    },
+    "VideoRepick": {
+      "color_order": [
+        "red",
+        "blue",
+        "green"
+      ],
+      "hard_spawn_count": 15,
+      "hard_branch_condition": "self.difficulty == \"hard\"",
+      "easy_medium_same_color_shuffle_size": 4,
+      "hard_consumes_zero_swap_draw": true,
+      "numpy_seed_side_effect": "np.random.seed(seed)",
+      "generator_lifecycle": "__init__ 创建 self.generator，重复次数、交换次数后继续用于 _load_scene"
+    },
+    "object_generation": {
+      "max_trials": 256,
+      "min_gap": "四任务相关 cube/bin 调用保持 self.cube_half_size，不新增全局净距",
+      "cube_center_bounds": "center - area_half + hs_new 到 center + area_half - hs_new",
+      "bin_half_size": "(self.cube_half_size * 2.5 + 0.005) * 0.5",
+      "cube_rng_order": "每次尝试 x、y、yaw 后碰撞判断",
+      "bin_rng_order": "每次尝试 x、y，碰撞通过后才抽 yaw",
+      "failure_handling": "BinFill 继续后续方块；VideoUnmaskSwap 中断容器循环；VideoRepick 抛 SceneGenerationError"
+    }
+  }
+}

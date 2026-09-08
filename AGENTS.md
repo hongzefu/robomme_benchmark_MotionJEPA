@@ -207,6 +207,7 @@
 | MotionJEPA 当前开关与 SigLIP 路径核查 | 完成 | 当前 `rgb-decoder-v1` 的 `configs/default.yaml` 与 `scripts/train.py` 表明 DINO、flow、ViT、state、EMA、W&B 等有结构开关；SigLIP 仅有 `loss.siglip_weight`，没有 `siglip.enabled` | `siglip_weight=0` 只能清零其 loss 系数；如需真正关闭 SigLIP token/decoder/前向，必须单独改造数据、模型、训练和验证路径 |
 | MotionJEPA 最新双配方默认值与旧脚本保护 | 完成 | `configs/default.yaml` 已对齐 `xqkorgzc` no-state 配方；`configs/legacy.yaml` 与修改前默认值逐字一致；11 个旧文件归档；中英文 README 损失公式已对齐当前 SigLIP+DINO+flow+SIGReg/state 可选逻辑 | 两个活动入口仍继承未显式覆盖的 default 字段；若要求跨未来默认值变更精确复现，需新增不可变配置快照 |
 | 异常 `.codex-motionjepa-edit` gitlink 清理 | 完成 | 用户明确要求不保留备份并全部删除；物理目录已删除，父仓库索引已将 mode `160000` gitlink 记为删除 | 提交前复核已暂存删除与现有 `AGENTS.md` 未暂存修改，避免混淆提交范围 |
+| newtask-v2 重建方案与原值提取 | 完成（仅方案及静态配置） | 根目录 `NEWTASK_V2_PLAN.md` 和 `scripts/configs/newtask-v2/native_sampling.json` 已落盘；12 份难度字典、6 个布局数组、7 份来源散列和文档检查通过 | 后续获准实施后从固定 `94449db0a068a6b454b55a13ebd48f0394d89cc8` 建立 `newtask-v2`，首个实现 `10.0`；本轮未实现或生成 |
 
 ## 追加式执行日志
 
@@ -865,3 +866,39 @@
 - 差异或阻塞：①**cross_diagonal 首次真实非空**（Button/val/ep11、val/ep31 的 (0,2) 入选最近邻，共 2 条）——判据 10c-iii 按计划从硬失败降级为告警+计数，正确性由 topo 分布两路对账硬判据（含分 split）兜底；②**判据 5 在 Button/val/ep11 两条超阈**（末帧位置集合差 1.28e-2/6.5e-3）——根因是对角交换冲量 ~17 的剧烈容器互撞把旁观 bin 撞离 6~8 mm 未弹回，属第一次 swap 的物理余波，按用户既定「保留+量化」原则给判据 5 加条件降级（有力互撞源降为量化告警、无互撞超阈仍硬失败）；③跨 split smoke 抓到一个过严闸门（staging_episode 唯一性误跨任务比较），改为 task 内查重；④argmin 余量 <0.005 的告警 21 条（全局最小 0.00055，规模效应，不作废）；⑤全库 `tests/lightweight/` 有 4 条既有失败（test_TaskGoal 2 + test_step_error_handling 2），git stash 基线复测同炸、与本轮无关，未处置。
 - 修改文件：`scripts/data-generation-MotionJEPALabel/` 下 8 个脚本（clip_plan/clip_worker/probe_original/generate_swap_clips/merge_clip_h5/make_clip_labels/verify_clips/draw_clip_diagrams）、README.md、CLAUDE.md（追加 §十六）；`tests/lightweight/test_swap_clip_plan.py`；`AGENTS.md` 本条。`swap_inject.py`/`prune_outputs.py` 零改动。
 - 下一步：MotionJEPA 侧对 153 个事件各生成 1 token（swap 窗口 50 帧取中间幅度最大 32 帧）做线性回归与聚类；无泄露子集按 `action_dev_max == 0` 过滤（106 条），整条原版可达子集按 `later_windows_follow_native_nn == true` 过滤（125 条）。
+
+### 2026-09-08 America/Detroit — newtask-v2 重建方案：开始只读核查
+
+- 状态：进行中，仅编写方案，未执行重建。
+- 目标：从 `dataset-gen-NewSeed` 重新规划 `newtask-v2`，首个实现版本从 `10.0` 开始；仅将原任务的位置分布和参数候选变成显式输入，原始取值及执行调用链保持不变。
+- 用户范围：已确认沿用 `BinFill`、`RouteStick`、`VideoUnmaskSwap`、`VideoRepick` 四个任务；初始指令要求只写根目录 Markdown，不修改实现、不创建目标分支、不运行生成。
+- 执行命令：`git status --short`、`git branch -a`、`git rev-parse HEAD origin/dataset-gen-NewSeed newtask-v1 origin/newtask-v1`、`git show`、`rg`、`sed`，均为只读核查。
+- 输入与来源：本地基线与本地远端跟踪引用均为 `94449db0a068a6b454b55a13ebd48f0394d89cc8`；`newtask-v1` 为 `be7a59db07ffd50011576dda9c432f81903e031b`，仅作差异参照；本轮没有刷新远端服务器状态。
+- 输出路径：根目录 `NEWTASK_V2_PLAN.md`。
+- 结果与证据：开始时工作区干净；已确认 newSeed 入口直接使用 `gym.make`、`RobommeRecordWrapper` 和原任务 `task_list`，不能用 v1 的独立执行链替代。
+- 差异或阻塞：尚未进行运行时一致性验证；四任务显式配置的初值须从基线源码提取，不能复制 v1 已改变的候选或位置配置。
+- 修改文件：本账本及方案文档。
+- 下一步：完成源码参数清单、ASCII 调用图、最小注入边界和后续验收计划。
+
+### 2026-09-08 America/Detroit — newtask-v2 重建方案：纳入入口约束并提前提取原配置
+
+- 状态：进行中，等待静态对账收尾；没有开始实现。
+- 用户追加：要求所有入口放在仓库根 `scripts/`，用于提取配置和生成新 dataset；并明确允许制定计划时先简单提取原版配置。
+- 实施：方案增加 `scripts/extract_native_config.py`、`scripts/generate_dataset.py`、`scripts/merge_dataset.py` 三个拟建顶层入口；后两者只转交基线已有生成、合并实现。现在只落盘原值 JSON，不实现入口。
+- 执行命令：先 `command -v uv`，再 `uv run --no-sync python -`，用标准库 AST 读取四个 task 的难度字典、布局和网格字面量，以 SHA-256 固定七份来源文件；其余构造参数、位置公式和工具默认值逐项核对源码后用 `apply_patch` 落盘。
+- 输出路径：`NEWTASK_V2_PLAN.md`、`scripts/configs/newtask-v2/native_sampling.json`。
+- 结果与证据：12 份难度字典已提取，保留原字段、原整数区间、原锚点顺序；记录两个 Video 任务整体旋转 `(0,180)` 实际为弧度、单值 `randint` 仍消耗随机数、RouteStick 的原布局为 `1 x 9` 等保真边界。
+- 意外与处理：`uv` 提示继承的 `VIRTUAL_ENV` 指向另一工作副本，并按默认规则忽略它，实际使用当前项目环境；未加 `--active`，未安装或修改依赖。一次文档补丁因上下文不匹配被整体拒绝，修正匹配后正常应用，未使用编辑回退。
+- 修改文件：仅根目录方案、配置 JSON 与本账本。
+- 下一步：检查快照对账、文档链接和最终 diff；只提交这三个文件，不创建 `newtask-v2`，不生成数据。
+
+### 2026-09-08 America/Detroit — newtask-v2 重建方案与原版配置快照交付
+
+- 状态：完成，仅指方案和静态配置快照交付；新版实现及运行时一致性仍未验证。
+- 输出：根目录 `NEWTASK_V2_PLAN.md` 包含原版完整调用图、配置输入支路、三个顶层 `scripts/` 入口、四任务候选与位置表、实施白名单、五步实施及三路对照计划；`scripts/configs/newtask-v2/native_sampling.json` 保存当前原值，尚未接入生成器。
+- 复核修正：补齐 `_execute_tasks` 循环结束后的原求值、异常 attempt 不进入 `_raw_summary` 的分支、RouteStick 方向候选与阈值。纯配置模块改为拟建 `src/robomme/sampling_config.py`，避免父进程经过环境包初始化提前导入仿真依赖。
+- 执行命令：`command -v uv` 后以 `uv run --no-sync python -` 运行标准库静态断言，检查配置与源码 AST、SHA-256、Markdown 链接、`bash -n` 命令围栏和历史账本保留；`git diff --check` 退出码 0。完整检查程序保存在本轮提交正文，可按固定基线复现。
+- 实测结果：12 份难度字典、6 个布局数组、7 份来源文件散列、6 个文档链接和 2 个命令围栏全部通过，静态检查退出码 0；检查耗时小于 1 秒；三个拟建脚本均未创建。首次文档链接检查误把代码里的 `entry["solve"](...)` 识别为链接，改为先排除代码围栏及行内代码后通过，未据此修改原代码。
+- 修改范围：仅 `AGENTS.md`、`NEWTASK_V2_PLAN.md`、`scripts/configs/newtask-v2/native_sampling.json`。没有新增或修改运行源码，没有依赖变更，没有创建目标分支，没有启动数据生成、回放或仿真。
+- 版本边界：本轮计划与原值提取按源分支 `2.21` 提交；`newtask-v2` 首个实现版本仍保留为 `10.0`。
+- 下一步：等待用户对方案的后续指令；不能把本条交付状态视作重建或生成授权。
