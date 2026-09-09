@@ -1054,3 +1054,18 @@
 - 目视安排：已完成四路且单格完整比较通过的场景，可先用 parity_review collect 出图，再按原尺寸画板逐张查看三路双相机原图区；原差分图及机检统计保留。mark 仅在实际查看后调用，并同时核验画板和每张原图版散列。这样目视可与后续格生成并行，不跳过规定关键帧。
 - 工具验证：smoke2 的 42 张 HDF5 关键帧加 1 张 reset 共 43 张原图版，准备成 11 个无缩放画板；已查看第 0 个画板并登记 4 张图的结果，其他 smoke 图不计目视。正式 15 格使用自己的新图和记录。
 - 补充回归防误判：重试对照必须实际观察到 seed 4000/4001、attempt 0/1、失败后成功；三路都直接成功不能冒充重试覆盖。
+
+- 首格实测：20260909-actions-v2 的 BinFill-easy-dynamicTrue 四路生成与四对完整比较通过；42 张 HDF5 关键帧及 1 张 reset 图共 43 张全部逐图查看，无可见差异。目视记录 artifacts/review/20260909-actions-v2/BinFill-easy-dynamicTrue/manifest.json 绑定原图版与无缩放画板散列；后续正式打包时再次核对，不能因路径相同就沿用。
+
+- 全量轻量测试：`uv run --no-sync python -m pytest tests/lightweight/ -q --durations=5`，223 passed / 4 failed，178.92 秒，退出码 1；日志 artifacts/logs/action-freeze-lightweight.log。固定基线 worktree 中重跑 test_TaskGoal.py 与 test_step_error_handling.py，27 passed / 4 failed，1.02 秒，退出码 1；同四个失败：unknown_env 空列表、SwingXtimes 连字符文本、DemonstrationWrapper 缺 try/except、dataset_replay 缺 status 检查。均为原版既有行为，不修改范围外逻辑；基线输出保存在 artifacts/logs/action-freeze-baseline-tests.log。
+
+- BinFill 六格里程碑：24 次正式生成全部成功；各格 A1/A2 无 RRT* 回退且逐位一致。六格四对 HDF5、全部证据段与初态对拍通过；图版数量依次为 43、47、56、14、20、26（含各格 reset），共 206 张全部逐图查看，无可见差异。相关 manifest 均已逐批 mark，未复用旧目视结果。
+
+- RouteStick easy：四路完整比较通过，71 张图（含 reset）全部逐图查看，无可见差异；实际节点 `[8,6,4]`，两段均 clockwise，演示与执行共四条方向绑定一致。正式矩阵已完成 32/60 次生成，medium 原版校准通过，完整比较与目视进行中。
+
+- RouteStick medium：四对完整比较及 137 张图的逐图目视通过；累计 8 格、414 张图完成目视。hard 的 A1/A2 分别 96.5/96.0 秒成功且逐位校准通过，无 RRT* 回退，B/C 进行中。
+
+- VideoUnmaskSwap easy/medium：两格四对完整比较通过，各 29 张图逐张目视通过；easy 抬起藏绿色方块的容器，medium 抬起藏红色方块的容器，三路目标身份及交换演进一致。累计 10 格、472 张图目视完成。RouteStick hard 完整比较也已通过，出图进行中；正式生成已达 49/60。
+
+- 正式矩阵完成：60/60 次 fresh 生成成功，总耗时 2439.0 秒，15 格四对 HDF5、状态、事件与随机流比较通过，原版校准均无 RRT* 回退。15 格的 852 张图版（837 张 HDF5 关键帧与 15 张 reset）均已逐图查看，机检和目视无差异；合并、隔离和补充回归仍在执行，不提前标通过。
+- 最终目视绑定工具：parity_review.finalize 逐项核对最终全量出图索引、目视画板、原图版 SHA-256、帧集合和像素差异，拒绝未查看或图片变化。相关定向测试 43 passed，1.23 秒；git diff --check 通过。待全量出图结束后实际执行 finalize。

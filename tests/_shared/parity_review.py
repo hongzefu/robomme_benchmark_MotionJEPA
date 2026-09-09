@@ -91,6 +91,49 @@ def collect(run_id, cell):
     prepare(index, root / "artifacts/review" / run_id / cell)
 
 
+def finalize(index_path, review_root, output):
+    """将实际目视逐项与最终出图索引重新对齐，拒绝未查看、缺帧及任何图片变化。"""
+    index_path = Path(index_path)
+    payload = json.loads(index_path.read_text())
+    report = {"run": payload["run"], "cells": {}, "passed": True, "image_count": 0}
+    for cell, detail in payload["cells"].items():
+        if detail.get("not_rendered") or not detail.get("montages"):
+            raise ValueError(f"{cell}: 缺少完整图版")
+        manifest_path = Path(review_root) / cell / "manifest.json"
+        manifest = json.loads(manifest_path.read_text())
+        reviewed = {}
+        for board in manifest["boards"]:
+            if not board.get("reviewed"):
+                raise ValueError(f"{cell}: 画板 {board['number']} 未目视")
+            if sha(board["path"]) != board["sha256"]:
+                raise ValueError(f"{cell}: 画板散列已改变")
+            for item in board["items"]:
+                frame = item["frame"]
+                if item["cell"] != cell or frame in reviewed:
+                    raise ValueError(f"{cell}: 目视身份重复或错位")
+                if frame not in detail["montages"]:
+                    raise ValueError(f"{cell}: 目视记录包含未规定的帧 {frame}")
+                expected = detail["montages"][frame]
+                if item["sha256"] != expected["montage_sha256"] or sha(expected["montage"]) != item["sha256"]:
+                    raise ValueError(f"{cell}/{frame}: 原图版散列已改变")
+                if any(value["max_abs"] != 0 or value["nonzero_pixels"] != 0 for value in expected["difference"].values()):
+                    raise ValueError(f"{cell}/{frame}: 像素比较存在差异")
+                reviewed[frame] = {"montage_sha256": item["sha256"], "board_sha256": board["sha256"],
+                    "reviewer": board["reviewer"], "note": board["note"], "passed": True}
+        if set(reviewed) != set(detail["montages"]):
+            raise ValueError(f"{cell}: 规定关键帧未全部目视")
+        report["cells"][cell] = {"image_count": len(reviewed), "passed": True, "images": reviewed,
+                                  "review_manifest_sha256": sha(manifest_path)}
+        report["image_count"] += len(reviewed)
+        detail["status"] = "通过"
+    report["cell_count"] = len(report["cells"])
+    index_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+    report["keyframe_index_sha256"] = sha(index_path)
+    Path(output).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    print(f"最终目视复核通过：{report['cell_count']} 格，{report['image_count']} 张图版。")
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser(description="原尺寸关键帧目视与散列绑定")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -104,13 +147,19 @@ def main():
     c = sub.add_parser("collect")
     c.add_argument("--run-id", required=True)
     c.add_argument("--cell", required=True)
+    f = sub.add_parser("finalize")
+    f.add_argument("--index", required=True)
+    f.add_argument("--review-root", required=True)
+    f.add_argument("--output", required=True)
     args = parser.parse_args()
     if args.command == "prepare":
         prepare(args.index, args.output)
     elif args.command == "mark":
         mark(args.manifest, [int(n) for n in args.boards.split(",")], args.note)
-    else:
+    elif args.command == "collect":
         collect(args.run_id, args.cell)
+    else:
+        finalize(args.index, args.review_root, args.output)
 
 
 if __name__ == "__main__":

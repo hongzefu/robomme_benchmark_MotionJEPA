@@ -11,6 +11,8 @@ import torch
 from tests._shared import parity_observer as observer
 from tests._shared import parity_keyframes as frames
 from tests._shared import parity_worker_isolation as isolation
+from tests._shared import parity_review as review
+import json
 
 
 def test_event_mapping_uses_record_number_instead_of_environment_step():
@@ -74,3 +76,29 @@ def test_real_worker_wrapper_detects_class_config_mutation(monkeypatch):
         return {"ok": True}
     monkeypatch.setattr(isolation, "_PRODUCT_WORKER", worker)
     assert isolation._checked_worker(None)["worker_class_config_unchanged"] is False
+
+
+def test_final_review_rejects_unseen_and_changed_images(tmp_path):
+    original = tmp_path / "original.png"
+    original.write_bytes(b"original")
+    board = tmp_path / "board.png"
+    board.write_bytes(b"board")
+    review_dir = tmp_path / "case"
+    review_dir.mkdir()
+    manifest_path = review_dir / "manifest.json"
+    manifest = {"boards": [{"number": 0, "path": str(board), "sha256": review.sha(board),
+        "reviewed": False, "reviewer": "测试检查者", "note": "测试证据", "items": [{"cell": "case", "frame": "0", "sha256": review.sha(original)}]}]}
+    index = tmp_path / "index.json"
+    index.write_text(json.dumps({"run": "test", "cells": {"case": {"not_rendered": [], "montages": {"0": {
+        "montage": str(original), "montage_sha256": review.sha(original), "difference": {"A-B": {"max_abs": 0, "nonzero_pixels": 0}}}}}}}))
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="未目视"):
+        review.finalize(index, tmp_path, tmp_path / "out.json")
+    manifest["boards"][0]["reviewed"] = True
+    manifest_path.write_text(json.dumps(manifest))
+    original.write_bytes(b"changed")
+    with pytest.raises(ValueError, match="原图版散列"):
+        review.finalize(index, tmp_path, tmp_path / "out.json")
+    original.write_bytes(b"original")
+    report = review.finalize(index, tmp_path, tmp_path / "out.json")
+    assert report["passed"] and report["image_count"] == 1
