@@ -44,6 +44,7 @@ PATHS = ("A1", "A2", "B", "C")
 def _observer_env(evidence_root: Path, label: str, record_steps: bool) -> dict[str, str]:
     env = dict(os.environ)
     env["PYTHONUNBUFFERED"] = "1"
+    env["VIRTUAL_ENV"] = str(REPO_ROOT / ".venv")
     env["PYTHONPATH"] = str(REPO_ROOT / "tests" / "_shared" / "parity_sitecustomize")
     env["PARITY_OBSERVER_DIR"] = str(REPO_ROOT / "tests" / "_shared")
     env["PARITY_EVIDENCE_DIR"] = str(evidence_root)
@@ -59,6 +60,7 @@ def _run_one(
     evidence_root: Path,
     record_steps: bool,
     log_dir: Path,
+    observer_enabled: bool = True,
 ) -> dict[str, Any]:
     cell = case["cell"]
     is_baseline = label.startswith("A")
@@ -69,8 +71,8 @@ def _run_one(
     absolute_output = workdir / relative_output
 
     command: list[str] = [
-        str(VENV_PYTHON),
-        entry,
+        "uv", "run", "--no-sync", "--project", str(REPO_ROOT), "python",
+        str(workdir / entry),
         "--output-dir",
         str(relative_output),
         "--env",
@@ -110,11 +112,15 @@ def _run_one(
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"{cell}.{label}.log"
     started = time.monotonic()
+    child_env = _observer_env(evidence_root, label, record_steps)
+    if not observer_enabled:
+        child_env = {key: value for key, value in child_env.items() if not key.startswith("PARITY_")}
+        child_env.pop("PYTHONPATH", None)
     with log_path.open("w", encoding="utf-8") as sink:
         completed = subprocess.run(
             command,
             cwd=str(workdir),
-            env=_observer_env(evidence_root, label, record_steps),
+            env=child_env,
             stdout=sink,
             stderr=subprocess.STDOUT,
         )

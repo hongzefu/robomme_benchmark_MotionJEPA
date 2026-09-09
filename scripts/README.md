@@ -54,7 +54,29 @@
 四点  [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0.1], [0.1, -0.1]]
 ```
 
-### 1.4 **没有**开放为可配的东西
+### 1.4 按 episode 固定的对象与动作（schema 3）
+
+配置仍通过 `load_sampling_config → EpisodeJob.sampling_config → gym.make` 传入，
+由 episode 对应的 seed 在原调用点实例化；没有逐 episode 结果表。
+相同任务、难度、layout、episode、attempt、配置及运行状态下，比较的是具体对象与动作。
+重试增加 attempt 并改变 seed，允许产生不同结果。
+
+| 任务 | 新增运行字段 | 固定的结果与消费位置 |
+| --- | --- | --- |
+| `VideoUnmaskSwap` | `parameters.VideoUnmaskSwap.object_selection`：`hidden_bin_permutation_size=3`、`hidden_bin_count_max=3`、`pickup_selected_indices=[0,1]`、`swap_seed_target_count=2` | `_load_scene` 保留原抽样顺序；抓取 `selected_bins` 的第一项或前两项，目标判定、求解、描述与 segment 同步绑定；保留交换发起对象原索引映射 |
+| `VideoRepick` | `parameters.VideoRepick.object_selection`：`easy_medium_target_count=1`、`hard_target_low=0`、`swap_remaining_count=2` | easy/medium 仍用 randperm，hard 仍用 randint；抓取始终绑定同一 `target_cube_1`；交换发起顺序是目标加其余两块的随机排列，hard 无交换 |
+| 两个视频任务 | 各自 `swap_selection` 的发起映射、剩余对象抽法与 `partner` 规则 | 原 step 中按交换开始时的位置选择完整对象对；XY 欧氏距离、排除自身、严格小于比较、等距取生成顺序靠前者，选中后复用 |
+| `RouteStick` | `parameters.RouteStick.walk`：节点 `[0,2,4,6,8]`、随机起点、邻居偏移 `[-1,1]`、端点强制回退、`direction` | `_load_scene → generate_dynamic_walk` 生成 steps+1 个节点；每段一次 `torch.rand(1)`，小于 0.5 为顺时针；演示和执行复用节点与方向 |
+
+新增策略、数量与索引映射只接受现行值；方向阈值是唯一开放的新增数值，须为 `[0,1]`
+内有限数值。直接构造任务也做校验。交换搭档依赖交换开始时的实际位置，因此重复性检查
+同时比较动作输入、状态和实际交换调用，不能只比较初始化时仍含 null 的 schedule。
+
+schema 2 配置须用 `--extract-config` 重新导出为 schema 3；新增字段参与源码与历史 AST
+检查，不能把说明文字当作已接入的运行配置。旧版的 15 格结果对应旧源码，本轮扩展的
+五项完整对拍结论待独立报告，不沿用历史报告宣称通过。
+
+### 1.5 **没有**开放为可配的东西
 
 物体尺寸、材质、碰撞几何、相机、速度、交换时序、失败恢复、成功阈值都属于原实现，没有动。
 
@@ -66,7 +88,7 @@
 无调用者的死代码、`VideoRepick` 永不命中的 `region4` 分支、与实际不符的注释等）
 按计划**原样保留、没有顺手修**，只在快照与计划文档里记录。
 
-### 1.5 「固定」是怎么保证的
+### 1.6 「固定」是怎么保证的
 
 取值有两个落点，但**不是两套真值**：
 

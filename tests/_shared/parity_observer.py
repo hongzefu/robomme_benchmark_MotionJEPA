@@ -292,6 +292,20 @@ def _wrap_event(module: Any, name: str) -> None:
         episode = _current()
         index = episode.next_index() if episode is not None else -1
         if episode is not None:
+            binding = None
+            if name == "swap_flat_two_lane" and args:
+                env = args[0]
+                binding = {
+                    "a": _actor_identity(env, kwargs.get("cube_a")),
+                    "b": _actor_identity(env, kwargs.get("cube_b")),
+                    "start_step": _summarize(kwargs.get("start_step")),
+                    "end_step": _summarize(kwargs.get("end_step")),
+                    "cur_step": _summarize(kwargs.get("cur_step")),
+                }
+                for number, pair in enumerate(getattr(env, "swap_schedule", [])):
+                    if pair[0] is kwargs.get("cube_a") and pair[1] is kwargs.get("cube_b") and pair[2] == kwargs.get("start_step"):
+                        binding["swap_index"] = number
+                        break
             episode.events.append(
                 {
                     "i": index,
@@ -300,6 +314,7 @@ def _wrap_event(module: Any, name: str) -> None:
                     "module": getattr(module, "__name__", "?"),
                     "args": [_summarize(item) for item in args[:8]],
                     "kwargs": {key: _summarize(value) for key, value in list(kwargs.items())[:8]},
+                    "swap_binding": binding,
                 }
             )
         result = original(*args, **kwargs)
@@ -379,6 +394,45 @@ _TASK_STATE_FIELDS = (
 )
 
 
+def _actor_identity(env: Any, actor: Any) -> dict[str, Any] | None:
+    """以生成序号绑定物体身份；颜色不能代替身份，位置不能用于重排。"""
+    if actor is None:
+        return None
+    for field in ("spawned_bins", "spawned_cubes", "buttons_grid", "spawned_dynamic_cubes"):
+        for index, item in enumerate(getattr(env, field, [])):
+            if item is actor:
+                result = {"collection": field, "index": index, "name": _stable_repr(getattr(actor, "name", ""))}
+                if field == "spawned_bins":
+                    result["color"] = getattr(env, "bin_to_color", {}).get(index)
+                return result
+    return None
+
+
+def _action_bindings(env: Any) -> dict[str, Any]:
+    """同时适用于原基线和新版，只读已建立的任务与对象，不调用求解器。"""
+    pickup_targets = []
+    route_tasks = []
+    for index, entry in enumerate(getattr(env, "task_list", [])):
+        if not isinstance(entry, dict):
+            continue
+        if "pick up" in entry.get("choice_label", "") and "segment" in entry:
+            pickup_targets.append({"task_index": index, "demonstration": entry.get("demonstration"),
+                "target": _actor_identity(env, entry["segment"]), "role": entry.get("choice_label")})
+        if "expected_dir" in entry:
+            defaults = getattr(entry.get("solve"), "__defaults__", ()) or ()
+            targets = [identity for value in defaults if (identity := _actor_identity(env, value)) is not None]
+            route_tasks.append({"task_index": index, "demonstration": entry.get("demonstration"),
+                "targets": targets, "expected_dir": entry["expected_dir"]})
+    return {
+        "pickup_targets": pickup_targets,
+        "swap_pairs": [{"swap_index": index, "a": _actor_identity(env, pair[0]),
+            "b": _actor_identity(env, pair[1]), "start_step": _summarize(pair[2]), "end_step": _summarize(pair[3])}
+            for index, pair in enumerate(getattr(env, "swap_schedule", []))],
+        "route": {"nodes": [_actor_identity(env, actor) for actor in getattr(env, "selected_buttons", [])],
+            "directions": list(getattr(env, "swing_directions", [])), "tasks": route_tasks},
+    }
+
+
 def _task_state(env: Any) -> dict[str, Any]:
     state: dict[str, Any] = {}
     for field in _TASK_STATE_FIELDS:
@@ -396,6 +450,7 @@ def _task_state(env: Any) -> dict[str, Any]:
             else:
                 names.append(repr(entry)[:60])
         state["task_list"] = names
+    state["action_bindings"] = _action_bindings(env)
     return state
 
 
@@ -408,6 +463,7 @@ def _wrap_task_class(task_class: Any, task_name: str) -> None:
 
     def init(self: Any, *args: Any, **kwargs: Any) -> Any:
         _begin_episode(task_name, kwargs.get("seed", None), kwargs.get("difficulty", None))
+        cache_empty = not bool(getattr(self, "_spawned_cubes", []))
         result = original_init(self, *args, **kwargs)
         episode = _current()
         if episode is not None:
@@ -416,6 +472,7 @@ def _wrap_task_class(task_class: Any, task_name: str) -> None:
                 {
                     "i": episode.next_index(),
                     "stage": "after_init",
+                    "spawn_cache_empty_on_entry": cache_empty,
                     "task_state": _task_state(self),
                 }
             )

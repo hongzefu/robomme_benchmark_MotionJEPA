@@ -1,4 +1,5 @@
 import copy
+import json
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -53,7 +54,25 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 # 本类没有 self.generator：__init__ 与 _load_scene 各自建局部流、各自用同一个 seed 重播种，
 # 不得为统一接口把它提升为实例属性。
 NATIVE_SAMPLING = {
-    "parameters": {},
+    "parameters": {
+        "object_selection": {
+            "hidden_bin_permutation_size": 3,
+            "hidden_bin_count_max": 3,
+            "pickup_selected_indices": [0, 1],
+            "swap_seed_target_count": 2,
+        },
+        "swap_selection": {
+            "initiator_mapping": "selected_local_indices_into_spawned_bins",
+            "remaining_selection": "randint_from_spawned_indices_excluding_local_targets",
+            "partner": {
+                "selection": "nearest",
+                "position_axes": [0, 1],
+                "resolve_at": "swap_start",
+                "exclude_self": True,
+                "tie_break": "first_in_spawn_order",
+            },
+        },
+    },
     "positions": {
         "containers": {
             "region3_tri": [[-0.05, -0.1], [-0.05, 0.1], [0.1, 0]],
@@ -88,6 +107,9 @@ def _resolve_sampling_config(cls, override):
             raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
         resolved = copy.deepcopy(override)
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    for key in ("object_selection", "swap_selection"):
+        if json.dumps(resolved["parameters"].get(key), sort_keys=True) != json.dumps(NATIVE_SAMPLING["parameters"][key], sort_keys=True):
+            raise ValueError(f"VideoUnmaskSwap.parameters.{key} 必须完整保留原版规则与类型")
     return resolved
 
 
@@ -294,8 +316,9 @@ class VideoUnmaskSwap(BaseEnv):
         self.color_names = color_names
 
         # Randomly select 3 bins from all bins to generate cube
-        num_bins_to_select = min(3, len(self.spawned_bins))
-        selected_bin_indices = torch.randperm(3, generator=generator)[:num_bins_to_select].tolist()
+        selection_cfg = self._sampling["parameters"]["object_selection"]
+        num_bins_to_select = min(selection_cfg["hidden_bin_count_max"], len(self.spawned_bins))
+        selected_bin_indices = torch.randperm(selection_cfg["hidden_bin_permutation_size"], generator=generator)[:num_bins_to_select].tolist()
         selected_bins = [self.spawned_bins[idx] for idx in selected_bin_indices]
         self.selected_bin_indices = selected_bin_indices
         self.selected_bins = selected_bins  # Save selected bins, corresponding to color_names order
@@ -376,7 +399,7 @@ class VideoUnmaskSwap(BaseEnv):
 
        # Randomly select 2 unique bins as target_bin_1 and target_bin_2
         # target_indices are indices into selected_bin_indices (0, 1, 2)
-        target_indices = torch.randperm(len(selected_bin_indices), generator=generator)[:2]
+        target_indices = torch.randperm(len(selected_bin_indices), generator=generator)[:selection_cfg["swap_seed_target_count"]]
         # Use selected_bins to get correct bin (corresponding to color_names order)
         self.target_bin_1=self.selected_bins[target_indices[0]]
         self.target_bin_2=self.selected_bins[target_indices[1]]
@@ -398,6 +421,7 @@ class VideoUnmaskSwap(BaseEnv):
         self.swap_pair3_idx2=None
         self._refresh_swap_schedule()
 
+        pickup_indices = selection_cfg["pickup_selected_indices"]
         tasks = [
              {
                         "func": lambda: static_check(self, timestep=int(self.elapsed_steps), static_steps=self.swap_schedule[-1][3]),
@@ -411,37 +435,37 @@ class VideoUnmaskSwap(BaseEnv):
 
             
             {
-                "func": (lambda: is_bin_pickup(self, obj=self.selected_bins[0])),
-                "name": f"pick up the container that hides the {self.color_names[0]} cube",
-                "subgoal_segment":f"pick up the container at <> that hides the {self.color_names[0]} cube",
+                "func": (lambda: is_bin_pickup(self, obj=self.selected_bins[pickup_indices[0]])),
+                "name": f"pick up the container that hides the {self.color_names[pickup_indices[0]]} cube",
+                "subgoal_segment":f"pick up the container at <> that hides the {self.color_names[pickup_indices[0]]} cube",
                 "choice_label": "pick up the container",
                 "demonstration": False,
-                "failure_func": lambda: is_any_bin_pickup(self, [bin for bin in self.spawned_bins if bin != self.selected_bins[0]]),
-                "solve": lambda env, planner: solve_pickup_bin(env, planner, obj=self.selected_bins[0]),
-                "segment":self.selected_bins[0],
+                "failure_func": lambda: is_any_bin_pickup(self, [bin for bin in self.spawned_bins if bin != self.selected_bins[pickup_indices[0]]]),
+                "solve": lambda env, planner: solve_pickup_bin(env, planner, obj=self.selected_bins[pickup_indices[0]]),
+                "segment":self.selected_bins[pickup_indices[0]],
             },
         ]
         if self.pick_times==2:
             tasks.append({
-                    "func": (lambda: is_bin_putdown(self, obj=self.selected_bins[0])),
+                    "func": (lambda: is_bin_putdown(self, obj=self.selected_bins[pickup_indices[0]])),
                     "name": "put down the container",
                     "subgoal_segment":"put down the container",
                     "choice_label": "put down the container",
                     "demonstration": False,
-                    "failure_func": lambda:is_any_bin_pickup(self,[bin for bin in self.spawned_bins if bin != self.selected_bins[0]]),
+                    "failure_func": lambda:is_any_bin_pickup(self,[bin for bin in self.spawned_bins if bin != self.selected_bins[pickup_indices[0]]]),
                     "solve": lambda env, planner: solve_putdown_whenhold(env, planner,),
 
                 })
             tasks.append(
                 {
-                    "func": (lambda: is_bin_pickup(self, obj=self.selected_bins[1])),
-                    "name": f"pick up the container that hides the {self.color_names[1]} cube",
-                    "subgoal_segment":f"pick up the container at <> that hides the {self.color_names[1]} cube",
+                    "func": (lambda: is_bin_pickup(self, obj=self.selected_bins[pickup_indices[1]])),
+                    "name": f"pick up the container that hides the {self.color_names[pickup_indices[1]]} cube",
+                    "subgoal_segment":f"pick up the container at <> that hides the {self.color_names[pickup_indices[1]]} cube",
                     "choice_label": "pick up the container",
                     "demonstration": False,
-                    "failure_func": lambda: is_any_bin_pickup(self,[bin for bin in self.spawned_bins if bin != self.selected_bins[1]]),
-                    "solve": lambda env, planner: solve_pickup_bin(env, planner, obj=self.selected_bins[1]),
-                    "segment":self.selected_bins[1],
+                    "failure_func": lambda: is_any_bin_pickup(self,[bin for bin in self.spawned_bins if bin != self.selected_bins[pickup_indices[1]]]),
+                    "solve": lambda env, planner: solve_pickup_bin(env, planner, obj=self.selected_bins[pickup_indices[1]]),
+                    "segment":self.selected_bins[pickup_indices[1]],
                 })
 
         # Store task list for RecordWrapper use
@@ -636,7 +660,8 @@ class VideoUnmaskSwap(BaseEnv):
                         if candidate is None or candidate is pair_idx1:
                             continue
                         candidate_pos = self._get_actor_position(candidate)
-                        dist = np.linalg.norm(reference_pos[:2] - candidate_pos[:2])
+                        axes = self._sampling["parameters"]["swap_selection"]["partner"]["position_axes"]
+                        dist = np.linalg.norm(reference_pos[axes] - candidate_pos[axes])
                         if dist < closest_dist:
                             closest_dist = dist
                             closest_actor = candidate

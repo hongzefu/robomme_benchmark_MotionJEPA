@@ -180,6 +180,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| episode 对象与动作冻结扩展 | 进行中 | 用户已批准 schema 3 接入及完整 15 格、五项对拍；起点 eabb468，工作区干净，原基线 worktree 94449db 已存在 | 接入配置、校验及观察器，短测提交后完整重新生成与留档 |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
 | 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
 | 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
@@ -1006,3 +1007,20 @@
 - 差异或阻塞：无。本轮另有一处会话内插曲——最初误在 `/data/hongzefu/robomme_benchmark_MotionJEPA-LabelData`（分支 `dataset-gen-LabelData`）做了同类改动并提交，用户纠偏后已 `git reset --hard d53f21a` 恢复原状（该仓库 commit 未推送，远端未受影响），本仓库改动与之无关。
 - 修改文件：`AGENTS.md`（强制规则节拆分与重编号、本条日志）、`CLAUDE.md`（由单句指针改写为 Claude Code 专属约定三节）。
 - 下一步：无待办。以后新增约定按适用范围二选一落位：通用/Codex 进 `AGENTS.md`，Claude Code 专属进 `CLAUDE.md`。
+
+### 2026-09-09 America/Detroit — episode 对象与动作冻结扩展：开始实施
+
+- 状态：进行中。
+- 用户要求：沿用冻结配置与 episode seed；固定两个视频任务的实际交换双方、抓取目标，以及 RouteStick 路线和方向；「所有的plan都要包含技术细节！」「仍然要做和原先一样的对拍测试」。最终批准完整技术方案，要求实施并完整重跑五项对拍。
+- 计划：schema 3 与原调用点接入；AST 历史提取和严格校验；观察器记录对象身份及动作；短测后提交代码；A1/A2/B/C 共 60 次生成、15 格合并、连续 worker、关键帧逐图检查、重试和 16 任务回归；独立证据留档并提交，不推送。
+- 预检：uv 与 tmux 可用；工作区干净，HEAD eabb468；原基线 worktree 固定 94449db；本地可用空间 2.6 TB，GPU 0 空闲显存约 44 GB。沿用原依赖，不安装新包。
+- 输出：本仓库 artifacts/ 与 docs/validation/newtask-v2/ 下本轮独立目录，保留全部旧证据。
+
+### 2026-09-09 America/Detroit — schema 3 接入与短测
+
+- 状态：代码接入完成；完整对拍待跑。
+- 实施：三任务新增 object_selection/swap_selection/walk，原调用点消费配置；最近邻仍在交换时按 XY norm 与严格小于比较，路线保留原随机消费。父进程及直接构造均校验；schema 3 与历史 AST 提取覆盖原基线和 schema 2 源码，66 组操作元一致。
+- 观察器：新增实际抓取绑定、交换双方与路线节点/方向/演示执行绑定，仍打桩于任务模块原事件；不增加仿真或随机调用。连续 worker 驱动增加 PARITY_BASELINE=1 原版参照，生成子命令也统一由 uv 启动。
+- 测试：配置、证据与动作定向测试共 102 passed，3.41 秒；BinFill easy ep0 四路均首次成功，115.8 秒，四对 HDF5 与边界/事件/逐步/随机流均一致。原版不带观察器单局成功，27.3 秒；独立比较校准另记。
+- 范围：本轮 short smoke 只覆盖 BinFill easy，不能将其他未运行格记为失败或通过；首次打包误用了完整用例表，已另以单格输入生成 scoped smoke 证据，原临时包保留不作正式结论。
+- 下一步：提交代码后启动独立运行编号的 15 格 fresh 对拍，再做合并、连续 worker、重试、16 任务、全量关键帧与离线复验。

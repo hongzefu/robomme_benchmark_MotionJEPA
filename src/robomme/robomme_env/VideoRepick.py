@@ -1,4 +1,5 @@
 import copy
+import json
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -62,6 +63,22 @@ NATIVE_SAMPLING = {
             "shape": [1],
         },
         "hard_spawn_rounds": 5,
+        "object_selection": {
+            "easy_medium_target_count": 1,
+            "hard_target_low": 0,
+            "swap_remaining_count": 2,
+        },
+        "swap_selection": {
+            "initiator_mapping": "target_then_permuted_remaining_spawned_indices",
+            "remaining_selection": "randperm_without_target",
+            "partner": {
+                "selection": "nearest",
+                "position_axes": [0, 1],
+                "resolve_at": "swap_start",
+                "exclude_self": True,
+                "tie_break": "first_in_spawn_order",
+            },
+        },
     },
     "positions": {
         "button": {
@@ -119,6 +136,9 @@ def _resolve_sampling_config(cls, override):
             raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
         resolved = copy.deepcopy(override)
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    for key in ("object_selection", "swap_selection"):
+        if json.dumps(resolved["parameters"].get(key), sort_keys=True) != json.dumps(NATIVE_SAMPLING["parameters"][key], sort_keys=True):
+            raise ValueError(f"VideoRepick.parameters.{key} 必须完整保留原版规则与类型")
     return resolved
 
 
@@ -312,7 +332,8 @@ class VideoRepick(BaseEnv):
                 if not self.spawned_cubes:
                     raise SceneGenerationError("Failed to generate any cube")
 
-                target_idx = torch.randint(0, len(self.spawned_cubes), (1,), generator=self.generator).item()
+                selection_cfg = self._sampling["parameters"]["object_selection"]
+                target_idx = torch.randint(selection_cfg["hard_target_low"], len(self.spawned_cubes), (1,), generator=self.generator).item()
                 logger.debug("target index: %s", target_idx)
                 self.target_cube_1 = self.spawned_cubes[target_idx]
 
@@ -370,7 +391,8 @@ class VideoRepick(BaseEnv):
                 if not self.spawned_cubes:
                     raise SceneGenerationError("Failed to generate any bin")
 
-                target_indices = torch.randperm(len(self.spawned_cubes), generator=self.generator)[:1].tolist()
+                selection_cfg = self._sampling["parameters"]["object_selection"]
+                target_indices = torch.randperm(len(self.spawned_cubes), generator=self.generator)[:selection_cfg["easy_medium_target_count"]].tolist()
                 self.target_cube_1 = self.spawned_cubes[target_indices[0]]
 
                 if self.difficulty != "hard":
@@ -378,7 +400,7 @@ class VideoRepick(BaseEnv):
                     if len(remaining_indices) < 2:
                         raise SceneGenerationError("Not enough cubes for swapping")
 
-                    selected_remaining = torch.randperm(len(remaining_indices), generator=self.generator)[:2].tolist()
+                    selected_remaining = torch.randperm(len(remaining_indices), generator=self.generator)[:selection_cfg["swap_remaining_count"]].tolist()
                     selected_indices = [remaining_indices[i] for i in selected_remaining]
                     swap_indices = target_indices + selected_indices
 
@@ -709,7 +731,8 @@ class VideoRepick(BaseEnv):
                             if candidate is None or candidate is pair_idx1:
                                 continue
                             candidate_pos = self._get_actor_position(candidate)
-                            dist = np.linalg.norm(reference_pos[:2] - candidate_pos[:2])
+                            axes = self._sampling["parameters"]["swap_selection"]["partner"]["position_axes"]
+                            dist = np.linalg.norm(reference_pos[axes] - candidate_pos[axes])
                             if dist < closest_dist:
                                 closest_dist = dist
                                 closest_actor = candidate

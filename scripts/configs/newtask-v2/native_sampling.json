@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "source_commit": "94449db0a068a6b454b55a13ebd48f0394d89cc8（原值基线）；本文件的 sources.sha256 对应接入 sampling_config 之后的工作树源码",
   "target_version": "10.0",
   "status": "已提取并接入运行：不传 --sampling-config 时由各任务模块的 NATIVE_SAMPLING 提供同一份原值",
@@ -29,7 +29,7 @@
     },
     "RouteStick": {
       "path": "src/robomme/robomme_env/RouteStick.py",
-      "sha256": "36ea27507dc905cc53b1936df37e988832ed2c7d64d57b5fb32386bd1d4f9ff2",
+      "sha256": "31b905a67e288e312a4fc71aad448e1d67d416199f174c20267a7a3ee40f8363",
       "anchors": [
         "config_easy",
         "config_medium",
@@ -41,7 +41,7 @@
     },
     "VideoUnmaskSwap": {
       "path": "src/robomme/robomme_env/VideoUnmaskSwap.py",
-      "sha256": "384efa669a45dd447bf1d3e93e5c6e6cc598360fc0e57c254f013b1b5b9a68cc",
+      "sha256": "44e1b389a08435f98b4bc2b1230d6101c31c30b40228bcfcc6afad645bf654a7",
       "anchors": [
         "config_easy",
         "config_medium",
@@ -53,7 +53,7 @@
     },
     "VideoRepick": {
       "path": "src/robomme/robomme_env/VideoRepick.py",
-      "sha256": "81d185c0e8af78494ed4fa950d0d5eacb82076174a794cefd1bde5f1107b0ec0",
+      "sha256": "a3e5aa0a44235bcb77525f5035b0385342d8a55d29e07f5a2a3ed1598ff74847",
       "anchors": [
         "config_easy",
         "config_medium",
@@ -85,7 +85,7 @@
     },
     "route": {
       "path": "src/robomme/robomme_env/utils/route.py",
-      "sha256": "9a6a07703056b3b3bfa2f6814659748749b9cdaf3dcc45038e3e547f10047878",
+      "sha256": "d96c0fefb4c809e22560e6ee8c5a23eb338d72cb1daf159c691a8a1b0aefba31",
       "anchors": [
         "generate_dynamic_walk"
       ]
@@ -174,7 +174,31 @@
           "backtrack": true
         }
       },
-      "configs_fallback_difficulty": "easy"
+      "configs_fallback_difficulty": "easy",
+      "walk": {
+        "node_indices": [
+          0,
+          2,
+          4,
+          6,
+          8
+        ],
+        "start_selection": "randint",
+        "neighbor_order": [
+          -1,
+          1
+        ],
+        "force_reverse_at_endpoint": true,
+        "direction": {
+          "sampler": "torch.rand",
+          "shape": [
+            1
+          ],
+          "threshold": 0.5,
+          "less_than": "clockwise",
+          "otherwise": "counterclockwise"
+        }
+      }
     },
     "VideoUnmaskSwap": {
       "configs": {
@@ -198,6 +222,29 @@
           "swap_max": 3,
           "pick_min": 2,
           "pick_max": 2
+        }
+      },
+      "object_selection": {
+        "hidden_bin_permutation_size": 3,
+        "hidden_bin_count_max": 3,
+        "pickup_selected_indices": [
+          0,
+          1
+        ],
+        "swap_seed_target_count": 2
+      },
+      "swap_selection": {
+        "initiator_mapping": "selected_local_indices_into_spawned_bins",
+        "remaining_selection": "randint_from_spawned_indices_excluding_local_targets",
+        "partner": {
+          "selection": "nearest",
+          "position_axes": [
+            0,
+            1
+          ],
+          "resolve_at": "swap_start",
+          "exclude_self": true,
+          "tie_break": "first_in_spawn_order"
         }
       }
     },
@@ -228,7 +275,26 @@
           1
         ]
       },
-      "hard_spawn_rounds": 5
+      "hard_spawn_rounds": 5,
+      "object_selection": {
+        "easy_medium_target_count": 1,
+        "hard_target_low": 0,
+        "swap_remaining_count": 2
+      },
+      "swap_selection": {
+        "initiator_mapping": "target_then_permuted_remaining_spawned_indices",
+        "remaining_selection": "randperm_without_target",
+        "partner": {
+          "selection": "nearest",
+          "position_axes": [
+            0,
+            1
+          ],
+          "resolve_at": "swap_start",
+          "exclude_self": true,
+          "tie_break": "first_in_spawn_order"
+        }
+      }
     }
   },
   "positions": {
@@ -556,13 +622,9 @@
     "RouteStick": {
       "num_rows": 1,
       "num_cols": 9,
-      "route_button_indices": [
-        0,
-        2,
-        4,
-        6,
-        8
-      ],
+      "route_button_indices": {
+        "source": "parameters.RouteStick.walk.node_indices"
+      },
       "obstacle_indices": [
         1,
         3,
@@ -574,16 +636,11 @@
       "obstacle_z": 0.05,
       "walk_node_count": "steps + 1",
       "swing_directions": {
-        "sampler": "torch.rand",
-        "shape": [
-          1
-        ],
-        "threshold": 0.5,
-        "less_than": "clockwise",
-        "otherwise": "counterclockwise",
-        "order": "依次遍历 self.selected_buttons[1:]，每段抽取一次"
+        "source": "parameters.RouteStick.walk.direction"
       },
-      "backtrack_false_can_force_reverse_at_endpoint": true,
+      "backtrack_false_can_force_reverse_at_endpoint": {
+        "source": "parameters.RouteStick.walk.force_reverse_at_endpoint"
+      },
       "difficulty_without_override": "easy",
       "generator_lifecycle": "_load_scene 新建局部 generator 并以 self.seed 初始化",
       "load_scene_rng_order": [
@@ -604,7 +661,9 @@
         "green",
         "blue"
       ],
-      "hidden_bin_permutation_size": 3,
+      "hidden_bin_permutation_size": {
+        "source": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size"
+      },
       "hidden_cube_xy": "所属容器当前 xy",
       "hidden_cube_half_size": "self.cube_half_size / 1.2",
       "hidden_cube_yaw": 0,

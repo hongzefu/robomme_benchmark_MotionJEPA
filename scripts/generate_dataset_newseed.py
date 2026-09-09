@@ -196,7 +196,7 @@ def inspect_episode_terminal(
 # ── 原版采样配置：来源表、AST 提取、校验 ────────────────────────────────────────
 
 SAMPLING_TASKS = ("BinFill", "RouteStick", "VideoUnmaskSwap", "VideoRepick")
-SAMPLING_SCHEMA_VERSION = 2
+SAMPLING_SCHEMA_VERSION = 3
 
 # 七份来源文件与本次实际读取的锚点；顺序即写入 JSON 的顺序。
 SAMPLING_SOURCES: tuple[tuple[str, str, tuple[str, ...]], ...] = (
@@ -250,8 +250,13 @@ SAMPLING_OPERAND_PATHS: tuple[str, ...] = (
     "parameters.BinFill.dynamic.shape",
     "parameters.RouteStick.configs",
     "parameters.RouteStick.configs_fallback_difficulty",
+    "parameters.RouteStick.walk",
     "parameters.VideoUnmaskSwap.configs",
+    "parameters.VideoUnmaskSwap.object_selection",
+    "parameters.VideoUnmaskSwap.swap_selection",
     "parameters.VideoRepick.configs",
+    "parameters.VideoRepick.object_selection",
+    "parameters.VideoRepick.swap_selection",
     "parameters.VideoRepick.num_repeats.low",
     "parameters.VideoRepick.num_repeats.high_exclusive",
     "parameters.VideoRepick.num_repeats.shape",
@@ -509,6 +514,7 @@ def extract_native_sampling(
     legacy = [task for task in SAMPLING_TASKS if not _has_module_literal(trees[task], "NATIVE_SAMPLING")]
     if legacy:
         parameters, positions = _extract_legacy(trees)
+        _complete_action_parameters(trees, parameters)
         return {"parameters": parameters, "positions": positions, "sources": sources, "_legacy": True}
 
     parameters: dict[str, Any] = {}
@@ -530,8 +536,135 @@ def extract_native_sampling(
         parameters[task] = task_parameters
         positions[task] = copy.deepcopy(native["positions"])
 
+    _complete_action_parameters(trees, parameters)
     _cross_check(trees, parameters, positions)
     return {"parameters": parameters, "positions": positions, "sources": sources}
+
+
+def _require_ast(scope: ast.AST, expression: str, label: str) -> None:
+    """历史规则必须在真实 AST 中命中；忽略注释、空白与行号，不执行源码。"""
+    expected = ast.parse(expression).body[0]
+    if isinstance(expected, ast.Expr):
+        expected = expected.value
+    signature = ast.dump(expected, include_attributes=False)
+    if not any(ast.dump(node, include_attributes=False) == signature for node in ast.walk(scope)):
+        raise SamplingConfigError(f"{label}: 未识别历史规则 {expression}")
+
+
+def _assignment_value(scope: ast.AST, name: str) -> ast.AST:
+    for node in ast.walk(scope):
+        if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == name for t in node.targets):
+            return node.value
+    raise SamplingConfigError(f"未找到历史赋值 {name}")
+
+
+def _historical_action_parameters(task: str, tree: ast.Module, route: ast.Module) -> dict[str, Any]:
+    """从旧调用点提取操作元，固定策略名称只在其 AST 证据通过后生成。"""
+    scene = _func_def(_class_def(tree, task), "_load_scene")
+    if task == "RouteStick":
+        walk = _func_def(route, "generate_dynamic_walk")
+        for expr in (
+            "torch.randint(0, len(indices), (1,), generator=generator).item()",
+            "neighbors.append(current_idx - 1)", "neighbors.append(current_idx + 1)",
+            "filtered if filtered else neighbors",
+            "torch.randint(0, len(candidates), (1,), generator=generator).item()",
+        ):
+            _require_ast(walk, expr, task)
+        direction = _assignment_value(scene, "dir_flag")
+        if not isinstance(direction, ast.IfExp) or not isinstance(direction.test, ast.Compare) or not isinstance(direction.test.ops[0], ast.Lt):
+            raise SamplingConfigError("RouteStick: 未识别方向抽样表达式")
+        _require_ast(direction.test.left, "torch.rand(1, generator=generator).item()", task)
+        return {"walk": {
+            "node_indices": _assigned_literal(scene, "button_indices"),
+            "start_selection": "randint", "neighbor_order": [-1, 1],
+            "force_reverse_at_endpoint": True,
+            "direction": {"sampler": "torch.rand", "shape": [1],
+                "threshold": ast.literal_eval(direction.test.comparators[0]),
+                "less_than": ast.literal_eval(direction.body), "otherwise": ast.literal_eval(direction.orelse)},
+        }}
+    step = _func_def(_class_def(tree, task), "step")
+    population = "spawned_bins" if task == "VideoUnmaskSwap" else "spawned_cubes"
+    for expr in (
+        "pair_idx2 is None and pair_idx1 is not None",
+        "candidate is None or candidate is pair_idx1",
+        "np.linalg.norm(reference_pos[:2] - candidate_pos[:2])",
+        "dist < closest_dist", "closest_actor = candidate",
+        f"self.{population}",
+    ):
+        _require_ast(step, expr, task)
+    partner = {"selection": "nearest", "position_axes": [0, 1],
+               "resolve_at": "swap_start", "exclude_self": True, "tie_break": "first_in_spawn_order"}
+    if task == "VideoUnmaskSwap":
+        permutation = _calls(scene, "randperm")
+        hidden = _assignment_value(scene, "num_bins_to_select")
+        targets = _assignment_value(scene, "target_indices")
+        if not isinstance(hidden, ast.Call) or not isinstance(targets, ast.Subscript) or not isinstance(targets.slice, ast.Slice):
+            raise SamplingConfigError("VideoUnmaskSwap: 未识别容器或交换目标数量")
+        for expr in (
+            "self.spawned_bins[swap_indices[0]]", "self.spawned_bins[swap_indices[1]]", "self.spawned_bins[swap_indices[2]]",
+            "torch.randint(0, len(remaining_indices), (1,), generator=generator).item()",
+            "[i for i in range(len(self.spawned_bins)) if i not in target_indices.tolist()]",
+            "is_bin_pickup(self, obj=self.selected_bins[0])", "is_bin_pickup(self, obj=self.selected_bins[1])",
+        ):
+            _require_ast(scene, expr, task)
+        return {
+            "object_selection": {
+                "hidden_bin_permutation_size": ast.literal_eval(permutation[1].args[0]),
+                "hidden_bin_count_max": ast.literal_eval(hidden.args[0]),
+                "pickup_selected_indices": [0, 1],
+                "swap_seed_target_count": ast.literal_eval(targets.slice.upper),
+            },
+            "swap_selection": {"initiator_mapping": "selected_local_indices_into_spawned_bins",
+                "remaining_selection": "randint_from_spawned_indices_excluding_local_targets", "partner": partner},
+        }
+    for expr in (
+        "torch.randperm(len(self.spawned_cubes), generator=self.generator)",
+        "torch.randperm(len(remaining_indices), generator=self.generator)",
+        "swap_indices = target_indices + selected_indices",
+        "[remaining_indices[i] for i in selected_remaining]",
+    ):
+        _require_ast(scene, expr, task)
+    targets = _assignment_value(scene, "target_indices")
+    remaining = _assignment_value(scene, "selected_remaining")
+    target_call = _calls(_assignment_value(scene, "target_idx"), "randint")[0]
+    try:
+        return {
+            "object_selection": {
+                "easy_medium_target_count": ast.literal_eval(targets.func.value.slice.upper),
+                "hard_target_low": ast.literal_eval(target_call.args[0]),
+                "swap_remaining_count": ast.literal_eval(remaining.func.value.slice.upper),
+            },
+            "swap_selection": {"initiator_mapping": "target_then_permuted_remaining_spawned_indices",
+                "remaining_selection": "randperm_without_target", "partner": partner},
+        }
+    except (AttributeError, ValueError) as exc:
+        raise SamplingConfigError("VideoRepick: 未识别目标和交换对象抽样") from exc
+
+
+def _complete_action_parameters(trees: Mapping[str, ast.Module], parameters: dict[str, Any]) -> None:
+    for task in ("RouteStick", "VideoUnmaskSwap", "VideoRepick"):
+        keys = ("walk",) if task == "RouteStick" else ("object_selection", "swap_selection")
+        present = [key in parameters[task] for key in keys]
+        if not any(present):
+            parameters[task].update(_historical_action_parameters(task, trees[task], trees["route"]))
+        elif not all(present):
+            raise SamplingConfigError(f"{task}: 对象选择配置块不完整，不能混用历史与新版字段")
+
+
+def _validate_action_parameters(parameters: Mapping[str, Any], native: Mapping[str, Any]) -> None:
+    """策略只支持原规则，方向阈值是唯一开放的新增数值输入。"""
+    for task in ("RouteStick", "VideoUnmaskSwap", "VideoRepick"):
+        keys = ("walk",) if task == "RouteStick" else ("object_selection", "swap_selection")
+        for key in keys:
+            candidate = copy.deepcopy(parameters[task][key])
+            expected = native[task][key]
+            if key == "walk":
+                threshold = candidate["direction"]["threshold"]
+                if isinstance(threshold, bool) or not isinstance(threshold, (int, float)) or not 0 <= threshold <= 1:
+                    raise SamplingConfigError("RouteStick.walk.direction.threshold 必须为 [0,1] 内有限数值")
+                candidate["direction"]["threshold"] = expected["direction"]["threshold"]
+            if json.dumps(candidate, sort_keys=True) != json.dumps(expected, sort_keys=True):
+                raise SamplingConfigError(f"{task}.{key} 必须保留原版规则与类型")
 
 
 def _cross_check(
@@ -852,7 +985,7 @@ def load_sampling_config(path: str | Path, repo_root: Path) -> dict[str, dict[st
         raise SamplingConfigError(f"{config_path}: 顶层必须是对象")
     if payload.get("schema_version") != SAMPLING_SCHEMA_VERSION:
         raise SamplingConfigError(
-            f"{config_path}: schema_version 必须为 {SAMPLING_SCHEMA_VERSION}，实际为 {payload.get('schema_version')!r}"
+            f"{config_path}: schema_version 必须为 {SAMPLING_SCHEMA_VERSION}，实际为 {payload.get('schema_version')!r}；请使用 --extract-config 重新导出"
         )
     for block in ("parameters", "positions"):
         if block not in payload or not isinstance(payload[block], dict):
@@ -867,6 +1000,7 @@ def load_sampling_config(path: str | Path, repo_root: Path) -> dict[str, dict[st
     native = extract_native_sampling(repo_root)
     _same_shape(native["parameters"], payload["parameters"], "parameters")
     _same_shape(native["positions"], payload["positions"], "positions")
+    _validate_action_parameters(payload["parameters"], native["parameters"])
 
     # 来源指纹：生成时核对七份源码，防止配置与实际运行的源码脱节
     declared = payload.get("sources")
@@ -903,6 +1037,16 @@ def _merge_snapshot(existing: Mapping[str, Any] | None, extracted: Mapping[str, 
     payload["positions"] = copy.deepcopy(extracted["positions"])
     if existing and "native_semantics" in existing:
         payload["native_semantics"] = copy.deepcopy(existing["native_semantics"])
+        references = {
+            "RouteStick": {"route_button_indices": "parameters.RouteStick.walk.node_indices",
+                "swing_directions": "parameters.RouteStick.walk.direction",
+                "backtrack_false_can_force_reverse_at_endpoint": "parameters.RouteStick.walk.force_reverse_at_endpoint"},
+            "VideoUnmaskSwap": {"hidden_bin_permutation_size": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size"},
+        }
+        for task, fields in references.items():
+            for key, path in fields.items():
+                if key in payload["native_semantics"].get(task, {}):
+                    payload["native_semantics"][task][key] = {"source": path}
     return payload
 
 

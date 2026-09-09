@@ -27,12 +27,15 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS_DIR = REPO_ROOT / "scripts"
+BASELINE = os.environ.get("PARITY_BASELINE") == "1"
+RUN_REPO_ROOT = REPO_ROOT / "artifacts" / "native-baseline" if BASELINE else REPO_ROOT
+SCRIPTS_DIR = RUN_REPO_ROOT / "scripts" / "data-generation-newSeed" if BASELINE else REPO_ROOT / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
@@ -40,7 +43,7 @@ import generate_dataset_newseed as generator  # noqa: E402
 import seed_layout  # noqa: E402
 
 CONFIG_PATH = REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "native_sampling.json"
-SAMPLING_TASKS = generator.SAMPLING_TASKS
+SAMPLING_TASKS = ("BinFill", "RouteStick", "VideoUnmaskSwap", "VideoRepick")
 
 
 def _hash(payload: Any) -> str:
@@ -51,8 +54,8 @@ def _hash(payload: Any) -> str:
 
 def _class_config_hashes() -> dict[str, str]:
     """四个任务类的类级 configs 内容散列（导入仿真，只在父进程做一次）。"""
-    if str(REPO_ROOT / "src") not in sys.path:
-        sys.path.insert(0, str(REPO_ROOT / "src"))
+    if str(RUN_REPO_ROOT / "src") not in sys.path:
+        sys.path.insert(0, str(RUN_REPO_ROOT / "src"))
     import importlib
 
     hashes: dict[str, str] = {}
@@ -87,8 +90,8 @@ def build_jobs(
                 seed=seed,
                 difficulty=difficulty,
                 output_root=str(target),
-                repo_root=str(REPO_ROOT),
-                sampling_config=copy.deepcopy(task_configs[task]) if task in task_configs else None,
+                repo_root=str(RUN_REPO_ROOT),
+                **({"sampling_config": copy.deepcopy(task_configs[task]) if task in task_configs else None} if not BASELINE else {}),
             )
         )
         detail["order"].append(
@@ -104,13 +107,15 @@ def run(
     first: tuple[str, int, str],
     second: tuple[str, int, str],
 ) -> dict[str, Any]:
-    label = "S-config" if with_config else "S-default"
-    output_root = REPO_ROOT / "artifacts" / "parity" / run_id / "worker-isolation" / label
+    if BASELINE and with_config:
+        raise ValueError("原基线连续 worker 不接受 sampling_config")
+    label = "S-baseline" if BASELINE else ("S-config" if with_config else "S-default")
+    output_root = RUN_REPO_ROOT / "artifacts" / "parity" / run_id / "worker-isolation" / label
     output_root.mkdir(parents=True, exist_ok=True)
 
     before_class = _class_config_hashes()
     jobs, detail = build_jobs(output_root, with_config, first, second)
-    before_parent = _hash([job.sampling_config for job in jobs])
+    before_parent = _hash([getattr(job, "sampling_config", None) for job in jobs])
 
     succeeded, exhausted = generator._run_jobs(
         jobs=jobs,
@@ -124,7 +129,7 @@ def run(
         cpu_plan={"0": None},
     )
     after_class = _class_config_hashes()
-    after_parent = _hash([job.sampling_config for job in jobs])
+    after_parent = _hash([getattr(job, "sampling_config", None) for job in jobs])
 
     workers_used = sorted({item.get("bound", {}).get("pid") for item in succeeded if item.get("bound")})
     return {

@@ -2,6 +2,7 @@
 
 
 import copy
+import json
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -60,6 +61,19 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 NATIVE_SAMPLING = {
     "parameters": {
         "configs_fallback_difficulty": "easy",
+        "walk": {
+            "node_indices": [0, 2, 4, 6, 8],
+            "start_selection": "randint",
+            "neighbor_order": [-1, 1],
+            "force_reverse_at_endpoint": True,
+            "direction": {
+                "sampler": "torch.rand",
+                "shape": [1],
+                "threshold": 0.5,
+                "less_than": "clockwise",
+                "otherwise": "counterclockwise",
+            },
+        },
     },
     "positions": {
         "grid_center": [-0.1, 0],
@@ -98,6 +112,15 @@ def _resolve_sampling_config(cls, override):
             raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
         resolved = copy.deepcopy(override)
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    walk = copy.deepcopy(resolved["parameters"].get("walk"))
+    if not isinstance(walk, dict) or not isinstance(walk.get("direction"), dict):
+        raise ValueError("RouteStick.parameters.walk 缺少完整游走规则")
+    threshold = walk["direction"].get("threshold")
+    if isinstance(threshold, bool) or not isinstance(threshold, (int, float)) or not math.isfinite(threshold) or not 0 <= threshold <= 1:
+        raise ValueError("RouteStick.walk.direction.threshold 必须为 [0,1] 内有限数值")
+    walk["direction"]["threshold"] = NATIVE_SAMPLING["parameters"]["walk"]["direction"]["threshold"]
+    if json.dumps(walk, sort_keys=True) != json.dumps(NATIVE_SAMPLING["parameters"]["walk"], sort_keys=True):
+        raise ValueError("RouteStick.parameters.walk 除方向阈值外必须完整保留原版规则与类型")
     return resolved
 
 
@@ -383,7 +406,8 @@ class RouteStick(BaseEnv):
         tasks=[]
 
         # Use the actual button actors corresponding to indices 0,2,4,6,8
-        button_indices = [0, 2, 4, 6, 8]
+        walk_cfg = self._sampling["parameters"]["walk"]
+        button_indices = list(walk_cfg["node_indices"])
         self.route_button_indices = button_indices
 
         sampling_configs = self._sampling["parameters"]["configs"]
@@ -393,7 +417,7 @@ class RouteStick(BaseEnv):
         steps = int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item())
         allow_backtracking = bool(cfg.get("backtrack", True))
 
-        traj=generate_dynamic_walk(button_indices,steps=steps,allow_backtracking=allow_backtracking,generator=generator)# Generate trajectory
+        traj=generate_dynamic_walk(button_indices,steps=steps,allow_backtracking=allow_backtracking,generator=generator,walk_config=walk_cfg)
         self.selected_buttons = [self.buttons_grid[i] for i in traj]
 
         def _stick_side(actor, ref_actor=None):
@@ -416,8 +440,9 @@ class RouteStick(BaseEnv):
 
         # Randomly decide and record clockwise/counterclockwise direction for each solve_swingonto_withDirection
         self.swing_directions = []
+        direction_cfg = walk_cfg["direction"]
         for _ in self.selected_buttons[1:]:
-            dir_flag = "clockwise" if torch.rand(1, generator=generator).item() < 0.5 else "counterclockwise"
+            dir_flag = direction_cfg["less_than"] if torch.rand(*direction_cfg["shape"], generator=generator).item() < direction_cfg["threshold"] else direction_cfg["otherwise"]
             self.swing_directions.append(dir_flag)
         logger.debug(f"[RouteStick] swing direction list: {self.swing_directions}")
 

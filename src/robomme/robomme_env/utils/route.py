@@ -6,7 +6,7 @@ from ...logging_utils import logger
 
 
 def generate_dynamic_walk(indices, steps=50, start_idx=None, allow_backtracking=True,
-                          generator=None, plot=False):
+                          generator=None, plot=False, walk_config=None):
     """
     Generate random walk trajectory (supports PyTorch Generator).
 
@@ -18,6 +18,16 @@ def generate_dynamic_walk(indices, steps=50, start_idx=None, allow_backtracking=
         generator (torch.Generator): PyTorch generator for controlling random seed
         plot (bool): Whether to plot
     """
+
+    # 显式配置只开放既有拓扑；调用者不传时保留原来的任意线性节点列表接口。
+    neighbor_order = [-1, 1]
+    if walk_config is not None:
+        if (walk_config.get("node_indices") != list(indices)
+                or walk_config.get("start_selection") != "randint"
+                or walk_config.get("neighbor_order") != [-1, 1]
+                or walk_config.get("force_reverse_at_endpoint") is not True):
+            raise ValueError("generate_dynamic_walk 只支持原有线性邻接与端点回退规则")
+        neighbor_order = walk_config["neighbor_order"]
 
     # 1. Initialization
     if start_idx is None:
@@ -37,10 +47,10 @@ def generate_dynamic_walk(indices, steps=50, start_idx=None, allow_backtracking=
 
         # Find all physically reachable neighbors
         neighbors = []
-        if current_idx > 0:
-            neighbors.append(current_idx - 1)
-        if current_idx < len(indices) - 1:
-            neighbors.append(current_idx + 1)
+        for offset in neighbor_order:
+            neighbor = current_idx + offset
+            if 0 <= neighbor < len(indices):
+                neighbors.append(neighbor)
 
         # --- Core logic: Backtracking filter ---
         candidates = []
