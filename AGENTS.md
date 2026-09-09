@@ -180,7 +180,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| episode 对象与动作冻结扩展 | 完整对拍进行中 | 产品 c56e5af（10.8）；v2 完成 60 次生成、15 格比较和 852 张目视，但收尾发现随机调用前状态记录缺失；观察器升至版本 3，110 项定向测试通过 | 独立运行 20260909-actions-v3 重新采集完整随机流，完成全部五项与补充回归 |
+| episode 对象与动作冻结扩展 | 完成五项及补充回归，4 个基线既有测试失败单列 | schema 3、66 组原值及消费位置检查；20260909-actions-v3 的 60 次 fresh、15 格原始与合并四对比较、三路连续 worker、852 张图像复核、重试与 16 任务全部通过；最终离线 42 passed；轻量全量 232 passed / 4 个固定基线已有失败 | 详见 docs/validation/newtask-v2/20260909-actions-v3/README.md；保留历史产物与记录边界，本轮不推送 |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
 | 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
 | 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
@@ -1087,3 +1087,25 @@
 
 - 离线留档补强：合并产物保存四路全字段聚合指纹，连续 worker 保存独立与连续两侧的 HDF5 指纹及状态／随机流散列链，供离线重新推导一致性，不仅保存 passed 标记。沿用既有指纹算法与比较器，未改生成过程。46 项相关定向测试通过，1.22 秒；完整交付离线测试等待实际证据齐全后执行。
 - v3 的 RouteStick easy：四路完整比较及 71 张图片复核通过；累计 7 格、277 张图完成复核。medium 原版校准通过，当前 30/60 次生成成功。
+
+- v3 的路线与藏块容器：RouteStick 三格和 VideoUnmaskSwap 三格的四对完整比较均通过，全部调用前后随机状态一致。各自 413 张和 98 张新图均完成与本轮目视记录的逐项散列复核；累计 12 格、717 张图通过。VideoRepick easy 原版校准通过，当前 51/60 次生成成功。
+
+- v3 全部生成完成：60/60 次 fresh 成功，编排墙钟 2479.7 秒（含校验器更新时仅暂停父进程的时间）；所有格原版 RRT* 回退均为零。60 条实际 episode_results 已核验 seed、难度、attempt、GPU 0、线程及统一参数，保存 execution_records.json。
+- v3 单格完整检查完成：15 格四对逐位比较全过，852 张新图与本轮实际查看的图片逐项 SHA-256 相同，逐格目视绑定全部通过。当前正在统一打包，合并、连续 worker、重试和 16 任务回归尚未完成；最终全量出图后仍须再次核验完整图片索引。
+
+- v3 统一打包与合并：15 格完整统一对拍通过；15×4 份合并产物由 A 原入口和 B/C --merge-only 分别生成，60 对合并后全字段比较均无差异，并保存可离线比较的逐帧聚合指纹。
+- v3 连续 worker：S-baseline、S-default、S-config 各完成 3 局，分别用时 85.96、85.90、85.89 秒；三路的同一 PID、父配置／类配置、空缓存及三槽位 HDF5／状态／事件／完整随机流检查全部通过。重试和 16 任务回归正在执行。
+
+- v3 补充回归：重试 A1/B/C 分别用时 52.50、52.37、52.84 秒，均实际经历 seed 4000 的任务失败与 seed 4001 的第二次尝试成功；失败分类和成功 HDF5 全字段对照一致。显式配置 --env all 的 16/16 任务首次成功，退出码 0，命令耗时 329.17 秒。正在最终 --limit 0 出图及完整索引复核，之后执行离线验证并提交。
+
+### 2026-09-09 America/Detroit — 对象与动作冻结最终验收
+
+- 状态：五项与补充回归完成，基线既有失败单列；本轮仅提交，不推送。
+- 最终图像：全量 --limit 0 出图 284.43 秒，自动阶段 EXIT_CODE=0；parity_review.finalize 实际核对最终 15 格、852 张图与本轮已经逐图查看的图片，全集、原图／画板散列和机检结果全部通过，退出码 0。报告记录实际目视来源目录与每格 manifest 路径，未把准备画板误记为已经查看。
+- 记录边界：RouteStick 每格 48 条高亮事件属于原 NO RECORD 步，三路清单及状态相同，但没有对应 HDF5 图片，未伪造目视结论；本 15 格的三种 Torch 抽样调用均使用显式 generator，全局分支另有定向测试；RRT* 与 C++ 规划随机性未实跑覆盖，不能外推。
+- 轻量包：docs/validation/newtask-v2/20260909-actions-v3/ 保存 50 份轻量数据文件及独立散列清单、中文报告；HDF5、视频、原始证据、PNG 和完整日志保留在 artifacts/。新增离线验收核对四路原始指纹、合并、三路连续 worker、重试、16 任务与全部目视，篡改报告必须拒绝。
+- 最终测试：uv run --no-sync python -m pytest tests/lightweight/ -q --durations=5 --basetemp artifacts/test-tmp/action-freeze-final，232 passed / 4 failed，176.26 秒，退出码 1。脚本自动提取 FAILED 集合，确认与固定 94449db 基线逐项相同；原输出和结构化结果入包。没有跳过四个旧失败或更改原任务判定。
+- 离线复验：uv run --no-sync python -m pytest tests/lightweight/test_action_freeze_delivery.py tests/lightweight/test_native_sampling_evidence.py -q --basetemp artifacts/test-tmp/action-freeze-offline，42 passed，0.35 秒，退出码 0。首次临时目录父级缺失导致 fixture 错误，创建仓库内父目录后正常；一次命令编排的字符串插值错误发生在工具启动前，未执行项目命令，改为普通字符串后运行。
+- 文档：scripts/README.md 更新 schema 3 字段、消费位置、五项真实结论及记录边界；运行索引增加最终 v3 和保留的 v2 中间说明；旧 DELIVERY 仅补充历史轮次标记，不覆盖旧结论。未修改官方参考数据、依赖锁或范围外源码。
+- 提交前检查：45 处本地文档链接、命令块 bash 语法、git diff --check 全部通过；主入口再次 --check-config --source-ref 94449db，工作树一致、66 组操作元一致。仅暂存本轮代码、文档和约 5.9 MiB 轻量证据，未纳入 HDF5、视频、PNG 或范围外文件。
+- 暂存检查发现 pytest 原始输出带行末空白；仅清理两份入库文本副本的行末空白和末尾空行，artifacts 原始日志保持不变并补存原始散列。重建轻量包清单后再次离线复验，42 passed，0.36 秒，退出码 0。

@@ -1,0 +1,283 @@
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+...........F.......F.................................................... [ 30%]
+........................................................................ [ 61%]
+........................................................................ [ 91%]
+................F..F                                                     [100%]
+=================================== FAILURES ===================================
+_______________ test_unknown_env_returns_single_goal_when_equal ________________
+
+    def test_unknown_env_returns_single_goal_when_equal():
+        """Unknown env_id goes to the default empty-string branch; when two goals are equal it returns a single-element list."""
+        s = _make_self()
+        result = _call("UnknownEnv", s)
+>       assert result == [""]
+E       AssertionError: assert [] == ['']
+E
+E         Right contains one more item: ''
+E         Use -v to get more diff
+
+tests/lightweight/test_TaskGoal.py:65: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+__________________________ test_swingxtimes_multiple ___________________________
+
+    def test_swingxtimes_multiple():
+        """Branch behavior test case."""
+        s = _make_self(unwrapped_attrs=dict(num_repeats=5, target_color_name="red"))
+        result = _call("SwingXtimes", s)
+>       assert "repeating this back and forth motion five times" in result[0]
+E       AssertionError: assert 'repeating this back and forth motion five times' in 'pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop'
+
+tests/lightweight/test_TaskGoal.py:159: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+[SwingXtimes] goal1: pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop
+[SwingXtimes] goal2: pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion five times, then put down the cube and press the button to stop
+_____________________ test_step_error_returns_status_error _____________________
+
+    def test_step_error_returns_status_error() -> None:
+        """
+        Construct a minimal Mock environment to make super().step() inside _step_batch() throw an exception,
+        verifying that DemonstrationWrapper.step() does not propagate upwards, but returns "error" via info["status"].
+        """
+        source = _load_step_source()
+        tree = ast.parse(source, filename=str(_demo_wrapper_path()))
+
+        # Find step() method, verify try/except structure exists
+        step_method = None
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name == "DemonstrationWrapper":
+                for item in node.body:
+                    if isinstance(item, ast.FunctionDef) and item.name == "step":
+                        step_method = item
+                        break
+                break
+
+        assert step_method is not None, "DemonstrationWrapper.step method not found"
+
+        # Verify that the step method body contains try/except
+        has_try = any(isinstance(n, ast.Try) for n in ast.walk(step_method))
+>       assert has_try, "DemonstrationWrapper.step() should contain a try/except block"
+E       AssertionError: DemonstrationWrapper.step() should contain a try/except block
+E       assert False
+
+tests/lightweight/test_step_error_handling.py:76: AssertionError
+______________ test_scripts_use_status_check_not_bare_try_except _______________
+
+    def test_scripts_use_status_check_not_bare_try_except() -> None:
+        """
+        Parse run_example.py and dataset_replay.py, verify:
+        1. There is an info.get("status") or status == "error" check in the script
+        2. env.step(action) calls are no longer directly wrapped by try/except Exception
+        """
+        scripts = ["run_example.py", "dataset_replay.py"]
+
+        for script_name in scripts:
+            script_path = _script_path(script_name)
+            source = script_path.read_text(encoding="utf-8")
+            tree = ast.parse(source, filename=str(script_path))
+
+            # ---- Check 1: Contains status related checks ----
+            has_status_check = (
+                'info.get("status")' in source
+                or "status == \"error\"" in source
+                or "status==" in source.replace(" ", "")
+            )
+>           assert has_status_check, (
+                f"{script_name}: Should have info.get('status') or status==\"error\" check"
+            )
+E           AssertionError: dataset_replay.py: Should have info.get('status') or status=="error" check
+E           assert False
+
+tests/lightweight/test_step_error_handling.py:231: AssertionError
+----------------------------- Captured stdout call -----------------------------
+  ✓ run_example.py: Use status check, no bare try/except wrapping env.step
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[BinFill-joint_angle]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/random.py:187: UserWarning: CUDA reports that you have 2 available devices, and you have used fork_rng without explicitly specifying which devices are being used. For safety, we initialize *every* CUDA device by default, which can be quite slow if you have a lot of CUDAs. If you know that you are only making use of a few CUDA devices, set the environment variable CUDA_VISIBLE_DEVICES or the 'devices' keyword argument of fork_rng with the set of devices you are actually using. For example, if you are using CPU only, set device.upper()_VISIBLE_DEVICES= or devices=[]; if you are using device 0 only, set CUDA_VISIBLE_DEVICES=0 or devices=[0].  To initialize all devices and suppress this warning, set the 'devices' keyword argument to `range(torch.cuda.device_count())`.
+    warnings.warn(message)
+
+tests/lightweight/test_TaskGoalI_isList.py: 224 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/mani_skill/utils/geometry/trimesh_utils.py:113: DeprecationWarning: component.pose can be ambiguous thus deprecated. It is equivalent to component.entity_pose, which should be used instead
+    T = component.pose.to_transformation_matrix()
+
+tests/lightweight/test_TaskGoalI_isList.py: 64 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.task_list to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.task_list` for environment variables or `env.get_wrapper_attr('task_list')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 64 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.current_task_name to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.current_task_name` for environment variables or `env.get_wrapper_attr('current_task_name')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 64 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.current_segment to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.current_segment` for environment variables or `env.get_wrapper_attr('current_segment')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 64 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.segmentation_id_map to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.segmentation_id_map` for environment variables or `env.get_wrapper_attr('segmentation_id_map')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 64 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.current_task_demonstration to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.current_task_demonstration` for environment variables or `env.get_wrapper_attr('current_task_demonstration')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 64 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.agent to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.agent` for environment variables or `env.get_wrapper_attr('agent')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 24 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.all_cubes to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.all_cubes` for environment variables or `env.get_wrapper_attr('all_cubes')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[SwingXtimes-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[SwingXtimes-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[SwingXtimes-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[SwingXtimes-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.target_right to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.target_right` for environment variables or `env.get_wrapper_attr('target_right')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[SwingXtimes-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[SwingXtimes-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[SwingXtimes-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[SwingXtimes-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.target_left to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.target_left` for environment variables or `env.get_wrapper_attr('target_left')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 36 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.evaluate to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.evaluate` for environment variables or `env.get_wrapper_attr('evaluate')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 28 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.elapsed_steps to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.elapsed_steps` for environment variables or `env.get_wrapper_attr('elapsed_steps')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoUnmask-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoUnmask-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoUnmask-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoUnmask-multi_choice]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[ButtonUnmask-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[ButtonUnmask-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[ButtonUnmask-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[ButtonUnmask-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.difficulty to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.difficulty` for environment variables or `env.get_wrapper_attr('difficulty')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 16 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.spawned_bins to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.spawned_bins` for environment variables or `env.get_wrapper_attr('spawned_bins')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoUnmaskSwap-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoUnmaskSwap-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoUnmaskSwap-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoUnmaskSwap-multi_choice]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[ButtonUnmaskSwap-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[ButtonUnmaskSwap-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[ButtonUnmaskSwap-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[ButtonUnmaskSwap-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.pick_times to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.pick_times` for environment variables or `env.get_wrapper_attr('pick_times')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoRepick-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoRepick-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoRepick-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoRepick-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.num_repeats to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.num_repeats` for environment variables or `env.get_wrapper_attr('num_repeats')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoRepick-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoRepick-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoRepick-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoRepick-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.spawned_cubes to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.spawned_cubes` for environment variables or `env.get_wrapper_attr('spawned_cubes')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py: 16 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.use_demonstrationwrapper to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.use_demonstrationwrapper` for environment variables or `env.get_wrapper_attr('use_demonstrationwrapper')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-multi_choice]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.target_color_name to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.target_color_name` for environment variables or `env.get_wrapper_attr('target_color_name')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.target_target_language to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.target_target_language` for environment variables or `env.get_wrapper_attr('target_target_language')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-multi_choice]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.targets to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.targets` for environment variables or `env.get_wrapper_attr('targets')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.which_in_subset to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.which_in_subset` for environment variables or `env.get_wrapper_attr('which_in_subset')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.grasp_target to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.grasp_target` for environment variables or `env.get_wrapper_attr('grasp_target')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.peg_heads to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.peg_heads` for environment variables or `env.get_wrapper_attr('peg_heads')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.peg_tails to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.peg_tails` for environment variables or `env.get_wrapper_attr('peg_tails')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-joint_angle]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-ee_pose]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-waypoint]
+tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[InsertPeg-multi_choice]
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.box to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.box` for environment variables or `env.get_wrapper_attr('box')` that will search the reminding wrappers.[0m
+    logger.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 5 durations ==============================
+6.14s call     tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-joint_angle]
+6.01s call     tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-multi_choice]
+5.99s call     tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-waypoint]
+5.98s call     tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceButton-ee_pose]
+5.80s call     tests/lightweight/test_TaskGoalI_isList.py::test_task_goal_is_list[VideoPlaceOrder-ee_pose]
+=========================== short test summary info ============================
+FAILED tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal
+FAILED tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple - Assert...
+FAILED tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error
+FAILED tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except
+4 failed, 232 passed, 803 warnings in 176.26s (0:02:56)
+EXIT_CODE=1

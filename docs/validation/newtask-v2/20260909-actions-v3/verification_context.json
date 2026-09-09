@@ -1,0 +1,17 @@
+{
+  "captured_utc": "2026-09-09T20:11:19.257875+00:00",
+  "commit": "1b312932a0349f80c9a35cc7ae0f16e647fcbee6",
+  "source_sha256": {
+    "tests/_shared/action_freeze_campaign.py": "45140996c6de0c6f96bed2c8cee7df48dd1b8008a1ea271f0beb801494cbb251",
+    "tests/_shared/parity_review.py": "dae530f90847a81c68c7830ce4ee5798d1e11e578c8eca81dd575a24a1a4dc62",
+    "tests/_shared/native_sampling_parity.py": "f5904bc9fa311173a0c9e7dd2d50820aa2e0d61a5a9fabaa72e82e3c358ecde6",
+    "tests/_shared/parity_worker_isolation.py": "20a071d70bfc8fd5dea3fa3d9f4a05e4ad63636c046d8539a118a731b669a23b",
+    "tests/_shared/parity_keyframes.py": "aa4b55d0f229f5f0a5d7efd300c9b70211f1af57595306ddda4f91896b97e264",
+    "tests/_shared/parity_observer.py": "7d73a1b478ec1449bec684d73d0479aae57041cd1ac178619a1492df8d7dc03e"
+  },
+  "note": "实际报告工具指纹；基线提交之后仅补充目视记录来源字段与说明文字，最终交付提交包含这些修改。任务实现与冻结配置未改变。",
+  "uncommitted_report_only_changes": [
+    "tests/_shared/parity_review.py",
+    "tests/_shared/parity_keyframes.py"
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "runs": {
+    "A1": {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260909-actions-v3/retry/A1",
+      "attempts": [
+        {
+          "task": "BinFill",
+          "episode": 0,
+          "seed": 4000,
+          "attempt": 0,
+          "ok": false,
+          "failure_class": "task",
+          "error_type": "DatasetGenerationError"
+        },
+        {
+          "task": "BinFill",
+          "episode": 0,
+          "seed": 4001,
+          "attempt": 1,
+          "ok": true,
+          "failure_class": null,
+          "error_type": null
+        }
+      ]
+    },
+    "B": {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260909-actions-v3/retry/B",
+      "attempts": [
+        {
+          "task": "BinFill",
+          "episode": 0,
+          "seed": 4000,
+          "attempt": 0,
+          "ok": false,
+          "failure_class": "task",
+          "error_type": "DatasetGenerationError"
+        },
+        {
+          "task": "BinFill",
+          "episode": 0,
+          "seed": 4001,
+          "attempt": 1,
+          "ok": true,
+          "failure_class": null,
+          "error_type": null
+        }
+      ]
+    },
+    "C": {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260909-actions-v3/retry/C",
+      "attempts": [
+        {
+          "task": "BinFill",
+          "episode": 0,
+          "seed": 4000,
+          "attempt": 0,
+          "ok": false,
+          "failure_class": "task",
+          "error_type": "DatasetGenerationError"
+        },
+        {
+          "task": "BinFill",
+          "episode": 0,
+          "seed": 4001,
+          "attempt": 1,
+          "ok": true,
+          "failure_class": null,
+          "error_type": null
+        }
+      ]
+    }
+  },
+  "differences": {
+    "A1-B": [],
+    "A1-C": [],
+    "B-C": []
+  },
+  "passed": true
+}

@@ -1,0 +1,18 @@
+{
+  "a0": {
+    "cell": "BinFill-easy-dynamicTrue",
+    "label": "A0",
+    "skipped": false,
+    "returncode": 0,
+    "elapsed_s": 27.4,
+    "command": "uv run --no-sync --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask python /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/scripts/data-generation-newSeed/generate_dataset_newseed.py --output-dir artifacts/parity/20260909-actions-smoke3/BinFill-easy-dynamicTrue/A0 --env BinFill --episodes 1 --episode-start 0 --workers 1 --gpus 0 --layout train --difficulty 100 --max-attempts 1 --max-tasks-per-child 8",
+    "cwd": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline",
+    "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260909-actions-smoke3/BinFill-easy-dynamicTrue/A0",
+    "log": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/logs/parity/20260909-actions-smoke3/BinFill-easy-dynamicTrue.A0.log",
+    "success_count": 1,
+    "exhausted_count": 0,
+    "ok": true
+  },
+  "h5_differences": [],
+  "passed": true
+}

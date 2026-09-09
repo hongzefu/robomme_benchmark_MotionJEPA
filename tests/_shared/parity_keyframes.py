@@ -279,7 +279,7 @@ def export_cell(
         "event_record_mapping": event_mapping,
         "initial_observation_note": (
             "初态用观察器捕获的 reset 返回观测，不额外渲染；它在 HDF5 中没有对应帧，"
-            "schema 2 观察器另存原始 RGB，并在 reset.png 中逐像素展示"
+            "观察器从版本 2 起另存原始 RGB，并在 reset.png 中逐像素展示"
         ),
     }
 

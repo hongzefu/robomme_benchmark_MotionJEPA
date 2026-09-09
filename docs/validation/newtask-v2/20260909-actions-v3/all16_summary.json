@@ -1,0 +1,53 @@
+{
+  "parameters": {
+    "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260909-actions-v3/all16",
+    "env": "all",
+    "tasks": [
+      "PickXtimes",
+      "StopCube",
+      "SwingXtimes",
+      "BinFill",
+      "VideoUnmaskSwap",
+      "VideoUnmask",
+      "ButtonUnmaskSwap",
+      "ButtonUnmask",
+      "VideoRepick",
+      "VideoPlaceButton",
+      "VideoPlaceOrder",
+      "PickHighlight",
+      "InsertPeg",
+      "MoveCube",
+      "PatternLock",
+      "RouteStick"
+    ],
+    "episodes": 1,
+    "episode_start": 0,
+    "workers": 1,
+    "gpus": [
+      "0"
+    ],
+    "seed_layout": "train",
+    "difficulty_ratio": "100",
+    "difficulty_cycle": [
+      "easy"
+    ],
+    "max_attempts": 1,
+    "limit_threads": true,
+    "max_tasks_per_child": 8,
+    "affinity": "none",
+    "save_video_for_recording": true,
+    "sampling_config": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json",
+    "sampling_config_tasks": [
+      "BinFill",
+      "RouteStick",
+      "VideoRepick",
+      "VideoUnmaskSwap"
+    ]
+  },
+  "requested_count": 16,
+  "success_count": 16,
+  "exhausted_count": 0,
+  "elapsed_s": 328.9,
+  "throughput_ep_per_min": 2.92,
+  "peak_rss_mb": 6565.4
+}

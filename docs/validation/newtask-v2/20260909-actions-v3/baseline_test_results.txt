@@ -1,0 +1,102 @@
+.F                                          [100%]
+=================================== FAILURES ===================================
+_______________ test_unknown_env_returns_single_goal_when_equal ________________
+
+    def test_unknown_env_returns_single_goal_when_equal():
+        """Unknown env_id goes to the default empty-string branch; when two goals are equal it returns a single-element list."""
+        s = _make_self()
+        result = _call("UnknownEnv", s)
+>       assert result == [""]
+E       AssertionError: assert [] == ['']
+E
+E         Right contains one more item: ''
+E         Use -v to get more diff
+
+tests/lightweight/test_TaskGoal.py:65: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+__________________________ test_swingxtimes_multiple ___________________________
+
+    def test_swingxtimes_multiple():
+        """Branch behavior test case."""
+        s = _make_self(unwrapped_attrs=dict(num_repeats=5, target_color_name="red"))
+        result = _call("SwingXtimes", s)
+>       assert "repeating this back and forth motion five times" in result[0]
+E       AssertionError: assert 'repeating this back and forth motion five times' in 'pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop'
+
+tests/lightweight/test_TaskGoal.py:159: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+[SwingXtimes] goal1: pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop
+[SwingXtimes] goal2: pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion five times, then put down the cube and press the button to stop
+_____________________ test_step_error_returns_status_error _____________________
+
+    def test_step_error_returns_status_error() -> None:
+        """
+        Construct a minimal Mock environment to make super().step() inside _step_batch() throw an exception,
+        verifying that DemonstrationWrapper.step() does not propagate upwards, but returns "error" via info["status"].
+        """
+        source = _load_step_source()
+        tree = ast.parse(source, filename=str(_demo_wrapper_path()))
+
+        # Find step() method, verify try/except structure exists
+        step_method = None
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name == "DemonstrationWrapper":
+                for item in node.body:
+                    if isinstance(item, ast.FunctionDef) and item.name == "step":
+                        step_method = item
+                        break
+                break
+
+        assert step_method is not None, "DemonstrationWrapper.step method not found"
+
+        # Verify that the step method body contains try/except
+        has_try = any(isinstance(n, ast.Try) for n in ast.walk(step_method))
+>       assert has_try, "DemonstrationWrapper.step() should contain a try/except block"
+E       AssertionError: DemonstrationWrapper.step() should contain a try/except block
+E       assert False
+
+tests/lightweight/test_step_error_handling.py:76: AssertionError
+______________ test_scripts_use_status_check_not_bare_try_except _______________
+
+    def test_scripts_use_status_check_not_bare_try_except() -> None:
+        """
+        Parse run_example.py and dataset_replay.py, verify:
+        1. There is an info.get("status") or status == "error" check in the script
+        2. env.step(action) calls are no longer directly wrapped by try/except Exception
+        """
+        scripts = ["run_example.py", "dataset_replay.py"]
+
+        for script_name in scripts:
+            script_path = _script_path(script_name)
+            source = script_path.read_text(encoding="utf-8")
+            tree = ast.parse(source, filename=str(script_path))
+
+            # ---- Check 1: Contains status related checks ----
+            has_status_check = (
+                'info.get("status")' in source
+                or "status == \"error\"" in source
+                or "status==" in source.replace(" ", "")
+            )
+>           assert has_status_check, (
+                f"{script_name}: Should have info.get('status') or status==\"error\" check"
+            )
+E           AssertionError: dataset_replay.py: Should have info.get('status') or status=="error" check
+E           assert False
+
+tests/lightweight/test_step_error_handling.py:231: AssertionError
+----------------------------- Captured stdout call -----------------------------
+  ✓ run_example.py: Use status check, no bare try/except wrapping env.step
+=============================== warnings summary ===============================
+tests/lightweight/test_step_error_handling.py::test_step_normal_returns_ongoing_status
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal
+FAILED tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple - Assert...
+FAILED tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error
+FAILED tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except
+4 failed, 27 passed, 1 warning in 1.02s

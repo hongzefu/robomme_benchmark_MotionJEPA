@@ -1,0 +1,49 @@
+{
+  "full_suite": {
+    "command": "uv run --no-sync python -m pytest tests/lightweight/ -q --durations=5 --basetemp artifacts/test-tmp/action-freeze-final",
+    "cwd": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask",
+    "passed": 232,
+    "failed": 4,
+    "duration_s": 176.26,
+    "returncode": 1,
+    "failures": [
+      "tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple",
+      "tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal",
+      "tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except",
+      "tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error"
+    ],
+    "log": "final_test_results.txt",
+    "raw_log": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/logs/action-freeze-final-lightweight.log",
+    "raw_log_sha256": "153df2507b82af694dddc0bc56f3130e0b0c6cc4c28e7ac661c63a954f42c560"
+  },
+  "baseline": {
+    "commit": "94449db0a068a6b454b55a13ebd48f0394d89cc8",
+    "command": "uv run --no-sync --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask python -m pytest tests/lightweight/test_TaskGoal.py tests/lightweight/test_step_error_handling.py -q",
+    "cwd": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline",
+    "passed": 27,
+    "failed": 4,
+    "duration_s": 1.02,
+    "returncode": 1,
+    "failures": [
+      "tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple",
+      "tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal",
+      "tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except",
+      "tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error"
+    ],
+    "log": "baseline_test_results.txt",
+    "raw_log": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/logs/action-freeze-baseline-tests.log",
+    "raw_log_sha256": "9d2152269177dc820510d58f10cd21f82dd83e7c6209a8f15c2af3496600c930"
+  },
+  "failure_sets_equal": true,
+  "targeted_before_matrix": {
+    "passed": 111,
+    "duration_s": 5.09,
+    "returncode": 0
+  },
+  "initial_offline_delivery": {
+    "passed": 4,
+    "duration_s": 0.06,
+    "returncode": 0
+  },
+  "text_copy_note": "入库文本副本只移除行末空白和末尾空行；原始日志保持不变。"
+}

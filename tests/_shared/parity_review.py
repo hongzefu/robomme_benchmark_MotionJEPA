@@ -95,7 +95,8 @@ def finalize(index_path, review_root, output):
     """将实际目视逐项与最终出图索引重新对齐，拒绝未查看、缺帧及任何图片变化。"""
     index_path = Path(index_path)
     payload = json.loads(index_path.read_text())
-    report = {"run": payload["run"], "cells": {}, "passed": True, "image_count": 0}
+    report = {"run": payload["run"], "review_root": str(Path(review_root).resolve()),
+              "cells": {}, "passed": True, "image_count": 0}
     for cell, detail in payload["cells"].items():
         if detail.get("not_rendered") or not detail.get("montages"):
             raise ValueError(f"{cell}: 缺少完整图版")
@@ -123,6 +124,7 @@ def finalize(index_path, review_root, output):
         if set(reviewed) != set(detail["montages"]):
             raise ValueError(f"{cell}: 规定关键帧未全部目视")
         report["cells"][cell] = {"image_count": len(reviewed), "passed": True, "images": reviewed,
+                                  "review_manifest": str(manifest_path.resolve()),
                                   "review_manifest_sha256": sha(manifest_path)}
         report["image_count"] += len(reviewed)
         detail["status"] = "通过"

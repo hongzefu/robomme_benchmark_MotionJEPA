@@ -1,0 +1,4961 @@
+{
+  "BinFill-easy-dynamicTrue": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4",
+            "cube_red_5"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 44,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4",
+            "cube_red_5"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 44,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4",
+            "cube_red_5"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 44,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4",
+            "cube_red_5"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 44,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "BinFill-medium-dynamicTrue": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_green_0",
+            "cube_green_1",
+            "cube_green_2",
+            "cube_green_3",
+            "cube_green_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 71,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_green_0",
+            "cube_green_1",
+            "cube_green_2",
+            "cube_green_3",
+            "cube_green_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 71,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_green_0",
+            "cube_green_1",
+            "cube_green_2",
+            "cube_green_3",
+            "cube_green_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 71,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_green_0",
+            "cube_green_1",
+            "cube_green_2",
+            "cube_green_3",
+            "cube_green_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 71,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "BinFill-hard-dynamicTrue": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4",
+            "cube_red_5"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 91,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4",
+            "cube_red_5"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 91,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4",
+            "cube_red_5"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 91,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": true,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4",
+            "cube_red_5"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 91,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "BinFill-easy-dynamicFalse": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 41,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 41,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 41,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 41,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "BinFill-medium-dynamicFalse": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 83,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 83,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 83,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 83,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "BinFill-hard-dynamicFalse": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_blue_5",
+            "cube_blue_6",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 67,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_blue_5",
+            "cube_blue_6",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 67,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_blue_5",
+            "cube_blue_6",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 67,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 2,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 4,
+            "demonstration": false,
+            "target": null,
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": false,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_blue_5",
+            "cube_blue_6",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 67,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "RouteStick-easy": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            }
+          ],
+          "directions": [
+            "clockwise",
+            "clockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 5,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 6,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 11,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            }
+          ],
+          "directions": [
+            "clockwise",
+            "clockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 5,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 6,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 11,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            }
+          ],
+          "directions": [
+            "clockwise",
+            "clockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 5,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 6,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 11,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            }
+          ],
+          "directions": [
+            "clockwise",
+            "clockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 5,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 6,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 11,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "RouteStick-medium": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 2,
+              "name": "'target_2'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 0,
+              "name": "'target_0'"
+            }
+          ],
+          "directions": [
+            "counterclockwise",
+            "clockwise",
+            "counterclockwise",
+            "clockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 3,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 2,
+                  "name": "'target_2'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 4,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 0,
+                  "name": "'target_0'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 7,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 8,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 9,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 2,
+                  "name": "'target_2'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 10,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 0,
+                  "name": "'target_0'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 15,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 2,
+              "name": "'target_2'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 0,
+              "name": "'target_0'"
+            }
+          ],
+          "directions": [
+            "counterclockwise",
+            "clockwise",
+            "counterclockwise",
+            "clockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 3,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 2,
+                  "name": "'target_2'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 4,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 0,
+                  "name": "'target_0'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 7,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 8,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 9,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 2,
+                  "name": "'target_2'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 10,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 0,
+                  "name": "'target_0'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 15,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 2,
+              "name": "'target_2'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 0,
+              "name": "'target_0'"
+            }
+          ],
+          "directions": [
+            "counterclockwise",
+            "clockwise",
+            "counterclockwise",
+            "clockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 3,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 2,
+                  "name": "'target_2'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 4,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 0,
+                  "name": "'target_0'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 7,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 8,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 9,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 2,
+                  "name": "'target_2'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 10,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 0,
+                  "name": "'target_0'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 15,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 2,
+              "name": "'target_2'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 0,
+              "name": "'target_0'"
+            }
+          ],
+          "directions": [
+            "counterclockwise",
+            "clockwise",
+            "counterclockwise",
+            "clockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 3,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 2,
+                  "name": "'target_2'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 4,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 0,
+                  "name": "'target_0'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 7,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 8,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 9,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 2,
+                  "name": "'target_2'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 10,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 0,
+                  "name": "'target_0'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 15,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "RouteStick-hard": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            }
+          ],
+          "directions": [
+            "counterclockwise",
+            "clockwise",
+            "clockwise",
+            "clockwise",
+            "clockwise",
+            "counterclockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 3,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 4,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 5,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 6,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 9,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 10,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 11,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 12,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 13,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 14,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 19,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            }
+          ],
+          "directions": [
+            "counterclockwise",
+            "clockwise",
+            "clockwise",
+            "clockwise",
+            "clockwise",
+            "counterclockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 3,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 4,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 5,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 6,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 9,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 10,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 11,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 12,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 13,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 14,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 19,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            }
+          ],
+          "directions": [
+            "counterclockwise",
+            "clockwise",
+            "clockwise",
+            "clockwise",
+            "clockwise",
+            "counterclockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 3,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 4,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 5,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 6,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 9,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 10,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 11,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 12,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 13,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 14,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 19,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [],
+        "route": {
+          "nodes": [
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 8,
+              "name": "'target_8'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 6,
+              "name": "'target_6'"
+            },
+            {
+              "collection": "buttons_grid",
+              "index": 4,
+              "name": "'target_4'"
+            }
+          ],
+          "directions": [
+            "counterclockwise",
+            "clockwise",
+            "clockwise",
+            "clockwise",
+            "clockwise",
+            "counterclockwise"
+          ],
+          "tasks": [
+            {
+              "task_index": 1,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 2,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 3,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 4,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 5,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 6,
+              "demonstration": true,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 9,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            },
+            {
+              "task_index": 10,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 11,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 12,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 8,
+                  "name": "'target_8'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 13,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 6,
+                  "name": "'target_6'"
+                }
+              ],
+              "expected_dir": "clockwise"
+            },
+            {
+              "task_index": 14,
+              "demonstration": false,
+              "targets": [
+                {
+                  "collection": "buttons_grid",
+                  "index": 4,
+                  "name": "'target_4'"
+                }
+              ],
+              "expected_dir": "counterclockwise"
+            }
+          ]
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [],
+          "rng_count": 19,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "VideoUnmaskSwap-easy": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 19,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 19,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 19,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 19,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "VideoUnmaskSwap-medium": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2",
+            "bin_3"
+          ],
+          "rng_count": 22,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2",
+            "bin_3"
+          ],
+          "rng_count": 22,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2",
+            "bin_3"
+          ],
+          "rng_count": 22,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2",
+            "bin_3"
+          ],
+          "rng_count": 22,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "VideoUnmaskSwap-hard": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "role": "pick up the container"
+          },
+          {
+            "task_index": 3,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          },
+          "2": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "resolved_at_step": 164,
+            "start_step": 164,
+            "end_step": 214
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2",
+            "bin_3"
+          ],
+          "rng_count": 22,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "role": "pick up the container"
+          },
+          {
+            "task_index": 3,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          },
+          "2": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "resolved_at_step": 164,
+            "start_step": 164,
+            "end_step": 214
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2",
+            "bin_3"
+          ],
+          "rng_count": 22,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "role": "pick up the container"
+          },
+          {
+            "task_index": 3,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          },
+          "2": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "resolved_at_step": 164,
+            "start_step": 164,
+            "end_step": 214
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2",
+            "bin_3"
+          ],
+          "rng_count": 22,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 1,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "role": "pick up the container"
+          },
+          {
+            "task_index": 3,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "role": "pick up the container"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "resolved_at_step": 64,
+            "start_step": 64,
+            "end_step": 114
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 1,
+              "name": "'bin_1'",
+              "color": "red"
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 2,
+              "name": "'bin_2'",
+              "color": "green"
+            },
+            "resolved_at_step": 114,
+            "start_step": 114,
+            "end_step": 164
+          },
+          "2": {
+            "a": {
+              "collection": "spawned_bins",
+              "index": 3,
+              "name": "'bin_3'",
+              "color": null
+            },
+            "b": {
+              "collection": "spawned_bins",
+              "index": 0,
+              "name": "'bin_0'",
+              "color": "blue"
+            },
+            "resolved_at_step": 164,
+            "start_step": 164,
+            "end_step": 214
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2",
+            "bin_3"
+          ],
+          "rng_count": 22,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "VideoRepick-easy": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 8,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 200,
+            "start_step": 200,
+            "end_step": 250
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "resolved_at_step": 250,
+            "start_step": 250,
+            "end_step": 300
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 20,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 8,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 200,
+            "start_step": 200,
+            "end_step": 250
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "resolved_at_step": 250,
+            "start_step": 250,
+            "end_step": 300
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 20,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 8,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 200,
+            "start_step": 200,
+            "end_step": 250
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "resolved_at_step": 250,
+            "start_step": 250,
+            "end_step": 300
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 20,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 6,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 8,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 200,
+            "start_step": 200,
+            "end_step": 250
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "resolved_at_step": 250,
+            "start_step": 250,
+            "end_step": 300
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "easy",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 20,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "VideoRepick-medium": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 7,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 9,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 200,
+            "start_step": 200,
+            "end_step": 250
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "resolved_at_step": 250,
+            "start_step": 250,
+            "end_step": 300
+          },
+          "2": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 0,
+              "name": "'bin_0'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 300,
+            "start_step": 300,
+            "end_step": 350
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 20,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 7,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 9,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 200,
+            "start_step": 200,
+            "end_step": 250
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "resolved_at_step": 250,
+            "start_step": 250,
+            "end_step": 300
+          },
+          "2": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 0,
+              "name": "'bin_0'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 300,
+            "start_step": 300,
+            "end_step": 350
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 20,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 7,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 9,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 200,
+            "start_step": 200,
+            "end_step": 250
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "resolved_at_step": 250,
+            "start_step": 250,
+            "end_step": 300
+          },
+          "2": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 0,
+              "name": "'bin_0'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 300,
+            "start_step": 300,
+            "end_step": 350
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 20,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 7,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 9,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {
+          "0": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 200,
+            "start_step": 200,
+            "end_step": 250
+          },
+          "1": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 1,
+              "name": "'bin_1'"
+            },
+            "resolved_at_step": 250,
+            "start_step": 250,
+            "end_step": 300
+          },
+          "2": {
+            "a": {
+              "collection": "spawned_cubes",
+              "index": 0,
+              "name": "'bin_0'"
+            },
+            "b": {
+              "collection": "spawned_cubes",
+              "index": 2,
+              "name": "'bin_2'"
+            },
+            "resolved_at_step": 300,
+            "start_step": 300,
+            "end_step": 350
+          }
+        },
+        "runtime_coverage": {
+          "difficulty": "medium",
+          "dynamic": null,
+          "scene_cube_names": [],
+          "scene_bin_names": [
+            "bin_0",
+            "bin_1",
+            "bin_2"
+          ],
+          "rng_count": 20,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  },
+  "VideoRepick-hard": {
+    "paths": {
+      "A1": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 3,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 5,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_green_2",
+            "cube_green_3",
+            "cube_green_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 131,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "A2": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 3,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 5,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_green_2",
+            "cube_green_3",
+            "cube_green_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 131,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "B": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 3,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 5,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_green_2",
+            "cube_green_3",
+            "cube_green_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 131,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      },
+      "C": {
+        "pickup_targets": [
+          {
+            "task_index": 0,
+            "demonstration": true,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 3,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          },
+          {
+            "task_index": 5,
+            "demonstration": false,
+            "target": {
+              "collection": "spawned_cubes",
+              "index": 8,
+              "name": "'cube_red_2'"
+            },
+            "role": "pick up the cube"
+          }
+        ],
+        "route": {
+          "nodes": [],
+          "directions": [],
+          "tasks": []
+        },
+        "actual_swaps": {},
+        "runtime_coverage": {
+          "difficulty": "hard",
+          "dynamic": null,
+          "scene_cube_names": [
+            "cube_blue_0",
+            "cube_blue_1",
+            "cube_blue_2",
+            "cube_blue_3",
+            "cube_blue_4",
+            "cube_green_0",
+            "cube_green_1",
+            "cube_green_2",
+            "cube_green_3",
+            "cube_green_4",
+            "cube_red_0",
+            "cube_red_1",
+            "cube_red_2",
+            "cube_red_3",
+            "cube_red_4"
+          ],
+          "scene_bin_names": [],
+          "rng_count": 131,
+          "rng_sources": [
+            "generator"
+          ],
+          "both_rng_states_recorded": true
+        }
+      }
+    },
+    "passed": true
+  }
+}

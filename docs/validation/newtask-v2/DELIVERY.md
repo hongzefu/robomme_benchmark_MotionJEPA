@@ -1,5 +1,9 @@
 # newtask-v2 交付清单（方案第六步）
 
+本页保留此前 schema 2 脚本平铺与清理轮次的历史记录。schema 3 对象／动作冻结和
+完整重跑的最新结果见 [20260909-actions-v3](20260909-actions-v3/README.md)，
+不要将本页历史待验项当作本轮状态。
+
 对应 [NEWTASK_V2_PLAN.md](../../../NEWTASK_V2_PLAN.md) 第八节第六步要求的交付内容。
 分支 `newtask-v2`，从固定基线 `94449db0a068a6b454b55a13ebd48f0394d89cc8` 重建。
 
