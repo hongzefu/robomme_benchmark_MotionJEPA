@@ -689,6 +689,49 @@ def _cross_check(
         raise SamplingConfigError(
             f"spawn_random_bin 的 yaw_scale_deg 默认值 {default_yaw} 与快照 {snapshot_yaw} 不一致"
         )
+    # 新字段必须真正接到原调用点，不能只存在于 NATIVE_SAMPLING 声明中。
+    for task in ("VideoUnmaskSwap", "VideoRepick", "RouteStick"):
+        declared = _module_literal(trees[task], "NATIVE_SAMPLING")["parameters"]
+        key = "walk" if task == "RouteStick" else "object_selection"
+        if key not in declared:
+            # schema 2 历史源码的内联值已由 _complete_action_parameters 独立提取。
+            continue
+        cls = _class_def(trees[task], task)
+        scene = _func_def(cls, "_load_scene")
+        if task == "RouteStick":
+            expressions = (
+                'button_indices = list(walk_cfg["node_indices"])',
+                'generate_dynamic_walk(button_indices, steps=steps, allow_backtracking=allow_backtracking, generator=generator, walk_config=walk_cfg)',
+                'torch.rand(*direction_cfg["shape"], generator=generator).item() < direction_cfg["threshold"]',
+            )
+            walk = _func_def(trees["route"], "generate_dynamic_walk")
+            if _param_default(walk, "walk_config", "generate_dynamic_walk") is not None:
+                raise SamplingConfigError("generate_dynamic_walk.walk_config 默认值必须为 None")
+            _require_ast(walk, 'neighbor_order = walk_config["neighbor_order"]', task)
+        elif task == "VideoUnmaskSwap":
+            expressions = (
+                'min(selection_cfg["hidden_bin_count_max"], len(self.spawned_bins))',
+                'torch.randperm(selection_cfg["hidden_bin_permutation_size"], generator=generator)',
+                'torch.randperm(len(selected_bin_indices), generator=generator)[:selection_cfg["swap_seed_target_count"]]',
+                'pickup_indices = selection_cfg["pickup_selected_indices"]',
+                'self.selected_bins[pickup_indices[0]]', 'self.selected_bins[pickup_indices[1]]',
+            )
+        else:
+            expressions = (
+                'torch.randint(selection_cfg["hard_target_low"], len(self.spawned_cubes), (1,), generator=self.generator)',
+                'torch.randperm(len(self.spawned_cubes), generator=self.generator)[:selection_cfg["easy_medium_target_count"]]',
+                'torch.randperm(len(remaining_indices), generator=self.generator)[:selection_cfg["swap_remaining_count"]]',
+            )
+        for expression in expressions:
+            _require_ast(scene, expression, f"{task} 新字段消费位置")
+        if task != "RouteStick":
+            step = _func_def(cls, "step")
+            for expression in (
+                'axes = self._sampling["parameters"]["swap_selection"]["partner"]["position_axes"]',
+                'np.linalg.norm(reference_pos[axes] - candidate_pos[axes])',
+                'dist < closest_dist', 'pair_idx2 is None and pair_idx1 is not None',
+            ):
+                _require_ast(step, expression, f"{task} 交换搭档规则")
 
 
 def _extract_legacy(trees: Mapping[str, ast.Module]) -> tuple[dict[str, Any], dict[str, Any]]:

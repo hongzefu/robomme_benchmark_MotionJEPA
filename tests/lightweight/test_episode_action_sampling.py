@@ -76,6 +76,18 @@ def test_unrecognized_historical_rule_fails_instead_of_using_current_defaults():
         generator._historical_action_parameters("VideoRepick", tree, source_tree("utils/route", baseline=True))
 
 
+def test_cross_check_rejects_declared_but_unused_action_configuration(monkeypatch):
+    original = generator._read_source
+    def changed(root, path, ref=None):
+        source = original(root, path, ref)
+        if path.endswith("VideoRepick.py"):
+            source = source.replace(b'selection_cfg["hard_target_low"]', b'0')
+        return source
+    monkeypatch.setattr(generator, "_read_source", changed)
+    with pytest.raises(generator.SamplingConfigError, match="新字段消费位置"):
+        generator.extract_native_sampling(REPO_ROOT)
+
+
 def walk_function(baseline=False):
     fn = generator._func_def(source_tree("utils/route", baseline), "generate_dynamic_walk")
     namespace = {"torch": torch, "logger": SimpleNamespace(debug=lambda *args: None)}
