@@ -117,6 +117,34 @@ def h5_fingerprint(path: str | Path) -> dict[str, Any]:
     return {"file": source.name, "entries": entries}
 
 
+def h5_digest(fingerprint: dict[str, Any]) -> dict[str, Any]:
+    """HDF5 指纹的入库形态：整份总散列 + 逐 timestep（及 setup）聚合散列。
+
+    能力边界：能判断整份是否相同并定位到「哪一帧」，精确到字段要回 artifacts/
+    用同一份完整指纹或原 HDF5 展开；本形态不能还原画面、也不能算像素差幅度。
+    """
+    entries = fingerprint["entries"]
+    groups: dict[str, list[str]] = {}
+    for path in sorted(entries):
+        parts = path.split("/")
+        key = "/".join(parts[:2]) if len(parts) >= 2 else parts[0]
+        groups.setdefault(key, []).append(
+            f"{path}|{json.dumps(entries[path], sort_keys=True, ensure_ascii=False)}"
+        )
+    return {
+        "file": fingerprint["file"],
+        "object_count": len(entries),
+        "sha256": hashlib.sha256(
+            json.dumps(entries, sort_keys=True, ensure_ascii=False).encode("utf-8")
+        ).hexdigest(),
+        "group_count": len(groups),
+        "group_sha256": {
+            key: hashlib.sha256("".join(value).encode("utf-8")).hexdigest()[:HASH_WIDTH]
+            for key, value in groups.items()
+        },
+    }
+
+
 def _first_element_difference(left: Any, right: Any) -> str | None:
     """定位第一个不同的元素；可量化字段附最大绝对差，仅作差异描述，不参与判定。"""
     left_array = np.asarray(left)
@@ -252,14 +280,36 @@ EVIDENCE_SECTIONS = (
 )
 
 
-def load_evidence(path: str | Path) -> dict[str, Any]:
-    """读取观察器写出的单局证据（.json.gz）。"""
+def load_evidence(
+    path: str | Path, difficulty: str | None = None, index: int | None = None
+) -> dict[str, Any]:
+    """读取观察器写出的单局证据（.json.gz）。
+
+    证据目录按 (task, seed) 切分，而 seed 不含难度——同一 episode 跑三个难度会落在同一个
+    目录里，因此给了 ``difficulty`` 时按它消歧；仍不唯一才报错，不静默取第一份。
+    """
     source = Path(path)
     if source.is_dir():
         candidates = sorted(source.glob("pid*.json.gz"))
-        if len(candidates) != 1:
-            raise ParityError(f"{source}: 期望恰好一份 pid*.json.gz，实际 {len(candidates)} 份")
-        source = candidates[0]
+        if len(candidates) > 1 and difficulty is not None:
+            matched = []
+            for candidate in candidates:
+                with gzip.open(candidate, "rt", encoding="utf-8") as handle:
+                    if json.load(handle).get("difficulty") == difficulty:
+                        matched.append(candidate)
+            candidates = matched
+        if index is not None:
+            # ⑤ 的同一 worker 会把同一个用例跑两次（甲→乙→甲），文件名带进程内序号，
+            # 这时必须按出现次序显式选，不能靠难度消歧。
+            if not 0 <= index < len(candidates):
+                raise ParityError(f"{source}: 只有 {len(candidates)} 份证据，取不到第 {index} 份")
+            source = candidates[index]
+        else:
+            if len(candidates) != 1:
+                raise ParityError(
+                    f"{source}: 期望恰好一份证据（难度={difficulty}），实际 {len(candidates)} 份"
+                )
+            source = candidates[0]
     if not source.is_file():
         raise ParityError(f"缺少证据文件：{source}")
     with gzip.open(source, "rt", encoding="utf-8") as handle:
@@ -268,10 +318,29 @@ def load_evidence(path: str | Path) -> dict[str, Any]:
     return payload
 
 
+# 逐条散列全量入库会让证据包到几十 MB；小段保留逐条链，大段按块散列。
+# 能力边界：块级只能把首个分歧缩到一个块内，精确到条要回 artifacts/ 的全量证据。
+FULL_CHAIN_LIMIT = 512
+CHAIN_BLOCK = 64
+HASH_WIDTH = 16
+
+
 def _record_hash(record: Any) -> str:
     return hashlib.sha256(
         json.dumps(record, ensure_ascii=False, sort_keys=True).encode("utf-8")
     ).hexdigest()
+
+
+def _chain(hashes: list[str]) -> dict[str, Any]:
+    """逐条散列链；超过阈值就按块聚合，块大小写进结果里，便于换算下标区间。"""
+    short = [item[:HASH_WIDTH] for item in hashes]
+    if len(short) <= FULL_CHAIN_LIMIT:
+        return {"granularity": "record", "block_size": 1, "chain": short}
+    blocks = [
+        hashlib.sha256("".join(short[start : start + CHAIN_BLOCK]).encode("utf-8")).hexdigest()[:HASH_WIDTH]
+        for start in range(0, len(short), CHAIN_BLOCK)
+    ]
+    return {"granularity": "block", "block_size": CHAIN_BLOCK, "chain": blocks}
 
 
 def evidence_digest(evidence: dict[str, Any]) -> dict[str, Any]:
@@ -287,10 +356,13 @@ def evidence_digest(evidence: dict[str, Any]) -> dict[str, Any]:
     for name, _title in EVIDENCE_SECTIONS:
         records = evidence.get(name) or []
         hashes = [_record_hash(item) for item in records]
+        chain = _chain(hashes)
         digest["sections"][name] = {
             "count": len(records),
             "sha256": hashlib.sha256("".join(hashes).encode("utf-8")).hexdigest(),
-            "record_sha256": hashes,
+            "granularity": chain["granularity"],
+            "block_size": chain["block_size"],
+            "record_sha256": chain["chain"],
         }
     initial = evidence.get("initial_obs")
     digest["initial_obs_sha256"] = _record_hash(initial) if initial is not None else None
@@ -450,10 +522,12 @@ def pack_run(
                         json.dumps(fingerprint["entries"], sort_keys=True).encode("utf-8")
                     ).hexdigest(),
                 }
-                entry["h5_fingerprint_ref"] = _store(evidence_dir, store, f"{cell}.{label}.h5", fingerprint)
+                entry["h5_fingerprint_ref"] = _store(
+                    evidence_dir, store, f"{cell}.{label}.h5", h5_digest(fingerprint)
+                )
             episode_evidence = evidence_root / label / f"{case['task']}_seed{case['seed']}"
             if episode_evidence.is_dir() and list(episode_evidence.glob("pid*.json.gz")):
-                payload = load_evidence(episode_evidence)
+                payload = load_evidence(episode_evidence, case.get("difficulty"))
                 payloads[label] = payload
                 digest = evidence_digest(payload)
                 entry["rrt_fallback_count"] = payload.get("rrt_fallback_count")
@@ -551,6 +625,65 @@ def _store(evidence_dir: Path, store: dict[str, str], name: str, payload: dict[s
     store[name] = digest
     return digest
 
+
+# ── ⑤ 连续 worker 隔离的比较 ──────────────────────────────────────────────────
+
+# 「甲 → 乙 → 甲」三个槽位，各自对应哪一格的独立运行
+ISOLATION_SLOTS = (
+    ("first-a", "BinFill-easy-dynamicTrue", "BinFill", 4000, "easy", 0),
+    ("second-b", "VideoRepick-easy", "VideoRepick", 9000, "easy", 0),
+    ("first-again", "BinFill-easy-dynamicTrue", "BinFill", 4000, "easy", 1),
+)
+
+
+def compare_worker_isolation(
+    run_root: Path, evidence_root: Path, label: str, independent_label: str
+) -> dict[str, Any]:
+    """⑤.3：连续 worker 里的每一局，与对应的独立运行逐项比较。
+
+    覆盖不传配置（``S-default`` ↔ 独立 ``B``）与显式原值配置（``S-config`` ↔ 独立 ``C``）两路。
+    """
+    isolation_root = run_root / "worker-isolation" / label
+    report: dict[str, Any] = {"label": label, "independent_label": independent_label, "slots": {}}
+    for slot, cell, task, seed, difficulty, occurrence in ISOLATION_SLOTS:
+        entry: dict[str, Any] = {"cell": cell, "task": task, "seed": seed, "difficulty": difficulty}
+        continuous_h5 = _single_h5(isolation_root / slot)
+        independent_h5 = _single_h5(_episode_dir(run_root, cell, independent_label))
+        if continuous_h5 is None or independent_h5 is None:
+            entry["h5"] = {"passed": None, "note": "一侧没有有效 HDF5"}
+        else:
+            differences = compare_h5(independent_h5, continuous_h5)
+            entry["h5"] = {
+                "passed": not differences,
+                "difference_count": len(differences),
+                "differences": differences[:20],
+            }
+        try:
+            continuous = load_evidence(
+                evidence_root / label / f"{task}_seed{seed}", index=occurrence
+            )
+            independent = load_evidence(
+                evidence_root / independent_label / f"{task}_seed{seed}", difficulty
+            )
+        except ParityError as exc:
+            entry["evidence"] = {"passed": None, "note": str(exc)}
+        else:
+            result = compare_evidence(independent, continuous)
+            entry["evidence"] = {
+                "passed": result["passed"],
+                "sections": {
+                    name: section["passed"] for name, section in result["sections"].items()
+                },
+                "initial_obs": result["initial_obs"]["passed"],
+                "rrt_fallback_count": result["rrt_fallback_count"],
+            }
+        report["slots"][slot] = entry
+    report["passed"] = all(
+        item["h5"].get("passed") and item["evidence"].get("passed")
+        for item in report["slots"].values()
+    )
+    return report
+
 def _main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="newtask-v2 三路对拍的离线比较")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -570,7 +703,34 @@ def _main(argv: Sequence[str] | None = None) -> int:
     pack.add_argument("--evidence-root", required=True, help="artifacts/parity-evidence/<run-id>")
     pack.add_argument("--cases", required=True)
     pack.add_argument("--output", required=True)
+    isolation = sub.add_parser("isolation", help="⑤：连续 worker 的每一局与对应独立运行比较")
+    isolation.add_argument("--run-root", required=True)
+    isolation.add_argument("--evidence-root", required=True)
+    isolation.add_argument("--output", default=None)
     args = parser.parse_args(argv)
+
+    if args.command == "isolation":
+        reports = [
+            compare_worker_isolation(
+                Path(args.run_root).resolve(), Path(args.evidence_root).resolve(), label, independent
+            )
+            for label, independent in (("S-default", "B"), ("S-config", "C"))
+        ]
+        if args.output:
+            out = Path(args.output)
+            out.mkdir(parents=True, exist_ok=True)
+            (out / "worker_isolation.json").write_text(
+                json.dumps(reports, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+            )
+        for report in reports:
+            print(f"{report['label']} ↔ 独立 {report['independent_label']}: passed={report['passed']}")
+            for slot, item in report["slots"].items():
+                print(
+                    f"  {slot} ({item['cell']}): h5={item['h5'].get('passed')} "
+                    f"evidence={item['evidence'].get('passed')} "
+                    f"sections={item['evidence'].get('sections')}"
+                )
+        return 0 if all(report["passed"] for report in reports) else 1
 
     if args.command == "pack":
         cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))["cases"]

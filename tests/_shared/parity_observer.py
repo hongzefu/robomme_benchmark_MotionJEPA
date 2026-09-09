@@ -57,6 +57,7 @@ _state: dict[str, Any] = {
     "max_rng": 400000,
     "episode": None,
     "episodes": [],
+    "sequence": 0,
     "lock": threading.RLock(),
 }
 
@@ -111,6 +112,8 @@ def _digest(payload: bytes) -> str:
 
 
 _ADDRESS_RE = re.compile(r"0x[0-9a-fA-F]+")
+# 连续 8 位以上数字只可能是 id()／内存地址；cube_red_10 这类真实序号不会被误伤
+_OBJECT_ID_RE = re.compile(r"\d{8,}")
 
 
 def _stable_repr(value: Any) -> str:
@@ -210,7 +213,11 @@ def _flush_current() -> None:
         return
     directory = Path(root) / str(_state["label"]) / f"{episode.task}_seed{episode.seed}"
     directory.mkdir(parents=True, exist_ok=True)
-    target = directory / f"pid{os.getpid()}.json.gz"
+    # 同一进程可能连续跑多局（⑤ 的甲→乙→甲），文件名必须带序号，否则后一局覆盖前一局；
+    # 同一 (task, seed) 还可能因难度不同而多次出现，难度写在 payload 里供读取端消歧。
+    sequence = _state["sequence"]
+    _state["sequence"] = sequence + 1
+    target = directory / f"pid{os.getpid()}-{sequence:02d}.json.gz"
     temporary = target.with_name(f".{target.name}.tmp")
     with gzip.open(temporary, "wt", encoding="utf-8") as handle:
         json.dump(episode.payload(), handle, ensure_ascii=False, sort_keys=False)
@@ -313,8 +320,14 @@ def _actor_snapshot(env: Any) -> dict[str, Any]:
     actors = getattr(scene, "actors", None)
     if not isinstance(actors, dict):
         return snapshot
+    aliased: dict[str, list[dict[str, Any]]] = {}
     for name in sorted(actors, key=str):
         actor = actors[name]
+        # RouteStick 的高亮盘名字里直接嵌了 id(obj)（statechange.py:248,466），
+        # 跨进程必然不同：这类 actor 的**身份**本就不可跨进程观测，抹掉 id 后还会同名相撞，
+        # 于是把同一归一名下的若干个按内容排序成多重集合比较，位置与状态本身照常逐项比。
+        raw_name = str(name)
+        name = _OBJECT_ID_RE.sub("<ID>", raw_name)
         entry: dict[str, Any] = {}
         try:
             pose = actor.pose
@@ -327,7 +340,14 @@ def _actor_snapshot(env: Any) -> dict[str, Any]:
                 entry[attribute] = _summarize(getattr(actor, attribute))
             except Exception:
                 pass
-        snapshot[str(name)] = entry
+        if name != raw_name:
+            aliased.setdefault(name, []).append(entry)
+        else:
+            snapshot[name] = entry
+    for name, entries in aliased.items():
+        snapshot[name] = sorted(
+            entries, key=lambda item: json.dumps(item, ensure_ascii=False, sort_keys=True)
+        )
     return snapshot
 
 

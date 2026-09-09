@@ -1,0 +1,2559 @@
+{
+  "run": "20260908T2255Z-parity15-3804e87",
+  "cells": {
+    "BinFill-easy-dynamicTrue": {
+      "case": {
+        "task": "BinFill",
+        "episode": 0,
+        "difficulty": "easy",
+        "seed": 4000,
+        "branch": "dynamic=True"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-easy-dynamicTrue/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 28.4,
+          "h5": {
+            "file": "BinFill_ep0_seed4000.h5",
+            "object_count": 13758,
+            "sha256": "4c7a0e58428459ef20a1eaea7308c15574245eb74a4ed1f7d8d02a51e0b6acf8"
+          },
+          "h5_fingerprint_ref": "aba7bf59cd19cfba",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 44,
+            "boundaries": 4,
+            "events": 6624,
+            "steps": 1100
+          },
+          "evidence_ref": "878c97b53f2ba3f1"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-easy-dynamicTrue/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 28.2,
+          "h5": {
+            "file": "BinFill_ep0_seed4000.h5",
+            "object_count": 13758,
+            "sha256": "4c7a0e58428459ef20a1eaea7308c15574245eb74a4ed1f7d8d02a51e0b6acf8"
+          },
+          "h5_fingerprint_ref": "aba7bf59cd19cfba",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 44,
+            "boundaries": 4,
+            "events": 6624,
+            "steps": 1100
+          },
+          "evidence_ref": "878c97b53f2ba3f1"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-easy-dynamicTrue/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 28.2,
+          "h5": {
+            "file": "BinFill_ep0_seed4000.h5",
+            "object_count": 13758,
+            "sha256": "4c7a0e58428459ef20a1eaea7308c15574245eb74a4ed1f7d8d02a51e0b6acf8"
+          },
+          "h5_fingerprint_ref": "aba7bf59cd19cfba",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 44,
+            "boundaries": 4,
+            "events": 6624,
+            "steps": 1100
+          },
+          "evidence_ref": "878c97b53f2ba3f1"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-easy-dynamicTrue/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 28.3,
+          "h5": {
+            "file": "BinFill_ep0_seed4000.h5",
+            "object_count": 13758,
+            "sha256": "4c7a0e58428459ef20a1eaea7308c15574245eb74a4ed1f7d8d02a51e0b6acf8"
+          },
+          "h5_fingerprint_ref": "aba7bf59cd19cfba",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 44,
+            "boundaries": 4,
+            "events": 6624,
+            "steps": 1100
+          },
+          "evidence_ref": "878c97b53f2ba3f1"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "BinFill-medium-dynamicTrue": {
+      "case": {
+        "task": "BinFill",
+        "episode": 2,
+        "difficulty": "medium",
+        "seed": 4200,
+        "branch": "dynamic=True"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-medium-dynamicTrue/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 106.6,
+          "h5": {
+            "file": "BinFill_ep2_seed4200.h5",
+            "object_count": 22083,
+            "sha256": "d39c20eb904647264b57c2b23f3f4c0a15284002133d7900d1283c7f83d99cb8"
+          },
+          "h5_fingerprint_ref": "0bceea6da8e45374",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 71,
+            "boundaries": 4,
+            "events": 14168,
+            "steps": 1766
+          },
+          "evidence_ref": "07f58f86734e01ab"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-medium-dynamicTrue/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 44.6,
+          "h5": {
+            "file": "BinFill_ep2_seed4200.h5",
+            "object_count": 22083,
+            "sha256": "d39c20eb904647264b57c2b23f3f4c0a15284002133d7900d1283c7f83d99cb8"
+          },
+          "h5_fingerprint_ref": "0bceea6da8e45374",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 71,
+            "boundaries": 4,
+            "events": 14168,
+            "steps": 1766
+          },
+          "evidence_ref": "07f58f86734e01ab"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-medium-dynamicTrue/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 44.7,
+          "h5": {
+            "file": "BinFill_ep2_seed4200.h5",
+            "object_count": 22083,
+            "sha256": "d39c20eb904647264b57c2b23f3f4c0a15284002133d7900d1283c7f83d99cb8"
+          },
+          "h5_fingerprint_ref": "0bceea6da8e45374",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 71,
+            "boundaries": 4,
+            "events": 14168,
+            "steps": 1766
+          },
+          "evidence_ref": "07f58f86734e01ab"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-medium-dynamicTrue/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 45.7,
+          "h5": {
+            "file": "BinFill_ep2_seed4200.h5",
+            "object_count": 22083,
+            "sha256": "d39c20eb904647264b57c2b23f3f4c0a15284002133d7900d1283c7f83d99cb8"
+          },
+          "h5_fingerprint_ref": "0bceea6da8e45374",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 71,
+            "boundaries": 4,
+            "events": 14168,
+            "steps": 1766
+          },
+          "evidence_ref": "07f58f86734e01ab"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "BinFill-hard-dynamicTrue": {
+      "case": {
+        "task": "BinFill",
+        "episode": 0,
+        "difficulty": "hard",
+        "seed": 4000,
+        "branch": "dynamic=True"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-hard-dynamicTrue/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 48.5,
+          "h5": {
+            "file": "BinFill_ep0_seed4000.h5",
+            "object_count": 23583,
+            "sha256": "e95557f903339aa3ca6569e12292849a679b24fd9f519ed1f8087a50ac4ae8a0"
+          },
+          "h5_fingerprint_ref": "002d34297c7c6e46",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 91,
+            "boundaries": 4,
+            "events": 17014,
+            "steps": 1886
+          },
+          "evidence_ref": "cb6467b2cb38e3d6"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-hard-dynamicTrue/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 48.8,
+          "h5": {
+            "file": "BinFill_ep0_seed4000.h5",
+            "object_count": 23583,
+            "sha256": "e95557f903339aa3ca6569e12292849a679b24fd9f519ed1f8087a50ac4ae8a0"
+          },
+          "h5_fingerprint_ref": "002d34297c7c6e46",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 91,
+            "boundaries": 4,
+            "events": 17014,
+            "steps": 1886
+          },
+          "evidence_ref": "cb6467b2cb38e3d6"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-hard-dynamicTrue/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 48.7,
+          "h5": {
+            "file": "BinFill_ep0_seed4000.h5",
+            "object_count": 23583,
+            "sha256": "e95557f903339aa3ca6569e12292849a679b24fd9f519ed1f8087a50ac4ae8a0"
+          },
+          "h5_fingerprint_ref": "002d34297c7c6e46",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 91,
+            "boundaries": 4,
+            "events": 17014,
+            "steps": 1886
+          },
+          "evidence_ref": "cb6467b2cb38e3d6"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-hard-dynamicTrue/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 50.1,
+          "h5": {
+            "file": "BinFill_ep0_seed4000.h5",
+            "object_count": 23583,
+            "sha256": "e95557f903339aa3ca6569e12292849a679b24fd9f519ed1f8087a50ac4ae8a0"
+          },
+          "h5_fingerprint_ref": "002d34297c7c6e46",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 91,
+            "boundaries": 4,
+            "events": 17014,
+            "steps": 1886
+          },
+          "evidence_ref": "cb6467b2cb38e3d6"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "BinFill-easy-dynamicFalse": {
+      "case": {
+        "task": "BinFill",
+        "episode": 1,
+        "difficulty": "easy",
+        "seed": 4100,
+        "branch": "dynamic=False"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-easy-dynamicFalse/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 20.8,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 9158,
+            "sha256": "7c517a2593d2e3fd4ed350944f00caa6335c151032473f2f4edd1d5018e18b1c"
+          },
+          "h5_fingerprint_ref": "d94a2e7c7ccfda40",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 41,
+            "boundaries": 4,
+            "events": 748,
+            "steps": 732
+          },
+          "evidence_ref": "47cfa1de88bad381"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-easy-dynamicFalse/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 20.9,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 9158,
+            "sha256": "7c517a2593d2e3fd4ed350944f00caa6335c151032473f2f4edd1d5018e18b1c"
+          },
+          "h5_fingerprint_ref": "d94a2e7c7ccfda40",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 41,
+            "boundaries": 4,
+            "events": 748,
+            "steps": 732
+          },
+          "evidence_ref": "47cfa1de88bad381"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-easy-dynamicFalse/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 20.8,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 9158,
+            "sha256": "7c517a2593d2e3fd4ed350944f00caa6335c151032473f2f4edd1d5018e18b1c"
+          },
+          "h5_fingerprint_ref": "d94a2e7c7ccfda40",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 41,
+            "boundaries": 4,
+            "events": 748,
+            "steps": 732
+          },
+          "evidence_ref": "47cfa1de88bad381"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-easy-dynamicFalse/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 20.9,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 9158,
+            "sha256": "7c517a2593d2e3fd4ed350944f00caa6335c151032473f2f4edd1d5018e18b1c"
+          },
+          "h5_fingerprint_ref": "d94a2e7c7ccfda40",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 41,
+            "boundaries": 4,
+            "events": 748,
+            "steps": 732
+          },
+          "evidence_ref": "47cfa1de88bad381"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "BinFill-medium-dynamicFalse": {
+      "case": {
+        "task": "BinFill",
+        "episode": 1,
+        "difficulty": "medium",
+        "seed": 4100,
+        "branch": "dynamic=False"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-medium-dynamicFalse/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 30.3,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 13733,
+            "sha256": "cb0640575503281e7472c0334809192b993ba081cadaadeb1407f5aafdda9305"
+          },
+          "h5_fingerprint_ref": "85db5d77550b700d",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 83,
+            "boundaries": 4,
+            "events": 1122,
+            "steps": 1098
+          },
+          "evidence_ref": "2c7f2222e9968853"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-medium-dynamicFalse/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 30.3,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 13733,
+            "sha256": "cb0640575503281e7472c0334809192b993ba081cadaadeb1407f5aafdda9305"
+          },
+          "h5_fingerprint_ref": "85db5d77550b700d",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 83,
+            "boundaries": 4,
+            "events": 1122,
+            "steps": 1098
+          },
+          "evidence_ref": "2c7f2222e9968853"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-medium-dynamicFalse/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 29.6,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 13733,
+            "sha256": "cb0640575503281e7472c0334809192b993ba081cadaadeb1407f5aafdda9305"
+          },
+          "h5_fingerprint_ref": "85db5d77550b700d",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 83,
+            "boundaries": 4,
+            "events": 1122,
+            "steps": 1098
+          },
+          "evidence_ref": "2c7f2222e9968853"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-medium-dynamicFalse/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 29.7,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 13733,
+            "sha256": "cb0640575503281e7472c0334809192b993ba081cadaadeb1407f5aafdda9305"
+          },
+          "h5_fingerprint_ref": "85db5d77550b700d",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 83,
+            "boundaries": 4,
+            "events": 1122,
+            "steps": 1098
+          },
+          "evidence_ref": "2c7f2222e9968853"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "BinFill-hard-dynamicFalse": {
+      "case": {
+        "task": "BinFill",
+        "episode": 1,
+        "difficulty": "hard",
+        "seed": 4100,
+        "branch": "dynamic=False"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-hard-dynamicFalse/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 39.6,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 18558,
+            "sha256": "11f6afdd22e3bdb096aeefd403414ddaf50b19c449d0d81702337a43916756d2"
+          },
+          "h5_fingerprint_ref": "36c794c6fd24d310",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 67,
+            "boundaries": 4,
+            "events": 1516,
+            "steps": 1484
+          },
+          "evidence_ref": "9fd966815348f123"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-hard-dynamicFalse/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 39.7,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 18558,
+            "sha256": "11f6afdd22e3bdb096aeefd403414ddaf50b19c449d0d81702337a43916756d2"
+          },
+          "h5_fingerprint_ref": "36c794c6fd24d310",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 67,
+            "boundaries": 4,
+            "events": 1516,
+            "steps": 1484
+          },
+          "evidence_ref": "9fd966815348f123"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-hard-dynamicFalse/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 39.8,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 18558,
+            "sha256": "11f6afdd22e3bdb096aeefd403414ddaf50b19c449d0d81702337a43916756d2"
+          },
+          "h5_fingerprint_ref": "36c794c6fd24d310",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 67,
+            "boundaries": 4,
+            "events": 1516,
+            "steps": 1484
+          },
+          "evidence_ref": "9fd966815348f123"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/BinFill-hard-dynamicFalse/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 39.8,
+          "h5": {
+            "file": "BinFill_ep1_seed4100.h5",
+            "object_count": 18558,
+            "sha256": "11f6afdd22e3bdb096aeefd403414ddaf50b19c449d0d81702337a43916756d2"
+          },
+          "h5_fingerprint_ref": "36c794c6fd24d310",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 67,
+            "boundaries": 4,
+            "events": 1516,
+            "steps": 1484
+          },
+          "evidence_ref": "9fd966815348f123"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "RouteStick-easy": {
+      "case": {
+        "task": "RouteStick",
+        "episode": 0,
+        "difficulty": "easy",
+        "seed": 16000,
+        "branch": ""
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-easy/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 30.1,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 5008,
+            "sha256": "faa339d18d0406cb31e55bde62b69b93b028851ee62088dd9153453d273ba3d0"
+          },
+          "h5_fingerprint_ref": "d0a1503f9002799c",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 11,
+            "boundaries": 4,
+            "events": 3410,
+            "steps": 1028
+          },
+          "evidence_ref": "205a7024d82705cd"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-easy/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 30.0,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 5008,
+            "sha256": "faa339d18d0406cb31e55bde62b69b93b028851ee62088dd9153453d273ba3d0"
+          },
+          "h5_fingerprint_ref": "d0a1503f9002799c",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 11,
+            "boundaries": 4,
+            "events": 3410,
+            "steps": 1028
+          },
+          "evidence_ref": "205a7024d82705cd"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-easy/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 29.9,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 5008,
+            "sha256": "faa339d18d0406cb31e55bde62b69b93b028851ee62088dd9153453d273ba3d0"
+          },
+          "h5_fingerprint_ref": "d0a1503f9002799c",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 11,
+            "boundaries": 4,
+            "events": 3410,
+            "steps": 1028
+          },
+          "evidence_ref": "205a7024d82705cd"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-easy/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 30.1,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 5008,
+            "sha256": "faa339d18d0406cb31e55bde62b69b93b028851ee62088dd9153453d273ba3d0"
+          },
+          "h5_fingerprint_ref": "d0a1503f9002799c",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 11,
+            "boundaries": 4,
+            "events": 3410,
+            "steps": 1028
+          },
+          "evidence_ref": "205a7024d82705cd"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "RouteStick-medium": {
+      "case": {
+        "task": "RouteStick",
+        "episode": 0,
+        "difficulty": "medium",
+        "seed": 16000,
+        "branch": ""
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-medium/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 58.0,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 10008,
+            "sha256": "0a7e1899149ce8f90a5a76b77bec330801a8949c1517b587a371283425522c85"
+          },
+          "h5_fingerprint_ref": "1ce6b1204b1cc5e4",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 15,
+            "boundaries": 4,
+            "events": 6874,
+            "steps": 1428
+          },
+          "evidence_ref": "ca4856bc2559d4bb"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-medium/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 58.4,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 10008,
+            "sha256": "0a7e1899149ce8f90a5a76b77bec330801a8949c1517b587a371283425522c85"
+          },
+          "h5_fingerprint_ref": "1ce6b1204b1cc5e4",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 15,
+            "boundaries": 4,
+            "events": 6874,
+            "steps": 1428
+          },
+          "evidence_ref": "ca4856bc2559d4bb"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-medium/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 57.9,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 10008,
+            "sha256": "0a7e1899149ce8f90a5a76b77bec330801a8949c1517b587a371283425522c85"
+          },
+          "h5_fingerprint_ref": "1ce6b1204b1cc5e4",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 15,
+            "boundaries": 4,
+            "events": 6874,
+            "steps": 1428
+          },
+          "evidence_ref": "ca4856bc2559d4bb"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-medium/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 64.1,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 10008,
+            "sha256": "0a7e1899149ce8f90a5a76b77bec330801a8949c1517b587a371283425522c85"
+          },
+          "h5_fingerprint_ref": "1ce6b1204b1cc5e4",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 15,
+            "boundaries": 4,
+            "events": 6874,
+            "steps": 1428
+          },
+          "evidence_ref": "ca4856bc2559d4bb"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "RouteStick-hard": {
+      "case": {
+        "task": "RouteStick",
+        "episode": 0,
+        "difficulty": "hard",
+        "seed": 16000,
+        "branch": "backtrack=True"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-hard/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 179.6,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 15008,
+            "sha256": "de119b6017f00486c9580c3a21cd9a486edbbe919321dbd103f79fdd06cc1324"
+          },
+          "h5_fingerprint_ref": "df397519ad592e49",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 19,
+            "boundaries": 4,
+            "events": 6242,
+            "steps": 1828
+          },
+          "evidence_ref": "30218d5494fdb89e"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-hard/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 181.9,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 15008,
+            "sha256": "de119b6017f00486c9580c3a21cd9a486edbbe919321dbd103f79fdd06cc1324"
+          },
+          "h5_fingerprint_ref": "df397519ad592e49",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 19,
+            "boundaries": 4,
+            "events": 6242,
+            "steps": 1828
+          },
+          "evidence_ref": "30218d5494fdb89e"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-hard/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 178.9,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 15008,
+            "sha256": "de119b6017f00486c9580c3a21cd9a486edbbe919321dbd103f79fdd06cc1324"
+          },
+          "h5_fingerprint_ref": "df397519ad592e49",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 19,
+            "boundaries": 4,
+            "events": 6242,
+            "steps": 1828
+          },
+          "evidence_ref": "30218d5494fdb89e"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/RouteStick-hard/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 179.0,
+          "h5": {
+            "file": "RouteStick_ep0_seed16000.h5",
+            "object_count": 15008,
+            "sha256": "de119b6017f00486c9580c3a21cd9a486edbbe919321dbd103f79fdd06cc1324"
+          },
+          "h5_fingerprint_ref": "df397519ad592e49",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 19,
+            "boundaries": 4,
+            "events": 6242,
+            "steps": 1828
+          },
+          "evidence_ref": "30218d5494fdb89e"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "VideoUnmaskSwap-easy": {
+      "case": {
+        "task": "VideoUnmaskSwap",
+        "episode": 0,
+        "difficulty": "easy",
+        "seed": 5000,
+        "branch": ""
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-easy/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 16.8,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 8158,
+            "sha256": "41f79bf4a86b0be84b51b53687ce8a5290352bfa52a429389b1fe4b31f2b1125"
+          },
+          "h5_fingerprint_ref": "bf7bfc6a6e39f96f",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 19,
+            "boundaries": 4,
+            "events": 5524,
+            "steps": 652
+          },
+          "evidence_ref": "05db1729bdefd0c0"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-easy/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 16.9,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 8158,
+            "sha256": "41f79bf4a86b0be84b51b53687ce8a5290352bfa52a429389b1fe4b31f2b1125"
+          },
+          "h5_fingerprint_ref": "bf7bfc6a6e39f96f",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 19,
+            "boundaries": 4,
+            "events": 5524,
+            "steps": 652
+          },
+          "evidence_ref": "05db1729bdefd0c0"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-easy/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 16.9,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 8158,
+            "sha256": "41f79bf4a86b0be84b51b53687ce8a5290352bfa52a429389b1fe4b31f2b1125"
+          },
+          "h5_fingerprint_ref": "bf7bfc6a6e39f96f",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 19,
+            "boundaries": 4,
+            "events": 5524,
+            "steps": 652
+          },
+          "evidence_ref": "05db1729bdefd0c0"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-easy/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 17.0,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 8158,
+            "sha256": "41f79bf4a86b0be84b51b53687ce8a5290352bfa52a429389b1fe4b31f2b1125"
+          },
+          "h5_fingerprint_ref": "bf7bfc6a6e39f96f",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 19,
+            "boundaries": 4,
+            "events": 5524,
+            "steps": 652
+          },
+          "evidence_ref": "05db1729bdefd0c0"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "VideoUnmaskSwap-medium": {
+      "case": {
+        "task": "VideoUnmaskSwap",
+        "episode": 0,
+        "difficulty": "medium",
+        "seed": 5000,
+        "branch": "bin=4：第 4 个容器永远没有藏块（randperm(3) 硬编码）"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-medium/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 18.0,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 8658,
+            "sha256": "fe0e134181978e34e3cf7d1557600d9cb691ee51ebb4e3ee352c1744f7d8e1eb"
+          },
+          "h5_fingerprint_ref": "c1deac6445bbaee7",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 22,
+            "boundaries": 4,
+            "events": 6576,
+            "steps": 692
+          },
+          "evidence_ref": "caa2dd0e00f8086e"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-medium/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 17.9,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 8658,
+            "sha256": "fe0e134181978e34e3cf7d1557600d9cb691ee51ebb4e3ee352c1744f7d8e1eb"
+          },
+          "h5_fingerprint_ref": "c1deac6445bbaee7",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 22,
+            "boundaries": 4,
+            "events": 6576,
+            "steps": 692
+          },
+          "evidence_ref": "caa2dd0e00f8086e"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-medium/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 17.8,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 8658,
+            "sha256": "fe0e134181978e34e3cf7d1557600d9cb691ee51ebb4e3ee352c1744f7d8e1eb"
+          },
+          "h5_fingerprint_ref": "c1deac6445bbaee7",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 22,
+            "boundaries": 4,
+            "events": 6576,
+            "steps": 692
+          },
+          "evidence_ref": "caa2dd0e00f8086e"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-medium/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 17.9,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 8658,
+            "sha256": "fe0e134181978e34e3cf7d1557600d9cb691ee51ebb4e3ee352c1744f7d8e1eb"
+          },
+          "h5_fingerprint_ref": "c1deac6445bbaee7",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 22,
+            "boundaries": 4,
+            "events": 6576,
+            "steps": 692
+          },
+          "evidence_ref": "caa2dd0e00f8086e"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "VideoUnmaskSwap-hard": {
+      "case": {
+        "task": "VideoUnmaskSwap",
+        "episode": 0,
+        "difficulty": "hard",
+        "seed": 5000,
+        "branch": "bin=4：第 4 个容器永远没有藏块（randperm(3) 硬编码）"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-hard/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 24.1,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 12883,
+            "sha256": "56e045460eab34716f2113f5020aca83cdc3ff83008a653bc5a74761ef377d40"
+          },
+          "h5_fingerprint_ref": "579f7a7204638ec0",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 22,
+            "boundaries": 4,
+            "events": 10666,
+            "steps": 1030
+          },
+          "evidence_ref": "03d1f8bd88cfa037"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-hard/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 24.0,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 12883,
+            "sha256": "56e045460eab34716f2113f5020aca83cdc3ff83008a653bc5a74761ef377d40"
+          },
+          "h5_fingerprint_ref": "579f7a7204638ec0",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 22,
+            "boundaries": 4,
+            "events": 10666,
+            "steps": 1030
+          },
+          "evidence_ref": "03d1f8bd88cfa037"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-hard/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 24.0,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 12883,
+            "sha256": "56e045460eab34716f2113f5020aca83cdc3ff83008a653bc5a74761ef377d40"
+          },
+          "h5_fingerprint_ref": "579f7a7204638ec0",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 22,
+            "boundaries": 4,
+            "events": 10666,
+            "steps": 1030
+          },
+          "evidence_ref": "03d1f8bd88cfa037"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoUnmaskSwap-hard/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 24.1,
+          "h5": {
+            "file": "VideoUnmaskSwap_ep0_seed5000.h5",
+            "object_count": 12883,
+            "sha256": "56e045460eab34716f2113f5020aca83cdc3ff83008a653bc5a74761ef377d40"
+          },
+          "h5_fingerprint_ref": "579f7a7204638ec0",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 22,
+            "boundaries": 4,
+            "events": 10666,
+            "steps": 1030
+          },
+          "evidence_ref": "03d1f8bd88cfa037"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "VideoRepick-easy": {
+      "case": {
+        "task": "VideoRepick",
+        "episode": 0,
+        "difficulty": "easy",
+        "seed": 9000,
+        "branch": ""
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-easy/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 33.3,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 18908,
+            "sha256": "61febace26b4ddd4ec33ad480f12bed3a36c5b78b6c1d85ba8a33b3ca732c164"
+          },
+          "h5_fingerprint_ref": "a5e0987f1c54c606",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 20,
+            "boundaries": 4,
+            "events": 1837,
+            "steps": 1584
+          },
+          "evidence_ref": "4e32406abe96e047"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-easy/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 33.3,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 18908,
+            "sha256": "61febace26b4ddd4ec33ad480f12bed3a36c5b78b6c1d85ba8a33b3ca732c164"
+          },
+          "h5_fingerprint_ref": "a5e0987f1c54c606",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 20,
+            "boundaries": 4,
+            "events": 1837,
+            "steps": 1584
+          },
+          "evidence_ref": "4e32406abe96e047"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-easy/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 33.4,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 18908,
+            "sha256": "61febace26b4ddd4ec33ad480f12bed3a36c5b78b6c1d85ba8a33b3ca732c164"
+          },
+          "h5_fingerprint_ref": "a5e0987f1c54c606",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 20,
+            "boundaries": 4,
+            "events": 1837,
+            "steps": 1584
+          },
+          "evidence_ref": "4e32406abe96e047"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-easy/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 33.4,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 18908,
+            "sha256": "61febace26b4ddd4ec33ad480f12bed3a36c5b78b6c1d85ba8a33b3ca732c164"
+          },
+          "h5_fingerprint_ref": "a5e0987f1c54c606",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 20,
+            "boundaries": 4,
+            "events": 1837,
+            "steps": 1584
+          },
+          "evidence_ref": "4e32406abe96e047"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "VideoRepick-medium": {
+      "case": {
+        "task": "VideoRepick",
+        "episode": 0,
+        "difficulty": "medium",
+        "seed": 9000,
+        "branch": ""
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-medium/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 35.2,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 20258,
+            "sha256": "2078c509d30a91852bd97d0f35cac2651f1498804c45836f222db25307850c09"
+          },
+          "h5_fingerprint_ref": "338f9630868c2b00",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 20,
+            "boundaries": 4,
+            "events": 2051,
+            "steps": 1692
+          },
+          "evidence_ref": "642ff6dad23bcd55"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-medium/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 35.2,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 20258,
+            "sha256": "2078c509d30a91852bd97d0f35cac2651f1498804c45836f222db25307850c09"
+          },
+          "h5_fingerprint_ref": "338f9630868c2b00",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 20,
+            "boundaries": 4,
+            "events": 2051,
+            "steps": 1692
+          },
+          "evidence_ref": "642ff6dad23bcd55"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-medium/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 35.2,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 20258,
+            "sha256": "2078c509d30a91852bd97d0f35cac2651f1498804c45836f222db25307850c09"
+          },
+          "h5_fingerprint_ref": "338f9630868c2b00",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 20,
+            "boundaries": 4,
+            "events": 2051,
+            "steps": 1692
+          },
+          "evidence_ref": "642ff6dad23bcd55"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-medium/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 35.5,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 20258,
+            "sha256": "2078c509d30a91852bd97d0f35cac2651f1498804c45836f222db25307850c09"
+          },
+          "h5_fingerprint_ref": "338f9630868c2b00",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 20,
+            "boundaries": 4,
+            "events": 2051,
+            "steps": 1692
+          },
+          "evidence_ref": "642ff6dad23bcd55"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    },
+    "VideoRepick-hard": {
+      "case": {
+        "task": "VideoRepick",
+        "episode": 0,
+        "difficulty": "hard",
+        "seed": 9000,
+        "branch": "hard 五轮生成循环（红蓝绿各一块 × 5 = 15 块），不替换成五个独立 episode"
+      },
+      "paths": {
+        "A1": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-hard/A1",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 41.8,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 18833,
+            "sha256": "ce48742d55c2ff89d26d8e8cfe6b293b3c165ff0953710e73841ecc10fac7062"
+          },
+          "h5_fingerprint_ref": "bbaacb70eb2e9b56",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 131,
+            "boundaries": 4,
+            "events": 1615,
+            "steps": 1578
+          },
+          "evidence_ref": "4ecfb07a60fcdd35"
+        },
+        "A2": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/native-baseline/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-hard/A2",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 41.8,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 18833,
+            "sha256": "ce48742d55c2ff89d26d8e8cfe6b293b3c165ff0953710e73841ecc10fac7062"
+          },
+          "h5_fingerprint_ref": "bbaacb70eb2e9b56",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 131,
+            "boundaries": 4,
+            "events": 1615,
+            "steps": 1578
+          },
+          "evidence_ref": "4ecfb07a60fcdd35"
+        },
+        "B": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-hard/B",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 41.9,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 18833,
+            "sha256": "ce48742d55c2ff89d26d8e8cfe6b293b3c165ff0953710e73841ecc10fac7062"
+          },
+          "h5_fingerprint_ref": "bbaacb70eb2e9b56",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 131,
+            "boundaries": 4,
+            "events": 1615,
+            "steps": 1578
+          },
+          "evidence_ref": "4ecfb07a60fcdd35"
+        },
+        "C": {
+          "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/parity/20260908T2255Z-parity15-3804e87/VideoRepick-hard/C",
+          "success_count": 1,
+          "exhausted_count": 0,
+          "elapsed_s": 42.0,
+          "h5": {
+            "file": "VideoRepick_ep0_seed9000.h5",
+            "object_count": 18833,
+            "sha256": "ce48742d55c2ff89d26d8e8cfe6b293b3c165ff0953710e73841ecc10fac7062"
+          },
+          "h5_fingerprint_ref": "bbaacb70eb2e9b56",
+          "rrt_fallback_count": 0,
+          "sections": {
+            "rng": 131,
+            "boundaries": 4,
+            "events": 1615,
+            "steps": 1578
+          },
+          "evidence_ref": "4ecfb07a60fcdd35"
+        }
+      },
+      "comparisons": {
+        "A1-A2": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-B": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "A1-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        },
+        "B-C": {
+          "h5": {
+            "passed": true,
+            "difference_count": 0,
+            "differences": []
+          },
+          "evidence": {
+            "passed": true,
+            "sections": {
+              "rng": true,
+              "boundaries": true,
+              "events": true,
+              "steps": true
+            },
+            "initial_obs": true,
+            "first_divergence": {}
+          }
+        }
+      },
+      "status": "通过",
+      "rrt_fallback_count": {
+        "A1": 0,
+        "A2": 0
+      }
+    }
+  },
+  "status_counts": {
+    "通过": 15
+  },
+  "passed": true
+}

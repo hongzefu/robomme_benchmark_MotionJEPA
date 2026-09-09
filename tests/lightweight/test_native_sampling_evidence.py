@@ -374,5 +374,47 @@ def test_compare_evidence_dirs_rejects_missing_episode(tmp_path: Path) -> None:
     assert result["missing_in_candidate"] == ["RouteStick_seed16000"]
 
 
+def test_large_sections_fall_back_to_block_chain() -> None:
+    """大段按块散列：能把首个分歧缩到一个块内，精确到条要回 artifacts/ 的全量证据。"""
+    evidence = _evidence()
+    evidence["steps"] = [
+        {"i": index, "phase": "after_step", "task_state": {"n": index}} for index in range(2000)
+    ]
+    digest = parity.evidence_digest(evidence)
+    section = digest["sections"]["steps"]
+    assert section["granularity"] == "block"
+    assert section["block_size"] == parity.CHAIN_BLOCK
+    assert section["count"] == 2000
+    assert len(section["record_sha256"]) == (2000 + parity.CHAIN_BLOCK - 1) // parity.CHAIN_BLOCK
+
+    changed = copy.deepcopy(evidence)
+    changed["steps"][777]["task_state"]["n"] = -1
+    other = parity.evidence_digest(changed)["sections"]["steps"]
+    differing = [i for i, value in enumerate(section["record_sha256"]) if value != other["record_sha256"][i]]
+    assert differing == [777 // parity.CHAIN_BLOCK]
+    # 块级只定位到区间，精确到条必须回全量证据
+    assert parity.compare_evidence(evidence, changed)["sections"]["steps"]["first_divergence"]["index"] == 777
+
+
+def test_h5_digest_locates_the_differing_timestep(tmp_path: Path) -> None:
+    """入库形态能判断整份是否相同并定位到哪一帧；不能还原画面或算像素差幅度。"""
+    reference, candidate = _pair(tmp_path, _change_one_pixel)
+    left = parity.h5_digest(parity.h5_fingerprint(reference))
+    right = parity.h5_digest(parity.h5_fingerprint(candidate))
+    assert left["sha256"] != right["sha256"]
+    assert left["object_count"] == right["object_count"]
+    differing = [key for key, value in left["group_sha256"].items() if right["group_sha256"][key] != value]
+    assert differing == ["episode_0/timestep_1"]
+    assert "front_rgb" not in json.dumps(left)
+
+
+def test_h5_digest_is_stable_for_identical_files(tmp_path: Path) -> None:
+    reference, candidate = _pair(tmp_path, None)
+    assert parity.h5_digest(parity.h5_fingerprint(reference)) == {
+        **parity.h5_digest(parity.h5_fingerprint(candidate)),
+        "file": "ref.h5",
+    }
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))

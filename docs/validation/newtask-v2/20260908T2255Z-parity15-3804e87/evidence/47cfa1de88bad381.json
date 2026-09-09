@@ -1,0 +1,111 @@
+{
+  "difficulty": "easy",
+  "initial_obs_sha256": "e4bfe7ab8f386e88f4167b820b36c35ae1775e5f70d8bc8b84ad449d3f5fa2b5",
+  "rng_total": 41,
+  "rrt_fallback_count": 0,
+  "sections": {
+    "boundaries": {
+      "block_size": 1,
+      "count": 4,
+      "granularity": "record",
+      "record_sha256": [
+        "4df08df036ded466",
+        "1fd3a5d8ae3de54a",
+        "a2920ca94b97d3cb",
+        "33d7c604fbe48542"
+      ],
+      "sha256": "e0463650d53a08bc479a21a4f931721cec3f36d5f08f915a2174a996862471b0"
+    },
+    "events": {
+      "block_size": 64,
+      "count": 748,
+      "granularity": "block",
+      "record_sha256": [
+        "50fe0c34be59d308",
+        "9555b1a09f72d0c4",
+        "7710bb37f4d667eb",
+        "c7b74a8ac171071d",
+        "21bc06c2786bd573",
+        "0a5181890b0a7efa",
+        "8f3583ff97572cc9",
+        "1bb24760e7622854",
+        "bff41cfc7b3d5d27",
+        "aec2d96c0a008817",
+        "c5a3fdf16d7c553c",
+        "c2123b060b56119d"
+      ],
+      "sha256": "01e13e4be7039d22f6353fff203aa39090cc099a8b69dd3e361812d78ea4682b"
+    },
+    "rng": {
+      "block_size": 1,
+      "count": 41,
+      "granularity": "record",
+      "record_sha256": [
+        "2a82e80ca9f441b6",
+        "df9b8d28473860eb",
+        "7fb1a3bf09aa3bd8",
+        "19cdd6f5ac2e4e71",
+        "73761931a05570f2",
+        "eb4cfb8cb5d6e397",
+        "d9c3788ae79e9367",
+        "2e325c78aeb9580b",
+        "bd1ee0aec88051b1",
+        "a1521759b7c61b7c",
+        "84b027d0a93d02a0",
+        "98b11b6c6553f785",
+        "85decb792f1d5011",
+        "e124c56e9028cdda",
+        "2de59debf66e2ddd",
+        "befc9f22ede200dd",
+        "e5f4bf46943da493",
+        "baeb9c0e749f928c",
+        "1892fad8df987ac0",
+        "bba94975f6bdab0b",
+        "8ae991d03487963b",
+        "3a2b9bb11807cd2a",
+        "3d773785147489b9",
+        "ca654cd87e105a2a",
+        "b71bed74416c33d6",
+        "0afb18f8d3961622",
+        "6e2435e241a700b3",
+        "9b466a4ec0f10f88",
+        "b1b8b54938074aad",
+        "d9a34d927e673e61",
+        "e8ffb642113c29de",
+        "5bc2e952a56292f8",
+        "a5595e8f9d227286",
+        "1db67b3ed1018cc0",
+        "f446d9a9b319f3f5",
+        "961aebbee033b1da",
+        "cac801b3c4cb1913",
+        "c5a3b0a45f150aef",
+        "0530e2b9db3ea2da",
+        "639748374182ac67",
+        "4aac9283b1702972"
+      ],
+      "sha256": "69cfd303b8b515c7ba19ffa27a0373cc79a1511e0505e7b2094dee3c0b76b2b5"
+    },
+    "steps": {
+      "block_size": 64,
+      "count": 732,
+      "granularity": "block",
+      "record_sha256": [
+        "a9a087fb58bcc50b",
+        "61edc4e813a638e9",
+        "5ab9f1c33806ae83",
+        "a71860d014640ce6",
+        "36fc23233d959f09",
+        "22423c8da679a359",
+        "b571a3871c3c1ebd",
+        "9da55f9c1728c03f",
+        "36fa0e2d591e777a",
+        "5093f95474946b44",
+        "00853276b06460d4",
+        "7a7d5a4ec04abf64"
+      ],
+      "sha256": "9ea560c7570cc417bc6aa5c1c76a8546bd078332e77885b78916af8105688a7f"
+    }
+  },
+  "seed": 4100,
+  "task": "BinFill"
+}

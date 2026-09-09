@@ -1,6 +1,6 @@
 {
   "schema": "newtask-v2 对拍用例表",
-  "status": "候选：实际 seed / 分支已按公式与离线预判固定；rrt_fallback_count 与通过状态在 A 路实测后回填，不以候选版结果挑选有利样本",
+  "status": "已实测：seed 与分支按公式与离线预判固定，受阻格已按替补扫描换 episode 并保留原记录",
   "layout": "train",
   "seed_formula": "offset(0) + env_code*1000 + episode*100 + attempt",
   "env_code": {
@@ -28,14 +28,21 @@
     {
       "cell": "BinFill-medium-dynamicTrue",
       "task": "BinFill",
-      "episode": 0,
+      "episode": 2,
       "difficulty": "medium",
       "difficulty_ratio": "010",
-      "seed": 4000,
+      "seed": 4200,
       "attempt": 0,
       "recovery_mode": "z",
       "branch": "dynamic=True",
-      "branch_source": "离线预判：bool(torch.randint(0,2,(1,),generator=Generator().manual_seed(seed)))，难度不进入 seed 故三难度下恒定"
+      "branch_source": "离线预判：bool(torch.randint(0,2,(1,),generator=Generator().manual_seed(seed)))，难度不进入 seed 故三难度下恒定；ep0 受阻后按替补扫描改用 ep2（dynamic 分支相同）",
+      "blocked_original": {
+        "episode": 0,
+        "seed": 4000,
+        "reason": "原版 A 路首次尝试即失败（DatasetGenerationError: 环境报告失败），A1/A2/B/C 四路一致失败",
+        "evidence": "artifacts/parity/<run>/BinFill-medium-dynamicTrue-blocked-ep0/，证据在 parity-evidence/<run>/*/BinFill_seed4000（difficulty=medium）",
+        "note": "按方案 4.6 保留记录、不删除；另选同格其他 episode 补足，只换 episode，seed 仍由原公式算出"
+      }
     },
     {
       "cell": "BinFill-hard-dynamicTrue",

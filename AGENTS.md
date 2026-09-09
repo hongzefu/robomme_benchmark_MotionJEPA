@@ -971,3 +971,15 @@
 - 意外与处置：①证据目录一度多套一层 label（驱动与观察器都加），已改为只由观察器加；②随机源身份用 `id(generator)` 会因内存地址跨进程不同而产生假差异，改为「本局首次出现序号」；③对象 `repr` 里的内存地址同样造成假差异（A1↔A2 的 events 段全量失配），已统一抹成 `0xADDR`，修后 A1↔A2/A1↔B/A1↔C/B↔C 四对的 rng(44)、boundaries(4)、events(6624)、steps(1100) 全段一致；④单局原始证据 8.1 MB，改为 gzip 落盘，观察器开销实测约 4%（24.09s vs 23.13s）。
 - 修改文件：`tests/_shared/{parity_observer,parity_runner,parity_worker_isolation}.py`、`tests/_shared/parity_sitecustomize/sitecustomize.py`、`tests/_shared/native_sampling_parity.py`、`tests/conftest.py`、`tests/lightweight/{test_native_sampling_config,test_native_sampling_evidence,test_swap_clip_plan}.py`、`tests/dataset/test_native_sampling_parity.py`、`docs/`（README ×3、`cases.json`）、本账本。
 - 下一步：15 格实测收尾、受阻格补足替补 episode、⑤ 连续 worker 实测、打包写报告；随后第五步清理与第六步范围核对。
+
+### 2026-09-08/09 America/Detroit — newtask-v2 第四步（二）：15 格三路实测、⑤ 连续 worker 与 ① 关键帧
+
+- 状态：②③④ 15 格通过、⑤ 两路通过、① 9 格通过 6 格待目视；第五步清理与第六步范围核对未做。
+- 用户指令：本轮承接「一路做到第六步 10.0 提交」；中途用户就 ① 的目视范围决策「用 agent 目视 354 张，不要 spawn 超过 3 个」，随后在 BinFill 组中断后指示「不要继续目视检查，继续其他工作」。
+- 实测：`parity_runner` 跑 15 格 × 四路共 60 次真实生成（tmux `parity15`，2229.3 s）。逐格四对（A1-A2、A1-B、A1-C、B-C）的 HDF5 全字段逐元素比较与四段证据比较全部通过；15 格的 A1/A2 `rrt_fallback_count` 全为 0，即全部落在「原版逐位可复现」的适用范围内，未动用 4.0 的容差退出路径。单格规模示例：BinFill-hard-dynamicTrue 的 HDF5 对象 23583 个、随机调用 91 次、事件 17014 条、逐步状态 1886 条；VideoRepick-hard 的 131 次随机调用与「五轮循环共 15 块」口径一致。
+- ⑤：用产品自己的 `_run_jobs`/`_worker` 排出「BinFill ep0 → VideoRepick ep0 → BinFill ep0」，两路（不传配置 / 显式原值配置）各一次。三局都落在同一个池进程（pid 279135 / 280088），逐局与对应独立运行的 HDF5 差异 0、四段证据全一致，含 VideoRepick 的进程级 `np.random.seed` 之后再跑 BinFill 那一局；四个任务类的类级 `configs` 与父进程配置散列前后不变。
+- ①：354 个关键帧（15 格并集）全部出图，`not_rendered` 为空；差分 `max_abs` 全为 0、非零像素 0；逐帧内容 SHA-256 三路一致 708/708。目视 217/354：RouteStick 三格、VideoUnmaskSwap 三格、VideoRepick 三格共 9 格全部关键帧已逐张目视且无可见区别；BinFill 六格 138 张只看了 1 张，记「待目视」。
+- 受阻并已补足：`BinFill-medium-dynamicTrue` 原定 ep0（seed 4000）在原版 A 路首次尝试即失败（`环境报告失败`），四路一致失败，属用例可解性问题。替补扫描在 ep0–9 内跳过 dynamic 分支不符的 ep1，选中 ep2（seed 4200，44.6 s 成功）；原受阻记录保留在 `BinFill-medium-dynamicTrue-blocked-ep0/` 与 `BinFill_seed4000`（medium）的证据里，`cases.json` 以 `blocked_original` 登记。
+- 意外与处置：①证据目录按 (task, seed) 命名，而 BinFill 三难度共用 seed 4000，三份证据相撞 —— 读取端按难度消歧，观察器文件名加进程内序号（⑤ 的甲→乙→甲会同 pid 同 seed 同难度写两次，否则后一局覆盖前一局）。②RouteStick 三格的证据段一度不一致且 A1↔A2 也不一致，根因是原版把 `id(obj)` 直接编进高亮盘 actor 名字（`statechange.py:248,466`）；抹掉数字后又同名相撞，最终改为把同一归一名下的若干个按内容排序成多重集合比较，RouteStick 三格因此重跑两次（1079.5 s）。③替补扫描探针与正式 A1 的证据落在同一目录造成打包报错，清掉后重跑该格 A1。④证据包首版 52 MB 太大，改为小段保留逐条散列链、大段按 64 条分块、HDF5 按 timestep 聚合，降到 672 KB（docs 内合计 1.3 MB）。⑤图版标题的中文被 PIL 默认字体渲染成方块，改用 Noto CJK 并按渲染宽度截断后全量重出。⑥负责 RouteStick/VideoUnmaskSwap 的目视 agent 自行又派了 4 个子检查员分担 84 张，超出用户「不超过 3 个」的限制（主会话只直接派了 3 个，但未在提示里禁止再分包），已在目视记录里按实际检查人登记。⑦负责 BinFill 的目视 agent 因会话额度中断，未给出可用结论。
+- 修改文件：`tests/_shared/{parity_observer,native_sampling_parity,parity_keyframes}.py`（`parity_keyframes.py` 为新增）、`tests/lightweight/test_native_sampling_evidence.py`（补 3 项能力边界测试，共 35 项）、`docs/validation/newtask-v2/{README.md,cases.json}`、`docs/validation/newtask-v2/20260908T2255Z-parity15-3804e87/`（报告、目视记录、result/manifest/keyframe_index/worker_isolation 与去重证据）、本账本。
+- 下一步：第五步按清单清理旧目录并抽样复验，第六步核对范围；BinFill 六格的 ① 目视保留为未完成项。

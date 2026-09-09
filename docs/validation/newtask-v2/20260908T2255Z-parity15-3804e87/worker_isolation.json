@@ -1,0 +1,166 @@
+[
+  {
+    "label": "S-default",
+    "independent_label": "B",
+    "slots": {
+      "first-a": {
+        "cell": "BinFill-easy-dynamicTrue",
+        "task": "BinFill",
+        "seed": 4000,
+        "difficulty": "easy",
+        "h5": {
+          "passed": true,
+          "difference_count": 0,
+          "differences": []
+        },
+        "evidence": {
+          "passed": true,
+          "sections": {
+            "rng": true,
+            "boundaries": true,
+            "events": true,
+            "steps": true
+          },
+          "initial_obs": true,
+          "rrt_fallback_count": {
+            "reference": 0,
+            "candidate": 0
+          }
+        }
+      },
+      "second-b": {
+        "cell": "VideoRepick-easy",
+        "task": "VideoRepick",
+        "seed": 9000,
+        "difficulty": "easy",
+        "h5": {
+          "passed": true,
+          "difference_count": 0,
+          "differences": []
+        },
+        "evidence": {
+          "passed": true,
+          "sections": {
+            "rng": true,
+            "boundaries": true,
+            "events": true,
+            "steps": true
+          },
+          "initial_obs": true,
+          "rrt_fallback_count": {
+            "reference": 0,
+            "candidate": 0
+          }
+        }
+      },
+      "first-again": {
+        "cell": "BinFill-easy-dynamicTrue",
+        "task": "BinFill",
+        "seed": 4000,
+        "difficulty": "easy",
+        "h5": {
+          "passed": true,
+          "difference_count": 0,
+          "differences": []
+        },
+        "evidence": {
+          "passed": true,
+          "sections": {
+            "rng": true,
+            "boundaries": true,
+            "events": true,
+            "steps": true
+          },
+          "initial_obs": true,
+          "rrt_fallback_count": {
+            "reference": 0,
+            "candidate": 0
+          }
+        }
+      }
+    },
+    "passed": true
+  },
+  {
+    "label": "S-config",
+    "independent_label": "C",
+    "slots": {
+      "first-a": {
+        "cell": "BinFill-easy-dynamicTrue",
+        "task": "BinFill",
+        "seed": 4000,
+        "difficulty": "easy",
+        "h5": {
+          "passed": true,
+          "difference_count": 0,
+          "differences": []
+        },
+        "evidence": {
+          "passed": true,
+          "sections": {
+            "rng": true,
+            "boundaries": true,
+            "events": true,
+            "steps": true
+          },
+          "initial_obs": true,
+          "rrt_fallback_count": {
+            "reference": 0,
+            "candidate": 0
+          }
+        }
+      },
+      "second-b": {
+        "cell": "VideoRepick-easy",
+        "task": "VideoRepick",
+        "seed": 9000,
+        "difficulty": "easy",
+        "h5": {
+          "passed": true,
+          "difference_count": 0,
+          "differences": []
+        },
+        "evidence": {
+          "passed": true,
+          "sections": {
+            "rng": true,
+            "boundaries": true,
+            "events": true,
+            "steps": true
+          },
+          "initial_obs": true,
+          "rrt_fallback_count": {
+            "reference": 0,
+            "candidate": 0
+          }
+        }
+      },
+      "first-again": {
+        "cell": "BinFill-easy-dynamicTrue",
+        "task": "BinFill",
+        "seed": 4000,
+        "difficulty": "easy",
+        "h5": {
+          "passed": true,
+          "difference_count": 0,
+          "differences": []
+        },
+        "evidence": {
+          "passed": true,
+          "sections": {
+            "rng": true,
+            "boundaries": true,
+            "events": true,
+            "steps": true
+          },
+          "initial_obs": true,
+          "rrt_fallback_count": {
+            "reference": 0,
+            "candidate": 0
+          }
+        }
+      }
+    },
+    "passed": true
+  }
+]
