@@ -416,5 +416,87 @@ def test_h5_digest_is_stable_for_identical_files(tmp_path: Path) -> None:
     }
 
 
+# ── Git 中的证据包自检（纯离线：不碰 artifacts/、不加载仿真、不占 GPU）─────────
+
+
+PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "docs" / "validation" / "newtask-v2"
+
+
+def _packages() -> list[Path]:
+    return sorted(
+        path for path in PACKAGE_ROOT.glob("*/result.json") if path.parent.name[0].isdigit()
+    )
+
+
+def test_committed_packages_are_self_contained() -> None:
+    """Git 里的证据包必须能独立读回：结论、引用与去重文件三者自洽。"""
+    packages = _packages()
+    assert packages, "docs/validation/newtask-v2 下没有证据包"
+    for result_path in packages:
+        root = result_path.parent
+        result = json.loads(result_path.read_text(encoding="utf-8"))
+        manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+        stored = {path.stem for path in (root / "evidence").glob("*.json")}
+        assert stored, f"{root}: evidence/ 为空"
+        # 清单里登记的每一个引用都必须真的落在 evidence/ 里
+        for name, digest in manifest["dedup_map"].items():
+            assert digest in stored, f"{root}: {name} 指向缺失的证据 {digest}"
+        # 结论里出现的每一个引用也必须能取回
+        for cell, item in result["cells"].items():
+            for label, entry in item["paths"].items():
+                for key in ("evidence_ref", "h5_fingerprint_ref"):
+                    if key in entry:
+                        assert entry[key] in stored, f"{root}/{cell}/{label}: {key} 取不回"
+
+
+def test_parity_conclusion_can_be_rederived_offline() -> None:
+    """只用 Git 里的轻量证据重新推出三路一致的结论，不访问原运行目录。
+
+    判据：同一格里 A1/A2/B/C 的证据指纹与 HDF5 指纹必须指向**同一份**去重文件——
+    内容不同就会散列成不同的文件名，从而立刻暴露。
+    """
+    for result_path in _packages():
+        root = result_path.parent
+        result = json.loads(result_path.read_text(encoding="utf-8"))
+        for cell, item in result["cells"].items():
+            if item["status"] != "通过":
+                continue
+            for key in ("evidence_ref", "h5_fingerprint_ref"):
+                refs = {
+                    label: entry[key]
+                    for label, entry in item["paths"].items()
+                    if key in entry
+                }
+                assert len(refs) == 4, f"{root}/{cell}: {key} 不是四路齐全，实际 {sorted(refs)}"
+                assert len(set(refs.values())) == 1, (
+                    f"{root}/{cell}: 四路的 {key} 不是同一份证据：{refs}"
+                )
+            # 结论本身也要是「四对比较全通过」
+            for pair, comparison in item["comparisons"].items():
+                assert comparison["h5"]["passed"] is True, f"{root}/{cell}/{pair}: h5 未通过"
+                assert comparison["evidence"]["passed"] is True, f"{root}/{cell}/{pair}: 证据未通过"
+
+
+def test_offline_rederivation_rejects_a_tampered_package(tmp_path: Path) -> None:
+    """反例：把某一路的引用改成别的散列，离线复验必须失败。"""
+    source = _packages()[0].parent
+    target = tmp_path / source.name
+    target.mkdir()
+    (target / "manifest.json").write_text(
+        (source / "manifest.json").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    result = json.loads((source / "result.json").read_text(encoding="utf-8"))
+    cell = next(name for name, item in result["cells"].items() if item["status"] == "通过")
+    result["cells"][cell]["paths"]["C"]["evidence_ref"] = "0" * 16
+    (target / "result.json").write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+
+    refs = {
+        label: entry["evidence_ref"]
+        for label, entry in result["cells"][cell]["paths"].items()
+        if "evidence_ref" in entry
+    }
+    assert len(set(refs.values())) != 1, "改过引用之后必须不再是同一份证据"
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))

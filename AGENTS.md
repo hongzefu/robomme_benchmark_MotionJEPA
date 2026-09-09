@@ -995,3 +995,13 @@
 - 实测（tmux `postclean` / `pcmp`，退出码均 0）：定向检查全过（工作树一致、与基线 61 项操作元一致、同级导入 OK）；`tests/lightweight` 全量 4 failed / 176 passed / 172.4 s，四项失败已在基线 worktree 复测确认为既有失败；抽样复验每任务 easy 一格的 B/C 与清理前产物做 HDF5 全字段逐元素比较，**八项全部 0 差异**；attempt 重试分支用原版已知首次失败的用例（BinFill/medium/ep0/seed 4000，`--max-attempts 2`）跑 A/B/C 三路，失败分类（`task`/`DatasetGenerationError`）与第二次 seed（4001）三路完全相同，三路 attempt 1 的产物两两比较 0 差异；`--env all` 加 `--sampling-config` 跑 16 任务各一局，**16/16 成功、attempt 全为 0、72.7 s**，其余 12 个任务没有拿到配置、照原默认值生成。
 - 修改文件：删除上述五个目录与三个测试文件；`.gitignore`、`readme.md`、`NEWTASK_V2_PLAN.md`、`scripts/generate_dataset_newseed.py`、`tests/_shared/parity_runner.py`、`docs/validation/newtask-v2/{README.md,legacy-measurements.md}`、`docs/validation/newtask-v2/20260909T1441Z-postclean/README.md`、本账本。
 - 下一步：第六步核对范围并给出交付清单。
+
+### 2026-09-09 America/Detroit — newtask-v2 第六步：范围核对与交付清单
+
+- 状态：第一至第六步全部执行完毕；② ③ ④ ⑤ 与全部定向检查通过，① 有 6 格停在「待目视」，因此不宣称方案第六步的全部条件已满足。
+- 用户指令：承接「一路做到第六步 10.0 提交」；上一轮用户要求「不要继续目视检查 继续其他工作」，本轮据此把 BinFill 六格的 ① 保留为未完成项。
+- 补做两项交付前必须完成的事：①**③.4 合并产物比较** —— A 路用基线 worktree 的原 `merge_episode_h5.py`、B/C 路用平铺主文件的 `--merge-only`，在 `BinFill-easy-dynamicTrue` 一格上生成三份 `record_dataset_BinFill.h5`，两两全字段逐元素比较 **0 差异**（会话 `mergechk`，退出码 0）；②**离线复验** —— 在 `tests/lightweight/test_native_sampling_evidence.py` 增加三项测试：证据包自洽（清单引用与 evidence/ 文件一一对应）、只用 Git 里的轻量证据重新推出「同一格四路指向同一份去重证据」的结论（不碰 artifacts/、不加载仿真）、以及篡改引用后必须失败的反例。该文件现为 38 项、0.32 s 全过。
+- 交付清单：新增 `docs/validation/newtask-v2/DELIVERY.md`，逐项对应第六步要求 —— 冻结配置与两级防漂移命令、与基线的最小 diff（`src/` 只改五个文件，+336/−55，其余源码零改动）、最终五脚本清单、函数迁入对应表、更新后的调用链 ASCII 图、15 格覆盖矩阵与 `rrt_fallback_count`（30 次原版运行全为 0）、五项对拍结论与证据位置、真实命令／tmux 会话／退出码表、轻量证据索引与能力边界、全部失败／受阻／未覆盖项。
+- 范围核对结论：**失败 0**；受阻并已补足 1 项（BinFill-medium-dynamicTrue 原 ep0 换 ep2）；未覆盖 5 项已逐条登记（① 的 BinFill 六格目视、RRT* 回退局未触发故容差路径未验证、其余 11 格未在清理后重跑、③.4 只覆盖一格、观察器开销只校准过一格）。
+- 修改文件：`docs/validation/newtask-v2/{DELIVERY.md,README.md}`、`docs/validation/newtask-v2/20260909T1441Z-postclean/README.md`、`tests/lightweight/test_native_sampling_evidence.py`、`NEWTASK_V2_PLAN.md`（补第十一节 10.4）、本账本。
+- 下一步：等用户对未覆盖项（尤其 BinFill 六格目视）的处置意见；不把当前状态说成方案第六步的完全通过。

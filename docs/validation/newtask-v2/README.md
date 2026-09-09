@@ -36,6 +36,14 @@ screw→RRTStar 回退走 mplib/OMPL，种子接口未暴露且有 1 秒墙钟�
 原版在某格首次尝试即失败或触发 RRT* 回退时，该格记为受阻并保留记录，
 另选**同格其他 episode** 补足（只换 episode，seed 仍由原公式算出，不自动换 seed 顶替）。
 
+## 交付清单
+
+[DELIVERY.md](DELIVERY.md)：方案第六步要求的交付内容（冻结配置、与基线的最小 diff、
+五脚本清单、函数迁入对应表、更新后的调用链、15 格覆盖矩阵与 `rrt_fallback_count`、
+五项对拍结论与证据、真实命令与退出码、轻量证据索引、全部失败／受阻／未覆盖项）。
+
+旧链路退出前的历史实测数字摘录见 [legacy-measurements.md](legacy-measurements.md)。
+
 ## 运行索引
 
 | 运行编号 | 范围 | 结论 |

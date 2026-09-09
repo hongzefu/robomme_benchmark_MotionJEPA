@@ -16,7 +16,7 @@
 | 项目 | 值 |
 | --- | --- |
 | 清理前候选提交 | `1f51108`（`10.2`） |
-| 清理内容 | 见 [NEWTASK_V2_PLAN.md 第十一节 10.3](../../../NEWTASK_V2_PLAN.md)；随 `10.3` 提交 |
+| 清理内容 | 见 [NEWTASK_V2_PLAN.md 第十一节 10.3](../../../../NEWTASK_V2_PLAN.md)；随 `10.3` 提交 |
 | 固定原版 | `94449db0a068a6b454b55a13ebd48f0394d89cc8`（基线 worktree，未受清理影响） |
 | 依赖锁 | `uv.lock` 未变，SHA-256 前 16 位 `983de83f7b22c98b` |
 | 设备 | NVIDIA RTX 6000 Ada Generation |
@@ -122,7 +122,11 @@ uv run --no-sync python scripts/generate_dataset_newseed.py \
   - 其余 11 格未在清理后重跑，沿用清理前证据（这是方案「抽样复验」的既定口径）。
   - ① 的 BinFill 六格目视仍未完成。
   - 触发 RRT\* 回退的局仍未出现，容差退出路径仍未验证。
-  - 合并（`--merge-only`）产物的结构与内容比较（③.4）本轮仍未做。
+  - ③.4 的合并产物比较**已在本运行编号之后单独补做**（会话 `mergechk`，日志
+    `artifacts/logs/merge-check.log`）：`BinFill-easy-dynamicTrue` 一格上，A 路用基线
+    worktree 的原 `merge_episode_h5.py`、B/C 路用平铺主文件的 `--merge-only`，
+    三份 `record_dataset_BinFill.h5` 两两全字段逐元素比较 **0 差异**；
+    但只在这一格上做过，未逐格覆盖。
 
 ## 6. 证据索引
 
