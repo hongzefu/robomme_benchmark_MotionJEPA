@@ -50,7 +50,7 @@ import threading
 from pathlib import Path
 from typing import Any, Callable
 
-EVIDENCE_VERSION = 2
+EVIDENCE_VERSION = 3
 
 _state: dict[str, Any] = {
     "installed": False,
@@ -179,19 +179,20 @@ def _generator_ordinal(generator: Any) -> int:
     return ordinal
 
 
-def _generator_state(generator: Any) -> dict[str, Any]:
+def _generator_state(generator: Any, device: Any = None) -> dict[str, Any]:
     """随机源身份与状态：不改状态，只读。"""
     if generator is None:
-        return {"source": "global"}
-    info: dict[str, Any] = {"source": "generator", "ordinal": _generator_ordinal(generator)}
-    try:
-        info["initial_seed"] = int(generator.initial_seed())
-    except Exception:
-        pass
-    try:
-        info["state_sha256"] = _digest(bytes(generator.get_state().numpy().tobytes()))
-    except Exception:
-        pass
+        import torch
+        selected_device = torch.device(device or "cpu")
+        if selected_device.type == "cuda":
+            generator = torch.cuda.default_generators[selected_device.index or torch.cuda.current_device()]
+        else:
+            generator = torch.default_generator
+        info: dict[str, Any] = {"source": "global", "device": str(selected_device)}
+    else:
+        info = {"source": "generator", "ordinal": _generator_ordinal(generator)}
+    info["initial_seed"] = int(generator.initial_seed())
+    info["state_sha256"] = _digest(generator.get_state().cpu().numpy().tobytes())
     return info
 
 
@@ -240,12 +241,14 @@ def _wrap_random(module: Any, name: str) -> None:
         return
 
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        result = original(*args, **kwargs)
         episode = _current()
+        generator = kwargs.get("generator")
+        record = episode is not None and len(episode.rng) < _state["max_rng"]
+        before = _generator_state(generator, kwargs.get("device")) if record else None
+        result = original(*args, **kwargs)
         if episode is not None:
             episode.rng_total += 1
-            if len(episode.rng) < _state["max_rng"]:
-                generator = kwargs.get("generator")
+            if record:
                 episode.rng.append(
                     {
                         "i": episode.next_index(),
@@ -256,7 +259,8 @@ def _wrap_random(module: Any, name: str) -> None:
                             for key, value in kwargs.items()
                             if key != "generator"
                         },
-                        "rng": _generator_state(generator),
+                        "rng_before": before,
+                        "rng": _generator_state(generator, kwargs.get("device")),
                         "result": _summarize(result),
                     }
                 )

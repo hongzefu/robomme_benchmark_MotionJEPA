@@ -26,6 +26,32 @@ def scalar(value):
     return value["values"][0] if isinstance(value, dict) and "values" in value else value
 
 
+def verify_runtime_coverage(case, evidence):
+    """由实际场景与随机记录核验覆盖，不能只看命令行声明。"""
+    state = evidence["boundaries"][-1]["task_state"]
+    if state["difficulty"] != case["difficulty"]:
+        raise ValueError("实际难度与用例不符")
+    if case["task"] == "BinFill" and state["dynamic"] is not (case["branch"] == "dynamic=True"):
+        raise ValueError("实际 dynamic 分支与用例不符")
+    rng = evidence["rng"]
+    if not rng or len(rng) != evidence["rng_total"]:
+        raise ValueError("随机调用记录不完整")
+    for call in rng:
+        for key in ("rng_before", "rng"):
+            if not call.get(key, {}).get("state_sha256"):
+                raise ValueError("缺少调用前后随机状态")
+    scene = next(item for item in evidence["boundaries"] if item["stage"] == "after_load_scene")
+    cubes = [name for name in scene["actors"] if name.startswith("cube_")]
+    bins = [name for name in scene["actors"] if name.startswith("bin_")]
+    if case["task"] == "VideoRepick" and case["difficulty"] == "hard":
+        if len(cubes) != 15 or scalar(state["swap_times"]) != 0:
+            raise ValueError("hard 必须实际生成 15 块且无交换")
+    return {"difficulty": state["difficulty"], "dynamic": state.get("dynamic"),
+        "scene_cube_names": cubes, "scene_bin_names": bins, "rng_count": len(rng),
+        "rng_sources": sorted({call["rng"]["source"] for call in rng}),
+        "both_rng_states_recorded": True}
+
+
 class Campaign:
     def __init__(self, run_id):
         if Path(run_id).name != run_id or run_id in (".", ".."):
@@ -160,6 +186,7 @@ class Campaign:
             paths = {}
             for label in runner.PATHS:
                 evidence = parity.load_evidence(self.evidence / label / f"{case['task']}_seed{case['seed']}", case["difficulty"])
+                coverage = verify_runtime_coverage(case, evidence)
                 boundaries = evidence["boundaries"]
                 bindings = boundaries[-1]["task_state"]["action_bindings"]
                 swaps = {}
@@ -171,7 +198,8 @@ class Campaign:
                     if start <= current < end:
                         swaps.setdefault(str(binding["swap_index"]), {"a": binding["a"], "b": binding["b"],
                             "resolved_at_step": current, "start_step": start, "end_step": end})
-                paths[label] = {"pickup_targets": bindings["pickup_targets"], "route": bindings["route"], "actual_swaps": swaps}
+                paths[label] = {"pickup_targets": bindings["pickup_targets"], "route": bindings["route"], "actual_swaps": swaps,
+                                "runtime_coverage": coverage}
                 state = boundaries[-1]["task_state"]
                 if case["task"] in ("VideoUnmaskSwap", "VideoRepick"):
                     if len(swaps) != scalar(state["swap_times"]):
@@ -183,6 +211,7 @@ class Campaign:
                     if len(route["nodes"]) != len(route["directions"]) + 1 or len(route["tasks"]) != 2 * len(route["directions"]):
                         raise RuntimeError(f"{case['cell']} {label}: 路线/演示/执行绑定数量不一致")
             reports[case["cell"]] = {"paths": paths, "passed": all(paths[a] == paths[b] for a, b in PAIRS)}
+            print(f"对象与动作检查完成 {case['cell']}：{'通过' if reports[case['cell']]['passed'] else '失败'}", flush=True)
         self.save("action_bindings.json", reports)
         if not all(item["passed"] for item in reports.values()):
             raise RuntimeError("具体对象或动作绑定不一致")

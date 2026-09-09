@@ -12,6 +12,7 @@ from tests._shared import parity_observer as observer
 from tests._shared import parity_keyframes as frames
 from tests._shared import parity_worker_isolation as isolation
 from tests._shared import parity_review as review
+from tests._shared.action_freeze_campaign import verify_runtime_coverage
 import json
 
 
@@ -102,3 +103,42 @@ def test_final_review_rejects_unseen_and_changed_images(tmp_path):
     original.write_bytes(b"original")
     report = review.finalize(index, tmp_path, tmp_path / "out.json")
     assert report["passed"] and report["image_count"] == 1
+
+
+@pytest.mark.parametrize("use_global", [False, True])
+def test_rng_observer_captures_both_states_without_consuming_randomness(monkeypatch, use_global):
+    episode = observer._EpisodeEvidence("测试", 31, "easy")
+    monkeypatch.setitem(observer._state, "episode", episode)
+    original = torch.rand
+    generator = None if use_global else torch.Generator().manual_seed(31)
+    source = torch.default_generator if use_global else generator
+    before = source.get_state().clone()
+    expected = original(3, generator=generator)
+    after = source.get_state().clone()
+    source.set_state(before)
+    module = SimpleNamespace(rand=original)
+    observer._wrap_random(module, "rand")
+    assert torch.equal(module.rand(3, generator=generator), expected)
+    assert torch.equal(source.get_state(), after)
+    record = episode.rng[0]
+    assert record["rng_before"]["state_sha256"] == observer._digest(before.numpy().tobytes())
+    assert record["rng"]["state_sha256"] == observer._digest(after.numpy().tobytes())
+    assert record["rng_before"]["source"] == ("global" if use_global else "generator")
+    assert record["rng_before"] != record["rng"]
+
+
+def test_runtime_coverage_rejects_declared_but_unexercised_branch():
+    case = {"task": "BinFill", "difficulty": "easy", "branch": "dynamic=True"}
+    state = {"difficulty": "hard", "dynamic": False}
+    evidence = {"boundaries": [{"stage": "after_load_scene", "task_state": state, "actors": {}}],
+        "rng": [{"rng_before": {"state_sha256": "a"}, "rng": {"state_sha256": "b", "source": "generator"}}], "rng_total": 1}
+    with pytest.raises(ValueError, match="实际难度"):
+        verify_runtime_coverage(case, evidence)
+    state["difficulty"] = "easy"
+    with pytest.raises(ValueError, match="dynamic"):
+        verify_runtime_coverage(case, evidence)
+    state["dynamic"] = True
+    assert verify_runtime_coverage(case, evidence)["both_rng_states_recorded"]
+    evidence["rng"][0].pop("rng_before")
+    with pytest.raises(ValueError, match="随机状态"):
+        verify_runtime_coverage(case, evidence)
