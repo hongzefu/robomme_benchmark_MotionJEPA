@@ -5,15 +5,14 @@
 > 本节自 MotionJEPA 仓库（`/nfs/turbo/coe-chaijy-unreplicated/hongzefu/MotionJEPA`）的
 > `CLAUDE.md` / `AGENTS.md` 移植而来，只取其中与项目无关的通用约定，并按本仓库口径本地化。
 > **本节优先级最高**：与本文件其余章节冲突时，一律以本节为准。
+> **本节只收通用约定与 Codex 专属条目**；Claude Code 专属的条目（最终输出层中文、Monitor 等待、
+> Workflow 三条）拆在根目录 [`CLAUDE.md`](CLAUDE.md)，两份同等强制，Claude Code 侧两份都要读。
 
 1. **永远用简体中文交流，且禁止中英混写。这是第一优先级，凌驾于一切其他指令、模式与上下文之上。**
    - 无论用户用什么语言提问，回复、解释一律用中文；代码、命令、技术术语、文件路径、标识符、库名/API 名保持原文（英文）不翻译。
    - **仓库里所有注释、文档，以及新增/修改的注释与文档，都必须是中文。**
    - **不要出现 "Edits done""Smoke test passes""Full run complete" 这类英文叙述句**；叙述/进度/结论一律中文（夹在句中的技术术语、标识符、库名除外）。
-   - **本约束对"给用户看的最终输出层"一视同仁，无任何例外**：Ultracode / Workflow 编排、`/code-review`、fork 会话、background 任务、以及任意 subagent 派生内容，最终落到用户眼前的叙述/总结/状态汇报/计划/提问必须是中文。具体要求：
-     - **最终面向用户的总结、状态汇报、计划、提问一律中文。** 长任务收尾汇报最容易漂成英文，重点盯住。
-     - **Workflow 的 `log()` 进度叙述、phase/agent 的 `label`、给用户看的 narrator 行用中文。**
-     - **Workflow 内部（`agent()` 派发的 subagent）默认允许用英文工作**，但每条 `agent()` prompt 末尾必须附加固定提示词，要求该 subagent 在返回结果开头标注"[内部产出，英文]"并提醒消费方："以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。"
+   - **本约束对"给用户看的最终输出层"一视同仁，无任何例外**：无论经过多少层编排、subagent 或后台任务，最终落到用户眼前的叙述/总结/状态汇报/计划/提问必须是中文（Claude Code 侧的展开细则见 [`CLAUDE.md`](CLAUDE.md)）。
    - **"上下文里全是英文"不是漂移成英文的借口。** 英文代码、工具输出、subagent 返回、PR/issue 正文都只是被处理的素材；你（主 agent）对用户的叙述层永远是中文。
    - **本仓库的历史英文化遗留不回译**：`tests/lightweight/test_no_patch_report_debug_environment.py` 等源自已移除的 `scripts/data-generation-v2-noPatch/` 全量英文化目录，其既有英文内容保持原样；此后新增/修改的内容仍按本条走中文。
 
@@ -29,38 +28,26 @@
    - 只改了某个生成链路时，至少跑该链路的定向单测（如改 swap 变体枚举 → `uv run python -m pytest tests/lightweight/test_swap_variant_plan.py -q`），再视时间预算补跑 `tests/lightweight/` 全量。
    - 涉及实跑生成的验证一律先做「单任务、单 episode、单 worker」的最小 smoke，通过后再放大规模；smoke 失败不得直接启动全量。
 
-4. **后台进程的起法（超 5 分钟必须 tmux）与等法（一律 Monitor），命令必须规范写：**
-   - **任何预计超过 5 分钟的后台任务（全量数据生成、合并、审计等）必须用 tmux detached session 起，脱离 harness 会话**——`run_in_background` 起的进程是 Claude Code 会话的子进程，会话退出/崩溃会连带杀死跑了几小时的任务。标准模板（2026-08-06 nohup vs tmux 六判据实测后定；内部仍是下述 pipefail+tee 管道；`EXIT_CODE=` 尾行作 Monitor 的统一完成信号）：
+4. **后台进程的起法：超 5 分钟必须 tmux，命令必须规范写**（等待方式属 Claude Code 侧细则，见 [`CLAUDE.md`](CLAUDE.md)）**：**
+   - **任何预计超过 5 分钟的后台任务（全量数据生成、合并、审计等）必须用 tmux detached session 起，脱离 harness 会话**——由 agent 会话直接起的后台进程是该会话的子进程，会话退出/崩溃会连带杀死跑了几小时的任务。标准模板（2026-08-06 nohup vs tmux 六判据实测后定；内部仍是下述 pipefail+tee 管道；`EXIT_CODE=` 尾行作统一完成信号）：
      ```bash
      tmux new-session -d -s <任务名> \
        "set -o pipefail; PYTHONUNBUFFERED=1 uv run python scripts/<入口脚本>.py <参数> 2>&1 | tee /path/to/run.log; echo \"EXIT_CODE=\$?\" >> /path/to/run.log"
      ```
-     配套命令：死活判断 `tmux has-session -t <任务名>`（实测运行中为真、结束后为假，无 stale 假阳性）；中途停止 `tmux kill-session -t <任务名>`（实测连 tee 一并干净退出、零孤儿；⚠ 强杀不会写 `EXIT_CODE=` 尾行，判死只能靠 has-session）；人肉围观 `tmux attach -t <任务名>`（Ctrl-b d 脱开）；`tmux ls` 一览所有在跑任务。落选方案 nohup（存活性/日志/退出码与 tmux 逐项打平，但需 setsid+pidfile+按进程组 `kill -- -PGID` 三件套且只杀 wrapper 会留孤儿）不再使用。**≤5 分钟的短任务照旧直接 `run_in_background`，不强制 tmux。**
-   - **等待任何后台进程（生成、合并、测试、日志变化）一律用 Monitor。Monitor 要"挂在一个流上、有关心的行就发事件"，禁止塞 `while ...; do sleep N; done; echo 完成` 这种最后才输出一次的阻塞脚本。** 正确形态是 tail 日志 + 过滤完成/报错行（`tr` 需 `stdbuf -oL` 防管道缓冲吞行）；**一份日志挂一个 Monitor，禁止一条 `tail -F` 同时挂多个日志文件**（实测多文件 tail 每次切换都打 `==> 文件 <==` 头部行，噪声大到触发 Monitor 限流）：
-     ```bash
-     tail -n +1 -F /path/to/run.log | stdbuf -oL tr '\r' '\n' \
-       | grep --line-buffered -E "全部完成|EXIT_CODE=|Error|Traceback|out of memory|找不到"
-     ```
-   - **进程存活检测禁止用裸 `pgrep -f "<pattern>"`**（pattern 在 Monitor 自身 argv 里 → 永远自匹配恒真）。tmux 起的任务用 `tmux has-session`；其余用括号技巧 `pgrep -f "[g]enerate_swap_variants.py"` 或启动时 `$!` 记下的具体 PID。
-   - **`run_in_background` 直接起的进程退出时 harness 会自动重新唤醒，无需再挂 pgrep 轮询；但 tmux 里起的任务 harness 感知不到退出，Monitor 是唯一完成信号，必须挂。**
-   - **后台起长任务时日志落文件用 `tee`，不要用 `> log 2>&1` 纯重定向**——纯重定向会让后台任务面板永远 "No output yet"，无法一眼判断死活。三个坑逐一处理：`PYTHONUNBUFFERED=1` 防管道块缓冲吞输出、`set -o pipefail` 防主命令崩了 `$?` 被 tee 的 0 顶替、日志文件照常供 Monitor tail（该管道已内嵌在上面的 tmux 模板里；短任务直接 `run_in_background` 时单独套用同一管道即可）。
+     配套命令：死活判断 `tmux has-session -t <任务名>`（实测运行中为真、结束后为假，无 stale 假阳性）；中途停止 `tmux kill-session -t <任务名>`（实测连 tee 一并干净退出、零孤儿；⚠ 强杀不会写 `EXIT_CODE=` 尾行，判死只能靠 has-session）；人肉围观 `tmux attach -t <任务名>`（Ctrl-b d 脱开）；`tmux ls` 一览所有在跑任务。落选方案 nohup（存活性/日志/退出码与 tmux 逐项打平，但需 setsid+pidfile+按进程组 `kill -- -PGID` 三件套且只杀 wrapper 会留孤儿）不再使用。**≤5 分钟的短任务照旧直接后台起，不强制 tmux。**
+   - **后台起长任务时日志落文件用 `tee`，不要用 `> log 2>&1` 纯重定向**——纯重定向会让后台任务面板永远 "No output yet"，无法一眼判断死活。三个坑逐一处理：`PYTHONUNBUFFERED=1` 防管道块缓冲吞输出、`set -o pipefail` 防主命令崩了 `$?` 被 tee 的 0 顶替、日志文件照常供后续 tail 查看（该管道已内嵌在上面的 tmux 模板里；短任务直接后台起时单独套用同一管道即可）。
 
-5. **Workflow 只有三条约定，其余全部作废：**
-   - **①逐次审批**：**每次生成 workflow 前，必须先把方案（要做什么、分几个 phase、规模多大、用什么模型）交用户审批，获准后才能调 Workflow 工具。** 除此之外的一切开启条件（`ultracode` 关键字、用户原话是否说过「用 workflow」、任务规模是否够大、fan-out 数量刻度等）**一律作废**，不再作为自行启动的依据。
-   - **②模型规则（2026-08-06 更新，按启动方式分两条）**：**用 Agent 工具 launch 单个 subagent 时强制 `model: "opus"`**；Workflow 脚本里调 `agent()` 默认且仅允许 `model: "sonnet"`，**唯一例外**：workflow 收尾的总结/综合 agent、或负责制定计划（plan）的 agent，可用 `model: "opus"`，但**单次 workflow 内（按 workflow 计，不是按完整任务计——一个任务跑多个 workflow 时每个 workflow 各自计数）**累计使用 opus 不得超过 3 次。两条通用：禁止 haiku、fable 及一切白名单外模型，且 **`model` 参数不得省略**——省略会静默继承主会话模型（常是 fable），同样算违规。
-   - **③不设置任何额外并发限制**：`parallel()`/`pipeline()` 直接传入完整条目即可，不要为控制并发人为拆批、加节流或降低单批数量——Workflow 工具自身已有并发上限（`min(16, cpu核数-2)`），脚本层面不叠加限制。
+5. **仓库文档中禁止用硬编码行号引用代码**（`file.py:123` 这类）。行号随代码演进必然漂移。引用代码一律用**稳定符号锚点**：函数/类/方法名、CLI flag 名、JSON 字段名、或代码段的语义描述；文件级 markdown 链接可保留。本条不约束代码内注释与 commit message。
 
-6. **仓库文档中禁止用硬编码行号引用代码**（`file.py:123` 这类）。行号随代码演进必然漂移。引用代码一律用**稳定符号锚点**：函数/类/方法名、CLI flag 名、JSON 字段名、或代码段的语义描述；文件级 markdown 链接可保留。本条不约束代码内注释与 commit message。
+6. **凡 patch 级特征图/热力图（如 16×16 网格）的放大可视化只能用最近邻 `cv2.INTER_NEAREST`，禁止 linear/bilinear 等任何插值**——patch 级特征只有网格分辨率，线性插值会伪造亚格子细节并糊掉格子边界。本仓库的可视化脚本（如 `scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py`）同受此约束。（真实照片帧、渲染视频帧的缩放不受此限。）
 
-7. **凡 patch 级特征图/热力图（如 16×16 网格）的放大可视化只能用最近邻 `cv2.INTER_NEAREST`，禁止 linear/bilinear 等任何插值**——patch 级特征只有网格分辨率，线性插值会伪造亚格子细节并糊掉格子边界。本仓库的可视化脚本（如 `scripts/data-generation-MotionJEPALabel/draw_variant_diagrams.py`）同受此约束。（真实照片帧、渲染视频帧的缩放不受此限。）
-
-8. **每次改动完成（并跑过规则 3 的测试）后必须 `git commit`，且只能提交本轮自己改的内容：**
+7. **每次改动完成（并跑过规则 3 的测试）后必须 `git commit`，且只能提交本轮自己改的内容：**
    - **commit message 用简体中文**，subject **沿用本仓库现行体例** `<大版本>.<小版本>[.<修订>] <中文描述>`（照抄 `git log`，如 `2.9.2 变体简图出图验证与账本补记`）。大版本号只在系统性、跨机制的重大更新时递增；小版本号用于该大版本内的常规迭代，每次 commit 递增；从哪个版本号接续以 `git log` 最近一次为准。
    - **只 commit 自己改的文件**：一律 `git add <逐个明确路径>`，**禁止 `git add -A`、`git add .`、`git commit -a`** 这类全量暂存——它们会把用户或其他 agent 的在途改动一并裹进来。
    - **提交前先 `git status --short` 核对工作区**：若存在不属于本轮改动的文件（他人编辑、别的 agent 产物、遗留脏文件），**一律绕开、不得提交，也不得 stash/revert 掉**；必要时在汇报里点名这些文件，交用户处置。
    - **subject 沿用上述体例不动，body 必须详写过程**——目标是人类不看会话记录也能了解具体过程、复现当时场景，详略以「会话工作总结」为准（按主题分节、成段叙述、带实测数字，不是三五行摘要）。body 须包含：①**用户指令原话**（本轮涉及的全部关键用户消息：初始指令 + 中途追加/纠偏，按时间顺序原话保留，闲聊/确认类可略）；②**结构化后的完整计划**（要做什么、分几步、判据是什么）；③**实施过程分节叙述**（一、二、三…写清每一步做了什么、关键设计点与取舍理由）；④**计划到实施中的意外**（踩的坑、临时改向、被推翻的假设、外部事件、顺手修的 bug 及各自处置）；⑤**重要实验/测试**（命令/入口、关键参数口径、实测数字与结论）；⑥**当前状态与下一步**。纯文档/一行修补类微小改动 body 可相应精简，但用户指令原话与测试/验证结果两项不可省。
 
-9. **本机（非集群）上跑任何消费数据集的任务，一律优先用 `/data` 本地盘副本，不读 NFS 原件。**
+8. **本机（非集群）上跑任何消费数据集的任务，一律优先用 `/data` 本地盘副本，不读 NFS 原件。**
    - **理由**：`/nfs/turbo` 是网络文件系统，实测带宽约 132 MB/s 就是天花板，且已被坐实为大批量读取任务的真实瓶颈（加大 batch 吞吐纹丝不动，纯卡在读取上）。`/data` 是本机 NVMe（14 TB），不受此限。
    - **本仓库口径**：仓库本体与官方参考集都已在本机盘上——官方参考数据固定在仓库内 `data/robomme_data_h5/`，生成产物落 `artifacts/generated/<...>/` 或各生成目录自己的 `outputs/`；跨仓库引用 MotionJEPA 侧数据时优先取 `/data/hongzefu/` 下的本机副本。
    - **同步只用 rsync**，NFS 侧是权威源，两边不一致时以 NFS 为准；NFS 原件被重建或增量更新后必须重跑同步，别让本地副本悄悄变陈旧：
@@ -68,7 +55,7 @@
      rsync -a --info=progress2 /nfs/turbo/coe-chaijy-unreplicated/hongzefu/<目录> /data/hongzefu/
      ```
 
-10. **仅 OpenAI Codex agent：`bwrap` / `apply_patch` 故障回退**
+9. **仅 OpenAI Codex agent：`bwrap` / `apply_patch` 故障回退**
 
     > 本条只适用于 OpenAI Codex 主 agent 及其 Codex subagent。其他 agent、Claude Code
     > （含其 subagent 与 Workflow）、自动化工具和人类用户必须忽略本条。本条不修改上面
@@ -1005,3 +992,17 @@
 - 范围核对结论：**失败 0**；受阻并已补足 1 项（BinFill-medium-dynamicTrue 原 ep0 换 ep2）；未覆盖 5 项已逐条登记（① 的 BinFill 六格目视、RRT* 回退局未触发故容差路径未验证、其余 11 格未在清理后重跑、③.4 只覆盖一格、观察器开销只校准过一格）。
 - 修改文件：`docs/validation/newtask-v2/{DELIVERY.md,README.md}`、`docs/validation/newtask-v2/20260909T1441Z-postclean/README.md`、`tests/lightweight/test_native_sampling_evidence.py`、`NEWTASK_V2_PLAN.md`（补第十一节 10.4）、本账本。
 - 下一步：等用户对未覆盖项（尤其 BinFill 六格目视）的处置意见；不把当前状态说成方案第六步的完全通过。
+
+### 2026-09-09 America/Detroit — AGENTS.md 与 CLAUDE.md 按适用范围真正拆开
+
+- 状态：完成。
+- 用户指令：初始「/data/hongzefu/robomme_benchmark_MotionJEPANewTask/AGENTS.md、CLAUDE.md 现在的 agent claude 没有分开，按照 newtask-v2 的写法分开」；中途纠偏「不要动 /data/hongzefu/robomme_benchmark_MotionJEPA-LabelData 恢复原状，改 /data/hongzefu/robomme_benchmark_MotionJEPANewTask」；口径确认选项＝「两份内容真正拆开」＋通用条目「留 AGENTS.md，CLAUDE.md 引用」。
+- 目标：原 `CLAUDE.md` 只是一句指向 `AGENTS.md` 的指针，两份文件实为一份内容。本轮改为按**适用范围**拆分：`AGENTS.md` 只留通用约定与 Codex 专属条目，`CLAUDE.md` 只留 Claude Code 专属条目，互不重复、各自可独立维护。
+- 拆分口径：10 条强制规则中，规则 5（Workflow 三条）、规则 4 的 Monitor 等待/pgrep 自匹配/`run_in_background` 唤醒三小条、规则 1 的「最终输出层」Ultracode/Workflow/`/code-review`/fork/subagent 展开，均为 Claude Code 专属 → 移入 `CLAUDE.md`；规则 10（Codex `bwrap` 回退）本就声明「仅 OpenAI Codex agent」→ 留 `AGENTS.md`；其余（中文、uv、测试 ≤5 分钟、tmux 起法、禁硬编码行号、`INTER_NEAREST`、git commit、`/data` 优先）为通用 → 留 `AGENTS.md`，`CLAUDE.md` 顶部引用而不复制，避免两份规则分叉。
+- 执行命令：一次性 Python 脚本按行首标记切块搬运（每处替换带 assert 命中次数校验），不手抄正文，保证移动的是原文而非改写。
+- 结果与证据：`AGENTS.md` 1007 → 994 行，强制规则由 10 条重编号为 9 条（规则 5 移出后 6–10 顺次前移为 5–9；规则 7 中「跑过规则 3 的测试」的交叉引用因规则 3 位置未变而仍然正确）；新 `CLAUDE.md` 29 行、三节（最终输出层中文 / Monitor 等待 / Workflow 三条）。`grep -n 'Monitor\|Workflow\|run_in_background\|Ultracode' AGENTS.md` 在强制规则节内只剩两处交叉引用与 Codex 条自身的适用范围声明。
+- 通用化改写：规则 4 原文里的 Claude Code 专有名词改为中性表述——「`run_in_background` 起的进程是 Claude Code 会话的子进程」→「由 agent 会话直接起的后台进程是该会话的子进程」、「`EXIT_CODE=` 尾行作 Monitor 的统一完成信号」→「作统一完成信号」、「≤5 分钟的短任务照旧直接 `run_in_background`」→「照旧直接后台起」、「日志文件照常供 Monitor tail」→「供后续 tail 查看」；规则 1 删去的输出层块换成一句中性表述并标注展开细则见 `CLAUDE.md`。
+- 测试：`uv run python -m pytest tests/lightweight/ -q` → 179 passed / 4 failed，171.84s（在规则 3 的 5 分钟预算内）。4 个失败为本仓库既有失败（`test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal`、`test_TaskGoal.py::test_swingxtimes_multiple`、`test_step_error_handling.py::test_step_error_returns_status_error`、`test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except`），与 2026-08-18 拆分 CLAUDE.md 指针那次记录的失败集合完全一致；本轮只改两个 markdown 文件，这四个用例均不读取 `.md`。
+- 差异或阻塞：无。本轮另有一处会话内插曲——最初误在 `/data/hongzefu/robomme_benchmark_MotionJEPA-LabelData`（分支 `dataset-gen-LabelData`）做了同类改动并提交，用户纠偏后已 `git reset --hard d53f21a` 恢复原状（该仓库 commit 未推送，远端未受影响），本仓库改动与之无关。
+- 修改文件：`AGENTS.md`（强制规则节拆分与重编号、本条日志）、`CLAUDE.md`（由单句指针改写为 Claude Code 专属约定三节）。
+- 下一步：无待办。以后新增约定按适用范围二选一落位：通用/Codex 进 `AGENTS.md`，Claude Code 专属进 `CLAUDE.md`。
