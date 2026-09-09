@@ -111,6 +111,7 @@ class Campaign:
                 files[label] = target / f"record_dataset_{task}.h5"
             comparisons = {f"{left}-{right}": parity.compare_h5(files[left], files[right]) for left, right in PAIRS}
             reports[cell] = {"files": {key: str(path) for key, path in files.items()}, "differences": comparisons,
+                             "fingerprints": {key: parity.h5_digest(parity.h5_fingerprint(path)) for key, path in files.items()},
                              "passed": not any(comparisons.values())}
             self.save("merged_comparison.json", reports)
             if not reports[cell]["passed"]:
@@ -138,6 +139,9 @@ class Campaign:
                 comparison = parity.compare_evidence(a, b)
                 caches = [record["spawn_cache_empty_on_entry"] for record in b["boundaries"] if "spawn_cache_empty_on_entry" in record]
                 slots[slot] = {"h5_differences": differences, "evidence_passed": comparison["passed"],
+                               "h5_fingerprints": {"independent": parity.h5_digest(parity.h5_fingerprint(left)),
+                                                   "continuous": parity.h5_digest(parity.h5_fingerprint(right))},
+                               "evidence_digests": {"independent": parity.evidence_digest(a), "continuous": parity.evidence_digest(b)},
                                "cache_empty": caches == [True], "passed": not differences and comparison["passed"] and caches == [True]}
             reports[label] = {"execution": run_report, "slots": slots,
                 "passed": all(slot["passed"] for slot in slots.values()) and run_report["same_worker"]
