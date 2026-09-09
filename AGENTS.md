@@ -180,7 +180,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| episode 对象与动作冻结扩展 | 完整对拍进行中 | 代码 c56e5af（10.8）；102 项定向测试、四路单格 smoke、原版观察器开关校准全通过；schema 3 的 66 组历史操作元一致 | 独立运行 20260909-actions-c56e5af 的 15 格 fresh、合并、连续 worker、关键帧与补充回归 |
+| episode 对象与动作冻结扩展 | 完整对拍进行中 | 产品 c56e5af（10.8）、验证工具 f8eb08c（10.9）；106 项定向测试、新版观察器四路 smoke 与开关校准通过；66 组历史操作元一致 | 独立运行 20260909-actions-v2 的 15 格 fresh、合并、连续 worker、关键帧与补充回归 |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
 | 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
 | 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
@@ -1043,3 +1043,14 @@
 - 下一步：新版观察器校准通过后提交验证工具，以新的运行编号重新采集全部 60 次和后续证据。
 
 - 修订后结果：第二次四路 smoke 共 117.3 秒，四对 HDF5、随机流、状态、事件、recordings 映射与 reset 原始 RGB 全部一致；新版观察器与原 A0 关闭观察器的 HDF5 差异 0。106 项定向测试再次全过（3.46 秒）。完整驱动增加逐格 A1/A2 校准门槛，原版不稳定时停止该次矩阵，不继续运行 B/C。
+
+### 2026-09-09 America/Detroit — 20260909-actions-v2 正式 fresh 重跑
+
+- 状态：进行中。
+- 固定版本：HEAD f8eb08c，产品代码为 c56e5af，原基线 94449db；启动前工作区仅本条账本更新。
+- 入口：先 `uv run --no-sync python -m tests._shared.parity_runner --run-id 20260909-actions-v2`，成功后 `uv run --no-sync python -m tests._shared.action_freeze_campaign --run-id 20260909-actions-v2`。
+- 后台：tmux action-freeze-v2，完整单日志 artifacts/logs/action-freeze-v2.log，pipefail/tee/EXIT_CODE 全部启用。全自动阶段完成后逐图目视，不把出图记为目视完成。
+
+- 目视安排：已完成四路且单格完整比较通过的场景，可先用 parity_review collect 出图，再按原尺寸画板逐张查看三路双相机原图区；原差分图及机检统计保留。mark 仅在实际查看后调用，并同时核验画板和每张原图版散列。这样目视可与后续格生成并行，不跳过规定关键帧。
+- 工具验证：smoke2 的 42 张 HDF5 关键帧加 1 张 reset 共 43 张原图版，准备成 11 个无缩放画板；已查看第 0 个画板并登记 4 张图的结果，其他 smoke 图不计目视。正式 15 格使用自己的新图和记录。
+- 补充回归防误判：重试对照必须实际观察到 seed 4000/4001、attempt 0/1、失败后成功；三路都直接成功不能冒充重试覆盖。

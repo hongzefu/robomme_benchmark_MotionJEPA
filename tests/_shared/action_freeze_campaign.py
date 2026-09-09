@@ -137,7 +137,11 @@ class Campaign:
             runs[label] = {"path": str(target), "attempts": [{key: item.get(key) for key in fields} for item in attempts]}
         differences = {f"{a}-{b}": parity.compare_h5(parity._single_h5(Path(runs[a]["path"])), parity._single_h5(Path(runs[b]["path"])))
                        for a, b in (("A1", "B"), ("A1", "C"), ("B", "C"))}
-        passed = runs["A1"]["attempts"] == runs["B"]["attempts"] == runs["C"]["attempts"] and not any(differences.values())
+        attempts = runs["A1"]["attempts"]
+        exercised_retry = ([item["seed"] for item in attempts] == [4000, 4001]
+            and [item["attempt"] for item in attempts] == [0, 1]
+            and [item["ok"] for item in attempts] == [False, True])
+        passed = exercised_retry and attempts == runs["B"]["attempts"] == runs["C"]["attempts"] and not any(differences.values())
         self.save("retry_comparison.json", {"runs": runs, "differences": differences, "passed": passed})
         if not passed:
             raise RuntimeError("重试分支不一致")
