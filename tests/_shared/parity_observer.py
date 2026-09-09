@@ -42,12 +42,15 @@ import importlib.util
 import json
 import os
 import re
+import base64
+import inspect
+import zlib
 import sys
 import threading
 from pathlib import Path
 from typing import Any, Callable
 
-EVIDENCE_VERSION = 1
+EVIDENCE_VERSION = 2
 
 _state: dict[str, Any] = {
     "installed": False,
@@ -78,6 +81,7 @@ class _EpisodeEvidence:
         self.boundaries: list[dict[str, Any]] = []
         self.steps: list[dict[str, Any]] = []
         self.initial_obs: dict[str, Any] | None = None
+        self.recordings: list[dict[str, Any]] = []
         self.rrt_fallback_count = 0
         self.call_index = 0
         self.generator_ordinals: dict[int, int] = {}
@@ -104,6 +108,7 @@ class _EpisodeEvidence:
             "boundaries": self.boundaries,
             "steps": self.steps,
             "initial_obs": self.initial_obs,
+            "recordings": self.recordings,
         }
 
 
@@ -287,11 +292,14 @@ def _wrap_event(module: Any, name: str) -> None:
     original = getattr(module, name, None)
     if not callable(original) or getattr(original, "_parity_wrapped", False):
         return
+    signature = inspect.signature(original)
 
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         episode = _current()
         index = episode.next_index() if episode is not None else -1
         if episode is not None:
+            arguments = signature.bind_partial(*args, **kwargs).arguments
+            timing = {key: int(arguments[key]) for key in ("start_step", "end_step", "cur_step") if key in arguments}
             binding = None
             if name == "swap_flat_two_lane" and args:
                 env = args[0]
@@ -315,6 +323,7 @@ def _wrap_event(module: Any, name: str) -> None:
                     "args": [_summarize(item) for item in args[:8]],
                     "kwargs": {key: _summarize(value) for key, value in list(kwargs.items())[:8]},
                     "swap_binding": binding,
+                    "timing": timing,
                 }
             )
         result = original(*args, **kwargs)
@@ -563,9 +572,32 @@ def _patch_record_wrapper(module: Any) -> None:
                 "note": "外层 reset 的返回观测；生成器丢弃了它，HDF5 中没有对应帧",
                 "value": _summarize(result),
             }
+            # 保留原 reset 返回的 RGB，供目视；只转存已有数组，不额外渲染。
+            obs = result[0]
+            rgb = {}
+            for camera, source in (("front_rgb", "base_camera"), ("wrist_rgb", "hand_camera")):
+                array = obs["sensor_data"][source]["rgb"][0].detach().cpu().numpy()
+                rgb[camera] = {"dtype": str(array.dtype), "shape": list(array.shape),
+                    "zlib_base64": base64.b64encode(zlib.compress(array.tobytes())).decode("ascii")}
+            episode.initial_obs["rgb"] = rgb
         return result
 
     wrapper_class.reset = reset
+    original_step = wrapper_class.step
+
+    def step(self: Any, *args: Any, **kwargs: Any) -> Any:
+        episode = _current()
+        event_begin = len(episode.events) if episode is not None else 0
+        record_begin = len(self.buffer)
+        before = int(self.unwrapped.elapsed_steps)
+        result = original_step(self, *args, **kwargs)
+        if episode is not None:
+            episode.recordings.append({"env_step_before": before, "env_step_after": int(self.unwrapped.elapsed_steps),
+                "record_begin": record_begin, "record_end": len(self.buffer),
+                "event_begin": event_begin, "event_end": len(episode.events)})
+        return result
+
+    wrapper_class.step = step
 
 
 def _patch_planner(module: Any) -> None:

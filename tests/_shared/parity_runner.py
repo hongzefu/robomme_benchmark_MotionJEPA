@@ -174,6 +174,28 @@ def run_matrix(
                 f"{result.get('elapsed_s')}s",
                 flush=True,
             )
+            if label == "A2" and "A1" in labels:
+                # 每格先确认原版可重复，再运行新版；不能只依赖上一轮的校准结论。
+                from tests._shared.native_sampling_parity import _single_h5, compare_h5, compare_evidence, load_evidence
+                left_dir = BASELINE_WORKTREE / "artifacts/parity" / output_root.name / case["cell"] / "A1"
+                right_dir = left_dir.parent / "A2"
+                left_h5, right_h5 = _single_h5(left_dir), _single_h5(right_dir)
+                calibration = {"passed": False}
+                if left_h5 is not None and right_h5 is not None:
+                    left = load_evidence(evidence_root / "A1" / f"{case['task']}_seed{case['seed']}", case["difficulty"])
+                    right = load_evidence(evidence_root / "A2" / f"{case['task']}_seed{case['seed']}", case["difficulty"])
+                    differences = compare_h5(left_h5, right_h5)
+                    evidence_comparison = compare_evidence(left, right)
+                    calibration = {"h5_differences": differences, "evidence_passed": evidence_comparison["passed"],
+                        "rrt_fallback_count": [left.get("rrt_fallback_count"), right.get("rrt_fallback_count")],
+                        "passed": not differences and evidence_comparison["passed"] and left.get("rrt_fallback_count") == right.get("rrt_fallback_count") == 0}
+                result["calibration"] = calibration
+                (log_dir / f"{case['cell']}.calibration.json").write_text(json.dumps(calibration, ensure_ascii=False, indent=2) + "\n")
+                print(f"原版校准 {case['cell']}：{'通过' if calibration['passed'] else '受阻'}", flush=True)
+                if not calibration["passed"]:
+                    result["ok"], result["skipped"] = False, False
+                    return {"cases": [case["cell"]], "labels": list(labels), "results": results,
+                            "elapsed_s": round(time.monotonic() - started, 1), "failed": [result]}
     return {
         "cases": [case["cell"] for case in cases],
         "labels": list(labels),

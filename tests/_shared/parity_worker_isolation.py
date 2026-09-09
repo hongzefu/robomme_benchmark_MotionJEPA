@@ -44,6 +44,7 @@ import seed_layout  # noqa: E402
 
 CONFIG_PATH = REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "native_sampling.json"
 SAMPLING_TASKS = ("BinFill", "RouteStick", "VideoUnmaskSwap", "VideoRepick")
+_PRODUCT_WORKER = generator._worker
 
 
 def _hash(payload: Any) -> str:
@@ -64,6 +65,17 @@ def _class_config_hashes() -> dict[str, str]:
         task_class = getattr(module, task)
         hashes[task] = _hash(task_class.configs)
     return hashes
+
+
+def _checked_worker(job):
+    """在真实池进程内核对类级配置；只包原 worker，不另写生成循环。"""
+    before = _class_config_hashes()
+    result = _PRODUCT_WORKER(job)
+    after = _class_config_hashes()
+    result["worker_class_config_before"] = before
+    result["worker_class_config_after"] = after
+    result["worker_class_config_unchanged"] = before == after
+    return result
 
 
 def build_jobs(
@@ -117,17 +129,21 @@ def run(
     jobs, detail = build_jobs(output_root, with_config, first, second)
     before_parent = _hash([getattr(job, "sampling_config", None) for job in jobs])
 
-    succeeded, exhausted = generator._run_jobs(
-        jobs=jobs,
-        gpu_ids=("0",),
-        workers=1,
-        layout_name="train",
-        jsonl_path=output_root / "episode_results.jsonl",
-        max_attempts=1,
-        # 固定 8：三条 job 必须落在同一个池进程里，否则测的就不是「连续 worker」
-        max_tasks_per_child=8,
-        cpu_plan={"0": None},
-    )
+    generator._worker = _checked_worker
+    try:
+        succeeded, exhausted = generator._run_jobs(
+            jobs=jobs,
+            gpu_ids=("0",),
+            workers=1,
+            layout_name="train",
+            jsonl_path=output_root / "episode_results.jsonl",
+            max_attempts=1,
+            # 固定 8：三条 job 必须落在同一个池进程里。
+            max_tasks_per_child=8,
+            cpu_plan={"0": None},
+        )
+    finally:
+        generator._worker = _PRODUCT_WORKER
     after_class = _class_config_hashes()
     after_parent = _hash([getattr(job, "sampling_config", None) for job in jobs])
 
@@ -142,11 +158,13 @@ def run(
         "class_config_hash_before": before_class,
         "class_config_hash_after": after_class,
         "class_config_unchanged": before_class == after_class,
+        "worker_class_config_unchanged": len(succeeded) == 3 and all(item.get("worker_class_config_unchanged") for item in succeeded),
         "parent_config_hash_before": before_parent,
         "parent_config_hash_after": after_parent,
         "parent_config_unchanged": before_parent == after_parent,
         "results": [
-            {key: item.get(key) for key in ("task", "episode", "seed", "difficulty", "ok", "wall_s", "h5_path")}
+            {key: item.get(key) for key in ("task", "episode", "seed", "difficulty", "ok", "wall_s", "h5_path",
+                "worker_class_config_before", "worker_class_config_after", "worker_class_config_unchanged")}
             for item in succeeded + exhausted
         ],
     }

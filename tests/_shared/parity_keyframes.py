@@ -19,9 +19,11 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import sys
+import zlib
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -152,6 +154,7 @@ def build_montage(
     index: int,
     title: str,
     target: Path,
+    initial_rgb: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """一帧一张图版：两行（正面／腕部）× 若干列（A／B／C 原图 + 差分图）。
 
@@ -163,7 +166,14 @@ def build_montage(
     stats: dict[str, Any] = {"frame_sha256": {}, "difference": {}}
     for camera in CAMERAS:
         row: list[tuple[str, np.ndarray]] = []
-        arrays = {label: _frame(path, index, camera) for label, path in frames.items()}
+        if initial_rgb is None:
+            arrays = {label: _frame(path, index, camera) for label, path in frames.items()}
+        else:
+            arrays = {}
+            for label in labels:
+                stored = initial_rgb[label][camera]
+                raw = zlib.decompress(base64.b64decode(stored["zlib_base64"]))
+                arrays[label] = np.frombuffer(raw, dtype=np.dtype(stored["dtype"])).reshape(stored["shape"])
         for label in labels:
             array = arrays[label]
             stats["frame_sha256"][f"{camera}.{label}"] = hashlib.sha256(array.tobytes()).hexdigest()
@@ -195,18 +205,43 @@ def build_montage(
     return stats
 
 
+def event_record_indices(evidence: dict[str, Any]) -> dict[str, Any]:
+    """按 wrapper 实际追加记录的位置映射事件，绝不以环境步数猜测 HDF5 编号。"""
+    if "recordings" not in evidence:
+        raise ValueError("缺少环境步到 HDF5 的记录映射，必须重新采集观察器证据")
+    indices = set()
+    unmapped = []
+    for record in evidence["recordings"]:
+        for event in evidence["events"][record["event_begin"]:record["event_end"]]:
+            timing = event.get("timing", {})
+            if not all(key in timing for key in ("start_step", "end_step", "cur_step")):
+                continue
+            start, end, current = (timing[key] for key in ("start_step", "end_step", "cur_step"))
+            if current not in (start, end, (start + end) // 2):
+                continue
+            if record["record_begin"] == record["record_end"]:
+                unmapped.append({"event": event["name"], "env_step": current, "reason": "原 wrapper 本步未记录"})
+            else:
+                indices.update(range(record["record_begin"], record["record_end"]))
+    return {"indices": sorted(indices), "unrecorded_events": unmapped}
+
+
 def export_cell(
     cell: str,
     case: dict[str, Any],
     frames: dict[str, Path],
     output_root: Path,
     limit: int | None = None,
+    evidence_paths: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """导出一格的关键帧图版；三路取并集，越界邻帧明确标记。"""
     union: dict[int, list[str]] = {}
     per_path: dict[str, Any] = {}
+    event_mapping = {}
     for label, path in frames.items():
-        detail = keyframe_indices(path)
+        events = event_record_indices(evidence_paths[label]) if evidence_paths is not None else {"indices": []}
+        event_mapping[label] = events
+        detail = keyframe_indices(path, extra=events["indices"])
         per_path[label] = detail
         for index, why in detail["keyframes"].items():
             union.setdefault(int(index), []).extend(f"{label}:{item}" for item in why)
@@ -220,6 +255,10 @@ def export_cell(
         sampled = selected
 
     montages: dict[str, Any] = {}
+    if evidence_paths is not None:
+        initial = {label: evidence["initial_obs"]["rgb"] for label, evidence in evidence_paths.items()}
+        montages["reset"] = build_montage(frames, -1, f"{cell} | 原 reset 返回初态（无 HDF5 帧号）",
+            output_root / cell / "reset.png", initial_rgb=initial)
     for index in sampled:
         title = (
             f"{cell} | {case.get('task')} {case.get('difficulty')} seed={case.get('seed')} "
@@ -237,9 +276,10 @@ def export_cell(
         "rendered_keyframes": sampled,
         "not_rendered": sorted(set(selected) - set(sampled)),
         "montages": montages,
+        "event_record_mapping": event_mapping,
         "initial_observation_note": (
             "初态用观察器捕获的 reset 返回观测，不额外渲染；它在 HDF5 中没有对应帧，"
-            "只出现在 ② 的构造期证据里"
+            "schema 2 观察器另存原始 RGB，并在 reset.png 中逐像素展示"
         ),
     }
 
@@ -251,13 +291,14 @@ def _main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--result", required=True, help="pack 出来的 result.json，用于只挑 ③ 已通过的格")
     parser.add_argument("--output", required=True, help="图版落点（artifacts/，不入 Git）")
     parser.add_argument("--index", required=True, help="关键帧索引与散列的落点（入 Git）")
+    parser.add_argument("--evidence-root", default=None, help="本轮观察器证据：用于事件记录映射与 reset 原图")
     parser.add_argument(
         "--limit", type=int, default=0, help="每格最多出多少张图版；<=0 表示全部关键帧都出图"
     )
     args = parser.parse_args(argv)
 
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    from tests._shared.native_sampling_parity import _episode_dir, _single_h5
+    from tests._shared.native_sampling_parity import _episode_dir, _single_h5, load_evidence
 
     run_root = Path(args.run_root).resolve()
     cases = {case["cell"]: case for case in json.loads(Path(args.cases).read_text(encoding="utf-8"))["cases"]}
@@ -276,9 +317,13 @@ def _main(argv: Sequence[str] | None = None) -> int:
         if len(frames) != 3:
             index_payload["cells"][cell] = {"status": "未验证", "reason": "三路 HDF5 不齐"}
             continue
+        evidence_paths = None
+        if args.evidence_root:
+            case = cases[cell]
+            evidence_paths = {label: load_evidence(Path(args.evidence_root) / label / f"{case['task']}_seed{case['seed']}", case["difficulty"])
+                              for label in frames}
         index_payload["cells"][cell] = export_cell(
-            cell, cases[cell], frames, Path(args.output), args.limit if args.limit > 0 else None
-        )
+            cell, cases[cell], frames, Path(args.output), args.limit if args.limit > 0 else None, evidence_paths=evidence_paths)
         index_payload["cells"][cell]["status"] = "待目视"
         print(
             f"{cell}: 关键帧 {index_payload['cells'][cell]['union_keyframe_count']} 帧，"

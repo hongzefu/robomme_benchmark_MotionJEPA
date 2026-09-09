@@ -180,7 +180,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| episode 对象与动作冻结扩展 | 进行中 | 用户已批准 schema 3 接入及完整 15 格、五项对拍；起点 eabb468，工作区干净，原基线 worktree 94449db 已存在 | 接入配置、校验及观察器，短测提交后完整重新生成与留档 |
+| episode 对象与动作冻结扩展 | 完整对拍进行中 | 代码 c56e5af（10.8）；102 项定向测试、四路单格 smoke、原版观察器开关校准全通过；schema 3 的 66 组历史操作元一致 | 独立运行 20260909-actions-c56e5af 的 15 格 fresh、合并、连续 worker、关键帧与补充回归 |
 | `/init` 仓库初始化 | 完成 | 已确认根目录 `readme.md`、官方 dataset 链接、仓库内标准数据路径、当前 Git 状态及历史候选线索；已创建本文件 | 按第一阶段下载参考 dataset |
 | 第一阶段：下载参考 dataset | 完成 | 固定官方 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337`；16 个 HDF5、1,600 episode 的 SHA-256/HDF5 审计通过；16 任务双 GPU 回放共 160 episode、160 success 视频、无 worker 或 step 错误 | 可正式开始第二阶段：扫描 Git 历史并恢复最新可用生成脚本 |
 | 第二阶段：恢复生成脚本 | 完成 | 扫描 14 个远端 branch、0 tag、71 个关键词 commit 和 539 个历史路径；选定最新兼容 `a3842d1...`；最终唯一入口为 `scripts/generate_dataset.sh`，固化补丁为 `scripts/generate_dataset_a3842d1.patch`；候选 worktree/lock/Python 3.11.14、help、原 seed 1×1×1 smoke 与生成后契约均通过 | 已正式进入第三阶段 |
@@ -1024,3 +1024,22 @@
 - 测试：配置、证据与动作定向测试共 102 passed，3.41 秒；BinFill easy ep0 四路均首次成功，115.8 秒，四对 HDF5 与边界/事件/逐步/随机流均一致。原版不带观察器单局成功，27.3 秒；独立比较校准另记。
 - 范围：本轮 short smoke 只覆盖 BinFill easy，不能将其他未运行格记为失败或通过；首次打包误用了完整用例表，已另以单格输入生成 scoped smoke 证据，原临时包保留不作正式结论。
 - 下一步：提交代码后启动独立运行编号的 15 格 fresh 对拍，再做合并、连续 worker、重试、16 任务、全量关键帧与离线复验。
+
+### 2026-09-09 America/Detroit — 15 格 fresh 对拍启动
+
+- 状态：进行中。
+- 基线：A1/A2 固定 94449db；B/C 固定代码提交 c56e5af。原版观察器开启/关闭的 HDF5 全字段比较差异 0；单格四对全部通过，102 项定向检查再次通过（3.42 秒）。
+- 命令：`uv run --no-sync python -m tests._shared.parity_runner --cases docs/validation/newtask-v2/cases.json --run-id 20260909-actions-c56e5af`，完整 15 格四路，不缩减 cell/path/steps。
+- 后台：tmux 会话 action-freeze-15；日志 artifacts/logs/action-freeze-15.log；输出 artifacts/parity/20260909-actions-c56e5af 与原基线 worktree 内对应目录。
+- 下一步：等待 60 次完成，核对全部原版重复性与新增对象/动作；再运行合并、隔离、补充回归和关键帧检查。
+
+### 2026-09-09 America/Detroit — 修补原验证工具的事件映射缺口
+
+- 状态：验证工具修订，准备重新启动正式矩阵。
+- 发现：原 parity_keyframes.export_cell 未传事件 extra，且 RecordWrapper 以 buffer 的连续编号落 HDF5，不能把环境 elapsed_steps 当作 HDF5 帧号。原 reset 仅留摘要，不能用于初态目视；原隔离测试仅在父进程核对类配置。
+- 处置：停止 action-freeze-15，已完成的 5 次和正在执行的尝试完整保留为中间产物，不纳入最终 fresh 结论。观察器版本升为 2，记录每次 wrapper.step 的事件区间、真实 buffer 追加区间及环境步；原 reset RGB 压缩转存，不额外渲染。关键帧从事件开始/中点/结束的真实记录编号取帧，未记录事件明确标注；补 reset 图版。
+- 隔离：在真实 worker 调用前后读取类级配置散列，原 _worker 与生成循环不变，增加可检测类级污染的反例。
+- 测试：四个定向文件共 106 passed，3.47 秒；第二次单格四路 smoke 进行中。原配置、任务源码和随机流接入自 c56e5af 起未再改动。
+- 下一步：新版观察器校准通过后提交验证工具，以新的运行编号重新采集全部 60 次和后续证据。
+
+- 修订后结果：第二次四路 smoke 共 117.3 秒，四对 HDF5、随机流、状态、事件、recordings 映射与 reset 原始 RGB 全部一致；新版观察器与原 A0 关闭观察器的 HDF5 差异 0。106 项定向测试再次全过（3.46 秒）。完整驱动增加逐格 A1/A2 校准门槛，原版不稳定时停止该次矩阵，不继续运行 B/C。

@@ -277,6 +277,7 @@ EVIDENCE_SECTIONS = (
     ("boundaries", "②.1 构造与初态边界"),
     ("events", "②.2/②.3 求值细节与事件"),
     ("steps", "②.2 逐步状态"),
+    ("recordings", "②/③ 环境步与真实落盘记录映射"),
 )
 
 
@@ -595,6 +596,7 @@ def pack_run(
         cell_result["rrt_fallback_count"] = {"A1": fallbacks[0] if fallbacks else None,
                                              "A2": fallbacks[1] if len(fallbacks) > 1 else None}
         result["cells"][cell] = cell_result
+        print(f"对拍检查完成 {cell}：{cell_result['status']}", flush=True)
 
     counter: dict[str, int] = {}
     for item in result["cells"].values():
