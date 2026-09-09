@@ -106,16 +106,47 @@ The environment input/output format is described in [doc/env_format.md](doc/env_
 
 ### 🔧 Data Generation
 
-The repository includes a complete 16-task × 100-episode HDF5 generation and validation workflow. It uses 20 workers and is locked to physical GPU 0. See [scripts/data-generation/README.md](scripts/data-generation/README.md) for the full workflow and artifact contract.
+The repository includes a complete 16-task × 100-episode HDF5 generation workflow in a single
+entry point, [scripts/generate_dataset_newseed.py](scripts/generate_dataset_newseed.py). Seeds are
+computed by the formula `offset + env_code*env_block + episode*100 + attempt` (see
+[scripts/seed_layout.py](scripts/seed_layout.py)) rather than read from a table, and a failed
+episode is automatically retried with `attempt+1`. One process pool per GPU; each worker is bound
+to its card for life.
 
 ```bash
-env CUDA_VISIBLE_DEVICES=0 uv run --locked scripts/data-generation/generate_dataset.py \
+# Generate
+uv run --no-sync python scripts/generate_dataset_newseed.py \
   --output-dir artifacts/generated/no-patch-full-16x100 \
   --env all \
   --episodes 100 \
   --workers 20 \
   --gpus 0
 ```
+
+The same file provides two auxiliary modes. `--extract-config` reads the four in-scope tasks'
+native sampling inputs straight from the source AST and writes (or, with `--check-config`, only
+verifies) the frozen snapshot; `--merge-only` merges the per-episode HDF5 files into
+`record_dataset_{task}.h5`.
+
+```bash
+# Verify the frozen native-sampling snapshot against the working tree (and, optionally, a commit)
+uv run --no-sync python scripts/generate_dataset_newseed.py \
+  --extract-config scripts/configs/newtask-v2/native_sampling.json --check-config
+
+# Generate with the native sampling inputs passed in explicitly
+uv run --no-sync python scripts/generate_dataset_newseed.py \
+  --output-dir artifacts/generated/binfill-smoke \
+  --env BinFill --episodes 1 --workers 1 --gpus 0 --difficulty 100 \
+  --sampling-config scripts/configs/newtask-v2/native_sampling.json
+
+# Merge per-episode files on demand (never automatic)
+uv run --no-sync python scripts/generate_dataset_newseed.py --merge-only \
+  --input-dir artifacts/generated/binfill-smoke --env BinFill
+```
+
+`--difficulty` is a three-digit easy/medium/hard cycle quota (`100` means all easy — it is not
+"difficulty 100"). Parity evidence for the four in-scope tasks lives in
+[docs/validation/newtask-v2/](docs/validation/newtask-v2/README.md).
 
 
 ## 🎓 Model Training

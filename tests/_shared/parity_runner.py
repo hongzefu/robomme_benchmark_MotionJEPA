@@ -31,6 +31,8 @@ from typing import Any, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BASELINE_WORKTREE = REPO_ROOT / "artifacts" / "native-baseline"
+# A 路入口是**基线 worktree 内**的原路径（该 worktree 固定在 94449db）；
+# 当前工作树的同名目录已在第五步清理中退出，这里的路径不受影响。
 BASELINE_ENTRY = "scripts/data-generation-newSeed/generate_dataset_newseed.py"
 FLAT_ENTRY = "scripts/generate_dataset_newseed.py"
 SAMPLING_CONFIG = "scripts/configs/newtask-v2/native_sampling.json"

@@ -30,7 +30,7 @@
 
 ## 二、原版实际调用链
 
-固定基线的原入口是 [generate_dataset_newseed.py](scripts/data-generation-newSeed/generate_dataset_newseed.py)（此链接在第五步清理后失效，届时改指平铺后的 `scripts/generate_dataset_newseed.py`），后续直接迁到 `scripts/generate_dataset_newseed.py`。它直接实例化的 wrapper 只有 `RobommeRecordWrapper`；`robomme.env_record_wrapper` 包的 `__init__.py` 会连带导入 `DemonstrationWrapper` 等其他 wrapper，但生成过程中不实例化它们。下图函数顺序不因文件位置改变；共享的必要函数并入两个保留文件，具体分配见第七节。
+固定基线的原入口是 `scripts/data-generation-newSeed/generate_dataset_newseed.py`（该路径已在第五步清理中退出工作树，只在基线 worktree `artifacts/native-baseline` 与 Git 历史中存在；平铺后的入口是 [generate_dataset_newseed.py](scripts/generate_dataset_newseed.py)）。它直接实例化的 wrapper 只有 `RobommeRecordWrapper`；`robomme.env_record_wrapper` 包的 `__init__.py` 会连带导入 `DemonstrationWrapper` 等其他 wrapper，但生成过程中不实例化它们。下图函数顺序不因文件位置改变；共享的必要函数并入两个保留文件，具体分配见第七节。
 
 下面按执行顺序画出 ASCII 调用图；缩进内是被调用方，返回后继续向下。
 
@@ -632,3 +632,24 @@ uv run --no-sync python scripts/generate_dataset_newseed.py --merge-only \
 3. **新增 `parameters.RouteStick.configs_fallback_difficulty`。** 原 `self.configs.get(..., self.config_easy)` 的兜底分支按第三节第 5 条显式记录，取值 `"easy"`。
 4. **两处 `*_origin` 说明更新。** BinFill 按钮的 `randomize_range` 与 VideoRepick easy/medium 的 `include_existing`/`include_goal` 原本走被调函数默认值、调用点未传；接入后由快照显式传入（取值不变），说明文字随之更新。
 5. **原值提取的落点。** 四个任务模块顶层各有一份 `NATIVE_SAMPLING` 字面量，它同时是不传配置时的运行默认值与 `--extract-config` 的 AST 提取目标，因此不存在「提取值」与「运行值」两套真值；难度字典仍只在类属性 `config_easy/medium/hard` 一处。`--source-ref` 走独立的旧式提取器，从基线的内联源码还原操作元子集（61 项），用于证明接入没有改动原值。
+
+### 10.3 第五步清理的实际范围
+
+按第七节清单执行，`scripts/` 下的产品 Python 文件集合已恰为
+`dataset_replay.py`、`evaluation.py`、`run_example.py`、`generate_dataset_newseed.py`、
+`seed_layout.py` 五个，加上 `configs/newtask-v2/native_sampling.json`，目录内再无其它 `.py`。
+
+| 处理对象 | 实际处理 |
+| --- | --- |
+| `scripts/data-generation-newSeed/`、`scripts/data-generation/`、`scripts/400ep-dataset/`、`scripts/data-generation-MotionJEPALabel/`、`scripts/patternlock-routestick-params/` | `git rm -r` 删除（合计 72 个被跟踪文件），残留的 `__pycache__` 一并 `rm -rf` |
+| `scripts/_icl/`、`scripts/legacy/`、`scripts/__pycache__/` | 未被 Git 跟踪、内容全部为 `.pyc`（共 26 个），核查后 `rm -rf` |
+| `.gitignore` | 删除三条失效规则及随之孤立的注释 |
+| 根 `readme.md` | Data Generation 一节改指平铺入口，补上 `--extract-config` / `--merge-only` / `--sampling-config` 三种用法与 `--difficulty` 语义说明 |
+| `tests/lightweight/test_append_train_metadata.py`、`test_no_patch_report_debug_environment.py`、`test_swap_clip_plan.py` | 三者在模块导入期就依赖已删目录（分别是 `utils/append_train_metadata.py`、`generate_dataset`/`validate_generated_dataset_contract`/`write_generation_report`、`clip_plan`），随旧功能退出 |
+| `tests/_shared/dataset_generation.py` 与 `tests/dataset/` 现有测试 | 按方案保留不动；`tests/dataset/test_record_stick.py` 只在注释里提过旧脚本，无导入依赖 |
+| 历史实测数字 | `reports/joint_action_diff_full.md` 与 `400ep-dataset/run-log.md` 的关键数字退出前已摘录进 [docs/validation/newtask-v2/legacy-measurements.md](docs/validation/newtask-v2/legacy-measurements.md) |
+
+`tests/_shared/parity_runner.py` 里的 `BASELINE_ENTRY` 仍是旧路径，这是**基线 worktree 内**
+（固定在 `94449db`）的入口，不随当前工作树的清理失效，已在源码注释里写明。
+`scripts/generate_dataset_newseed.py` 与 `seed_layout.py` 的文档字符串保留了迁移出处说明，
+属于沿革记录，不是运行依赖（`seed_layout.py` 的实际 import 已由测试按 AST 断言只有标准库）。

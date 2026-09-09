@@ -41,3 +41,4 @@ screw→RRTStar 回退走 mplib/OMPL，种子接口未暴露且有 1 秒墙钟�
 | 运行编号 | 范围 | 结论 |
 | --- | --- | --- |
 | [20260908T2255Z-parity15-3804e87](20260908T2255Z-parity15-3804e87/README.md) | 15 格 × 四路（A1/A2/B/C）+ ⑤ 连续 worker 两路 + ① 全量 354 张关键帧出图 | ②③④ 15 格通过、⑤ 两路通过、① 9 格通过 6 格待目视；15 格 `rrt_fallback_count` 全为 0 |
+| [20260909T1441Z-postclean](20260909T1441Z-postclean/README.md) | 第五步清理后的抽样复验（每任务 easy 一格 B/C）+ 定向检查清单 + attempt 重试分支三路对照 + `--env all` 16 任务 smoke | 抽样复验八项 0 差异、重试分支三路一致且产物 0 差异、16/16 任务成功；轻量全量 4 failed（基线既有）/176 passed |

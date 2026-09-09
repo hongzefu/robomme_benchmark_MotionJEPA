@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """无 seed 独立生成：seed 由公式自算，失败自动 attempt+1 重试。
 
-与 ``scripts/data-generation/generate_dataset.py``（复现型，读 train metadata 里的死 seed、
-单次尝试、锁死 GPU 0）的差别：
+与旧的复现型入口（读 train metadata 里的死 seed、单次尝试、锁死 GPU 0；该脚本已随
+``scripts/data-generation/`` 在 newtask-v2 第五步退出工作树，可从 Git 历史追溯）的差别：
 
 * seed 不再读表，由 ``seed_layout`` 按 ``offset + env_code*env_block + episode*100 + attempt`` 现算
 * 单条失败不再让整体 raise，而是 attempt+1 重新入队，直到成功或达到上限
