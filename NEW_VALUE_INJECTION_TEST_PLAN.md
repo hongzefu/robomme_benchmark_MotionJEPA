@@ -1,6 +1,6 @@
 # 新值注入测试方案：生成 1100 条固定规格，实跑其中 110 条
 
-> **权威与状态：**本文件按 [AGENTS.md](AGENTS.md) 强制规则第 10 条组织，承接 `cfca77d`（`10.17`）保存的已确认范围及 `f11548c`（`10.19`）的两部分结构。容器碰撞机制与固定案例已于 `dc0b03b`（`10.20`）补入；本次按用户指定顺序重排第一部分并内置草图，本轮实跑固定单 GPU、单 worker，多卡多进程留待后续立项。生产检测、新值注入接口、规格生成与一键复现均待实施。第 3.5 节和第 5.7 节单列定稿前已完成的诊断证据，不作为完整新值任务验收。每个实施阶段须单独获批；后续授权明确覆盖多个阶段时按该授权执行。
+> **权威与状态：**本文件按 [AGENTS.md](AGENTS.md) 强制规则第 10 条组织，承接 `cfca77d`（`10.17`）保存的已确认范围及 `f11548c`（`10.19`）的两部分结构。容器碰撞机制与固定案例已于 `dc0b03b`（`10.20`）补入；第一部分已按用户指定顺序重排并内置草图，本次改为逐字段精确约定并压缩第三、五节；本轮实跑采用多 GPU 对拍，依据第 5.8 节原值并行校准 `20260909-schema3-parallel-v2` 的 15/16 逐位一致（第六节）。生产检测、新值注入接口、规格生成与一键复现均待实施。第 3.5 节和第 5.7 节单列定稿前已完成的诊断证据，不作为完整新值任务验收。每个实施阶段须单独获批；后续授权明确覆盖多个阶段时按该授权执行。
 >
 > **代码锚点：**本次只读核查的已提交基线为 `c0cb3ee38a702738536b83c4718a495bcba148a0`，工作副本为 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`；原值来源固定为 `94449db0a068a6b454b55a13ebd48f0394d89cc8`。工作区原值并行校准的在途修改不计入此代码基线。提交编号沿用 `10.<小版本> <中文描述>`，实施时按当时最新 `git log` 递增，不预占其他任务编号。
 >
@@ -44,12 +44,12 @@
 下面每条都在后面的某一节展开，读者按节号跳读即可：
 
 1. 只覆盖四任务的 11 个难度组；`VideoRepick hard` 完全排除，990 条不作物理可行性结论（本节）。
-2. 原值配置定义「能取什么」，外部规格定死「这一条取了什么」：布局、对象身份和动作；尺寸、速度、时序一律不动（第二节）。
+2. 原值配置定义「能取什么」，外部规格定死「这一条取了什么」：第二节逐字段列出取值域与配额；尺寸、速度、时序一律不动（第二节）。
 3. 两个视频任务的容器／方块之间：用真实碰撞盒检查全部对象对，初态查一次、每段交换路径查一次；接触即排除，数值容限固定 `1e-6` 米，不另加安全间隙（第三节）。
 4. 能独立分配的类别按配额平衡，连续变量分层采样；受几何和动作耦合的组合只报真实频数，不声称严格均匀（第四节）。
 5. 交换双方预写，执行时核验实际最近邻，不匹配直接失败；正式样本固定 `attempt=0`，失败不换 seed、不补位（第五节）。
-6. 验收分四问单独回答：规格是否均匀、碰撞是否全部排除、注入是否生效、前 10 条是否可执行；最终逐项列出，不用一个总成功率替代（第五节）。
-7. 本轮所有实跑固定单 GPU、单 worker；多卡多进程留待后续立项（第六节）。
+6. 验收分五问单独回答：规格是否均匀、碰撞是否全部排除、注入是否生效、前 10 条是否可执行、并行是否与串行逐位一致；最终逐项列出，不用一个总成功率替代（第五节）。
+7. 本轮实跑采用多 GPU 对拍：先对 16 条新值样本做四种运行配置校准，通过后其余样本用双卡、每卡 2 worker；校准不通过则用单卡单 worker 完成并保留失败结论（第六节）。
 8. 用户已目视确认的四容器三例持久保留；重跑使用新目录，分别复核轨迹重算和视频重渲染，不能把旧视频或单姿态交叉验证当作新值执行通过（第 3.5 节及第二部分第四、七节）。
 
 #### 1.2 本方案依据的用户原话
@@ -81,7 +81,7 @@
 
 交互确认采用按实际数量全部检测、接触即排除、真实 SAPIEN 场景交换片段。四容器三例的用户目视结论已确认，其他六例不据此自动标为已目视。
 
-本次重排的用户原话：
+两轮重排的用户原话：
 
 > 我看不懂 重构第一部分
 > 按照以下顺序讲
@@ -94,13 +94,24 @@
 >
 > 六、GPU 与进程：现状和本轮执行顺序这里暂时不考虑 只考虑单gpu情况
 
+> 约定和固定值为什么是1-4的形式 按照你实际固定的内容 一条一条说 要精确 不能用自然语言
+>
+> 六、GPU 与进程：本轮固定单 GPU、单 worker
+>  并且改为多gpu对拍
+> 本次实测中，除生成失败的那条外，其余 15 条都保证了逐位一致：
+> * GPU 1 单 worker；
+> * GPU 0 双 worker；
+> * 双 GPU、每卡 2 worker。
+>
+> 现在还是太冗长了！增强可读性让我能理解
+> 尤其是三、两个视频任务的碰撞排除
+>  五、对拍注入与前 10 条验收
+
 ### 二、根据哪些约定，生成哪些固定值
 
-下面按环境单独列出。**“约定”是取值范围和必须遵守的规则；“固定值”是外部生成器为某一条 episode 选定后保存的具体结果。每个环境的约定 1～4 与固定值 1～4 一一对应。** 不同 episode 可以取不同值，同一条规格冻结后不能再随机改值。当前只说明要生成什么，尚未生成正式的 1100 条规格。
+**每个环境一张表：一行就是一条规格里被固定的一个字段。** 「取值域」是约定（来自 [native_sampling.json](scripts/configs/newtask-v2/native_sampling.json)，字段实际含义以四个任务的 `config_easy/medium/hard`、`_load_scene`、`_initialize_episode`、`step` 为准）；「配额」是 100 条内的分配规则；生成器为一条 episode 在取值域内选定的具体值就是固定值，冻结后不再改。记号：`u` 为 `[0,1)` 上的均匀采样；`R(θ)` 为绕世界原点 `(0,0)` 的二维旋转；整数区间含两端，浮点区间保持原半开口径。**未列出的量（高度、尺寸、碰撞几何、动作速度、时序）沿用原实现，不固定、不改。** 每个环境开头的俯视草图按 `positions.<任务>` 推导（x 向右、y 向上、单位米）；末尾的记录示例只是字段形态，数字为占位。
 
-难度与空间范围以 [native_sampling.json](scripts/configs/newtask-v2/native_sampling.json) 为依据；字段实际含义以四个任务的 `config_easy/medium/hard`、`_load_scene`、`_initialize_episode` 和 `step` 为准。下文数量区间均为整数且包含两端；位置单位为米，连续采样的半开区间口径见第 2.6 节。每个环境开头的俯视草图按 `positions.<任务>` 推导，x 向右、y 向上；每个环境末尾的记录示例只是字段形态示意，字段名与第二部分第二节的契约一致，不是已生成的规格。
-
-#### 2.1 BinFill：固定出现哪些方块、放在哪里、按什么顺序投入
+#### 2.1 BinFill
 
 ```text
 BinFill 俯视（方块中心有效域已扣除半尺寸 0.02）
@@ -109,159 +120,146 @@ BinFill 俯视（方块中心有效域已扣除半尺寸 0.02）
          │  ┌──────────┐        ┌────────────┐      │
          │  │ 按钮中心  │        │ 孔板中心    │      │
          │  │x∈[-0.25, │        │x∈[-0.05,   │      │
-         │  │   -0.15] │        │    0.15]   │      │
+         │  │   -0.15) │        │    0.15)   │      │
          │  │y∈[-0.20, │        │y∈[-0.20,   │      │
-         │  │    0.20] │        │    0.20]   │      │
-         │  └──────────┘        │ 旋转 ±20°   │      │
+         │  │    0.20) │        │    0.20)   │      │
+         │  └──────────┘        │ 旋转[-20,20)°│      │
          │                      └────────────┘      │
  y=-0.23 └────────────────────────────────────────┘
         x=-0.28                                x=0.15
- 每块方块自身朝向 0～2π；方块间保持原避让规则（min_gap = 0.02）
 ```
 
-**约定 1～4**
-
-1. **难度限定数量。** `easy`：出现 1 色、共 4～6 块，目标颜色池 1 色、总共投入 1～3 块；`medium`：出现 2 色、共 8～10 块，目标颜色池 1～2 色、总共投入 2～4 块；`hard`：出现 3 色、共 10～12 块，目标颜色池 2～3 色、总共投入 3～5 块。对应 `parameters.BinFill.configs.<难度>` 的 `color`、`spawn_cubes`、`put_in_color`、`put_in_numbers`。
-2. **对象颜色与出现方式受原逻辑约束。** 颜色从红、绿、蓝中选；各色生成数必须不少于该色目标数，目标颜色池中的某色可以最终分到 0 块。`dynamic` 可为 `True` 或 `False`，沿用原出现时序；每档 100 条各分配 50 条，前 10 条各 5 条。
-3. **位置沿用原区域。** 按钮中心 x 为 −0.25～−0.15、y 为 −0.20～0.20；孔板中心 x 为 −0.05～0.15、y 为 −0.20～0.20，旋转 −20°～20°；方块中心 x 为 −0.28～0.08、y 为 −0.23～0.23，自身朝向一整圈，并满足原避让规则。对应 `positions.BinFill.button/board/cubes`。
-4. **投入对象不能任意换。** 同色抓取对象仍取该颜色生成列表的前若干块；抓取和投入顺序必须与原任务构造一致。
-
-**固定值 1～4（每条 episode 都要保存）**
-
-1. **具体数量：**所选难度、出现颜色数、方块总数、目标颜色池大小、投入总数。例如 `easy` 可以选定“1 色、5 块、目标颜色池 1 色、投入 2 块”；这是数量示意，不是已生成的完整规格。
-2. **具体对象清单：**本条的 `dynamic` 值、出现颜色与目标颜色池、各色生成数及目标数、每块的对象身份和颜色，以及完整生成顺序。
-3. **具体位姿：**按钮的位置、孔板的位置与朝向、每个方块的位置与朝向。保存选出的具体坐标，不能只保存上述区域上下限。
-4. **具体动作清单：**按顺序列出每次抓取哪个方块、将哪个方块投入；对象身份必须能回查固定值 2 的清单。
-
-一条记录的形态示意（数字为占位，不是已生成规格）：
+| 字段 | 类型 | 取值域 | 每组 100 条配额 | 锚点 |
+|---|---|---|---|---|
+| `difficulty` | 枚举 | `{easy, medium, hard}` | 每档 100 | `parameters.BinFill.configs` |
+| `dynamic` | bool | `{True, False}` | 50／50，前 10 条 5／5 | `parameters.BinFill.dynamic` |
+| `num_colors` | int | easy=1，medium=2，hard=3 | 由难度定 | `configs.<难度>.color` |
+| `colors_present` | 集合 | `⊂ {red, blue, green}`，`|·| = num_colors`；生成顺序 `red, blue, green` | 合法组合计数差 ≤ 1 | `native_semantics.BinFill.spawn_color_order` |
+| `spawn_total` | int | easy `[4,6]`，medium `[8,10]`，hard `[10,12]` | 34／33／33 | `configs.<难度>.spawn_cubes` |
+| `spawn_count[c]` | int，每色 | `Σ_c = spawn_total`，`spawn_count[c] ≥ target_count[c]` | 报实际频数 | `load_scene_rng_order` 分配循环 |
+| `target_pool` | 集合 | `⊂ colors_present`，`|·|` easy `1`、medium `[1,2]`、hard `[2,3]` | 合法值计数差 ≤ 1 | `configs.<难度>.put_in_color` |
+| `put_in_total` | int | easy `[1,3]`，medium `[2,4]`，hard `[3,5]` | 34／33／33 | `configs.<难度>.put_in_numbers` |
+| `target_count[c]` | int，每色 | `c ∈ target_pool`，`≥ 0`，`Σ_c = put_in_total` | 报实际频数 | 同上 |
+| `button_xy` | float[2] | `x = -0.2 + (u-0.5)·0.1 ∈ [-0.25,-0.15)`；`y = (u-0.5)·0.4 ∈ [-0.2,0.2)` | 各 10 分箱 | `positions.BinFill.button` |
+| `board_xy` | float[2] | `x = 0.15 + (u·0.2-0.2) ∈ [-0.05,0.15)`；`y = u·0.4-0.2 ∈ [-0.2,0.2)` | 各 10 分箱 | `positions.BinFill.board` |
+| `board_yaw_deg` | float | `u·40-20 ∈ [-20,20)` | 10 分箱 | 同上 |
+| `cubes[i].object_id` | str | `cube_i`，`i = 0 … spawn_total-1` 为生成顺序（`randperm` 后） | — | `torch.randperm(len(cube_tasks))` |
+| `cubes[i].color` | 枚举 | `∈ colors_present`；每色个数 = `spawn_count[c]` | — | 同上 |
+| `cubes[i].xy` | float[2] | `x ∈ [-0.28,0.08]`，`y ∈ [-0.23,0.23]`（区域 `(-0.1,0)±(0.2,0.25)` 扣半尺寸 0.02）；方块两两间距 ≥ 0.02，不与按钮／孔板避让 | 采样输入各 10 分箱；实际位置报频数 | `positions.BinFill.cubes`，`spawn_random_cube` |
+| `cubes[i].yaw_rad` | float | `u·2π ∈ [0,2π)` | 10 分箱 | 同上 |
+| `actions[k]` | (object_id, put_in) | `k = 0 … put_in_total-1`；每色 `c` 的抓取对象 = 该色生成列表前 `target_count[c]` 块；顺序与原 `_initialize_episode` 构造一致 | — | `BinFill::_initialize_episode` |
 
 ```text
 { "episode": 0, "difficulty": "easy",
-  "layout":  { "dynamic": true, "button_xy": [-0.21, 0.08],
-               "board": {"xy": [0.05, -0.12], "yaw_deg": 7.5},
+  "layout":  { "dynamic": true, "button_xy": [-0.21, 0.08], "board": {"xy": [0.05, -0.12], "yaw_deg": 7.5},
                "cubes": [ {"object_id": "cube_0", "color": "red", "xy": [-0.20, 0.15], "yaw_rad": 1.1}, … 共 5 块 ] },
-  "objects": { "colors_present": ["red"], "target_pool": ["red"],
-               "spawn_count": {"red": 5}, "target_count": {"red": 2} },
+  "objects": { "colors_present": ["red"], "target_pool": ["red"], "spawn_count": {"red": 5}, "target_count": {"red": 2} },
   "actions": [ {"pick": "cube_0", "put_in": true}, {"pick": "cube_1", "put_in": true} ] }
 ```
 
-#### 2.2 RouteStick：固定整排布局、起点、路线和每段绕行方向
+#### 2.2 RouteStick
 
 ```text
-RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体绕世界原点 (0,0) 旋转 −30°～+30°）
+RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体绕世界原点 (0,0) 旋转 [-30, 30)°）
  索引:   0     1     2     3     4     5     6     7     8
          ●─────▲─────●─────▲─────●─────▲─────●─────▲─────●
        y=-0.28              y=0                     y=+0.28   （旋转前 x 均为 -0.1）
  ● = 可踩节点 {0,2,4,6,8}   ▲ = 障碍柱 {1,3,5,7}（各自随机 RGB）
- 路线只能沿 0—2—4—6—8 相邻走；每段单独选顺时针 / 逆时针绕行
 ```
 
-**约定 1～4**
-
-1. **难度限定路线长度和回退。** `easy` 走 2～3 段，`medium` 走 4～5 段，均不允许主动立即回退；`hard` 走 4～7 段，允许立即回退。段数是边数，节点数等于段数加 1。对应 `parameters.RouteStick.configs.<难度>.length/backtrack`。
-2. **布局形状不变。** 保留中心 `(-0.1, 0)`、1×9、间距 0.07 的排列，整体绕世界原点旋转 −30°～30°；4 根障碍柱颜色各取原 RGB 范围。对应 `positions.RouteStick`，不把各节点改成独立随机摆放。
-3. **起点与路线必须符合邻接关系。** 可访问节点依次为 `0—2—4—6—8`，每步只能走相邻节点；`easy`、`medium` 在端点仍允许被迫回退。5 个起点每档各 20 条，前 10 条各 2 条。
-4. **每段绕行方向必须明确。** 每一段分别选定顺时针或逆时针；在合法路线内平衡方向，不能为凑频数生成非法路线。对应 `parameters.RouteStick.walk.direction`。
-
-**固定值 1～4（每条 episode 都要保存）**
-
-1. **具体长度：**所选难度与确定的段数；`hard` 的 4、5、6、7 段在 100 条中各分配 25 条。
-2. **具体布局：**一个确定的整体旋转角，以及 4 根障碍柱各自确定的 RGB 值；节点与障碍位置由固定排列和该角度唯一推导并核验。
-3. **具体路线：**起点和完整节点序列，例如 `0→2→4`，不能只写“走两段”。
-4. **具体方向：**与路线各段逐一对应的方向序列，例如“顺时针、逆时针”。
-
-一条记录的形态示意（数字为占位，不是已生成规格，也不代表已验证可执行）：
+| 字段 | 类型 | 取值域 | 每组 100 条配额 | 锚点 |
+|---|---|---|---|---|
+| `difficulty` | 枚举 | `{easy, medium, hard}` | 每档 100 | `parameters.RouteStick.configs` |
+| `L`（段数） | int | easy `[2,3]`，medium `[4,5]`，hard `[4,7]` | easy 50／50，medium 50／50，hard 25×4 | `configs.<难度>.length` |
+| `backtrack` | bool | easy=False，medium=False，hard=True | 由难度定 | `configs.<难度>.backtrack` |
+| `rotation_deg` | float | `u·60-30 ∈ [-30,30)` | 10 分箱 | `positions.RouteStick.yaw_expression` |
+| `node_xy[j]` | 推导 | `R(rotation)·(-0.1, 0.07·(j-4))`，`j = 0…8`；不单独随机 | — | `grid_center`，`grid_spacing_y` |
+| `obstacle_rgb[m]` | float[3]×4 | 每分量 `u ∈ [0,1)`；`m` 对应障碍索引 `{1,3,5,7}` | — | `positions.RouteStick.obstacle_color` |
+| `nodes[0]` | int | `∈ {0,2,4,6,8}` | 各 20，前 10 条各 2 | `positions.RouteStick.walk_start` |
+| `nodes[1…L]` | int[L] | `nodes[i+1]-nodes[i] ∈ {-2,+2}`，`nodes[i] ∈ {0,…,8}`；`backtrack=False` 时 `nodes[i+2] ≠ nodes[i]`，除非 `nodes[i+1] ∈ {0,8}`（端点被迫回退） | 合法路线内平衡，报频数 | `route.py::generate_dynamic_walk` |
+| `directions[i]` | 枚举[L] | `∈ {clockwise, counterclockwise}` | 顺／逆总频数差 ≤ 1 | `parameters.RouteStick.walk.direction` |
 
 ```text
 { "episode": 0, "difficulty": "easy",
-  "layout":  { "rotation_deg": -12.0,
-               "obstacle_rgb": [[0.2, 0.7, 0.1], [0.9, 0.3, 0.3], [0.1, 0.4, 0.8], [0.6, 0.6, 0.2]] },
+  "layout":  { "rotation_deg": -12.0, "obstacle_rgb": [[0.2,0.7,0.1], [0.9,0.3,0.3], [0.1,0.4,0.8], [0.6,0.6,0.2]] },
   "actions": { "nodes": [0, 2, 4], "directions": ["clockwise", "counterclockwise"] } }
 ```
 
-#### 2.3 VideoUnmaskSwap：固定容器布局、藏物映射、抓取对象和交换双方
+⚠ `RouteStick::__init__` 仅在未显式传难度的 seed 推导分支末尾把难度覆盖成 `easy`；当前生成器显式传入 `difficulty`，不进入该分支。须分别记录请求难度、实际配置和最终 `task_state.difficulty`，不顺手修旧行为。
 
-两个视频任务共用同一套布局锚点：
+#### 2.3 VideoUnmaskSwap
 
 ```text
-布局锚点（旋转前；整体绕 (0,0) 旋转 θ∈[0,180) 弧度，随后每个锚点再各自沿世界 x、y 偏移）
+两个视频任务共用的布局锚点（旋转前；整体绕 (0,0) 旋转 θ∈[0,180) 弧度，随后每个锚点再各自沿世界 x、y 偏移）
    三角 region3_tri        直线 region3_line        四点 region4（medium / hard）
       1●(-0.05, 0.1)          1●(0, 0.15)             1●(-0.05, 0.1)   2●(0.1, 0.1)
                 2●(0.1, 0)    2●(0, 0)
       0●(-0.05,-0.1)          0●(0,-0.15)             0●(-0.05,-0.1)   3●(0.1,-0.1)
  偏移上限：容器 ±0.0425（=0.07−0.0275）；方块 ±0.05（=0.07−0.02）
- 容器自身朝向 0°～90°；方块自身朝向 0～2π
- VideoRepick 另有按钮中心 x∈[-0.25,-0.15]、y∈[-0.05,0.05]
+ ⚠ θ 的原单位是弧度：θ=90 是 90 弧度，不是 90°；画图另列 θ mod 2π
 ```
 
-**约定 1～4**
-
-1. **难度限定容器、交换和抓取数量。** `easy`：3 个容器、交换 1～2 次、抓取 1～2 个容器；`medium`：4 个容器、交换 1～2 次、抓取 1 个容器；`hard`：4 个容器、交换 2～3 次、抓取 2 个容器。对应 `parameters.VideoUnmaskSwap.configs.<难度>` 的 `bin`、`swap_min/max`、`pick_min/max`。
-2. **容器布局沿用原类型和范围。** `easy` 用三角或直线布局，100 条各 50 条、前 10 条各 5 条；`medium`、`hard` 用原四点布局。锚点取 `positions.VideoUnmaskSwap.containers.region3_tri/region3_line/region4`，整体旋转取原值 0～180 **弧度**；旋转后每个锚点沿世界 x、y 各偏移不超过 0.0425，容器自身旋转 0°～90°。3 个容器检查全部 3 对，4 个容器检查全部 6 对；初态和每次交换路径均须通过第 3.3～3.4 节的接触排除判据。
-3. **藏物与抓取身份遵守原映射。** 红、绿、蓝方块分别藏在前 3 个容器中，第 4 个容器恒空；抓取按 `selected_bins` 的既有索引顺序选择，保留 `object_selection.pickup_selected_indices=[0,1]` 的含义，不能混用藏物排列索引与 `spawned_bins` 索引。
-4. **交换必须符合原发起顺序和最近邻规则。** 发起对象沿用 `swap_selection.initiator_mapping` 的现有映射；搭档是在该次交换开始时 XY 最近的另一容器，距离相同时取生成顺序靠前者。预写的搭档与执行时最近邻不一致就失败。
-
-**固定值 1～4（每条 episode 都要保存）**
-
-1. **具体数量：**所选难度、确定的容器数、交换次数、抓取次数。例如 `hard` 可选“4 个容器、交换 3 次、抓取 2 个容器”。
-2. **具体布局：**所选布局类型、整体旋转角、每个容器的位置和自身朝向，并保存初态及各段交换路径的碰撞检查结果。
-3. **具体对象映射与抓取顺序：**红／绿／蓝各藏在哪个容器，哪个容器为空，以及按顺序抓取的容器身份及其所藏颜色；全部身份都能回查容器生成清单。
-4. **具体交换清单：**逐次写出“第几次、哪个容器发起、与哪个容器交换”，保存双方身份与顺序；不能只写交换次数或只写发起者，把搭档留空。
-
-一条记录的形态示意（数字为占位，不是已生成规格）：
+| 字段 | 类型 | 取值域 | 每组 100 条配额 | 锚点 |
+|---|---|---|---|---|
+| `difficulty` | 枚举 | `{easy, medium, hard}` | 每档 100 | `parameters.VideoUnmaskSwap.configs` |
+| `n_bins` | int | easy=3，medium=4，hard=4 | 由难度定 | `configs.<难度>.bin` |
+| `n_swaps` | int | easy `[1,2]`，medium `[1,2]`，hard `[2,3]` | 50／50 | `configs.<难度>.swap_min/max` |
+| `n_picks` | int | easy `[1,2]`，medium `1`，hard `2` | easy 50／50 | `configs.<难度>.pick_min/max` |
+| `layout_type` | 枚举 | easy `∈ {region3_tri, region3_line}`；medium／hard `= region4` | easy 50／50，前 10 条 5／5 | `containers.region3_choice` |
+| `theta_rad` | float | `u·180 ∈ [0,180)` **弧度** | 10 分箱；另报 `θ mod 2π` | `layout_rotation_range_rad` |
+| `bins[i].xy` | float[2] | `R(theta)·anchor_i + delta_i`，`delta_i ∈ [-0.0425,0.0425]²`；`anchor_i` = `layout_type` 第 `i` 个锚点，`i` 为生成顺序 | `delta` 各 10 分箱 | `region_half_size`，`bin_half_size` |
+| `bins[i].yaw_deg` | float | `u·90 ∈ [0,90)` | 10 分箱 | `yaw_scale_deg` |
+| `selected` | 索引[3] | `randperm(3)`，即 `spawned_bins` 前 3 个的一个排列；`bin_3`（若有）永不入选、恒空 | 6 种排列计数差 ≤ 1 | `hidden_bin_permutation` |
+| `hidden[color]` | 映射 | 颜色顺序 `randperm(3)` 打乱 `{red, green, blue}` 后，第 `k` 色藏在 `spawned_bins[selected[k]]` | 6 种排列计数差 ≤ 1 | `color_shuffle` |
+| `pick_order` | object_id[n_picks] | `[spawned_bins[selected[0]], spawned_bins[selected[1]]][:n_picks]` | 报频数 | `pickup_selected_indices=[0,1]` |
+| `swap_pairs[k].initiator` | object_id | `t = randperm(3)[:2]`；`k∈{0,1}`：`spawned_bins[t_k]`（原代码把 selected 内位置直接当 spawned 索引，按原行为保留）；`k=2`：`spawned_bins[j]`，`j ∈ {0…n_bins-1}∖{t_0,t_1}` 均匀抽 | 报频数 | `swap_selection.initiator_mapping/remaining_selection` |
+| `swap_pairs[k].partner` | object_id | `argmin_{j≠initiator} ‖xy_j − xy_initiator‖₂`，在第 `k` 段开始（控制步 `64+50k`）时算；等距取生成顺序小者 | 报对象对频数及未覆盖对 | `swap_selection.partner`，`_refresh_swap_schedule` |
+| `collision.initial` | 枚举 | `PASS`：全部 `C(n_bins,2)` 对的 `g > 1e-6` | 必须 | 第三节 |
+| `collision.sweeps[k]` | 枚举[n_swaps] | `PASS`：第 `k` 段区间证明通过 | 必须 | 第三节 |
 
 ```text
 { "episode": 0, "difficulty": "hard",
-  "layout":  { "type": "region4", "theta_rad": 1.23,
-               "bins": [ {"object_id": "bin_0", "xy": [-0.08, -0.12], "yaw_deg": 35.0}, … 共 4 个 ] },
-  "objects": { "hidden": {"red": "bin_2", "green": "bin_0", "blue": "bin_1"}, "empty": "bin_3",
-               "pick_order": ["bin_2", "bin_0"] },
-  "actions": { "swap_pairs": [ ["bin_2", "bin_0"], ["bin_1", "bin_3"], ["bin_0", "bin_2"] ] },
+  "layout":  { "type": "region4", "theta_rad": 1.23, "bins": [ {"object_id": "bin_0", "xy": [-0.08,-0.12], "yaw_deg": 35.0}, … 共 4 个 ] },
+  "objects": { "selected": [2, 0, 1], "hidden": {"green": "bin_2", "red": "bin_0", "blue": "bin_1"}, "empty": "bin_3", "pick_order": ["bin_2", "bin_0"] },
+  "actions": { "swap_pairs": [ ["bin_1", "bin_3"], ["bin_0", "bin_2"], ["bin_3", "bin_1"] ] },
   "collision": { "initial": "PASS", "sweeps": ["PASS", "PASS", "PASS"], "min_g_m": 0.0031 } }
 ```
 
-#### 2.4 VideoRepick：固定同色方块布局、唯一目标、重复抓放和交换双方
+#### 2.4 VideoRepick
 
-布局锚点与第 2.3 节的草图相同，实际对象是 3 个方块而不是容器；偏移上限取方块口径 0.05。
+布局锚点同 2.3 的草图；实际对象是 3 个方块，偏移上限取方块口径 0.05。
 
-**约定 1～4**
-
-1. **只覆盖两个难度。** `easy`：3 个同色方块、交换 1～2 次；`medium`：3 个同色方块、交换 2～3 次。两档重复抓放次数均为 1～3，来自 `parameters.VideoRepick.num_repeats`；`hard` 不生成规格、不画图、不实跑。
-2. **方块与按钮位置沿用原范围。** 方块取 `positions.VideoRepick.easy_medium_cubes.region3_tri/region3_line` 的三角或直线布局，每档 100 条各 50 条、前 10 条各 5 条；整体旋转取原值 0～180 **弧度**，旋转后每个锚点沿世界 x、y 各偏移不超过 0.05，方块自身朝向一整圈。按钮中心 x 为 −0.25～−0.15、y 为 −0.05～0.05。实际检测对象是 3 个方块，初态与全部交换路径检查其全部 3 对，按第 3.3～3.4 节接触即排除。
-3. **颜色一致，目标唯一。** 本条的 3 个方块统一取红、绿、蓝之一；选定一个目标方块后，重复抓放始终指向同一个对象，不能在交换后按当前位置另选目标。
-4. **交换发起顺序受约束。** 首次由目标方块发起，后续发起者取其余方块的排列，实际次数由难度决定；每次搭档为交换开始时 XY 最近的另一方块，距离相同时取生成顺序靠前者。预写与实际不符就失败。对应 `parameters.VideoRepick.swap_selection`。
-
-**固定值 1～4（每条 episode 都要保存）**
-
-1. **具体数量：**所选难度、确定的交换次数和重复抓放次数；方块数固定为 3。重复 1／2／3 次在每档 100 条中按 34／33／33 分配。
-2. **具体位姿：**按钮的位置、所选方块布局类型与整体旋转角、3 个方块各自的位置和朝向，以及初态和各段交换路径的碰撞检查结果。
-3. **具体颜色与目标：**本条统一颜色、3 个方块的对象身份、唯一目标方块身份，以及每次重复抓放对应的同一目标身份。
-4. **具体交换清单：**逐次写出发起方块和搭档方块的身份，按实际执行顺序保存；第一条的发起者必须等于固定值 3 的目标。
-
-一条记录的形态示意（数字为占位，不是已生成规格）：
+| 字段 | 类型 | 取值域 | 每组 100 条配额 | 锚点 |
+|---|---|---|---|---|
+| `difficulty` | 枚举 | `{easy, medium}`；`hard` 不生成 | 每档 100 | `parameters.VideoRepick.configs` |
+| `n_cubes` | int | `3` | 固定 | `configs.<难度>.cube` |
+| `n_swaps` | int | easy `[1,2]`，medium `[2,3]` | 50／50 | `configs.<难度>.swap_min/max` |
+| `num_repeats` | int | `[1,3]` | 34／33／33 | `parameters.VideoRepick.num_repeats` |
+| `layout_type` | 枚举 | `∈ {region3_tri, region3_line}` | 50／50，前 10 条 5／5 | `easy_medium_cubes.region3_choice` |
+| `theta_rad` | float | `u·180 ∈ [0,180)` **弧度** | 10 分箱；另报 `θ mod 2π` | `layout_rotation_range_rad` |
+| `cubes[i].xy` | float[2] | `R(theta)·anchor_i + delta_i`，`delta_i ∈ [-0.05,0.05]²`；方块两两间距 ≥ 0.02，且与按钮避让（`include_goal=True`） | `delta` 各 10 分箱 | `region_half_size`，`spawn_random_cube` |
+| `cubes[i].yaw_rad` | float | `u·2π ∈ [0,2π)` | 10 分箱 | `yaw_range_rad` |
+| `button_xy` | float[2] | `x = -0.2 + (u-0.5)·0.1 ∈ [-0.25,-0.15)`；`y = (u-0.5)·0.1 ∈ [-0.05,0.05)` | 各 10 分箱 | `positions.VideoRepick.button` |
+| `color` | 枚举 | `∈ {red, blue, green}`，3 块同色 | 34／33／33 | `native_semantics.VideoRepick.color_order` |
+| `target` | object_id | `∈ {cube_0, cube_1, cube_2}` | 34／33／33 | `easy_medium_target_count=1` |
+| `swap_pairs[0].initiator` | object_id | `= target` | 固定 | `swap_selection.initiator_mapping` |
+| `swap_pairs[k≥1].initiator` | object_id | 其余两块的一个排列 `randperm(2)`，按序取到 `n_swaps-1` 个 | 2 种排列 50／50 | `remaining_selection` |
+| `swap_pairs[k].partner` | object_id | `argmin_{j≠initiator} ‖xy_j − xy_initiator‖₂`，第 `k` 段开始时算；等距取生成顺序小者 | 报频数 | `swap_selection.partner` |
+| `repeat_target[r]` | object_id | `= target`，`r = 0 … num_repeats-1`；交换后不按当前位置另选 | 固定 | `VideoRepick::_initialize_episode` |
+| `collision.initial` / `collision.sweeps[k]` | 枚举 | 同 2.3，3 对 | 必须 | 第三节 |
 
 ```text
 { "episode": 0, "difficulty": "medium",
   "layout":  { "type": "region3_tri", "theta_rad": 0.42, "button_xy": [-0.19, 0.02],
-               "cubes": [ {"object_id": "cube_0", "xy": [-0.02, -0.14], "yaw_rad": 4.9}, … 共 3 个 ] },
+               "cubes": [ {"object_id": "cube_0", "xy": [-0.02,-0.14], "yaw_rad": 4.9}, … 共 3 个 ] },
   "objects": { "color": "blue", "target": "cube_1", "num_repeats": 2 },
   "actions": { "swap_pairs": [ ["cube_1", "cube_0"], ["cube_2", "cube_1"] ] },
   "collision": { "initial": "PASS", "sweeps": ["PASS", "PASS"], "min_g_m": 0.0058 } }
 ```
 
-#### 2.5 四个环境共同保留什么
+#### 2.5 代码落点
 
-上述清单固定的是每条 episode 的布局、对象与动作选择。**高度、物体尺寸、碰撞几何、动作速度和时序沿用原实现**；固定动作清单不等于预先生成机器人整段控制轨迹。
-
-两个视频任务都只旋转布局锚点，随后的位置偏移仍沿世界坐标轴。整体旋转的原单位是弧度，不能把 0～180 弧度改成 0～180°；它也不同于每个对象自身的朝向。具体公式、索引消费点与反例见第 2.6 节。
-
-#### 2.6 代码落点与反例
-
-难度字段位于 `native_sampling.json::parameters.<任务>.configs.<难度>`；构造期的 `dynamic`、`num_repeats`，以及 `object_selection`、`swap_selection`、`walk` 也位于各任务的 `parameters` 下。空间配置位于 `positions.<任务>`。实际消费分别见 [BinFill.py](src/robomme/robomme_env/BinFill.py)、[RouteStick.py](src/robomme/robomme_env/RouteStick.py)、[VideoUnmaskSwap.py](src/robomme/robomme_env/VideoUnmaskSwap.py)、[VideoRepick.py](src/robomme/robomme_env/VideoRepick.py) 的 `__init__`、`_load_scene`、`_initialize_episode` 和 `step`。新增规格在这些原创建点和动作绑定点接入，不通过创建后整体挪动物体实现。
-
-视频布局遵循 `p_xy = R(theta) × anchor_xy + delta_world`，其中 `theta ∈ [0,180)` 弧度；画图另列 `theta mod 2π`。例如 `theta=90` 是 90 弧度，不能按 90° 消费。有效 XY 范围是原区域扣除物体半尺寸后的范围，不能直接把区域边界当作物体中心边界。上述各环境清单中的范围表示可行域边界；实际随机采样保持原半开区间，有限精度边界在静态检查中单列。
-
-路线合法性使用 [route.py](src/robomme/robomme_env/utils/route.py)::`generate_dynamic_walk` 的线性邻接语义：
+难度字段位于 `native_sampling.json::parameters.<任务>.configs.<难度>`；`dynamic`、`num_repeats`、`object_selection`、`swap_selection`、`walk` 位于各任务的 `parameters` 下；空间配置位于 `positions.<任务>`。实际消费见 [BinFill.py](src/robomme/robomme_env/BinFill.py)、[RouteStick.py](src/robomme/robomme_env/RouteStick.py)、[VideoUnmaskSwap.py](src/robomme/robomme_env/VideoUnmaskSwap.py)、[VideoRepick.py](src/robomme/robomme_env/VideoRepick.py) 的 `__init__`、`_load_scene`、`_initialize_episode` 和 `step`。新增规格在这些原创建点和动作绑定点接入，不通过创建后整体挪动物体实现；路线合法性复用 [route.py](src/robomme/robomme_env/utils/route.py)::`generate_dynamic_walk` 的线性邻接语义：
 
 ```text
 节点拓扑：0 ── 2 ── 4 ── 6 ── 8
@@ -270,15 +268,13 @@ RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体�
 主动回退：2 → 4 → 2       easy / medium 不合法，hard 可合法
 ```
 
-⚠ `RouteStick::__init__` 仅在未显式传难度的 seed 推导分支末尾将难度覆盖成 `easy`；当前生成器显式传入 `difficulty`，不进入该分支。须分别记录请求难度、实际配置和最终 `task_state.difficulty`，用实际段数／回退约束核对难度覆盖，不顺手修旧行为。两个视频任务的 `step` 才决定实际交换搭档，初始化 schedule 里的空值不能充当完整动作证据。
-
-上述细化把“固定动作”落实为可核对的对象身份、路线和执行位置。历史 schema 3 已核对 66 组原值操作元；新规格是否真正消费仍须通过 `INJECTION_BINDING`，目前没有新值实测收益数字。
+两个视频任务的 `step` 才决定实际交换搭档，初始化 schedule 里的空值不能充当完整动作证据。新规格是否真正被消费由 `INJECTION_BINDING` 判定，目前没有新值实测数字。
 
 ### 三、两个视频任务的碰撞排除
 
 #### 3.1 查谁、什么时候查
 
-`VideoUnmaskSwap` 的容器和 `VideoRepick` 的方块在交换时沿弯道互换位置，弯道可能扫过旁观对象。本节的规则一句话：**按实际对象数检查全部对象对，初态查一次、每段交换整条路径查一次；接触即排除，容限 `1e-6` 米，不另加安全间隙。**
+**按实际对象数检查全部对象对；初态查一次、每段交换整条路径查一次；接触即排除，容限 `ε = 1e-6` 米，不加安全间隙。**
 
 ```text
 俯视：交换 0↔1，旁观 2、3（四容器三例的布局；δ 控制旁观容器 2 与 0 号弯道的间隙）
@@ -290,13 +286,13 @@ RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体�
  三例 δ = +0.012 / +0.0002 / −0.0002 → 最小判定值 g ≈ +12 mm / +0.2 mm / −0.2 mm → 通过 / 通过 / 拒绝
 ```
 
-**四个容器检查全部 6 对，三个对象检查全部 3 对。** 对象集合采用 `VideoUnmaskSwap::spawned_bins` 和 `VideoRepick::spawned_cubes`；后者 easy／medium 虽命名为 `bin_*`，实际是 3 个方块。检测包含交换双方、移动对象与旁观对象以及旁观对象之间的全部对象对。容器内部形状彼此重叠不属于跨对象碰撞；此专项不扩大到机器人、桌面、按钮或容器内藏物的碰撞判定。
-
-检查在两个时机进行：规格冻结前，外部生成器按第四节的重采样规则筛候选；实跑时，在每次初始化和每次交换开始时从实际位姿重新检查（第 5.3 节）。前者只证明预测路径几何通过，后者才是运行时证据。
+- **对象集合**：`VideoUnmaskSwap::spawned_bins`、`VideoRepick::spawned_cubes`（后者 easy／medium 虽命名 `bin_*`，实为 3 个方块）。4 个对象查 6 对，3 个查 3 对；交换双方、移动对象与旁观、旁观之间全查。
+- **两个时机**：规格冻结前，外部生成器按第 4.3 节筛候选（预测路径）；实跑时，每次初始化和每段交换开始从实际位姿再查（第 5.3 节）。前者只证明预测几何，后者才是运行时证据。
+- **不查**：机器人、桌面、按钮、容器内藏物；容器自身 6 个盒体互相重叠不算碰撞。
 
 #### 3.2 真实几何：容器 6 个盒体，方块 1 个
 
-几何权威为 [object_generation.py](src/robomme/robomme_env/utils/object_generation.py)::`build_bin` 的 `add_box_collision` 与方块创建点的实际碰撞形状。`build_bin` 注释说底板加四壁，但源码还创建中央方块，**实际为 6 个盒体**。当前机器人配置最终使用 `cube_half_size=0.02` 米；容器局部几何如下，单位均为米，表中是半尺寸：
+几何权威为 [object_generation.py](src/robomme/robomme_env/utils/object_generation.py)::`build_bin` 的 `add_box_collision`。⚠ 注释说「底板加四壁」，源码还建了中央方块，**实际 6 个盒体**。`cube_half_size=0.02` 米，单位米，表中为半尺寸：
 
 | 形状 | 局部中心 | 半尺寸 |
 | --- | --- | --- |
@@ -305,27 +301,23 @@ RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体�
 | 左／右壁 | `(±0.0275, 0, 0.027)` | `(0.0025, 0.0275, 0.025)` |
 | 前／后壁 | `(0, ±0.0275, 0.027)` | `(0.0275, 0.0025, 0.025)` |
 
-因此容器最外侧宽度是 `2 × (0.0275 + 0.0025) = 0.06` 米；方块边长是 `0.04` 米。运行时必须读取各 `PhysxCollisionShapeBox` 的 `half_size`、`local_pose`，再以 `actor.pose × shape.local_pose` 得到世界盒体。CPU 规格检查使用同源几何描述，并在仿真预检中逐形状核验；不得静默遗漏中央方块或把其他机器人尺寸硬套为上述数值。每对容器检查 `6 × 6 = 36` 个盒对，四容器每个状态共 216 个盒对；三个方块共 3 个盒对。外接圆、中心距离或整体包围盒只能初筛，不能替代最终判定。
+- 容器外宽 `2×(0.0275+0.0025) = 0.06` 米；方块边长 `0.04` 米。每对容器 `6×6 = 36` 盒对，四容器一个状态 216 盒对；三方块 3 盒对。
+- 运行时读每个 `PhysxCollisionShapeBox` 的 `half_size`、`local_pose`，世界盒体 = `actor.pose × shape.local_pose`；CPU 侧用同源描述并在仿真预检中逐形状核对。外接圆／中心距／整体包围盒只能初筛。
 
 #### 3.3 静态判据：分离轴，接触即排除
 
-单盒对使用三维分离轴检测。设中心为 `cA/cB`，方向正交基为 `RA/RB`，半尺寸为 `hA/hB`，候选轴为双方 6 个面法向及 9 个边方向叉积；轴按单位长度计算，叉积范数不大于 `1e-12` 的退化轴跳过：
+单盒对做三维分离轴检测（15 根候选轴：双方各 3 个面法向 + 9 个边叉积，叉积范数 ≤ `1e-12` 的退化轴跳过；`float64`）：
 
 ```text
 radius(A, n) = Σ_k hA[k] × abs(dot(n, RA[:, k]))
 gap(n) = abs(dot(cB − cA, n)) − radius(A, n) − radius(B, n)
-g = max_n gap(n)
-ε = 1e-6 米 = 0.001 毫米
+g = max_n gap(n)                      ε = 1e-6 米 = 0.001 毫米
 
 g > ε       → 此盒对分离
-g < 0       → 此盒对穿入，拒绝
 0 ≤ g ≤ ε   → 接触或数值边界，拒绝
+g < 0       → 穿入，拒绝
 任一跨对象盒对被拒绝 → 整个候选／正式样本拒绝
-```
 
-`g` 是分离轴判定值，不是一般情形下的最短欧氏距离；仅本次轴向边界案例可将其直观解释为间隙／穿入量。`ε` 用于数值容限，不另加安全间隙。计算用 `float64`，输入取实际形状与位姿的已转换值；非有限数、缺失形状或不支持的形状不能当成安全。算法依据为 [分离轴与包围盒碰撞检测原始说明](https://www.geometrictools.com/Documentation/DynamicCollisionDetection.pdf)。
-
-```text
 穿入                 接触／数值边界                   分离
 ───────────────|──────────────────|────────────────────→ g
                0               0.001 毫米
@@ -333,51 +325,41 @@ g < 0       → 此盒对穿入，拒绝
 案例：−0.2 毫米         0                         +0.2 毫米
 ```
 
-⚠ `spawn_random_bin` 在抽取新容器朝向前完成旧避让检查；`swap_flat_two_lane` 中固定旁观对象的位置也不保证交换路径避开旁观对象。必须在完整朝向和路径都确定后执行上述真实盒体检查，不修改旧几何或把旧避让注释当作保证。第 3.5 节已有三种对象数量的边界案例；正式 500 条规格尚未据此筛查。
+- `g` 是分离轴判定值，一般不等于最短欧氏距离；非有限数、缺形状、不支持的形状都按不安全处理。依据：[分离轴与包围盒碰撞检测原始说明](https://www.geometrictools.com/Documentation/DynamicCollisionDetection.pdf)。
+- ⚠ 原 `spawn_random_bin` 在抽朝向前就做完避让、`swap_flat_two_lane` 也不保证弯道避开旁观对象，所以必须在完整朝向和路径确定后再做上述检查，不改旧几何。
 
 #### 3.4 连续判据：区间证明分离，不能只抽视频帧
 
-连续检查严格复现 [statechange.py](src/robomme/robomme_env/utils/statechange.py)::`swap_flat_two_lane`：两个视频任务实际传入 `lane_offset=0.07`、`smooth=True`；旁观对象使用该次交换缓存的位姿，两个运动对象各自保持原高度。下式中的 `A/B` 为交换开始的 XY，`n` 为 `B−A` 的单位左法向：
+严格复现 [statechange.py](src/robomme/robomme_env/utils/statechange.py)::`swap_flat_two_lane`（实际传入 `lane_offset=0.07`、`smooth=True`；`A/B` 为交换开始的 XY，`n` 为 `B−A` 的单位左法向）：
 
 ```text
-u = (cur_step − start_step) / (end_step − start_step)
-s = u²(3 − 2u)
-pA_xy(s) = A + s(B − A) + 0.07 sin(πs) n
-pB_xy(s) = B − s(B − A) − 0.07 sin(πs) n
-qA(s) = normalize((1 − s)qA0 + s qB0)
-qB(s) = normalize((1 − s)qB0 + s qA0)
+u = (cur_step − start_step) / (end_step − start_step)      s = u²(3 − 2u)
+pA_xy(s) = A + s(B − A) + 0.07 sin(πs) n                    pB_xy(s) = B − s(B − A) − 0.07 sin(πs) n
+qA(s) = normalize((1 − s)qA0 + s qB0)                       qB(s) = normalize((1 − s)qB0 + s qA0)
 ```
 
-保留原四元数符号及归一化线性插值，不改成球面插值、不翻转符号取最短旋转；原函数在 XY 距离不大于 `1e-9` 时取零法向，端点处理同样保留。零法向不代表自动安全，初态与端点仍须检测。原函数在四元数范数不大于 `1e-6` 时不执行归一化，因此该退化区间不能按正常路径证明，按“无法证明安全”拒绝。
-
-**连续检查在单调的 `s ∈ [0,1]` 上二分。** 这与原 smoothstep 遍历同一条几何路径；速度上界也是对 `s` 的导数，不能直接混用于 `u` 或物理秒。每个形状对先检查两端，再从根区间、中点开始，按左区间先于右区间的固定顺序检查：
+在单调的 `s ∈ [0,1]` 上二分；每个形状对先查两端，再从根区间中点开始、左子区间先于右子区间：
 
 ```text
-Δq = q1 − q0
-m = min_{s∈当前区间} ||q0 + sΔq||
-ω_bound = 2 ||Δq|| / m
-r = 该形状8个局部顶点到actor原点的最大距离
-L_moving = ||B − A|| + 0.07π + r × ω_bound
-L_stationary = 0
+Δq = q1 − q0；m = min_{s∈区间} ||q0 + sΔq||；ω_bound = 2||Δq|| / m
+r = 该形状 8 个局部顶点到 actor 原点的最大距离
+L_moving = ||B − A|| + 0.07π + r × ω_bound；L_stationary = 0
 
-若中点 g ≤ ε：发现接触／穿入／数值边界，拒绝
-若中点 g > ε + (LA + LB) × 区间宽度 / 2：整个区间分离
-否则：二分，分别证明两个子区间
-```
+若中点 g ≤ ε                          → 接触／穿入／数值边界，拒绝
+若中点 g > ε + (LA + LB) × 区间宽度/2 → 整个区间分离（中点轴固定，支撑边界移动 ≤ 两侧速度上界之和）
+否则                                  → 二分，分别证明两个子区间
 
-`m` 由 `||q0+sΔq||²` 的区间内极小点及端点计算；`Δq=0` 时旋转速度上界为 0。中点选择的分离轴在该区间证明中保持固定：投影支撑边界移动不超过两物体表面速度上界之和，因此上述严格不等式才足以保证整个区间不接触。固定上限为**每个盒对、每段交换最大深度 20，最多访问 4096 个区间**，根深度记 0；耗尽上限、`m≤1e-6`、非有限数或无法保守计算上界时，记录 `uncertified` 并拒绝。不能在上限处改用更多离散帧后声称连续通过，也不能把 `uncertified` 标为已确认物理穿入。
-
-```text
 两个控制步：  无接触 ●─────────● 无接触
-中间实际路径：       └─穿过旁观物体─┘
-处理：端点均通过仍不能放行 → 中点与区间证明 → 接触拒绝／全部区间证明通过
+中间实际路径：       └─穿过旁观物体─┘     ← 端点都通过也不能放行，必须做区间证明
 ```
 
-交换必须按原 schedule 顺序检查；上一段结束位姿成为下一段的预测起态。正式执行时每段再从实际位姿重新检查，不能只相信初始化时的预测。数学连续路径检查与运行时物理子步观察分开报告：前者筛查原控制路径，后者检查引擎真实状态，不能把有限物理子步观测说成对任意物理运动的连续证明。当前已有第 3.5 节的 3 个独立区间反例；**任意旋转的完整连续检测尚未实现或验证**，以上机制和上限已固定，不留待实施时选择。
+- **不改插值**：保留原四元数符号与归一化线性插值；XY 距离 ≤ `1e-9` 时原函数取零法向，照原样保留，端点仍要查。
+- **上限固定**：每盒对、每段最大深度 20、最多 4096 个区间；耗尽、`m ≤ 1e-6`、非有限数、无法算上界 → `uncertified`，一律拒绝，不能改成多抽几帧放行。
+- **段间衔接**：上一段终态 = 下一段预测起态；实跑时每段再从实际位姿重查。任意旋转的完整连续检测**尚未实现**，机制与上限已固定。
 
-#### 3.5 定稿前固定案例、实测与用户目视结论
+#### 3.5 定稿前固定案例与用户目视
 
-案例根目录为 `artifacts/collision-preplan/20260909-bin-contact-v2/`。9 段视频使用真实 SAPIEN 场景、原碰撞几何和原交换函数产生的位姿，随后按保存的位姿重渲染；每段 155 帧、25 帧／秒、6.2 秒。三视图分别为俯视全景、斜视全景和固定接触区域放大；第 25 个控制步重复 35 帧便于目视。视频不推进完整任务物理仿真；PhysX 交叉检查另在最接近姿态执行一次 `1e-6` 秒 CPU 物理步。
+案例根目录 `artifacts/collision-preplan/20260909-bin-contact-v2/`：9 段视频由真实 SAPIEN 场景、原几何、原交换函数产生位姿后重渲染（155 帧、25 帧／秒、6.2 秒，俯视／斜视／接触区放大三视图），不推进任务物理仿真。
 
 | 场景 | 明显通过，约 +12 毫米 | 临界通过，约 +0.2 毫米 | 边缘拒绝，约 −0.2 毫米 | 用户目视状态 |
 | --- | --- | --- | --- | --- |
@@ -385,22 +367,14 @@ L_stationary = 0
 | 三容器 | [视频](artifacts/collision-preplan/20260909-bin-contact-v2/bin3-clear.mp4) | [视频](artifacts/collision-preplan/20260909-bin-contact-v2/bin3-edge_pass.mp4) | [视频](artifacts/collision-preplan/20260909-bin-contact-v2/bin3-edge_fail.mp4) | 已生成，用户未单独确认 |
 | 三方块 | [视频](artifacts/collision-preplan/20260909-bin-contact-v2/cube3-clear.mp4) | [视频](artifacts/collision-preplan/20260909-bin-contact-v2/cube3-edge_pass.mp4) | [视频](artifacts/collision-preplan/20260909-bin-contact-v2/cube3-edge_fail.mp4) | 已生成，用户未单独确认 |
 
-四容器三例均交换对象 `0↔1`，旁观对象为 `2/3`。初始 XY 分别为 `(-0.05,-0.06)`、`(0.06,-0.06)`、`(-0.01,0.07+δ)`、`(0.1,0.14)`；三个案例的 `δ` 依次为 `0.012`、`0.0002`、`-0.0002` 米。初始 Z 为实际 `build_bin` 产生的约 `0.052` 米，初始四元数、浮点实际值及每步位姿以清单为准。三例最接近姿态均为第 25 步，对象 `0/2` 的最小 SAT 判定值依次为 `0.012000004760920592`、`0.0002000061795111828`、`-0.00020000059157646195` 米。它们是固定几何回归输入，不是已通过全部配额、对象索引及抓取约束的正式 episode，不纳入 1100／110 的统计。
+四容器三例：交换 `0↔1`，旁观 `2/3`；初始 XY `(-0.05,-0.06)`、`(0.06,-0.06)`、`(-0.01,0.07+δ)`、`(0.1,0.14)`，`δ = 0.012 / 0.0002 / -0.0002` 米，Z 约 `0.052` 米；最接近姿态均为第 25 步，对象 `0/2` 最小 `g = 0.012000004760920592 / 0.0002000061795111828 / -0.00020000059157646195` 米。它们是几何回归输入，不计入 1100／110。
 
-已持久保存的证据：
+证据：[manifest.json](artifacts/collision-preplan/20260909-bin-contact-v2/manifest.json)（9 例、51 步位姿、SAT 数值）、[reproduction_contract.json](artifacts/collision-preplan/20260909-bin-contact-v2/reproduction_contract.json)（源码快照、相机、编码）、[crosscheck.json](artifacts/collision-preplan/20260909-bin-contact-v2/crosscheck.json)（PhysX 交叉验证、3 个区间反例）、[checksums.json](artifacts/collision-preplan/20260909-bin-contact-v2/checksums.json)（21 个文件 SHA-256；清单自身 `90a6e677fb55740167d72f449d81d5eb2f0fcbd6aae0eed32a76a8281da9e421`）。
 
-- [manifest.json](artifacts/collision-preplan/20260909-bin-contact-v2/manifest.json)：9 个案例、初始与 51 个控制步位姿、对象／形状对、SAT 数值、视频散列与源码提交。
-- [reproduction_contract.json](artifacts/collision-preplan/20260909-bin-contact-v2/reproduction_contract.json)：原函数源码快照、环境、相机、光照、字体、标注、时间轴及编码参数；明确一键复现入口尚未实现。
-- [crosscheck.json](artifacts/collision-preplan/20260909-bin-contact-v2/crosscheck.json)：9 个最接近姿态的 PhysX 交叉验证与 3 个独立区间反例。
-- [checksums.json](artifacts/collision-preplan/20260909-bin-contact-v2/checksums.json)：9 个视频、9 个最近姿态 PNG 和上述 3 个 JSON，共 21 个文件的 SHA-256；不递归包含清单自身，后续轻量留档另保存其散列。
+- **PhysX 不能用「有接触点」判碰撞**：三例分别有 36、62、66 个接触候选点，最小 `separation` 约 `+0.0120000001 / +0.0002000011 / -0.0002000057` 米，只有按分离值判才与几何一致；9 个姿态全部相符。区间反例在 `s=0.23712158203125` 被拒绝。
+- **四容器三例禁止覆盖或清理**；复现用新目录，分别核对「从初态重算轨迹」与「从保存轨迹重渲染」；跨 GPU／驱动不要求 MP4 逐字节相同。一键复现单列为 `COLLISION_REPRODUCE`，文件已保存 ≠ 工具已完成。
 
-散列清单自身的 SHA-256 固定为 `90a6e677fb55740167d72f449d81d5eb2f0fcbd6aae0eed32a76a8281da9e421`；文档落地时已重新核验该值和全部 21 个成员文件，不能通过同时修改证据与清单掩盖原件变化。
-
-**PhysX 不能用“有接触点”判碰撞。** 四容器明显通过、临界通过、边缘拒绝三例分别产生 36、62、66 个接触候选点，其最小 `separation` 分别约为 `+0.0120000001`、`+0.0002000011`、`-0.0002000057` 米。只有按接触点的分离值判断，才与真实几何一致；9 个姿态交叉验证全部相符。帧间窄穿越反例在 `s=0.23712158203125` 被拒绝，另有微小间隙通过和相切拒绝；它们只验证区间思路，不是任意旋转任务的完整验证。
-
-**四容器三例是用户确认的固定回归案例，禁止复跑覆盖或例行清理。** 旧 `v1` 曾因俯视相机默认 up 与视线平行而退化，仅保留为诊断历史；已修正 up 向量并增加局部相机的 `v2` 才是本计划引用的目视版本。未来复现必须使用新目录，分别检查从初始条件重算原轨迹、从保存轨迹重渲染视频；相机和编码参数取上述契约。跨 GPU／驱动不要求 MP4 字节相同，但对象身份、几何、轨迹、检测判定与画面语义必须可核对。第 5.5 节将完整复现单列待验收，不能把文件已保存说成一键工具已完成。
-
-以上判据在第四节的规格冻结前用于筛候选，在第五节的实跑中用于运行时复核。
+以上判据在第四节冻结前用于筛候选，在第五节实跑中用于运行时复核。
 
 ### 四、如何均匀分配，画什么图
 
@@ -503,62 +477,48 @@ L_stationary = 0
 
 #### 5.1 接口与固定规则
 
-当前 schema 3 只有采样规则，尚无逐 episode 结果表。因此：
+- **规格文件**：每个任务／难度一份 JSON，100 条记录，episode `0～99`，每条含任务、难度、稳定对象标识、生成顺序、位姿、动作及 `spec_sha256`。`native_sampling.json` 仍是原值依据，不改。
+- **注入路径**：新增 `--episode-specs`；[生成入口](scripts/generate_dataset_newseed.py) 父进程校验 → `EpisodeJob.episode_spec` → `gym.make(episode_spec=...)` → 原创建点与动作构造点消费；两次初始化用同一份内容。不传规格时走原随机路径。
+- **工具**：外部采样、出图、编排放在测试工具 `tests._shared.injection_campaign`（`plan/check/plot/run`）；生产侧碰撞检查放拟新增的 `src/robomme/robomme_env/utils/bin_collision.py`，生产代码不导入 `tests`。
 
-- 保留 `native_sampling.json` 作为原值依据；新增独立 `--episode-specs` 输入。源码调整后刷新来源指纹，原值参数不变。
-- 每个任务／难度保存一份含 100 条记录的规格文件，episode 编号为 `0～99`。每条包含任务、难度、稳定对象标识、生成顺序、位姿、动作及规格散列。
-- 在 [生成入口](scripts/generate_dataset_newseed.py) 中由父进程校验，再通过 `EpisodeJob.episode_spec` 传入环境。
-- 在原来的对象创建和动作构造位置消费规格；构造初始化与随后正式 `reset()` 都使用同一份内容。未传规格时保留原有随机调用路径。
-- 外部采样、出图和专项编排放入测试工具 `tests._shared.injection_campaign`，提供 `plan/check/plot/run` 子命令。
-
-**交换双方采用已确认的规则：外部预写两个对象；交换开始时检查指定搭档是否为当时实际最近邻，不符直接失败，禁止换搭档。** 图中的预定交换对须标明是否经过实跑核验。
-
-实际最近邻必须复用两个视频任务 `step` 的比较语义：以交换开始时 actor 的 XY 欧氏距离扫描生成列表，排除自身，只有 `dist < closest_dist` 才更新，因此等距时生成顺序靠前者胜出。记预定发起对象为 `a`、预定搭档为 `b_spec`，运行时计算 `b_actual`；仅 `b_spec == b_actual` 才调用原交换动作。检查不能被“提前把搭档字段填成非空”绕开。外部模拟的理想交换位置只可用于设计规格，不能替代这个运行时检查。
-
-最近邻核验通过后，仍必须按实际起态检查整段连续交换；最近邻正确不代表路径无碰撞。生产检测与外部规格检查共享拟新增内部模块 `src/robomme/robomme_env/utils/bin_collision.py`，不从生产代码导入 `tests`；仅在传入逐 episode 新值规格时启用新过滤。
-
-#### 5.2 改动前后链路与数值边界
+**交换搭档规则（用户已确认）：外部预写发起者 `a` 与搭档 `b_spec`；执行时按 `step` 原语义算实际最近邻，不符即失败，禁止换搭档。**
 
 ```text
-现状：native_sampling.json（采样规则，JSON 字节数以文件实测）
-  → load_sampling_config（dict；只校验和复制，不改采样数值）
-  → EpisodeJob.sampling_config → _run_jobs → _worker → gym.make
-  → 任务 __init__ / _load_scene（原 RNG 产生位置、对象和路线）
-  → _initialize_episode → RobommeRecordWrapper.reset 再次初始化
-  → _execute_tasks / 任务 step（运行时选择最近邻，执行物理动作）
-  → RobommeRecordWrapper（原 HDF5 / 视频）
-
-开启后：CPU plan → 原配额内候选 → 视频任务初态＋全部预定交换连续检测
-  → 冻结11份JSON × 100条 → check / plot
-  → --episode-specs → 父进程校验与索引（新增，不采样）
-  → EpisodeJob.episode_spec（每 job 独立 dict；pickle 实际字节数留档）
-  → _worker → gym.make(episode_spec=...)（传同一内容，不改数）
-  → 原创建点消费位姿 / 对象 / 路线（替代指定随机结果；这里有意改数）
-  → 两次初始化消费同一规格（深拷贝工作态，散列不变；视频对象几何复核）
-  → 原动作构造与 step（身份／最近邻 → 实际起态连续检测 → 原交换位姿）
-  → 完整交换位姿更新后、物理子步前后（视频对象几何及接触分离值复核）
-  → 原记录器 + 测试侧证据（只读记录，记录开关须校准）
-
-关闭后：没有 --episode-specs → 不额外传 kwarg → 保留上面的现状链路
+b_actual = argmin_{j≠a} ‖xy_j − xy_a‖₂     交换开始时算；复用 step 的 dist < closest_dist，等距取生成顺序小者
+b_spec == b_actual → 按实际起态做第 3.4 节连续检查 → 原 swap_flat_two_lane
+b_spec != b_actual → 该样本记「实际对象／动作不符」失败；不能靠预填搭档字段绕过
 ```
 
-规格里位置为长度 3 的有限数数组，四元数为长度 4，单对象共 7 个标量；JSON 本身没有 tensor dtype 或固定字节数，不能写成“每对象 28 字节”。进入环境时沿用各创建点的原转换；若该点是 `float32[3]`／`float32[4]`，其纯数值载荷才分别为 12／16 字节。记录实际 shape、dtype、转换前值和转换后位模式；不要求 JSON 十进制文本等于仿真存储字节。
+#### 5.2 改动前后链路
 
-路线为 `L+1` 个整数节点和 `L` 个方向标签；`L` 由难度决定。HDF5 每个 dataset 的 shape、dtype 与字节量由实际产物统计，不假设固定轨迹长度。本链路不训练模型，可训练参数为 0；JSON、pickle、actor 和 HDF5 四个边界分别记录规格身份及数值转换，关闭态不新增 dtype 转换。
+```text
+开启（有 --episode-specs）：
+  CPU plan → 原配额内候选 → 视频任务初态＋全部预定交换连续检测 → 冻结 11 份 JSON × 100 条 → check / plot   [不改仿真]
+  → 父进程校验与索引                                     [不采样]
+  → EpisodeJob.episode_spec（每 job 独立 dict）           [不改数]
+  → _worker → gym.make(episode_spec=...)                 [不改数]
+  → 原创建点消费位姿 / 对象 / 路线                        [有意改数：替代原随机结果]
+  → 两次初始化消费同一规格（深拷贝工作态）                 [散列不变；视频对象几何复核]
+  → 原动作构造与 step：身份／最近邻 → 实际起态连续检测 → 原交换位姿
+  → 完整交换位姿更新后、物理子步前后：几何与接触分离值复核  [只读]
+  → 原记录器 + 测试侧只读证据
 
-#### 5.3 运行时检查顺序与碰撞拒绝证据
+关闭（无 --episode-specs）：不额外传 kwarg，链路与现状逐位相同（native_sampling.json → 原 RNG → 原动作 → 原 HDF5）
+```
 
-两个视频任务在 `_initialize_episode` 完成对象放置后复核实际碰撞盒，构造初始化与正式 `reset()` 各执行一次，不复用旧 actor 引用。每次交换开始，在原 `step` 中按“最近邻身份核验 → 实际起态的连续路径检查 → 原 `swap_flat_two_lane`”顺序执行；连续交换的交接时刻沿用现有函数调用顺序和缓存，上一段端点与下一段起点都检查。
+- 规格里位置 3 个、四元数 4 个有限数，JSON 无固定字节数；进入环境沿用各创建点原转换并记录实际 shape／dtype／转换前后值。HDF5 各 dataset 的字节量按实际产物统计；可训练参数为 0，关闭态不新增 dtype 转换。
 
-原交换函数一次会依次设置旁观对象及交换双方位姿，**只能在这一完整更新返回后检查**，不能把只移动 A、尚未移动 B 的中间赋值状态当作物理碰撞。在 `_before_simulation_step`、`_after_simulation_step` 处保留基类调用并增加受新值开关控制的只读检查；后者同时读取目标对象之间的 `contact.points[].separation`，以捕捉已经被求解器分开的接触。使用与第 3.3 节相同的 `ε`，过滤对象集合之外的接触，不以候选点个数或碰撞冲量阈值替代。若启用 GPU 物理后端，必须先保证读到当前子步的形状／位姿和接触；不能取得所需证据时记录能力缺口并阻止该模式通过，不读取陈旧缓存后放行。
+#### 5.3 运行时检查顺序
 
-命中后立即中止该固定样本，记录 `collision_rejection`：规格散列、任务／难度／episode、初始化编号、交换编号、控制步及物理子步、检查阶段、对象和形状标识、`g`／`separation`、区间边界、深度与访问数、拒绝原因。区间中点只是接触见证，不宣称找到精确首次接触时刻；区间耗尽等 `uncertified` 不填伪造的穿入深度。保留拒绝前的帧、事件和异常；尚未实际执行的预测碰撞只可另做带“预测”标识的诊断回放，不能伪造为生产运行帧。没有 HDF5 的失败同样留在 110 个样本的结果表中。
+1. **初始化复核**：两个视频任务在 `_initialize_episode` 放置完对象后读实际碰撞盒并做 3.3 节检查；构造初始化与正式 `reset()` 各一次，不复用旧 actor。
+2. **交换开始**：在原 `step` 中先做 5.1 节最近邻核验。
+3. **实际起态连续检查**：按 3.4 节从实际位姿证明整段；上一段终点与下一段起点都查。
+4. **原交换动作**：`swap_flat_two_lane` 一次设置旁观与双方位姿，**完整返回后**才检查，不把只动了 A 未动 B 的中间态当碰撞。
+5. **物理子步**：`_before_simulation_step`／`_after_simulation_step` 保留基类调用，加受新值开关控制的只读检查；后者读目标对象间 `contact.points[].separation`（同一 `ε`），不按接触点个数或冲量判。GPU 物理后端读不到当前子步证据时记能力缺口并阻止该模式通过。
 
-正式运行保持 `--max-attempts 1`，生产异常不得进入换 seed、换搭档或重采样路径。关闭新值注入时不安装新检查、不新增几何读取与随机调用；不得借碰撞检测改变速度、几何、原成功条件或环境默认行为。完整关闭态 HDF5 对照以及检测开关的只读性分别验收。
+命中即中止该样本并记 `collision_rejection`（规格散列、样本身份、初始化／交换编号、控制步与子步、阶段、对象与形状、`g`／`separation`、区间边界与深度、原因 `contact`／`numerical_boundary`／`uncertified`），保留拒绝前的帧与事件。`--max-attempts 1` 不变，不换 seed／搭档／重采样；关闭注入时不装新检查、不新增几何读取与随机调用。
 
 #### 5.4 前 10 条怎样验收
-
-一条实跑样本从规格到判定的完整路径如下；括号内是该环节对应的判定项（定义见第 5.5 节）：
 
 ```text
 一条实跑样本（任务/难度/episode k，k∈0～9）
@@ -581,70 +541,65 @@ L_stationary = 0
 | 抓取对象、交换双方、路线和方向 | — | 按实际执行事件检查 |
 | 最终成功及 HDF5 契约 | — | 检查并保存视频 |
 
-正式实跑固定 `attempt=0`、`--max-attempts 1`。失败保留原条目，**不能换 seed，也不能拿第 11 条补位**。
+正式实跑固定 `attempt=0`、`--max-attempts 1`；失败保留原条目，不换 seed、不拿第 11 条补位。七类最终状态互斥：通过、规格拒绝、碰撞拒绝（再分接触／穿入、数值边界、无法证明安全）、实际对象／动作不符、规划失败、超时、未运行；没有 HDF5 的失败也保留规格、日志和失败位置。产物按运行编号／任务／难度分目录，规格与结果用散列关联，历史证据只读。
 
-报告分别统计：通过、规格拒绝、碰撞拒绝、实际对象／动作不符、规划失败、超时、未运行。七类最终状态互斥；碰撞拒绝另分实际接触／穿入、数值边界和无法证明安全。失败即使没有 HDF5，也必须保留规格、日志和失败位置。
+#### 5.5 验收判定表
 
-产物按运行编号、任务、难度分目录，避免三个难度相同 episode 编号互相覆盖；规格与结果通过散列关联。历史证据保持只读。
+大写标识是**拟新增的判定协议**，不是现有工具输出；每项报 `PASS`／`FAIL`／`NOT_RUN` 及分子／分母，由独立检查器从原始产物推导。「问」列标明该项回答五问中的哪一问。
 
-#### 5.5 验收判定表（单 GPU）
+| 判定项 | 问 | 查什么 | 目标判定行 |
+| --- | --- | --- | --- |
+| `SPEC_SCOPE` | 均匀 | 11 组 × episode 0～99 无缺号／重复／越界，排除项正确 | `SPEC_SCOPE=PASS groups=11 specs=1100 excluded=VideoRepick-hard` |
+| `SPEC_REPRODUCIBLE` | 均匀 | 同 seed、不同组调度顺序独立生成两次，逐记录散列相同 | `SPEC_REPRODUCIBLE=PASS compared=1100 differences=0` |
+| `COVERAGE_QUOTA` | 均匀 | 重算全量与前 10 配额、分层计数、条件频数和缺口 | `COVERAGE_QUOTA=PASS groups=11 prefix=10 quota_gaps=0` |
+| `STATIC_GEOMETRY` | 均匀 | 逐条检查难度、索引、范围、避让、路线与动作长度 | `STATIC_GEOMETRY=PASS checked=1100 rejected=0` |
+| `COLLISION_GEOMETRY` | 碰撞 | 实际 actor 盒数／半尺寸／局部位姿与 3.2 节一致；旋转角点、相切、中央方块、全部对象对；PhysX 分离值反证 | `COLLISION_GEOMETRY=PASS bin_shapes=6 cube_shapes=1 four_object_pairs=6` |
+| `COLLISION_SWEEP` | 碰撞 | 500 条冻结视频规格逐段区间检查；帧间穿越、四元数、段间边界、上限／退化拒绝反例 | `COLLISION_SWEEP=PASS specs=500 rejected=0 uncertified=0` |
+| `COLLISION_RUNTIME` | 碰撞 | 50 个视频唯一样本的两次初始化、每段实际起态、完整位姿更新、子步前后与 `separation` | `COLLISION_RUNTIME=PASS unique=50 rejected=0 missing_checks=0` |
+| `COLLISION_REPRODUCE` | 碰撞 | 9 例从初态重算轨迹对照保存位姿；从保存轨迹重渲染；新旧目录、原件散列 | `COLLISION_REPRODUCE=PASS cases=9 accepted=6 rejected=3 original_unchanged=1` |
+| `PLOT_EVIDENCE` | 均匀 | 每组 100 小图 + 三类图，图与计数表的规格散列一致 | `PLOT_EVIDENCE=PASS groups=11 thumbnails=1100` |
+| `DEFAULT_PARITY` | 注入生效 | 修改前后关闭注入、同 seed／配置，原调用流、对象动作、完整 HDF5 逐位相同 | `DEFAULT_PARITY=PASS cases=<实际数> differences=0` |
+| `SMOKE` | 注入生效 | 单任务、单 episode、单 GPU、单 worker：注入、终态、HDF5、视频；观察器开关对照 | `SMOKE=PASS episodes=1 attempt=0 observer_differences=0` |
+| `INJECTION_BINDING` | 注入生效 | 创建前输入 vs 创建后位姿、两次初始化、所有目标／方向／交换事件 | `INJECTION_BINDING=PASS unique=110 mismatches=0` |
+| `PARALLEL_CONTENT` | 并行一致 | `S1/P0/P01` 各与同规格 `S0` 比较完整 HDF5 与对象动作证据，共 48 对 | `PARALLEL_CONTENT=PASS unique=16 pairs=48 differences=0` |
+| `PARALLEL_OVERLAP` | 并行一致 | 卡身份、不同 PID、真实 step 时间区间重叠 > 0；双卡需跨卡共同窗口 | `PARALLEL_OVERLAP=PASS mode=P01 gpus=2 workers_per_gpu=2`，同时报 `P0` |
+| `FEASIBILITY` | 可执行 | 110 个唯一规格的最终严格布尔成功、`inspect_episode_terminal` 契约、视频存在 | `FEASIBILITY=PASS unique=110 succeeded=110 attempt=0` |
+| `DELIVERY` | 可执行 | 离线重算清单散列；所有规格、110 行结果、命令、退出码、七类状态计数、固定案例保留清单 | `DELIVERY=PASS specs=1100 result_rows=110 missing=0` |
 
-以下大写标识为**拟新增的判定协议**，不是当前工具已经打印的结果。每项须报告 `PASS`、`FAIL` 或 `NOT_RUN` 及分子／分母；表中的数字是目标值。实现后由独立检查器从规格、事件或原始产物推导，不能只读报告的布尔标记。各项按四问归类：**均匀**（`SPEC_SCOPE`、`SPEC_REPRODUCIBLE`、`COVERAGE_QUOTA`、`STATIC_GEOMETRY`、`PLOT_EVIDENCE`）、**碰撞**（`COLLISION_GEOMETRY`、`COLLISION_SWEEP`、`COLLISION_RUNTIME`、`COLLISION_REPRODUCE`）、**注入生效**（`DEFAULT_PARITY`、`SMOKE`、`INJECTION_BINDING`）、**可执行**（`FEASIBILITY`、`DELIVERY`）。并行相关的两项本轮不做，见第六节。
+失败处理：任何样本不得移出分母；没有成功 HDF5 的执行保留失败证据，依赖该产物的比较列为未完成。只有全部具名项实际通过才称全方案通过；走串行回退时并行两项保持 `FAIL`／`NOT_RUN`，不改写成整体通过。
 
-| 判定项 | 查什么／怎么查 | 通过说明什么／目标判定行 |
+#### 5.6 阶段安排
+
+| 阶段 | 内容 | 判据 |
 | --- | --- | --- |
-| `SPEC_SCOPE` | 枚举 11 个组、每组 episode 0～99，检查缺号、重复、越界和排除项 | 范围齐全；`SPEC_SCOPE=PASS groups=11 specs=1100 excluded=VideoRepick-hard` |
-| `SPEC_REPRODUCIBLE` | 同 seed 独立生成两次，改变组调度顺序，逐记录比较规范化内容及散列 | 外部生成不依赖调度；`SPEC_REPRODUCIBLE=PASS compared=1100 differences=0` |
-| `COVERAGE_QUOTA` | 重算全量与前 10 配额、分层计数、条件频数和缺口 | 声明的独立配额满足，耦合限制已披露；`COVERAGE_QUOTA=PASS groups=11 prefix=10 quota_gaps=0` |
-| `STATIC_GEOMETRY` | 逐条检查难度、索引、范围、避让、路线与动作长度，报告失败位置 | 全部静态合法，不代表物理可行；`STATIC_GEOMETRY=PASS checked=1100 rejected=0` |
-| `COLLISION_GEOMETRY` | 比较实际 actor 的盒数、半尺寸与局部位姿；验证旋转角点、相切、中央方块、旁观对象和全部对象对；以独立 PhysX 分离值反证 | 真实几何与拒绝口径正确；`COLLISION_GEOMETRY=PASS bin_shapes=6 cube_shapes=1 four_object_pairs=6`，附完整反例清单 |
-| `COLLISION_SWEEP` | 对冻结的 500 条视频规格逐段执行连续区间检查；测试帧间穿越、不同四元数、连续交换边界及上限／退化拒绝 | 预测运动路径全部可证明分离；`COLLISION_SWEEP=PASS specs=500 rejected=0 uncertified=0`；冻结前候选拒绝数另列 |
-| `COLLISION_RUNTIME` | 对 50 个视频唯一样本检查两次初始化、每次实际起态、完整交换位姿更新及物理子步前后；核验接触分离值和记录覆盖 | 被测实际路径具备完整检查证据且未被拒绝；`COLLISION_RUNTIME=PASS unique=50 rejected=0 missing_checks=0` |
-| `COLLISION_REPRODUCE` | 从固定初态重算全部 9 例轨迹并对照保存位姿、判定；另从保存轨迹重渲染视频，核对相机／时间轴与新旧目录 | 一键入口实际复现通过；`COLLISION_REPRODUCE=PASS cases=9 accepted=6 rejected=3 original_unchanged=1`；旧视频存在不能代替此项 |
-| `PLOT_EVIDENCE` | 检查每组 100 个小图及三类图表，核对图与计数表的规格散列 | 图表可追溯，目视结论另记；`PLOT_EVIDENCE=PASS groups=11 thumbnails=1100` |
-| `DEFAULT_PARITY` | 修改前后关闭注入、相同 seed／配置，比较原调用流、对象动作及完整 HDF5 | 被测关闭路径不变；`DEFAULT_PARITY=PASS cases=<实际数> differences=0`，不得省略样本清单 |
-| `SMOKE` | 单任务、单 episode、单 GPU、单 worker，检查注入、终态、HDF5 和视频；对观察器做开关对照 | 核心链路可进入正式实跑；`SMOKE=PASS episodes=1 attempt=0 observer_differences=0` |
-| `INJECTION_BINDING` | 检查创建前输入与创建后规范化位姿、两次初始化、所有目标／方向／交换事件 | 规定内容实际被消费；`INJECTION_BINDING=PASS unique=110 mismatches=0` |
-| `FEASIBILITY` | 110 个唯一规格逐条核验最终严格布尔成功、`inspect_episode_terminal` 契约及视频存在 | 仅这 110 条物理可行；`FEASIBILITY=PASS unique=110 succeeded=110 attempt=0` |
-| `DELIVERY` | 离线重算清单散列，检查所有规格和 110 行结果、命令、退出码及七类状态计数；核对固定案例保留清单 | 报告完整可复核；`DELIVERY=PASS specs=1100 result_rows=110 missing=0`，不等于前面所有项目通过 |
+| 0 | 核对授权、代码／配置／环境和在途原值校准；冻结实现基线 | 第二部分前置红线满足，记录未验证项 |
+| 1 | 实现规格生成、真实碰撞盒与连续路径检查、固定案例复现、三类图 | `COLLISION_GEOMETRY`、`COLLISION_REPRODUCE`、`SPEC_SCOPE`、`SPEC_REPRODUCIBLE`、`COVERAGE_QUOTA`、`STATIC_GEOMETRY`、`COLLISION_SWEEP`、`PLOT_EVIDENCE` |
+| 2 | 接入规格、碰撞拒绝、运行时子步检查与事件证据；关闭态对照；单条冒烟 | `DEFAULT_PARITY`、`SMOKE`；短验证累计 ≤ 5 分钟，失败不放大 |
+| 3 | 固定 16 个新值规格，按四配置执行 64 次校准 | `PARALLEL_CONTENT`、`PARALLEL_OVERLAP`；失败按第六节串行回退，不换规格 |
+| 4 | 完成其余 94 条（校准通过用 `P01`，否则 `S0`），汇总 110 个唯一样本与全部重复执行 | `INJECTION_BINDING`、`COLLISION_RUNTIME`、`FEASIBILITY` |
+| 5 | 轻量证据、独立离线复核、更新说明与账本并提交 | `DELIVERY` |
 
-失败处理：任何样本不得被移出分母；没有成功 HDF5 的执行保留失败证据，并将依赖该产物的比较列为未完成。只有所有具名项目实际通过才称全方案验收通过。
-
-#### 5.6 阶段安排（单 GPU）
-
-| 阶段 | 内容 | 判据与推进条件 |
-| --- | --- | --- |
-| 0 | 核对授权、代码／配置／环境和在途原值校准；冻结实现基线 | 第二部分前置红线满足，记录所有未验证项 |
-| 1 | 实现独立规格生成、真实碰撞盒与连续路径检查、固定案例复现和三类图表 | `COLLISION_GEOMETRY`、`COLLISION_REPRODUCE`、`SPEC_SCOPE`、`SPEC_REPRODUCIBLE`、`COVERAGE_QUOTA`、`STATIC_GEOMETRY`、`COLLISION_SWEEP`、`PLOT_EVIDENCE` |
-| 2 | 接入规格、碰撞拒绝、运行时子步检查与事件证据，验证关闭态及单条冒烟 | `DEFAULT_PARITY`、`SMOKE`；先做单任务单 episode 单 worker 的视频链路定向冒烟；短验证累计不超过 5 分钟，失败不放大 |
-| 3 | 以 `--gpus 0 --workers 1` 顺序执行 110 个唯一样本，汇总全部结果 | `INJECTION_BINDING`、`COLLISION_RUNTIME`、`FEASIBILITY`；拒绝／失败／超时／未运行全部列出 |
-| 4 | 保存轻量证据、独立离线复核、更新说明与账本并提交 | `DELIVERY`；逐项报告此前所有判定，不覆盖历史证据 |
-
-执行次数：110 个唯一样本各执行一次，另加阶段 2 的两条冒烟（`BinFill hard` episode 0 与 `VideoUnmaskSwap medium` episode 0，均属 110 条之内，写独立目录，不重复计数）。⚠ 历史 schema 3 的 60 次生成耗时 2479.7 秒，不能按比例承诺新布局耗时；预计超过 5 分钟的阶段用 detached `tmux` 保存日志和退出码。报告必须保存墙钟时间、显存峰值和完整差异；有规划回退或逐位差异时不自动放宽容差。
-
-最终结论必须明确区分：**规格是否均匀、碰撞是否全部排除、注入是否生效、前 10 条是否可执行。**
+执行次数预算 `64 + 94 = 158`（不含冒烟），物理覆盖仍是 110 条；两条冒烟（`BinFill hard` ep 0、`VideoUnmaskSwap medium` ep 0）属 110 条内，写独立目录。⚠ 158 是预算不是实测，原值耗时（第六节）不能按比例外推；超过 5 分钟的阶段用 detached `tmux`。
 
 #### 5.7 实施后实测追加区
 
-**正式新值阶段 1～4 尚未执行。** 定稿前碰撞诊断独立编号 `20260909-bin-contact-v2`，记录以下已发生的结果，不回写目标判据以适配结果：
+**正式新值阶段 1～5 尚未执行。** 定稿前碰撞诊断（编号 `20260909-bin-contact-v2`）已发生的结果如下，不回写目标判据以适配结果：
 
 | 已有检查 | 实测与退出状态 | 证明边界 |
 | --- | --- | --- |
-| 原几何／原交换函数诊断 | 首轮 9 例共 20.99 秒，成功执行部分退出码 0；51 个控制步的 SAT 分类符合预设 6 通过／3 拒绝 | 未覆盖任意旋转连续路径或完整任务 |
-| 修正相机后重渲染 | 9 段视频，23.28 秒，退出码 0；`ffprobe` 核实每段 H.264、155 帧、6.2 秒 | 使用保存位姿回放，不重新运行生产任务 |
-| 独立 PhysX 与区间反例 | 9 个最接近姿态判断一致；3 个独立区间反例通过；0.61 秒，退出码 0 | PhysX 只检查最接近姿态；区间反例不是完整旋转实现 |
-| 文件完整性 | 21 个证据文件 SHA-256 核验通过，退出码 0；散列清单自身另存散列 | 文件可核验，不等于已有一键复现入口 |
-| 用户目视 | 四容器明显通过／临界通过／边缘失败三例已确认 | 不外推到另外六例或正式 50 个视频样本 |
+| 原几何／原交换函数诊断 | 首轮 9 例共 20.99 秒，退出码 0；51 个控制步 SAT 分类 6 通过／3 拒绝 | 未覆盖任意旋转连续路径或完整任务 |
+| 修正相机后重渲染 | 9 段视频 23.28 秒，退出码 0；`ffprobe` 核实 H.264、155 帧、6.2 秒 | 保存位姿回放，不重跑生产任务 |
+| 独立 PhysX 与区间反例 | 9 个最接近姿态一致；3 个区间反例通过；0.61 秒，退出码 0 | PhysX 只查最接近姿态 |
+| 文件完整性 | 21 个文件 SHA-256 通过，退出码 0；清单自身另存散列 | 不等于一键复现入口 |
+| 用户目视 | 四容器三例已确认 | 不外推到另外六例或正式 50 个样本 |
 
-诊断使用 `command -v uv` 后通过 `uv run --no-sync python -` 执行内联验证；当时没有落地独立脚本，故不伪造一条已存在的重生成 CLI。第二部分第四节给出现有文件核验命令，并单独约定待实现的复现入口。排查中曾把机器人配置直接索引为不存在的 `panda_wristcam`，核实任务实际回退到 `panda`；直接传入 ManiSkill Pose 给 SAPIEN 相机也曾因类型不同失败，转换为原生 Pose 后修正。首次不带 render 系统的 PhysX 场景因原 `build_bin` 同时创建 visual 而初始化失败，改为默认 Scene 后重跑；上述失败不计入通过次数。`v1` 的俯视退化已经在 `v2` 修正，两版原产物均未覆盖。
-
-后续在本节追加正式运行编号、代码提交、命令、退出码、实测数字及四个碰撞判定项的独立结论；不得把本表通过数填入 `COLLISION_SWEEP`、`COLLISION_RUNTIME` 或 `COLLISION_REPRODUCE`。
+- 诊断为 `uv run --no-sync python -` 内联执行，一键复现入口待实现。排查失败不计入通过：误索引 `panda_wristcam`（实际回退 `panda`）、ManiSkill Pose 直传 SAPIEN 相机类型不符、无 render 的 PhysX 场景因 `build_bin` 建 visual 失败；`v1` 俯视相机退化，`v2` 才是目视版本，两版均未覆盖。
+- 后续在此追加正式运行编号、命令、退出码与实测数字；本表数字不得填入 `COLLISION_SWEEP`／`COLLISION_RUNTIME`／`COLLISION_REPRODUCE`。
 
 #### 5.8 独立原值并行校准实测
 
-**原值校准检查已完成，完整 16 条资格未满足，整体未通过。正式新值阶段 1～4 仍未执行。**
-本节对应用户另行批准的原值校准，不改变本文件的新值单 GPU、单 worker 范围，
-也不改变碰撞方案或后续阶段的授权边界。
+**原值校准检查已完成，完整 16 条资格未满足，工具结论整体未通过；正式新值阶段 1～5 仍未执行。**
+本节对应用户另行批准的原值校准（`08e3a3b`，`10.23`）；用户据其 15/16 逐位一致决定本轮新值采用多 GPU 对拍（第六节），本节只记录实测，不改变碰撞方案或后续阶段的授权边界。
 
 固定 `BinFill hard`、`RouteStick hard`、`VideoUnmaskSwap hard`、`VideoRepick medium`
 各 episode `0～3`，共 16 个唯一原值样本；五轮 S0a、S0b、S1、P0、P01 共 80 次实际生成。
@@ -680,29 +635,39 @@ tmux 命令见 [scripts/README.md](scripts/README.md) 第 2.6 节。`compare` �
 与旧 A/B/C 证据包发现规则冲突。57 项定向测试通过，另有真实产物端到端复核通过。
 旧中间运行与初版报告保存在 `artifacts/parallel-calibration/`，不替代正式复核结果。
 
-这里的 80 次、45 对及窗口通过数均属于独立原值检查，不填入第 5.5 节新值验收计数，
-也不改变第六节新值 `PARALLEL_CONTENT`／`PARALLEL_OVERLAP` 的 `NOT_RUN` 状态。
+这里的 80 次、45 对及窗口通过数均属于独立原值检查，不填入第 5.5 节新值验收计数；
+新值的 `PARALLEL_CONTENT`／`PARALLEL_OVERLAP` 仍须由第六节的新值校准自己取得。
 
-### 六、GPU 与进程：本轮固定单 GPU、单 worker
+### 六、GPU 与进程：多 GPU 对拍
 
-**本轮 110 条实跑全部使用 `--gpus 0 --workers 1`，与 [完整对拍报告](docs/validation/newtask-v2/20260909-actions-v3/README.md) 的 60 次生成相同配置；多 GPU、每卡多 worker 的新值一致性留待后续单独立项，不在本轮验收范围。**
+**本轮采用多 GPU 对拍。** 四种运行配置：`S0`（GPU 0／1 worker）、`S1`（GPU 1／1 worker）、`P0`（GPU 0／2 workers）、`P01`（GPU 0、1／共 4 workers）。生成器每 GPU 一个 `spawn` 进程池，`per_gpu = max(1, workers // len(gpu_ids))`（`generate_dataset_newseed.py::_run_jobs`），`--workers` 是总数。
 
-| 问题 | 已核实的结论 |
+**依据：原值并行校准实测**（详见第 5.8 节与 [实测报告](docs/validation/newtask-v2/20260909-schema3-parallel-v2/README.md)；代码 `91bacf9`，比较工具 `1f98324`，留档提交 `08e3a3b`）。16 个原值样本 = 四任务各前 4 条，前三任务 hard、`VideoRepick` medium：
+
+| 项 | 实测 |
 |---|---|
-| 生成器支持什么？ | 每 GPU 一个 `spawn` 进程池。`--gpus 0,1 --workers 4` 表示每卡 2 个 worker；`--workers 8` 表示每卡 4 个 |
-| 多卡多进程以前验证过吗？ | [早期报告](docs/validation/newtask-v2/20260909T1441Z-postclean/README.md) 记录 schema 2 使用双卡、每卡 4 worker，16 个 easy 任务全部成功，耗时 72.7 秒；原始重产物已清理 |
-| 既有 schema 3 串行验证过什么？ | 完整对拍报告的 60 次生成全部使用 GPU 0、单 worker；同 worker 连续生成也已验证 |
+| 五轮 `S0a/S0b/S1/P0/P01` 成功生成 | 各 15/16；唯一失败 `BinFill/hard/episode_3`，五轮错误签名相同（原值自身失败，与并行无关） |
+| `S1/P0/P01` 对 `S0` 严格比较 | 各 15/15 通过：`h5_difference_count=0`、`no_planner_fallback=True`；第 16 条因串行参考未建立不可比 |
+| 并发／串行窗口判据 | 每轮 4/4 批次通过；`P01` 四任务的四 worker 共同 step 重叠分别 27.734、48.155、14.041、22.700 秒 |
+| 批次总耗时 | `S0a` 758.01 秒、`S0b` 756.44 秒、`S1` 754.58 秒、`P0` 401.13 秒、`P01` 262.59 秒 |
+| 工具正式结论 | `passed=False`（分母 16 未全通过，失败不换 seed、不补样本） |
 
-原值并行校准（生成代码 `91bacf9`、数值复核工具 `1f98324`，编号 `20260909-schema3-parallel-v2`）
-已完成五轮 80 次及独立离线复核，实测见第 5.8 节：15 个可比样本在三种模式下全部严格一致，
-但固定失败样本使完整 16 条校准未整体通过。它是另一任务，不能替代新值并行证据。
+用户据此决定（原话）：
 
-| 判定项 | 本轮状态 |
-| --- | --- |
-| `PARALLEL_CONTENT` | `NOT_RUN`：新值样本跨配置逐位一致性未验证 |
-| `PARALLEL_OVERLAP` | `NOT_RUN`：新值样本真实并发未验证 |
+> 本次实测中，除生成失败的那条外，其余 15 条都保证了逐位一致：
+> * GPU 1 单 worker；
+> * GPU 0 双 worker；
+> * 双 GPU、每卡 2 worker。
 
-后续立项时再定四种运行配置与真实并发判据；原定义已移至第二部分「八、后续多卡校准（本轮不做）」，不删除。
+原值结果只证明生成器在多卡多 worker 下对原值逐位一致；**新值样本仍须自己通过 `PARALLEL_CONTENT`／`PARALLEL_OVERLAP`，不借用原值结果。**
+
+本轮执行顺序：
+
+1. **冒烟（`S0`）**：单任务、单 episode、单 worker，`SMOKE` 通过后才进入下一步。
+2. **校准**：16 条新值规格（四任务各前 4 条，前三任务 hard、`VideoRepick` medium）× 四配置 = 64 次。
+3. **判定**：`PARALLEL_CONTENT`（`S1/P0/P01` 各对 `S0`，48 对逐位）+ `PARALLEL_OVERLAP`（同一主机单调时钟，不同 PID 的 `[first_step, last_step]` 窗口 `min(end_a,end_b) − max(start_a,start_b) > 0`；`P01` 还需跨卡共同窗口；只有排队／导入重叠不算）。
+4. **其余 94 条**：校准通过用 `P01`；不通过则用 `S0` 完成，并行两项保持 `FAIL`，不换规格、不放宽容差。
+5. **留档**：保留 64 次逐轮结果与每种配置的墙钟、显存峰值、重叠时长、完整差异；超过 5 分钟的阶段用 detached `tmux`。
 
 ## 第二部分（技术细节，供 agent 追踪）
 
@@ -711,7 +676,7 @@ tmux 命令见 [scripts/README.md](scripts/README.md) 第 2.6 节。`compare` �
 1. **授权：**本轮落地补充文档并复核已保存证据；阶段表仍是未来生产工作说明。第 3.5 节是此前为定稿完成的独立诊断，不授权本轮启动生产检测、新值规格生成、全任务仿真、清理、分支创建或推送。
 2. **范围：**第一部分第一节的 11 组是唯一规格集合；episode `0～9` 是唯一实跑样本集合，`VideoRepick hard` 不生成、不画图、不实跑。
 3. **原值：**`native_sampling.json` 的 `parameters`、`positions` 和原值操作元不变；仅源码接入后按原提取流程刷新必要来源指纹。不得借机改变碰撞几何、速度、时序、成功阈值、默认随机调用或旧难度行为。
-4. **失败：**正式执行固定 `--max-attempts 1`；加载器拒绝新值专项中 `max_attempts != 1`。本轮实跑固定 `--gpus 0 --workers 1`，不切换运行配置。不能换 seed、换搭档、换难度、改规格补跑或使用第 11 条补位。
+4. **失败：**正式执行固定 `--max-attempts 1`；加载器拒绝新值专项中 `max_attempts != 1`。不能换 seed、换搭档、换难度、改规格补跑或使用第 11 条补位。
 5. **存储：**规格、数据、日志、图像全部落本仓库；官方参考集与历史保留产物只读。运行编号不可复用，文件和目录按任务／难度分隔。
 6. **证据：**新增接口和命令须先实现才能运行；第 5.5 节验收表中的 `PASS` 行是目标，第 3.5 节与第 5.7 节的定稿前实测单列。历史原值、碰撞诊断与正式新值证据分开归因，禁止借用在途原值校准或旧案例的通过标记。
 7. **环境与协作：**先 `command -v uv`，全部 Python 入口由 `uv run` 启动；依赖变更写回 `pyproject.toml` 并锁定。不得把其他任务的未提交文件纳入本轮提交或覆盖其结果。
@@ -772,10 +737,10 @@ tmux 命令见 [scripts/README.md](scripts/README.md) 第 2.6 节。`compare` �
 | 碰撞几何与连续预测 | 同源几何对实际形状；500 条规格的全部对象对和交换段 | 漏中央方块、旋转角点接触、帧间穿越、错误最短旋转、深度／计数耗尽、四元数退化 | `COLLISION_GEOMETRY`、`COLLISION_SWEEP` |
 | 碰撞运行时 | 50 条实际初始化、交换起态、完整位姿更新及物理子步前后 | 旁观对象被穿过、只更新半对时误判、正 separation 候选点误判、子步缓存过期、冻结后换 seed | `COLLISION_RUNTIME`、`DEFAULT_PARITY` |
 | 固定案例复现 | 保存初态重算轨迹对旧轨迹；保存轨迹重渲染；旧原件散列对照 | 只播放旧视频、混用 v1 退化相机、修改旧目录、缺失边缘失败、用户未目视却标已确认 | `COLLISION_REPRODUCE` |
-| 后续多卡校准（本轮不做） | 留待立项：同一规格的单卡串行结果对多卡／多 worker 结果 | 少产物、不同 timestep、数值／图像差异、规划回退、只有排队重叠 | `PARALLEL_CONTENT`、`PARALLEL_OVERLAP` 本轮 `NOT_RUN`，定义见第八节 |
+| 四配置校准 | 同一 16 规格的 `S0` 对 `S1/P0/P01` | 少产物、不同 timestep、数值／图像差异、规划回退、只有排队重叠 | `PARALLEL_CONTENT`、`PARALLEL_OVERLAP` |
 | 最终样本与交付 | 110 个唯一规格、每次执行记录、结果表及文件清单 | 无 HDF5 的失败被丢弃、第 11 条补位、未运行被记成功、仅保存通过标记 | `FEASIBILITY`、`DELIVERY` |
 
-七类最终状态互斥：通过、规格拒绝、碰撞拒绝、实际对象／动作不符、规划失败、超时、未运行；对应计数之和为 110。碰撞的几何确认、数值边界与无法证明安全分项统计，不能把 `uncertified` 当作已确认穿入。基础设施或代码错误另有 `error_type`／`failure_class`／阶段明细，阻塞受影响样本并计入未完成项，不冒充物理不可行。本轮无重复执行，110 个唯一规格各执行一次；两条冒烟属于其中，写独立目录不重复计数。冻结前候选拒绝数与固定的 9 个诊断案例另册统计，不进入 110 行分母。
+七类最终状态互斥：通过、规格拒绝、碰撞拒绝、实际对象／动作不符、规划失败、超时、未运行；对应计数之和为 110。碰撞的几何确认、数值边界与无法证明安全分项统计，不能把 `uncertified` 当作已确认穿入。基础设施或代码错误另有 `error_type`／`failure_class`／阶段明细，阻塞受影响样本并计入未完成项，不冒充物理不可行。64 次校准重复执行单独列逐轮结果；唯一规格的可行性结论与跨配置一致性结论分开，不能用重复成功次数扩大分子。冻结前候选拒绝数与固定的 9 个诊断案例另册统计，不进入 110 行分母。
 
 ### 四、运行手册
 
@@ -843,7 +808,7 @@ uv run --no-sync python -m tests._shared.injection_campaign check --run-id "$INJ
 uv run --no-sync python -m tests._shared.injection_campaign plot --run-id "$INJECTION_RUN_ID"
 ```
 
-拟新增最小冒烟入口如下。选择固定 `BinFill hard` episode 0，属于 110 个目标样本；观察器对照使用另一个子目录，不能覆盖首条产物。冒烟失败停止正式实跑，保留该规格：
+拟新增最小冒烟入口如下。选择固定 `BinFill hard` episode 0，属于 110 个目标样本；观察器对照使用另一个子目录，不能覆盖首条产物。冒烟失败停止矩阵，保留该规格：
 
 ```bash
 command -v uv
@@ -867,18 +832,18 @@ uv run --no-sync python scripts/generate_dataset_newseed.py \
   --episode-specs "artifacts/injection/$INJECTION_RUN_ID/specs/VideoUnmaskSwap/medium.json"
 ```
 
-短测、上述核心端到端与视频碰撞链路冒烟合计不超过 300 秒；预计超出时选取覆盖关键拒绝分支与成功链的定向子集，剩余预算再补轻量全量。不以旧案例回放或语法检查替代任务冒烟，也不因五分钟限制跳过；任一冒烟失败停止放大，不换规格。全部固定案例复现和 110 条可行性执行按已获批阶段组织，预计超过五分钟使用 tmux。
+短测、上述核心端到端与视频碰撞链路冒烟合计不超过 300 秒；预计超出时选取覆盖关键拒绝分支与成功链的定向子集，剩余预算再补轻量全量。不以旧案例回放或语法检查替代任务冒烟，也不因五分钟限制跳过；任一冒烟失败停止放大，不换规格。完整四配置矩阵、全部固定案例复现和可行性执行按已获批阶段组织，预计超过五分钟使用 tmux。
 
-拟新增 `run --phase feasibility` 以 `--gpus 0 --workers 1` 顺序执行 110 个唯一样本，按任务／难度拆目录并调用原生产入口。`compare` 独立检查原始数据；`report` 无论此前通过与否都保存完整状态，不得因某条失败遗失剩余样本。
+拟新增 `run --phase calibration` 固定 16 条和四种配置，按任务／难度／配置拆目录并调用原生产入口；`run --phase feasibility` 先读取校准报告，再以 `P01`（校准未通过则 `S0`）执行剩余 94 条。`compare` 独立检查原始数据；`report` 无论此前通过与否都保存完整状态，不得因某条失败遗失剩余样本。
 
-超过五分钟时，可行性执行按下面模板启动。运行编号须为已由 `plan` 新建的编号；本阶段复用其冻结规格，但每次执行使用全新子目录：
+超过五分钟时，校准命令按下面模板启动。运行编号须为已由 `plan` 新建的编号；后续阶段复用其冻结规格，但每次执行使用全新子目录。只有校准结果和阶段授权均允许后，才把子命令改成可行性阶段并另起日志：
 
 ```bash
 mkdir -p artifacts/logs
-tmux new-session -d -s "$INJECTION_RUN_ID-feasibility" \
-  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m tests._shared.injection_campaign run --run-id $INJECTION_RUN_ID --phase feasibility 2>&1 | tee artifacts/logs/$INJECTION_RUN_ID-feasibility.log; code=\$?; echo EXIT_CODE=\$code | tee -a artifacts/logs/$INJECTION_RUN_ID-feasibility.log; exit \$code"
-tmux has-session -t "$INJECTION_RUN_ID-feasibility"
-tmux attach -t "$INJECTION_RUN_ID-feasibility"
+tmux new-session -d -s "$INJECTION_RUN_ID-calibration" \
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m tests._shared.injection_campaign run --run-id $INJECTION_RUN_ID --phase calibration 2>&1 | tee artifacts/logs/$INJECTION_RUN_ID-calibration.log; code=\$?; echo EXIT_CODE=\$code | tee -a artifacts/logs/$INJECTION_RUN_ID-calibration.log; exit \$code"
+tmux has-session -t "$INJECTION_RUN_ID-calibration"
+tmux attach -t "$INJECTION_RUN_ID-calibration"
 ```
 
 记录每次生产子命令的退出码，完整命令中的 `--gpus`、`--workers`、线程限制、`--affinity`、`--layout`、难度、attempt、规格散列和 seed 必须可追溯。卡号之外另存 GPU UUID／PCI 地址；父进程与各 worker 的实际参数必须一致。原值并行校准工具可在其完成提交后复用只读计时／资源采样方法，但不能将原值样本表当作新值规格表。
@@ -896,7 +861,7 @@ tmux attach -t "$INJECTION_RUN_ID-feasibility"
 | 原轨迹四元数退化 | 区间内线性混合范数与上界可计算性检查 | `m≤1e-6` 按无法证明安全拒绝，不擅自改四元数符号或插值方式 |
 | 动态交换导致预定搭档失效 | 在真实交换开始时记录完整距离和候选序 | 直接报错并保留样本，不现场改搭档 |
 | 两次初始化或连续 worker 污染 | 规格散列、actor 映射与工作态前后检查 | 每次从独立副本重建，不修改类配置 |
-| GPU／规划器数值差异 | 全 HDF5、事件与回退记录对照 | 逐位失败原样报告；本轮固定单 GPU 单 worker，不切换配置 |
+| GPU／规划器数值差异 | 全 HDF5、事件与回退记录对照 | 逐位失败原样报告；仅用已校准串行配置推进剩余样本 |
 | 专项比较只取部分字段 | 核对调用原比较器及其完整差异清单 | 保持全部 group／dataset／attribute 和类型覆盖，不能把缺测视作一致 |
 | 其他任务同期更新工具或文档 | 每阶段前记录 `git status` 与文件散列 | 以完成提交为依赖，保留他人 hunk；追加真实证据时再合并文档 |
 | 既有轻量测试失败混淆本轮结果 | 与原值报告中四个具名失败逐项比较 | 新失败必须处理；旧失败单列，不宣称全量全绿 |
@@ -908,7 +873,6 @@ tmux attach -t "$INJECTION_RUN_ID-feasibility"
 - 100 条不穷举对象、顺序、路线和连续位置的笛卡尔积；约束过滤后的空间分布不承诺严格均匀。
 - 新值注入无需与旧随机生成的不同场景逐位相等；逐位要求适用于相同固定规格的不同运行配置，以及关闭注入的回归。
 - 原值 schema 2 双卡成功、schema 3 单卡完整对拍和第 5.8 节已完成的原值并行检查，均不能代替本方案的新值并行证据；原值完整 16 条校准仍有固定失败样本。
-- 新值注入的多 GPU、多 worker 一致性本轮未验证；`PARALLEL_CONTENT`、`PARALLEL_OVERLAP` 固定为 `NOT_RUN`，留待第八节所述后续立项。
 - 未实际发生的规划回退、C++ 随机分支、其他硬件／驱动组合不算已覆盖。
 - 图表生成不等于逐图目视完成，视频文件存在不等于已人工观看；有实际复核时记录查看对象与结论，否则写未目视。
 - 用户已确认固定四容器三例；另六例及未来 50 个正式视频样本不得借用该目视状态。9 段案例是位姿驱动渲染，PhysX 仅在最接近姿态交叉检查，不能称为 9 次完整任务仿真。
@@ -920,18 +884,8 @@ tmux attach -t "$INJECTION_RUN_ID-feasibility"
 
 重产物按 `artifacts/injection/<运行编号>/` 存储，规格为 `specs/<任务>/<难度>.json`，生成结果为 `<阶段>/<运行配置>/<任务>/<难度>/`；每个 episode 和每次重复执行另有身份记录。图表、原始观察器证据、HDF5 和视频留在该运行根目录，主日志位于 `artifacts/logs/`。不同难度、配置或重复运行绝不写同一输出目录。
 
-轻量包拟放 `docs/validation/newtask-v2/<运行编号>/`：中文 `README.md`、11 份规格及规范化散列、全量／前 10 计数表、静态拒绝清单、110 行唯一样本结果、命令与退出码、HDF5 全字段聚合指纹、动作绑定摘要、资源／时间区间、环境与源码指纹、完整清单散列。轻量不表示只留成功条目；没有 HDF5 的失败也必须能定位到规格与错误阶段。
+轻量包拟放 `docs/validation/newtask-v2/<运行编号>/`：中文 `README.md`、11 份规格及规范化散列、全量／前 10 计数表、静态拒绝清单、110 行唯一样本结果、64 次校准记录、命令与退出码、HDF5 全字段聚合指纹、动作绑定摘要、资源／时间区间、环境与源码指纹、完整清单散列。轻量不表示只留成功条目；没有 HDF5 的失败也必须能定位到规格与错误阶段。
 
 碰撞固定案例另有已存在的持久目录 `artifacts/collision-preplan/20260909-bin-contact-v2/`，其中 9 个视频、9 个 PNG、3 个证据 JSON 和散列清单保持只读，尤其保留用户确认的四容器三例。未来轻量包须保存该清单自身的 SHA-256、9 例输入／判定摘要、四容器用户确认原话、原函数和环境指纹，并引用原视频。原件属于明确保留项，不进入例行清理候选；后续复现用 `artifacts/collision-replay/<新编号>/`，每次保存实际命令、退出码、轨迹差异、相机／编码参数、输出文件和前后原件散列。不得通过将视频重新复制到原路径掩盖原件变化，也不得用重编码后的新散列覆盖已确认原件的基准。
 
 提交前按 `AGENTS.md` 强制规则第 7 条检查状态，只暂存本轮明确路径；同文件有他人 hunk 时只暂存本轮差异，不 stash 或回退。中文提交正文保存用户原话、完整计划、实施过程、意外、命令／实测数字／退出码及下一步。文档引用使用文件与稳定符号，不使用代码行号；HDF5、PNG、视频和完整日志不纳入提交。只有后续实际完成对应阶段，才更新第一部分第 5.7 节实测追加区、`scripts/README.md` 与账本的执行状态。
-
-### 八、后续多卡校准（本轮不做）
-
-本节承接原第一部分「六、GPU 与进程」移出的多卡多进程口径，仅供将来立项时接续；**本轮不执行，`PARALLEL_CONTENT`、`PARALLEL_OVERLAP` 固定为 `NOT_RUN`。**
-
-原计划的四种运行配置记为 `S0`（GPU 0／1 worker）、`S1`（GPU 1／1 worker）、`P0`（GPU 0／2 workers）、`P01`（GPU 0、1／4 workers）。校准样本从四任务各取前 4 条：前三任务用 hard，`VideoRepick` 用 medium，共 16 个唯一规格；`S1/P0/P01` 各与同规格 `S0` 比较完整 HDF5 与对象动作证据，共 48 对。原预算为 `16×4=64` 次执行，加上其余 `110−16=94` 个唯一样本共 158 次；该数字是预算推导，不是实测。校准通过后前 10 条可行性测试拟采用双卡、每卡 2 worker；校准失败则保留原因，用已验证的串行配置完成其余样本。
-
-生产调度依据 `generate_dataset_newseed.py::_run_jobs` 的 `per_gpu=max(1, workers//len(gpu_ids))`。上述配置均能整除；`--workers` 是总数，不能误读为每卡数。真实并发判据使用同一主机的单调时钟，比较两个不同 PID 的实际仿真窗口 `[first_step,last_step]`，要求 `min(end_a,end_b)−max(start_a,start_b)>0`；双卡还需存在跨卡共同执行窗口。只记录进程存活、导入或排队重叠不算通过。目标判定行：`PARALLEL_CONTENT=PASS unique=16 pairs=48 differences=0`、`PARALLEL_OVERLAP=PASS mode=P01 gpus=2 workers_per_gpu=2`，并同时报告 `P0` 检查结果。报告须保存每种配置的墙钟时间、显存峰值、实际重叠时长和完整差异；有规划回退或逐位差异时不自动放宽容差。原值并行校准工具可在其完成提交后复用只读计时／资源采样方法，但不能将原值样本表当作新值规格表。
-
-立项时按第一部分第六节的单 GPU 结果为基线，`run --phase calibration` 及其 tmux 启动模板参照第四节可行性模板另起编号与日志；校准样本均来自 110 条之内，重复运行不扩大样本范围，保留每轮结果，不能只保存最后一次。
