@@ -109,7 +109,7 @@
 
 ### 二、根据哪些约定，生成哪些固定值
 
-**每个环境一张表：一行就是一条规格里被固定的一个字段。** 「用途」说明这个字段在场景或动作里决定什么；「取值域」是约定（来自 [native_sampling.json](scripts/configs/newtask-v2/native_sampling.json)，字段实际含义以四个任务的 `config_easy/medium/hard`、`_load_scene`、`_initialize_episode`、`step` 为准）；「配额」是 100 条内的分配规则；生成器为一条 episode 在取值域内选定的具体值就是固定值，冻结后不再改。记号：`u` 为 `[0,1)` 上的均匀采样；`R(θ)` 为绕世界原点 `(0,0)` 的二维旋转；整数区间含两端，浮点区间保持原半开口径。**未列出的量（高度、尺寸、碰撞几何、动作速度、时序）沿用原实现，不固定、不改。** 每个环境开头的俯视草图按 `positions.<任务>` 推导（x 向右、y 向上、单位米）；末尾的记录示例只是字段形态，数字为占位。
+**每个环境分两张表。「约定」是外部生成器必须遵守的规则，写清范围与依据；「固定值」是每条 episode 保存下来的字段，写清它决定什么、依据哪条约定、100 条内怎么分配。** 生成器在约定范围内为一条 episode 选定的具体值就是固定值，冻结后不再改。范围以 [native_sampling.json](scripts/configs/newtask-v2/native_sampling.json) 为准，字段实际含义以四个任务的 `config_easy/medium/hard`、`_load_scene`、`_initialize_episode`、`step` 为准；长度单位为米，整数范围含两端。**未列出的量（高度、尺寸、碰撞几何、动作速度、时序）沿用原实现，不固定、不改。** 每个环境开头的俯视草图按 `positions.<任务>` 推导（x 向右、y 向上）；末尾的记录示例只是字段形态，数字为占位。
 
 #### 2.1 BinFill
 
@@ -119,35 +119,46 @@ BinFill 俯视（方块中心有效域已扣除半尺寸 0.02）
          │  方块区  x∈[-0.28, 0.08]  y∈[-0.23, 0.23] │
          │  ┌──────────┐        ┌────────────┐      │
          │  │ 按钮中心  │        │ 孔板中心    │      │
-         │  │x∈[-0.25, │        │x∈[-0.05,   │      │
-         │  │   -0.15) │        │    0.15)   │      │
-         │  │y∈[-0.20, │        │y∈[-0.20,   │      │
-         │  │    0.20) │        │    0.20)   │      │
-         │  └──────────┘        │ 旋转[-20,20)°│      │
+         │  │x -0.25   │        │x -0.05     │      │
+         │  │  ~-0.15  │        │  ~0.15     │      │
+         │  │y -0.20   │        │y -0.20     │      │
+         │  │  ~0.20   │        │  ~0.20     │      │
+         │  └──────────┘        │ 转 -20~20° │      │
          │                      └────────────┘      │
  y=-0.23 └────────────────────────────────────────┘
         x=-0.28                                x=0.15
 ```
 
-| 字段 | 类型 | 用途 | 取值域 | 每组 100 条配额 | 锚点 |
-|---|---|---|---|---|---|
-| `difficulty` | 枚举 | 选用哪套难度字典，决定下面所有数量区间 | `{easy, medium, hard}` | 每档 100 | `parameters.BinFill.configs` |
-| `dynamic` | bool | 方块是否按原时序分批出现（`True`）还是开局全在（`False`），影响任务事件序列 | `{True, False}` | 50／50，前 10 条 5／5 | `parameters.BinFill.dynamic` |
-| `num_colors` | int | 场上出现几种颜色的方块 | easy=1，medium=2，hard=3 | 由难度定 | `configs.<难度>.color` |
-| `colors_present` | 集合 | 具体是哪几种颜色，以及各色方块的生成先后 | `⊂ {red, blue, green}`，`|·| = num_colors`；生成顺序 `red, blue, green` | 合法组合计数差 ≤ 1 | `native_semantics.BinFill.spawn_color_order` |
-| `spawn_total` | int | 场上方块总数 | easy `[4,6]`，medium `[8,10]`，hard `[10,12]` | 34／33／33 | `configs.<难度>.spawn_cubes` |
-| `spawn_count[c]` | int，每色 | 每种颜色各生成几块，用来创建对象 | `Σ_c = spawn_total`，`spawn_count[c] ≥ target_count[c]` | 报实际频数 | `load_scene_rng_order` 分配循环 |
-| `target_pool` | 集合 | 任务指令要投入的颜色集合（目标颜色） | `⊂ colors_present`，`|·|` easy `1`、medium `[1,2]`、hard `[2,3]` | 合法值计数差 ≤ 1 | `configs.<难度>.put_in_color` |
-| `put_in_total` | int | 总共要投入孔板几块，即抓放动作次数 | easy `[1,3]`，medium `[2,4]`，hard `[3,5]` | 34／33／33 | `configs.<难度>.put_in_numbers` |
-| `target_count[c]` | int，每色 | 每种目标颜色各投入几块，决定每次抓哪个颜色 | `c ∈ target_pool`，`≥ 0`，`Σ_c = put_in_total` | 报实际频数 | 同上 |
-| `button_xy` | float[2] | 按钮的桌面位置（任务起始要按的按钮） | `x = -0.2 + (u-0.5)·0.1 ∈ [-0.25,-0.15)`；`y = (u-0.5)·0.4 ∈ [-0.2,0.2)` | 各 10 分箱 | `positions.BinFill.button` |
-| `board_xy` | float[2] | 孔板的桌面位置（方块投入的目标） | `x = 0.15 + (u·0.2-0.2) ∈ [-0.05,0.15)`；`y = u·0.4-0.2 ∈ [-0.2,0.2)` | 各 10 分箱 | `positions.BinFill.board` |
-| `board_yaw_deg` | float | 孔板绕竖直轴的朝向 | `u·40-20 ∈ [-20,20)` | 10 分箱 | 同上 |
-| `cubes[i].object_id` | str | 每块方块的稳定身份，动作清单靠它回查对象 | `cube_i`，`i = 0 … spawn_total-1` 为生成顺序（`randperm` 后） | — | `torch.randperm(len(cube_tasks))` |
-| `cubes[i].color` | 枚举 | 每块方块的颜色，决定它是否可能被抓 | `∈ colors_present`；每色个数 = `spawn_count[c]` | — | 同上 |
-| `cubes[i].xy` | float[2] | 每块方块的桌面位置 | `x ∈ [-0.28,0.08]`，`y ∈ [-0.23,0.23]`（区域 `(-0.1,0)±(0.2,0.25)` 扣半尺寸 0.02）；方块两两间距 ≥ 0.02，不与按钮／孔板避让 | 采样输入各 10 分箱；实际位置报频数 | `positions.BinFill.cubes`，`spawn_random_cube` |
-| `cubes[i].yaw_rad` | float | 每块方块绕竖直轴的朝向，影响抓取姿态 | `u·2π ∈ [0,2π)` | 10 分箱 | 同上 |
-| `actions[k]` | (object_id, put_in) | 按执行顺序列出每次抓哪块、投入孔板；机器人按此清单动作 | `k = 0 … put_in_total-1`；每色 `c` 的抓取对象 = 该色生成列表前 `target_count[c]` 块；顺序与原 `_initialize_episode` 构造一致 | — | `BinFill::_initialize_episode` |
+**约定**
+
+| 编号 | 约定 | 依据 |
+|---|---|---|
+| B1 | 难度决定数量：`easy` 出现 1 种颜色、共 4～6 块、目标颜色 1 种、总共投入 1～3 块；`medium` 2 种颜色、8～10 块、目标颜色 1～2 种、投入 2～4 块；`hard` 3 种颜色、10～12 块、目标颜色 2～3 种、投入 3～5 块 | `parameters.BinFill.configs.<难度>` |
+| B2 | 颜色只能是红、蓝、绿；生成顺序固定为红、蓝、绿；目标颜色必须是场上出现的颜色；每种颜色生成的块数不少于该色要投入的块数；目标颜色里某一色可以分到 0 块 | `native_semantics.BinFill.spawn_color_order`、分配循环 |
+| B3 | `dynamic` 只能是 `True`（方块按原时序分批出现）或 `False`（开局全在） | `parameters.BinFill.dynamic` |
+| B4 | 按钮中心 x 在 −0.25 到 −0.15 之间、y 在 −0.20 到 0.20 之间 | `positions.BinFill.button` |
+| B5 | 孔板中心 x 在 −0.05 到 0.15 之间、y 在 −0.20 到 0.20 之间；绕竖直轴转 −20° 到 20° | `positions.BinFill.board` |
+| B6 | 方块中心 x 在 −0.28 到 0.08 之间、y 在 −0.23 到 0.23 之间（原区域扣掉半边长 0.02）；方块自身朝向一整圈任意；方块两两之间至少留 0.02 的间隙，与按钮、孔板不做避让（沿用原逻辑） | `positions.BinFill.cubes`、`spawn_random_cube` |
+| B7 | 每种目标颜色要抓的方块，必须是该颜色生成列表里最前面的那几块；抓取与投入的先后顺序与原任务构造一致，不能自行换块或换序 | `BinFill::_initialize_episode` |
+
+**固定值（每条 episode 保存）**
+
+| 字段 | 用途 | 依据约定 | 100 条内配额 |
+|---|---|---|---|
+| `difficulty` | 选用哪套难度 | B1 | 每档 100 |
+| `dynamic` | 方块分批出现还是开局全在 | B3 | `True`／`False` 各 50，前 10 条各 5 |
+| `colors_present` | 场上有哪几种颜色，以及各色生成先后 | B1、B2 | 合法组合内计数差不超过 1 |
+| `spawn_total` | 方块总数 | B1 | 各合法值 34／33／33 |
+| `spawn_count[颜色]` | 每种颜色各几块，用来创建对象 | B1、B2 | 报实际频数 |
+| `target_pool` | 指令要投入的颜色集合 | B1、B2 | 合法值计数差不超过 1 |
+| `put_in_total` | 总共投入几块，即抓放次数 | B1 | 各合法值 34／33／33 |
+| `target_count[颜色]` | 每种目标颜色各投几块 | B1、B2 | 报实际频数 |
+| `button_xy` | 按钮位置 | B4 | x、y 各分 10 箱均匀 |
+| `board_xy`、`board_yaw_deg` | 孔板位置与朝向 | B5 | 各分 10 箱均匀 |
+| `cubes[i].object_id` | 第 `i` 块方块的稳定身份（`i` 为生成顺序），动作清单靠它回查 | B2 | — |
+| `cubes[i].color` | 第 `i` 块的颜色 | B2 | — |
+| `cubes[i].xy`、`cubes[i].yaw_rad` | 第 `i` 块的位置与朝向 | B6 | 采样输入各分 10 箱；实际位置报频数 |
+| `actions[k]` | 第 `k` 次动作抓哪块、投入孔板，机器人按此清单执行 | B7 | — |
 
 ```text
 { "episode": 0, "difficulty": "easy",
@@ -160,24 +171,34 @@ BinFill 俯视（方块中心有效域已扣除半尺寸 0.02）
 #### 2.2 RouteStick
 
 ```text
-RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体绕世界原点 (0,0) 旋转 [-30, 30)°）
+RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体绕世界原点 (0,0) 转 -30° 到 30°）
  索引:   0     1     2     3     4     5     6     7     8
          ●─────▲─────●─────▲─────●─────▲─────●─────▲─────●
        y=-0.28              y=0                     y=+0.28   （旋转前 x 均为 -0.1）
  ● = 可踩节点 {0,2,4,6,8}   ▲ = 障碍柱 {1,3,5,7}（各自随机 RGB）
 ```
 
-| 字段 | 类型 | 用途 | 取值域 | 每组 100 条配额 | 锚点 |
-|---|---|---|---|---|---|
-| `difficulty` | 枚举 | 选用哪套难度字典，决定段数区间与是否允许回退 | `{easy, medium, hard}` | 每档 100 | `parameters.RouteStick.configs` |
-| `L`（段数） | int | 路线走几段，即机器人推杆移动几次 | easy `[2,3]`，medium `[4,5]`，hard `[4,7]` | easy 50／50，medium 50／50，hard 25×4 | `configs.<难度>.length` |
-| `backtrack` | bool | 是否允许主动原路返回 | easy=False，medium=False，hard=True | 由难度定 | `configs.<难度>.backtrack` |
-| `rotation_deg` | float | 整排节点与障碍柱整体绕世界原点转多少度，决定所有节点的实际位置 | `u·60-30 ∈ [-30,30)` | 10 分箱 | `positions.RouteStick.yaw_expression` |
-| `node_xy[j]` | 推导 | 9 个格点的桌面位置（偶数索引是可踩按钮，奇数索引是障碍柱） | `R(rotation)·(-0.1, 0.07·(j-4))`，`j = 0…8`；不单独随机 | — | `grid_center`，`grid_spacing_y` |
-| `obstacle_rgb[m]` | float[3]×4 | 4 根障碍柱各自的颜色，只影响观感与视觉识别 | 每分量 `u ∈ [0,1)`；`m` 对应障碍索引 `{1,3,5,7}` | — | `positions.RouteStick.obstacle_color` |
-| `nodes[0]` | int | 路线起点，即杆初始放在哪个按钮上 | `∈ {0,2,4,6,8}` | 各 20，前 10 条各 2 | `positions.RouteStick.walk_start` |
-| `nodes[1…L]` | int[L] | 依次经过的按钮序列，即每段从哪走到哪 | `nodes[i+1]-nodes[i] ∈ {-2,+2}`，`nodes[i] ∈ {0,…,8}`；`backtrack=False` 时 `nodes[i+2] ≠ nodes[i]`，除非 `nodes[i+1] ∈ {0,8}`（端点被迫回退） | 合法路线内平衡，报频数 | `route.py::generate_dynamic_walk` |
-| `directions[i]` | 枚举[L] | 每一段绕过中间障碍柱时走顺时针还是逆时针，决定推杆轨迹 | `∈ {clockwise, counterclockwise}` | 顺／逆总频数差 ≤ 1 | `parameters.RouteStick.walk.direction` |
+**约定**
+
+| 编号 | 约定 | 依据 |
+|---|---|---|
+| R1 | 难度决定路线长度与回退：`easy` 走 2～3 段、`medium` 走 4～5 段，都不允许主动原路返回；`hard` 走 4～7 段，允许原路返回。段数是移动次数，经过的节点数比段数多 1 | `parameters.RouteStick.configs.<难度>` |
+| R2 | 布局形状固定：9 个格点排成一排，中心在 (−0.1, 0)，相邻间距 0.07；整排绕世界原点转 −30° 到 30°；节点位置只由这个角度推出，不能各自随机摆 | `positions.RouteStick` |
+| R3 | 偶数索引 0、2、4、6、8 是可踩按钮，奇数索引 1、3、5、7 是障碍柱；4 根障碍柱各取一个随机 RGB 颜色 | `native_semantics.RouteStick.obstacle_indices` |
+| R4 | 起点只能是 5 个按钮之一；每一步只能走到相邻按钮（索引差 2）；不允许回退的难度里，只有走到两端（0 或 8）时才可以被迫掉头 | `route.py::generate_dynamic_walk` |
+| R5 | 每一段单独指定绕过中间障碍柱的方向：顺时针或逆时针 | `parameters.RouteStick.walk.direction` |
+
+**固定值（每条 episode 保存）**
+
+| 字段 | 用途 | 依据约定 | 100 条内配额 |
+|---|---|---|---|
+| `difficulty` | 选用哪套难度 | R1 | 每档 100 |
+| `L` | 走几段 | R1 | `easy` 2／3 各 50；`medium` 4／5 各 50；`hard` 4／5／6／7 各 25 |
+| `rotation_deg` | 整排转多少度，决定所有节点的实际位置 | R2 | 分 10 箱均匀 |
+| `obstacle_rgb[4]` | 4 根障碍柱的颜色，只影响观感 | R3 | — |
+| `nodes[0]` | 起点，杆初始放在哪个按钮上 | R4 | 5 个起点各 20，前 10 条各 2 |
+| `nodes[1…L]` | 依次经过的按钮序列 | R1、R4 | 合法路线内平衡，报实际频数 |
+| `directions[1…L]` | 每段绕障碍柱走顺时针还是逆时针，决定推杆轨迹 | R5 | 顺／逆总数差不超过 1 |
 
 ```text
 { "episode": 0, "difficulty": "easy",
@@ -190,32 +211,42 @@ RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体�
 #### 2.3 VideoUnmaskSwap
 
 ```text
-两个视频任务共用的布局锚点（旋转前；整体绕 (0,0) 旋转 θ∈[0,180) 弧度，随后每个锚点再各自沿世界 x、y 偏移）
+两个视频任务共用的布局锚点（旋转前；整组绕 (0,0) 转 0 到 180 弧度，随后每个锚点再各自沿世界 x、y 小幅偏移）
    三角 region3_tri        直线 region3_line        四点 region4（medium / hard）
       1●(-0.05, 0.1)          1●(0, 0.15)             1●(-0.05, 0.1)   2●(0.1, 0.1)
                 2●(0.1, 0)    2●(0, 0)
       0●(-0.05,-0.1)          0●(0,-0.15)             0●(-0.05,-0.1)   3●(0.1,-0.1)
- 偏移上限：容器 ±0.0425（=0.07−0.0275）；方块 ±0.05（=0.07−0.02）
- ⚠ θ 的原单位是弧度：θ=90 是 90 弧度，不是 90°；画图另列 θ mod 2π
+ 偏移上限：容器 0.0425（=0.07−0.0275）；方块 0.05（=0.07−0.02）
+ ⚠ 整组旋转的原单位是弧度：取到 90 就是 90 弧度，不是 90°；画图另列它对 2π 取余后的实际朝向
 ```
 
-| 字段 | 类型 | 用途 | 取值域 | 每组 100 条配额 | 锚点 |
-|---|---|---|---|---|---|
-| `difficulty` | 枚举 | 选用哪套难度字典，决定容器数、交换与抓取次数区间 | `{easy, medium, hard}` | 每档 100 | `parameters.VideoUnmaskSwap.configs` |
-| `n_bins` | int | 场上容器个数 | easy=3，medium=4，hard=4 | 由难度定 | `configs.<难度>.bin` |
-| `n_swaps` | int | 视频阶段容器互换位置的次数 | easy `[1,2]`，medium `[1,2]`，hard `[2,3]` | 50／50 | `configs.<难度>.swap_min/max` |
-| `n_picks` | int | 视频结束后机器人要抓起几个容器 | easy `[1,2]`，medium `1`，hard `2` | easy 50／50 | `configs.<难度>.pick_min/max` |
-| `layout_type` | 枚举 | 用哪组布局锚点摆容器（三角／直线／四点） | easy `∈ {region3_tri, region3_line}`；medium／hard `= region4` | easy 50／50，前 10 条 5／5 | `containers.region3_choice` |
-| `theta_rad` | float | 整组锚点绕世界原点转多少弧度，决定容器整体朝向 | `u·180 ∈ [0,180)` **弧度** | 10 分箱；另报 `θ mod 2π` | `layout_rotation_range_rad` |
-| `bins[i].xy` | float[2] | 每个容器的桌面位置（锚点旋转后再各自偏移） | `R(theta)·anchor_i + delta_i`，`delta_i ∈ [-0.0425,0.0425]²`；`anchor_i` = `layout_type` 第 `i` 个锚点，`i` 为生成顺序 | `delta` 各 10 分箱 | `region_half_size`，`bin_half_size` |
-| `bins[i].yaw_deg` | float | 每个容器绕竖直轴的朝向，影响碰撞盒与抓取姿态 | `u·90 ∈ [0,90)` | 10 分箱 | `yaw_scale_deg` |
-| `selected` | 索引[3] | 哪三个容器参与藏物，以及它们对应颜色的顺序 | `randperm(3)`，即 `spawned_bins` 前 3 个的一个排列；`bin_3`（若有）永不入选、恒空 | 6 种排列计数差 ≤ 1 | `hidden_bin_permutation` |
-| `hidden[color]` | 映射 | 红／绿／蓝方块各藏在哪个容器里，是任务的记忆目标 | 颜色顺序 `randperm(3)` 打乱 `{red, green, blue}` 后，第 `k` 色藏在 `spawned_bins[selected[k]]` | 6 种排列计数差 ≤ 1 | `color_shuffle` |
-| `pick_order` | object_id[n_picks] | 视频结束后按顺序抓哪几个容器，即抓取动作清单 | `[spawned_bins[selected[0]], spawned_bins[selected[1]]][:n_picks]` | 报频数 | `pickup_selected_indices=[0,1]` |
-| `swap_pairs[k].initiator` | object_id | 第 `k` 次交换由哪个容器发起（先动的那个） | `t = randperm(3)[:2]`；`k∈{0,1}`：`spawned_bins[t_k]`（原代码把 selected 内位置直接当 spawned 索引，按原行为保留）；`k=2`：`spawned_bins[j]`，`j ∈ {0…n_bins-1}∖{t_0,t_1}` 均匀抽 | 报频数 | `swap_selection.initiator_mapping/remaining_selection` |
-| `swap_pairs[k].partner` | object_id | 第 `k` 次交换的对方容器；预写值用于设计，执行时必须与实际最近邻相符 | `argmin_{j≠initiator} ‖xy_j − xy_initiator‖₂`，在第 `k` 段开始（控制步 `64+50k`）时算；等距取生成顺序小者 | 报对象对频数及未覆盖对 | `swap_selection.partner`，`_refresh_swap_schedule` |
-| `collision.initial` | 枚举 | 初始摆放是否通过碰撞检查，不通过的候选不会被冻结 | `PASS`：全部 `C(n_bins,2)` 对的 `g > 1e-6` | 必须 | 第三节 |
-| `collision.sweeps[k]` | 枚举[n_swaps] | 第 `k` 段交换路径是否通过连续碰撞检查 | `PASS`：第 `k` 段区间证明通过 | 必须 | 第三节 |
+**约定**
+
+| 编号 | 约定 | 依据 |
+|---|---|---|
+| U1 | 难度决定数量：`easy` 3 个容器、交换 1～2 次、抓 1～2 个；`medium` 4 个容器、交换 1～2 次、抓 1 个；`hard` 4 个容器、交换 2～3 次、抓 2 个 | `parameters.VideoUnmaskSwap.configs.<难度>` |
+| U2 | 布局只能从原三组锚点里选：`easy` 用三角或直线，`medium`／`hard` 用四点；整组绕世界原点转 0 到 180 **弧度**；转完后每个容器再各自沿 x、y 偏移，每个方向最多 0.0425；容器自身朝向 0° 到 90° | `positions.VideoUnmaskSwap.containers` |
+| U3 | 藏物只用前三个生成的容器：把它们随机排个序，红、绿、蓝（颜色顺序也随机打乱）依次各藏进一个；第 4 个容器（若有）永远是空的 | `hidden_bin_permutation`、`color_shuffle` |
+| U4 | 视频结束后抓取的容器，按藏物排序的第 1、第 2 个依次取，取几个由难度定 | `pickup_selected_indices=[0,1]` |
+| U5 | 交换发起者按原逻辑产生：前两次的发起者是「藏物排序里随机抽出的两个位置」直接当作生成序号去取的容器（原代码就是这样混用索引，按原行为保留）；第三次从其余生成序号里随机取一个。三段交换分别在控制步 64、114、164 开始，每段 50 步 | `swap_selection.initiator_mapping`、`_refresh_swap_schedule` |
+| U6 | 每次交换的对方，是交换开始那一刻离发起者水平距离最近的另一个容器；距离相同时取生成序号小的。规格里预写的对方必须与执行时算出的一致，否则该条失败 | `swap_selection.partner` |
+| U7 | 初始摆放和每段交换路径都必须通过第三节的碰撞检查（全部容器两两之间，接触即排除） | 第三节 |
+
+**固定值（每条 episode 保存）**
+
+| 字段 | 用途 | 依据约定 | 100 条内配额 |
+|---|---|---|---|
+| `difficulty` | 选用哪套难度 | U1 | 每档 100 |
+| `n_bins`、`n_swaps`、`n_picks` | 容器个数、交换次数、抓取个数 | U1 | 有两个合法值的各 50 |
+| `layout_type` | 用哪组锚点 | U2 | `easy` 三角／直线各 50，前 10 条各 5 |
+| `theta_rad` | 整组转多少弧度 | U2 | 分 10 箱均匀；另报对 2π 取余的实际朝向 |
+| `bins[i].xy`、`bins[i].yaw_deg` | 第 `i` 个容器的位置与朝向（`i` 为生成顺序） | U2 | 偏移量各分 10 箱均匀 |
+| `selected[3]` | 参与藏物的三个容器及顺序 | U3 | 6 种排列计数差不超过 1 |
+| `hidden[颜色]` | 红、绿、蓝各藏在哪个容器，是记忆目标 | U3 | 6 种对应计数差不超过 1 |
+| `pick_order` | 视频后按顺序抓哪几个容器 | U4 | 报实际频数 |
+| `swap_pairs[k].initiator` | 第 `k` 次交换谁先动 | U5 | 报实际频数 |
+| `swap_pairs[k].partner` | 第 `k` 次交换的对方；预写用于设计，执行时核验 | U6 | 报对象对频数与未覆盖对 |
+| `collision.initial`、`collision.sweeps[k]` | 初态与每段路径的碰撞检查结果，不通过的候选不冻结 | U7 | 必须全部通过 |
 
 ```text
 { "episode": 0, "difficulty": "hard",
@@ -229,24 +260,33 @@ RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体�
 
 布局锚点同 2.3 的草图；实际对象是 3 个方块，偏移上限取方块口径 0.05。
 
-| 字段 | 类型 | 用途 | 取值域 | 每组 100 条配额 | 锚点 |
-|---|---|---|---|---|---|
-| `difficulty` | 枚举 | 选用哪套难度字典，决定交换次数区间 | `{easy, medium}`；`hard` 不生成 | 每档 100 | `parameters.VideoRepick.configs` |
-| `n_cubes` | int | 场上方块个数 | `3` | 固定 | `configs.<难度>.cube` |
-| `n_swaps` | int | 视频阶段方块互换位置的次数 | easy `[1,2]`，medium `[2,3]` | 50／50 | `configs.<难度>.swap_min/max` |
-| `num_repeats` | int | 视频结束后对目标方块重复抓放几次 | `[1,3]` | 34／33／33 | `parameters.VideoRepick.num_repeats` |
-| `layout_type` | 枚举 | 用哪组布局锚点摆方块（三角／直线） | `∈ {region3_tri, region3_line}` | 50／50，前 10 条 5／5 | `easy_medium_cubes.region3_choice` |
-| `theta_rad` | float | 整组锚点绕世界原点转多少弧度，决定方块整体朝向 | `u·180 ∈ [0,180)` **弧度** | 10 分箱；另报 `θ mod 2π` | `layout_rotation_range_rad` |
-| `cubes[i].xy` | float[2] | 每个方块的桌面位置（锚点旋转后再各自偏移） | `R(theta)·anchor_i + delta_i`，`delta_i ∈ [-0.05,0.05]²`；方块两两间距 ≥ 0.02，且与按钮避让（`include_goal=True`） | `delta` 各 10 分箱 | `region_half_size`，`spawn_random_cube` |
-| `cubes[i].yaw_rad` | float | 每个方块绕竖直轴的朝向 | `u·2π ∈ [0,2π)` | 10 分箱 | `yaw_range_rad` |
-| `button_xy` | float[2] | 按钮的桌面位置（任务起始要按的按钮） | `x = -0.2 + (u-0.5)·0.1 ∈ [-0.25,-0.15)`；`y = (u-0.5)·0.1 ∈ [-0.05,0.05)` | 各 10 分箱 | `positions.VideoRepick.button` |
-| `color` | 枚举 | 三个方块的统一颜色，使目标只能靠位置记忆区分 | `∈ {red, blue, green}`，3 块同色 | 34／33／33 | `native_semantics.VideoRepick.color_order` |
-| `target` | object_id | 要重复抓放的那一个方块，是任务的记忆目标 | `∈ {cube_0, cube_1, cube_2}` | 34／33／33 | `easy_medium_target_count=1` |
-| `swap_pairs[0].initiator` | object_id | 第一次交换由目标方块发起，保证目标一定被移动过 | `= target` | 固定 | `swap_selection.initiator_mapping` |
-| `swap_pairs[k≥1].initiator` | object_id | 后续交换由哪个方块发起 | 其余两块的一个排列 `randperm(2)`，按序取到 `n_swaps-1` 个 | 2 种排列 50／50 | `remaining_selection` |
-| `swap_pairs[k].partner` | object_id | 每次交换的对方方块；预写值用于设计，执行时必须与实际最近邻相符 | `argmin_{j≠initiator} ‖xy_j − xy_initiator‖₂`，第 `k` 段开始时算；等距取生成顺序小者 | 报频数 | `swap_selection.partner` |
-| `repeat_target[r]` | object_id | 每次重复抓放的对象始终是同一个目标方块 | `= target`，`r = 0 … num_repeats-1`；交换后不按当前位置另选 | 固定 | `VideoRepick::_initialize_episode` |
-| `collision.initial` / `collision.sweeps[k]` | 枚举 | 初始摆放与每段交换路径是否通过碰撞检查 | 同 2.3，3 对 | 必须 | 第三节 |
+**约定**
+
+| 编号 | 约定 | 依据 |
+|---|---|---|
+| P1 | 只做两个难度：`easy` 3 个方块、交换 1～2 次；`medium` 3 个方块、交换 2～3 次；两档视频结束后都对目标方块重复抓放 1～3 次；`hard` 不生成 | `parameters.VideoRepick.configs.<难度>`、`num_repeats` |
+| P2 | 布局从三角或直线两组锚点里选；整组绕世界原点转 0 到 180 **弧度**；转完后每个方块再各自沿 x、y 偏移，每个方向最多 0.05；方块自身朝向一整圈任意；方块两两之间至少留 0.02，并与按钮避让 | `positions.VideoRepick.easy_medium_cubes` |
+| P3 | 按钮中心 x 在 −0.25 到 −0.15 之间、y 在 −0.05 到 0.05 之间 | `positions.VideoRepick.button` |
+| P4 | 三个方块同一种颜色（红、蓝、绿之一）；从中选一个作目标，之后所有重复抓放都指向这同一个方块，交换后不按新位置另选 | `easy_medium_target_count=1` |
+| P5 | 第一次交换由目标方块发起；后面几次的发起者是另外两块的一个随机排列，按序取；每次交换的对方是交换开始时水平距离最近的另一块，距离相同取生成序号小的，预写值与执行不符即失败 | `parameters.VideoRepick.swap_selection` |
+| P6 | 初始摆放和每段交换路径都必须通过第三节的碰撞检查（3 个方块两两之间） | 第三节 |
+
+**固定值（每条 episode 保存）**
+
+| 字段 | 用途 | 依据约定 | 100 条内配额 |
+|---|---|---|---|
+| `difficulty` | 选用哪套难度 | P1 | 每档 100 |
+| `n_swaps` | 交换几次 | P1 | 两个合法值各 50 |
+| `num_repeats` | 视频后重复抓放几次 | P1 | 1／2／3 次按 34／33／33 |
+| `layout_type` | 三角还是直线 | P2 | 各 50，前 10 条各 5 |
+| `theta_rad` | 整组转多少弧度 | P2 | 分 10 箱均匀；另报对 2π 取余的实际朝向 |
+| `cubes[i].xy`、`cubes[i].yaw_rad` | 第 `i` 个方块的位置与朝向 | P2 | 偏移量各分 10 箱均匀 |
+| `button_xy` | 按钮位置 | P3 | x、y 各分 10 箱均匀 |
+| `color` | 三块的统一颜色，使目标只能靠位置记忆区分 | P4 | 红／蓝／绿按 34／33／33 |
+| `target` | 要重复抓放的那一块，是记忆目标 | P4 | 三块各约 33 |
+| `swap_pairs[k].initiator` | 第 `k` 次交换谁先动（第 1 次固定是目标） | P5 | 后续排列两种各 50 |
+| `swap_pairs[k].partner` | 第 `k` 次交换的对方；预写用于设计，执行时核验 | P5 | 报实际频数 |
+| `collision.initial`、`collision.sweeps[k]` | 初态与每段路径的碰撞检查结果 | P6 | 必须全部通过 |
 
 ```text
 { "episode": 0, "difficulty": "medium",
