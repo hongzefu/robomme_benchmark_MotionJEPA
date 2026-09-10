@@ -47,6 +47,7 @@ import inspect
 import zlib
 import sys
 import threading
+import time
 from pathlib import Path
 from typing import Any, Callable
 
@@ -85,6 +86,13 @@ class _EpisodeEvidence:
         self.rrt_fallback_count = 0
         self.call_index = 0
         self.generator_ordinals: dict[int, int] = {}
+        # 时间只写独立旁路文件，不进入 payload 或随机流计数。
+        self.timing: dict[str, Any] | None = None
+        if os.environ.get("PARITY_TIMING") == "1":
+            self.timing = {"task": self.task, "seed": self.seed,
+                           "difficulty": self.difficulty, "pid": os.getpid(),
+                           "reset_ns": None, "first_step_ns": None,
+                           "last_step_ns": None, "close_ns": None}
 
     def next_index(self) -> int:
         self.call_index += 1
@@ -209,6 +217,18 @@ def _current() -> _EpisodeEvidence | None:
     return _state["episode"]
 
 
+def _write_timing(episode: _EpisodeEvidence) -> None:
+    """按实际 PID 和局序号隔离旁路证据，超时残缺记录不能冒充完成。"""
+    if episode.timing is None or not _state["root"]:
+        return
+    directory = Path(_state["root"]) / str(_state["label"]) / f"{episode.task}_seed{episode.seed}"
+    directory.mkdir(parents=True, exist_ok=True)
+    target = directory / f"pid{os.getpid()}-{_state['sequence']:02d}.timing.json"
+    temporary = target.with_suffix(".tmp")
+    temporary.write_text(json.dumps(episode.timing, ensure_ascii=False) + "\n", encoding="utf-8")
+    temporary.replace(target)
+
+
 def _flush_current() -> None:
     episode = _state["episode"]
     if episode is None:
@@ -217,6 +237,7 @@ def _flush_current() -> None:
     if root is None:
         _state["episode"] = None
         return
+    _write_timing(episode)
     directory = Path(root) / str(_state["label"]) / f"{episode.task}_seed{episode.seed}"
     directory.mkdir(parents=True, exist_ok=True)
     # 同一进程可能连续跑多局（⑤ 的甲→乙→甲），文件名必须带序号，否则后一局覆盖前一局；
@@ -571,6 +592,10 @@ def _patch_record_wrapper(module: Any) -> None:
         result = original_reset(self, *args, **kwargs)
         episode = _current()
         if episode is not None:
+            if episode.timing is not None:
+                episode.timing.update(reset_ns=time.monotonic_ns(), first_step_ns=None,
+                                      last_step_ns=None, close_ns=None)
+                _write_timing(episode)
             episode.initial_obs = {
                 "i": episode.next_index(),
                 "note": "外层 reset 的返回观测；生成器丢弃了它，HDF5 中没有对应帧",
@@ -594,7 +619,13 @@ def _patch_record_wrapper(module: Any) -> None:
         event_begin = len(episode.events) if episode is not None else 0
         record_begin = len(self.buffer)
         before = int(self.unwrapped.elapsed_steps)
+        if episode is not None and episode.timing is not None:
+            if episode.timing["first_step_ns"] is None:
+                episode.timing["first_step_ns"] = time.monotonic_ns()
+                _write_timing(episode)
         result = original_step(self, *args, **kwargs)
+        if episode is not None and episode.timing is not None:
+            episode.timing["last_step_ns"] = time.monotonic_ns()
         if episode is not None:
             episode.recordings.append({"env_step_before": before, "env_step_after": int(self.unwrapped.elapsed_steps),
                 "record_begin": record_begin, "record_end": len(self.buffer),
@@ -602,6 +633,19 @@ def _patch_record_wrapper(module: Any) -> None:
         return result
 
     wrapper_class.step = step
+
+    if os.environ.get("PARITY_TIMING") == "1":
+        original_close = wrapper_class.close
+
+        def close(self: Any, *args: Any, **kwargs: Any) -> Any:
+            episode = _current()
+            if episode is not None and episode.timing is not None:
+                if episode.timing["close_ns"] is None:
+                    episode.timing["close_ns"] = time.monotonic_ns()
+                _write_timing(episode)
+            return original_close(self, *args, **kwargs)
+
+        wrapper_class.close = close
 
 
 def _patch_planner(module: Any) -> None:
