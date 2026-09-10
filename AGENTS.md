@@ -191,6 +191,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 录像流式写入与清单混跑实施计划 | 计划落盘完成，静态核验通过 | 根目录新增 `VIDEO_STREAM_AND_MANIFEST_POOL_PLAN.md`：录像器只换写入路径（`video_stream.py` 首帧开流、分片 MP4、`-threads 1`、`video_report`、`video_scope` 开关）、生成入口视频核验与 `--job-manifest` 清单混跑、双卡每卡 12／16／20 三档 × 4 组 × 40 条对拍（0～3 对旧 `S0a`，4～39 档间互比）；引言块点名用户两条指令冲突（`NO RECORD` 跳过 vs 录全部）按最新指令执行并留开关；对 `NEW_VALUE_INJECTION_TEST_PLAN.md` 的临时改动已全部 `git checkout` 撤回 | 仅计划与账本变更；四个阶段待逐个获批实施 |
 | 并行校准改为八档阶梯并实测选档 | 文档修订完成，静态核验通过 | `NEW_VALUE_INJECTION_TEST_PLAN.md` 校准配置由四档扩为八档（单卡 1、单卡 2、双卡各 2／4／6／8／10 worker，共 128 次），新增 `PARALLEL_SCALE` 判定按实测选第二阶段档位，资源上限按本机实测（377 GB 内存、32 核、2×46 GB 显卡）写入 | 仅计划与账本变更 |
 | 新值计划改为两阶段全量实跑 | 文档修订完成，静态核验通过 | `NEW_VALUE_INJECTION_TEST_PLAN.md` 第五节改为第一阶段轻量验证（4 条冒烟 + 16 条四配置校准 64 次）与第二阶段 1100 条全部实跑（每组七类计数、碰撞三分项、逐条失败环节）；4.4 改为跑前／跑后两套图加失败位置图；判定分母 110→1100、50→500；第六节写明原值多卡验证已做、新值未做、全量耗时估算 | 仅计划与账本变更；实施仍待逐阶段获批 |
 | 均匀分配流程图内置第四节 | 文档修订完成，静态核验通过 | `NEW_VALUE_INJECTION_TEST_PLAN.md` 第四节开头新增 ASCII 流程图：字段分三类（独立离散／连续／耦合）→ 各自分配 → 组合候选 → 碰撞筛与同格重抽 → 冻结与计数验收 | 仅计划与账本变更 |
@@ -1342,3 +1343,12 @@
 - 实施：校准配置由 `S0/S1/P0/P01` 四档扩为八档，新增 `P01x4/P01x6/P01x8/P01x10`（双卡各 4／6／8／10 worker，共 8／12／16／20），16 条 × 8 = 最多 128 次，阶梯从低到高、某档失败即停；新增判定 `PARALLEL_SCALE`：取通过逐位与并发判定、无 OOM／超时、主机内存峰值低于 300 GB、墙钟不比上一档差的最大档作为第二阶段配置；`PARALLEL_CONTENT` 改为每档 16 对最多 112 对、`PARALLEL_OVERLAP` 每档一行且每卡 n worker 须见 n 个不同 PID 同时 step。第六节写入本机资源实测（`free -g` 377 GB、`nproc` 32、两张 RTX 6000 Ada 46068 MiB）与原值每 worker 约 5.3 GB 内存的折算，并引用历史 No-Patch 单卡 20 workers；执行预算改为最多 4+128+1100=1232 次；第一节口径 7、流程草图、5.4 步骤 1d、5.6、第二部分闸门表、运行手册（`--workers` 1/1/2/4/8/12/16/20）、留档同步更新。
 - 验证：`uv run --no-sync python -` 只读核验通过（六节顺序、本地链接、bash 块、无「四配置」「64 次」「1168」残留）；`git diff --check` 通过。纯文档改动未运行 pytest。
 - 当前状态与后续：仅提交计划与本条账本增量；实施仍待逐阶段获批。
+
+### 2026-09-10 America/Detroit — 录像流式写入与清单混跑实施计划落盘
+
+- 状态：计划落盘完成，静态核验通过；未实施代码、未启动生成。
+- 用户要求：原话「生成后的100episode尽可能保留完整视频 … 需要2gpu多worker尽可能多的并行」「不要改动视频生成的逻辑！只能修改视频写的逻辑」「NO RECORD 阶段的步骤就是要直接跳过的！！！ 把这条写入agents md」「双卡直接测大于10worker」「修改完 生成入口 generate_dataset_newseed.py 录像器 RecordWrapper.py 你要做对拍测试 和之前一致」「不改了 单独成一个plan 实现 … reset() 返回时补录第 0 帧；step() 里录像不再看 NO RECORD … 新增规格清单模式 … 并且测试并发 NEW_VALUE_INJECTION_TEST_PLAN.md先不动」「生成计划落到根目录」；提问选定每卡 12／16／20 三档、每批 40 条、只对 0～3 与旧 `S0a` 逐位比、分片 MP4。
+- 实施：对 codex 六条审稿意见逐条核实（均属实）并另核出 HDF5 缓冲与录像共用 `NO RECORD` 条件、B2 颜色顺序与源码不符、均匀性检查只数出现值、旧校准工具写死每卡 2 worker 四点；三路只读探索与一路设计 agent 后写成根目录 `VIDEO_STREAM_AND_MANIFEST_POOL_PLAN.md`（两部分结构：录像写入路径、生成入口视频核验与 `--job-manifest`、三档并发对拍、10 项判定行、四阶段表、runbook、风险、盲区）。中途曾按更早指令直接改 `NEW_VALUE_INJECTION_TEST_PLAN.md`，用户随后要求不动该文件，已 `git checkout -- NEW_VALUE_INJECTION_TEST_PLAN.md` 整文件撤回（撤回前核对 diff 仅含本会话改动）。
+- 意外：用户两条指令冲突（`NO RECORD` 跳过并写入 AGENTS.md vs 录全部步骤加 reset 帧），计划按最新指令执行并做成 `video_scope` 开关，AGENTS.md 未新增「跳过 `NO RECORD`」规则，待用户裁定；开场快照里的 7 个已修改与 8 个未跟踪在途文件在探索期间已不在工作区（无 stash），非本会话所为。
+- 验证：`uv run --no-sync python -` 只读核验新计划 7 个本地链接全部存在、代码块配对、4 个 bash 块；`git diff --check` 无告警。实测口径来自 `20260909-schema3-parallel-v2`（P01 单条 19～71 秒、`close_s` 3.4～7.6 秒、单 worker RSS 3.5～5.8 GB、HDF5 0.32～0.72 GB）与本机（32 核、377 GB、2×46 GB、`/data` 余 2.6 TB）；imageio 2.37.2 实测接受 `-threads 1` 与分片 `movflags`。
+- 当前状态与后续：仅提交新计划与本条账本增量；阶段 1（录像器）、2（清单模式）、3（三档并发）、4（留档）待逐个获批后实施。
