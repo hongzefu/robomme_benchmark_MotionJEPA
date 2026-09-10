@@ -53,7 +53,7 @@
 6. 验收分五问单独回答：规格是否均匀、碰撞是否全部排除、注入是否生效、330 条各自能否执行、并行是否与串行逐位一致；最终逐项列出，不用一个总成功率替代（第五节）。
 7. 本轮实跑采用双 GPU 对拍，直接测每卡 12／16／20 worker 三档：先用单卡单 worker 跑两遍 16 条固定样本建立串行参考，再每档用同一份 120 条清单一次调用混跑，16 条固定样本逐位对串行参考、其余档间互比；按「成功且视频完整的条数 ÷ 墙钟」选档并另报最大稳定档；12 档不通过则向下补测 8、4 两档，仍无合格双卡档就报告双 GPU 要求未满足并停止，不自动改单卡全量（第五节步骤 3～4，参数见第六节）。
 8. 用户已目视确认的四容器三例持久保留；重跑使用新目录，分别复核轨迹重算和视频重渲染，不能把旧视频或单姿态交叉验证当作新值执行通过（第二部分第 8.4 节及第二部分第四、七节）。
-9. 实跑的 330 条每条都登记视频状态：录像器 `RobommeRecordWrapper` 冻结，不改源文件、不子类覆写、不打补丁；视频就是它现有逻辑的产出（主相机、腕部相机、原始分割、目标分割、目标标记，上下两排规划与在线判断，任务文字；`NO RECORD` 阶段按设计跳过、不补 reset 帧；成功名／`FAILED_` 前缀，落 `videos/`）。生成入口在 `close()` 后按命名规则找文件、用 ffprobe 数帧、算散列，成功局要求帧数等于 HDF5 的 timestep 数；视频缺失或帧数不符不改变任务结果，但单列视频判定失败，样本不移出分母（第五节步骤 0c）。
+9. 实跑的 330 条每条都登记视频状态：录像器 `RobommeRecordWrapper` 冻结，不改源文件、不子类覆写、不打补丁；视频就是它现有逻辑的产出（主相机、腕部相机、原始分割、目标分割、目标标记，上下两排规划与在线判断，任务文字；`NO RECORD` 阶段按设计跳过、不补 reset 帧；成功名／`FAILED_` 前缀，落 `videos/`）。生成入口在 `close()` 后按命名规则找文件、用 ffprobe 数帧、算散列，成功局要求帧数等于 HDF5 的 timestep 数；视频缺失或帧数不符不改变任务结果，但单列视频判定失败，样本不移出分母（第五节步骤 0c）。**330 条视频文件全部持久保留**：成功名、`FAILED_` 前缀与 `NO_OBJECT` 调试视频一律留在运行根目录各组的 `videos/` 下，不清理、不转码、不改名；后续任何 `artifacts/` 清理必须绕开该目录，与四容器三例同级保留（第二部分第七节）。
 10. `src/robomme` 下任何改动和覆盖（含子类覆写、monkeypatch、运行时替换方法）都须用户逐个批准；本计划里对该目录的改动清单只是待批项，不是授权（[AGENTS.md](AGENTS.md) 强制规则第 11 条，第二部分〇第 10 条）。
 
 #### 1.2 本方案依据的用户原话
@@ -700,7 +700,7 @@ video = {status, path, frames, frames_expected, bytes, sha256, no_object_path}
 | 4／5 | `VIDEO_INDEX` | 可执行 | 330 行每行有视频状态，`missing`／`no_close` 必须带原因（无文件、进程未到 `close()`、编码异常日志）；成功与 `FAILED_` 都查 | `VIDEO_INDEX=PASS rows=330 complete=<n> frame_mismatch=<n> missing=<n> no_close=<n> untraceable=0` |
 | 4／5 | `VIDEO_DECODE` | 可执行 | 成功局 `ffprobe` 读出的帧数等于 HDF5 timestep 数；`FAILED_` 视频帧数 > 0 且可解码到最后一帧；散列留档 | `VIDEO_DECODE=PASS success_rows=<n> decoded_eq_timesteps=<n> failed_videos=<n> mismatches=0` |
 | 5 | `FEASIBILITY` | 可执行 | 330 条全部登记执行状态、任务结果、视频状态；成功条用 `inspect_episode_terminal` 契约核验；成功数是报告结果，不是门槛 | `FEASIBILITY=PASS unique=330 executed=330 unclassified=0 succeeded=<实际数> attempt=0`，另一行 `RESULT_COVERAGE all_recorded=330 all_success=<实际数>` |
-| 6 | `DELIVERY` | 可执行 | 离线重算清单散列；全部 1100 条规格、330 行三字段结果、每组七类计数与碰撞三分项、视频状态计数、命令、退出码、固定案例保留清单 | `DELIVERY=PASS specs=1100 result_rows=330 missing=0` |
+| 6 | `DELIVERY` | 可执行 | 离线重算清单散列；全部 1100 条规格、330 行三字段结果、每组七类计数与碰撞三分项、视频状态计数、命令、退出码、固定案例保留清单；逐个核 `videos/` 下实际文件与散列，`videos_on_disk` 必须等于视频状态不为 `missing`／`no_close` 的条数 | `DELIVERY=PASS specs=1100 result_rows=330 missing=0 videos_on_disk=<n> videos_expected=<n> video_sha_mismatch=0` |
 
 失败处理：任何样本不得移出分母；没有成功 HDF5 的执行保留失败证据，依赖该产物的比较列为未完成。视频缺失可以保留"任务结果通过"，但 `VIDEO_INDEX`／`VIDEO_DECODE` 必须如实记失败。只有全部具名项实际通过才称全方案通过；没有合格双卡档时并行三项保持 `FAIL`／`NOT_RUN`，不改写成整体通过。
 
@@ -1050,7 +1050,7 @@ tmux attach -t "$INJECTION_RUN_ID-calibration"
 
 ### 七、留档与提交纪律
 
-重产物按 `artifacts/injection/<运行编号>/` 存储，规格为 `specs/<任务>/<难度>.json`，生成结果为 `<阶段>/<运行配置>/<任务>/<难度>/`；每个 episode 和每次重复执行另有身份记录。图表、原始观察器证据、HDF5 和视频留在该运行根目录，主日志位于 `artifacts/logs/`。不同难度、配置或重复运行绝不写同一输出目录。
+重产物按 `artifacts/injection/<运行编号>/` 存储，规格为 `specs/<任务>/<难度>.json`，生成结果为 `<阶段>/<运行配置>/<任务>/<难度>/`；每个 episode 和每次重复执行另有身份记录。图表、原始观察器证据、HDF5 和视频留在该运行根目录，主日志位于 `artifacts/logs/`。不同难度、配置或重复运行绝不写同一输出目录。**步骤 5 的 330 条视频是明确保留项**：`RobommeRecordWrapper` 原始产出的成功名、`FAILED_` 与 `NO_OBJECT` 视频全部留在 `artifacts/injection/<运行编号>/<阶段>/<运行配置>/<任务>/<难度>/videos/`，不清理、不转码、不改名，不进入例行清理候选，地位与 `artifacts/collision-preplan/20260909-bin-contact-v2/` 相同；轻量包只存路径、帧数与 SHA-256，不复制视频。校准阶段（步骤 2～4）的视频同样保留到对应档目录，供 `VIDEO_INDEX`／`VIDEO_DECODE` 复核。
 
 轻量包拟放 `docs/validation/newtask-v2/<运行编号>/`：中文 `README.md`、11 份规格及规范化散列、全量／每批计数表、静态拒绝清单、跑前与跑后两套图、330 行实跑样本结果（执行状态、任务结果、视频状态与失败环节）、每组七类计数与碰撞三分项、视频状态计数、4 次冒烟、32 次串行参考与每档负载校准记录（含吞吐、内存峰值、并发峰值）、命令与退出码、HDF5 全字段聚合指纹、动作绑定摘要、资源／时间区间、环境与源码指纹、完整清单散列。轻量不表示只留成功条目；没有 HDF5 的失败也必须能定位到规格与错误阶段。
 
