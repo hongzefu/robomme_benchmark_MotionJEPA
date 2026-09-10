@@ -1,0 +1,54 @@
+{
+  "结论": "代码与文档验收完成；完整16条原值校准因固定串行失败未整体通过",
+  "定向测试": {
+    "command": "uv run --no-sync python -m pytest tests/lightweight/test_parallel_calibration.py tests/lightweight/test_native_sampling_evidence.py -q --basetemp artifacts/test-tmp/parallel-delivery-final",
+    "passed": 57,
+    "elapsed_s": 0.56,
+    "exit_code": 0
+  },
+  "真实产物端到端检查": {
+    "description": "P01四任务collect_batch与实际窗口检查，再比较BinFill episode 0的S0a/P01完整产物",
+    "elapsed_s": 46.45,
+    "exit_code": 0
+  },
+  "离线复核": {
+    "command": "uv run --no-sync python -m tests._shared.parallel_calibration compare --run-id 20260909-schema3-parallel-v2",
+    "exit_code": 1,
+    "source": "从原始HDF5和观察器证据重新推导",
+    "eligible_reference": 15,
+    "planned_reference": 16,
+    "matching_candidate_pairs": 45,
+    "planned_candidate_pairs": 48,
+    "timing_batches_passed": 20,
+    "generation_attempts": 80,
+    "generation_successes": 75
+  },
+  "文档与范围": {
+    "新增及报告本地链接": 10,
+    "新增Bash语法检查": 2,
+    "生产源码配置依赖与cfca77d相比": "未改变",
+    "新值单GPU范围": "保留",
+    "新值生成": "未执行"
+  },
+  "日志散列": {
+    "artifacts/logs/20260909-schema3-parallel-v2.log": "f4c08db7e9533624b613dd1fb48b0c8c0c3c80fc48d3948147c14034a16b8843",
+    "artifacts/logs/20260909-schema3-parallel-v2-offline.log": "8296444b03943c15a89737cdc0cd3a70908fabb01b049a216669bf2f113f75b0",
+    "artifacts/logs/20260909-schema3-parallel-v2-tests.log": "4fdf1fb0954575f96db04426414152ec34d0171c405cf880ca55e9b5c247a813",
+    "artifacts/logs/20260909-schema3-parallel-v2-tests-final.log": "683f55afac9586e4ce0f0c5376b1d84698c4d8227d49843c6c1667bfa187cf85"
+  },
+  "代码散列": {
+    "tests/_shared/parallel_calibration.py": "37016fabe7ff99b5581724f1a0f977e9ec5223d188b54053161e1993d697f117",
+    "tests/_shared/parity_observer.py": "fa2eb8a8ba4aa5081de2c7f17e48c2ac85a9d9e0b29b14f4e2f808b3425cae4a",
+    "tests/lightweight/test_parallel_calibration.py": "5de22471f1f3d58f0bd4decdbab60b01224899dc0cbb92694d7f15292d77b94b"
+  },
+  "输入冻结清单": {
+    "path": "artifacts/parallel-calibration/20260909-schema3-parallel-v2/frozen_manifest.json",
+    "sha256": "9c908821363d91218145acf25bd7efdeca44e1eb574147a1f25235ace8d0114e"
+  },
+  "SVG格式复核": {
+    "图形路径数量": 183,
+    "图形路径": "规范化后逐项相同",
+    "数值报告": "散列未变",
+    "原始SVG散列": "915c5e039cb75d30954bd762f60448e47908cabe71d6288746ef6071bb913dda"
+  }
+}

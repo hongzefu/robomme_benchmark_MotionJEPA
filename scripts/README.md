@@ -186,6 +186,70 @@ schema 2 配置须用 `--extract-config` 重新导出为 schema 3；新增字段
 [运行索引](../docs/validation/newtask-v2/README.md) 和
 [原交付清单](../docs/validation/newtask-v2/DELIVERY.md) 保留旧轮次的历史结论。
 
+### 2.6 schema 3 原值配置的多 GPU、多 worker 校准
+
+**五轮 80 次生成及独立离线复核已完成：75 次成功，15 个可比样本在跨卡与并行模式下的 45 对比较全部严格一致；完整 16 条校准未整体通过。**
+
+正式编号为 `20260909-schema3-parallel-v2`。固定 `BinFill hard`、`RouteStick hard`、
+`VideoUnmaskSwap hard`、`VideoRepick medium` 各 episode `0～3`，显式传入原值配置，
+使用 train seed、attempt 0、`--max-attempts 1 --max-tasks-per-child 8`、线程限制和
+`--affinity none`。本次比较当前实现的不同运行配置，不替代前文原版接入的 A/B/C 对拍。
+
+| 配置 | GPU／总 worker | 生成成功 | 与参考严格比较通过／计划条数 | 执行窗口检查 | 四批总耗时 |
+| --- | --- | --- | --- | --- | --- |
+| S0a | GPU 0／1 | 15/16 | 建立参考 | 串行 4/4 通过 | 758.01 秒 |
+| S0b | GPU 0／1 | 15/16 | 15/16 | 串行 4/4 通过 | 756.44 秒 |
+| S1 | GPU 1／1 | 15/16 | 15/16 | 串行 4/4 通过 | 754.58 秒 |
+| P0 | GPU 0／2 | 15/16 | 15/16 | 同卡并发 4/4 通过 | 401.13 秒 |
+| P01 | GPU 0、1／4，每卡 2 个 | 15/16 | 15/16 | 四 worker 共同并发 4/4 通过 | 262.59 秒 |
+
+唯一失败是 `BinFill hard / episode 3 / seed 4300`，五轮均为
+`DatasetGenerationError: BinFill/episode_3: 环境报告失败`。该条从未移出分母，
+没有换 seed 或补样本；其余 15 条的 HDF5 全字段、初态、状态事件、实际对象动作和随机流
+全部逐位一致。80 次均无规划回退、无批次超时。完整 16 条参考未建立，因此 S1、P0、P01
+整体校准均未通过；生成主命令和独立 `compare` 的退出码均为 1。
+
+**双卡每卡 2 worker 的实际并发已证实。** 检查实际 GPU／PCI／PID，以及首次至最后一次
+step 的单调时钟窗口；P01 四任务的四 worker 共同重叠分别为 27.734、48.155、14.041、
+22.700 秒。失败条虽然没有成功 HDF5，仍独立读取其时间证据；进程导入和视频编码时间
+不计入窗口。上述耗时是带观察器的本次流程测量，不外推为其他任务、硬件或并行规模的性能保证。
+
+入口为测试侧 [parallel_calibration.py](../tests/_shared/parallel_calibration.py)，复用原生产
+CLI；任务、生产调度、`native_sampling.json` 和依赖均未修改。生成实现提交为 `91bacf9`，
+独立数值复核工具为 `1f98324`；图版文本格式随后单独规范，比较结果不变。来源、结果和时间图见
+[实测报告](../docs/validation/newtask-v2/20260909-schema3-parallel-v2/README.md)、
+[结构化结果](../docs/validation/newtask-v2/20260909-schema3-parallel-v2/parallel_result.json)。
+新报告使用 `parallel_result.json`，避免与旧 A/B/C 证据包的 `result.json` 发现规则混淆。
+
+重新生成必须使用新编号；以下命令先执行自己的观察器开关冒烟，通过后才跑五轮：
+
+```bash
+command -v uv
+mkdir -p artifacts/logs
+PARALLEL_RUN_ID="schema3-parallel-$(date -u +%Y%m%dT%H%M%SZ)"
+tmux new-session -d -s "$PARALLEL_RUN_ID" \
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m tests._shared.parallel_calibration run --run-id $PARALLEL_RUN_ID 2>&1 | tee artifacts/logs/$PARALLEL_RUN_ID.log; code=\$?; echo EXIT_CODE=\$code | tee -a artifacts/logs/$PARALLEL_RUN_ID.log; exit \$code"
+```
+
+独立复核只读取既有重产物并刷新派生报告，不生成 episode；本轮全字段复核也超过五分钟，
+同样用 tmux：
+
+```bash
+command -v uv
+mkdir -p artifacts/logs
+PARALLEL_RECHECK_ID="schema3-compare-$(date -u +%Y%m%dT%H%M%SZ)"
+tmux new-session -d -s "$PARALLEL_RECHECK_ID" \
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m tests._shared.parallel_calibration compare --run-id 20260909-schema3-parallel-v2 2>&1 | tee artifacts/logs/$PARALLEL_RECHECK_ID.log; code=\$?; echo EXIT_CODE=\$code | tee -a artifacts/logs/$PARALLEL_RECHECK_ID.log; exit \$code"
+```
+
+`--smoke-only` 只做单条开关校准；单批默认超时 600 秒。完整重产物与逐批记录位于
+`artifacts/parallel-calibration/20260909-schema3-parallel-v2/`；主日志和独立复核日志分别为
+`artifacts/logs/20260909-schema3-parallel-v2.log`、
+`artifacts/logs/20260909-schema3-parallel-v2-offline.log`。
+
+**这只覆盖原值配置。** 新值规格、注入、1100 条分布图和 110 条新值可行性测试均未执行，
+不能用本轮可比样本的一致结论替代新值校准。`VideoRepick hard` 未参与本轮。
+
 ---
 
 ## 三、几个脚本入口分别做什么用

@@ -1,0 +1,114 @@
+[
+  {
+    "task": "BinFill",
+    "difficulty": "hard",
+    "episode": 0,
+    "seed": 4000,
+    "attempt": 0
+  },
+  {
+    "task": "BinFill",
+    "difficulty": "hard",
+    "episode": 1,
+    "seed": 4100,
+    "attempt": 0
+  },
+  {
+    "task": "BinFill",
+    "difficulty": "hard",
+    "episode": 2,
+    "seed": 4200,
+    "attempt": 0
+  },
+  {
+    "task": "BinFill",
+    "difficulty": "hard",
+    "episode": 3,
+    "seed": 4300,
+    "attempt": 0
+  },
+  {
+    "task": "RouteStick",
+    "difficulty": "hard",
+    "episode": 0,
+    "seed": 16000,
+    "attempt": 0
+  },
+  {
+    "task": "RouteStick",
+    "difficulty": "hard",
+    "episode": 1,
+    "seed": 16100,
+    "attempt": 0
+  },
+  {
+    "task": "RouteStick",
+    "difficulty": "hard",
+    "episode": 2,
+    "seed": 16200,
+    "attempt": 0
+  },
+  {
+    "task": "RouteStick",
+    "difficulty": "hard",
+    "episode": 3,
+    "seed": 16300,
+    "attempt": 0
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "difficulty": "hard",
+    "episode": 0,
+    "seed": 5000,
+    "attempt": 0
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "difficulty": "hard",
+    "episode": 1,
+    "seed": 5100,
+    "attempt": 0
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "difficulty": "hard",
+    "episode": 2,
+    "seed": 5200,
+    "attempt": 0
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "difficulty": "hard",
+    "episode": 3,
+    "seed": 5300,
+    "attempt": 0
+  },
+  {
+    "task": "VideoRepick",
+    "difficulty": "medium",
+    "episode": 0,
+    "seed": 9000,
+    "attempt": 0
+  },
+  {
+    "task": "VideoRepick",
+    "difficulty": "medium",
+    "episode": 1,
+    "seed": 9100,
+    "attempt": 0
+  },
+  {
+    "task": "VideoRepick",
+    "difficulty": "medium",
+    "episode": 2,
+    "seed": 9200,
+    "attempt": 0
+  },
+  {
+    "task": "VideoRepick",
+    "difficulty": "medium",
+    "episode": 3,
+    "seed": 9300,
+    "attempt": 0
+  }
+]

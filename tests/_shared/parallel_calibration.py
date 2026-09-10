@@ -419,6 +419,8 @@ def timeline(report: dict, path: Path) -> None:
     fig.tight_layout()
     fig.savefig(path)
     plt.close(fig)
+    # SVG 路径的行末空白没有图形语义，规范输出以通过仓库文本检查。
+    path.write_text("\n".join(line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")
 
 
 def compare(root: Path) -> dict:
