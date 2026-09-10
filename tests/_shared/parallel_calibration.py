@@ -316,16 +316,21 @@ def collect_batch(root: Path, mode: str, task: str, gpu_map: dict, snapshot: dic
             row.update({name: record.get(name) for name in ("ok", "bound", "failure_class", "error_type", "error", "started_at", "finished_at", "wall_s", "peak_rss_mb")})
             if record.get("ok") is not True:
                 row["errors"].append("生成未成功")
+            if record.get("ok") is True:
+                try:
+                    h5 = directory / "hdf5_files" / f"{task}_ep{case['episode']}_seed{case['seed']}.h5"
+                    if Path(record.get("h5_path", "")).resolve() != h5.resolve():
+                        raise ValueError("HDF5 路径与用例不匹配")
+                    with h5py.File(h5, "r") as handle:
+                        _, done, contract_errors = inspect_episode_terminal(handle[f"episode_{case['episode']}"], str(h5))
+                        if done is not True or contract_errors:
+                            raise ValueError(f"HDF5 终态契约失败：{contract_errors}")
+                    row["h5_path"] = str(h5)
+                    row["h5_sha256"] = sha(h5)
+                except Exception as exc:
+                    row["errors"].append(f"HDF5 验证失败：{type(exc).__name__}: {exc}")
+            # 原 wrapper 失败时不保留成功 HDF5，但观察器和执行窗口仍须独立读取。
             try:
-                h5 = directory / "hdf5_files" / f"{task}_ep{case['episode']}_seed{case['seed']}.h5"
-                if Path(record.get("h5_path", "")).resolve() != h5.resolve():
-                    raise ValueError("HDF5 路径与用例不匹配")
-                with h5py.File(h5, "r") as handle:
-                    _, done, contract_errors = inspect_episode_terminal(handle[f"episode_{case['episode']}"], str(h5))
-                    if done is not True or contract_errors:
-                        raise ValueError(f"HDF5 终态契约失败：{contract_errors}")
-                row["h5_path"] = str(h5)
-                row["h5_sha256"] = sha(h5)
                 evidence_dir = root / "evidence" / task / mode / f"{task}_seed{case['seed']}"
                 payload = load_evidence(evidence_dir, difficulty=case["difficulty"])
                 row["errors"].extend(validate_evidence(payload, case))
@@ -342,7 +347,7 @@ def collect_batch(root: Path, mode: str, task: str, gpu_map: dict, snapshot: dic
                 row["timing_path"] = str(timing_files[0])
                 row["timing_sha256"] = sha(timing_files[0])
             except Exception as exc:
-                row["errors"].append(f"产物验证失败：{type(exc).__name__}: {exc}")
+                row["errors"].append(f"观察器或时间证据验证失败：{type(exc).__name__}: {exc}")
         # 生产入口在单条失败时也返回非零；其余完整成功条仍可独立比较。
         row["valid"] = not row["errors"] and not input_errors and not execution.get("timed_out", False)
         rows.append(row)
@@ -377,6 +382,23 @@ def decide(reference: dict, comparisons: dict, batches: dict) -> dict:
                   and len(comparisons.get(mode, {})) == 16 and all(value["passed"] for value in comparisons.get(mode, {}).values())
                   and len(batches.get(mode, {})) == 4 and all(value["passed"] for value in batches.get(mode, {}).values())}
             for mode in ("S1", "P0", "P01")}
+
+
+def failure_diagnostics(indexed: dict) -> dict:
+    """失败签名单独对照，不将重复失败转为参考合格或数值一致。"""
+    result = {}
+    for case in cases():
+        identity = key(case)
+        rows = {mode: indexed[mode][identity] for mode in MODES}
+        if not any(row.get("ok") is False for row in rows.values()):
+            continue
+        signatures = {mode: {name: row.get(name) for name in ("ok", "failure_class", "error_type", "error", "rrt_fallback_count")}
+                      for mode, row in rows.items()}
+        same = all(row.get("ok") is False for row in rows.values()) and all(value == signatures["S0a"] for value in signatures.values())
+        result[f"{case['task']}/{case['difficulty']}/episode_{case['episode']}"] = {
+            "same_failure_signature": same, "signatures": signatures,
+            "note": "仅对照错误签名，不构成成功参考或完整失败轨迹逐位一致结论"}
+    return result
 
 
 def timeline(report: dict, path: Path) -> None:
@@ -430,6 +452,7 @@ def compare(root: Path) -> dict:
         reference[name] = compare_pair(left, indexed["S0b"][identity])
         for mode in comparisons:
             comparisons[mode][name] = compare_pair(left, indexed[mode][identity]) if reference[name]["passed"] else {"passed": False, "reason": "串行参考未建立"}
+        print(f"已比较 {name}：参考={reference[name]['passed']}，" + "，".join(f"{mode}={comparisons[mode][name]['passed']}" for mode in comparisons), flush=True)
     modes = decide(reference, comparisons, batches)
     # 两轮参考的绑定和串行窗口本身也必须有效。
     baseline_batches_ok = all(entry["passed"] for mode in ("S0a", "S0b") for entry in batches[mode].values())
@@ -438,11 +461,18 @@ def compare(root: Path) -> dict:
     report = {"scope": "当前源码、依赖、硬件、schema 3 原值；不含 VideoRepick hard 或新值注入",
               "context": context, "integrity_errors": integrity_errors, "batches": batches,
               "reference": reference, "comparisons": comparisons, "modes": modes,
+              "failure_diagnostics": failure_diagnostics(indexed),
+              "comparison_context": {"created_at": time.time(),
+                  "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip(),
+                  "tool_sha256": {name: sha(REPO / name) for name in (
+                      "tests/_shared/parallel_calibration.py", "tests/_shared/native_sampling_parity.py",
+                      "tests/_shared/parity_observer.py")}},
               "passed": all(value["passed"] for value in modes.values())}
     write_json(root / "comparison.json", report)
     docs = REPO / "docs/validation/newtask-v2" / root.name
     docs.mkdir(parents=True, exist_ok=True)
-    write_json(docs / "result.json", report)
+    # result.json 是既有 A/B/C 对拍包的发现约定，不能混入不同报告结构。
+    write_json(docs / "parallel_result.json", report)
     write_json(docs / "cases.json", cases())
     write_json(docs / "context.json", context)
     timeline(report, docs / "timeline.svg")
@@ -458,8 +488,10 @@ def compare(root: Path) -> dict:
     for mode, result in modes.items():
         lines.append(f"| {mode} | {sum(value['passed'] for value in comparisons[mode].values())}/16 | {'通过' if result['passed'] else '未通过'} |")
     lines += ["", "![GPU 与 PID 执行时间图](timeline.svg)", "", "## 逐条结果与首个分歧", "",
-              "详细记录见 [result.json](result.json)，输入见 [cases.json](cases.json)，环境和来源散列见 [context.json](context.json)。", ""]
+              "详细记录见 [parallel_result.json](parallel_result.json)，输入见 [cases.json](cases.json)，环境和来源散列见 [context.json](context.json)。", ""]
     lines.extend(f"- 输入完整性：{error}" for error in integrity_errors)
+    for name, failure in report["failure_diagnostics"].items():
+        lines.append(f"- {name}：五轮错误签名相同={failure['same_failure_signature']}；重复失败不计为参考通过。")
     for mode, entries in batches.items():
         for task, entry in entries.items():
             for error in entry["errors"] + entry["concurrency"]["errors"]:

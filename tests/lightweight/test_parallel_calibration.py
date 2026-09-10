@@ -205,21 +205,28 @@ def test_failed_episode_does_not_hide_other_successful_comparisons(tmp_path):
             with h5py.File(h5, "w") as handle:
                 handle.create_dataset(f"episode_{index}/timestep_0/info/is_completed", data=True)
             row["h5_path"] = str(h5)
-            evidence = root / "evidence/BinFill/S0a" / f"BinFill_seed{case['seed']}"
-            evidence.mkdir(parents=True)
-            data = payload()
-            data.update(task=case["task"], seed=case["seed"], difficulty=case["difficulty"], pid=100)
-            with gzip.open(evidence / "pid100-00.json.gz", "wt") as handle:
-                json.dump(data, handle)
-            calibration.write_json(evidence / "pid100-00.timing.json", {
-                "task": case["task"], "seed": case["seed"], "difficulty": case["difficulty"], "pid": 100,
-                "reset_ns": 1 + index * 100, "first_step_ns": 10 + index * 100,
-                "last_step_ns": 20 + index * 100, "close_ns": 30 + index * 100})
+        evidence = root / "evidence/BinFill/S0a" / f"BinFill_seed{case['seed']}"
+        evidence.mkdir(parents=True)
+        data = payload()
+        data.update(task=case["task"], seed=case["seed"], difficulty=case["difficulty"], pid=100)
+        with gzip.open(evidence / "pid100-00.json.gz", "wt") as handle:
+            json.dump(data, handle)
+        calibration.write_json(evidence / "pid100-00.timing.json", {
+            "task": case["task"], "seed": case["seed"], "difficulty": case["difficulty"], "pid": 100,
+            "reset_ns": 1 + index * 100, "first_step_ns": 10 + index * 100,
+            "last_step_ns": 20 + index * 100, "close_ns": 30 + index * 100})
         records.append(row)
     (directory / "episode_results.jsonl").write_text("\n".join(json.dumps(row) for row in records))
     result = calibration.collect_batch(root, "S0a", "BinFill", GPU_MAP, snapshot)
     assert not result["passed"]
     assert [row["valid"] for row in result["rows"]] == [True, True, True, False]
+    assert result["concurrency"]["passed"]
+    assert result["rows"][3]["timing"]["close_ns"] == 330
+    assert "h5_path" not in result["rows"][3]
+    calibration.write_json(evidence / "pid100-01.timing.json", {})
+    duplicate = calibration.collect_batch(root, "S0a", "BinFill", GPU_MAP, snapshot)
+    assert not duplicate["concurrency"]["passed"]
+    assert any("应恰好一份" in error for error in duplicate["rows"][3]["errors"])
 
 
 def test_resource_summary_uses_observed_maximum_and_keeps_errors(tmp_path):
@@ -234,3 +241,14 @@ def test_resource_summary_uses_observed_maximum_and_keeps_errors(tmp_path):
     assert result["max_process_group_rss_kib"] == 30
     assert result["max_gpu_used_mib"] == {"0": 60}
     assert result["errors"] == ["采样缺口"]
+
+
+def test_identical_failure_is_only_a_diagnostic():
+    indexed = {mode: {calibration.key(case): {**case, "ok": True} for case in calibration.cases()} for mode in calibration.MODES}
+    identity = calibration.key(calibration.cases()[3])
+    for rows in indexed.values():
+        rows[identity].update(ok=False, failure_class="task", error_type="DatasetGenerationError", error="环境失败", rrt_fallback_count=0)
+    result = calibration.failure_diagnostics(indexed)
+    assert len(result) == 1 and next(iter(result.values()))["same_failure_signature"]
+    indexed["P01"][identity]["error"] = "另一错误"
+    assert not next(iter(calibration.failure_diagnostics(indexed).values()))["same_failure_signature"]

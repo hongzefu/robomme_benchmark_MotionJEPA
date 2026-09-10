@@ -192,7 +192,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | 新值约定与固定值按环境展开 | 文档整理完成，静态核验通过 | 第 3.1 节按四个环境分别列出约定 1～4 与固定值 1～4，共 16 对；27 个本地链接、7 个命令块检查通过 | 仅文档与账本增量；正式规格生成和新值实跑仍待实施 |
-| schema 3 原值多 GPU 多 worker 校准 | 进行中 | 已批准四任务固定 16 条、五轮 80 次矩阵；工作区干净，双 RTX 6000 Ada 可用；仅实现测试侧编排与时间证据 | 先轻量测试和 BinFill hard episode 0 开关冒烟，再运行正式矩阵；不涉及新值注入 |
+| schema 3 原值多 GPU 多 worker 校准 | 正式运行进行中 | 代码提交 `91bacf9`；56 项定向测试通过；初轮开关冒烟 100.91 秒、HDF5 零差异；正式编号 `20260909-schema3-parallel-v2` 从冒烟独立重跑 | 完成五轮 80 次及离线比较，再更新两份用户指定文档；不涉及新值注入 |
 | episode 对象与动作冻结扩展 | 完成五项及补充回归，4 个基线既有测试失败单列 | schema 3、66 组原值及消费位置检查；20260909-actions-v3 的 60 次 fresh、15 格原始与合并四对比较、三路连续 worker、852 张图像复核、重试与 16 任务全部通过；最终离线 42 passed；轻量全量 232 passed / 4 个固定基线已有失败 | 详见 docs/validation/newtask-v2/20260909-actions-v3/README.md；v3 完整证据链已保留，旧重产物已按后续用户审批清理 |
 | `artifacts/` 旧产物清理 | 完成 | 清理前 233,701,922,190 字节、7,992 文件、44 个符号链接；保留 v3 正式产物、smoke3 校准、v2 目视来源及必要日志后为 60,044,029,723 字节、3,425 文件、0 个符号链接；永久释放 173,657,892,467 字节 | 保持 `20260909-actions-v3` 证据链只读；后续新运行必须使用新编号，不得写入现有保留目录 |
 | 新值注入计划双部分重构 | 文档重构完成，静态复核通过 | `NEW_VALUE_INJECTION_TEST_PLAN.md` 按强制规则第 10 条分为机制／验收与技术执行两部分；保留 1100 条规格、110 条实跑，补齐代码锚点和逐项判定 | 仅计划与本条账本变更；新增接口、规格、图表和新值仿真仍未实施 |
@@ -1158,6 +1158,55 @@
 - 中间运行：汇总修正前旧编号已进入 S0a/BinFill 首批，允许该批结束；原有源码防漂移检查会在下一批前阻止继续。保留旧编号所有产物，新编号重新执行完整矩阵，不混用旧结果。
 - 测试：修正后 55 项定向测试通过，0.61 秒；另补资源采样最大值和缺口反例。仅测试侧文件改变，任务、原值配置与生产入口未变。
 - 下一步：提交通过代码验收的三个测试侧文件与账本；等待旧编号退出后，以新编号正式实跑并完成离线复核及用户指定两份文档更新。
+
+### 2026-09-09 America/Detroit — 原值并行校准正式编号启动
+
+- 状态：进行中。
+- 代码提交：`91bacf9`（10.18）；最终定向测试 56 passed，0.58 秒，退出码 0。
+- 中间编号：`20260909-schema3-parallel` 完成开关冒烟及 S0a/BinFill 首批后，由源码防漂移检查停止，退出码 1；没有混入正式矩阵。
+- 正式运行：`20260909-schema3-parallel-v2`，tmux 会话 `parallel-schema3-v2`。入口为 `uv run --no-sync python -m tests._shared.parallel_calibration run --run-id 20260909-schema3-parallel-v2`；外层使用 PYTHONUNBUFFERED、pipefail、tee 与 EXIT_CODE。
+- 输出：`artifacts/parallel-calibration/20260909-schema3-parallel-v2/`；主日志 `artifacts/logs/20260909-schema3-parallel-v2.log`。正式编号重新执行自己的开关冒烟，成功后才依次运行五轮。
+- 下一步：完整保留失败样本与首个差异；矩阵结束后独立 compare，不改生产逻辑、输入和判据。
+
+### 2026-09-09 America/Detroit — 原值校准串行首轮发现固定样本失败
+
+- 状态：正式矩阵继续，尚不能判校准通过。
+- 实测：S0a/BinFill hard 的 episode 0、1、2 成功；episode 3、seed 4300、attempt 0 返回 `DatasetGenerationError: BinFill/episode_3: 环境报告失败`，耗时 47.524 秒。对应失败视频、观察器和 step 时间旁路均保留；无成功 HDF5。
+- 影响：该条尚未建立合格串行参考，不能归因于并发；其他成功条仍独立比较。按用户约定不换 seed、不更换 episode、不补样本，继续其他轮次。
+- 后续首轮进展：RouteStick hard 与 VideoUnmaskSwap hard 均 4/4 首次成功；正在运行 VideoRepick medium。
+- 证据：正式编号下各批 `episode_results.jsonl`、`execution.json` 与 `evidence/`；汇总仍待五轮完成后离线推导。
+
+### 2026-09-09 America/Detroit — 原值校准两轮串行参考建立
+
+- 状态：正式矩阵继续，跨卡与并行结论待核验。
+- S0a、S0b 各有 15/16 首次成功；BinFill hard episode 3、seed 4300 均报告相同环境失败。
+- 只读提前复核：使用当前 `collect_batch` 与 `compare_pair` 读取两轮真实产物；BinFill 的前三条，以及 RouteStick、VideoUnmaskSwap、VideoRepick 各四条，共 15 条的完整 HDF5、初态、状态事件及随机流全部严格一致，无规划回退。失败条未建立参考，不计为通过。
+- 进展：S1 的 BinFill 同样前三条成功、episode 3 相同失败；实际 GPU 绑定为 1、PCI 为 02:00.0，正在继续 RouteStick。
+- 下一步：完成 S1、P0、P01，分别核验真实执行重叠与严格内容比较；最终 compare 再从原产物完整推导，不复用这次提前检查的通过标记。
+
+### 2026-09-09 America/Detroit — 跨 GPU 串行生成完成，进入同卡并发
+
+- 状态：已完成 S0a、S0b、S1 共 48 次正式生成；P0 开始。
+- S1：GPU 1、PCI 02:00.0，15/16 成功；唯一失败仍为 BinFill hard episode 3、seed 4300 的相同环境失败，其余任务均 4/4 成功。此处仅记录生成结果，跨卡严格内容比较待最终执行。
+- 下一步：GPU 0 双 worker 的 P0，再运行双 GPU 每卡双 worker 的 P01；保留每个 PID 的实际 step 窗口和资源采样。
+
+### 2026-09-09 America/Detroit — 80 次原值生成与实际并发窗口检查完成
+
+- 状态：正式生成完成，全字段比较进行中。
+- 生成：五轮各 15/16 成功，总计 75/80 成功；五次失败全部为 BinFill hard episode 3、seed 4300、attempt 0 的相同 `DatasetGenerationError`。全部 80 条均有结果，无替换、无重试；`finished.json` 确认运行期间源码未变。
+- 实际窗口：直接读取所有结果与独立 timing 旁路，20 个批次的绑卡／串行或并发判据均通过。失败条的时间记录也存在，纳入执行重叠检查，但不改变其生成失败结论。
+- P0 各任务不同 PID 的最大 step 重叠秒数：BinFill 30.3023、RouteStick 61.1936、VideoUnmaskSwap 14.3782、VideoRepick 23.3474。
+- P01 各任务四个 worker 的共同 step 重叠秒数：BinFill 27.7342、RouteStick 48.1553、VideoUnmaskSwap 14.0411、VideoRepick 22.6999；实际每卡两个不同 PID，GPU/PCI 均正确。
+- 下一步：完成自动全字段比较，独立离线复核；报告中区分失败条无成功 HDF5 与其已有的完整执行时间记录，不把两者混为“没有并发”。
+
+### 2026-09-09 America/Detroit — 原值校准自动比较完成与报告读取修正
+
+- 状态：自动比较完成，独立离线复核待执行。
+- 自动比较：参考合格 15/16；S1、P0、P01 各有 15 条严格比较通过，共 45 对全部一致。唯一未建立参考的 BinFill hard episode 3 在五轮均失败，故三种模式整体仍按完整 16 条判据判为未通过；主日志退出码 1 是验收未通过，不是运行中断。
+- 报告修正：初版遇到失败条无成功 HDF5 会跳过其观察器和时间证据；现独立读取这些旁路，保留生成失败，同时完整统计其真实 step 窗口。只改报告读取，不改生成、观察器或判据；原始自动报告保存为正式 artifacts 下的 `comparison-initial.json` 等中间文件。
+- 兼容处理：新报告最初名为 result.json，会被旧测试当作 A/B/C 对拍包。现改用 parallel_result.json，保留旧发现规则和历史报告不动；旧版本报告移入正式 artifacts 留档。
+- 代码验证：57 项定向测试通过，0.77 秒；真实 P01 四任务产物与并发窗口检查，以及 BinFill episode 0 的 S0a/P01 严格比较全部通过，合计 46.45 秒，退出码 0。代码验收仍在五分钟预算内。
+- 下一步：固定报告工具新提交，再独立运行 compare；生成源码指纹仍对应 `91bacf9`，报告额外记录实际比较工具指纹。复核后更新 scripts/README.md 与 NEW_VALUE_INJECTION_TEST_PLAN.md。
 
 ### 2026-09-09 America/Detroit — 导入「计划分两部分」规则为强制规则第 10 条
 
