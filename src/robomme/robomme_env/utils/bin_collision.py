@@ -1,0 +1,838 @@
+"""容器／方块之间的真实碰撞盒判据（NEW_VALUE_INJECTION_TEST_PLAN 第三节与第 8.1～8.3 节）。
+
+本模块只做几何，不建 actor、不采样、不碰 SAPIEN 场景，因此外部 CPU 规格生成器与仿真
+运行时可以共用同一份判据，避免「筛查用一套几何、实跑用另一套」的双真值。
+
+三层接口：
+
+* :func:`bin_shape_specs` / :func:`cube_shape_specs` —— 与
+  ``object_generation.py::build_bin`` 同源的局部盒体描述（容器 6 个盒体、方块 1 个）。
+* :func:`check_bin_layout` —— 静态判据：全部对象对逐盒对做三维分离轴检测，
+  ``g > ε`` 才算分开，``0 ≤ g ≤ ε`` 记接触、``g < 0`` 记穿入，两者都排除。
+* :func:`check_swap_sweep` —— 连续判据：复刻
+  ``statechange.py::swap_flat_two_lane`` 的弯道与四元数插值，用区间二分证明整段路径
+  始终分开；证明不出来一律按 ``uncertified`` 排除，不改成抽帧放行。
+
+判据数值全部定死在模块常量里：``EPS_M``、``MAX_DEPTH``、``MAX_INTERVALS``、
+``DEGENERATE_NORM``。不提供放宽阈值的开关。
+"""
+
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass, field
+from typing import Any, Iterable, Sequence
+
+import numpy as np
+
+__all__ = [
+    "BinCollisionError",
+    "CollisionRejection",
+    "ShapeSpec",
+    "ObjectState",
+    "EPS_M",
+    "MAX_DEPTH",
+    "MAX_INTERVALS",
+    "DEGENERATE_NORM",
+    "LANE_OFFSET",
+    "bin_shape_specs",
+    "cube_shape_specs",
+    "bin_actor_pose",
+    "cube_actor_pose",
+    "quat_to_matrix",
+    "euler_xyz_to_quat",
+    "sat_gap",
+    "check_pair_static",
+    "check_bin_layout",
+    "check_swap_sweep",
+    "check_bin_state",
+    "shape_specs_from_actor",
+    "object_state_from_actor",
+]
+
+
+# ── 固定判据数值 ─────────────────────────────────────────────────────────────
+#: 分离阈值，米。1e-6 米 = 0.001 毫米；不再额外加安全间隙。
+EPS_M = 1e-6
+#: 单个盒对、单段路径的区间二分最大深度。
+MAX_DEPTH = 20
+#: 单个盒对、单段路径最多考察的区间个数。
+MAX_INTERVALS = 4096
+#: 四元数线性混合的范数下限；低于它认为插值退化，无法给出角速度上界。
+DEGENERATE_NORM = 1e-6
+#: ``swap_flat_two_lane`` 在两个视频任务里的实际弯道侧移，米。
+LANE_OFFSET = 0.07
+#: ``swap_flat_two_lane`` 判定「起终点重合、法向取零」的阈值，与原函数一致。
+COINCIDENT_XY = 1e-9
+
+
+class BinCollisionError(RuntimeError):
+    """规格或运行状态未通过碰撞判据。``rejection`` 里带结构化的拒绝证据。"""
+
+    def __init__(self, rejection: "CollisionRejection") -> None:
+        super().__init__(rejection.summary())
+        self.rejection = rejection
+
+
+@dataclass(frozen=True)
+class CollisionRejection:
+    """一次拒绝的完整证据。``reason`` 只取三种具名值。
+
+    * ``contact``：``g < 0``，两个盒体已经穿入。
+    * ``numerical_boundary``：``0 ≤ g ≤ ε``（含正好相切的 ``g == 0``），或判定值非有限。
+    * ``uncertified``：深度／区间数耗尽、四元数退化、上界算不出来——无法证明安全。
+    """
+
+    reason: str
+    stage: str  # "initial" / "sweep" / "state"
+    object_a: str
+    object_b: str
+    shape_a: int
+    shape_b: int
+    gap_m: float | None = None
+    s: float | None = None
+    sweep_index: int | None = None
+    interval_low: float | None = None
+    interval_high: float | None = None
+    depth: int | None = None
+    intervals_used: int | None = None
+    detail: str = ""
+
+    def summary(self) -> str:
+        where = f"{self.stage}"
+        if self.sweep_index is not None:
+            where += f"#{self.sweep_index}"
+        gap = "n/a" if self.gap_m is None else f"{self.gap_m:.12g}"
+        return (
+            f"碰撞排除[{self.reason}] {where} 对象 {self.object_a}(形状{self.shape_a})"
+            f" 与 {self.object_b}(形状{self.shape_b}) g={gap}"
+            + (f" s={self.s:.12g}" if self.s is not None else "")
+            + (f" {self.detail}" if self.detail else "")
+        )
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "reason": self.reason,
+            "stage": self.stage,
+            "object_a": self.object_a,
+            "object_b": self.object_b,
+            "shape_a": self.shape_a,
+            "shape_b": self.shape_b,
+            "gap_m": self.gap_m,
+            "s": self.s,
+            "sweep_index": self.sweep_index,
+            "interval_low": self.interval_low,
+            "interval_high": self.interval_high,
+            "depth": self.depth,
+            "intervals_used": self.intervals_used,
+            "detail": self.detail,
+        }
+
+
+@dataclass(frozen=True)
+class ShapeSpec:
+    """一个盒体在 actor 局部坐标系里的位姿与半尺寸。"""
+
+    local_p: np.ndarray  # (3,)
+    local_q: np.ndarray  # (4,) wxyz
+    half: np.ndarray  # (3,)
+
+    def vertex_radius(self) -> float:
+        """该盒体 8 个顶点到 actor 原点的最大距离，用于旋转项的线速度上界。"""
+        rot = quat_to_matrix(self.local_q)
+        best = 0.0
+        for sx in (-1.0, 1.0):
+            for sy in (-1.0, 1.0):
+                for sz in (-1.0, 1.0):
+                    offset = rot @ (self.half * np.array([sx, sy, sz]))
+                    best = max(best, float(np.linalg.norm(self.local_p + offset)))
+        return best
+
+
+@dataclass
+class ObjectState:
+    """场上一个对象的当前世界位姿与它的全部盒体。"""
+
+    name: str
+    p: np.ndarray  # (3,)
+    q: np.ndarray  # (4,) wxyz
+    shapes: Sequence[ShapeSpec]
+    radii: tuple[float, ...] = field(default=())
+
+    def __post_init__(self) -> None:
+        self.p = np.asarray(self.p, dtype=np.float64).reshape(3)
+        self.q = _normalize_quat(np.asarray(self.q, dtype=np.float64).reshape(4))
+        if not self.radii:
+            self.radii = tuple(shape.vertex_radius() for shape in self.shapes)
+
+
+# ── 四元数与旋转 ─────────────────────────────────────────────────────────────
+def _normalize_quat(q: np.ndarray) -> np.ndarray:
+    norm = float(np.linalg.norm(q))
+    if not math.isfinite(norm) or norm <= DEGENERATE_NORM:
+        raise ValueError(f"四元数退化，范数 {norm}")
+    return q / norm
+
+
+def quat_to_matrix(q: Sequence[float]) -> np.ndarray:
+    """wxyz 四元数转 3×3 旋转矩阵（与 SAPIEN／ManiSkill 的 wxyz 顺序一致）。"""
+    w, x, y, z = (float(v) for v in q)
+    return np.array(
+        [
+            [1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
+            [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
+            [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)],
+        ],
+        dtype=np.float64,
+    )
+
+
+def _axis_rotation(axis: str, angle: float) -> np.ndarray:
+    cos, sin = math.cos(angle), math.sin(angle)
+    if axis == "X":
+        return np.array([[1, 0, 0], [0, cos, -sin], [0, sin, cos]], dtype=np.float64)
+    if axis == "Y":
+        return np.array([[cos, 0, sin], [0, 1, 0], [-sin, 0, cos]], dtype=np.float64)
+    if axis == "Z":
+        return np.array([[cos, -sin, 0], [sin, cos, 0], [0, 0, 1]], dtype=np.float64)
+    raise ValueError(f"未知旋转轴 {axis}")
+
+
+def euler_xyz_to_quat(angles_rad: Sequence[float]) -> np.ndarray:
+    """复刻 ``euler_angles_to_matrix(..., convention="XYZ")`` 再取四元数。
+
+    ManiSkill 的 ``rotation_conversions`` 是 pytorch3d 的搬运版，``"XYZ"`` 表示
+    ``R = Rx(a) @ Ry(b) @ Rz(c)``；``build_bin`` 与 ``spawn_fixed_cube`` 都走这条路径。
+    """
+    a, b, c = (float(v) for v in angles_rad)
+    matrix = _axis_rotation("X", a) @ _axis_rotation("Y", b) @ _axis_rotation("Z", c)
+    return matrix_to_quat(matrix)
+
+
+def matrix_to_quat(matrix: np.ndarray) -> np.ndarray:
+    """3×3 旋转矩阵转 wxyz 四元数，符号取 w ≥ 0，与 pytorch3d 的实现一致。"""
+    m = np.asarray(matrix, dtype=np.float64)
+    trace = float(m[0, 0] + m[1, 1] + m[2, 2])
+    if trace > 0.0:
+        s = math.sqrt(trace + 1.0) * 2.0
+        w = 0.25 * s
+        x = (m[2, 1] - m[1, 2]) / s
+        y = (m[0, 2] - m[2, 0]) / s
+        z = (m[1, 0] - m[0, 1]) / s
+    elif m[0, 0] > m[1, 1] and m[0, 0] > m[2, 2]:
+        s = math.sqrt(1.0 + m[0, 0] - m[1, 1] - m[2, 2]) * 2.0
+        w = (m[2, 1] - m[1, 2]) / s
+        x = 0.25 * s
+        y = (m[0, 1] + m[1, 0]) / s
+        z = (m[0, 2] + m[2, 0]) / s
+    elif m[1, 1] > m[2, 2]:
+        s = math.sqrt(1.0 + m[1, 1] - m[0, 0] - m[2, 2]) * 2.0
+        w = (m[0, 2] - m[2, 0]) / s
+        x = (m[0, 1] + m[1, 0]) / s
+        y = 0.25 * s
+        z = (m[1, 2] + m[2, 1]) / s
+    else:
+        s = math.sqrt(1.0 + m[2, 2] - m[0, 0] - m[1, 1]) * 2.0
+        w = (m[1, 0] - m[0, 1]) / s
+        x = (m[0, 2] + m[2, 0]) / s
+        y = (m[1, 2] + m[2, 1]) / s
+        z = 0.25 * s
+    quat = np.array([w, x, y, z], dtype=np.float64)
+    if quat[0] < 0.0:
+        quat = -quat
+    return _normalize_quat(quat)
+
+
+# ── 与 build_bin / spawn_random_cube 同源的几何描述 ───────────────────────────
+def bin_shape_specs(cube_half_size: float) -> tuple[ShapeSpec, ...]:
+    """容器的 6 个盒体，逐字复刻 ``build_bin`` 的 ``poses`` 与 ``half_sizes``。
+
+    ⚠ ``build_bin`` 的注释说「底板加四壁」，源码另外还建了一个中央方块，实际是 6 个。
+    """
+    inner_side = cube_half_size * 2.5
+    wall_thickness = 0.005
+    wall_height = cube_half_size * 2.5
+    floor_thickness = 0.004
+
+    inner_half = inner_side * 0.5
+    t = wall_thickness * 0.5
+    h = wall_height * 0.5
+    tf = floor_thickness * 0.5
+
+    bottom_half = [inner_half + t, inner_half + t, tf]
+    lr_wall_half = [t, inner_half + t, h]
+    fb_wall_half = [inner_half + t, t, h]
+
+    base_z = tf
+    offset = inner_half + t
+    z_wall = tf + h
+
+    identity = np.array([1.0, 0.0, 0.0, 0.0])
+    local = [
+        ([0.0, 0.0, 0.0], [cube_half_size] * 3),
+        ([0.0, 0.0, base_z], bottom_half),
+        ([-offset, 0.0, z_wall], lr_wall_half),
+        ([+offset, 0.0, z_wall], lr_wall_half),
+        ([0.0, -offset, z_wall], fb_wall_half),
+        ([0.0, +offset, z_wall], fb_wall_half),
+    ]
+    return tuple(
+        ShapeSpec(np.array(p, dtype=np.float64), identity.copy(), np.array(half, dtype=np.float64))
+        for p, half in local
+    )
+
+
+def cube_shape_specs(half_size: float) -> tuple[ShapeSpec, ...]:
+    """方块的单个盒体：``actors.build_cube`` 的碰撞体就在 actor 原点。"""
+    return (
+        ShapeSpec(
+            np.zeros(3, dtype=np.float64),
+            np.array([1.0, 0.0, 0.0, 0.0]),
+            np.full(3, float(half_size), dtype=np.float64),
+        ),
+    )
+
+
+def bin_actor_pose(xy: Sequence[float], z_rotation_deg: float, cube_half_size: float) -> tuple[np.ndarray, np.ndarray]:
+    """复刻 ``build_bin`` 的 ``builder.set_initial_pose``：翻转 180° 扣在桌面上。"""
+    wall_height = cube_half_size * 2.5
+    floor_thickness = 0.004
+    h = wall_height * 0.5
+    tf = floor_thickness * 0.5
+    p = np.array([float(xy[0]), float(xy[1]), tf + 2.0 * h], dtype=np.float64)
+    q = euler_xyz_to_quat([math.pi, 0.0, math.radians(float(z_rotation_deg))])
+    return p, q
+
+
+def cube_actor_pose(xy: Sequence[float], yaw_rad: float, half_size: float) -> tuple[np.ndarray, np.ndarray]:
+    """复刻 ``spawn_random_cube`` 的落点：底面贴桌，绕 z 轴 yaw。"""
+    p = np.array([float(xy[0]), float(xy[1]), float(half_size)], dtype=np.float64)
+    q = euler_xyz_to_quat([0.0, 0.0, float(yaw_rad)])
+    return p, q
+
+
+# ── 静态判据：三维分离轴 ─────────────────────────────────────────────────────
+def _world_box(state_p: np.ndarray, state_rot: np.ndarray, shape: ShapeSpec) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """actor 世界位姿 × 形状局部位姿 → 世界盒体（中心、列为轴的 3×3、半尺寸）。"""
+    center = state_p + state_rot @ shape.local_p
+    axes = state_rot @ quat_to_matrix(shape.local_q)
+    return center, axes, shape.half
+
+
+def _radius(half: np.ndarray, axes: np.ndarray, n: np.ndarray) -> float:
+    return float(np.sum(half * np.abs(axes.T @ n)))
+
+
+def sat_gap(
+    center_a: np.ndarray,
+    axes_a: np.ndarray,
+    half_a: np.ndarray,
+    center_b: np.ndarray,
+    axes_b: np.ndarray,
+    half_b: np.ndarray,
+) -> float:
+    """单个盒对的分离轴判定值 ``g = max_n gap(n)``。
+
+    候选轴 15 根：双方各 3 个面法向 + 9 个边叉积；叉积范数 ≤ 1e-12 的退化轴跳过。
+    ``g`` 是分离轴判定值，一般不等于最短欧氏距离；非有限数按不安全处理（返回 NaN）。
+    """
+    delta = center_b - center_a
+    best = -np.inf
+    for k in range(3):
+        for axis in (axes_a[:, k], axes_b[:, k]):
+            gap = abs(float(np.dot(delta, axis))) - _radius(half_a, axes_a, axis) - _radius(half_b, axes_b, axis)
+            if gap > best:
+                best = gap
+    for i in range(3):
+        for j in range(3):
+            axis = np.cross(axes_a[:, i], axes_b[:, j])
+            norm = float(np.linalg.norm(axis))
+            if norm <= 1e-12:
+                continue
+            axis = axis / norm
+            gap = abs(float(np.dot(delta, axis))) - _radius(half_a, axes_a, axis) - _radius(half_b, axes_b, axis)
+            if gap > best:
+                best = gap
+    if not math.isfinite(best):
+        return float("nan")
+    return float(best)
+
+
+def _classify(gap: float) -> str | None:
+    """把判定值翻成拒绝原因；``None`` 表示这一对分开。"""
+    if not math.isfinite(gap):
+        return "numerical_boundary"
+    if gap < 0.0:
+        return "contact"  # 穿入
+    if gap <= EPS_M:
+        return "numerical_boundary"  # 接触或落在 [0, ε] 的数值边界带，含正好相切的 g == 0
+    return None
+
+
+def check_pair_static(
+    obj_a: ObjectState,
+    obj_b: ObjectState,
+    *,
+    stage: str = "initial",
+    sweep_index: int | None = None,
+) -> tuple[float, CollisionRejection | None]:
+    """一对对象的全部盒对静态检查，返回最小判定值与拒绝证据。
+
+    ⚠ 遍历全部盒对后才出结论，证据指向**判定值最小**的那一对形状，而不是遍历里
+    碰上的第一对。否则同一个几何状态会因形状顺序不同报出不同的 ``reason``：
+    两个容器中心距 0.04 时最小 ``g = −0.01``（前后壁真穿入），但中央方块与前壁那一对
+    恰好 ``g = 0``，早退会把一次真穿入报成数值边界。
+    """
+    rot_a = quat_to_matrix(obj_a.q)
+    rot_b = quat_to_matrix(obj_b.q)
+    worst = np.inf
+    worst_pair: tuple[int, int] | None = None
+    worst_finite = True
+    for ia, shape_a in enumerate(obj_a.shapes):
+        box_a = _world_box(obj_a.p, rot_a, shape_a)
+        for ib, shape_b in enumerate(obj_b.shapes):
+            box_b = _world_box(obj_b.p, rot_b, shape_b)
+            gap = sat_gap(*box_a, *box_b)
+            if not math.isfinite(gap):
+                # 非有限判定值一律按不安全处理，且优先于任何有限值成为证据
+                return float("nan"), CollisionRejection(
+                    reason="numerical_boundary",
+                    stage=stage,
+                    object_a=obj_a.name,
+                    object_b=obj_b.name,
+                    shape_a=ia,
+                    shape_b=ib,
+                    gap_m=None,
+                    sweep_index=sweep_index,
+                    detail="分离轴判定值非有限",
+                )
+            if gap < worst:
+                worst, worst_pair = gap, (ia, ib)
+    if worst_pair is None:
+        return float("nan"), CollisionRejection(
+            reason="uncertified",
+            stage=stage,
+            object_a=obj_a.name,
+            object_b=obj_b.name,
+            shape_a=-1,
+            shape_b=-1,
+            sweep_index=sweep_index,
+            detail="对象缺少碰撞形状",
+        )
+    reason = _classify(worst)
+    if reason is None:
+        return float(worst), None
+    return float(worst), CollisionRejection(
+        reason=reason,
+        stage=stage,
+        object_a=obj_a.name,
+        object_b=obj_b.name,
+        shape_a=worst_pair[0],
+        shape_b=worst_pair[1],
+        gap_m=float(worst),
+        sweep_index=sweep_index,
+    )
+
+
+def check_bin_layout(
+    objects: Sequence[ObjectState],
+    *,
+    stage: str = "initial",
+    raise_on_reject: bool = False,
+) -> tuple[float, CollisionRejection | None]:
+    """全部对象两两之间的静态检查；任一对被拒绝，整体拒绝。
+
+    返回 ``(最小判定值, 拒绝证据或 None)``；证据指向全场判定值最小的那一对对象与形状，
+    与遍历顺序无关。``raise_on_reject`` 为真时改抛 :class:`BinCollisionError`，
+    供运行时检查点直接中止该样本。
+    """
+    worst = np.inf
+    worst_rejection: CollisionRejection | None = None
+    for i in range(len(objects)):
+        for j in range(i + 1, len(objects)):
+            gap, rejection = check_pair_static(objects[i], objects[j], stage=stage)
+            if rejection is not None and not math.isfinite(gap):
+                if raise_on_reject:
+                    raise BinCollisionError(rejection)
+                return gap, rejection
+            if gap < worst:
+                worst, worst_rejection = gap, rejection
+    if worst_rejection is not None:
+        if raise_on_reject:
+            raise BinCollisionError(worst_rejection)
+        return float(worst), worst_rejection
+    return (float(worst) if math.isfinite(worst) else float("nan")), None
+
+
+def check_bin_state(
+    objects: Sequence[ObjectState],
+    *,
+    stage: str = "state",
+    raise_on_reject: bool = False,
+) -> tuple[float, CollisionRejection | None]:
+    """运行时某一时刻的只读复核，与 :func:`check_bin_layout` 同判据，只换 ``stage`` 标签。"""
+    return check_bin_layout(objects, stage=stage, raise_on_reject=raise_on_reject)
+
+
+# ── 连续判据：区间二分证明 ───────────────────────────────────────────────────
+def _lane_endpoints(a_xy: np.ndarray, b_xy: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """复刻 ``swap_flat_two_lane`` 的主方向与左法向；起终点重合时法向取零。"""
+    delta = b_xy - a_xy
+    normal = np.array([-delta[1], delta[0]], dtype=np.float64)
+    norm = float(np.linalg.norm(normal))
+    if norm > COINCIDENT_XY:
+        normal = normal / norm
+    else:
+        normal = np.zeros(2, dtype=np.float64)
+    return delta, normal
+
+
+def _quat_at(q0: np.ndarray, q1: np.ndarray, s: float) -> np.ndarray:
+    """A 的 ``qa(s) = normalize((1−s)qa0 + s qb0)``；保留原符号与归一化线性混合。"""
+    blended = (1.0 - s) * q0 + s * q1
+    norm = float(np.linalg.norm(blended))
+    if not math.isfinite(norm) or norm <= DEGENERATE_NORM:
+        raise ValueError("四元数线性混合退化")
+    return blended / norm
+
+
+def _min_blend_norm(q0: np.ndarray, dq: np.ndarray, lo: float, hi: float) -> float:
+    """``m = min_{s∈[lo,hi]} ||q0 + s·Δq||``：线段到原点的最近距离，端点或投影点取到。"""
+    dd = float(np.dot(dq, dq))
+    candidates = [lo, hi]
+    if dd > 0.0:
+        star = -float(np.dot(q0, dq)) / dd
+        if lo < star < hi:
+            candidates.append(star)
+    return min(float(np.linalg.norm(q0 + s * dq)) for s in candidates)
+
+
+@dataclass
+class _Mover:
+    """交换中一个对象在参数 ``s`` 上的位姿函数与速度上界所需的量。"""
+
+    name: str
+    shapes: Sequence[ShapeSpec]
+    radii: Sequence[float]
+    xy0: np.ndarray
+    z: float
+    delta: np.ndarray  # 主方向位移（B−A），本对象按 sign 取用
+    normal: np.ndarray
+    sign: float  # A 取 +1，B 取 −1
+    q0: np.ndarray
+    q1: np.ndarray
+
+    def pose_at(self, s: float) -> tuple[np.ndarray, np.ndarray]:
+        offset = LANE_OFFSET * math.sin(math.pi * s)
+        xy = self.xy0 + self.sign * (self.delta * s + self.normal * offset)
+        return np.array([xy[0], xy[1], self.z], dtype=np.float64), _quat_at(self.q0, self.q1, s)
+
+    def bounding_sphere(self) -> tuple[np.ndarray, float]:
+        """整段路径上该对象全部盒体点的保守包围球。
+
+        actor 原点轨迹 ``xy0 + sign·(δ·s + n·0.07 sin(πs))`` 包在以中点为心、
+        半径 ``0.5‖δ‖ + 0.07`` 的球内；再加上盒体顶点到原点的最大距离即可。
+        """
+        mid_xy = self.xy0 + self.sign * (self.delta * 0.5 + self.normal * LANE_OFFSET)
+        center = np.array([mid_xy[0], mid_xy[1], self.z], dtype=np.float64)
+        radius = 0.5 * float(np.linalg.norm(self.delta)) + LANE_OFFSET + max(self.radii)
+        return center, radius
+
+    def speed_bound(self, lo: float, hi: float, shape_index: int) -> float:
+        """该盒体上任意点在 ``[lo,hi]`` 内对 ``s`` 的线速度上界。"""
+        translation = float(np.linalg.norm(self.delta)) + LANE_OFFSET * math.pi
+        dq = self.q1 - self.q0
+        m = _min_blend_norm(self.q0, dq, lo, hi)
+        if not math.isfinite(m) or m <= DEGENERATE_NORM:
+            raise ValueError("四元数插值退化，算不出角速度上界")
+        omega = 2.0 * float(np.linalg.norm(dq)) / m
+        return translation + self.radii[shape_index] * omega
+
+
+@dataclass
+class _Static:
+    """交换中不动的旁观对象；速度上界恒为 0。"""
+
+    name: str
+    shapes: Sequence[ShapeSpec]
+    radii: Sequence[float]
+    p: np.ndarray
+    q: np.ndarray
+
+    def pose_at(self, s: float) -> tuple[np.ndarray, np.ndarray]:  # noqa: ARG002
+        return self.p, self.q
+
+    def bounding_sphere(self) -> tuple[np.ndarray, float]:
+        return self.p, max(self.radii)
+
+    def speed_bound(self, lo: float, hi: float, shape_index: int) -> float:  # noqa: ARG002
+        return 0.0
+
+
+def _prove_pair(
+    left: Any,
+    right: Any,
+    ia: int,
+    ib: int,
+    *,
+    stage: str,
+    sweep_index: int | None,
+) -> tuple[float, CollisionRejection | None]:
+    """对一个盒对做区间二分证明；返回 ``(观察到的最小 g, 拒绝证据或 None)``。"""
+    shape_a = left.shapes[ia]
+    shape_b = right.shapes[ib]
+
+    def gap_at(s: float) -> float:
+        pa, qa = left.pose_at(s)
+        pb, qb = right.pose_at(s)
+        return sat_gap(
+            *_world_box(pa, quat_to_matrix(qa), shape_a),
+            *_world_box(pb, quat_to_matrix(qb), shape_b),
+        )
+
+    def reject(reason: str, s: float | None, gap: float | None, lo: float, hi: float, depth: int, used: int, detail: str) -> CollisionRejection:
+        return CollisionRejection(
+            reason=reason,
+            stage=stage,
+            object_a=left.name,
+            object_b=right.name,
+            shape_a=ia,
+            shape_b=ib,
+            gap_m=gap if gap is not None and math.isfinite(gap) else None,
+            s=s,
+            sweep_index=sweep_index,
+            interval_low=lo,
+            interval_high=hi,
+            depth=depth,
+            intervals_used=used,
+            detail=detail,
+        )
+
+    worst = np.inf
+    used = 0
+
+    # 先查两端：端点都通过也不能放行，但端点不通过可以立刻拒绝。
+    for s in (0.0, 1.0):
+        try:
+            gap = gap_at(s)
+        except ValueError as exc:
+            return float("nan"), reject("uncertified", s, None, 0.0, 1.0, 0, used, str(exc))
+        used += 1
+        if math.isfinite(gap):
+            worst = min(worst, gap)
+        reason = _classify(gap)
+        if reason is not None:
+            return gap, reject(reason, s, gap, s, s, 0, used, "端点判定")
+
+    # 从根区间中点开始，左子区间先于右子区间。
+    stack: list[tuple[float, float, int]] = [(0.0, 1.0, 0)]
+    while stack:
+        lo, hi, depth = stack.pop()
+        if used >= MAX_INTERVALS:
+            return (
+                float(worst) if math.isfinite(worst) else float("nan"),
+                reject("uncertified", None, None, lo, hi, depth, used, f"区间数超过上限 {MAX_INTERVALS}"),
+            )
+        if depth > MAX_DEPTH:
+            return (
+                float(worst) if math.isfinite(worst) else float("nan"),
+                reject("uncertified", None, None, lo, hi, depth, used, f"二分深度超过上限 {MAX_DEPTH}"),
+            )
+        mid = 0.5 * (lo + hi)
+        try:
+            gap = gap_at(mid)
+            bound_a = left.speed_bound(lo, hi, ia)
+            bound_b = right.speed_bound(lo, hi, ib)
+        except ValueError as exc:
+            return (
+                float(worst) if math.isfinite(worst) else float("nan"),
+                reject("uncertified", mid, None, lo, hi, depth, used, str(exc)),
+            )
+        used += 1
+        if math.isfinite(gap):
+            worst = min(worst, gap)
+        reason = _classify(gap)
+        if reason is not None:
+            return gap, reject(reason, mid, gap, lo, hi, depth, used, "中点判定")
+        margin = (bound_a + bound_b) * (hi - lo) * 0.5
+        if not math.isfinite(margin):
+            return (
+                float(worst) if math.isfinite(worst) else float("nan"),
+                reject("uncertified", mid, gap, lo, hi, depth, used, "速度上界非有限"),
+            )
+        if gap > EPS_M + margin:
+            continue  # 整个区间已证明分离
+        # 右子区间后进先出地压栈，保证左子区间先被证明。
+        stack.append((mid, hi, depth + 1))
+        stack.append((lo, mid, depth + 1))
+
+    return (float(worst) if math.isfinite(worst) else float("nan")), None
+
+
+def check_swap_sweep(
+    moving_a: ObjectState,
+    moving_b: ObjectState,
+    bystanders: Sequence[ObjectState] = (),
+    *,
+    sweep_index: int | None = None,
+    stage: str = "sweep",
+    raise_on_reject: bool = False,
+) -> tuple[float, CollisionRejection | None]:
+    """整段交换路径的连续检查：交换双方之间、双方各自与每个旁观对象之间。
+
+    路径按 ``swap_flat_two_lane`` 的实际语义复算：``A`` 沿 ``+0.07 sin(πs)`` 的左法向弯道
+    去 ``B`` 的位置，``B`` 沿 ``−`` 号弯道去 ``A`` 的位置，四元数互换并做归一化线性混合。
+    旁观对象在整段里被原函数逐帧按住不动，因此速度上界取 0。
+
+    ⚠ 不抽帧：每个盒对都必须由区间二分证明整段分离，证明不出来按 ``uncertified`` 拒绝。
+    ⚠ 与 :func:`check_bin_layout` 不同，本函数在第一个被证否的盒对上就返回——盒对数量是
+    静态检查的几十倍且每对都要二分，跑完全部只为挑「最严重」的一对不划算。因此返回的
+    证据是「第一个证否的盒对」，不保证是判定值最小的那一对。
+    """
+    a_xy = moving_a.p[:2]
+    b_xy = moving_b.p[:2]
+    delta, normal = _lane_endpoints(a_xy, b_xy)
+
+    mover_a = _Mover(
+        name=moving_a.name,
+        shapes=moving_a.shapes,
+        radii=moving_a.radii,
+        xy0=a_xy.copy(),
+        z=float(moving_a.p[2]),
+        delta=delta,
+        normal=normal,
+        sign=1.0,
+        q0=moving_a.q.copy(),
+        q1=moving_b.q.copy(),
+    )
+    mover_b = _Mover(
+        name=moving_b.name,
+        shapes=moving_b.shapes,
+        radii=moving_b.radii,
+        xy0=b_xy.copy(),
+        z=float(moving_b.p[2]),
+        delta=delta,
+        normal=normal,
+        sign=-1.0,
+        q0=moving_b.q.copy(),
+        q1=moving_a.q.copy(),
+    )
+    statics = [
+        _Static(name=item.name, shapes=item.shapes, radii=item.radii, p=item.p.copy(), q=item.q.copy())
+        for item in bystanders
+    ]
+
+    pairs: list[tuple[Any, Any]] = [(mover_a, mover_b)]
+    for item in statics:
+        pairs.append((mover_a, item))
+        pairs.append((mover_b, item))
+
+    worst = np.inf
+    coarse_worst = np.inf
+    for left, right in pairs:
+        # 粗筛：两个保守包围球都分开时，这一对的 36 个盒对必然整段分离，跳过二分。
+        # 只跳过必然通过的对，判据本身不变；旁观容器多半在这一步就过掉，二分次数大幅下降。
+        # ⚠ 被跳过的对**不进 worst**：包围球间隙是真实 g 的保守下界，混进去会把
+        # 「最危险对象对的最小 g」压成一个离得很远的对的下界，报告与图都会误导。
+        center_l, radius_l = left.bounding_sphere()
+        center_r, radius_r = right.bounding_sphere()
+        clearance = float(np.linalg.norm(center_l - center_r)) - radius_l - radius_r
+        if clearance > EPS_M:
+            coarse_worst = min(coarse_worst, clearance)
+            continue
+        for ia in range(len(left.shapes)):
+            for ib in range(len(right.shapes)):
+                gap, rejection = _prove_pair(left, right, ia, ib, stage=stage, sweep_index=sweep_index)
+                if rejection is not None:
+                    if raise_on_reject:
+                        raise BinCollisionError(rejection)
+                    return gap, rejection
+                if math.isfinite(gap):
+                    worst = min(worst, gap)
+    if math.isfinite(worst):
+        return float(worst), None
+    # 全部对象对都在粗筛里过掉了：没有精算值，退回包围球下界，仍然是「已证明分离」
+    return (float(coarse_worst) if math.isfinite(coarse_worst) else float("nan")), None
+
+
+# ── 运行时：从真实 actor 读盒体 ──────────────────────────────────────────────
+def _to_numpy(value: Any) -> np.ndarray:
+    if hasattr(value, "detach"):
+        value = value.detach().cpu().numpy()
+    return np.asarray(value, dtype=np.float64).reshape(-1)
+
+
+def shape_specs_from_actor(actor: Any) -> tuple[ShapeSpec, ...]:
+    """读 actor 上每个 ``PhysxCollisionShapeBox`` 的 ``half_size`` 与 ``local_pose``。
+
+    形状顺序按引擎返回顺序保留，不排序、不合并；遇到非盒体形状立即报错，
+    不用整体 AABB 替代——那只能初筛，不能当判据。
+    """
+    entity = getattr(actor, "_objs", None)
+    if entity:
+        entity = entity[0]
+    else:
+        entity = actor
+    components = None
+    for attr in ("find_component_by_type", "components"):
+        if hasattr(entity, attr):
+            break
+    try:
+        from sapien.physx import PhysxRigidBaseComponent  # type: ignore
+
+        component = entity.find_component_by_type(PhysxRigidBaseComponent)
+        components = component.get_collision_shapes()
+    except Exception as exc:  # pragma: no cover - 只在无 SAPIEN 环境下触发
+        raise BinCollisionError(
+            CollisionRejection(
+                reason="uncertified",
+                stage="geometry",
+                object_a=str(getattr(actor, "name", actor)),
+                object_b="-",
+                shape_a=-1,
+                shape_b=-1,
+                detail=f"读不到碰撞形状：{exc}",
+            )
+        ) from exc
+
+    specs: list[ShapeSpec] = []
+    for index, shape in enumerate(components):
+        half = getattr(shape, "half_size", None)
+        if half is None:
+            raise BinCollisionError(
+                CollisionRejection(
+                    reason="uncertified",
+                    stage="geometry",
+                    object_a=str(getattr(actor, "name", actor)),
+                    object_b="-",
+                    shape_a=index,
+                    shape_b=-1,
+                    detail=f"第 {index} 个形状不是盒体：{type(shape).__name__}",
+                )
+            )
+        pose = shape.local_pose
+        specs.append(
+            ShapeSpec(
+                np.asarray(pose.p, dtype=np.float64).reshape(3),
+                np.asarray(pose.q, dtype=np.float64).reshape(4),
+                np.asarray(half, dtype=np.float64).reshape(3),
+            )
+        )
+    return tuple(specs)
+
+
+def object_state_from_actor(actor: Any, name: str | None = None) -> ObjectState:
+    """把一个真实 actor 的当前世界位姿与真实盒体打包成 :class:`ObjectState`。"""
+    pose = actor.pose if hasattr(actor, "pose") else actor.get_pose()
+    p = _to_numpy(pose.p)[:3]
+    q = _to_numpy(pose.q)[:4]
+    return ObjectState(
+        name=name or str(getattr(actor, "name", "actor")),
+        p=p,
+        q=q,
+        shapes=shape_specs_from_actor(actor),
+    )
+
+
+def object_states_from_actors(actors_map: Iterable[tuple[str, Any]]) -> list[ObjectState]:
+    return [object_state_from_actor(actor, name) for name, actor in actors_map]
