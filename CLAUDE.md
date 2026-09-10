@@ -1,6 +1,6 @@
 # Claude Code 专属约定
 
-> 本仓库的**通用**约定（简体中文、uv、端到端测试、后台任务的 tmux 起法、禁硬编码行号、patch 级可视化、git commit、`/data` 本地盘优先）全部在根目录 [`AGENTS.md`](AGENTS.md) 的「强制规则（最高优先级）」里，**必须完整阅读并严格遵守**，本文件不重复。
+> 本仓库的**通用**约定（简体中文、uv、端到端测试、后台任务的 tmux 起法、禁硬编码行号、patch 级可视化、git commit、`/data` 本地盘优先、计划分两部分）全部在根目录 [`AGENTS.md`](AGENTS.md) 的「强制规则（最高优先级）」里，**必须完整阅读并严格遵守**，本文件不重复。
 > 本文件只收 **Claude Code 特有、AGENTS.md 不覆盖**的条目，与 AGENTS.md 同等强制；两者冲突时以 AGENTS.md 的「强制规则（最高优先级）」为准。
 
 ## 1. 最终输出层一律中文（AGENTS.md 规则 1 的 Claude Code 展开）
