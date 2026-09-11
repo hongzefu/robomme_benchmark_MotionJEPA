@@ -5,8 +5,9 @@
 
 * ``1_positions.png`` —— 初始位置。第一面板把该组全部物体叠在同一个桌面坐标轴里，其余面板按物体种类拆开
   （按钮＋孔板／方块；格点；每个容器；按钮／每块方块），矩形是真实尺寸与朝向，虚线框／虚线环是合法区。
-* ``2_events.png``   —— 随机事件画进桌面坐标。第一面板全部叠加，其余面板拆开：BinFill 按 dynamic 分两面，
-  RouteStick 按起点分五面，视频任务按第 1／2／3 次交换分三面。
+* ``2_events.png``   —— 随机事件画进桌面坐标。第一面板全部叠加，其余面板拆开：BinFill 画出全部方块（带颜色，
+  黑边 + 数字 1/2/3… = 被抓方块及其抓取顺序，孔板与按钮淡画）并按 dynamic 分两面（2026-09-11 用户要求，原为
+  「被抓方块 → 孔板中心」的箭头），RouteStick 按起点分五面，视频任务按第 1／2／3 次交换分三面。
 * ``3_episodes_p1..p5.png`` —— 单个 episode 的情况，每页 6 条（2 行 × 3 列），每格是该条的俯视布局
   （编号、朝向、箭头、目标标记），格下文字逐项列出这条 episode 的全部随机事件与位姿数值。
 
@@ -207,6 +208,22 @@ def draw_binfill(ax, r, labels=True, alpha=ALPHA):
             ep_text(ax, cube["xy"], picked.index(cube["object_id"]) + 1, size=9)
 
 
+def draw_binfill_events(ax, r, alpha=ALPHA):
+    """图 2 用：全部方块按颜色实画，被抓的加黑边并标抓取顺序 1/2/3…；孔板轮廓与按钮淡画只作参照，不标 ep 号。"""
+    layout = r["layout"]
+    circle(ax, layout["button_xy"], BUTTON_BASE_R, color=BUTTON_COLOR, alpha=0.18, zorder=2)
+    board = layout["board"]
+    square(ax, board["xy"], BOARD_SIDE, board["yaw_deg"], fill=False, edgecolor=BOARD_COLOR, linewidth=0.7, alpha=0.35, zorder=2)
+    picked = [a["pick"] for a in r["actions"]]
+    for cube in layout["cubes"]:
+        is_pick = cube["object_id"] in picked
+        square(ax, cube["xy"], 2 * CUBE_HALF, math.degrees(cube["yaw_rad"]), facecolor=COLOR_HEX[cube["color"]],
+               edgecolor="black" if is_pick else "none", linewidth=1.6, alpha=alpha if is_pick else alpha * 0.75,
+               zorder=5 if is_pick else 4)
+        if is_pick:
+            ep_text(ax, cube["xy"], picked.index(cube["object_id"]) + 1, size=8)
+
+
 def draw_routestick(ax, r, labels=True, alpha=ALPHA):
     points = [view(p) for p in routestick_points(r["layout"]["rotation_deg"])]
     for index, (u, v) in enumerate(points):
@@ -379,30 +396,27 @@ def plot_events(task, difficulty, records, sampling, out: Path) -> None:
     xl, yl = episode_limits(task)
     base = f"图 2 · {task} / {difficulty} 随机事件画进桌面坐标（前 {n} 条 ep0～{n - 1}）"
     if task == "BinFill":
+        # 全部方块带颜色实画，被抓的黑边 + 抓取顺序数字；按 dynamic 拆两面（2026-09-11 用户要求改自箭头图）
         fig, axes = make_panels(3, 3)
-        counts = [0, 0, 0]
-        for episode, r in enumerate(records):
-            board_xy = r["layout"]["board"]["xy"]
-            cube_by_id = {c["object_id"]: c for c in r["layout"]["cubes"]}
+        cubes = [0, 0, 0]
+        picks = [0, 0, 0]
+        episodes_dyn = [0, 0]
+        for r in records:
             dyn = r["layout"]["dynamic"]
             targets = [axes[0], axes[1] if dyn else axes[2]]
-            for action in r["actions"]:
-                cube = cube_by_id[action["pick"]]
-                for ax in targets:
-                    ax.annotate("", xy=view(board_xy), xytext=view(cube["xy"]),
-                                arrowprops=dict(arrowstyle="-|>", color=COLOR_HEX[cube["color"]], lw=1.3, linestyle="-" if dyn else "--", alpha=ALPHA), zorder=4)
-                counts[0] += 1
-                counts[1 if dyn else 2] += 1
             for ax in targets:
-                ax.plot(*view(board_xy), "s", color=BOARD_COLOR, markersize=6, zorder=5)
-                ep_text(ax, (board_xy[0] - 0.012, board_xy[1] + 0.012), episode, color=BOARD_COLOR, size=8)
-        style_axes(axes[0], f"① 全部抓取动作 ×{counts[0]}：被抓方块 → 该条的孔板中心（数字 = ep 号）", xl, yl)
-        style_axes(axes[1], f"② 只看 dynamic=True（方块分批出现）的 episode：{counts[1]} 个动作", xl, yl)
-        style_axes(axes[2], f"③ 只看 dynamic=False（开局全在）的 episode：{counts[2]} 个动作", xl, yl)
-        handles = [*[Line2D([], [], color=COLOR_HEX[c], label=f"抓{COLOR_CN[c]}方块") for c in ("red", "blue", "green")],
-                   Line2D([], [], color="#37474f", linestyle="-", label="实线 = dynamic=True"),
-                   Line2D([], [], color="#37474f", linestyle="--", label="虚线 = dynamic=False"),
-                   Line2D([], [], marker="s", linestyle="", color=BOARD_COLOR, label="孔板中心")]
+                draw_binfill_events(ax, r)
+            for slot in (0, 1 if dyn else 2):
+                cubes[slot] += len(r["layout"]["cubes"])
+                picks[slot] += len(r["actions"])
+            episodes_dyn[0 if dyn else 1] += 1
+        style_axes(axes[0], f"① 全部 {n} 条的全部方块 ×{cubes[0]}：黑边 + 数字 = 被抓方块及抓取顺序（共 {picks[0]} 次抓取）", xl, yl)
+        style_axes(axes[1], f"② 只看 dynamic=True（方块分批出现）的 {episodes_dyn[0]} 条：方块 ×{cubes[1]}，抓取 {picks[1]} 次", xl, yl)
+        style_axes(axes[2], f"③ 只看 dynamic=False（开局全在）的 {episodes_dyn[1]} 条：方块 ×{cubes[2]}，抓取 {picks[2]} 次", xl, yl)
+        handles = [*[Patch(facecolor=COLOR_HEX[c], label=f"{COLOR_CN[c]}方块") for c in ("red", "blue", "green")],
+                   Patch(facecolor="white", edgecolor="black", linewidth=1.6, label="黑边 + 数字 1/2/3… = 被抓方块及抓取顺序"),
+                   Line2D([], [], color=BOARD_COLOR, linewidth=0.7, alpha=0.6, label="孔板轮廓（淡）"),
+                   Patch(facecolor=BUTTON_COLOR, alpha=0.25, label="按钮（淡）")]
     elif task == "RouteStick":
         starts = [0, 2, 4, 6, 8]
         fig, axes = make_panels(6, 3)
