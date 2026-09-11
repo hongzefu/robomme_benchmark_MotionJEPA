@@ -244,15 +244,33 @@ def tier_is_unusable(result: dict[str, Any]) -> tuple[bool, str]:
     """
     if result["timed_out"]:
         return True, f"该档墙钟超过 {TIER_TIMEOUT_S} 秒上限"
-    infra = [
-        row for row in result["rows"]
-        if row["execution_state"] == "infra_error"
-        or (row["error_type"] or "") in ("BrokenProcessPool", "MemoryError")
-    ]
-    if infra:
-        kinds = sorted({row["error_type"] or "?" for row in infra})
-        return True, f"{len(infra)} 条基础设施失败（{kinds}），按 OOM／池崩溃处理"
+    hits = [row for row in result["rows"] if _is_resource_failure(row)]
+    if hits:
+        kinds = sorted({row["error_type"] or "?" for row in hits})
+        return True, f"{len(hits)} 条资源性失败（{kinds}），按 OOM／池崩溃处理"
     return False, ""
+
+
+#: OOM 的三种露头方式，缺一不可：
+#: * 主机内存被 OOM killer 杀掉 worker → 池崩溃 → ``infra_error``；
+#: * 显式的 ``MemoryError``；
+#: * **CUDA 显存不足** —— 它在 worker 里抛 ``torch.cuda.OutOfMemoryError``／``RuntimeError``，
+#:   不在 ``retryable`` 名单里，于是被记成 ``code_error``。⚠ 只看 ``infra_error`` 会漏掉
+#:   这一类，而档位阶梯恰恰就是靠显存 OOM 封顶的。
+_OOM_ERROR_TYPES = ("BrokenProcessPool", "MemoryError", "OutOfMemoryError", "CudaError")
+_OOM_TEXT_MARKERS = ("out of memory", "outofmemory", "cuda error", "cudaerrormemoryallocation",
+                     "failed to allocate", "no kernel image", "cannot allocate memory")
+
+
+def _is_resource_failure(row: dict[str, Any]) -> bool:
+    """这一条是不是资源性失败（该档撑不住），而不是样本自身的任务性失败。"""
+    if row.get("execution_state") == "infra_error":
+        return True
+    error_type = str(row.get("error_type") or "")
+    if any(marker in error_type for marker in _OOM_ERROR_TYPES):
+        return True
+    text = str(row.get("error") or "").lower()
+    return any(marker in text for marker in _OOM_TEXT_MARKERS)
 
 
 def tier_throughput(result: dict[str, Any]) -> tuple[float, int, int]:

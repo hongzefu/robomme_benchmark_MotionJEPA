@@ -340,3 +340,24 @@ def test_执行状态与任务结果分开记():
     record = {"ok": False, "error_type": "ScrewPlanFailure", "failure_class": "task"}
     assert execution_state(record) == "completed"
     assert classify_outcome(record) == "规划失败"
+
+
+def test_cuda_显存_oom_也算该档不可用():
+    """⚠ CUDA OOM 在 worker 里不在 retryable 名单，会被记成 code_error 而不是 infra_error；
+    只看 infra_error 会漏掉它，而档位阶梯恰恰是靠显存 OOM 封顶的。"""
+    rows = [{"outcome": "未运行", "video_status": "missing", "execution_state": "code_error",
+             "error_type": "OutOfMemoryError", "error": "CUDA out of memory. Tried to allocate 2.00 GiB"}]
+    unusable, reason = tier_is_unusable(_tier_result(rows))
+    assert unusable is True and "OOM" in reason
+
+
+def test_仅靠错误文本也能认出显存不足():
+    rows = [{"outcome": "未运行", "video_status": "missing", "execution_state": "code_error",
+             "error_type": "RuntimeError", "error": "CUDA error: out of memory"}]
+    assert tier_is_unusable(_tier_result(rows))[0] is True
+
+
+def test_普通运行时错误不算资源失败():
+    rows = [{"outcome": "规划失败", "video_status": "complete", "execution_state": "completed",
+             "error_type": "RuntimeError", "error": "planner gave up after 3 tries"}]
+    assert tier_is_unusable(_tier_result(rows))[0] is False

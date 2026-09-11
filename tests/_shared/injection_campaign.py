@@ -156,15 +156,21 @@ def load_group_documents(run_id: str) -> tuple[Path, dict[str, Any], dict[tuple[
 class Verdicts:
     """收集判定行；任一项 FAIL 则整体不通过。"""
 
-    def __init__(self) -> None:
-        self.lines: list[str] = []
-        self.records: list[dict[str, Any]] = []
+    def __init__(self, echo: bool = False) -> None:
+        self.lines = []
+        self.records = []
+        # echo=True 时每判完一项就打印一行，长阶段中途能看到进度，
+        # 不必等全部检查跑完（check 要跑 6 分钟以上，闷着看不到任何输出）
+        self.echo = echo
 
     def add(self, name: str, passed: bool | None, **fields: Any) -> None:
         status = "NOT_RUN" if passed is None else ("PASS" if passed else "FAIL")
         rendered = " ".join(f"{key}={value}" for key, value in fields.items())
-        self.lines.append(f"{name}={status}" + (f" {rendered}" if rendered else ""))
+        line = f"{name}={status}" + (f" {rendered}" if rendered else "")
+        self.lines.append(line)
         self.records.append({"name": name, "status": status, **fields})
+        if self.echo:
+            print(line, flush=True)
 
     @property
     def passed(self) -> bool:
@@ -559,7 +565,7 @@ def cmd_check(run_id: str, sampling_config: Path) -> dict[str, Any]:
             "但 parameters / positions 未变，继续验收"
         )
 
-    verdicts = Verdicts()
+    verdicts = Verdicts(echo=True)
     started = time.monotonic()
     _check_scope(documents, verdicts)
     quota_report = _check_quota(documents, sampling, verdicts)
@@ -575,8 +581,6 @@ def cmd_check(run_id: str, sampling_config: Path) -> dict[str, Any]:
         "passed": verdicts.passed,
     }
     _write_json(root / "check_result.json", payload)
-    for line in verdicts.lines:
-        print(line)
     print(f"CHECK={'PASS' if verdicts.passed else 'FAIL'} elapsed_s={payload['elapsed_s']}")
     return payload
 
@@ -653,7 +657,15 @@ def cmd_compare(left_dir: Path, right_dir: Path, label: str, *, subset_only: boo
 
 
 # ── run：步骤 3～5 的执行编排 ───────────────────────────────────────────────
-def cmd_run(run_id: str, phase: str, sampling_config: Path, tiers: Sequence[int] | None = None) -> dict[str, Any]:
+def cmd_run(
+    run_id: str,
+    phase: str,
+    sampling_config: Path,
+    tiers: Sequence[int] | None = None,
+    *,
+    skip_ladder: bool = False,
+    tier_override: int | None = None,
+) -> dict[str, Any]:
     """按阶段跑：``calibration``（步骤 3+4）或 ``feasibility``（步骤 5）。
 
     每一步都复用生产入口 ``scripts/generate_dataset_newseed.py``，命令、退出码、墙钟与
@@ -715,6 +727,28 @@ def cmd_run(run_id: str, phase: str, sampling_config: Path, tiers: Sequence[int]
             _write_json(root / "calibration_result.json", payload)
             for line in verdicts.lines:
                 print(line)
+            return payload
+
+        if skip_ladder:
+            # 步骤 4 被显式跳过（2026-09-10 用户决定：机器被另一个用户占了 639% CPU 与
+            # GPU 1 的 33.7 GB，单条从 98.6 秒慢到 316 秒，吞吐测量会严重失真）。
+            # ⚠ 并行三项如实记 NOT_RUN，**不假装测过吞吐**，也不拿一个没测过的档冒充选出的档。
+            reason = (
+                "按用户决定跳过档位校准：机器被另一用户重度占用（GPU1 33.7 GB、639% CPU、"
+                "load 15），单条 BinFill hard 实测 316.31 秒 / RouteStick hard 167.27 秒，"
+                "分别是空闲时 98.6 / 47.0 秒的 3.2 / 3.6 倍，吞吐测量失真"
+            )
+            for name in ("PARALLEL_CONTENT", "PARALLEL_OVERLAP", "PARALLEL_SCALE"):
+                verdicts.add(name, None, reason="档位校准被跳过")
+            payload.update({"ladder": [], "chosen": None, "max_stable": None, "stopped_at": None,
+                            "skip_ladder": True, "skip_reason": reason})
+            print(reason, flush=True)
+            payload["verdicts"] = verdicts.records
+            payload["passed"] = verdicts.passed
+            _write_json(root / f"{phase}_result.json", payload)
+            for line in verdicts.lines:
+                print(line)
+            print(f"RUN={'PASS' if verdicts.passed else 'FAIL'} phase={phase}（并行三项 NOT_RUN）")
             return payload
 
         # ── 步骤 4：120 条清单，每卡 worker 数一路往上探到 OOM／超时为止 ────────
@@ -804,13 +838,26 @@ def cmd_run(run_id: str, phase: str, sampling_config: Path, tiers: Sequence[int]
 
     elif phase == "feasibility":
         calibration = root / "calibration_result.json"
-        if not calibration.is_file():
-            raise CampaignError(f"实跑前必须先跑校准：缺 {calibration}")
-        chosen = json.loads(calibration.read_text(encoding="utf-8")).get("chosen")
-        if not chosen:
-            raise CampaignError("校准没有选出合格的双卡档，拒绝启动实跑")
-        tier = int(chosen["tier"])
-        gpu_ids = chosen.get("gpus") or ["0"]
+        if not calibration.is_file() and tier_override is None:
+            raise CampaignError(f"实跑前必须先跑校准：缺 {calibration}（或显式传 --tier）")
+        chosen = (
+            json.loads(calibration.read_text(encoding="utf-8")).get("chosen")
+            if calibration.is_file()
+            else None
+        )
+        if not chosen and tier_override is None:
+            raise CampaignError(
+                "校准没有选出合格的档，拒绝启动实跑；确要在未校准的情况下实跑，"
+                "请显式传 --tier <每卡 worker 数>（PARALLEL_SCALE 会保持 NOT_RUN）"
+            )
+        if tier_override is not None:
+            # 显式指定档位：档位不是测出来的，报告里必须写明这一点
+            tier = int(tier_override)
+            gpu_ids = ["0"]
+            chosen = {"tier": tier, "mode": f"P0x{tier}", "gpus": gpu_ids, "measured": False}
+        else:
+            tier = int(chosen["tier"])
+            gpu_ids = chosen.get("gpus") or ["0"]
         groups = [(item["task"], item["difficulty"]) for item in manifest_doc["groups"]]
         feas_manifest = write_manifest(
             root / "manifests" / "feasibility330.json", groups, FEASIBILITY_EPISODES, specs_root,
@@ -856,6 +903,7 @@ def cmd_run(run_id: str, phase: str, sampling_config: Path, tiers: Sequence[int]
         payload.update(
             {
                 "tier": tier, "mode": mode, "gpus": gpu_ids,
+                "tier_measured": chosen.get("measured", True),
                 "run": {k: v for k, v in result.items() if k != "rows"}, "rows": rows,
                 "outcome_counts": dict(outcomes), "video_counts": dict(videos), "execution_counts": dict(states),
                 "per_group": {
@@ -877,6 +925,182 @@ def cmd_run(run_id: str, phase: str, sampling_config: Path, tiers: Sequence[int]
         print(line)
     print(f"RUN={'PASS' if verdicts.passed else 'FAIL'} phase={phase}")
     return payload
+
+
+# ── report：步骤 6 的轻量包与交付核对 ───────────────────────────────────────
+def cmd_report(run_id: str) -> dict[str, Any]:
+    """汇总全部阶段的判定与计数，写轻量包到 ``docs/validation/newtask-v2/<运行编号>/``。
+
+    轻量**不表示只留成功条目**：没有 HDF5 的失败也必须能定位到规格与错误阶段。
+    重产物（HDF5、视频、PNG）留在 ``artifacts/`` 原地，这里只存路径、帧数与 SHA-256。
+    """
+    root, manifest, documents = load_group_documents(run_id)
+    target = REPO_ROOT / "docs" / "validation" / "newtask-v2" / run_id
+    target.mkdir(parents=True, exist_ok=True)
+
+    def _load(name: str) -> dict[str, Any] | None:
+        path = root / name
+        return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
+
+    check = _load("check_result.json")
+    calibration = _load("calibration_result.json")
+    feasibility = _load("feasibility_result.json")
+    plots = {phase: _load(f"plot_manifest_{phase}.json") for phase in ("before", "after")}
+
+    verdicts: list[dict[str, Any]] = []
+    for payload in (check, calibration, feasibility):
+        if payload:
+            verdicts.extend(payload.get("verdicts", []))
+
+    # 规格清单散列：每组一条，独立重算，不信任 plan 写下的值
+    spec_digest = []
+    for item in manifest["groups"]:
+        path = root / item["path"]
+        spec_digest.append(
+            {
+                "task": item["task"], "difficulty": item["difficulty"], "path": item["path"],
+                "episodes": item["episodes"], "file_sha256": _sha256_file(path),
+                "matches_manifest": _sha256_file(path) == item["file_sha256"],
+            }
+        )
+
+    # 交付核对：逐条核 videos/ 下的实际文件与散列
+    rows = (feasibility or {}).get("rows", [])
+    videos_expected = sum(1 for row in rows if row["video_status"] not in ("missing", "no_close"))
+    videos_on_disk = 0
+    video_sha_mismatch = 0
+    for row in rows:
+        path_text = row.get("video_path")
+        if not path_text:
+            continue
+        path = Path(path_text)
+        if not path.is_file():
+            continue
+        videos_on_disk += 1
+        if row.get("video_sha256") and _sha256_file(path) != row["video_sha256"]:
+            video_sha_mismatch += 1
+
+    delivery = Verdicts()
+    expected_specs = sum(item["episodes"] for item in manifest["groups"])
+    delivery.add(
+        "DELIVERY",
+        all(item["matches_manifest"] for item in spec_digest)
+        and videos_on_disk == videos_expected
+        and video_sha_mismatch == 0
+        and bool(rows),
+        specs=expected_specs, result_rows=len(rows),
+        missing=sum(1 for row in rows if row["video_status"] == "missing"),
+        videos_on_disk=videos_on_disk, videos_expected=videos_expected,
+        video_sha_mismatch=video_sha_mismatch,
+    )
+    verdicts.extend(delivery.records)
+
+    payload = {
+        "run_id": run_id,
+        "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "manifest": {key: value for key, value in manifest.items() if key != "groups"},
+        "spec_digest": spec_digest,
+        "verdicts": verdicts,
+        "outcome_counts": (feasibility or {}).get("outcome_counts"),
+        "video_counts": (feasibility or {}).get("video_counts"),
+        "execution_counts": (feasibility or {}).get("execution_counts"),
+        "per_group": (feasibility or {}).get("per_group"),
+        "calibration_ladder": (calibration or {}).get("ladder"),
+        "calibration_chosen": (calibration or {}).get("chosen"),
+        "gpu_note": (calibration or {}).get("gpu_note"),
+        "plots": {phase: (item or {}).get("groups") for phase, item in plots.items()},
+        "rows": rows,
+    }
+    _write_json(target / "report.json", payload)
+    _write_json(target / "result_rows.json", {"run_id": run_id, "rows": rows})
+    (target / "README.md").write_text(_render_readme(payload), encoding="utf-8")
+
+    for record in delivery.records:
+        print(" ".join([f"{record['name']}={record['status']}"] + [
+            f"{key}={value}" for key, value in record.items() if key not in ("name", "status", "detail")
+        ]))
+    print(f"REPORT=OK run_id={run_id} 轻量包 {target.relative_to(REPO_ROOT)}")
+    return payload
+
+
+def _render_readme(payload: dict[str, Any]) -> str:
+    """轻量包的中文 README：判定行、计数表、档位记录、失败清单一页可查。"""
+    lines = [
+        f"# 新值注入专项实测报告 · {payload['run_id']}",
+        "",
+        f"生成时间（UTC）：{payload['generated_utc']}",
+        "",
+        "> 本报告由 `tests._shared.injection_campaign report` 从各阶段的原始产物汇总，",
+        "> 数字均为实测。重产物（HDF5、视频、PNG）留在 `artifacts/injection/` 原地，",
+        "> 这里只存路径、帧数与 SHA-256。",
+        "",
+        "## 一、判定行",
+        "",
+        "| 判定项 | 结果 | 关键数字 |",
+        "|---|---|---|",
+    ]
+    for record in payload["verdicts"]:
+        numbers = " ".join(
+            f"{key}={value}" for key, value in record.items()
+            if key not in ("name", "status", "detail") and not isinstance(value, (dict, list))
+        )
+        lines.append(f"| `{record['name']}` | {record['status']} | {numbers} |")
+
+    if payload.get("gpu_note"):
+        lines += ["", f"⚠ {payload['gpu_note']}"]
+
+    if payload.get("outcome_counts"):
+        lines += ["", "## 二、实跑 330 条的七类结果", "", "| 结果 | 条数 |", "|---|---:|"]
+        for key, value in payload["outcome_counts"].items():
+            lines.append(f"| {key} | {value} |")
+        lines += ["", "### 每组明细", "", "| 组 | " + " | ".join(payload["outcome_counts"]) + " |",
+                  "|---" * (len(payload["outcome_counts"]) + 1) + "|"]
+        for group, counts in (payload.get("per_group") or {}).items():
+            lines.append(f"| {group} | " + " | ".join(str(counts.get(key, 0)) for key in payload["outcome_counts"]) + " |")
+
+    if payload.get("video_counts"):
+        lines += ["", "## 三、视频状态", "", "| 状态 | 条数 |", "|---|---:|"]
+        for key, value in payload["video_counts"].items():
+            lines.append(f"| `{key}` | {value} |")
+
+    if payload.get("calibration_ladder"):
+        lines += [
+            "", "## 四、档位阶梯", "",
+            "| 档 | worker | 可用 | 交付 | 失败 | 墙钟(秒) | 吞吐(条/分) | 峰值RSS(MB) | 备注 |",
+            "|---|---:|---|---:|---:|---:|---:|---:|---|",
+        ]
+        for item in payload["calibration_ladder"]:
+            lines.append(
+                f"| `{item.get('mode', item['tier'])}` | {item['workers']} | "
+                f"{'否' if item['unusable'] else '是'} | {item['delivered']} | {item['failed']} | "
+                f"{item['wall_s']} | {item['delivered_per_min']} | {item['peak_rss_mb']:.0f} | {item['reason'] or '—'} |"
+            )
+        chosen = payload.get("calibration_chosen")
+        lines += ["", f"选中档位：**{chosen['mode'] if chosen else '无'}**"]
+
+    failures = [row for row in payload.get("rows", []) if row["outcome"] != "通过"]
+    if failures:
+        lines += [
+            "", "## 五、失败样本清单（保留在分母里，不换 seed、不补位）", "",
+            "| 组 | episode | 任务结果 | 执行状态 | error_type | 视频状态 |", "|---|---:|---|---|---|---|",
+        ]
+        for row in failures:
+            lines.append(
+                f"| {row['task']}/{row['difficulty']} | {row['episode']} | {row['outcome']} | "
+                f"{row['execution_state']} | `{row['error_type'] or '—'}` | `{row['video_status']}` |"
+            )
+
+    lines += [
+        "", "## 六、规格清单散列", "",
+        "| 组 | 条数 | 文件 SHA-256（前 16 位） | 与清单一致 |", "|---|---:|---|---|",
+    ]
+    for item in payload["spec_digest"]:
+        lines.append(
+            f"| {item['task']}/{item['difficulty']} | {item['episodes']} | "
+            f"`{item['file_sha256'][:16]}…` | {'是' if item['matches_manifest'] else '**否**'} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
 
 
 # ── CLI ─────────────────────────────────────────────────────────────────────
@@ -906,6 +1130,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--tiers", default=None,
         help="逗号分隔的每卡 worker 档位，默认 12,16,20,24,28,32；一路向上探到 OOM／超时为止",
     )
+    runner.add_argument(
+        "--skip-ladder", action="store_true",
+        help="calibration 只做串行参考，跳过档位阶梯；并行三项如实记 NOT_RUN",
+    )
+    runner.add_argument(
+        "--tier", type=int, default=None,
+        help="feasibility 显式指定每卡 worker 数（跳过档位校准时必须给），报告里会标明该档未经测速",
+    )
+
+    report = sub.add_parser("report", help="汇总各阶段判定与计数，写轻量包")
+    report.add_argument("--run-id", required=True)
 
     compare = sub.add_parser("compare", help="两个运行目录的完整 HDF5 逐位对拍")
     compare.add_argument("--left", required=True, help="参考侧目录")
@@ -931,8 +1166,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         if args.command == "run":
             tiers = [int(item) for item in args.tiers.split(",")] if args.tiers else None
-            result = cmd_run(args.run_id, args.phase, Path(args.sampling_config).resolve(), tiers)
+            result = cmd_run(
+                args.run_id, args.phase, Path(args.sampling_config).resolve(), tiers,
+                skip_ladder=args.skip_ladder, tier_override=args.tier,
+            )
             return 0 if result.get("passed") else 1
+        if args.command == "report":
+            cmd_report(args.run_id)
+            return 0
         if args.command == "compare":
             payload = cmd_compare(
                 Path(args.left).resolve(), Path(args.right).resolve(), args.label,
