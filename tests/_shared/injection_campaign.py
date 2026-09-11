@@ -1065,6 +1065,37 @@ def cmd_report(run_id: str) -> dict[str, Any]:
         if payload:
             verdicts.extend(payload.get("verdicts", []))
 
+    # 在别处取得、但属于同一次验收的判定（关闭态对拍、冒烟、固定案例复现、出图）。
+    # 它们的产物分散在其它运行编号或 collision-replay 目录下，这里按证据路径并入，
+    # 每条都带 evidence 字段指回原始文件，不凭空造数字。
+    external = _load("external_evidence.json")
+    if external:
+        verdicts.extend(external.get("verdicts", []))
+
+    # 单独跑出来的并行实测覆盖校准阶段的 NOT_RUN 占位。
+    # ⚠ 只覆盖「确实另行测过」的项：PARALLEL_SCALE 没测过，它的 NOT_RUN 必须原样保留。
+    measured = _load("parallel_content.json")
+    if measured:
+        verdicts = [item for item in verdicts if item["name"] != "PARALLEL_CONTENT"]
+        extra = Verdicts()
+        extra.add(
+            "PARALLEL_CONTENT", measured["passed"], unique=measured["compared"],
+            differences=len(measured["difference_episodes"]),
+            note="实跑12worker对S0a单worker",
+        )
+        verdicts.extend(extra.records)
+    overlap = _load("parallel_overlap.json")
+    if overlap:
+        verdicts = [item for item in verdicts if item["name"] != "PARALLEL_OVERLAP"]
+        extra = Verdicts()
+        extra.add(
+            "PARALLEL_OVERLAP", overlap["passed"], mode="P0x12", gpus=1,
+            workers_per_gpu=overlap["workers_per_gpu"],
+            peak_distinct_pids=overlap["peak_distinct_pids"],
+            samples=overlap["samples"],
+        )
+        verdicts.extend(extra.records)
+
     # 规格清单散列：每组一条，独立重算，不信任 plan 写下的值
     spec_digest = []
     for item in manifest["groups"]:
@@ -1119,6 +1150,9 @@ def cmd_report(run_id: str) -> dict[str, Any]:
         "video_counts": (feasibility or {}).get("video_counts"),
         "execution_counts": (feasibility or {}).get("execution_counts"),
         "per_group": (feasibility or {}).get("per_group"),
+        "external_evidence": external,
+        "parallel_content": measured,
+        "parallel_overlap": overlap,
         "calibration_ladder": (calibration or {}).get("ladder"),
         "calibration_chosen": (calibration or {}).get("chosen"),
         "gpu_note": (calibration or {}).get("gpu_note"),

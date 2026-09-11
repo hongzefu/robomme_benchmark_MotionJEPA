@@ -874,7 +874,86 @@ load average 15.04。同一条样本在这种负载下的墙钟是空闲时的 3
 与 `PARALLEL_OVERLAP`（从实跑的 step 时间线扫描），只有 `PARALLEL_SCALE`（多档吞吐对比）
 确实没有测、保持 `NOT_RUN`。
 
-**步骤 5～6**：随完成随追加。
+**步骤 3（串行参考）**
+
+`SERIAL_REFERENCE=PASS unique=16 comparable=16 both_failed=0 differences=0`。
+16 条固定样本（四任务各 episode 0～3，前三任务 hard、`VideoRepick` medium）在
+GPU 0 单 worker 跑两遍，全部成功、完整 HDF5 逐位一致，无 `both_failed` 扣除。
+
+⚠ 两遍墙钟相差 5 倍——`S0a` 2964.6 秒、`S0b` 580.5 秒——原因是另一个用户的任务在
+两遍之间结束了。同一条样本 `S0a` 时 184～383 秒、`S0b` 时 24～47 秒，这组对照本身就是
+「跳过档位校准」决定的事后佐证：在共享机器上测出来的吞吐没有意义。
+
+**步骤 5（实跑 330 条）**
+
+用显式指定的 `P0x12`（GPU 0 单卡 12 worker，`tier_measured=false`，**不是校准选出的**）
+一次调用跑完 11 组 × episode 0～29。墙钟约 1 小时 53 分（20:38→22:31）。
+
+| 判定行 | 实测 |
+| --- | --- |
+| `FEASIBILITY=PASS` | `unique=330 executed=330 unclassified=0 succeeded=322 attempt=0` |
+| `RESULT_COVERAGE=PASS` | `all_recorded=330 all_success=322` |
+| `VIDEO_INDEX=PASS` | `rows=330 complete=327 frame_mismatch=0 missing=0 no_close=3 untraceable=0` |
+| `VIDEO_DECODE=PASS` | `success_rows=322 decoded_eq_timesteps=322 failed_videos=5 mismatches=0` |
+| `COLLISION_RUNTIME=PASS` | `unique=150 checked=147 missing_checks=0 rejected=0` |
+| `INJECTION_BINDING=PASS` | `unique=330 bound=327 mismatches=0` |
+
+七类结果：**通过 322**（97.6%）、规划失败 5、未运行 3。每组 30 条明细：
+
+| 组 | 通过 | 其他 |
+| --- | ---: | --- |
+| `BinFill` easy / medium / hard | 29 / 28 / 28 | 规划失败 1 / 2 / 2 |
+| `RouteStick` easy / medium / hard | 30 / 30 / 30 | — |
+| `VideoUnmaskSwap` easy / medium / hard | 30 / 30 / 30 | — |
+| `VideoRepick` easy / medium | 28 / 29 | 未运行 2 / 1 |
+
+⚠ 两类失败要分清：
+
+* **5 条规划失败全在 `BinFill`**，错误签名统一是 `DatasetGenerationError: 环境报告失败`。
+  第 5.9.2 节记录的**原值**基线里 `BinFill hard/ep3` 也是五轮相同失败、同一签名，
+  说明这是该任务自身的成功率，不是注入引入的。
+* **3 条「未运行」是人为中断**，不是物理不可行：`VideoRepick/easy/ep0`（已跑 112 分钟）、
+  `easy/ep26` 与 `medium/ep26`（各 51 分钟）在往 `fail_safe_limit = 2000` 步爬，
+  RSS 涨到 14.9 GB（录像器把 2000 帧攒在内存，1280×768 每帧约 2.95 MB ≈ 5.9 GB）。
+  按用户决定「kill 这三条，立刻收尾」用 `kill -9` 掉对应 worker，父进程合成
+  `BrokenProcessPool` 记录，`--max-attempts 1` 下不重试。它们本该得到的是「超时」。
+
+两个视频任务 150 条**零碰撞拒绝、零漏检**；147 条有运行时检查记录，另 3 条正是被中断的。
+
+**步骤 4 的替代证据（并行一致）**
+
+档位阶梯虽被跳过，但实跑本身就是 12 worker 并行，因此拿它对串行参考取得了两项：
+
+* `PARALLEL_CONTENT=PASS unique=16 differences=0` —— 16 条固定样本在「12 worker 并行」
+  与「单 worker 串行」下的完整 HDF5 **逐位相同**，并行没有引入偏差。
+* `PARALLEL_OVERLAP=FAIL mode=P0x12 workers_per_gpu=12 peak_distinct_pids=11 samples=322`
+  —— **如实记 FAIL**（2026-09-10 用户决定「如实记 FAIL，附分析」）。
+
+  ⚠ 峰值 11 的成因已查清，不是伪并发：各阶段中位耗时 `make` 8.1 秒、`reset` 0.3 秒、
+  `solve` 120.5 秒、`close` 3.6 秒，`make+close` 约占单条 9%，
+  12 ×(1−0.09) ≈ **10.9 ≈ 11**，与实测吻合；含 make/close 的完整窗口峰值同样是 11，
+  说明父进程处理结果、写 jsonl、再提交下一个 job 之间还有一个 slot 在换手。
+  并发度的时间分布为 11 个占 20.0%、10 个占 28.1%、9 个占 26.1%、8 个占 13.7%
+  （合计 87.9%），是货真价实的并行。**判据口径与调度现实不符这一点原样留下，
+  不为通过而放宽**；是否修订判据留待后续决定。
+
+* `PARALLEL_SCALE=NOT_RUN` —— 多档吞吐对比确实没做，不假装测过。
+
+**步骤 6（出图、复核、留档）**
+
+`PLOT_EVIDENCE=PASS groups=11 before=11 after=11 thumbnails=1100 font=Noto Sans CJK JP`，
+共 66 张图（11 组 × 3 类 × 跑前跑后）。
+`COLLISION_REPRODUCE=PASS cases=9 accepted=6 rejected=3 original_unchanged=1
+max_pose_diff_m=6.32e-09 mode=trajectory`；`COLLISION_RERENDER=NOT_RUN`（重渲染需 SAPIEN）。
+`DELIVERY=PASS specs=1100 result_rows=330 missing=0 videos_on_disk=327 videos_expected=327
+video_sha_mismatch=0`——逐条核了 `videos/` 下的实际文件与 SHA-256。
+
+轻量包在 [docs/validation/newtask-v2/20260910-new-values-04/](docs/validation/newtask-v2/20260910-new-values-04/)。
+
+**本轮验收总计：21 项判定，18 项 PASS、1 项 FAIL（`PARALLEL_OVERLAP`）、
+2 项 NOT_RUN（`PARALLEL_SCALE`、`COLLISION_RERENDER`）。**
+按第 5.7 节「只有全部具名项实际通过才称全方案通过」，本方案**尚未整体通过**，
+未通过与未执行的三项如实单列，不改写成整体通过。
 
 ### 六、运行配置与资源速查表
 
