@@ -210,10 +210,12 @@ def routestick_group(sampling: dict[str, Any], difficulty: str) -> dict[str, Any
 
 
 # ── 视频任务共用 ────────────────────────────────────────────────────────────
-def swap_pairs_field() -> dict[str, Any]:
+def swap_pairs_field(difficulty: str = "") -> dict[str, Any]:
+    # xhard（swap 4～5 次）多一句循环规则；三档文案逐字不变，保证 v1／v2 文件逐字节可重建
+    cycle = "；第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者）" if difficulty == "xhard" else ""
     return field("swap_pairs", "`swap_pairs[k].partner`（交换搭档）",
-                 {"kind": "derived", "from": ["initiators", "layout"], "expr": "每段交换开始时与发起者水平距离最近的对象，等距取序号小者；执行时按实际位姿重算，不符判失败"},
-                 "交换开始时的水平最近邻，等距取序号小者", DERIVED, "推出（执行时核验，不符即失败）")
+                 {"kind": "derived", "from": ["initiators", "layout"], "expr": "每段交换开始时与发起者水平距离最近的对象，等距取序号小者；执行时按实际位姿重算，不符判失败" + cycle},
+                 "交换开始时的水平最近邻，等距取序号小者" + cycle, DERIVED, "推出（执行时核验，不符即失败）")
 
 
 def candidates_field(sampling: dict[str, Any]) -> dict[str, Any]:
@@ -281,7 +283,7 @@ def unmask_group(sampling: dict[str, Any], difficulty: str) -> dict[str, Any]:
             field("pick_order", "`pick_order`（视频后抓取顺序）",
                   {"kind": "derived", "from": ["selected", "n_picks"], "expr": "object_selection.pickup_selected_indices[:n_picks] 索引进 selected"},
                   "`selected` 的前 `n_picks` 个", DERIVED, "推出"),
-            swap_pairs_field(),
+            swap_pairs_field(difficulty),
         ],
     }
 
@@ -329,7 +331,7 @@ def repick_group(sampling: dict[str, Any], difficulty: str) -> dict[str, Any]:
             field("tail", "后续发起者顺序 `tail`",
                   derived_domain(sampling, "permutations_of", "permutations_of_range_minus_one", {"n": f"{cfg}.cube"}, "itertools.permutations(range(cube - 1))，索引进 others = 除 target 外的两块", pool=[0, 1]),
                   "另外两块的 2 种排列", Q, "配额"),
-            swap_pairs_field(),
+            swap_pairs_field(difficulty),
         ],
     }
 
@@ -383,6 +385,26 @@ def build_v2(base: dict[str, Any]) -> dict[str, Any]:
     return doc
 
 
+def build_v3(base: dict[str, Any], sampling: dict[str, Any]) -> dict[str, Any]:
+    """v2 + 三个 xhard 组（2026-09-11 用户决定）；旧 11 组与 overrides 逐字不动。
+
+    用户原话：「给videorepick和videpunmaskswap加入swap 4-5次 作为xhard难度模式」「其他和videorepick medium
+    videpunmaskswap hard保持一致」「给routestick增加xhard模式 和hard保持一致 但是走的段数增加8-10」；
+    追问答复：段数落在 8～10、第 4/5 次发起者循环沿用 3 个发起者、契约 v3 + 新 run 只跑 3 个 xhard 组。
+    ``derives_from_operands_sha256`` 按四档作用域重算（v1/v2 仍是三档作用域，文件字节不变）。
+    """
+    from .specs import operand_sha256  # 惰性：避免 contract ↔ specs 循环
+
+    doc = copy.deepcopy(base)
+    doc["contract_version"] = "v3"
+    doc["contract_note"] = base["contract_note"] + "；v3 = v2 + RouteStick／VideoUnmaskSwap／VideoRepick 各加 xhard 组（RouteStick 段数 8～10；两个视频任务 swap 4～5 次、第 k 次发起者 = swap_initiators[k mod 3]），旧 11 组逐字不动"
+    doc["derives_from_operands_sha256"] = operand_sha256(sampling, {d for _, d in GROUPS_V3})
+    doc["added_groups_v3"] = [list(item) for item in XHARD_GROUPS]
+    for task, difficulty in XHARD_GROUPS:
+        doc["groups"][f"{task}/{difficulty}"] = BUILDERS[task](sampling, difficulty)
+    return doc
+
+
 def write_contract(doc: dict[str, Any], out: Path) -> Contract:
     contract = Contract(doc)  # 先做结构校验
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -398,10 +420,11 @@ def report_check(contract: Contract, sampling: dict[str, Any]) -> tuple[bool, st
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="注入取值域契约：生成 v1／v2 与离线回算核对")
+    parser = argparse.ArgumentParser(description="注入取值域契约：生成 v1／v2／v3 与离线回算核对")
     sub = parser.add_subparsers(dest="command", required=True)
     b1 = sub.add_parser("build-v1"); b1.add_argument("--sampling", default=str(DEFAULT_SAMPLING)); b1.add_argument("--out", required=True)
     b2 = sub.add_parser("build-v2"); b2.add_argument("--base", required=True); b2.add_argument("--out", required=True)
+    b3 = sub.add_parser("build-v3"); b3.add_argument("--base", required=True); b3.add_argument("--sampling", default=str(DEFAULT_SAMPLING)); b3.add_argument("--out", required=True)
     ck = sub.add_parser("check"); ck.add_argument("--contract", required=True); ck.add_argument("--sampling", default=str(DEFAULT_SAMPLING))
     args = parser.parse_args(argv)
     try:
@@ -420,6 +443,15 @@ def main(argv: list[str] | None = None) -> int:
             sampling = json.loads(DEFAULT_SAMPLING.read_text(encoding="utf-8"))
             ok, line = report_check(contract, sampling)
             print(f"CONTRACT_BUILT=v2 out={args.out} sha256={contract.sha256[:12]}…"); print(line)
+            return 0 if ok else 1
+        if args.command == "build-v3":
+            base = json.loads(Path(args.base).read_text(encoding="utf-8"))
+            if base.get("contract_version") != "v2":
+                raise ContractError("build-v3 的 --base 必须是 v2 契约")
+            sampling = json.loads(Path(args.sampling).resolve().read_text(encoding="utf-8"))
+            contract = write_contract(build_v3(base, sampling), Path(args.out))
+            ok, line = report_check(contract, sampling)
+            print(f"CONTRACT_BUILT=v3 out={args.out} sha256={contract.sha256[:12]}… groups={len(contract.groups())}"); print(line)
             return 0 if ok else 1
         contract = load_contract(args.contract)
         sampling = json.loads(Path(args.sampling).read_text(encoding="utf-8"))

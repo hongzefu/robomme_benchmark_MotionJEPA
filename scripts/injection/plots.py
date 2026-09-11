@@ -143,7 +143,7 @@ def _draw_video(ax, record: dict[str, Any], is_unmask: bool) -> None:
     for order, pair in enumerate(record["actions"]["swap_pairs"]):
         a, b = positions[pair["initiator"]], positions[pair["partner"]]
         ax.annotate("", xy=b, xytext=a,
-                    arrowprops=dict(arrowstyle="<->", color="#6d4c41", lw=0.8, alpha=0.8 - 0.2 * order), zorder=2)
+                    arrowprops=dict(arrowstyle="<->", color="#6d4c41", lw=0.8, alpha=max(0.2, 0.8 - 0.15 * order)), zorder=2)  # xhard 第 5 次（order=4）仍可见
     if not is_unmask:
         ax.add_patch(Circle(layout["button_xy"], 0.015, color="#455a64", zorder=3))
         ax.set_xlim(-0.3, 0.3)

@@ -1,0 +1,5821 @@
+{
+  "contract_schema_version": 1,
+  "contract_version": "v3",
+  "contract_note": "注入规格的取值域与分配约定（事件表三列的机器可读版）；几何常量仍在 native_sampling.json，contract 里的派生数值由 check 每次回算核对；v2 = v1 + BinFill 对齐 heldout 分支 2fa5660（medium/hard 方块数区间、多目标色每色至少 1 块）；v3 = v2 + RouteStick／VideoUnmaskSwap／VideoRepick 各加 xhard 组（RouteStick 段数 8～10；两个视频任务 swap 4～5 次、第 k 次发起者 = swap_initiators[k mod 3]），旧 11 组逐字不动",
+  "generator_seed": 20260909,
+  "group_size": 100,
+  "derives_from": "scripts/configs/newtask-v2/native_sampling.json",
+  "derives_from_operands_sha256": "97c9af660ca51b7edd238a3a82e2933e0ffa8c6c34882838cc79cb6becaf51d6",
+  "excluded_groups": [
+    [
+      "VideoRepick",
+      "hard"
+    ]
+  ],
+  "overrides": [
+    {
+      "group": "BinFill/medium",
+      "field": "spawn_total",
+      "native": {
+        "lo": 8,
+        "hi": 10
+      },
+      "contract": {
+        "lo": 6,
+        "hi": 8
+      },
+      "source": "heldout 分支 2fa5660 的 BinFill.config_medium['spawn_cubes'] = [6, 8]",
+      "reason": "用户 2026-09-11 原话「能否改为对齐heldout」「按照这个方案改 把现有的…写作为json约定 v1 修改后的binfill计为v2」"
+    },
+    {
+      "group": "BinFill/hard",
+      "field": "spawn_total",
+      "native": {
+        "lo": 10,
+        "hi": 12
+      },
+      "contract": {
+        "lo": 8,
+        "hi": 10
+      },
+      "source": "heldout 分支 2fa5660 的 BinFill.config_hard['spawn_cubes'] = [8, 10]",
+      "reason": "用户 2026-09-11 原话「能否改为对齐heldout」「按照这个方案改 把现有的…写作为json约定 v1 修改后的binfill计为v2」"
+    }
+  ],
+  "groups": {
+    "BinFill/easy": {
+      "task": "BinFill",
+      "difficulty": "easy",
+      "初始化": [
+        {
+          "key": "dynamic",
+          "label": "`dynamic`（方块分批出现还是开局全在）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              true,
+              false
+            ],
+            "derivation": {
+              "recipe": "bool_pair",
+              "inputs": {
+                "spec": "parameters.BinFill.dynamic"
+              },
+              "expr": "torch.randint(0, 2) 转 bool → [true, false]"
+            }
+          },
+          "domain_text": "True / False",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额 50/50"
+        },
+        {
+          "key": "colors_present",
+          "label": "`colors_present`（场上有哪些颜色）",
+          "domain": {
+            "kind": "combinations",
+            "values": [
+              [
+                0
+              ],
+              [
+                1
+              ],
+              [
+                2
+              ]
+            ],
+            "value_labels": [
+              "red",
+              "blue",
+              "green"
+            ],
+            "pool": [
+              "red",
+              "blue",
+              "green"
+            ],
+            "choose": 1,
+            "derivation": {
+              "recipe": "combinations_of_color_pool",
+              "inputs": {
+                "num_colors": "parameters.BinFill.configs.easy.color",
+                "pool": "const:SPAWN_COLOR_ORDER"
+              },
+              "expr": "itertools.combinations(range(3), num_colors)，颜色名按 SPAWN_COLOR_ORDER"
+            }
+          },
+          "domain_text": "红蓝绿里取 1 种",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "spawn_total",
+          "label": "`spawn_total`（生成几块）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 4,
+            "hi": 6,
+            "values": [
+              4,
+              5,
+              6
+            ],
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.BinFill.configs.easy.spawn_cubes"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间（torch.randint(lo, hi+1) 消费）"
+            }
+          },
+          "domain_text": "4～6",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "initialize_color_order",
+          "label": "`initialize_color_order`（颜色创建顺序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                "blue",
+                "red",
+                "green"
+              ],
+              [
+                "blue",
+                "green",
+                "red"
+              ],
+              [
+                "red",
+                "blue",
+                "green"
+              ],
+              [
+                "red",
+                "green",
+                "blue"
+              ],
+              [
+                "green",
+                "blue",
+                "red"
+              ],
+              [
+                "green",
+                "red",
+                "blue"
+              ]
+            ],
+            "pool": [
+              "blue",
+              "red",
+              "green"
+            ],
+            "derivation": {
+              "recipe": "permutations_of_constant",
+              "inputs": {
+                "pool": "const:INITIALIZE_COLOR_DEFS"
+              },
+              "expr": "itertools.permutations(('blue','red','green'))"
+            }
+          },
+          "domain_text": "蓝红绿 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "spawn_count",
+          "label": "`spawn_count[颜色]`（每色生成几块）",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "spawn_total",
+              "target_count",
+              "colors_present"
+            ],
+            "rule_note": "每色底数 max(target_count, 1)，余量逐个随机摊到场上颜色；单色直接取 max(spawn_total, target_count)"
+          },
+          "domain_text": "每色至少 max(目标,1)，余量随机摊",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "max(0, spawn_total - sum(max(target,1)))"
+          },
+          "allocation_text": "`rng_ep` 逐条随机（耦合）"
+        },
+        {
+          "key": "spawn_order",
+          "label": "方块生成顺序",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "spawn_count"
+            ],
+            "expr": "把 (颜色, 该色序号) 展开后整体打乱，等价于 torch.randperm(len(cube_tasks))"
+          },
+          "domain_text": "(颜色, 序号) 的随机排列",
+          "allocation": {
+            "kind": "rng_ep",
+            "call": "permutation"
+          },
+          "allocation_text": "`rng_ep.permutation`"
+        },
+        {
+          "key": "button_xy",
+          "label": "`button_xy`（按钮中心）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "button_x": {
+                "lo": -0.25,
+                "hi": -0.15000000000000002,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.BinFill.button.center_xy[0]",
+                    "span": "positions.BinFill.button.randomize_range[0]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              },
+              "button_y": {
+                "lo": -0.2,
+                "hi": 0.2,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.BinFill.button.center_xy[1]",
+                    "span": "positions.BinFill.button.randomize_range[1]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              }
+            }
+          },
+          "domain_text": "x∈[-0.25,-0.15] y∈[-0.2,0.2]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "board_pose",
+          "label": "`board.xy`、`board.yaw_deg`（孔板）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "board_x": {
+                "lo": -0.05000000000000002,
+                "hi": 0.15,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "base_minus_subtract_span",
+                  "inputs": {
+                    "base": "positions.BinFill.board.base_position[0]",
+                    "subtract": "positions.BinFill.board.x_offset.subtract",
+                    "scale": "positions.BinFill.board.x_offset.scale"
+                  },
+                  "expr": "[base - subtract, base - subtract + scale]（x_expression 叠 base）"
+                }
+              },
+              "board_y": {
+                "lo": -0.2,
+                "hi": 0.2,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.BinFill.board.y_offset.subtract",
+                    "scale": "positions.BinFill.board.y_offset.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]；⚠ 不叠 base_position[1]，与 y_expression 一致"
+                }
+              },
+              "board_yaw": {
+                "lo": -20.0,
+                "hi": 20.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.BinFill.board.yaw_deg.subtract",
+                    "scale": "positions.BinFill.board.yaw_deg.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]"
+                }
+              }
+            }
+          },
+          "domain_text": "x∈[-0.05,0.15] y∈[-0.2,0.2]，yaw∈[-20°,20°]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "cube_pose",
+          "label": "`cubes[i].xy`、`yaw_rad`（每块方块）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "cube_x": {
+                "lo": -0.28,
+                "hi": 0.08,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "region_inset",
+                  "inputs": {
+                    "center": "positions.BinFill.cubes.region_center[0]",
+                    "half": "positions.BinFill.cubes.region_half_size[0]",
+                    "inset": "const:cube_half_size"
+                  },
+                  "expr": "[center - half + inset, center + half - inset]（object_generation.cube_center_bounds）"
+                }
+              },
+              "cube_y": {
+                "lo": -0.23,
+                "hi": 0.23,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "region_inset",
+                  "inputs": {
+                    "center": "positions.BinFill.cubes.region_center[1]",
+                    "half": "positions.BinFill.cubes.region_half_size[1]",
+                    "inset": "const:cube_half_size"
+                  },
+                  "expr": "同 cube_x 取 [1]"
+                }
+              },
+              "cube_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.BinFill.cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              }
+            }
+          },
+          "domain_text": "x∈[-0.28,0.08] y∈[-0.23,0.23]，yaw 0～2π",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "whole_region",
+            "note": "第 0 块首次尝试用分层点并计入配额；其余块粗箱轮转；被拒后照 spawn_random_cube 在整个区域重抽，最多 256 次"
+          },
+          "allocation_text": "第 0 块首次尝试分层；其余块粗箱轮转；被拒整域重抽"
+        }
+      ],
+      "事件": [
+        {
+          "key": "put_in_color",
+          "label": "`put_in_color` 目标色种数",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              1
+            ],
+            "derivation": {
+              "recipe": "clamped_color_counts",
+              "inputs": {
+                "pair": "parameters.BinFill.configs.easy.put_in_color",
+                "num_colors": "parameters.BinFill.configs.easy.color"
+              },
+              "expr": "sorted({min(max(1, min(3, k)), max(1, num_colors)) for k in pair[0]..pair[1]})；源码先夹 [1,3] 再夹 [1, max(1, color)]"
+            }
+          },
+          "domain_text": "1",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "target_pool",
+          "label": "`target_pool`（要投入的颜色子集）",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "colors_present",
+              "put_in_color"
+            ],
+            "universe_recipe": "场上颜色里取 put_in_color 种的全部子集"
+          },
+          "domain_text": "场上颜色的子集",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "put_in_total",
+          "label": "`put_in_total`（投入几块）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 3,
+            "values": [
+              1,
+              2,
+              3
+            ],
+            "note": "heldout 多色分支抽 randint(max(pair[0], 目标色数), pair[1]+1)；三档配置下 max(...) 恒等于 pair[0]，域不变",
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.BinFill.configs.easy.put_in_numbers"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间"
+            }
+          },
+          "domain_text": "1～3",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "target_count",
+          "label": "`target_count[颜色]`（每色投几块）",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "put_in_total",
+              "target_pool"
+            ],
+            "rule": "each_target_at_least_one",
+            "note": "单色直接给总数；多目标色先每色各 1，余量再逐个随机分（heldout 2fa5660 的 min_required_targets）"
+          },
+          "domain_text": "单色直接给总数；多目标色每色先各 1，余量逐个随机分（heldout 规则，不允许 0）",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "put_in_total"
+          },
+          "allocation_text": "`rng_ep` 逐条随机（耦合）"
+        },
+        {
+          "key": "actions",
+          "label": "`actions`（抓哪块）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initialize_color_order",
+              "target_count",
+              "spawn_order"
+            ],
+            "expr": "按 initialize_color_order 遍历定义表，每色取生成列表最前 target_count 块"
+          },
+          "domain_text": "按颜色创建顺序遍历，每色取生成列表最前 `target_count` 块",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        }
+      ]
+    },
+    "BinFill/medium": {
+      "task": "BinFill",
+      "difficulty": "medium",
+      "初始化": [
+        {
+          "key": "dynamic",
+          "label": "`dynamic`（方块分批出现还是开局全在）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              true,
+              false
+            ],
+            "derivation": {
+              "recipe": "bool_pair",
+              "inputs": {
+                "spec": "parameters.BinFill.dynamic"
+              },
+              "expr": "torch.randint(0, 2) 转 bool → [true, false]"
+            }
+          },
+          "domain_text": "True / False",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额 50/50"
+        },
+        {
+          "key": "colors_present",
+          "label": "`colors_present`（场上有哪些颜色）",
+          "domain": {
+            "kind": "combinations",
+            "values": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "value_labels": [
+              "red+blue",
+              "red+green",
+              "blue+green"
+            ],
+            "pool": [
+              "red",
+              "blue",
+              "green"
+            ],
+            "choose": 2,
+            "derivation": {
+              "recipe": "combinations_of_color_pool",
+              "inputs": {
+                "num_colors": "parameters.BinFill.configs.medium.color",
+                "pool": "const:SPAWN_COLOR_ORDER"
+              },
+              "expr": "itertools.combinations(range(3), num_colors)，颜色名按 SPAWN_COLOR_ORDER"
+            }
+          },
+          "domain_text": "红蓝绿里取 2 种",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "spawn_total",
+          "label": "`spawn_total`（生成几块）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 6,
+            "hi": 8,
+            "values": [
+              6,
+              7,
+              8
+            ],
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.BinFill.configs.medium.spawn_cubes"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间（torch.randint(lo, hi+1) 消费）"
+            }
+          },
+          "domain_text": "6～8",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "initialize_color_order",
+          "label": "`initialize_color_order`（颜色创建顺序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                "blue",
+                "red",
+                "green"
+              ],
+              [
+                "blue",
+                "green",
+                "red"
+              ],
+              [
+                "red",
+                "blue",
+                "green"
+              ],
+              [
+                "red",
+                "green",
+                "blue"
+              ],
+              [
+                "green",
+                "blue",
+                "red"
+              ],
+              [
+                "green",
+                "red",
+                "blue"
+              ]
+            ],
+            "pool": [
+              "blue",
+              "red",
+              "green"
+            ],
+            "derivation": {
+              "recipe": "permutations_of_constant",
+              "inputs": {
+                "pool": "const:INITIALIZE_COLOR_DEFS"
+              },
+              "expr": "itertools.permutations(('blue','red','green'))"
+            }
+          },
+          "domain_text": "蓝红绿 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "spawn_count",
+          "label": "`spawn_count[颜色]`（每色生成几块）",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "spawn_total",
+              "target_count",
+              "colors_present"
+            ],
+            "rule_note": "每色底数 max(target_count, 1)，余量逐个随机摊到场上颜色；单色直接取 max(spawn_total, target_count)"
+          },
+          "domain_text": "每色至少 max(目标,1)，余量随机摊",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "max(0, spawn_total - sum(max(target,1)))"
+          },
+          "allocation_text": "`rng_ep` 逐条随机（耦合）"
+        },
+        {
+          "key": "spawn_order",
+          "label": "方块生成顺序",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "spawn_count"
+            ],
+            "expr": "把 (颜色, 该色序号) 展开后整体打乱，等价于 torch.randperm(len(cube_tasks))"
+          },
+          "domain_text": "(颜色, 序号) 的随机排列",
+          "allocation": {
+            "kind": "rng_ep",
+            "call": "permutation"
+          },
+          "allocation_text": "`rng_ep.permutation`"
+        },
+        {
+          "key": "button_xy",
+          "label": "`button_xy`（按钮中心）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "button_x": {
+                "lo": -0.25,
+                "hi": -0.15000000000000002,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.BinFill.button.center_xy[0]",
+                    "span": "positions.BinFill.button.randomize_range[0]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              },
+              "button_y": {
+                "lo": -0.2,
+                "hi": 0.2,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.BinFill.button.center_xy[1]",
+                    "span": "positions.BinFill.button.randomize_range[1]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              }
+            }
+          },
+          "domain_text": "x∈[-0.25,-0.15] y∈[-0.2,0.2]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "board_pose",
+          "label": "`board.xy`、`board.yaw_deg`（孔板）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "board_x": {
+                "lo": -0.05000000000000002,
+                "hi": 0.15,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "base_minus_subtract_span",
+                  "inputs": {
+                    "base": "positions.BinFill.board.base_position[0]",
+                    "subtract": "positions.BinFill.board.x_offset.subtract",
+                    "scale": "positions.BinFill.board.x_offset.scale"
+                  },
+                  "expr": "[base - subtract, base - subtract + scale]（x_expression 叠 base）"
+                }
+              },
+              "board_y": {
+                "lo": -0.2,
+                "hi": 0.2,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.BinFill.board.y_offset.subtract",
+                    "scale": "positions.BinFill.board.y_offset.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]；⚠ 不叠 base_position[1]，与 y_expression 一致"
+                }
+              },
+              "board_yaw": {
+                "lo": -20.0,
+                "hi": 20.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.BinFill.board.yaw_deg.subtract",
+                    "scale": "positions.BinFill.board.yaw_deg.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]"
+                }
+              }
+            }
+          },
+          "domain_text": "x∈[-0.05,0.15] y∈[-0.2,0.2]，yaw∈[-20°,20°]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "cube_pose",
+          "label": "`cubes[i].xy`、`yaw_rad`（每块方块）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "cube_x": {
+                "lo": -0.28,
+                "hi": 0.08,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "region_inset",
+                  "inputs": {
+                    "center": "positions.BinFill.cubes.region_center[0]",
+                    "half": "positions.BinFill.cubes.region_half_size[0]",
+                    "inset": "const:cube_half_size"
+                  },
+                  "expr": "[center - half + inset, center + half - inset]（object_generation.cube_center_bounds）"
+                }
+              },
+              "cube_y": {
+                "lo": -0.23,
+                "hi": 0.23,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "region_inset",
+                  "inputs": {
+                    "center": "positions.BinFill.cubes.region_center[1]",
+                    "half": "positions.BinFill.cubes.region_half_size[1]",
+                    "inset": "const:cube_half_size"
+                  },
+                  "expr": "同 cube_x 取 [1]"
+                }
+              },
+              "cube_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.BinFill.cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              }
+            }
+          },
+          "domain_text": "x∈[-0.28,0.08] y∈[-0.23,0.23]，yaw 0～2π",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "whole_region",
+            "note": "第 0 块首次尝试用分层点并计入配额；其余块粗箱轮转；被拒后照 spawn_random_cube 在整个区域重抽，最多 256 次"
+          },
+          "allocation_text": "第 0 块首次尝试分层；其余块粗箱轮转；被拒整域重抽"
+        }
+      ],
+      "事件": [
+        {
+          "key": "put_in_color",
+          "label": "`put_in_color` 目标色种数",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "clamped_color_counts",
+              "inputs": {
+                "pair": "parameters.BinFill.configs.medium.put_in_color",
+                "num_colors": "parameters.BinFill.configs.medium.color"
+              },
+              "expr": "sorted({min(max(1, min(3, k)), max(1, num_colors)) for k in pair[0]..pair[1]})；源码先夹 [1,3] 再夹 [1, max(1, color)]"
+            }
+          },
+          "domain_text": "1/2",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "target_pool",
+          "label": "`target_pool`（要投入的颜色子集）",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "colors_present",
+              "put_in_color"
+            ],
+            "universe_recipe": "场上颜色里取 put_in_color 种的全部子集"
+          },
+          "domain_text": "场上颜色的子集",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "put_in_total",
+          "label": "`put_in_total`（投入几块）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 2,
+            "hi": 4,
+            "values": [
+              2,
+              3,
+              4
+            ],
+            "note": "heldout 多色分支抽 randint(max(pair[0], 目标色数), pair[1]+1)；三档配置下 max(...) 恒等于 pair[0]，域不变",
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.BinFill.configs.medium.put_in_numbers"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间"
+            }
+          },
+          "domain_text": "2～4",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "target_count",
+          "label": "`target_count[颜色]`（每色投几块）",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "put_in_total",
+              "target_pool"
+            ],
+            "rule": "each_target_at_least_one",
+            "note": "单色直接给总数；多目标色先每色各 1，余量再逐个随机分（heldout 2fa5660 的 min_required_targets）"
+          },
+          "domain_text": "单色直接给总数；多目标色每色先各 1，余量逐个随机分（heldout 规则，不允许 0）",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "put_in_total"
+          },
+          "allocation_text": "`rng_ep` 逐条随机（耦合）"
+        },
+        {
+          "key": "actions",
+          "label": "`actions`（抓哪块）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initialize_color_order",
+              "target_count",
+              "spawn_order"
+            ],
+            "expr": "按 initialize_color_order 遍历定义表，每色取生成列表最前 target_count 块"
+          },
+          "domain_text": "按颜色创建顺序遍历，每色取生成列表最前 `target_count` 块",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        }
+      ]
+    },
+    "BinFill/hard": {
+      "task": "BinFill",
+      "difficulty": "hard",
+      "初始化": [
+        {
+          "key": "dynamic",
+          "label": "`dynamic`（方块分批出现还是开局全在）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              true,
+              false
+            ],
+            "derivation": {
+              "recipe": "bool_pair",
+              "inputs": {
+                "spec": "parameters.BinFill.dynamic"
+              },
+              "expr": "torch.randint(0, 2) 转 bool → [true, false]"
+            }
+          },
+          "domain_text": "True / False",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额 50/50"
+        },
+        {
+          "key": "colors_present",
+          "label": "`colors_present`（场上有哪些颜色）",
+          "domain": {
+            "kind": "combinations",
+            "values": [
+              [
+                0,
+                1,
+                2
+              ]
+            ],
+            "value_labels": [
+              "red+blue+green"
+            ],
+            "pool": [
+              "red",
+              "blue",
+              "green"
+            ],
+            "choose": 3,
+            "derivation": {
+              "recipe": "combinations_of_color_pool",
+              "inputs": {
+                "num_colors": "parameters.BinFill.configs.hard.color",
+                "pool": "const:SPAWN_COLOR_ORDER"
+              },
+              "expr": "itertools.combinations(range(3), num_colors)，颜色名按 SPAWN_COLOR_ORDER"
+            }
+          },
+          "domain_text": "红蓝绿里取 3 种",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "spawn_total",
+          "label": "`spawn_total`（生成几块）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 8,
+            "hi": 10,
+            "values": [
+              8,
+              9,
+              10
+            ],
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.BinFill.configs.hard.spawn_cubes"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间（torch.randint(lo, hi+1) 消费）"
+            }
+          },
+          "domain_text": "8～10",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "initialize_color_order",
+          "label": "`initialize_color_order`（颜色创建顺序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                "blue",
+                "red",
+                "green"
+              ],
+              [
+                "blue",
+                "green",
+                "red"
+              ],
+              [
+                "red",
+                "blue",
+                "green"
+              ],
+              [
+                "red",
+                "green",
+                "blue"
+              ],
+              [
+                "green",
+                "blue",
+                "red"
+              ],
+              [
+                "green",
+                "red",
+                "blue"
+              ]
+            ],
+            "pool": [
+              "blue",
+              "red",
+              "green"
+            ],
+            "derivation": {
+              "recipe": "permutations_of_constant",
+              "inputs": {
+                "pool": "const:INITIALIZE_COLOR_DEFS"
+              },
+              "expr": "itertools.permutations(('blue','red','green'))"
+            }
+          },
+          "domain_text": "蓝红绿 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "spawn_count",
+          "label": "`spawn_count[颜色]`（每色生成几块）",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "spawn_total",
+              "target_count",
+              "colors_present"
+            ],
+            "rule_note": "每色底数 max(target_count, 1)，余量逐个随机摊到场上颜色；单色直接取 max(spawn_total, target_count)"
+          },
+          "domain_text": "每色至少 max(目标,1)，余量随机摊",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "max(0, spawn_total - sum(max(target,1)))"
+          },
+          "allocation_text": "`rng_ep` 逐条随机（耦合）"
+        },
+        {
+          "key": "spawn_order",
+          "label": "方块生成顺序",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "spawn_count"
+            ],
+            "expr": "把 (颜色, 该色序号) 展开后整体打乱，等价于 torch.randperm(len(cube_tasks))"
+          },
+          "domain_text": "(颜色, 序号) 的随机排列",
+          "allocation": {
+            "kind": "rng_ep",
+            "call": "permutation"
+          },
+          "allocation_text": "`rng_ep.permutation`"
+        },
+        {
+          "key": "button_xy",
+          "label": "`button_xy`（按钮中心）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "button_x": {
+                "lo": -0.25,
+                "hi": -0.15000000000000002,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.BinFill.button.center_xy[0]",
+                    "span": "positions.BinFill.button.randomize_range[0]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              },
+              "button_y": {
+                "lo": -0.2,
+                "hi": 0.2,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.BinFill.button.center_xy[1]",
+                    "span": "positions.BinFill.button.randomize_range[1]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              }
+            }
+          },
+          "domain_text": "x∈[-0.25,-0.15] y∈[-0.2,0.2]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "board_pose",
+          "label": "`board.xy`、`board.yaw_deg`（孔板）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "board_x": {
+                "lo": -0.05000000000000002,
+                "hi": 0.15,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "base_minus_subtract_span",
+                  "inputs": {
+                    "base": "positions.BinFill.board.base_position[0]",
+                    "subtract": "positions.BinFill.board.x_offset.subtract",
+                    "scale": "positions.BinFill.board.x_offset.scale"
+                  },
+                  "expr": "[base - subtract, base - subtract + scale]（x_expression 叠 base）"
+                }
+              },
+              "board_y": {
+                "lo": -0.2,
+                "hi": 0.2,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.BinFill.board.y_offset.subtract",
+                    "scale": "positions.BinFill.board.y_offset.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]；⚠ 不叠 base_position[1]，与 y_expression 一致"
+                }
+              },
+              "board_yaw": {
+                "lo": -20.0,
+                "hi": 20.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.BinFill.board.yaw_deg.subtract",
+                    "scale": "positions.BinFill.board.yaw_deg.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]"
+                }
+              }
+            }
+          },
+          "domain_text": "x∈[-0.05,0.15] y∈[-0.2,0.2]，yaw∈[-20°,20°]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "cube_pose",
+          "label": "`cubes[i].xy`、`yaw_rad`（每块方块）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "cube_x": {
+                "lo": -0.28,
+                "hi": 0.08,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "region_inset",
+                  "inputs": {
+                    "center": "positions.BinFill.cubes.region_center[0]",
+                    "half": "positions.BinFill.cubes.region_half_size[0]",
+                    "inset": "const:cube_half_size"
+                  },
+                  "expr": "[center - half + inset, center + half - inset]（object_generation.cube_center_bounds）"
+                }
+              },
+              "cube_y": {
+                "lo": -0.23,
+                "hi": 0.23,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "region_inset",
+                  "inputs": {
+                    "center": "positions.BinFill.cubes.region_center[1]",
+                    "half": "positions.BinFill.cubes.region_half_size[1]",
+                    "inset": "const:cube_half_size"
+                  },
+                  "expr": "同 cube_x 取 [1]"
+                }
+              },
+              "cube_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.BinFill.cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              }
+            }
+          },
+          "domain_text": "x∈[-0.28,0.08] y∈[-0.23,0.23]，yaw 0～2π",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "whole_region",
+            "note": "第 0 块首次尝试用分层点并计入配额；其余块粗箱轮转；被拒后照 spawn_random_cube 在整个区域重抽，最多 256 次"
+          },
+          "allocation_text": "第 0 块首次尝试分层；其余块粗箱轮转；被拒整域重抽"
+        }
+      ],
+      "事件": [
+        {
+          "key": "put_in_color",
+          "label": "`put_in_color` 目标色种数",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              2,
+              3
+            ],
+            "derivation": {
+              "recipe": "clamped_color_counts",
+              "inputs": {
+                "pair": "parameters.BinFill.configs.hard.put_in_color",
+                "num_colors": "parameters.BinFill.configs.hard.color"
+              },
+              "expr": "sorted({min(max(1, min(3, k)), max(1, num_colors)) for k in pair[0]..pair[1]})；源码先夹 [1,3] 再夹 [1, max(1, color)]"
+            }
+          },
+          "domain_text": "2/3",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "target_pool",
+          "label": "`target_pool`（要投入的颜色子集）",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "colors_present",
+              "put_in_color"
+            ],
+            "universe_recipe": "场上颜色里取 put_in_color 种的全部子集"
+          },
+          "domain_text": "场上颜色的子集",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "put_in_total",
+          "label": "`put_in_total`（投入几块）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 3,
+            "hi": 5,
+            "values": [
+              3,
+              4,
+              5
+            ],
+            "note": "heldout 多色分支抽 randint(max(pair[0], 目标色数), pair[1]+1)；三档配置下 max(...) 恒等于 pair[0]，域不变",
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.BinFill.configs.hard.put_in_numbers"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间"
+            }
+          },
+          "domain_text": "3～5",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "target_count",
+          "label": "`target_count[颜色]`（每色投几块）",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "put_in_total",
+              "target_pool"
+            ],
+            "rule": "each_target_at_least_one",
+            "note": "单色直接给总数；多目标色先每色各 1，余量再逐个随机分（heldout 2fa5660 的 min_required_targets）"
+          },
+          "domain_text": "单色直接给总数；多目标色每色先各 1，余量逐个随机分（heldout 规则，不允许 0）",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "put_in_total"
+          },
+          "allocation_text": "`rng_ep` 逐条随机（耦合）"
+        },
+        {
+          "key": "actions",
+          "label": "`actions`（抓哪块）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initialize_color_order",
+              "target_count",
+              "spawn_order"
+            ],
+            "expr": "按 initialize_color_order 遍历定义表，每色取生成列表最前 target_count 块"
+          },
+          "domain_text": "按颜色创建顺序遍历，每色取生成列表最前 `target_count` 块",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        }
+      ]
+    },
+    "RouteStick/easy": {
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "初始化": [
+        {
+          "key": "rotation_deg",
+          "label": "`rotation_deg`（整排绕世界原点转）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "rotation_deg": {
+                "lo": -30.0,
+                "hi": 30.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.RouteStick.yaw_deg.subtract",
+                    "scale": "positions.RouteStick.yaw_deg.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]"
+                }
+              }
+            }
+          },
+          "domain_text": "[-30°, 30°]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "obstacle_rgb",
+          "label": "`obstacle_rgb[4]`（4 根障碍柱颜色）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[)",
+            "components": {
+              "rgb_channel": {
+                "lo": 0.0,
+                "hi": 1.0,
+                "unit": "1",
+                "derivation": {
+                  "recipe": "unit_interval_half_open",
+                  "inputs": {},
+                  "expr": "torch.rand → [0, 1)"
+                }
+              }
+            },
+            "per_object": 4
+          },
+          "domain_text": "每根一个随机 RGB，各通道 [0,1)",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "4 × 3"
+          },
+          "allocation_text": "`rng_ep` 随机（只影响观感）"
+        },
+        {
+          "key": "grid_points",
+          "label": "9 个格点位置",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "rotation_deg"
+            ],
+            "expr": "1×9 整排绕世界原点旋转 rotation_deg"
+          },
+          "domain_text": "由 `rotation_deg` 唯一确定",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        }
+      ],
+      "事件": [
+        {
+          "key": "L",
+          "label": "`L`（走几段）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 2,
+            "hi": 3,
+            "values": [
+              2,
+              3
+            ],
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.RouteStick.configs.easy.length"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间"
+            }
+          },
+          "domain_text": "2～3",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "start_node",
+          "label": "起点 `nodes[0]`",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              0,
+              2,
+              4,
+              6,
+              8
+            ],
+            "derivation": {
+              "recipe": "node_values",
+              "inputs": {
+                "node_indices": "parameters.RouteStick.walk.node_indices"
+              },
+              "expr": "可踩节点值表本身；生成器用 node_indices.index(v) 映回局部槽位"
+            }
+          },
+          "domain_text": "0/2/4/6/8",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额各 20"
+        },
+        {
+          "key": "edge",
+          "label": "每段去哪（有向边）",
+          "domain": {
+            "kind": "coupled",
+            "universe": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                6
+              ],
+              [
+                6,
+                4
+              ],
+              [
+                6,
+                8
+              ],
+              [
+                8,
+                6
+              ]
+            ],
+            "backtrack": false,
+            "depends_on": [
+              "start_node",
+              "L"
+            ],
+            "derivation": {
+              "recipe": "linear_adjacency_edges",
+              "inputs": {
+                "node_indices": "parameters.RouteStick.walk.node_indices",
+                "neighbor_order": "parameters.RouteStick.walk.neighbor_order",
+                "backtrack": "parameters.RouteStick.configs.easy.backtrack"
+              },
+              "expr": "局部索引 ±1 且不越界的全部有向边；backtrack=false 时剔除上一步，端点无路可走被迫掉头"
+            }
+          },
+          "domain_text": "线性邻接 ±1；不许回退：剔除上一步，端点被迫掉头",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "direction",
+          "label": "每段绕行方向 `directions`",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "clockwise",
+              "counterclockwise"
+            ],
+            "derivation": {
+              "recipe": "direction_pair",
+              "inputs": {
+                "direction": "parameters.RouteStick.walk.direction"
+              },
+              "expr": "[less_than, otherwise]"
+            }
+          },
+          "domain_text": "clockwise / counterclockwise",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        }
+      ]
+    },
+    "RouteStick/medium": {
+      "task": "RouteStick",
+      "difficulty": "medium",
+      "初始化": [
+        {
+          "key": "rotation_deg",
+          "label": "`rotation_deg`（整排绕世界原点转）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "rotation_deg": {
+                "lo": -30.0,
+                "hi": 30.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.RouteStick.yaw_deg.subtract",
+                    "scale": "positions.RouteStick.yaw_deg.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]"
+                }
+              }
+            }
+          },
+          "domain_text": "[-30°, 30°]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "obstacle_rgb",
+          "label": "`obstacle_rgb[4]`（4 根障碍柱颜色）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[)",
+            "components": {
+              "rgb_channel": {
+                "lo": 0.0,
+                "hi": 1.0,
+                "unit": "1",
+                "derivation": {
+                  "recipe": "unit_interval_half_open",
+                  "inputs": {},
+                  "expr": "torch.rand → [0, 1)"
+                }
+              }
+            },
+            "per_object": 4
+          },
+          "domain_text": "每根一个随机 RGB，各通道 [0,1)",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "4 × 3"
+          },
+          "allocation_text": "`rng_ep` 随机（只影响观感）"
+        },
+        {
+          "key": "grid_points",
+          "label": "9 个格点位置",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "rotation_deg"
+            ],
+            "expr": "1×9 整排绕世界原点旋转 rotation_deg"
+          },
+          "domain_text": "由 `rotation_deg` 唯一确定",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        }
+      ],
+      "事件": [
+        {
+          "key": "L",
+          "label": "`L`（走几段）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 4,
+            "hi": 5,
+            "values": [
+              4,
+              5
+            ],
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.RouteStick.configs.medium.length"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间"
+            }
+          },
+          "domain_text": "4～5",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "start_node",
+          "label": "起点 `nodes[0]`",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              0,
+              2,
+              4,
+              6,
+              8
+            ],
+            "derivation": {
+              "recipe": "node_values",
+              "inputs": {
+                "node_indices": "parameters.RouteStick.walk.node_indices"
+              },
+              "expr": "可踩节点值表本身；生成器用 node_indices.index(v) 映回局部槽位"
+            }
+          },
+          "domain_text": "0/2/4/6/8",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额各 20"
+        },
+        {
+          "key": "edge",
+          "label": "每段去哪（有向边）",
+          "domain": {
+            "kind": "coupled",
+            "universe": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                6
+              ],
+              [
+                6,
+                4
+              ],
+              [
+                6,
+                8
+              ],
+              [
+                8,
+                6
+              ]
+            ],
+            "backtrack": false,
+            "depends_on": [
+              "start_node",
+              "L"
+            ],
+            "derivation": {
+              "recipe": "linear_adjacency_edges",
+              "inputs": {
+                "node_indices": "parameters.RouteStick.walk.node_indices",
+                "neighbor_order": "parameters.RouteStick.walk.neighbor_order",
+                "backtrack": "parameters.RouteStick.configs.medium.backtrack"
+              },
+              "expr": "局部索引 ±1 且不越界的全部有向边；backtrack=false 时剔除上一步，端点无路可走被迫掉头"
+            }
+          },
+          "domain_text": "线性邻接 ±1；不许回退：剔除上一步，端点被迫掉头",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "direction",
+          "label": "每段绕行方向 `directions`",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "clockwise",
+              "counterclockwise"
+            ],
+            "derivation": {
+              "recipe": "direction_pair",
+              "inputs": {
+                "direction": "parameters.RouteStick.walk.direction"
+              },
+              "expr": "[less_than, otherwise]"
+            }
+          },
+          "domain_text": "clockwise / counterclockwise",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        }
+      ]
+    },
+    "RouteStick/hard": {
+      "task": "RouteStick",
+      "difficulty": "hard",
+      "初始化": [
+        {
+          "key": "rotation_deg",
+          "label": "`rotation_deg`（整排绕世界原点转）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "rotation_deg": {
+                "lo": -30.0,
+                "hi": 30.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.RouteStick.yaw_deg.subtract",
+                    "scale": "positions.RouteStick.yaw_deg.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]"
+                }
+              }
+            }
+          },
+          "domain_text": "[-30°, 30°]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "obstacle_rgb",
+          "label": "`obstacle_rgb[4]`（4 根障碍柱颜色）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[)",
+            "components": {
+              "rgb_channel": {
+                "lo": 0.0,
+                "hi": 1.0,
+                "unit": "1",
+                "derivation": {
+                  "recipe": "unit_interval_half_open",
+                  "inputs": {},
+                  "expr": "torch.rand → [0, 1)"
+                }
+              }
+            },
+            "per_object": 4
+          },
+          "domain_text": "每根一个随机 RGB，各通道 [0,1)",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "4 × 3"
+          },
+          "allocation_text": "`rng_ep` 随机（只影响观感）"
+        },
+        {
+          "key": "grid_points",
+          "label": "9 个格点位置",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "rotation_deg"
+            ],
+            "expr": "1×9 整排绕世界原点旋转 rotation_deg"
+          },
+          "domain_text": "由 `rotation_deg` 唯一确定",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        }
+      ],
+      "事件": [
+        {
+          "key": "L",
+          "label": "`L`（走几段）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 4,
+            "hi": 7,
+            "values": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.RouteStick.configs.hard.length"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间"
+            }
+          },
+          "domain_text": "4～7",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "start_node",
+          "label": "起点 `nodes[0]`",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              0,
+              2,
+              4,
+              6,
+              8
+            ],
+            "derivation": {
+              "recipe": "node_values",
+              "inputs": {
+                "node_indices": "parameters.RouteStick.walk.node_indices"
+              },
+              "expr": "可踩节点值表本身；生成器用 node_indices.index(v) 映回局部槽位"
+            }
+          },
+          "domain_text": "0/2/4/6/8",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额各 20"
+        },
+        {
+          "key": "edge",
+          "label": "每段去哪（有向边）",
+          "domain": {
+            "kind": "coupled",
+            "universe": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                6
+              ],
+              [
+                6,
+                4
+              ],
+              [
+                6,
+                8
+              ],
+              [
+                8,
+                6
+              ]
+            ],
+            "backtrack": true,
+            "depends_on": [
+              "start_node",
+              "L"
+            ],
+            "derivation": {
+              "recipe": "linear_adjacency_edges",
+              "inputs": {
+                "node_indices": "parameters.RouteStick.walk.node_indices",
+                "neighbor_order": "parameters.RouteStick.walk.neighbor_order",
+                "backtrack": "parameters.RouteStick.configs.hard.backtrack"
+              },
+              "expr": "局部索引 ±1 且不越界的全部有向边；backtrack=false 时剔除上一步，端点无路可走被迫掉头"
+            }
+          },
+          "domain_text": "线性邻接 ±1；允许回退",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "direction",
+          "label": "每段绕行方向 `directions`",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "clockwise",
+              "counterclockwise"
+            ],
+            "derivation": {
+              "recipe": "direction_pair",
+              "inputs": {
+                "direction": "parameters.RouteStick.walk.direction"
+              },
+              "expr": "[less_than, otherwise]"
+            }
+          },
+          "domain_text": "clockwise / counterclockwise",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        }
+      ]
+    },
+    "VideoUnmaskSwap/easy": {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "easy",
+      "初始化": [
+        {
+          "key": "layout_type",
+          "label": "`layout_type`（锚点布局）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "region3_tri",
+              "region3_line"
+            ],
+            "derivation": {
+              "recipe": "layout_choice_by_bins",
+              "inputs": {
+                "bins": "parameters.VideoUnmaskSwap.configs.easy.bin",
+                "order": "positions.VideoUnmaskSwap.containers.region3_choice.order"
+              },
+              "expr": "bins==3 → region3_choice.order；否则恒为 region4"
+            }
+          },
+          "domain_text": "三角／直线",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "selected",
+          "label": "`selected`（藏物容器排序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                0,
+                2,
+                1
+              ],
+              [
+                1,
+                0,
+                2
+              ],
+              [
+                1,
+                2,
+                0
+              ],
+              [
+                2,
+                0,
+                1
+              ],
+              [
+                2,
+                1,
+                0
+              ]
+            ],
+            "pool": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range",
+              "inputs": {
+                "n": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size"
+              },
+              "expr": "itertools.permutations(range(3))"
+            }
+          },
+          "domain_text": "前三个容器的 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "color_order",
+          "label": "`color_order`（藏物颜色顺序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                "red",
+                "green",
+                "blue"
+              ],
+              [
+                "red",
+                "blue",
+                "green"
+              ],
+              [
+                "green",
+                "red",
+                "blue"
+              ],
+              [
+                "green",
+                "blue",
+                "red"
+              ],
+              [
+                "blue",
+                "red",
+                "green"
+              ],
+              [
+                "blue",
+                "green",
+                "red"
+              ]
+            ],
+            "pool": [
+              "red",
+              "green",
+              "blue"
+            ],
+            "derivation": {
+              "recipe": "permutations_of_constant",
+              "inputs": {
+                "pool": "const:UNMASK_COLOR_ORDER"
+              },
+              "expr": "itertools.permutations(('red','green','blue'))"
+            }
+          },
+          "domain_text": "红绿蓝 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "theta_rad",
+          "label": "`theta_rad`（整组绕原点转）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "theta_rad": {
+                "lo": 0.0,
+                "hi": 180.0,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoUnmaskSwap.containers.layout_rotation_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]（原单位就是弧度）"
+                }
+              }
+            }
+          },
+          "domain_text": "[0, 180] 弧度（原单位就是弧度，不是度）",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；被拒同粗箱重抽"
+        },
+        {
+          "key": "bin_pose",
+          "label": "`bins[i].xy`、`yaw_deg`（每个容器）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "bin0_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin0_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin0_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin1_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin1_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin1_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin2_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin2_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin2_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              }
+            },
+            "per_object": 3
+          },
+          "domain_text": "锚点旋转后各偏移 ≤ 0.0425，yaw 0～90°",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；被拒同粗箱重抽"
+        },
+        {
+          "key": "hidden",
+          "label": "`hidden`（颜色→容器）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected",
+              "color_order"
+            ],
+            "expr": "color_order[i] → bin_{selected[i]}"
+          },
+          "domain_text": "由 `selected` + `color_order` 算出",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "empty",
+          "label": "`empty`（空容器）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected"
+            ],
+            "expr": "range(n_bins) 里不在 selected 的容器"
+          },
+          "domain_text": "不在 `selected` 里的容器",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "candidates_used",
+          "label": "`collision.candidates_used`（冻结用了第几个候选）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 256,
+            "derivation": {
+              "recipe": "one_to_max_trials",
+              "inputs": {
+                "max_trials": "native_semantics.object_generation.max_trials"
+              },
+              "expr": "[1, max_trials]"
+            },
+            "values": null
+          },
+          "domain_text": "1～256",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "几何／碰撞被拒后重抽的落地结果"
+        }
+      ],
+      "事件": [
+        {
+          "key": "n_swaps",
+          "label": "`n_swaps`（交换几次）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 2,
+            "values": [
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoUnmaskSwap.configs.easy.swap_min",
+                "hi": "parameters.VideoUnmaskSwap.configs.easy.swap_max"
+              },
+              "expr": "[swap_min … swap_max] 闭区间"
+            }
+          },
+          "domain_text": "1～2",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "n_picks",
+          "label": "`n_picks`（视频后抓几个）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 2,
+            "values": [
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoUnmaskSwap.configs.easy.pick_min",
+                "hi": "parameters.VideoUnmaskSwap.configs.easy.pick_max"
+              },
+              "expr": "[pick_min … pick_max] 闭区间"
+            }
+          },
+          "domain_text": "1～2",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_initiators_first_two",
+          "label": "前两个发起者 `swap_initiators[:2]`",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ]
+            ],
+            "pool": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range_k",
+              "inputs": {
+                "n": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size",
+                "k": "parameters.VideoUnmaskSwap.object_selection.swap_seed_target_count"
+              },
+              "expr": "itertools.permutations(range(3), 2)"
+            }
+          },
+          "domain_text": "3 取 2 的 6 种有序对（原代码把藏物序号当生成序号用，照抄）",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_initiators_third",
+          "label": "第三个发起者 `swap_initiators[2]`",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "swap_initiators_first_two"
+            ],
+            "universe": [
+              "bin_0",
+              "bin_1",
+              "bin_2"
+            ],
+            "note": "range(n_bins) 去掉前两个发起者"
+          },
+          "domain_text": "其余生成序号",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "pick_order",
+          "label": "`pick_order`（视频后抓取顺序）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected",
+              "n_picks"
+            ],
+            "expr": "object_selection.pickup_selected_indices[:n_picks] 索引进 selected"
+          },
+          "domain_text": "`selected` 的前 `n_picks` 个",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "swap_pairs",
+          "label": "`swap_pairs[k].partner`（交换搭档）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initiators",
+              "layout"
+            ],
+            "expr": "每段交换开始时与发起者水平距离最近的对象，等距取序号小者；执行时按实际位姿重算，不符判失败"
+          },
+          "domain_text": "交换开始时的水平最近邻，等距取序号小者",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出（执行时核验，不符即失败）"
+        }
+      ]
+    },
+    "VideoUnmaskSwap/medium": {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "medium",
+      "初始化": [
+        {
+          "key": "layout_type",
+          "label": "`layout_type`（锚点布局）",
+          "domain": {
+            "kind": "constant",
+            "value": "region4",
+            "derivation": {
+              "recipe": "layout_choice_by_bins",
+              "inputs": {
+                "bins": "parameters.VideoUnmaskSwap.configs.medium.bin",
+                "order": "positions.VideoUnmaskSwap.containers.region3_choice.order"
+              },
+              "expr": "bins==3 → region3_choice.order；否则恒为 region4"
+            }
+          },
+          "domain_text": "四点（固定）",
+          "allocation": {
+            "kind": "constant"
+          },
+          "allocation_text": "常量"
+        },
+        {
+          "key": "selected",
+          "label": "`selected`（藏物容器排序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                0,
+                2,
+                1
+              ],
+              [
+                1,
+                0,
+                2
+              ],
+              [
+                1,
+                2,
+                0
+              ],
+              [
+                2,
+                0,
+                1
+              ],
+              [
+                2,
+                1,
+                0
+              ]
+            ],
+            "pool": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range",
+              "inputs": {
+                "n": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size"
+              },
+              "expr": "itertools.permutations(range(3))"
+            }
+          },
+          "domain_text": "前三个容器的 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "color_order",
+          "label": "`color_order`（藏物颜色顺序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                "red",
+                "green",
+                "blue"
+              ],
+              [
+                "red",
+                "blue",
+                "green"
+              ],
+              [
+                "green",
+                "red",
+                "blue"
+              ],
+              [
+                "green",
+                "blue",
+                "red"
+              ],
+              [
+                "blue",
+                "red",
+                "green"
+              ],
+              [
+                "blue",
+                "green",
+                "red"
+              ]
+            ],
+            "pool": [
+              "red",
+              "green",
+              "blue"
+            ],
+            "derivation": {
+              "recipe": "permutations_of_constant",
+              "inputs": {
+                "pool": "const:UNMASK_COLOR_ORDER"
+              },
+              "expr": "itertools.permutations(('red','green','blue'))"
+            }
+          },
+          "domain_text": "红绿蓝 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "theta_rad",
+          "label": "`theta_rad`（整组绕原点转）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "theta_rad": {
+                "lo": 0.0,
+                "hi": 180.0,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoUnmaskSwap.containers.layout_rotation_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]（原单位就是弧度）"
+                }
+              }
+            }
+          },
+          "domain_text": "[0, 180] 弧度（原单位就是弧度，不是度）",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；被拒同粗箱重抽"
+        },
+        {
+          "key": "bin_pose",
+          "label": "`bins[i].xy`、`yaw_deg`（每个容器）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "bin0_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin0_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin0_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin1_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin1_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin1_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin2_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin2_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin2_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin3_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin3_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin3_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              }
+            },
+            "per_object": 4
+          },
+          "domain_text": "锚点旋转后各偏移 ≤ 0.0425，yaw 0～90°",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；被拒同粗箱重抽"
+        },
+        {
+          "key": "hidden",
+          "label": "`hidden`（颜色→容器）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected",
+              "color_order"
+            ],
+            "expr": "color_order[i] → bin_{selected[i]}"
+          },
+          "domain_text": "由 `selected` + `color_order` 算出",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "empty",
+          "label": "`empty`（空容器）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected"
+            ],
+            "expr": "range(n_bins) 里不在 selected 的容器"
+          },
+          "domain_text": "不在 `selected` 里的容器",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "candidates_used",
+          "label": "`collision.candidates_used`（冻结用了第几个候选）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 256,
+            "derivation": {
+              "recipe": "one_to_max_trials",
+              "inputs": {
+                "max_trials": "native_semantics.object_generation.max_trials"
+              },
+              "expr": "[1, max_trials]"
+            },
+            "values": null
+          },
+          "domain_text": "1～256",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "几何／碰撞被拒后重抽的落地结果"
+        }
+      ],
+      "事件": [
+        {
+          "key": "n_swaps",
+          "label": "`n_swaps`（交换几次）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 2,
+            "values": [
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoUnmaskSwap.configs.medium.swap_min",
+                "hi": "parameters.VideoUnmaskSwap.configs.medium.swap_max"
+              },
+              "expr": "[swap_min … swap_max] 闭区间"
+            }
+          },
+          "domain_text": "1～2",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "n_picks",
+          "label": "`n_picks`（视频后抓几个）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 1,
+            "values": [
+              1
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoUnmaskSwap.configs.medium.pick_min",
+                "hi": "parameters.VideoUnmaskSwap.configs.medium.pick_max"
+              },
+              "expr": "[pick_min … pick_max] 闭区间"
+            }
+          },
+          "domain_text": "1",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_initiators_first_two",
+          "label": "前两个发起者 `swap_initiators[:2]`",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ]
+            ],
+            "pool": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range_k",
+              "inputs": {
+                "n": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size",
+                "k": "parameters.VideoUnmaskSwap.object_selection.swap_seed_target_count"
+              },
+              "expr": "itertools.permutations(range(3), 2)"
+            }
+          },
+          "domain_text": "3 取 2 的 6 种有序对（原代码把藏物序号当生成序号用，照抄）",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_initiators_third",
+          "label": "第三个发起者 `swap_initiators[2]`",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "swap_initiators_first_two"
+            ],
+            "universe": [
+              "bin_0",
+              "bin_1",
+              "bin_2",
+              "bin_3"
+            ],
+            "note": "range(n_bins) 去掉前两个发起者"
+          },
+          "domain_text": "其余生成序号",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "pick_order",
+          "label": "`pick_order`（视频后抓取顺序）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected",
+              "n_picks"
+            ],
+            "expr": "object_selection.pickup_selected_indices[:n_picks] 索引进 selected"
+          },
+          "domain_text": "`selected` 的前 `n_picks` 个",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "swap_pairs",
+          "label": "`swap_pairs[k].partner`（交换搭档）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initiators",
+              "layout"
+            ],
+            "expr": "每段交换开始时与发起者水平距离最近的对象，等距取序号小者；执行时按实际位姿重算，不符判失败"
+          },
+          "domain_text": "交换开始时的水平最近邻，等距取序号小者",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出（执行时核验，不符即失败）"
+        }
+      ]
+    },
+    "VideoUnmaskSwap/hard": {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "hard",
+      "初始化": [
+        {
+          "key": "layout_type",
+          "label": "`layout_type`（锚点布局）",
+          "domain": {
+            "kind": "constant",
+            "value": "region4",
+            "derivation": {
+              "recipe": "layout_choice_by_bins",
+              "inputs": {
+                "bins": "parameters.VideoUnmaskSwap.configs.hard.bin",
+                "order": "positions.VideoUnmaskSwap.containers.region3_choice.order"
+              },
+              "expr": "bins==3 → region3_choice.order；否则恒为 region4"
+            }
+          },
+          "domain_text": "四点（固定）",
+          "allocation": {
+            "kind": "constant"
+          },
+          "allocation_text": "常量"
+        },
+        {
+          "key": "selected",
+          "label": "`selected`（藏物容器排序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                0,
+                2,
+                1
+              ],
+              [
+                1,
+                0,
+                2
+              ],
+              [
+                1,
+                2,
+                0
+              ],
+              [
+                2,
+                0,
+                1
+              ],
+              [
+                2,
+                1,
+                0
+              ]
+            ],
+            "pool": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range",
+              "inputs": {
+                "n": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size"
+              },
+              "expr": "itertools.permutations(range(3))"
+            }
+          },
+          "domain_text": "前三个容器的 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "color_order",
+          "label": "`color_order`（藏物颜色顺序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                "red",
+                "green",
+                "blue"
+              ],
+              [
+                "red",
+                "blue",
+                "green"
+              ],
+              [
+                "green",
+                "red",
+                "blue"
+              ],
+              [
+                "green",
+                "blue",
+                "red"
+              ],
+              [
+                "blue",
+                "red",
+                "green"
+              ],
+              [
+                "blue",
+                "green",
+                "red"
+              ]
+            ],
+            "pool": [
+              "red",
+              "green",
+              "blue"
+            ],
+            "derivation": {
+              "recipe": "permutations_of_constant",
+              "inputs": {
+                "pool": "const:UNMASK_COLOR_ORDER"
+              },
+              "expr": "itertools.permutations(('red','green','blue'))"
+            }
+          },
+          "domain_text": "红绿蓝 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "theta_rad",
+          "label": "`theta_rad`（整组绕原点转）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "theta_rad": {
+                "lo": 0.0,
+                "hi": 180.0,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoUnmaskSwap.containers.layout_rotation_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]（原单位就是弧度）"
+                }
+              }
+            }
+          },
+          "domain_text": "[0, 180] 弧度（原单位就是弧度，不是度）",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；被拒同粗箱重抽"
+        },
+        {
+          "key": "bin_pose",
+          "label": "`bins[i].xy`、`yaw_deg`（每个容器）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "bin0_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin0_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin0_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin1_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin1_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin1_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin2_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin2_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin2_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin3_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin3_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin3_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              }
+            },
+            "per_object": 4
+          },
+          "domain_text": "锚点旋转后各偏移 ≤ 0.0425，yaw 0～90°",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；被拒同粗箱重抽"
+        },
+        {
+          "key": "hidden",
+          "label": "`hidden`（颜色→容器）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected",
+              "color_order"
+            ],
+            "expr": "color_order[i] → bin_{selected[i]}"
+          },
+          "domain_text": "由 `selected` + `color_order` 算出",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "empty",
+          "label": "`empty`（空容器）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected"
+            ],
+            "expr": "range(n_bins) 里不在 selected 的容器"
+          },
+          "domain_text": "不在 `selected` 里的容器",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "candidates_used",
+          "label": "`collision.candidates_used`（冻结用了第几个候选）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 256,
+            "derivation": {
+              "recipe": "one_to_max_trials",
+              "inputs": {
+                "max_trials": "native_semantics.object_generation.max_trials"
+              },
+              "expr": "[1, max_trials]"
+            },
+            "values": null
+          },
+          "domain_text": "1～256",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "几何／碰撞被拒后重抽的落地结果"
+        }
+      ],
+      "事件": [
+        {
+          "key": "n_swaps",
+          "label": "`n_swaps`（交换几次）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 2,
+            "hi": 3,
+            "values": [
+              2,
+              3
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoUnmaskSwap.configs.hard.swap_min",
+                "hi": "parameters.VideoUnmaskSwap.configs.hard.swap_max"
+              },
+              "expr": "[swap_min … swap_max] 闭区间"
+            }
+          },
+          "domain_text": "2～3",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "n_picks",
+          "label": "`n_picks`（视频后抓几个）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 2,
+            "hi": 2,
+            "values": [
+              2
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoUnmaskSwap.configs.hard.pick_min",
+                "hi": "parameters.VideoUnmaskSwap.configs.hard.pick_max"
+              },
+              "expr": "[pick_min … pick_max] 闭区间"
+            }
+          },
+          "domain_text": "2",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_initiators_first_two",
+          "label": "前两个发起者 `swap_initiators[:2]`",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ]
+            ],
+            "pool": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range_k",
+              "inputs": {
+                "n": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size",
+                "k": "parameters.VideoUnmaskSwap.object_selection.swap_seed_target_count"
+              },
+              "expr": "itertools.permutations(range(3), 2)"
+            }
+          },
+          "domain_text": "3 取 2 的 6 种有序对（原代码把藏物序号当生成序号用，照抄）",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_initiators_third",
+          "label": "第三个发起者 `swap_initiators[2]`",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "swap_initiators_first_two"
+            ],
+            "universe": [
+              "bin_0",
+              "bin_1",
+              "bin_2",
+              "bin_3"
+            ],
+            "note": "range(n_bins) 去掉前两个发起者"
+          },
+          "domain_text": "其余生成序号",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "pick_order",
+          "label": "`pick_order`（视频后抓取顺序）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected",
+              "n_picks"
+            ],
+            "expr": "object_selection.pickup_selected_indices[:n_picks] 索引进 selected"
+          },
+          "domain_text": "`selected` 的前 `n_picks` 个",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "swap_pairs",
+          "label": "`swap_pairs[k].partner`（交换搭档）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initiators",
+              "layout"
+            ],
+            "expr": "每段交换开始时与发起者水平距离最近的对象，等距取序号小者；执行时按实际位姿重算，不符判失败"
+          },
+          "domain_text": "交换开始时的水平最近邻，等距取序号小者",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出（执行时核验，不符即失败）"
+        }
+      ]
+    },
+    "VideoRepick/easy": {
+      "task": "VideoRepick",
+      "difficulty": "easy",
+      "初始化": [
+        {
+          "key": "layout_type",
+          "label": "`layout_type`（锚点布局）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "region3_tri",
+              "region3_line"
+            ],
+            "derivation": {
+              "recipe": "layout_choice_by_bins",
+              "inputs": {
+                "bins": "parameters.VideoRepick.configs.easy.cube",
+                "order": "positions.VideoRepick.easy_medium_cubes.region3_choice.order"
+              },
+              "expr": "cube==3 → region3_choice.order"
+            }
+          },
+          "domain_text": "三角／直线",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "color",
+          "label": "`color`（三块统一颜色）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "red",
+              "blue",
+              "green"
+            ],
+            "derivation": {
+              "recipe": "enum_from_constant",
+              "inputs": {
+                "pool": "const:REPICK_COLOR_ORDER"
+              },
+              "expr": "REPICK_COLOR_ORDER"
+            }
+          },
+          "domain_text": "红／蓝／绿",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "theta_button",
+          "label": "`theta_rad`、`button_xy`",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "theta_rad": {
+                "lo": 0.0,
+                "hi": 180.0,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.layout_rotation_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]（原单位就是弧度）"
+                }
+              },
+              "button_x": {
+                "lo": -0.25,
+                "hi": -0.15000000000000002,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.VideoRepick.button.center_xy[0]",
+                    "span": "positions.VideoRepick.button.randomize_range[0]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              },
+              "button_y": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.VideoRepick.button.center_xy[1]",
+                    "span": "positions.VideoRepick.button.randomize_range[1]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              }
+            }
+          },
+          "domain_text": "[0, 180] 弧度；x∈[-0.25,-0.15] y∈[-0.05,0.05]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin",
+            "note": "θ 被拒同粗箱重抽；按钮在候选循环外算一次，不参与重抽"
+          },
+          "allocation_text": "分层（θ 被拒同粗箱重抽，按钮不参与重抽）"
+        },
+        {
+          "key": "cube_pose",
+          "label": "`cubes[i].xy`、`yaw_rad`（每块方块）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "cube0_dx": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube0_dy": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube0_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              },
+              "cube1_dx": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube1_dy": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube1_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              },
+              "cube2_dx": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube2_dy": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube2_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              }
+            },
+            "per_object": 3
+          },
+          "domain_text": "锚点旋转后各偏移 ≤ 0.0500，yaw 0～2π",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；方块间距 < 0.02、压按钮或碰撞被拒后同粗箱重抽"
+        },
+        {
+          "key": "candidates_used",
+          "label": "`collision.candidates_used`（冻结用了第几个候选）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 256,
+            "derivation": {
+              "recipe": "one_to_max_trials",
+              "inputs": {
+                "max_trials": "native_semantics.object_generation.max_trials"
+              },
+              "expr": "[1, max_trials]"
+            },
+            "values": null
+          },
+          "domain_text": "1～256",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "几何／碰撞被拒后重抽的落地结果"
+        }
+      ],
+      "事件": [
+        {
+          "key": "n_swaps",
+          "label": "`n_swaps`（交换几次）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 2,
+            "values": [
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoRepick.configs.easy.swap_min",
+                "hi": "parameters.VideoRepick.configs.easy.swap_max"
+              },
+              "expr": "[swap_min … swap_max] 闭区间"
+            }
+          },
+          "domain_text": "1～2",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "num_repeats",
+          "label": "`num_repeats`（重复抓放次数）",
+          "domain": {
+            "kind": "int_range_half_open",
+            "lo": 1,
+            "high_exclusive": 4,
+            "values": [
+              1,
+              2,
+              3
+            ],
+            "derivation": {
+              "recipe": "half_open_int_range",
+              "inputs": {
+                "low": "parameters.VideoRepick.num_repeats.low",
+                "high_exclusive": "parameters.VideoRepick.num_repeats.high_exclusive"
+              },
+              "expr": "[low, high_exclusive)，源码 torch.randint(1, 4) 半开，不含 4"
+            }
+          },
+          "domain_text": "1～3",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "target",
+          "label": "`target`（目标方块）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "range_of_n",
+              "inputs": {
+                "n": "parameters.VideoRepick.configs.easy.cube"
+              },
+              "expr": "range(cube)，值是方块生成序号"
+            }
+          },
+          "domain_text": "三块之一",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "tail",
+          "label": "后续发起者顺序 `tail`",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "pool": [
+              0,
+              1
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range_minus_one",
+              "inputs": {
+                "n": "parameters.VideoRepick.configs.easy.cube"
+              },
+              "expr": "itertools.permutations(range(cube - 1))，索引进 others = 除 target 外的两块"
+            }
+          },
+          "domain_text": "另外两块的 2 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_pairs",
+          "label": "`swap_pairs[k].partner`（交换搭档）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initiators",
+              "layout"
+            ],
+            "expr": "每段交换开始时与发起者水平距离最近的对象，等距取序号小者；执行时按实际位姿重算，不符判失败"
+          },
+          "domain_text": "交换开始时的水平最近邻，等距取序号小者",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出（执行时核验，不符即失败）"
+        }
+      ]
+    },
+    "VideoRepick/medium": {
+      "task": "VideoRepick",
+      "difficulty": "medium",
+      "初始化": [
+        {
+          "key": "layout_type",
+          "label": "`layout_type`（锚点布局）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "region3_tri",
+              "region3_line"
+            ],
+            "derivation": {
+              "recipe": "layout_choice_by_bins",
+              "inputs": {
+                "bins": "parameters.VideoRepick.configs.medium.cube",
+                "order": "positions.VideoRepick.easy_medium_cubes.region3_choice.order"
+              },
+              "expr": "cube==3 → region3_choice.order"
+            }
+          },
+          "domain_text": "三角／直线",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "color",
+          "label": "`color`（三块统一颜色）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "red",
+              "blue",
+              "green"
+            ],
+            "derivation": {
+              "recipe": "enum_from_constant",
+              "inputs": {
+                "pool": "const:REPICK_COLOR_ORDER"
+              },
+              "expr": "REPICK_COLOR_ORDER"
+            }
+          },
+          "domain_text": "红／蓝／绿",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "theta_button",
+          "label": "`theta_rad`、`button_xy`",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "theta_rad": {
+                "lo": 0.0,
+                "hi": 180.0,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.layout_rotation_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]（原单位就是弧度）"
+                }
+              },
+              "button_x": {
+                "lo": -0.25,
+                "hi": -0.15000000000000002,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.VideoRepick.button.center_xy[0]",
+                    "span": "positions.VideoRepick.button.randomize_range[0]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              },
+              "button_y": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.VideoRepick.button.center_xy[1]",
+                    "span": "positions.VideoRepick.button.randomize_range[1]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              }
+            }
+          },
+          "domain_text": "[0, 180] 弧度；x∈[-0.25,-0.15] y∈[-0.05,0.05]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin",
+            "note": "θ 被拒同粗箱重抽；按钮在候选循环外算一次，不参与重抽"
+          },
+          "allocation_text": "分层（θ 被拒同粗箱重抽，按钮不参与重抽）"
+        },
+        {
+          "key": "cube_pose",
+          "label": "`cubes[i].xy`、`yaw_rad`（每块方块）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "cube0_dx": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube0_dy": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube0_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              },
+              "cube1_dx": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube1_dy": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube1_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              },
+              "cube2_dx": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube2_dy": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube2_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              }
+            },
+            "per_object": 3
+          },
+          "domain_text": "锚点旋转后各偏移 ≤ 0.0500，yaw 0～2π",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；方块间距 < 0.02、压按钮或碰撞被拒后同粗箱重抽"
+        },
+        {
+          "key": "candidates_used",
+          "label": "`collision.candidates_used`（冻结用了第几个候选）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 256,
+            "derivation": {
+              "recipe": "one_to_max_trials",
+              "inputs": {
+                "max_trials": "native_semantics.object_generation.max_trials"
+              },
+              "expr": "[1, max_trials]"
+            },
+            "values": null
+          },
+          "domain_text": "1～256",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "几何／碰撞被拒后重抽的落地结果"
+        }
+      ],
+      "事件": [
+        {
+          "key": "n_swaps",
+          "label": "`n_swaps`（交换几次）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 2,
+            "hi": 3,
+            "values": [
+              2,
+              3
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoRepick.configs.medium.swap_min",
+                "hi": "parameters.VideoRepick.configs.medium.swap_max"
+              },
+              "expr": "[swap_min … swap_max] 闭区间"
+            }
+          },
+          "domain_text": "2～3",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "num_repeats",
+          "label": "`num_repeats`（重复抓放次数）",
+          "domain": {
+            "kind": "int_range_half_open",
+            "lo": 1,
+            "high_exclusive": 4,
+            "values": [
+              1,
+              2,
+              3
+            ],
+            "derivation": {
+              "recipe": "half_open_int_range",
+              "inputs": {
+                "low": "parameters.VideoRepick.num_repeats.low",
+                "high_exclusive": "parameters.VideoRepick.num_repeats.high_exclusive"
+              },
+              "expr": "[low, high_exclusive)，源码 torch.randint(1, 4) 半开，不含 4"
+            }
+          },
+          "domain_text": "1～3",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "target",
+          "label": "`target`（目标方块）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "range_of_n",
+              "inputs": {
+                "n": "parameters.VideoRepick.configs.medium.cube"
+              },
+              "expr": "range(cube)，值是方块生成序号"
+            }
+          },
+          "domain_text": "三块之一",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "tail",
+          "label": "后续发起者顺序 `tail`",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "pool": [
+              0,
+              1
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range_minus_one",
+              "inputs": {
+                "n": "parameters.VideoRepick.configs.medium.cube"
+              },
+              "expr": "itertools.permutations(range(cube - 1))，索引进 others = 除 target 外的两块"
+            }
+          },
+          "domain_text": "另外两块的 2 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_pairs",
+          "label": "`swap_pairs[k].partner`（交换搭档）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initiators",
+              "layout"
+            ],
+            "expr": "每段交换开始时与发起者水平距离最近的对象，等距取序号小者；执行时按实际位姿重算，不符判失败"
+          },
+          "domain_text": "交换开始时的水平最近邻，等距取序号小者",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出（执行时核验，不符即失败）"
+        }
+      ]
+    },
+    "RouteStick/xhard": {
+      "task": "RouteStick",
+      "difficulty": "xhard",
+      "初始化": [
+        {
+          "key": "rotation_deg",
+          "label": "`rotation_deg`（整排绕世界原点转）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "rotation_deg": {
+                "lo": -30.0,
+                "hi": 30.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "subtract_span",
+                  "inputs": {
+                    "subtract": "positions.RouteStick.yaw_deg.subtract",
+                    "scale": "positions.RouteStick.yaw_deg.scale"
+                  },
+                  "expr": "[-subtract, -subtract + scale]"
+                }
+              }
+            }
+          },
+          "domain_text": "[-30°, 30°]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "none"
+          },
+          "allocation_text": "分层"
+        },
+        {
+          "key": "obstacle_rgb",
+          "label": "`obstacle_rgb[4]`（4 根障碍柱颜色）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[)",
+            "components": {
+              "rgb_channel": {
+                "lo": 0.0,
+                "hi": 1.0,
+                "unit": "1",
+                "derivation": {
+                  "recipe": "unit_interval_half_open",
+                  "inputs": {},
+                  "expr": "torch.rand → [0, 1)"
+                }
+              }
+            },
+            "per_object": 4
+          },
+          "domain_text": "每根一个随机 RGB，各通道 [0,1)",
+          "allocation": {
+            "kind": "rng_ep",
+            "draws": "4 × 3"
+          },
+          "allocation_text": "`rng_ep` 随机（只影响观感）"
+        },
+        {
+          "key": "grid_points",
+          "label": "9 个格点位置",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "rotation_deg"
+            ],
+            "expr": "1×9 整排绕世界原点旋转 rotation_deg"
+          },
+          "domain_text": "由 `rotation_deg` 唯一确定",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        }
+      ],
+      "事件": [
+        {
+          "key": "L",
+          "label": "`L`（走几段）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 8,
+            "hi": 10,
+            "values": [
+              8,
+              9,
+              10
+            ],
+            "derivation": {
+              "recipe": "closed_int_range",
+              "inputs": {
+                "pair": "parameters.RouteStick.configs.xhard.length"
+              },
+              "expr": "[pair[0] … pair[1]] 闭区间"
+            }
+          },
+          "domain_text": "8～10",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "start_node",
+          "label": "起点 `nodes[0]`",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              0,
+              2,
+              4,
+              6,
+              8
+            ],
+            "derivation": {
+              "recipe": "node_values",
+              "inputs": {
+                "node_indices": "parameters.RouteStick.walk.node_indices"
+              },
+              "expr": "可踩节点值表本身；生成器用 node_indices.index(v) 映回局部槽位"
+            }
+          },
+          "domain_text": "0/2/4/6/8",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额各 20"
+        },
+        {
+          "key": "edge",
+          "label": "每段去哪（有向边）",
+          "domain": {
+            "kind": "coupled",
+            "universe": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                6
+              ],
+              [
+                6,
+                4
+              ],
+              [
+                6,
+                8
+              ],
+              [
+                8,
+                6
+              ]
+            ],
+            "backtrack": true,
+            "depends_on": [
+              "start_node",
+              "L"
+            ],
+            "derivation": {
+              "recipe": "linear_adjacency_edges",
+              "inputs": {
+                "node_indices": "parameters.RouteStick.walk.node_indices",
+                "neighbor_order": "parameters.RouteStick.walk.neighbor_order",
+                "backtrack": "parameters.RouteStick.configs.xhard.backtrack"
+              },
+              "expr": "局部索引 ±1 且不越界的全部有向边；backtrack=false 时剔除上一步，端点无路可走被迫掉头"
+            }
+          },
+          "domain_text": "线性邻接 ±1；允许回退",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "direction",
+          "label": "每段绕行方向 `directions`",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "clockwise",
+              "counterclockwise"
+            ],
+            "derivation": {
+              "recipe": "direction_pair",
+              "inputs": {
+                "direction": "parameters.RouteStick.walk.direction"
+              },
+              "expr": "[less_than, otherwise]"
+            }
+          },
+          "domain_text": "clockwise / counterclockwise",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        }
+      ]
+    },
+    "VideoUnmaskSwap/xhard": {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard",
+      "初始化": [
+        {
+          "key": "layout_type",
+          "label": "`layout_type`（锚点布局）",
+          "domain": {
+            "kind": "constant",
+            "value": "region4",
+            "derivation": {
+              "recipe": "layout_choice_by_bins",
+              "inputs": {
+                "bins": "parameters.VideoUnmaskSwap.configs.xhard.bin",
+                "order": "positions.VideoUnmaskSwap.containers.region3_choice.order"
+              },
+              "expr": "bins==3 → region3_choice.order；否则恒为 region4"
+            }
+          },
+          "domain_text": "四点（固定）",
+          "allocation": {
+            "kind": "constant"
+          },
+          "allocation_text": "常量"
+        },
+        {
+          "key": "selected",
+          "label": "`selected`（藏物容器排序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                0,
+                2,
+                1
+              ],
+              [
+                1,
+                0,
+                2
+              ],
+              [
+                1,
+                2,
+                0
+              ],
+              [
+                2,
+                0,
+                1
+              ],
+              [
+                2,
+                1,
+                0
+              ]
+            ],
+            "pool": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range",
+              "inputs": {
+                "n": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size"
+              },
+              "expr": "itertools.permutations(range(3))"
+            }
+          },
+          "domain_text": "前三个容器的 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "color_order",
+          "label": "`color_order`（藏物颜色顺序）",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                "red",
+                "green",
+                "blue"
+              ],
+              [
+                "red",
+                "blue",
+                "green"
+              ],
+              [
+                "green",
+                "red",
+                "blue"
+              ],
+              [
+                "green",
+                "blue",
+                "red"
+              ],
+              [
+                "blue",
+                "red",
+                "green"
+              ],
+              [
+                "blue",
+                "green",
+                "red"
+              ]
+            ],
+            "pool": [
+              "red",
+              "green",
+              "blue"
+            ],
+            "derivation": {
+              "recipe": "permutations_of_constant",
+              "inputs": {
+                "pool": "const:UNMASK_COLOR_ORDER"
+              },
+              "expr": "itertools.permutations(('red','green','blue'))"
+            }
+          },
+          "domain_text": "红绿蓝 6 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "theta_rad",
+          "label": "`theta_rad`（整组绕原点转）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "theta_rad": {
+                "lo": 0.0,
+                "hi": 180.0,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoUnmaskSwap.containers.layout_rotation_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]（原单位就是弧度）"
+                }
+              }
+            }
+          },
+          "domain_text": "[0, 180] 弧度（原单位就是弧度，不是度）",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；被拒同粗箱重抽"
+        },
+        {
+          "key": "bin_pose",
+          "label": "`bins[i].xy`、`yaw_deg`（每个容器）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "bin0_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin0_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin0_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin1_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin1_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin1_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin2_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin2_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin2_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              },
+              "bin3_dx": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin3_dy": {
+                "lo": -0.04250000000000001,
+                "hi": 0.04250000000000001,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoUnmaskSwap.containers.region_half_size",
+                    "object_half": {
+                      "recipe": "bin_half_from_cube_half",
+                      "inputs": {
+                        "cube_half": "const:cube_half_size"
+                      }
+                    }
+                  },
+                  "expr": "±(region_half − (cube_half*2.5+0.005)*0.5)，公式取自 native_semantics.object_generation.bin_half_size"
+                }
+              },
+              "bin3_yaw": {
+                "lo": 0.0,
+                "hi": 90.0,
+                "unit": "deg",
+                "derivation": {
+                  "recipe": "zero_to",
+                  "inputs": {
+                    "scale": "positions.VideoUnmaskSwap.containers.yaw_scale_deg"
+                  },
+                  "expr": "[0, scale]"
+                }
+              }
+            },
+            "per_object": 4
+          },
+          "domain_text": "锚点旋转后各偏移 ≤ 0.0425，yaw 0～90°",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；被拒同粗箱重抽"
+        },
+        {
+          "key": "hidden",
+          "label": "`hidden`（颜色→容器）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected",
+              "color_order"
+            ],
+            "expr": "color_order[i] → bin_{selected[i]}"
+          },
+          "domain_text": "由 `selected` + `color_order` 算出",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "empty",
+          "label": "`empty`（空容器）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected"
+            ],
+            "expr": "range(n_bins) 里不在 selected 的容器"
+          },
+          "domain_text": "不在 `selected` 里的容器",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "candidates_used",
+          "label": "`collision.candidates_used`（冻结用了第几个候选）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 256,
+            "derivation": {
+              "recipe": "one_to_max_trials",
+              "inputs": {
+                "max_trials": "native_semantics.object_generation.max_trials"
+              },
+              "expr": "[1, max_trials]"
+            },
+            "values": null
+          },
+          "domain_text": "1～256",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "几何／碰撞被拒后重抽的落地结果"
+        }
+      ],
+      "事件": [
+        {
+          "key": "n_swaps",
+          "label": "`n_swaps`（交换几次）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 4,
+            "hi": 5,
+            "values": [
+              4,
+              5
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoUnmaskSwap.configs.xhard.swap_min",
+                "hi": "parameters.VideoUnmaskSwap.configs.xhard.swap_max"
+              },
+              "expr": "[swap_min … swap_max] 闭区间"
+            }
+          },
+          "domain_text": "4～5",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "n_picks",
+          "label": "`n_picks`（视频后抓几个）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 2,
+            "hi": 2,
+            "values": [
+              2
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoUnmaskSwap.configs.xhard.pick_min",
+                "hi": "parameters.VideoUnmaskSwap.configs.xhard.pick_max"
+              },
+              "expr": "[pick_min … pick_max] 闭区间"
+            }
+          },
+          "domain_text": "2",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_initiators_first_two",
+          "label": "前两个发起者 `swap_initiators[:2]`",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ]
+            ],
+            "pool": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range_k",
+              "inputs": {
+                "n": "parameters.VideoUnmaskSwap.object_selection.hidden_bin_permutation_size",
+                "k": "parameters.VideoUnmaskSwap.object_selection.swap_seed_target_count"
+              },
+              "expr": "itertools.permutations(range(3), 2)"
+            }
+          },
+          "domain_text": "3 取 2 的 6 种有序对（原代码把藏物序号当生成序号用，照抄）",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_initiators_third",
+          "label": "第三个发起者 `swap_initiators[2]`",
+          "domain": {
+            "kind": "coupled",
+            "depends_on": [
+              "swap_initiators_first_two"
+            ],
+            "universe": [
+              "bin_0",
+              "bin_1",
+              "bin_2",
+              "bin_3"
+            ],
+            "note": "range(n_bins) 去掉前两个发起者"
+          },
+          "domain_text": "其余生成序号",
+          "allocation": {
+            "kind": "balanced",
+            "usage_scope": "group"
+          },
+          "allocation_text": "合法候选内平衡"
+        },
+        {
+          "key": "pick_order",
+          "label": "`pick_order`（视频后抓取顺序）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "selected",
+              "n_picks"
+            ],
+            "expr": "object_selection.pickup_selected_indices[:n_picks] 索引进 selected"
+          },
+          "domain_text": "`selected` 的前 `n_picks` 个",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出"
+        },
+        {
+          "key": "swap_pairs",
+          "label": "`swap_pairs[k].partner`（交换搭档）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initiators",
+              "layout"
+            ],
+            "expr": "每段交换开始时与发起者水平距离最近的对象，等距取序号小者；执行时按实际位姿重算，不符判失败；第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者）"
+          },
+          "domain_text": "交换开始时的水平最近邻，等距取序号小者；第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者）",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出（执行时核验，不符即失败）"
+        }
+      ]
+    },
+    "VideoRepick/xhard": {
+      "task": "VideoRepick",
+      "difficulty": "xhard",
+      "初始化": [
+        {
+          "key": "layout_type",
+          "label": "`layout_type`（锚点布局）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "region3_tri",
+              "region3_line"
+            ],
+            "derivation": {
+              "recipe": "layout_choice_by_bins",
+              "inputs": {
+                "bins": "parameters.VideoRepick.configs.xhard.cube",
+                "order": "positions.VideoRepick.easy_medium_cubes.region3_choice.order"
+              },
+              "expr": "cube==3 → region3_choice.order"
+            }
+          },
+          "domain_text": "三角／直线",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "color",
+          "label": "`color`（三块统一颜色）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              "red",
+              "blue",
+              "green"
+            ],
+            "derivation": {
+              "recipe": "enum_from_constant",
+              "inputs": {
+                "pool": "const:REPICK_COLOR_ORDER"
+              },
+              "expr": "REPICK_COLOR_ORDER"
+            }
+          },
+          "domain_text": "红／蓝／绿",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "theta_button",
+          "label": "`theta_rad`、`button_xy`",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "theta_rad": {
+                "lo": 0.0,
+                "hi": 180.0,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.layout_rotation_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]（原单位就是弧度）"
+                }
+              },
+              "button_x": {
+                "lo": -0.25,
+                "hi": -0.15000000000000002,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.VideoRepick.button.center_xy[0]",
+                    "span": "positions.VideoRepick.button.randomize_range[0]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              },
+              "button_y": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "center_pm_half_range",
+                  "inputs": {
+                    "center": "positions.VideoRepick.button.center_xy[1]",
+                    "span": "positions.VideoRepick.button.randomize_range[1]"
+                  },
+                  "expr": "[center - span/2, center + span/2]"
+                }
+              }
+            }
+          },
+          "domain_text": "[0, 180] 弧度；x∈[-0.25,-0.15] y∈[-0.05,0.05]",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin",
+            "note": "θ 被拒同粗箱重抽；按钮在候选循环外算一次，不参与重抽"
+          },
+          "allocation_text": "分层（θ 被拒同粗箱重抽，按钮不参与重抽）"
+        },
+        {
+          "key": "cube_pose",
+          "label": "`cubes[i].xy`、`yaw_rad`（每块方块）",
+          "domain": {
+            "kind": "continuous",
+            "closed": "[]",
+            "components": {
+              "cube0_dx": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube0_dy": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube0_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              },
+              "cube1_dx": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube1_dy": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube1_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              },
+              "cube2_dx": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube2_dy": {
+                "lo": -0.05,
+                "hi": 0.05,
+                "unit": "m",
+                "derivation": {
+                  "recipe": "offset_limit",
+                  "inputs": {
+                    "region_half": "positions.VideoRepick.easy_medium_cubes.region_half_size",
+                    "object_half": "const:cube_half_size"
+                  },
+                  "expr": "±(region_half − cube_half)"
+                }
+              },
+              "cube2_yaw": {
+                "lo": 0.0,
+                "hi": 6.283185307179586,
+                "unit": "rad",
+                "derivation": {
+                  "recipe": "pair",
+                  "inputs": {
+                    "pair": "positions.VideoRepick.easy_medium_cubes.yaw_range_rad"
+                  },
+                  "expr": "[pair[0], pair[1]]"
+                }
+              }
+            },
+            "per_object": 3
+          },
+          "domain_text": "锚点旋转后各偏移 ≤ 0.0500，yaw 0～2π",
+          "allocation": {
+            "kind": "stratify",
+            "resample": "coarse_bin"
+          },
+          "allocation_text": "分层；方块间距 < 0.02、压按钮或碰撞被拒后同粗箱重抽"
+        },
+        {
+          "key": "candidates_used",
+          "label": "`collision.candidates_used`（冻结用了第几个候选）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 1,
+            "hi": 256,
+            "derivation": {
+              "recipe": "one_to_max_trials",
+              "inputs": {
+                "max_trials": "native_semantics.object_generation.max_trials"
+              },
+              "expr": "[1, max_trials]"
+            },
+            "values": null
+          },
+          "domain_text": "1～256",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "几何／碰撞被拒后重抽的落地结果"
+        }
+      ],
+      "事件": [
+        {
+          "key": "n_swaps",
+          "label": "`n_swaps`（交换几次）",
+          "domain": {
+            "kind": "int_range",
+            "closed": true,
+            "lo": 4,
+            "hi": 5,
+            "values": [
+              4,
+              5
+            ],
+            "derivation": {
+              "recipe": "closed_int_range_from_bounds",
+              "inputs": {
+                "lo": "parameters.VideoRepick.configs.xhard.swap_min",
+                "hi": "parameters.VideoRepick.configs.xhard.swap_max"
+              },
+              "expr": "[swap_min … swap_max] 闭区间"
+            }
+          },
+          "domain_text": "4～5",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "num_repeats",
+          "label": "`num_repeats`（重复抓放次数）",
+          "domain": {
+            "kind": "int_range_half_open",
+            "lo": 1,
+            "high_exclusive": 4,
+            "values": [
+              1,
+              2,
+              3
+            ],
+            "derivation": {
+              "recipe": "half_open_int_range",
+              "inputs": {
+                "low": "parameters.VideoRepick.num_repeats.low",
+                "high_exclusive": "parameters.VideoRepick.num_repeats.high_exclusive"
+              },
+              "expr": "[low, high_exclusive)，源码 torch.randint(1, 4) 半开，不含 4"
+            }
+          },
+          "domain_text": "1～3",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "target",
+          "label": "`target`（目标方块）",
+          "domain": {
+            "kind": "enum",
+            "values": [
+              0,
+              1,
+              2
+            ],
+            "derivation": {
+              "recipe": "range_of_n",
+              "inputs": {
+                "n": "parameters.VideoRepick.configs.xhard.cube"
+              },
+              "expr": "range(cube)，值是方块生成序号"
+            }
+          },
+          "domain_text": "三块之一",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "tail",
+          "label": "后续发起者顺序 `tail`",
+          "domain": {
+            "kind": "permutations_of",
+            "values": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "pool": [
+              0,
+              1
+            ],
+            "derivation": {
+              "recipe": "permutations_of_range_minus_one",
+              "inputs": {
+                "n": "parameters.VideoRepick.configs.xhard.cube"
+              },
+              "expr": "itertools.permutations(range(cube - 1))，索引进 others = 除 target 外的两块"
+            }
+          },
+          "domain_text": "另外两块的 2 种排列",
+          "allocation": {
+            "kind": "quota"
+          },
+          "allocation_text": "配额"
+        },
+        {
+          "key": "swap_pairs",
+          "label": "`swap_pairs[k].partner`（交换搭档）",
+          "domain": {
+            "kind": "derived",
+            "from": [
+              "initiators",
+              "layout"
+            ],
+            "expr": "每段交换开始时与发起者水平距离最近的对象，等距取序号小者；执行时按实际位姿重算，不符判失败；第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者）"
+          },
+          "domain_text": "交换开始时的水平最近邻，等距取序号小者；第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者）",
+          "allocation": {
+            "kind": "derived"
+          },
+          "allocation_text": "推出（执行时核验，不符即失败）"
+        }
+      ]
+    }
+  },
+  "target_count_rule_override": {
+    "groups": [
+      "BinFill/easy",
+      "BinFill/medium",
+      "BinFill/hard"
+    ],
+    "field": "target_count",
+    "native": {
+      "rule": "allow_zero"
+    },
+    "contract": {
+      "rule": "each_target_at_least_one"
+    },
+    "source": "heldout 分支 2fa5660 的 BinFill::_load_scene 多色分支：先 for color_idx in active_color_indices: target_numbers[color_idx] += 1，再把 total_target - min_required_targets 逐个随机分；单色分支不变",
+    "reason": "用户 2026-09-11 原话「能否改为对齐heldout」「按照这个方案改 把现有的…写作为json约定 v1 修改后的binfill计为v2」",
+    "note": "coupled 域没有 derivation，不进 CONTRACT_DERIVED 的回算；BinFill/easy 恒为单色，规则不起作用、规格逐位不变"
+  },
+  "added_groups_v3": [
+    [
+      "RouteStick",
+      "xhard"
+    ],
+    [
+      "VideoUnmaskSwap",
+      "xhard"
+    ],
+    [
+      "VideoRepick",
+      "xhard"
+    ]
+  ]
+}

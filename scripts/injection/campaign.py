@@ -662,6 +662,48 @@ def _index_h5(root: Path) -> dict[tuple[str, str, int], Path]:
     return index
 
 
+def _select_groups(groups: Sequence[tuple[str, str]], groups_filter: Sequence[str] | None) -> list[tuple[str, str]]:
+    """按 ``--groups``（``任务/难度`` 列表）从清单组里选子集，保持清单顺序；未知键直接拒绝，不静默忽略。"""
+    if not groups_filter:
+        return list(groups)
+    wanted = [tuple(key.split("/", 1)) for key in groups_filter]
+    unknown = [key for key in wanted if key not in groups]
+    if unknown:
+        raise CampaignError(f"--groups 里有清单没有的组：{['/'.join(k) for k in unknown]}；清单组：{['/'.join(g) for g in groups]}")
+    return [group for group in groups if group in wanted]
+
+
+def cmd_specs_diff(left_run: str, right_run: str, label: str = "OLD_GROUPS_EQUIVALENCE") -> dict[str, Any]:
+    """两次冻结运行里**共有的组**逐条比 ``spec_sha256``（xhard 扩展：06 的旧 11 组必须与 05 逐条相同）。
+
+    只比两边都有的组；一边独有的组只报告、不判失败。判定行 ``<label>=PASS compared=<n> differences=<n> shared_groups=<n>``。
+    """
+    _, _, left_docs = load_group_documents(left_run)
+    _, _, right_docs = load_group_documents(right_run)
+    shared = [key for key in left_docs if key in right_docs]
+    compared = differences = 0
+    diff_samples: list[str] = []
+    for task, difficulty in shared:
+        left_eps = {item["episode"]: item["spec_sha256"] for item in left_docs[(task, difficulty)]["episodes"]}
+        right_eps = {item["episode"]: item["spec_sha256"] for item in right_docs[(task, difficulty)]["episodes"]}
+        for episode in sorted(set(left_eps) | set(right_eps)):
+            compared += 1
+            if left_eps.get(episode) != right_eps.get(episode):
+                differences += 1
+                if len(diff_samples) < 10:
+                    diff_samples.append(f"{task}/{difficulty}/ep{episode}")
+    payload = {
+        "left": left_run, "right": right_run, "shared_groups": ["/".join(k) for k in shared],
+        "left_only": ["/".join(k) for k in left_docs if k not in right_docs],
+        "right_only": ["/".join(k) for k in right_docs if k not in left_docs],
+        "compared": compared, "differences": differences, "samples": diff_samples,
+        "passed": differences == 0 and compared > 0,
+    }
+    print(f"{label}={'PASS' if payload['passed'] else 'FAIL'} compared={compared} differences={differences} shared_groups={len(shared)} "
+          f"right_only={','.join(payload['right_only']) or '-'}")
+    return payload
+
+
 def cmd_compare(left_dir: Path, right_dir: Path, label: str, *, subset_only: bool = False) -> dict[str, Any]:
     """逐位比较两个运行目录里同名 episode 的完整 HDF5。
 
@@ -727,8 +769,12 @@ def cmd_run(
     skip_ladder: bool = False,
     tier_override: int | None = None,
     gpus: str = "0",
+    groups_filter: Sequence[str] | None = None,
 ) -> dict[str, Any]:
     """按阶段跑：``calibration``（步骤 3+4）或 ``feasibility``（步骤 5）。
+
+    ``groups_filter``（2026-09-11 加 xhard 时引入）只对 ``feasibility`` 生效：逗号分隔的 ``任务/难度``，
+    只跑清单里这些组；默认 ``None`` 跑清单全部组（05 及之前的行为逐字不变）。未知键直接拒绝。
 
     ``gpus`` 只对 ``feasibility`` + ``--tier`` 生效：逗号分隔的物理卡号，每卡 worker 数由 ``tier`` 给，
     传给生成器的 ``--workers`` 是总数 ``tier × 卡数``（生成器按 ``workers // len(gpus)`` 摊到每卡）。
@@ -929,15 +975,17 @@ def cmd_run(
         else:
             tier = int(chosen["tier"])
             gpu_ids = chosen.get("gpus") or ["0"]
-        groups = [(item["task"], item["difficulty"]) for item in manifest_doc["groups"]]
+        groups = _select_groups([(item["task"], item["difficulty"]) for item in manifest_doc["groups"]], groups_filter)
+        total_episodes = len(groups) * len(FEASIBILITY_EPISODES)
         feas_manifest = write_manifest(
-            root / "manifests" / "feasibility330.json", groups, FEASIBILITY_EPISODES, specs_root,
-            "步骤 5 实跑：11 组各 episode 0～29，共 330 条；其余 770 条本轮不实跑",
+            root / "manifests" / f"feasibility{total_episodes}.json", groups, FEASIBILITY_EPISODES, specs_root,
+            f"步骤 5 实跑：{len(groups)} 组各 episode 0～{len(FEASIBILITY_EPISODES) - 1}，共 {total_episodes} 条；"
+            f"其余 {len(manifest_doc['groups']) * GROUP_SIZE - total_episodes} 条本轮不实跑",
         )
         mode = chosen.get("mode") or f"P0x{tier}"
         source = "校准选出的" if chosen.get("measured", True) else "显式指定（未经测速）的"
         total_workers = tier * len(gpu_ids)  # 生成器的 --workers 是总数，按卡数摊成每卡 tier 个
-        print(f"[实跑] 用{source} {mode}（--gpus {','.join(gpu_ids)} --workers {total_workers}，每卡 {tier}）跑 330 条", flush=True)
+        print(f"[实跑] 用{source} {mode}（--gpus {','.join(gpu_ids)} --workers {total_workers}，每卡 {tier}）跑 {total_episodes} 条", flush=True)
         result = invoke_generator(
             output_dir=root / "feasibility" / mode, manifest=feas_manifest,
             gpus=",".join(gpu_ids), workers=total_workers, log_path=logs / f"feasibility-{mode}.log",
@@ -1017,7 +1065,7 @@ def _summarize_feasibility(
     gpu_ids: Sequence[str],
     chosen: dict[str, Any],
 ) -> dict[str, Any]:
-    """从 330 行结果算出实跑阶段的全部判定与计数。
+    """从实跑结果行（05 为 330 行，按 组数 × 30 参数化）算出实跑阶段的全部判定与计数。
 
     ⚠ 抽成独立函数是为了让 ``summarize`` 子命令能在**不重跑仿真**的前提下，
     用当前代码重新统计既有的 ``episode_results.jsonl``。实测踩过一次：父进程启动时
@@ -1054,7 +1102,7 @@ def _summarize_feasibility(
         complete=videos.get("complete", 0), frame_mismatch=videos.get("frame_mismatch", 0),
         missing=videos.get("missing", 0), no_close=videos.get("no_close", 0), untraceable=untraceable,
     )
-    # COLLISION_RUNTIME：只覆盖两个视频任务（5 组 × 30 条 = 150 条）
+    # COLLISION_RUNTIME：只覆盖本次实跑里的两个视频任务组（05 是 5 组 × 30 = 150 条，06 只跑 xhard 时是 2 组 × 30 = 60 条）
     video_rows = [row for row in rows if row["task"] in ("VideoUnmaskSwap", "VideoRepick")]
     checked = sum(1 for row in video_rows if row["runtime_checks_total"] > 0)
     # 「应检查但既未检查也未阻断」：跑完了、任务也通过了，却一条检查记录都没有
@@ -1263,7 +1311,8 @@ def _render_readme(payload: dict[str, Any]) -> str:
         lines += ["", f"⚠ {payload['gpu_note']}"]
 
     if payload.get("outcome_counts"):
-        lines += ["", "## 二、实跑 330 条的七类结果", "", "| 结果 | 条数 |", "|---|---:|"]
+        total_rows = sum(payload["outcome_counts"].values())
+        lines += ["", f"## 二、实跑 {total_rows} 条的七类结果", "", "| 结果 | 条数 |", "|---|---:|"]
         for key, value in payload["outcome_counts"].items():
             lines.append(f"| {key} | {value} |")
         lines += ["", "### 每组明细", "", "| 组 | " + " | ".join(payload["outcome_counts"]) + " |",
@@ -1435,6 +1484,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--gpus", default="0",
         help="feasibility + --tier 时用的物理卡号，逗号分隔（如 0,1）；每卡 worker 数由 --tier 给，总 worker = tier × 卡数；默认只用 GPU 0",
     )
+    runner.add_argument(
+        "--groups", default=None,
+        help="feasibility 只跑清单里这些组，逗号分隔的 任务/难度（如 RouteStick/xhard,VideoRepick/xhard）；默认跑清单全部组",
+    )
 
     summarize = sub.add_parser("summarize", help="不重跑仿真，用当前代码重算既有实跑结果")
     summarize.add_argument("--run-id", required=True)
@@ -1447,6 +1500,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     reproduce.add_argument("--source-dir", default=str(COLLISION_CASE_ROOT))
     reproduce.add_argument("--output-dir", required=True, help="复现产物目录，必须是新目录")
     reproduce.add_argument("--mode", default="trajectory", choices=("trajectory", "both"))
+
+    specs_diff = sub.add_parser("specs-diff", help="两次冻结运行共有组的规格散列逐条对拍（新契约冻结后证明旧组不变）")
+    specs_diff.add_argument("--left", required=True, help="参考侧 run id")
+    specs_diff.add_argument("--right", required=True, help="候选侧 run id")
+    specs_diff.add_argument("--label", default="OLD_GROUPS_EQUIVALENCE")
 
     compare = sub.add_parser("compare", help="两个运行目录的完整 HDF5 逐位对拍")
     compare.add_argument("--left", required=True, help="参考侧目录")
@@ -1476,6 +1534,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             result = cmd_run(
                 args.run_id, args.phase, Path(args.sampling_config).resolve(), tiers,
                 skip_ladder=args.skip_ladder, tier_override=args.tier, gpus=args.gpus,
+                groups_filter=[item.strip() for item in args.groups.split(",") if item.strip()] if args.groups else None,
             )
             return 0 if result.get("passed") else 1
         if args.command == "collision-reproduce":
@@ -1489,6 +1548,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.command == "report":
             cmd_report(args.run_id)
             return 0
+        if args.command == "specs-diff":
+            return 0 if cmd_specs_diff(args.left, args.right, args.label)["passed"] else 1
         if args.command == "compare":
             payload = cmd_compare(
                 Path(args.left).resolve(), Path(args.right).resolve(), args.label,

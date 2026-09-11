@@ -667,7 +667,8 @@ def _unmask_group(difficulty: str, gc: GroupContract, config: dict[str, Any], pa
         # 即使 n_swaps=1 也要有 3 个发起者，否则会 IndexError。所以规格存完整的 3 个，
         # actions.swap_pairs 只存实际执行的前 n_swaps 段——未执行的那部分也不靠随机。
         initiators_full = [*target_indices, third]
-        initiators = initiators_full[:n_swaps]
+        # xhard（n_swaps 4～5）第 k 次发起者循环沿用循环基 initiators_full[k mod 3]（a,b,c,a,b）；n ≤ 3 时与 [:n_swaps] 逐元素相同
+        initiators = [initiators_full[k % len(initiators_full)] for k in range(n_swaps)]
 
         frozen = None
         for trial in range(MAX_CANDIDATES):
@@ -797,7 +798,8 @@ def _repick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], pa
         tail = [others[i] for i in tail_series[episode]]
         # 同 VideoUnmaskSwap：源码无条件赋值 swap_pair{1,2,3}_idx1，需要完整的 3 个发起者
         initiators_full = [target, *tail]
-        initiators = initiators_full[:n_swaps]
+        # 同 VideoUnmaskSwap：第 k 次发起者 = initiators_full[k mod 3]；n ≤ 3 时与 [:n_swaps] 逐元素相同
+        initiators = [initiators_full[k % len(initiators_full)] for k in range(n_swaps)]
 
         button_xy = [strata["button_x"].values[episode], strata["button_y"].values[episode]]
         button = button_obb(button_xy, float(button_cfg["scale"]))

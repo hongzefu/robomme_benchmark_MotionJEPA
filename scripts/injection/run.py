@@ -2,7 +2,7 @@
 
 * ``calibration``：先用 16 条固定样本建立串行参考（``S0a``／``S0b`` 两遍），
   再按每卡 worker 数一路向上探，用同一份 120 条清单测吞吐。
-* ``feasibility``：用选出的档，一次调用传 11 组清单跑每组 episode 0～29 共 330 条。
+* ``feasibility``：用选出的档，一次调用传清单跑每组 episode 0～29（05 是 11 组 330 条；``--groups`` 可只跑其中若干组，06 只跑 3 个 xhard 组 90 条）。
 
 **档位选择的口径（2026-09-10 用户决定）**：不设 RSS／``free``／swap 三条软守卫，
 直接一路往上加 worker，**实测到 OOM 或超时为止**，用最后一个不 OOM 的档做全量。
@@ -24,6 +24,7 @@ from typing import Any, Sequence
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 #: 四个校准组：三个 hard 加 VideoRepick medium（VideoRepick 没有 hard）。
+#: 2026-09-11 加了 xhard 后「每任务最难档」的口径待下一轮校准时再定，本轮（06 显式 --tier 20）沿用 05 口径不改。
 CALIBRATION_GROUPS: tuple[tuple[str, str], ...] = (
     ("BinFill", "hard"),
     ("RouteStick", "hard"),
