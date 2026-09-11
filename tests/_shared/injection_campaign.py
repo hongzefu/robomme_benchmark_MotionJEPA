@@ -882,86 +882,162 @@ def cmd_run(
             sampling_config=sampling_config, timeout_s=6 * 3600,
         )
         rows = result["rows"]
-        outcomes = Counter(row["outcome"] for row in rows)
-        videos = Counter(row["video_status"] for row in rows)
-        states = Counter(row["execution_state"] for row in rows)
-        expected = len(groups) * len(FEASIBILITY_EPISODES)
-        verdicts.add(
-            "FEASIBILITY", len(rows) == expected, unique=expected, executed=len(rows),
-            unclassified=sum(1 for row in rows if row["outcome"] not in outcomes),
-            succeeded=outcomes.get(OUTCOME_PASS, 0), attempt=0,
-        )
-        verdicts.add(
-            "RESULT_COVERAGE", len(rows) == expected,
-            all_recorded=len(rows), all_success=outcomes.get(OUTCOME_PASS, 0),
-        )
-        untraceable = sum(
-            1 for row in rows if row["video_status"] in ("missing", "no_close") and not row["video_reason"]
-        )
-        verdicts.add(
-            "VIDEO_INDEX", len(rows) == expected and untraceable == 0, rows=len(rows),
-            complete=videos.get("complete", 0), frame_mismatch=videos.get("frame_mismatch", 0),
-            missing=videos.get("missing", 0), no_close=videos.get("no_close", 0), untraceable=untraceable,
-        )
-        # COLLISION_RUNTIME：只覆盖两个视频任务（5 组 × 30 条 = 150 条）
-        video_rows = [row for row in rows if row["task"] in ("VideoUnmaskSwap", "VideoRepick")]
-        checked = sum(1 for row in video_rows if row["runtime_checks_total"] > 0)
-        # 「应检查但既未检查也未阻断」：跑完了、任务也通过了，却一条检查记录都没有
-        missing_checks = sum(
-            1 for row in video_rows
-            if row["runtime_checks_total"] == 0 and row["outcome"] == OUTCOME_PASS
-        )
-        runtime_rejected = sum(1 for row in video_rows if row["runtime_rejections"])
-        verdicts.add(
-            "COLLISION_RUNTIME", missing_checks == 0 and bool(video_rows),
-            unique=len(video_rows), checked=checked, missing_checks=missing_checks,
-            rejected=runtime_rejected,
-        )
-        # INJECTION_BINDING：每条成功样本都要有创建输入 vs 创建后位姿的绑定证据
-        bound = sum(1 for row in rows if row["injection_bound"])
-        unbound_success = sum(1 for row in rows if row["outcome"] == OUTCOME_PASS and not row["injection_bound"])
-        verdicts.add(
-            "INJECTION_BINDING", unbound_success == 0 and bound > 0,
-            unique=len(rows), bound=bound, mismatches=unbound_success,
-        )
+        payload.update(_summarize_feasibility(root, rows, groups, verdicts, tier, mode, gpu_ids, chosen))
+        payload["run"] = {k: v for k, v in result.items() if k != "rows"}
+        payload["verdicts"] = verdicts.records
+        payload["passed"] = verdicts.passed
+        _write_json(root / f"{phase}_result.json", payload)
+        for line in verdicts.lines:
+            print(line)
+        print(f"RUN={'PASS' if verdicts.passed else 'FAIL'} phase={phase}")
+        return payload
 
-        success_rows = [row for row in rows if row["outcome"] == OUTCOME_PASS]
-        decoded = sum(1 for row in success_rows if row["video_frames"] == row["video_frames_expected"])
-        failed_videos = sum(1 for row in rows if row["outcome"] != OUTCOME_PASS and row["video_status"] == "complete")
-        verdicts.add(
-            "VIDEO_DECODE", decoded == len(success_rows), success_rows=len(success_rows),
-            decoded_eq_timesteps=decoded, failed_videos=failed_videos,
-            mismatches=len(success_rows) - decoded,
-        )
-        payload.update(
-            {
-                "tier": tier, "mode": mode, "gpus": gpu_ids,
-                "tier_measured": chosen.get("measured", True),
-                "run": {k: v for k, v in result.items() if k != "rows"}, "rows": rows,
-                "outcome_counts": dict(outcomes), "video_counts": dict(videos), "execution_counts": dict(states),
-                "runtime_check_summary": {
-                    "video_rows": len(video_rows), "checked": checked,
-                    "missing_checks": missing_checks, "rejected": runtime_rejected,
-                },
-                "per_group": {
-                    f"{task}/{difficulty}": dict(
-                        Counter(row["outcome"] for row in rows if row["task"] == task and row["difficulty"] == difficulty)
-                    )
-                    for task, difficulty in groups
-                },
-            }
-        )
-        _write_json(root / "feasibility_results.json", {"run_id": run_id, "tier": tier, "rows": rows})
-    else:
-        raise CampaignError(f"未知阶段 {phase}")
+    raise CampaignError(f"未知阶段 {phase}")
 
+
+def cmd_summarize(run_id: str, mode: str | None = None) -> dict[str, Any]:
+    """**不重跑仿真**，用当前代码重新统计既有的 ``episode_results.jsonl``。
+
+    ⚠ 这是必需的退路，不是便利功能。父进程在启动那一刻就把 ``read_result_rows`` 等
+    统计代码加载进内存了，跑到一半修好的 bug 对它无效；而仿真产物（jsonl、HDF5、视频）
+    是完整的。实测踩过一次：旧版 key 少了 difficulty，330 行被统计成 120 行。
+    没有这条退路就只能重跑几小时。
+    """
+    root, manifest_doc, _documents = load_group_documents(run_id)
+    feasibility_root = root / "feasibility"
+    if not feasibility_root.is_dir():
+        raise CampaignError(f"找不到实跑产物：{feasibility_root}")
+    modes = sorted(item.name for item in feasibility_root.iterdir() if item.is_dir())
+    if mode is None:
+        if len(modes) != 1:
+            raise CampaignError(f"{feasibility_root} 下有多个档 {modes}，请用 --mode 指定")
+        mode = modes[0]
+    output_dir = feasibility_root / mode
+    if not output_dir.is_dir():
+        raise CampaignError(f"找不到该档的产物：{output_dir}")
+
+    from tests._shared.injection_run import FEASIBILITY_EPISODES, read_result_rows
+
+    rows = read_result_rows(output_dir)
+    groups = [(item["task"], item["difficulty"]) for item in manifest_doc["groups"]]
+    tier = int(mode.rsplit("x", 1)[1]) if "x" in mode else 0
+    previous = root / "feasibility_result.json"
+    chosen = json.loads(previous.read_text(encoding="utf-8")).get("chosen") if previous.is_file() else None
+    chosen = chosen or {"tier": tier, "mode": mode, "gpus": ["0"], "measured": False}
+
+    verdicts = Verdicts(echo=True)
+    payload: dict[str, Any] = {
+        "run_id": run_id,
+        "phase": "feasibility",
+        "recomputed_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "recomputed_from": str(output_dir / "episode_results.jsonl"),
+        "expected_rows": len(groups) * len(FEASIBILITY_EPISODES),
+    }
+    payload.update(
+        _summarize_feasibility(root, rows, groups, verdicts, tier, mode, chosen.get("gpus") or ["0"], chosen)
+    )
     payload["verdicts"] = verdicts.records
     payload["passed"] = verdicts.passed
-    _write_json(root / f"{phase}_result.json", payload)
-    for line in verdicts.lines:
-        print(line)
-    print(f"RUN={'PASS' if verdicts.passed else 'FAIL'} phase={phase}")
+    _write_json(root / "feasibility_result.json", payload)
+    print(f"SUMMARIZE={'PASS' if verdicts.passed else 'FAIL'} mode={mode} rows={len(rows)}")
     return payload
+
+def _summarize_feasibility(
+    root: Path,
+    rows: list[dict[str, Any]],
+    groups: Sequence[tuple[str, str]],
+    verdicts: "Verdicts",
+    tier: int,
+    mode: str,
+    gpu_ids: Sequence[str],
+    chosen: dict[str, Any],
+) -> dict[str, Any]:
+    """从 330 行结果算出实跑阶段的全部判定与计数。
+
+    ⚠ 抽成独立函数是为了让 ``summarize`` 子命令能在**不重跑仿真**的前提下，
+    用当前代码重新统计既有的 ``episode_results.jsonl``。实测踩过一次：父进程启动时
+    加载的是旧版 ``read_result_rows``（key 少了 difficulty），330 行被统计成 120 行，
+    而原始 jsonl 是完整的——这种情况必须能独立重算，不能被迫重跑几小时的仿真。
+    """
+    from tests._shared.injection_run import FEASIBILITY_EPISODES, OUTCOME_PASS
+
+    outcomes = Counter(row["outcome"] for row in rows)
+    videos = Counter(row["video_status"] for row in rows)
+    states = Counter(row["execution_state"] for row in rows)
+    # ⚠ 「规划失败」这一类实际混装三种来源：ScrewPlanFailure／PlannerExhausted（真规划无解）、
+    # SceneGenerationError（场景生成失败）、DatasetGenerationError（环境 evaluate 判定任务失败）。
+    # 七类状态互斥是计划定死的，不能擅自加第八类，但必须把 error_type 分布一并报出来，
+    # 否则「规划失败 N 条」会掩盖掉它们是完全不同的失败。
+    error_types = Counter(
+        str(row["error_type"] or "-") for row in rows if row["outcome"] != OUTCOME_PASS
+    )
+    expected = len(groups) * len(FEASIBILITY_EPISODES)
+    verdicts.add(
+        "FEASIBILITY", len(rows) == expected, unique=expected, executed=len(rows),
+        unclassified=sum(1 for row in rows if row["outcome"] not in outcomes),
+        succeeded=outcomes.get(OUTCOME_PASS, 0), attempt=0,
+    )
+    verdicts.add(
+        "RESULT_COVERAGE", len(rows) == expected,
+        all_recorded=len(rows), all_success=outcomes.get(OUTCOME_PASS, 0),
+    )
+    untraceable = sum(
+        1 for row in rows if row["video_status"] in ("missing", "no_close") and not row["video_reason"]
+    )
+    verdicts.add(
+        "VIDEO_INDEX", len(rows) == expected and untraceable == 0, rows=len(rows),
+        complete=videos.get("complete", 0), frame_mismatch=videos.get("frame_mismatch", 0),
+        missing=videos.get("missing", 0), no_close=videos.get("no_close", 0), untraceable=untraceable,
+    )
+    # COLLISION_RUNTIME：只覆盖两个视频任务（5 组 × 30 条 = 150 条）
+    video_rows = [row for row in rows if row["task"] in ("VideoUnmaskSwap", "VideoRepick")]
+    checked = sum(1 for row in video_rows if row["runtime_checks_total"] > 0)
+    # 「应检查但既未检查也未阻断」：跑完了、任务也通过了，却一条检查记录都没有
+    missing_checks = sum(
+        1 for row in video_rows
+        if row["runtime_checks_total"] == 0 and row["outcome"] == OUTCOME_PASS
+    )
+    runtime_rejected = sum(1 for row in video_rows if row["runtime_rejections"])
+    verdicts.add(
+        "COLLISION_RUNTIME", missing_checks == 0 and bool(video_rows),
+        unique=len(video_rows), checked=checked, missing_checks=missing_checks,
+        rejected=runtime_rejected,
+    )
+    # INJECTION_BINDING：每条成功样本都要有创建输入 vs 创建后位姿的绑定证据
+    bound = sum(1 for row in rows if row["injection_bound"])
+    unbound_success = sum(1 for row in rows if row["outcome"] == OUTCOME_PASS and not row["injection_bound"])
+    verdicts.add(
+        "INJECTION_BINDING", unbound_success == 0 and bound > 0,
+        unique=len(rows), bound=bound, mismatches=unbound_success,
+    )
+
+    success_rows = [row for row in rows if row["outcome"] == OUTCOME_PASS]
+    decoded = sum(1 for row in success_rows if row["video_frames"] == row["video_frames_expected"])
+    failed_videos = sum(1 for row in rows if row["outcome"] != OUTCOME_PASS and row["video_status"] == "complete")
+    verdicts.add(
+        "VIDEO_DECODE", decoded == len(success_rows), success_rows=len(success_rows),
+        decoded_eq_timesteps=decoded, failed_videos=failed_videos,
+        mismatches=len(success_rows) - decoded,
+    )
+    summary = {
+            "tier": tier, "mode": mode, "gpus": list(gpu_ids),
+            "tier_measured": chosen.get("measured", True),
+            "rows": rows,
+            "outcome_counts": dict(outcomes), "video_counts": dict(videos), "execution_counts": dict(states),
+            "error_type_counts": dict(error_types),
+            "runtime_check_summary": {
+                "video_rows": len(video_rows), "checked": checked,
+                "missing_checks": missing_checks, "rejected": runtime_rejected,
+            },
+            "per_group": {
+                f"{task}/{difficulty}": dict(
+                    Counter(row["outcome"] for row in rows if row["task"] == task and row["difficulty"] == difficulty)
+                )
+                for task, difficulty in groups
+            },
+    }
+    _write_json(root / "feasibility_results.json", {"run_id": root.name, "tier": tier, "rows": rows})
+    return summary
 
 
 # ── report：步骤 6 的轻量包与交付核对 ───────────────────────────────────────
@@ -1039,6 +1115,7 @@ def cmd_report(run_id: str) -> dict[str, Any]:
         "spec_digest": spec_digest,
         "verdicts": verdicts,
         "outcome_counts": (feasibility or {}).get("outcome_counts"),
+        "error_type_counts": (feasibility or {}).get("error_type_counts"),
         "video_counts": (feasibility or {}).get("video_counts"),
         "execution_counts": (feasibility or {}).get("execution_counts"),
         "per_group": (feasibility or {}).get("per_group"),
@@ -1094,6 +1171,17 @@ def _render_readme(payload: dict[str, Any]) -> str:
                   "|---" * (len(payload["outcome_counts"]) + 1) + "|"]
         for group, counts in (payload.get("per_group") or {}).items():
             lines.append(f"| {group} | " + " | ".join(str(counts.get(key, 0)) for key in payload["outcome_counts"]) + " |")
+
+    if payload.get("error_type_counts"):
+        lines += [
+            "", "### 失败样本的 error_type 分布", "",
+            "> ⚠ 「规划失败」一类混装三种来源：`ScrewPlanFailure`／`PlannerExhausted`（规划无解）、",
+            "> `SceneGenerationError`（场景生成失败）、`DatasetGenerationError`（环境判定任务失败）。",
+            "> 七类状态按计划互斥、不加第八类，但这里把 `error_type` 分开列，避免一个数字掩盖三种失败。",
+            "", "| error_type | 条数 |", "|---|---:|",
+        ]
+        for key, value in sorted(payload["error_type_counts"].items(), key=lambda item: -item[1]):
+            lines.append(f"| `{key}` | {value} |")
 
     if payload.get("video_counts"):
         lines += ["", "## 三、视频状态", "", "| 状态 | 条数 |", "|---|---:|"]
@@ -1240,6 +1328,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="feasibility 显式指定每卡 worker 数（跳过档位校准时必须给），报告里会标明该档未经测速",
     )
 
+    summarize = sub.add_parser("summarize", help="不重跑仿真，用当前代码重算既有实跑结果")
+    summarize.add_argument("--run-id", required=True)
+    summarize.add_argument("--mode", default=None, help="档目录名，如 P0x12；只有一个档时可省")
+
     report = sub.add_parser("report", help="汇总各阶段判定与计数，写轻量包")
     report.add_argument("--run-id", required=True)
 
@@ -1282,6 +1374,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 Path(args.source_dir).resolve(), Path(args.output_dir).resolve(), args.mode
             )
             return 0 if payload["passed"] else 1
+        if args.command == "summarize":
+            result = cmd_summarize(args.run_id, args.mode)
+            return 0 if result.get("passed") else 1
         if args.command == "report":
             cmd_report(args.run_id)
             return 0
