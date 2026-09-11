@@ -1,0 +1,528 @@
+{
+  "run_id": "20260910-new-values-04",
+  "phase": "before",
+  "episodes": 30,
+  "font": "Noto Sans CJK JP",
+  "dpi": 110,
+  "groups": [
+    {
+      "task": "BinFill",
+      "difficulty": "easy",
+      "directory": "BinFill/easy",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "05fee8176297b4d3dfd8c0d17c5a0bb45f8519b49e44ec582b62596a5b0fab1d",
+        "376e41ecbf54187158b06f48162048ba1380446e1998de1f690b09d93a26ae47",
+        "1fab01dfa665aa26080bd4f25b55c3273f4145965ae28fa6f885c9f08c2890ec"
+      ]
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "medium",
+      "directory": "BinFill/medium",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "9216e3f9f201c251ad70e2e3f89256fac751d6ad1b0e450566cf1859e120b09e",
+        "57d39063e75f8be0b49c39b9c06eb9fa92398048a540d51f09b8f3ae147fc325",
+        "23da803942f37f1fe78e24ed4c8e6ff8a63272f467fc00ea53a6da3132e73b7f"
+      ]
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "hard",
+      "directory": "BinFill/hard",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "2d78e07309718ee1d905d0c9db4c433cd3fb31c5e19a3effcbc7cc02cb86b603",
+        "8b51f377153c471bbf8b08bbc7169b2317cc484d229edb55727f996d984e8e7a",
+        "6d2cdba3ef3731c800515c1ff56b13b24dad801cdf7e93d3affe3f3a20eaec69"
+      ]
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "directory": "RouteStick/easy",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "137749dc7d713e027f0602b7cd113fb1a849eddd473de78ca1bc400171eb4f1c",
+        "987624cf3605feb1407efd5169435bc932a1af463a4a1d0627bb643f4313e0fa",
+        "30ec78d43ea8f87edff8425e598aa3305173b7cd2341b00a36c601fe04213016"
+      ]
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "medium",
+      "directory": "RouteStick/medium",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "20dac10afade1b3201f0b9f67dae14641e4a21867051081ee135246e15c293f9",
+        "8375ad505d42e2b41fa67b8f93b555333c07d805b2ff8003c91069b95a875df0",
+        "25b82c236bdb279ab028f7f78394fb5967dbd77e04529c0bc65b9cb7eb4abb7c"
+      ]
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "hard",
+      "directory": "RouteStick/hard",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "02bb697694ee649101cce6ae9e43f8d48248f02dca70c3ea890cd551c0f4a831",
+        "c68b4697576c0774686e8425842409800df98660fa8c94046c435deb7ffa186f",
+        "1f7865566f5d2d33d7d33889c3a312b1559d085f57a9ca2ad4e5790b46af47eb"
+      ]
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "easy",
+      "directory": "VideoUnmaskSwap/easy",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "7dbcd31cc77de10d102430bd1327f14fdace75682dd3882517b7afb97077f3b9",
+        "9b8af2258bdc86d25daf635b33995a53b52675c38b4e1692df63bc03755bbb87",
+        "4d45acb0369a81f287a682a05d940007ac0462fd092e6aa6fb032177ffd1de15"
+      ]
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "medium",
+      "directory": "VideoUnmaskSwap/medium",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "e10bc911a07419b118cadc9a1312b3d217da6b69ae6089ce7188d322c9d5acaa",
+        "21950c14328bf55e9ab4dd4449b40174a33cb418702c829de7789a2d10b19de9",
+        "c6aec75f6df4d6293a87e7f4ac6f1f1095242368f9a9d2ddddb719ef004ce259"
+      ]
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "hard",
+      "directory": "VideoUnmaskSwap/hard",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "9d5d3294ce9520e4c3f1e0847738dfb325fd9f234ac28c0271528030591eff24",
+        "f10317a0b0f290109596c9eeeaf1e8eb0c8a67067955f38c7076ae6e8d6358d1",
+        "e493bb7dcea9560749b2d68808c33892bc0c7e336b2a7ab8fa7861d90cc11f0d"
+      ]
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "easy",
+      "directory": "VideoRepick/easy",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "d81769760958553f767a76126fb6e8729096b4ce9d4266f78571f7499eecaacf",
+        "250b860723c4940f8c748c52081031303fa00c5ad49c3f1185debd5070c7b98b",
+        "f01cfad1173a10d148cd1b8a85cdba0793407cca100634328f5fba12b62aaf0c"
+      ]
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "medium",
+      "directory": "VideoRepick/medium",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "00ebff80391b5aea6bf2d48c15ff9eda00ae8c319a4607887ad683bd3a043bb4",
+        "66177cc0942bb7035e7e426c1278f0502a0e22cacaa6e410bced9d61520d7265",
+        "cac663a13ca7606ff9d8a28e69b88fe03dc9ff8d65d09d35b1cbb61aebdf188e"
+      ]
+    }
+  ],
+  "sizes": {
+    "BinFill/easy/1_positions.png": [
+      3630,
+      1375
+    ],
+    "BinFill/easy/2_events.png": [
+      3630,
+      1375
+    ],
+    "BinFill/easy/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "BinFill/easy/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "BinFill/easy/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "BinFill/easy/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "BinFill/easy/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "BinFill/medium/1_positions.png": [
+      3630,
+      1375
+    ],
+    "BinFill/medium/2_events.png": [
+      3630,
+      1375
+    ],
+    "BinFill/medium/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "BinFill/medium/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "BinFill/medium/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "BinFill/medium/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "BinFill/medium/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "BinFill/hard/1_positions.png": [
+      3630,
+      1375
+    ],
+    "BinFill/hard/2_events.png": [
+      3630,
+      1375
+    ],
+    "BinFill/hard/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "BinFill/hard/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "BinFill/hard/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "BinFill/hard/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "BinFill/hard/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/easy/1_positions.png": [
+      2420,
+      1375
+    ],
+    "RouteStick/easy/2_events.png": [
+      3630,
+      2750
+    ],
+    "RouteStick/easy/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/easy/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/easy/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/easy/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/easy/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/medium/1_positions.png": [
+      2420,
+      1375
+    ],
+    "RouteStick/medium/2_events.png": [
+      3630,
+      2750
+    ],
+    "RouteStick/medium/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/medium/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/medium/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/medium/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/medium/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/hard/1_positions.png": [
+      2420,
+      1375
+    ],
+    "RouteStick/hard/2_events.png": [
+      3630,
+      2750
+    ],
+    "RouteStick/hard/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/hard/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/hard/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/hard/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/hard/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/easy/1_positions.png": [
+      3630,
+      2750
+    ],
+    "VideoUnmaskSwap/easy/2_events.png": [
+      4840,
+      1375
+    ],
+    "VideoUnmaskSwap/easy/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/easy/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/easy/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/easy/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/easy/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/medium/1_positions.png": [
+      3630,
+      2750
+    ],
+    "VideoUnmaskSwap/medium/2_events.png": [
+      4840,
+      1375
+    ],
+    "VideoUnmaskSwap/medium/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/medium/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/medium/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/medium/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/medium/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/hard/1_positions.png": [
+      3630,
+      2750
+    ],
+    "VideoUnmaskSwap/hard/2_events.png": [
+      4840,
+      1375
+    ],
+    "VideoUnmaskSwap/hard/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/hard/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/hard/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/hard/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "VideoUnmaskSwap/hard/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/easy/1_positions.png": [
+      3630,
+      2750
+    ],
+    "VideoRepick/easy/2_events.png": [
+      4840,
+      1375
+    ],
+    "VideoRepick/easy/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/easy/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/easy/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/easy/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/easy/3_episodes_p5.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/medium/1_positions.png": [
+      3630,
+      2750
+    ],
+    "VideoRepick/medium/2_events.png": [
+      4840,
+      1375
+    ],
+    "VideoRepick/medium/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/medium/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/medium/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/medium/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "VideoRepick/medium/3_episodes_p5.png": [
+      3630,
+      3190
+    ]
+  }
+}

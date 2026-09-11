@@ -1,4 +1,4 @@
-"""从冻结规格统计「结果分布」，生成 11 组「事件 / 取值域 / 分配 / 结果分布」四列表。
+"""从冻结规格统计「结果分布」，生成 11 组「事件 / 取值域 / 分配 / 结果分布」四列表（每组分「初始化」「事件」两张）。
 
 * 只读 ``artifacts/injection/<run-id>/specs/<任务>/<难度>.json`` 与 ``scripts/configs/newtask-v2/native_sampling.json``，
   只依赖标准库，不 import matplotlib，也不 import ``tests._shared``（与出图脚本同样是独立只读工具；
@@ -319,6 +319,30 @@ def repick_rows(records: list[dict[str, Any]], config: dict[str, Any], anchors_c
     ]
 
 
+# ── 每行归「初始化」还是「事件」（用户要求表格分两部分）────────────────────────
+INIT, EVT = "初始化", "事件"
+SECTION_OF = {
+    # BinFill：场景里有什么、摆在哪 = 初始化；要投哪些、投几块、抓哪块 = 事件
+    "`dynamic`（方块分批出现还是开局全在）": INIT, "`colors_present`（场上有哪些颜色）": INIT, "`spawn_total`（生成几块）": INIT,
+    "`initialize_color_order`（颜色创建顺序）": INIT, "`spawn_count[颜色]`（每色生成几块）": INIT, "方块生成顺序": INIT,
+    "`button_xy`（按钮中心）": INIT, "`board.xy`、`board.yaw_deg`（孔板）": INIT, "`cubes[i].xy`、`yaw_rad`（每块方块）": INIT,
+    "`put_in_color` 目标色种数": EVT, "`target_pool`（要投入的颜色子集）": EVT, "`put_in_total`（投入几块）": EVT,
+    "`target_count[颜色]`（每色投几块）": EVT, "`actions`（抓哪块）": EVT,
+    # RouteStick：整排位置与柱子颜色 = 初始化；走几段、从哪起、每段去哪怎么绕 = 事件
+    "`rotation_deg`（整排绕世界原点转）": INIT, "`obstacle_rgb[4]`（4 根障碍柱颜色）": INIT, "9 个格点位置": INIT,
+    "`L`（走几段）": EVT, "起点 `nodes[0]`": EVT, "每段去哪（有向边）": EVT, "每段绕行方向 `directions`": EVT,
+    # VideoUnmaskSwap：布局、藏物、位姿、冻结候选 = 初始化；交换几次、谁发起、抓几个 = 事件
+    "`layout_type`（锚点布局）": INIT, "`selected`（藏物容器排序）": INIT, "`color_order`（藏物颜色顺序）": INIT,
+    "`theta_rad`（整组绕原点转）": INIT, "`bins[i].xy`、`yaw_deg`（每个容器）": INIT, "`hidden`（颜色→容器）": INIT,
+    "`empty`（空容器）": INIT, "`collision.candidates_used`（冻结用了第几个候选）": INIT,
+    "`n_swaps`（交换几次）": EVT, "`n_picks`（视频后抓几个）": EVT, "前两个发起者 `swap_initiators[:2]`": EVT,
+    "第三个发起者 `swap_initiators[2]`": EVT, "`pick_order`（视频后抓取顺序）": EVT, "`swap_pairs[k].partner`（交换搭档）": EVT,
+    # VideoRepick：布局、颜色、位姿 = 初始化；交换、重复、目标、发起顺序 = 事件
+    "`color`（三块统一颜色）": INIT, "`theta_rad`、`button_xy`": INIT, "`cubes[i].xy`、`yaw_rad`（每块方块）": INIT,
+    "`num_repeats`（重复抓放次数）": EVT, "`target`（目标方块）": EVT, "后续发起者顺序 `tail`": EVT,
+}
+
+
 # ── 渲染 ────────────────────────────────────────────────────────────────────
 def group_rows(task: str, difficulty: str, records: list[dict[str, Any]], sampling: dict[str, Any]) -> list[tuple[str, str, str, str]]:
     config = sampling["parameters"][task]["configs"][difficulty]
@@ -336,9 +360,14 @@ def render_group_table(task: str, difficulty: str, records: list[dict[str, Any]]
     lines = [f"### {task} / {difficulty}（{len(records)} 条）", ""]
     if task == "VideoRepick":
         lines += ["> 注：VideoRepick 的三块方块在规格里 `object_id` 是 `bin_0/1/2`（沿用源码命名），下表照此写。", ""]
-    lines += ["| 事件 | 取值域 | 分配 | 结果分布 |", "|---|---|---|---|"]
-    lines += [f"| {a} | {b} | {c} | {d} |" for a, b, c, d in rows]
-    return "\n".join(lines), len(rows)
+    unknown = [a for a, *_ in rows if a not in SECTION_OF]
+    if unknown:
+        raise KeyError(f"事件行未归类到初始化/事件：{unknown}")
+    for section, note in ((INIT, "场景开局是什么样：物体种类、数量、位姿、藏物关系"), (EVT, "任务要做什么：投入／抓取／路线／交换的选择")):
+        lines += [f"#### {section}（{note}）", "", "| 事件 | 取值域 | 分配 | 结果分布 |", "|---|---|---|---|"]
+        lines += [f"| {a} | {b} | {c} | {d} |" for a, b, c, d in rows if SECTION_OF[a] == section]
+        lines.append("")
+    return "\n".join(lines).rstrip("\n"), len(rows)
 
 
 def render_all(root: Path, sampling: dict[str, Any]) -> tuple[str, int]:
