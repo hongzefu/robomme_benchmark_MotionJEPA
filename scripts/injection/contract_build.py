@@ -41,6 +41,9 @@ GROUPS = (
     ("VideoRepick", "easy"), ("VideoRepick", "medium"),
 )
 EXCLUDED_GROUPS = (("VideoRepick", "hard"),)
+#: 2026-09-11 用户决定新增的 xhard 三组；``GROUPS`` 保持 11 组（v1／v2 的输入清单）不动。
+XHARD_GROUPS = (("RouteStick", "xhard"), ("VideoUnmaskSwap", "xhard"), ("VideoRepick", "xhard"))
+GROUPS_V3 = GROUPS + XHARD_GROUPS
 
 #: BinFill 对齐 heldout 分支 ``cvpr2026Challenge-heldOutSeed-4-5/4``（commit 2fa5660）的三条 override（v2）。
 HELDOUT_COMMIT = "2fa5660d8b78f31a6735538660d18a8e830bff63"
@@ -345,7 +348,8 @@ def build_v1(sampling: dict[str, Any], sampling_path: Path) -> dict[str, Any]:
         "generator_seed": DEFAULT_SEED,
         "group_size": GROUP_SIZE,
         "derives_from": str(sampling_path.relative_to(REPO_ROOT)) if sampling_path.is_relative_to(REPO_ROOT) else str(sampling_path),
-        "derives_from_operands_sha256": operand_sha256(sampling),
+        # 只算 v1 消费到的三档（作用域散列，见 specs.operand_sha256）：源码日后加档不改变 v1 的依据身份
+        "derives_from_operands_sha256": operand_sha256(sampling, {d for _, d in GROUPS}),
         "excluded_groups": [list(item) for item in EXCLUDED_GROUPS],
         "overrides": [],
         "groups": groups,

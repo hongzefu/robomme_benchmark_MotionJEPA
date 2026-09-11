@@ -11,12 +11,13 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import itertools
 import json
 import math
 from dataclasses import dataclass, field
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Iterable, Sequence
 
 import numpy as np
 
@@ -60,6 +61,15 @@ GROUPS: tuple[tuple[str, str], ...] = (
     ("VideoRepick", "medium"),
 )
 EXCLUDED_GROUPS: tuple[tuple[str, str], ...] = (("VideoRepick", "hard"),)
+#: 2026-09-11 用户决定新增的 xhard 三组（RouteStick 段数 8～10；两个视频任务 swap 4～5 次）。
+#: ``GROUPS`` 保持 11 组不动：它是 v1／v2 契约 builder 的输入清单，也是 05 及更早冻结运行的复验口径。
+XHARD_GROUPS: tuple[tuple[str, str], ...] = (
+    ("RouteStick", "xhard"),
+    ("VideoUnmaskSwap", "xhard"),
+    ("VideoRepick", "xhard"),
+)
+#: 契约 v3 的完整组列表（14 组）。运行期（plan／check／run）不读这两个常量，一律由契约或清单驱动。
+GROUPS_V3: tuple[tuple[str, str], ...] = GROUPS + XHARD_GROUPS
 
 #: ``BinFill`` 的颜色池顺序（``native_semantics.BinFill.spawn_color_order``），只是索引口径。
 SPAWN_COLOR_ORDER = ("red", "blue", "green")
@@ -98,16 +108,34 @@ def record_sha256(record: dict[str, Any]) -> str:
     return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
 
 
-def operand_sha256(sampling: dict[str, Any]) -> str:
+def operand_sha256(sampling: dict[str, Any], difficulties: Iterable[str] | None = None) -> str:
     """规格生成**实际消费的那部分**原值依据的散列：只取 ``parameters`` 与 ``positions``。
 
     ⚠ 不能用 ``native_sampling.json`` 的整个文件字节散列。该文件里还有
     ``sources.sha256``——四个任务模块的源码指纹，接入新值后每改一次源码就得刷新一次。
     拿文件散列当验收依据，会在一次纯源码改动之后把已经冻结的规格全部判成「依据漂移」，
     而真正的取值域（parameters / positions）根本没动。实测就踩过这一下。
+
+    ``difficulties``（2026-09-11 加 xhard 时引入）：非空时 ``parameters.<任务>.configs`` 只保留
+    这些难度键，其余原样。同一原则的延伸——某个契约／某次冻结只消费了 easy/medium/hard 三档，
+    源码后来加了 ``config_xhard`` 也不该把它们判成「依据漂移」。实测：新源码按三档过滤后的散列
+    与 05 冻结时的 ``124e49f8…`` 逐位相同，四档全量则是新值。``None`` 为全量（向后兼容）。
     """
-    payload = {"parameters": sampling["parameters"], "positions": sampling["positions"]}
+    parameters = sampling["parameters"]
+    if difficulties is not None:
+        keep = set(difficulties)
+        parameters = copy.deepcopy(parameters)
+        for task_block in parameters.values():
+            configs = task_block.get("configs") if isinstance(task_block, dict) else None
+            if isinstance(configs, dict):
+                task_block["configs"] = {key: value for key, value in configs.items() if key in keep}
+    payload = {"parameters": parameters, "positions": sampling["positions"]}
     return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
+
+
+def difficulties_of(groups: Iterable[tuple[str, str]]) -> set[str]:
+    """一组 ``(任务, 难度)`` 消费到的难度集合，供 :func:`operand_sha256` 的作用域参数。"""
+    return {difficulty for _task, difficulty in groups}
 
 
 def seal(record: dict[str, Any]) -> dict[str, Any]:

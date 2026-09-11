@@ -2,7 +2,7 @@
 
 子命令：
 
-* ``plan``  —— 生成并冻结 11 组 × 100 条规格，写运行根目录与清单（步骤 0）。
+* ``plan``  —— 按契约里的组列表生成并冻结每组 100 条规格，写运行根目录与清单（步骤 0）。
 * ``check`` —— 从冻结的规格**独立重算**全部计数与几何，打第 5.7 节的判定行。
 * ``plot``  —— 出跑前／跑后三类图（委托 :mod:`scripts.injection.plots`）。
 * ``run``   —— 校准与实跑的编排（步骤 2～5），复用生产入口 ``generate_dataset_newseed``。
@@ -37,10 +37,10 @@ from .specs import (  # noqa: E402
     CUBE_HALF_SIZE,
     EXCLUDED_GROUPS,
     GENERATOR_VERSION,
-    GROUPS,
     SPEC_SCHEMA_VERSION,
     DEFAULT_SEED,
     build_group,
+    difficulties_of,
     operand_sha256,
     canonical_json,
     record_sha256,
@@ -78,7 +78,7 @@ def run_root(run_id: str) -> Path:
 
 # ── plan ────────────────────────────────────────────────────────────────────
 def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path, contract_path: Path) -> dict[str, Any]:
-    """生成 11 组规格并冻结。运行编号不可复用：目录已存在直接拒绝。
+    """按契约里的组列表生成规格并冻结（v2 契约 11 组，v3 契约 14 组）。运行编号不可复用：目录已存在直接拒绝。
 
     ``contract_path`` 是取值域与分配的约定（``injection_contract_v*.json``），是候选分布的派生依据；
     ``sampling_config`` 只再提供几何常量。两者的身份都写进清单。
@@ -96,15 +96,17 @@ def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path, cont
     _mismatches, problems = audit_overrides(contract, sampling)
     if problems:
         raise CampaignError("契约与原值回算不一致且未登记 override，拒绝冻结：\n  " + "\n  ".join(problems[:5]))
-    # 冻结进规格的是「取值域散列」（parameters + positions），不是文件字节散列；
+    # 组列表由契约驱动（v2 契约恰是原 11 组同序，v3 多出三个 xhard 组），不再读模块常量 GROUPS
+    groups = [(group.task, group.difficulty) for group in contract.groups()]
+    # 冻结进规格的是「取值域散列」（parameters + positions，只取本次消费到的难度档），不是文件字节散列；
     # 文件字节散列另存一份作参考，源码指纹刷新时它会变，但不影响验收。
-    config_sha = operand_sha256(sampling)
+    config_sha = operand_sha256(sampling, difficulties_of(groups))
     file_sha = _sha256_file(sampling_config)
 
     started = time.monotonic()
     groups_meta: list[dict[str, Any]] = []
     stats_all: dict[str, Any] = {}
-    for task, difficulty in GROUPS:
+    for task, difficulty in groups:
         group = build_group(task, difficulty, sampling, contract, seed)
         relative = Path("specs") / task / f"{difficulty}.json"
         _write_json(root / relative, group.as_document(config_sha))
@@ -228,7 +230,7 @@ def _check_scope(documents: dict[tuple[str, str], dict[str, Any]], verdicts: Ver
         not problems,
         groups=len(documents),
         specs=total,
-        excluded="VideoRepick-hard",
+        excluded="+".join(f"{task}-{difficulty}" for task, difficulty in EXCLUDED_GROUPS),
         problems=len(problems),
     )
     if problems:
@@ -241,7 +243,7 @@ def _check_reproducible(
     """同 seed、**不同组调度顺序**独立再生成一次，逐记录散列必须相同。"""
     compared = 0
     differences = 0
-    for task, difficulty in reversed(GROUPS):  # 倒序调度，证明结果与顺序无关
+    for task, difficulty in reversed(list(documents)):  # 按清单倒序调度全部组，证明结果与顺序无关
         rebuilt = build_group(task, difficulty, sampling, contract, seed)
         frozen = documents[(task, difficulty)]["episodes"]
         for left, right in zip(frozen, rebuilt.episodes):
@@ -482,6 +484,11 @@ def _static_problems(
         for item in swaps:
             if item["initiator"] == item["partner"]:
                 problems.append(f"{tag}: 交换发起者与搭档相同")
+        # 第 k 段发起者 = 循环基 swap_initiators[k mod 3]（xhard 4～5 次时循环沿用；≤3 次时与逐个取用等价）
+        initiators = objects["swap_initiators"]
+        for index, item in enumerate(swaps):
+            if not initiators or item["initiator"] != initiators[index % len(initiators)]:
+                problems.append(f"{tag}: 第 {index} 段发起者不是 swap_initiators[{index} mod {len(initiators)}]")
         if is_unmask:
             if len(objects["selected"]) != 3 or len(set(objects["selected"])) != 3:
                 problems.append(f"{tag}: 藏物排序不是 3 个互异容器")
@@ -594,10 +601,12 @@ def cmd_check(run_id: str, sampling_config: Path, contract_override: Path | None
     sampling = json.loads(sampling_config.read_text(encoding="utf-8"))
     contract = resolve_contract(manifest, contract_override)
     frozen = manifest.get("sampling_operands_sha256") or manifest.get("sampling_config_sha256")
-    if operand_sha256(sampling) != frozen:
+    # 只算清单里各组消费到的难度档：源码后来加了别的档（如 xhard）不会把旧冻结判成依据漂移
+    current_sha = operand_sha256(sampling, {item["difficulty"] for item in manifest["groups"]})
+    if current_sha != frozen:
         raise CampaignError(
             "原值取值域（parameters / positions）的散列与冻结时不符，拒绝在漂移的依据上验收；"
-            f"当前 {operand_sha256(sampling)[:12]}…，冻结时 {str(frozen)[:12]}…"
+            f"当前 {current_sha[:12]}…，冻结时 {str(frozen)[:12]}…"
         )
     current_file_sha = _sha256_file(sampling_config)
     if manifest.get("sampling_config_file_sha256") not in (None, current_file_sha):
@@ -1387,7 +1396,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="新值注入专项：规格生成、静态检查、出图与实跑编排")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    plan = sub.add_parser("plan", help="生成并冻结 11 组 × 100 条规格")
+    plan = sub.add_parser("plan", help="按契约里的组列表生成并冻结每组 100 条规格（v2 为 11 组，v3 为 14 组）")
     plan.add_argument("--run-id", required=True)
     plan.add_argument("--seed", type=int, default=DEFAULT_SEED)
     plan.add_argument("--per-group", type=int, default=GROUP_SIZE)

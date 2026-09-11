@@ -244,18 +244,27 @@ SAMPLING_EXTRACTED_BLOCKS = ("parameters", "positions", "sources")
 
 # 真正参与运算的操作元路径：--source-ref 的旧式源码只能还原这一层，
 # 说明性字段（*_expression、*_origin、min_gap 文本等）不在其中。
+# ⚠ RouteStick／VideoUnmaskSwap／VideoRepick 的 configs 按难度逐条列出，不列整块：
+# 固定基线 94449db 只有三档，2026-09-11 起这三个任务多了 config_xhard，整块比对会把新增档误判成「原版操作元不一致」。
+# 基线只担保原三档一字未动；BinFill 没有 xhard，仍整块比对。
 SAMPLING_OPERAND_PATHS: tuple[str, ...] = (
     "parameters.BinFill.configs",
     "parameters.BinFill.dynamic.low",
     "parameters.BinFill.dynamic.high_exclusive",
     "parameters.BinFill.dynamic.shape",
-    "parameters.RouteStick.configs",
+    "parameters.RouteStick.configs.easy",
+    "parameters.RouteStick.configs.medium",
+    "parameters.RouteStick.configs.hard",
     "parameters.RouteStick.configs_fallback_difficulty",
     "parameters.RouteStick.walk",
-    "parameters.VideoUnmaskSwap.configs",
+    "parameters.VideoUnmaskSwap.configs.easy",
+    "parameters.VideoUnmaskSwap.configs.medium",
+    "parameters.VideoUnmaskSwap.configs.hard",
     "parameters.VideoUnmaskSwap.object_selection",
     "parameters.VideoUnmaskSwap.swap_selection",
-    "parameters.VideoRepick.configs",
+    "parameters.VideoRepick.configs.easy",
+    "parameters.VideoRepick.configs.medium",
+    "parameters.VideoRepick.configs.hard",
     "parameters.VideoRepick.object_selection",
     "parameters.VideoRepick.swap_selection",
     "parameters.VideoRepick.num_repeats.low",
@@ -359,6 +368,14 @@ def _func_def(scope: ast.AST, name: str) -> ast.FunctionDef:
         if isinstance(node, ast.FunctionDef) and node.name == name:
             return node
     raise SamplingConfigError(f"未找到函数定义：{name}")
+
+
+def _has_assigned(scope: ast.AST, name: str) -> bool:
+    """scope 内是否存在 ``name = ...`` 赋值（只判存在，不求值）。"""
+    return any(
+        isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == name for t in node.targets)
+        for node in ast.walk(scope)
+    )
 
 
 def _assigned_literal(scope: ast.AST, name: str) -> Any:
@@ -533,6 +550,10 @@ def extract_native_sampling(
                 "hard": _assigned_literal(class_def, "config_hard"),
             }
         }
+        # 第四档 xhard（2026-09-11）只有 RouteStick／VideoUnmaskSwap／VideoRepick 有，类里存在才写入；
+        # BinFill 没有，保持三键。legacy 分支（旧式源码）永远没有该属性，不改。
+        if _has_assigned(class_def, "config_xhard"):
+            task_parameters["configs"]["xhard"] = _assigned_literal(class_def, "config_xhard")
         task_parameters.update(copy.deepcopy(native["parameters"]))
         parameters[task] = task_parameters
         positions[task] = copy.deepcopy(native["positions"])
