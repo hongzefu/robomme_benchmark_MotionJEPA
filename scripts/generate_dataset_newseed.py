@@ -209,17 +209,17 @@ SAMPLING_SOURCES: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
         "RouteStick",
         "src/robomme/robomme_env/RouteStick.py",
-        ("config_easy", "config_medium", "config_hard", "__init__", "_load_scene", "_initialize_episode"),
+        ("config_easy", "config_medium", "config_hard", "config_xhard", "__init__", "_load_scene", "_initialize_episode"),
     ),
     (
         "VideoUnmaskSwap",
         "src/robomme/robomme_env/VideoUnmaskSwap.py",
-        ("config_easy", "config_medium", "config_hard", "__init__", "_load_scene", "_initialize_episode"),
+        ("config_easy", "config_medium", "config_hard", "config_xhard", "__init__", "_load_scene", "_initialize_episode"),
     ),
     (
         "VideoRepick",
         "src/robomme/robomme_env/VideoRepick.py",
-        ("config_easy", "config_medium", "config_hard", "__init__", "_load_scene", "_initialize_episode"),
+        ("config_easy", "config_medium", "config_hard", "config_xhard", "__init__", "_load_scene", "_initialize_episode"),
     ),
     (
         "object_generation",
@@ -516,7 +516,7 @@ def extract_native_sampling(
 
     工作树（以及任何已经接入 sampling_config 的提交）里，四个任务模块顶层各有一份
     ``NATIVE_SAMPLING`` 字面量，它同时是不传配置时的运行默认值，因此提取即读取运行真值；
-    难度字典仍从类属性 ``config_easy/medium/hard`` 读，不在两处重复。
+    难度字典仍从类属性 ``config_easy/medium/hard``（三任务另有 ``config_xhard``）读，不在两处重复。
     """
     sources: dict[str, Any] = {}
     trees: dict[str, ast.Module] = {}

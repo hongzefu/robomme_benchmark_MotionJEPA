@@ -110,7 +110,7 @@ def test_real_walk_matches_baseline_nodes_and_rng(backtrack, steps, start):
 
 
 @pytest.mark.parametrize("task", ["VideoUnmaskSwap", "VideoRepick"])
-@pytest.mark.parametrize("difficulty", ["easy", "medium", "hard"])
+@pytest.mark.parametrize("difficulty", ["easy", "medium", "hard", "xhard"])  # xhard 的对象数：Unmask 4、Repick 3，走非 hard 分支
 def test_real_object_selection_expressions_match_baseline(task, difficulty):
     def run(baseline):
         scene = generator._func_def(source_tree(task, baseline), "_load_scene")

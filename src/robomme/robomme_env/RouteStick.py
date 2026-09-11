@@ -169,12 +169,18 @@ class RouteStick(BaseEnv):
     'length':[4,7],
     'backtrack':True,
     }
+    # xhard（2026-09-11 用户决定）：与 hard 一致，只把段数提到 8～10
+    config_xhard = {
+    'length':[8,10],
+    'backtrack':True,
+    }
 
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard
     }
 
     def __init__(self, *args, robot_uids="panda_stick", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,

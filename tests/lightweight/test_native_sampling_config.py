@@ -96,7 +96,9 @@ def test_load_sampling_config_slices_four_tasks() -> None:
     assert sorted(configs) == sorted(generator.SAMPLING_TASKS)
     for task, payload in configs.items():
         assert set(payload) == {"parameters", "positions"}
-        assert set(payload["parameters"]["configs"]) == {"easy", "medium", "hard"}
+        # 2026-09-11 起 RouteStick／VideoUnmaskSwap／VideoRepick 多一档 xhard，BinFill 仍三档
+        expected = {"easy", "medium", "hard"} | ({"xhard"} if task != "BinFill" else set())
+        assert set(payload["parameters"]["configs"]) == expected
     # 其余 12 个任务照原默认值生成，不因为没有配置而报错
     others = set(seed_layout.ALL_TASKS) - set(generator.SAMPLING_TASKS)
     assert len(others) == 12

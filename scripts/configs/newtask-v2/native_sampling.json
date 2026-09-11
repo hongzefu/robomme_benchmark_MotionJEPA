@@ -29,11 +29,12 @@
     },
     "RouteStick": {
       "path": "src/robomme/robomme_env/RouteStick.py",
-      "sha256": "11b8dc7351335eee8865349fadd646b25db6ef19fc663c02470380ec284ef072",
+      "sha256": "115d0574371596d64901074568ba1d5068e68e905a0a186d88701ddaf548da3e",
       "anchors": [
         "config_easy",
         "config_medium",
         "config_hard",
+        "config_xhard",
         "__init__",
         "_load_scene",
         "_initialize_episode"
@@ -41,11 +42,12 @@
     },
     "VideoUnmaskSwap": {
       "path": "src/robomme/robomme_env/VideoUnmaskSwap.py",
-      "sha256": "bf1b8fa75e7ae43aa4e2c5f6bdc52db6077c9498513b9f97bde4106030de3455",
+      "sha256": "15daa18685c6b88d8911ee03e2a84a3cd3ec3c56c13a54b1f280c8bdc1a986d0",
       "anchors": [
         "config_easy",
         "config_medium",
         "config_hard",
+        "config_xhard",
         "__init__",
         "_load_scene",
         "_initialize_episode"
@@ -53,11 +55,12 @@
     },
     "VideoRepick": {
       "path": "src/robomme/robomme_env/VideoRepick.py",
-      "sha256": "60774bed729dc52e88985deec7c41cc5dc637c43130341ed8951e49a32a72633",
+      "sha256": "e546c927a6ef6726552504854056959c53e3a647ad48f33bab7c1363bac46434",
       "anchors": [
         "config_easy",
         "config_medium",
         "config_hard",
+        "config_xhard",
         "__init__",
         "_load_scene",
         "_initialize_episode"
@@ -172,6 +175,13 @@
             7
           ],
           "backtrack": true
+        },
+        "xhard": {
+          "length": [
+            8,
+            10
+          ],
+          "backtrack": true
         }
       },
       "configs_fallback_difficulty": "easy",
@@ -222,6 +232,13 @@
           "swap_max": 3,
           "pick_min": 2,
           "pick_max": 2
+        },
+        "xhard": {
+          "bin": 4,
+          "swap_min": 4,
+          "swap_max": 5,
+          "pick_min": 2,
+          "pick_max": 2
         }
       },
       "object_selection": {
@@ -265,6 +282,11 @@
           "swap": null,
           "swap_min": 0,
           "swap_max": 0
+        },
+        "xhard": {
+          "cube": 3,
+          "swap_min": 4,
+          "swap_max": 5
         }
       },
       "num_repeats": {

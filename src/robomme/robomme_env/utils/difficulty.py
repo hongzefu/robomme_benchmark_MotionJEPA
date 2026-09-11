@@ -5,7 +5,9 @@ from __future__ import annotations
 from typing import Optional
 
 
-VALID_DIFFICULTIES = {"easy", "medium", "hard"}
+# ⚠ 白名单是 16 个任务共享的；某任务是否支持某档由它自己的 configs 决定
+# （2026-09-11 加 xhard，只有 RouteStick／VideoUnmaskSwap／VideoRepick 有 config_xhard，其余任务传 xhard 会在 configs 查表处 KeyError）
+VALID_DIFFICULTIES = {"easy", "medium", "hard", "xhard"}
 
 
 def normalize_robomme_difficulty(value: Optional[str]) -> Optional[str]:

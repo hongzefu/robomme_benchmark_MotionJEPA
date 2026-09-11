@@ -177,13 +177,22 @@ class VideoUnmaskSwap(BaseEnv):
         "pick_min":2,
         "pick_max":2
     }
+    # xhard（2026-09-11 用户决定）：与 hard 一致，只把 swap 次数提到 4～5
+    config_xhard = {
+        "bin":4,
+        "swap_min":4,
+        "swap_max":5,
+        "pick_min":2,
+        "pick_max":2
+    }
 
 
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard
     }
 
 
@@ -498,6 +507,10 @@ class VideoUnmaskSwap(BaseEnv):
         self.swap_pair1_idx2=None
         self.swap_pair2_idx2=None
         self.swap_pair3_idx2=None
+        # xhard（swap 4～5 次）：第 k 次发起者循环沿用前 3 个（a,b,c,a,b）；swap ≤ 3 次时本循环不执行
+        for k in range(3, self.swap_times):
+            setattr(self, f"swap_pair{k+1}_idx1", self.spawned_bins[swap_indices[k % 3]])
+            setattr(self, f"swap_pair{k+1}_idx2", None)
         self._refresh_swap_schedule()
 
         if spec is not None:
@@ -512,6 +525,7 @@ class VideoUnmaskSwap(BaseEnv):
                 "n_picks": self.pick_times,
                 "selected": list(selected_bin_indices),
                 "color_names": list(color_names),
+                # 这三个是循环基：第 k 次的实际发起者是 swap_initiators[k mod 3]，不在证据里展开（与规格的 3 个一一对应）
                 "swap_initiators": [self.spawned_bins.index(getattr(self, f"swap_pair{k}_idx1")) for k in (1, 2, 3)
                                     if getattr(self, f"swap_pair{k}_idx1", None) is not None],
                 "bins": [
@@ -835,21 +849,13 @@ class VideoUnmaskSwap(BaseEnv):
             raise BinCollisionError(rejection)
 
     def _refresh_swap_schedule(self):
-        if self.swap_times==1:
-                    self.swap_schedule = [
-                            (self.swap_pair1_idx1, self.swap_pair1_idx2, 64, 64 + 50),
-                        ]# Final swap order
-        elif self.swap_times==2:
-            self.swap_schedule = [
-                    (self.swap_pair1_idx1, self.swap_pair1_idx2, 64, 64 + 50),
-                    (self.swap_pair2_idx1, self.swap_pair2_idx2, 64 + 50, 64 + 50 * 2),
-                ]# Final swap order
-        elif self.swap_times==3:
-            self.swap_schedule = [
-                    (self.swap_pair1_idx1, self.swap_pair1_idx2, 64, 64 + 50),
-                    (self.swap_pair2_idx1, self.swap_pair2_idx2, 64 + 50, 64 + 50 * 2),
-                    (self.swap_pair3_idx1, self.swap_pair3_idx2, 64 + 50 * 2, 64+ 50 * 3),
-            ]
+        # 通式：第 k 次 swap 占 [64+50k, 64+50(k+1)]，首尾相接；1/2/3 次时与原三分支逐项相同，0 次时不赋值
+        if self.swap_times < 1:
+            return
+        self.swap_schedule = [
+            (getattr(self, f"swap_pair{k+1}_idx1"), getattr(self, f"swap_pair{k+1}_idx2"), 64 + 50 * k, 64 + 50 * (k + 1))
+            for k in range(self.swap_times)
+        ]
 
 
 
