@@ -229,3 +229,45 @@ def test_tables_include_swap_column(wt, tmp_path):
     assert "bin_1↔bin_0（关节法 S=203 = 像素法，B1−S=16） |" in text and "⚠" not in text.split("### VideoRepick / easy")[1]
     # 非视频任务的表没有这一列
     assert "| 0 | 16000 | 300 | 150 | 7 | 8+8=16 | 9.6 | 42.7 | 绕左逆 50 · 绕右顺 50 · 绕右顺 50 ‖ 绕左逆 50 · 绕右顺 50 · 绕右顺 43 · 完成 7 |\n" in text
+
+
+# ── xhard 扩展（2026-09-11）：14 组真源、5 色、多运行合并 ──────────────────────
+def test_groups_是十四组且与注入组列表一致(wt):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from scripts.injection.specs import GROUPS_V3
+
+    assert wt.GROUPS == list(GROUPS_V3) and len(wt.GROUPS) == 14
+    assert wt.GROUPS[-3:] == [("RouteStick", "xhard"), ("VideoUnmaskSwap", "xhard"), ("VideoRepick", "xhard")]
+
+
+def test_跑前图的swap颜色扩到五色且前三色不变():
+    source = (Path(__file__).resolve().parents[2] / "scripts" / "injection-before-2d" / "plot_injection_before_2d.py").read_text(encoding="utf-8")
+    assert 'SWAP_COLORS = ["#6a1b9a", "#ef6c00", "#00838f", "#ad1457", "#5d4037"]' in source
+
+
+@pytest.mark.parametrize("n", [4, 5])
+def test_unmask_xhard_四五次调度(wt, n):
+    pairs = [{"initiator": f"bin_{k % 3}", "partner": f"bin_{(k + 1) % 3}"} for k in range(n)]
+    swaps = wt.unmask_swaps(n, pairs)
+    assert len(swaps) == n and swaps[0][0] == 64 and swaps[-1][1] == 64 + 50 * n
+    assert all(swaps[k][1] == swaps[k + 1][0] for k in range(n - 1))
+
+
+def test_extract_多运行后者覆盖前者(wt, tmp_path, monkeypatch):
+    """两个运行的 episode_results.jsonl 合并：同 key 取后者；行里记 run_id；不开 h5（全部造成失败行）。"""
+    a, b = tmp_path / "a", tmp_path / "b"
+    for d in (a, b):
+        d.mkdir()
+    a.joinpath("episode_results.jsonl").write_text(
+        json.dumps({"task": "RouteStick", "difficulty": "hard", "episode": 0, "seed": 1, "ok": False, "error_type": "X"}) + "\n", encoding="utf-8")
+    b.joinpath("episode_results.jsonl").write_text(
+        json.dumps({"task": "RouteStick", "difficulty": "hard", "episode": 0, "seed": 1, "ok": False, "error_type": "Y"}) + "\n"
+        + json.dumps({"task": "RouteStick", "difficulty": "xhard", "episode": 0, "seed": 1, "ok": False, "error_type": "Z"}) + "\n", encoding="utf-8")
+    monkeypatch.setattr(wt, "REPO_ROOT", tmp_path)
+    payload = wt.extract(["run-a", "run-b"], [a, b])
+    assert payload["rollout_run_ids"] == ["run-a", "run-b"] and payload["rollout_run_id"] == "run-a,run-b"
+    by_key = {(r["task"], r["difficulty"], r["episode"]): r for r in payload["failed_rows"]}
+    assert by_key[("RouteStick", "hard", 0)]["error_type"] == "Y"  # 后者覆盖前者
+    assert by_key[("RouteStick", "xhard", 0)]["error_type"] == "Z"
+    with pytest.raises(ValueError):
+        wt.extract(["only-one"], [a, b])

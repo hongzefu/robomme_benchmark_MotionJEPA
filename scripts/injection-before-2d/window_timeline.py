@@ -30,17 +30,21 @@ from typing import Any, Callable
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[1]
-DEFAULT_ROLLOUT_RUN_ID = "20260911-contract-v2-05"
+DEFAULT_ROLLOUT_RUN_ID = "20260911-contract-v2-05,20260911-contract-v3-06"  # 逗号分隔多个运行，后者覆盖前者的同 key 行
 TIMELINE_JSON = HERE / "windows_timeline.json"
 DOC = HERE / "SAMPLING_WINDOWS.md"
 BEGIN = "<!-- AUTO:WINDOW_TABLES BEGIN -->"
 END = "<!-- AUTO:WINDOW_TABLES END -->"
 
+# 14 组：本目录三个脚本的唯一组列表（event_tables／plot_injection_before_2d 从这里 import），
+# 与 scripts/injection/specs.py::GROUPS_V3 逐项相同（tests/lightweight/test_window_timeline.py 断言）。
+# 2026-09-11 加 xhard 三组；旧 11 组的轨迹来自 05 实跑，xhard 来自 06（--rollout-run-id 可给多个运行，后者覆盖前者）。
 GROUPS: list[tuple[str, str]] = [
     ("BinFill", "easy"), ("BinFill", "medium"), ("BinFill", "hard"),
     ("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"),
     ("VideoUnmaskSwap", "easy"), ("VideoUnmaskSwap", "medium"), ("VideoUnmaskSwap", "hard"),
     ("VideoRepick", "easy"), ("VideoRepick", "medium"),
+    ("RouteStick", "xhard"), ("VideoUnmaskSwap", "xhard"), ("VideoRepick", "xhard"),
 ]
 WIN, STRIDE, BUDGETS = 33, 16, (32, 8)
 BANDS = ("最短", "中位", "最长")
@@ -331,18 +335,31 @@ def rollout_dir(run_id: str, mode: str | None = None) -> Path:
     return root / mode
 
 
-def extract(run_id: str, source: Path) -> dict[str, Any]:
-    """读 jsonl（每个 (任务, 难度, episode) 只取最后一次 attempt）→ 成功条逐个开 h5 → BinFill 模拟 demo。"""
+def extract(run_ids: Sequence[str] | str, sources: Sequence[Path] | Path) -> dict[str, Any]:
+    """读 jsonl（每个 (任务, 难度, episode) 只取最后一次 attempt）→ 成功条逐个开 h5 → BinFill 模拟 demo。
+
+    可传多个运行（与 ``sources`` 一一对应，按序合并、后者覆盖前者的同 key 行）：05 出旧 11 组、06 只实跑 3 个 xhard 组，
+    合并后 14 组落在同一份 JSON；每条行记 ``run_id``，规格按该行所属运行读。
+    """
+    if isinstance(run_ids, str):
+        run_ids = [run_ids]
+    if isinstance(sources, Path):
+        sources = [sources]
+    if len(run_ids) != len(sources):
+        raise ValueError("run_ids 与 sources 数量不一致")
     latest: dict[tuple[str, str, int], dict[str, Any]] = {}
-    for line in (source / "episode_results.jsonl").read_text(encoding="utf-8").splitlines():
-        if line.strip():
-            row = json.loads(line)
-            latest[(row["task"], row["difficulty"], int(row["episode"]))] = row
+    for run_id, source in zip(run_ids, sources):
+        for line in (source / "episode_results.jsonl").read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                row = json.loads(line)
+                row["run_id"] = run_id
+                latest[(row["task"], row["difficulty"], int(row["episode"]))] = row
     groups: dict[str, list[dict[str, Any]]] = {f"{task}/{difficulty}": [] for task, difficulty in GROUPS}
     skipped: list[dict[str, Any]] = []
     failed: list[dict[str, Any]] = []
     unknown_labels: dict[str, int] = {}
-    specs: dict[tuple[str, str], dict[int, dict[str, Any]]] = {}
+    specs: dict[tuple[str, str, str], dict[int, dict[str, Any]]] = {}
+    group_sources: dict[str, str] = {}
     swap_summary = {"episodes": 0, "fail": 0, "warn": 0}
     for (task, difficulty, episode), row in sorted(latest.items()):
         key = f"{task}/{difficulty}"
@@ -365,11 +382,13 @@ def extract(run_id: str, source: Path) -> dict[str, Any]:
             _label, known = short_label(text)
             if not known:
                 unknown_labels[text] = unknown_labels.get(text, 0) + 1
-        entry = {"episode": episode, "seed": int(row["seed"]), "recovery_mode": row.get("recovery_mode"), **record}
+        run_id = row["run_id"]
+        group_sources[key] = run_id
+        entry = {"episode": episode, "seed": int(row["seed"]), "recovery_mode": row.get("recovery_mode"), "run_id": run_id, **record}
         if task in SWAP_TASKS:
-            if (task, difficulty) not in specs:
-                specs[(task, difficulty)] = load_specs(run_id, task, difficulty)
-            annotate_swaps(task, entry, specs[(task, difficulty)][episode], h5_path)
+            if (run_id, task, difficulty) not in specs:
+                specs[(run_id, task, difficulty)] = load_specs(run_id, task, difficulty)
+            annotate_swaps(task, entry, specs[(run_id, task, difficulty)][episode], h5_path)
             swap_summary["episodes"] += 1
             if entry["swap_check"] == "FAIL":
                 swap_summary["fail"] += 1
@@ -379,8 +398,10 @@ def extract(run_id: str, source: Path) -> dict[str, Any]:
             entry = simulate_binfill_demo(entry)
         groups[key].append(entry)
     return {
-        "rollout_run_id": run_id,
-        "source": str(source.relative_to(REPO_ROOT)),
+        "rollout_run_id": ",".join(run_ids),
+        "rollout_run_ids": list(run_ids),
+        "source": ",".join(str(s.relative_to(REPO_ROOT)) for s in sources),
+        "group_sources": group_sources,
         "window": WIN, "stride": STRIDE, "budgets": list(BUDGETS),
         "binfill_simulated_demo": True,
         "episodes": sum(len(rows) for rows in groups.values()),
@@ -489,8 +510,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="采样窗口数轴数据层：extract 抽轨迹成 JSON；tables 生成/校验文档自动表")
     sub = parser.add_subparsers(dest="command", required=True)
     ext = sub.add_parser("extract", help="从实跑 HDF5 抽 T / demo / 分段，写 windows_timeline.json")
-    ext.add_argument("--rollout-run-id", default=DEFAULT_ROLLOUT_RUN_ID)
-    ext.add_argument("--mode", default=None, help="feasibility 下的档目录名（只有一个档时可省）")
+    ext.add_argument("--rollout-run-id", default=DEFAULT_ROLLOUT_RUN_ID, help="逗号分隔的一个或多个运行编号，后者覆盖前者的同 key 行")
+    ext.add_argument("--mode", default=None, help="feasibility 下的档目录名（各运行只有一个档时可省；给了则对每个运行都用它）")
     ext.add_argument("--out", default=str(TIMELINE_JSON))
     tab = sub.add_parser("tables", help="生成或校验 SAMPLING_WINDOWS.md 的自动表")
     tab.add_argument("--json", default=str(TIMELINE_JSON))
@@ -502,8 +523,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "extract":
-        source = rollout_dir(args.rollout_run_id, args.mode)
-        payload = extract(args.rollout_run_id, source)
+        run_ids = [item.strip() for item in args.rollout_run_id.split(",") if item.strip()]
+        sources = [rollout_dir(run_id, args.mode) for run_id in run_ids]
+        payload = extract(run_ids, sources)
         out = Path(args.out)
         out.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
         for text, count in payload["unknown_labels"].items():

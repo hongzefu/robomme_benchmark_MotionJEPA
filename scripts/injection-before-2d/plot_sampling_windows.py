@@ -2,8 +2,8 @@
 
 把上一会话 artifact「采样窗口与 eval 成功率」的 ``track()`` 画法搬成静态 PNG，产物放本目录 ``figures/``（已 gitignore）：
 
-* ``figures/<任务>/<难度>/4_windows.png`` —— 该组全部可用 episode 各一行（按 T 升序），同任务三档共用一根横轴；
-* ``figures/windows_overview.png`` —— 11 组 × 最短／中位／最长 = 33 行，全局横轴，对应 artifact 默认「全部」视图。
+* ``figures/<任务>/<难度>/4_windows.png`` —— 该组全部可用 episode 各一行（按 T 升序），同任务各档共用一根横轴；
+* ``figures/windows_overview.png`` —— 14 组 × 最短／中位／最长 = 42 行，全局横轴，对应 artifact 默认「全部」视图。
 
 每一行从下到上：subgoal 分段（交替灰块，块够宽写中文短标）→ 窗口细条（demo 蓝、exec 绿，按 ``i % 3`` 堆三行防粘连，
 段 < 33 帧画虚线空框）→ N=8 帧路红点 → N=32 帧路紫细线；行底色淡蓝 = demo 段、淡绿 = exec 段；
@@ -73,7 +73,7 @@ def draw_track(ax, row: dict[str, Any], y: float, xmax: float, axis_px: float) -
         ax.add_patch(Rectangle((start, top), length, bottom - top, facecolor=COLOR[kind], alpha=0.09, edgecolor="none", zorder=1))
         ax.plot([start, start], [top, bottom], color=COLOR[kind], linewidth=0.8, alpha=0.7, zorder=2)
     char_px = 7 * DPI / 72
-    # swap 事件：贯穿整行的半透明竖带（第 1/2/3 次紫/橙/青，与跑前图 2 同色），顶部小字「换k a↔b」；校验不过画虚线空框
+    # swap 事件：贯穿整行的半透明竖带（第 1～5 次紫/橙/青/玫红/棕，与跑前图 2 同色；xhard 最多 5 次），顶部小字「换k a↔b」；校验不过画虚线空框
     swap_ok = row.get("swap_check") == "PASS"
     for k, (s, e, label) in enumerate(row.get("swaps", [])):
         color = SWAP_COLORS[k % len(SWAP_COLORS)]
@@ -143,7 +143,7 @@ def _draw_board(items: list[tuple[str, Any]], xmax: float, title: str, out: Path
                Patch(facecolor="none", edgecolor=COLOR["empty"], linestyle="--", label=f"段 < {WIN} 帧，铺不出窗口"),
                Patch(facecolor=COLOR["demo"], alpha=0.15, label="淡蓝底 = demo 段（BinFill 为同一条重复两遍的模拟 demo）"),
                Patch(facecolor=COLOR["exec"], alpha=0.15, label="淡绿底 = exec 段"),
-               *[Patch(facecolor=SWAP_COLORS[k], alpha=0.35, edgecolor=SWAP_COLORS[k], label=f"第 {k + 1} 次 swap（换k 发起者↔搭档；Unmask 按调度常量、Repick 按关节静止反解）") for k in range(3)]]
+               *[Patch(facecolor=SWAP_COLORS[k], alpha=0.35, edgecolor=SWAP_COLORS[k], label=f"第 {k + 1} 次 swap（换k 发起者↔搭档；Unmask 按调度常量、Repick 按关节静止反解）") for k in range(len(SWAP_COLORS))]]
     fig.legend(handles=handles, loc="lower center", ncol=4, fontsize=9, framealpha=0.95, bbox_to_anchor=(0.5, 0.01))
     fig.suptitle(title, fontsize=14, y=1 - 0.35 / fig_h)
     fig.text(0.5, 1 - 0.72 / fig_h, f"窗口 [f, f+{WIN - 1}]（{WIN} 帧）、stride 16、不跨 demo／exec 段，每段窗口数 len(range(0, max(0, L-{WIN - 1}), 16))；"
@@ -172,7 +172,7 @@ def main() -> int:
         target = out_root / task / difficulty
         target.mkdir(parents=True, exist_ok=True)
         items = [("row", _label_for(r, task, difficulty), r) for r in rows]
-        title = (f"图 4 · {task} / {difficulty} 采样窗口数轴（实跑 {run_id}，{len(rows)} 条按 T 升序；横轴 0–{task_xmax[task]} 在 {task} 三档间固定）"
+        title = (f"图 4 · {task} / {difficulty} 采样窗口数轴（实跑 {run_id}，{len(rows)} 条按 T 升序；横轴 0–{task_xmax[task]} 在 {task} 各档间固定）"
                  + ("；BinFill 的 demo 为同一条重复两遍模拟" if task == "BinFill" else ""))
         out = target / "4_windows.png"
         _draw_board(items, task_xmax[task], title, out)
@@ -190,7 +190,7 @@ def main() -> int:
         for band in BANDS:
             items.append(("row", _label_for(reps[band], task, difficulty, band), reps[band]))
     overview = out_root / "windows_overview.png"
-    _draw_board(items, global_xmax, f"采样窗口数轴总览 · 11 组各取最短／中位／最长三条（实跑 {run_id}；横轴 0–{global_xmax} 全局固定，可跨任务横比）", overview)
+    _draw_board(items, global_xmax, f"采样窗口数轴总览 · {len(GROUPS)} 组各取最短／中位／最长三条（实跑 {run_id}；横轴 0–{global_xmax} 全局固定，可跨任务横比）", overview)
     files.append(overview)
 
     sizes = {}

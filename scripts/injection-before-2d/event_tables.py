@@ -33,20 +33,17 @@ HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
 from scripts.injection.contract import Contract, ContractError, GroupContract, load_contract  # noqa: E402
 
 NATIVE_SAMPLING_CONFIG = REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "native_sampling.json"
 DOC = HERE / "NEW_VALUE_DISTRIBUTION_BEFORE.md"
-DEFAULT_RUN_ID = "20260911-contract-v2-05"
+DEFAULT_RUN_ID = "20260911-contract-v3-06"  # 14 组的冻结规格（旧 11 组与 05 逐条相同）
 BEGIN = "<!-- AUTO:EVENT_TABLES BEGIN -->"
 END = "<!-- AUTO:EVENT_TABLES END -->"
 
-GROUPS: list[tuple[str, str]] = [
-    ("BinFill", "easy"), ("BinFill", "medium"), ("BinFill", "hard"),
-    ("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"),
-    ("VideoUnmaskSwap", "easy"), ("VideoUnmaskSwap", "medium"), ("VideoUnmaskSwap", "hard"),
-    ("VideoRepick", "easy"), ("VideoRepick", "medium"),
-]
+from window_timeline import GROUPS  # noqa: E402  # 14 组的唯一真源（纯标准库模块）
 COARSE_BINS = 10
 MAX_KEYS = 12  # 频数键超过这个数只列前几个，避免把表撑爆
 

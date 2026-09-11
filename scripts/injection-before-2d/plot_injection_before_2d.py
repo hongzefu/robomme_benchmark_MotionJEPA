@@ -29,9 +29,14 @@ import argparse
 import glob
 import json
 import math
+import sys
 import textwrap
 from pathlib import Path
 from typing import Any
+
+HERE_DIR = Path(__file__).resolve().parent
+if str(HERE_DIR) not in sys.path:
+    sys.path.insert(0, str(HERE_DIR))
 
 import matplotlib
 
@@ -47,12 +52,7 @@ REPO_ROOT = HERE.parents[1]
 SAMPLING_CONFIG = REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "native_sampling.json"
 FIGURES_DIR = HERE / "figures"
 
-GROUPS: list[tuple[str, str]] = [
-    ("BinFill", "easy"), ("BinFill", "medium"), ("BinFill", "hard"),
-    ("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"),
-    ("VideoUnmaskSwap", "easy"), ("VideoUnmaskSwap", "medium"), ("VideoUnmaskSwap", "hard"),
-    ("VideoRepick", "easy"), ("VideoRepick", "medium"),
-]
+from window_timeline import GROUPS  # noqa: E402  # 14 组的唯一真源
 PLOT_EPISODES = 30       # 只画实跑范围 ep0～29
 EPISODES_PER_PAGE = 6    # 单 episode 图每页 2 行 × 3 列
 EPISODE_PAGES = PLOT_EPISODES // EPISODES_PER_PAGE
@@ -69,7 +69,8 @@ BUTTON_BASE_R = 0.025 * 1.5  # 底座半径（scale=1.5）
 
 COLOR_HEX = {"red": "#d32f2f", "green": "#388e3c", "blue": "#1976d2"}
 COLOR_CN = {"red": "红", "green": "绿", "blue": "蓝"}
-SWAP_COLORS = ["#6a1b9a", "#ef6c00", "#00838f"]
+# 第 1～5 次 swap 的颜色（xhard 最多 5 次）；前 3 色与 10.56 及之前一字不动，旧组图色不变
+SWAP_COLORS = ["#6a1b9a", "#ef6c00", "#00838f", "#ad1457", "#5d4037"]
 BUTTON_COLOR, BOARD_COLOR, EMPTY_BIN_COLOR, ROUTE_COLOR = "#455a64", "#795548", "#cfd8dc", "#e65100"
 ALPHA = 0.75
 
@@ -441,8 +442,11 @@ def plot_events(task, difficulty, records, sampling, out: Path) -> None:
     else:
         is_unmask = task == "VideoUnmaskSwap"
         items_key = "bins" if is_unmask else "cubes"
-        fig, axes = make_panels(4, 4)
-        counts = [0, 0, 0, 0]
+        # 面板数 1 + K：K = max(3, 该组最大 n_swaps)；三档 K=3 与 10.56 的 4 面板逐参数相同，xhard K=5 → 6 面板
+        max_swaps = max((len(r["actions"]["swap_pairs"]) for r in records), default=0)
+        K = max(3, max_swaps)
+        fig, axes = make_panels(1 + K, 4 if K == 3 else 3)
+        counts = [0] * (1 + K)
         for episode, r in enumerate(records):
             positions = {item["object_id"]: view(item["xy"]) for item in r["layout"][items_key]}
             for order, pair in enumerate(r["actions"]["swap_pairs"]):
@@ -463,9 +467,9 @@ def plot_events(task, difficulty, records, sampling, out: Path) -> None:
                     ax.plot(*view(r["layout"]["button_xy"]), ".", color=BUTTON_COLOR, markersize=8, alpha=0.8, zorder=5)
         marker_note = "空心圆 = 视频后抓取的容器" if is_unmask else "空心方 = 目标方块，灰点 = 按钮"
         style_axes(axes[0], f"① 全部交换 ×{counts[0]}：发起者 → 搭档（数字 = ep 号，标在发起者处；{marker_note}）", xl, yl)
-        for k in range(3):
-            style_axes(axes[1 + k], f"{'②③④'[k]} 只看第 {k + 1} 次交换：{counts[1 + k]} 次" + ("（本组无第 3 次交换）" if k == 2 and counts[3] == 0 else ""), xl, yl)
-        handles = [Line2D([], [], color=SWAP_COLORS[k], label=f"第 {k + 1} 次交换 initiator → partner") for k in range(3)]
+        for k in range(K):
+            style_axes(axes[1 + k], f"{'②③④⑤⑥'[k]} 只看第 {k + 1} 次交换：{counts[1 + k]} 次" + (f"（本组无第 {k + 1} 次交换）" if k >= 2 and counts[1 + k] == 0 else ""), xl, yl)
+        handles = [Line2D([], [], color=SWAP_COLORS[k], label=f"第 {k + 1} 次交换 initiator → partner") for k in range(K)]
         if is_unmask:
             handles.append(Line2D([], [], marker="o", linestyle="", markerfacecolor="none", markeredgecolor="black", markersize=10, label="视频后抓取的容器（pick_order）"))
         else:

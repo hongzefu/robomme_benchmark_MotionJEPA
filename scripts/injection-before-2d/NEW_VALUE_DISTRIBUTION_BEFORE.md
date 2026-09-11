@@ -1,13 +1,13 @@
 # 新值规格的跑前分布：怎么生成、每组随机了什么、结果落成什么样
 
-> 数据：`artifacts/injection/20260911-contract-v2-05/specs/<任务>/<难度>.json`，11 组 × 100 条 = 1100 条冻结规格，生成 seed `20260909`，`VideoRepick hard` 排除。取值域与分配两列取自契约 `scripts/configs/newtask-v2/injection_contract_v2.json`（BinFill 对齐 heldout：medium 6～8 块、hard 8～10 块、多目标色每色至少 1 块），改口径与用户决策见 [NEW_VALUE_CONTRACT_CHANGELOG.md](../NEW_VALUE_CONTRACT_CHANGELOG.md)；上一轮 `20260910-new-values-04`（契约 v1 = 原值口径）原样保留作对照，除 BinFill medium／hard 外 9 组规格与 04 逐条相同。
-> 判定（`check_result.json`）：`CONTRACT_DERIVED=PASS fields=155 mismatches=6 overrides=2 version=v2 problems=0`、`SPEC_SCOPE=PASS specs=1100`、`COVERAGE_QUOTA=PASS batches=10 quota_gaps=0`、`STATIC_GEOMETRY=PASS rejected=0`、`COLLISION_SWEEP=PASS specs=500 rejected=0 min_g_m=0.00042638`、`SPEC_REPRODUCIBLE=PASS differences=0`、`CHECK=PASS elapsed_s=357.1`。
+> 数据：`artifacts/injection/20260911-contract-v3-06/specs/<任务>/<难度>.json`，14 组 × 100 条 = 1400 条冻结规格（2026-09-11 新增 RouteStick／VideoUnmaskSwap／VideoRepick 的 `xhard` 三组），生成 seed `20260909`，`VideoRepick hard` 排除。取值域与分配两列取自契约 `scripts/configs/newtask-v2/injection_contract_v3.json`（= v2 + 三个 xhard 组；v2 = BinFill 对齐 heldout：medium 6～8 块、hard 8～10 块、多目标色每色至少 1 块），改口径与用户决策见 [NEW_VALUE_CONTRACT_CHANGELOG.md](../NEW_VALUE_CONTRACT_CHANGELOG.md)；旧 11 组规格与 `20260911-contract-v2-05` 逐条相同（`OLD_GROUPS_EQUIVALENCE=PASS compared=1100 differences=0`），05 与 04 原样保留作对照。
+> 判定（`check_result.json`）：`CONTRACT_DERIVED=PASS fields=200 mismatches=6 overrides=2 version=v3 problems=0`、`SPEC_SCOPE=PASS groups=14 specs=1400`、`COVERAGE_QUOTA=PASS batches=10 quota_gaps=0`、`STATIC_GEOMETRY=PASS checked=1400 rejected=0`（含新增的「第 k 段发起者 = swap_initiators[k mod 3]」校验）、`COLLISION_SWEEP=PASS specs=700 rejected=0 min_g_m=0.000141418`、`SPEC_REPRODUCIBLE=PASS compared=1400 differences=0`、`CHECK=PASS elapsed_s=655.5`。
 > 本目录只有只读脚本，不改 `tests/_shared/*`、不改 `src/robomme`、不写原 `plots/`；图只做**跑前**，PNG 放本目录 `figures/`，已 gitignore 不入库，只保留链接（用户要求）。
 > 05 的 ep0～29 已按契约 v2 实跑（双卡各 20 worker，档 `feasibility/P01x20/`）；这些真实轨迹上的**采样窗口数轴**（motion 窗口、subgoal 分段、两条帧路；BinFill 以同一条重复两遍模拟 demo）见 [SAMPLING_WINDOWS.md](SAMPLING_WINDOWS.md)。
 >
 > 三条命令（都只读规格 JSON）：
-> - 出图：`uv run python scripts/injection-before-2d/plot_injection_before_2d.py --run-id 20260911-contract-v2-05`，只画实跑范围前 30 条（ep0～29），每组 7 张、共 77 张，产物放本目录 `figures/<任务>/<难度>/`（已 gitignore 不入库，文档链接指向本地文件，clone 后先跑一次出图），成功打 `PLOT2D_BEFORE=PASS groups=11 files=77 episodes=30`；
-> - 生成第二节的事件表：`uv run python scripts/injection-before-2d/event_tables.py --run-id 20260911-contract-v2-05 --write`（「取值域」「分配」两列取自清单记录的契约，本脚本只算「结果分布」列），成功打 `EVENT_TABLES=WRITTEN groups=11 rows=125`；
+> - 出图：`uv run python scripts/injection-before-2d/plot_injection_before_2d.py --run-id 20260911-contract-v3-06`，只画实跑范围前 30 条（ep0～29），每组 7 张、共 98 张，产物放本目录 `figures/<任务>/<难度>/`（已 gitignore 不入库，文档链接指向本地文件，clone 后先跑一次出图），成功打 `PLOT2D_BEFORE=PASS groups=14 files=98 episodes=30`；xhard 视频组的事件图按最大 swap 次数画「①全部 + 第 1～5 次」六个面板；
+> - 生成第二节的事件表：`uv run python scripts/injection-before-2d/event_tables.py --run-id 20260911-contract-v3-06 --write`（「取值域」「分配」两列取自清单记录的契约，本脚本只算「结果分布」列），成功打 `EVENT_TABLES=WRITTEN groups=14 rows=156`；
 > - 核对文档链接、产物张数与事件表是否漂移：`uv run python scripts/injection-before-2d/check_doc_links.py`，成功打 `DOC_LINKS=PASS … files=77/77 … tables=PASS`。
 
 ## 一、分布是怎么生成的
@@ -18,7 +18,7 @@
 
 ### 1.1 一个字段一把专属骰子
 
-每一个要随机的量（比如 BinFill/easy 的按钮 x 坐标）都有自己的一把骰子。骰子是这样造的：把 `20260909|BinFill|easy|button_x` 这串字做一次 SHA-256，取前 8 个字节当随机数种子（`scripts/injection/sampling.py::derive_rng`）。换任何一个字（换任务、换难度、换字段名）就是另一把骰子；同一串字在任何机器、任何并行度、任何字典遍历顺序下摇出来的数永远一样。所以 `plan` 跑两遍，1100 条规格逐条散列全同（`SPEC_REPRODUCIBLE=PASS differences=0`）。
+每一个要随机的量（比如 BinFill/easy 的按钮 x 坐标）都有自己的一把骰子。骰子是这样造的：把 `20260909|BinFill|easy|button_x` 这串字做一次 SHA-256，取前 8 个字节当随机数种子（`scripts/injection/sampling.py::derive_rng`）。换任何一个字（换任务、换难度、换字段名）就是另一把骰子；同一串字在任何机器、任何并行度、任何字典遍历顺序下摇出来的数永远一样。所以 `plan` 跑两遍，1400 条规格逐条散列全同（`SPEC_REPRODUCIBLE=PASS compared=1400 differences=0`）；也因为换难度就是另一把骰子，06 新增 xhard 三组不会扰动旧 11 组（与 05 逐条相同）。
 
 ### 1.2 连续量（位置、角度）：10 个抽屉，每个抽屉 10 个小格
 
@@ -76,7 +76,7 @@
 - 两个视频任务：初态 + 每段交换路径过真实碰撞盒的连续检查（接触即拒，容限 1e-6 m）；被拒后 θ 与每个偏移、朝向都在**同一粗箱**内重抽，粗箱不变所以配额判据不受影响。冻结时用到第几个候选的实际频数见第二节各组的 `collision.candidates_used` 行（VideoRepick/medium 最远用到第 33 个）。
 - RouteStick 无几何拒绝（候选 0）。
 
-## 二、11 组各随机了什么、结果落成什么样
+## 二、14 组各随机了什么、结果落成什么样
 
 每组两张表：**初始化**（场景开局是什么样：物体种类、数量、位姿、藏物关系）与**事件**（任务要做什么：投入／抓取／路线／交换的选择）。四列：**事件**（随机了什么）、**取值域**（能取哪些值）、**分配**（用第一节的哪种办法）、**结果分布**（这 100 条实际落成什么样）。「推出」表示由前面的随机量确定性算出、本身不再随机，但仍报实际频数。结果分布只有四种写法：
 
@@ -348,6 +348,75 @@
 | `target`（目标方块） | 三块之一 | 配额 | bin_0:34 bin_1:33 bin_2:33 |
 | 后续发起者顺序 `tail` | 另外两块的 2 种排列 | 配额 | bin_0-bin_1:14 bin_0-bin_2:20 bin_1-bin_0:19 bin_1-bin_2:16 bin_2-bin_0:13 bin_2-bin_1:18 |
 | `swap_pairs[k].partner`（交换搭档） | 交换开始时的水平最近邻，等距取序号小者 | 推出（执行时核验，不符即失败） | 推出：bin_0→bin_2:50 bin_1→bin_2:48 bin_2→bin_0:43 bin_2→bin_1:42 bin_1→bin_0:35 bin_0→bin_1:32（共 250 次交换）；未覆盖 无 |
+
+### RouteStick / xhard（100 条）
+
+#### 初始化（场景开局是什么样：物体种类、数量、位姿、藏物关系）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `rotation_deg`（整排绕世界原点转） | [-30°, 30°] | 分层 | 10 箱各 10，实测 [-29.63, 29.50] |
+| `obstacle_rgb[4]`（4 根障碍柱颜色） | 每根一个随机 RGB，各通道 [0,1) | `rng_ep` 随机（只影响观感） | 通道值 箱计数 120,123,121,121,121,129,116,115,122,112，实测 [0.000, 0.999]（共 1200 个通道值） |
+| 9 个格点位置 | 由 `rotation_deg` 唯一确定 | 推出 | 推出：900 个格点 x 实测 [-0.2254, 0.0515]，y 实测 [-0.2973, 0.2973] |
+
+#### 事件（任务要做什么：投入／抓取／路线／交换的选择）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `L`（走几段） | 8～10 | 配额 | 8:34 9:33 10:33 |
+| 起点 `nodes[0]` | 0/2/4/6/8 | 配额各 20 | 0:20 2:20 4:20 6:20 8:20 |
+| 每段去哪（有向边） | 线性邻接 ±1；允许回退 | 合法候选内平衡 | 8→6:122 0→2:115 6→4:114 6→8:113 2→0:110 2→4:110 4→2:108 4→6:107（共 899 段）；未覆盖 无 |
+| 每段绕行方向 `directions` | clockwise / counterclockwise | 合法候选内平衡 | clockwise:449 counterclockwise:450（共 899 段） |
+
+### VideoUnmaskSwap / xhard（100 条）
+
+#### 初始化（场景开局是什么样：物体种类、数量、位姿、藏物关系）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `layout_type`（锚点布局） | 四点（固定） | 常量 | region4:100 |
+| `selected`（藏物容器排序） | 前三个容器的 6 种排列 | 配额 | 0-1-2:17 0-2-1:17 1-0-2:17 1-2-0:17 2-0-1:16 2-1-0:16 |
+| `color_order`（藏物颜色顺序） | 红绿蓝 6 种排列 | 配额 | red-green-blue:17 red-blue-green:17 green-red-blue:17 green-blue-red:17 blue-red-green:16 blue-green-red:16 |
+| `theta_rad`（整组绕原点转） | [0, 180] 弧度（原单位就是弧度，不是度） | 分层；被拒同粗箱重抽 | 10 箱各 10，实测 [1.71, 179.29] |
+| `bins[i].xy`、`yaw_deg`（每个容器） | 锚点旋转后各偏移 ≤ 0.0425，yaw 0～90° | 分层；被拒同粗箱重抽 | bin_0：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0419, 0.0423]，yaw 实测 [0.49, 89.36]；bin_1：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0420, 0.0422]，yaw 实测 [0.14, 89.99]；bin_2：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0424, 0.0422]，yaw 实测 [0.83, 89.93]；bin_3：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0420, 0.0423]，yaw 实测 [0.45, 89.61] |
+| `hidden`（颜色→容器） | 由 `selected` + `color_order` 算出 | 推出 | 推出：green→bin_1:41 red→bin_0:38 blue→bin_0:35 blue→bin_2:34 red→bin_2:34 green→bin_2:32 blue→bin_1:31 red→bin_1:28 green→bin_0:27（共 300 项）；未覆盖 无 |
+| `empty`（空容器） | 不在 `selected` 里的容器 | 推出 | 推出：bin_3:100 |
+| `collision.candidates_used`（冻结用了第几个候选） | 1～256 | 几何／碰撞被拒后重抽的落地结果 | 1:95 2:4 4:1 |
+
+#### 事件（任务要做什么：投入／抓取／路线／交换的选择）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `n_swaps`（交换几次） | 4～5 | 配额 | 4:50 5:50 |
+| `n_picks`（视频后抓几个） | 2 | 配额 | 2:100 |
+| 前两个发起者 `swap_initiators[:2]` | 3 取 2 的 6 种有序对（原代码把藏物序号当生成序号用，照抄） | 配额 | bin_0-bin_1:17 bin_0-bin_2:17 bin_1-bin_0:17 bin_1-bin_2:17 bin_2-bin_0:16 bin_2-bin_1:16 |
+| 第三个发起者 `swap_initiators[2]` | 其余生成序号 | 合法候选内平衡 | bin_3:26 bin_1:25 bin_2:25 bin_0:24；未覆盖 无 |
+| `pick_order`（视频后抓取顺序） | `selected` 的前 `n_picks` 个 | 推出 | 推出：bin_0→bin_1:17 bin_0→bin_2:17 bin_1→bin_0:17 bin_1→bin_2:17 bin_2→bin_0:16 bin_2→bin_1:16 |
+| `swap_pairs[k].partner`（交换搭档） | 交换开始时的水平最近邻，等距取序号小者；第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者） | 推出（执行时核验，不符即失败） | 推出：bin_1→bin_2:112 bin_2→bin_1:110 bin_0→bin_3:107 bin_3→bin_0:23 bin_0→bin_1:22 bin_2→bin_0:20 bin_1→bin_0:19 bin_0→bin_2:13 bin_2→bin_3:12 bin_1→bin_3:9 bin_3→bin_2:2 bin_3→bin_1:1（共 450 次交换）；未覆盖 无 |
+
+### VideoRepick / xhard（100 条）
+
+> 注：VideoRepick 的三块方块在规格里 `object_id` 是 `bin_0/1/2`（沿用源码命名），下表照此写。
+
+#### 初始化（场景开局是什么样：物体种类、数量、位姿、藏物关系）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `layout_type`（锚点布局） | 三角／直线 | 配额 | region3_tri:50 region3_line:50 |
+| `color`（三块统一颜色） | 红／蓝／绿 | 配额 | red:34 blue:33 green:33 |
+| `theta_rad`、`button_xy` | [0, 180] 弧度；x∈[-0.25,-0.15] y∈[-0.05,0.05] | 分层（θ 被拒同粗箱重抽，按钮不参与重抽） | θ 10 箱各 10，实测 [1.31, 178.63]；按钮 x 10 箱各 10，实测 [-0.2492, -0.1504]；按钮 y 10 箱各 10，实测 [-0.0493, 0.0495] |
+| `cubes[i].xy`、`yaw_rad`（每块方块） | 锚点旋转后各偏移 ≤ 0.0500，yaw 0～2π | 分层；方块间距 < 0.02、压按钮或碰撞被拒后同粗箱重抽 | bin_0：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0495, 0.0491]，yaw 实测 [0.02, 6.23]；bin_1：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0497, 0.0496]，yaw 实测 [0.01, 6.25]；bin_2：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0498, 0.0496]，yaw 实测 [0.11, 6.28] |
+| `collision.candidates_used`（冻结用了第几个候选） | 1～256 | 几何／碰撞被拒后重抽的落地结果 | 1:63 2:21 3:6 4:4 5:1 6:2 7:1 8:1 39:1 |
+
+#### 事件（任务要做什么：投入／抓取／路线／交换的选择）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `n_swaps`（交换几次） | 4～5 | 配额 | 4:50 5:50 |
+| `num_repeats`（重复抓放次数） | 1～3 | 配额 | 1:34 2:33 3:33 |
+| `target`（目标方块） | 三块之一 | 配额 | bin_0:34 bin_1:33 bin_2:33 |
+| 后续发起者顺序 `tail` | 另外两块的 2 种排列 | 配额 | bin_0-bin_1:15 bin_0-bin_2:16 bin_1-bin_0:18 bin_1-bin_2:19 bin_2-bin_0:17 bin_2-bin_1:15 |
+| `swap_pairs[k].partner`（交换搭档） | 交换开始时的水平最近邻，等距取序号小者；第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者） | 推出（执行时核验，不符即失败） | 推出：bin_0→bin_2:88 bin_1→bin_2:83 bin_2→bin_0:75 bin_1→bin_0:72 bin_2→bin_1:68 bin_0→bin_1:64（共 450 次交换）；未覆盖 无 |
 <!-- AUTO:EVENT_TABLES END -->
 
 ## 三、三种图怎么看
@@ -373,6 +442,9 @@
 | VideoUnmaskSwap/hard | [图 1](figures/VideoUnmaskSwap/hard/1_positions.png) | [图 2](figures/VideoUnmaskSwap/hard/2_events.png) | [1](figures/VideoUnmaskSwap/hard/3_episodes_p1.png) [2](figures/VideoUnmaskSwap/hard/3_episodes_p2.png) [3](figures/VideoUnmaskSwap/hard/3_episodes_p3.png) [4](figures/VideoUnmaskSwap/hard/3_episodes_p4.png) [5](figures/VideoUnmaskSwap/hard/3_episodes_p5.png) |
 | VideoRepick/easy | [图 1](figures/VideoRepick/easy/1_positions.png) | [图 2](figures/VideoRepick/easy/2_events.png) | [1](figures/VideoRepick/easy/3_episodes_p1.png) [2](figures/VideoRepick/easy/3_episodes_p2.png) [3](figures/VideoRepick/easy/3_episodes_p3.png) [4](figures/VideoRepick/easy/3_episodes_p4.png) [5](figures/VideoRepick/easy/3_episodes_p5.png) |
 | VideoRepick/medium | [图 1](figures/VideoRepick/medium/1_positions.png) | [图 2](figures/VideoRepick/medium/2_events.png) | [1](figures/VideoRepick/medium/3_episodes_p1.png) [2](figures/VideoRepick/medium/3_episodes_p2.png) [3](figures/VideoRepick/medium/3_episodes_p3.png) [4](figures/VideoRepick/medium/3_episodes_p4.png) [5](figures/VideoRepick/medium/3_episodes_p5.png) |
+| RouteStick/xhard（06 新增） | [图 1](figures/RouteStick/xhard/1_positions.png) | [图 2](figures/RouteStick/xhard/2_events.png) | [1](figures/RouteStick/xhard/3_episodes_p1.png) [2](figures/RouteStick/xhard/3_episodes_p2.png) [3](figures/RouteStick/xhard/3_episodes_p3.png) [4](figures/RouteStick/xhard/3_episodes_p4.png) [5](figures/RouteStick/xhard/3_episodes_p5.png) |
+| VideoUnmaskSwap/xhard（06 新增） | [图 1](figures/VideoUnmaskSwap/xhard/1_positions.png) | [图 2](figures/VideoUnmaskSwap/xhard/2_events.png) | [1](figures/VideoUnmaskSwap/xhard/3_episodes_p1.png) [2](figures/VideoUnmaskSwap/xhard/3_episodes_p2.png) [3](figures/VideoUnmaskSwap/xhard/3_episodes_p3.png) [4](figures/VideoUnmaskSwap/xhard/3_episodes_p4.png) [5](figures/VideoUnmaskSwap/xhard/3_episodes_p5.png) |
+| VideoRepick/xhard（06 新增） | [图 1](figures/VideoRepick/xhard/1_positions.png) | [图 2](figures/VideoRepick/xhard/2_events.png) | [1](figures/VideoRepick/xhard/3_episodes_p1.png) [2](figures/VideoRepick/xhard/3_episodes_p2.png) [3](figures/VideoRepick/xhard/3_episodes_p3.png) [4](figures/VideoRepick/xhard/3_episodes_p4.png) [5](figures/VideoRepick/xhard/3_episodes_p5.png) |
 
 示例（VideoUnmaskSwap/medium 的图 1、图 2 与图 3 第 1 页，RouteStick/hard 的图 2）：
 

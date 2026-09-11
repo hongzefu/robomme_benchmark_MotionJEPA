@@ -17,8 +17,8 @@ import window_timeline
 HERE = Path(__file__).resolve().parent
 DOCS = [HERE / "NEW_VALUE_DISTRIBUTION_BEFORE.md", HERE / "SAMPLING_WINDOWS.md"]
 RUN_ID = event_tables.DEFAULT_RUN_ID
-EXPECTED_FILES = 11 * 7        # 11 组 × （1_positions + 2_events + 3_episodes_p1～p5）
-EXPECTED_WINDOW_FILES = 11 + 1  # 11 组 × 4_windows + 总览
+EXPECTED_FILES = len(window_timeline.GROUPS) * 7        # 14 组 × （1_positions + 2_events + 3_episodes_p1～p5）
+EXPECTED_WINDOW_FILES = len(window_timeline.GROUPS) + 1  # 14 组 × 4_windows + 总览
 MIN_LONG_EDGE = 2000
 
 
