@@ -57,8 +57,20 @@
 8. 用户已目视确认的四容器三例持久保留；重跑使用新目录，分别复核轨迹重算和视频重渲染，不能把旧视频或单姿态交叉验证当作新值执行通过（第二部分第 8.4 节及第二部分第四、七节）。
 9. 实跑的 330 条每条都登记视频状态：录像器 `RobommeRecordWrapper` 冻结，不改源文件、不子类覆写、不打补丁；视频就是它现有逻辑的产出（主相机、腕部相机、原始分割、目标分割、目标标记，上下两排规划与在线判断，任务文字；`NO RECORD` 阶段按设计跳过、不补 reset 帧；成功名／`FAILED_` 前缀，落 `videos/`）。生成入口在 `close()` 后按命名规则找文件、用 ffprobe 数帧、算散列，成功局要求帧数等于 HDF5 的 timestep 数；视频缺失或帧数不符不改变任务结果，但单列视频判定失败，样本不移出分母（第五节步骤 0c）。**330 条视频文件全部持久保留**：成功名、`FAILED_` 前缀与 `NO_OBJECT` 调试视频一律留在运行根目录各组的 `videos/` 下，不清理、不转码、不改名；后续任何 `artifacts/` 清理必须绕开该目录，与四容器三例同级保留（第二部分第七节）。
 10. `src/robomme` 下任何改动和覆盖（含子类覆写、monkeypatch、运行时替换方法）都须用户逐个批准；本计划里对该目录的改动清单只是待批项，不是授权（[AGENTS.md](AGENTS.md) 强制规则第 11 条，第二部分〇第 10 条）。
+11. **取值域与分配办法由约定 JSON 定义并作为生成器的派生依据**（2026-09-11）：[injection_contract_v1.json](scripts/configs/newtask-v2/injection_contract_v1.json) 是现状口径（事件表「事件／取值域／分配」三列的机器可读版，数值域由 `native_sampling.json` 派生），[injection_contract_v2.json](scripts/configs/newtask-v2/injection_contract_v2.json) 是本轮采用的口径；几何常量（按钮盒尺寸、孔板边长、锚点坐标、避让间距）仍只在 `native_sampling.json`。契约对原值的任何偏离必须登记在 `overrides` 白名单，由新判定 `CONTRACT_DERIVED` 逐字段回算核对（第二部分第二节，判定见 5.7）。`plan` 的 `--contract` 必填、不给默认值；`check`／`plot` 以清单记录的 `contract_path`／`contract_sha256` 为准。变化与用户决策见 [scripts/NEW_VALUE_CONTRACT_CHANGELOG.md](scripts/NEW_VALUE_CONTRACT_CHANGELOG.md)。
+12. **本轮契约 v2：BinFill 对齐 heldout 分支 `cvpr2026Challenge-heldOutSeed-4-5/4`（`2fa5660`）**——medium `spawn_cubes` 由 `[8,10]` 改 `[6,8]`、hard 由 `[10,12]` 改 `[8,10]`、多目标色时每个目标色至少 1 块（单色分支不变）；其余 9 组与 v1 逐字相同。v1 口径的冻结结果保留为 `20260910-new-values-04`，作为对照不重跑、不清理；v2 重冻结为 `20260911-contract-v2-05`，本轮只做规格、静态检查与跑前图，不实跑仿真（第 5.9.4 节）。
+13. **注入链路代码位于 `scripts/injection/`，不依赖 `tests/`**（2026-09-11 用户原话「候选分布产生，生成h5，对拍，出图都不要放在test内 不要依赖test 全部放在 scripts」）：`plan/check/run/compare/plot/report/collision-reproduce` 全部在 `scripts.injection.campaign`，HDF5 逐位比较核在 `scripts/injection/h5_compare.py`；`tests/` 只反向 import 做单测，`tests/lightweight/test_scripts_do_not_import_tests.py` 用 AST 钉死这条不变量。生产入口 `generate_dataset_newseed.py` 与 `src/robomme` 仍不导入它。
 
 #### 1.2 本方案依据的用户原话
+
+2026-09-11 追加（契约化、BinFill 对齐 heldout、链路搬入 scripts/）：
+
+> 能否改为对齐heldout
+> 按照这个方案改 把现有的…写作为json约定 v1 修改后的binfill计为v2 候选分布怎么产生 需要读取这个json配置作为派生的依据 并且在scripts/增加一个md 写json的变化和用户决策
+> injection_contract_v1.json / _v2.json native_sampling.json这些加入git追踪 关键小产物都加入git
+> 对应的候选分布产生，生成h5，对拍，出图都不要放在test内 不要依赖test 全部放在 …/scripts
+
+追问答复（AskUserQuestion）：契约只写三列、几何仍读 `native_sampling.json`；v2 含「每目标色至少 1 块」；重冻结并重写分布文档；v1／v2 两个文件。
 
 原始决策依据保存在 `cfca77d` 的提交正文，以下逐字保留关键用户原话；其余字段细化是本计划的技术设计，不冒充新增用户决策：
 
@@ -189,8 +201,8 @@ BinFill 俯视（方块中心有效域已扣除半尺寸 0.02）
 
 | 编号 | 约定 | 依据 |
 |---|---|---|
-| B1 | 难度决定数量：`easy` 出现 1 种颜色、共 4～6 块、目标颜色 1 种、总共投入 1～3 块；`medium` 2 种颜色、8～10 块、目标颜色 1～2 种、投入 2～4 块；`hard` 3 种颜色、10～12 块、目标颜色 2～3 种、投入 3～5 块 | `parameters.BinFill.configs.<难度>` |
-| B2 | 颜色只能是红、蓝、绿。三个顺序分别定义、不得混用：**颜色池顺序**红 0、蓝 1、绿 2 只是索引口径；**实际创建顺序**由规格字段 `initialize_color_order` 固定（已提交源码在 `_initialize_episode` 里用 `torch.randperm` 打乱创建顺序，不是固定红蓝绿）；**执行颜色顺序**由 `actions` 清单决定（源码同样打乱任务列表）。目标颜色必须是场上出现的颜色；每种颜色生成的块数不少于该色要投入的块数；目标颜色里某一色可以分到 0 块 | `native_semantics.BinFill.spawn_color_order`、`BinFill::_initialize_episode` 的两处 `randperm`、分配循环 |
+| B1 | 难度决定数量：`easy` 出现 1 种颜色、共 4～6 块、目标颜色 1 种、总共投入 1～3 块；`medium` 2 种颜色、**6～8 块**、目标颜色 1～2 种、投入 2～4 块；`hard` 3 种颜色、**8～10 块**、目标颜色 2～3 种、投入 3～5 块。方块总数是口径 12 对齐 heldout 后的区间（原值 medium 8～10、hard 10～12；`20260910-new-values-04` 按原值即契约 v1 冻结，`20260911-contract-v2-05` 起按契约 v2） | 契约 `groups["BinFill/<难度>"]` 的 `spawn_total`／`put_in_color`／`put_in_total`（v1 由 `parameters.BinFill.configs.<难度>` 派生，v2 的两处区间登记在 `overrides`） |
+| B2 | 颜色只能是红、蓝、绿。三个顺序分别定义、不得混用：**颜色池顺序**红 0、蓝 1、绿 2 只是索引口径；**实际创建顺序**由规格字段 `initialize_color_order` 固定（已提交源码在 `_initialize_episode` 里用 `torch.randperm` 打乱创建顺序，不是固定红蓝绿）；**执行颜色顺序**由 `actions` 清单决定（源码同样打乱任务列表）。目标颜色必须是场上出现的颜色；每种颜色生成的块数不少于该色要投入的块数；**多目标色时每个目标色至少分到 1 块**（契约 v2 的 `target_count.rule = each_target_at_least_one`：先每色各 1 块，余量再逐个随机分；v1 的 `allow_zero` 允许某目标色为 0，`20260910-new-values-04` 按 v1 冻结）。生成器 `scripts/injection/specs.py::_binfill_group` 按契约的 rule 分支，`check` 按清单里的契约核 | `native_semantics.BinFill.spawn_color_order`、`BinFill::_initialize_episode` 的两处 `randperm`、heldout 分支 `2fa5660` 的 `min_required_targets` |
 | B3 | `dynamic` 只能是 `True`（方块按原时序分批出现）或 `False`（开局全在） | `parameters.BinFill.dynamic` |
 | B4 | 按钮中心 x 在 −0.25 到 −0.15 之间、y 在 −0.20 到 0.20 之间 | `positions.BinFill.button` |
 | B5 | 孔板中心 x 在 −0.05 到 0.15 之间、y 在 −0.20 到 0.20 之间；绕竖直轴转 −20° 到 20° | `positions.BinFill.board` |
@@ -209,7 +221,7 @@ BinFill 俯视（方块中心有效域已扣除半尺寸 0.02）
 | `spawn_count[颜色]` | 每种颜色各几块，用来创建对象 | B1、B2 | 报实际频数 |
 | `target_pool` | 指令要投入的颜色集合 | B1、B2 | 合法值计数差不超过 1 |
 | `put_in_total` | 总共投入几块，即抓放次数 | B1 | 各合法值 34／33／33 |
-| `target_count[颜色]` | 每种目标颜色各投几块 | B1、B2 | 报实际频数 |
+| `target_count[颜色]` | 每种目标颜色各投几块 | B1、B2 | 报实际频数；契约 v2 下每个目标色 ≥ 1 |
 | `button_xy` | 按钮位置 | B4 | x、y 各分 10 箱均匀 |
 | `board_xy`、`board_yaw_deg` | 孔板位置与朝向 | B5 | 各分 10 箱均匀 |
 | `cubes[i].object_id` | 第 `i` 块方块的稳定身份（`i` 为生成顺序），动作清单靠它回查 | B2 | — |
@@ -428,7 +440,7 @@ RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体�
 
 #### 4.1 先分类别配额
 
-拟由 `tests._shared.injection_campaign::plan` 负责配额与采样，`check` 独立从最终规格重算计数。对于有 `k` 个可独立分配候选的变量，配额满足 `n_i ∈ {floor(100/k), ceil(100/k)}` 且 `sum(n_i)=100`；因此两类为 `50/50`，三类为 `34/33/33`。⚠ `check` 必须按**完整合法类别补零计数**再算计数差：类别集合来自约定表而不是来自实际出现的值，否则 100 条全为 `True` 时 `dynamic` 的计数差也是 0 并被误判通过（在途实现曾有此反例）。
+拟由 `scripts.injection.campaign::plan` 负责配额与采样，`check` 独立从最终规格重算计数。对于有 `k` 个可独立分配候选的变量，配额满足 `n_i ∈ {floor(100/k), ceil(100/k)}` 且 `sum(n_i)=100`；因此两类为 `50/50`，三类为 `34/33/33`。⚠ `check` 必须按**完整合法类别补零计数**再算计数差：类别集合来自约定表而不是来自实际出现的值，否则 100 条全为 `True` 时 `dynamic` 的计数差也是 0 并被误判通过（在途实现曾有此反例）。
 
 | 覆盖项 | 分配方法 |
 |---|---|
@@ -558,7 +570,7 @@ RouteStick 俯视（1×9 整排，中心 (-0.1, 0)，相邻间距 0.07，整体�
 - **注入路径**：新增 `--episode-specs`；[生成入口](scripts/generate_dataset_newseed.py) 父进程校验 → `EpisodeJob.episode_spec` → `gym.make(episode_spec=...)` → 原创建点与动作构造点消费；两次初始化用同一份内容。不传规格时走原随机路径。
 - **清单混跑**：`--episode-specs` 同时接受单个规格文件和多组清单；清单模式下一次调用把多个任务／难度组的 job 混进同一套双卡进程池，每个 `EpisodeJob` 自带难度与独立输出根（同任务不同难度的 seed 与 HDF5 文件名相同，必须分目录），按 episode 轮转入队。生成入口现有的"一次调用单一难度"检查只对非清单模式保留。
 - **录像器冻结**：`RobommeRecordWrapper` 不改源文件、不子类覆写、不打补丁；生成入口 `_worker` 仍按现状构造它并传 `save_video=True`。视频核验只在 `close()` 之后由生成入口完成（步骤 0c）。
-- **工具**：外部采样、出图、编排放在测试工具 `tests._shared.injection_campaign`（`plan/check/plot/run`）；生产侧碰撞检查放拟新增的 `src/robomme/robomme_env/utils/bin_collision.py`，生产代码不导入 `tests`。`src/robomme` 下每一处改动先列清单交用户逐个批准。
+- **工具**：外部采样、出图、编排放在 `scripts/injection/`（入口 `scripts.injection.campaign`，`plan/check/plot/run`；2026-09-11 起从 `tests/_shared` 搬入，不依赖 `tests/`）；生产侧碰撞检查放拟新增的 `src/robomme/robomme_env/utils/bin_collision.py`，生产代码不导入 `tests`。`src/robomme` 下每一处改动先列清单交用户逐个批准。
 
 **交换搭档规则（用户已确认）：外部预写发起者 `a` 与搭档 `b_spec`；执行时按 `step` 原语义算实际最近邻，不符即失败，禁止换搭档。**
 
@@ -706,6 +718,7 @@ video = {status, path, frames, frames_expected, bytes, sha256, no_object_path}
 | 步骤 | 判定项 | 问 | 查什么 | 目标判定行 |
 | --- | --- | --- | --- | --- |
 | 0 | `SPEC_SCOPE` | 均匀 | 11 组 × episode 0～99 无缺号／重复／越界，排除项正确 | `SPEC_SCOPE=PASS groups=11 specs=1100 excluded=VideoRepick-hard` |
+| 0 | `CONTRACT_DERIVED` | 均匀 | 契约里每个带派生表达式的域用 `native_sampling.json` 回算一遍；不一致项必须全部落在 `overrides` 白名单内，且白名单记录的原值等于当场回算值；契约散列与清单不符时 `check` 直接拒绝验收，不降级继续 | `CONTRACT_DERIVED=PASS fields=<n> mismatches=<n> overrides=<n> version=v2 problems=0` |
 | 0 | `SPEC_REPRODUCIBLE` | 均匀 | 同 seed、不同组调度顺序独立生成两次，逐记录散列相同 | `SPEC_REPRODUCIBLE=PASS compared=1100 differences=0` |
 | 0 | `COVERAGE_QUOTA` | 均匀 | 重算全量与每批配额、分层计数、条件频数和缺口 | `COVERAGE_QUOTA=PASS groups=11 batches=10 quota_gaps=0` |
 | 0 | `STATIC_GEOMETRY` | 均匀 | 逐条检查难度、索引、范围、避让、路线与动作长度 | `STATIC_GEOMETRY=PASS checked=1100 rejected=0` |
@@ -955,6 +968,58 @@ video_sha_mismatch=0`——逐条核了 `videos/` 下的实际文件与 SHA-256�
 按第 5.7 节「只有全部具名项实际通过才称全方案通过」，本方案**尚未整体通过**，
 未通过与未执行的三项如实单列，不改写成整体通过。
 
+##### 5.9.4 搬迁、契约化与 v2 重冻结实测（运行编号 `20260911-contract-v2-05`）
+
+**本节随实施进度追加，原计划正文不改写。** 2026-09-11 三件事一起做：①注入链路代码从 `tests/_shared/injection_*.py`
+搬到 `scripts/injection/`（`campaign/run/plots/replay/specs/sampling/categories`，HDF5 比较核抽成 `h5_compare.py`，
+`tests/_shared/native_sampling_parity.py` 反向 import 它），`scripts/` 不再依赖 `tests/`；②取值域与分配抽成契约
+JSON（口径 11），v1 由 `native_sampling.json` 派生、v2 = v1 + BinFill 对齐 heldout 三处（口径 12）；③按 v2 重冻结
+本编号，只做规格、静态检查与跑前 2D 图，**不实跑仿真**。04 运行原样保留作 v1 对照。
+
+**做了什么、怎么证明没改坏 v1**
+
+| 证据 | 判定行 |
+| --- | --- |
+| 搬迁后用新入口对 04 重跑 `check` | `SPEC_SCOPE=PASS groups=11 specs=1100`、`COVERAGE_QUOTA=PASS quota_gaps=0`、`STATIC_GEOMETRY=PASS checked=1100 rejected=0`、`COLLISION_GEOMETRY=PASS`、`COLLISION_SWEEP=PASS specs=500 rejected=0 uncertified=0 min_g_m=0.00042638`、`SPEC_REPRODUCIBLE=PASS compared=1100 differences=0`、`CHECK=PASS elapsed_s=359.0` |
+| v1 契约由原值回算 | `CONTRACT_DERIVED=PASS fields=155 mismatches=0 overrides=0 problems=0` |
+| 生成器改读契约后对 04 的 1100 条逐条散列 | `V1_EQUIVALENCE=PASS compared=1100 differences=0`（`artifacts/logs/stage-a-move/v1_equivalence.log`） |
+| 事件表两列改取契约后对 04 文档零漂移 | `EVENT_TABLES=PASS groups=11 rows=125 drift=0`（改默认编号前打出；改后再以 04 + v1 对 HEAD 版文档复核 `EVENT_TABLES_V1_VS_HEAD=PASS rows=125 drift=0`） |
+| v2 契约的偏离恰为白名单 | `CONTRACT_DERIVED=PASS fields=155 mismatches=6 overrides=2 problems=0`（两组各 lo／hi／values 共 6 处；`target_count` 规则另记 `target_count_rule_override`） |
+
+**步骤 0（05：规格、静态检查、跑前图）**
+
+| 判定行 | 实测 |
+| --- | --- |
+| `PLAN=OK` | `run_id=20260911-contract-v2-05 groups=11 specs=1100 elapsed_s=179.1`（`--contract injection_contract_v2.json`，清单记 `contract_version=v2`、`contract_sha256=e787666c0b36…`） |
+| `CONTRACT_DERIVED=PASS` | `fields=155 mismatches=6 overrides=2 version=v2 problems=0` |
+| `SPEC_SCOPE=PASS` | `groups=11 specs=1100 excluded=VideoRepick-hard problems=0` |
+| `COVERAGE_QUOTA=PASS` | `groups=11 batches=10 quota_gaps=0` |
+| `STATIC_GEOMETRY=PASS` | `checked=1100 rejected=0` |
+| `COLLISION_GEOMETRY=PASS` | `bin_shapes=6 cube_shapes=1 four_object_pairs=6` |
+| `COLLISION_SWEEP=PASS` | `specs=500 rejected=0 uncertified=0 min_g_m=0.00042638`（五个视频组与 04 逐位相同，数字自然一致） |
+| `SPEC_REPRODUCIBLE=PASS` | `compared=1100 differences=0`（倒序调度独立重生成） |
+| `CHECK=PASS` | `elapsed_s=357.1` |
+| `PLOT2D_BEFORE=PASS` | `groups=11 files=77 episodes=30 min_long_edge_px=2420 font=Noto Sans CJK JP` |
+| `EVENT_TABLES=WRITTEN` | `groups=11 rows=125`；`DOC_LINKS=PASS links=83 missing=0 files=77/77 tables=PASS rows=125 drift=0` |
+
+**v2 对 04 的差异面**（只在 BinFill medium／hard；其余 9 组 + BinFill/easy 的 100 条 `spec_sha256` 与 04 逐条相同）
+
+| 组 | 项 | 04（v1） | 05（v2） |
+| --- | --- | --- | --- |
+| BinFill/medium | `spawn_total` 分布 | 8:34 9:33 10:33 | 6:34 7:33 8:33 |
+| | 目标色的目标数分布（目标色为 0 的项） | 0:14 1:39 2:51 3:26 4:20（14） | 1:59 2:51 3:22 4:18（0） |
+| | 总块数 ／ 动作数 | 899 ／ 299 | 699 ／ 299 |
+| | 候选 ／ 几何拒绝 | 2600 ／ 1701 | 1745 ／ 1046 |
+| BinFill/hard | `spawn_total` 分布 | 10:34 11:33 12:33 | 8:34 9:33 10:33 |
+| | 目标色的目标数分布（目标色为 0 的项） | 0:40 1:79 2:84 3:36 4:11（40） | 1:135 2:84 3:28 4:3（0） |
+| | 总块数 ／ 动作数 | 1099 ／ 399 | 899 ／ 399 |
+| | 候选 ／ 几何拒绝 | 4423 ／ 3324 | 2733 ／ 1834 |
+| BinFill/easy | 全部 | 逐位相同（单色，规则不起作用；区间未变） | 同左 |
+
+事件表文案只变 5 行（两档 `spawn_total` 取值域、三档 `target_count` 取值域）。medium／hard 的方块位置也全变：多色时目标数分配少了「目标色数」次 `rng_ep.integers`，后续余量分配、生成序打乱与落位尝试整体错位，属预期。
+
+**没做的**：本轮不重跑 330 条仿真，04 的实跑结果（`FEASIBILITY`／`SERIAL_REFERENCE`／`PARALLEL_*`／`DELIVERY`）不迁移到 05；05 的 BinFill medium／hard 有无新的规划失败要等实跑才知道。`docs/validation/newtask-v2/20260910-new-values-04/README.md` 第 5 行仍写旧入口名，属历史交付物不改。
+
 ### 六、运行配置与资源速查表
 
 本节只放参数与数字，供第五节步骤 3～5 引用；执行顺序不在这里。
@@ -1050,13 +1115,13 @@ RSS < 300 GB、`free` ≥ 40 GB、swap 不增长三条软守卫——它们会�
 | `src/robomme/robomme_env/utils/bin_collision.py`（拟新增） | `check_bin_layout`、`check_swap_sweep`、`check_bin_state`、`BinCollisionError` | 同源真实盒体、三维 SAT、连续区间证明与结构化拒绝；生产和外部规格检查共用 | 无新值规格时不调用 | 几何缺失、接触、数值边界和无法证明安全均按具名原因拒绝，不导入测试模块 |
 | `RouteStick.py` | `_load_scene`、`_initialize_episode` | 消费固定节点与逐段方向，绑定演示、求解、目标判定和 segment | 保留 `generate_dynamic_walk` 调用 | 校验拓扑后直接使用给定路线；记录真实难度与有效配置 |
 | `scripts/configs/newtask-v2/native_sampling.json` | `sources.sha256` 及来源描述 | 接入后刷新必要指纹，提取与历史操作元复核 | 原值不变 | 仍是合法域依据，不承担逐 episode 表 |
-| `tests/_shared/injection_campaign.py`（拟新增） | `plan/check/plot/run`，拟新增 `compare/report/collision-reproduce` | 外部采样、500 条碰撞筛查、固定案例轨迹重算与重渲染、专项报告 | 不被生产导入 | 拒绝次数和配额缺口可核对，旧案例只读、复现写新目录，复用原生产入口 |
+| `scripts/injection/campaign.py`（拟新增） | `plan/check/plot/run`，拟新增 `compare/report/collision-reproduce` | 外部采样、500 条碰撞筛查、固定案例轨迹重算与重渲染、专项报告 | 不被生产导入 | 拒绝次数和配额缺口可核对，旧案例只读、复现写新目录，复用原生产入口 |
 | `tests/_shared/parity_observer.py` | 原事件、初始化和运行时记录位置 | 仅在确有缺字段时扩充只读证据；先检查在途原值校准最终版本 | 默认证据兼容 | 记录规格散列、实际绑定与两次初始化，不额外采样 |
 | `tests/lightweight/test_episode_specs.py`、`test_injection_campaign.py`（拟新增） | 格式、约束、配额、隔离与篡改反例 | 定向验证第 5.7 节协议，避免只测实现镜像 | 无规格路径回归 | 缺字段、改散列、非法动作、假并发均拒绝 |
 | `tests/lightweight/test_bin_collision.py`（拟新增） | 几何、旋转、连续路径、拒绝与固定案例反例 | 独立解析例与实际形状／PhysX 交叉检查，覆盖第 5.7 节碰撞判据 | 不改变旧测试结果 | 全对象对、帧间穿越、相切、退化、上限和候选耗尽均具名测试 |
 | `scripts/README.md`、`AGENTS.md`、本计划及 `docs/validation/newtask-v2/<运行编号>/` | 用法、状态、实测追加区、交付包 | 实施后更新真实结果 | 历史结果不覆盖 | 实测与未覆盖项分别留档 |
 
-`scripts/seed_layout.py::SeedLayout.seed`、`RobommeRecordWrapper` 和 `utils/route.py::generate_dynamic_walk` 作为既有语义锚点，本计划内不修改；其中 `RobommeRecordWrapper` 按前置红线第 10 条完全冻结。上表中 `src/robomme` 下的每一行都是待批项，须用户逐个批准后才能动。HDF5 对拍复用 `tests/_shared/native_sampling_parity.py::compare_h5`，其 `_walk` 显式遍历 group、dataset 及各层 attribute，`_dataset_signature` 和 `_first_element_difference` 检查类型、形状与内容；保持此全集覆盖，不能只挑动作字段比较。
+`scripts/seed_layout.py::SeedLayout.seed`、`RobommeRecordWrapper` 和 `utils/route.py::generate_dynamic_walk` 作为既有语义锚点，本计划内不修改；其中 `RobommeRecordWrapper` 按前置红线第 10 条完全冻结。上表中 `src/robomme` 下的每一行都是待批项，须用户逐个批准后才能动。HDF5 对拍复用 `scripts/injection/h5_compare.py::compare_h5`，其 `_walk` 显式遍历 group、dataset 及各层 attribute，`_dataset_signature` 和 `_first_element_difference` 检查类型、形状与内容；保持此全集覆盖，不能只挑动作字段比较。
 
 ### 二、规格契约、生成与消费细节
 
@@ -1066,10 +1131,12 @@ RSS < 300 GB、`free` ≥ 40 GB、swap 不增长三条软守卫——它们会�
 
 | 任务 | 拟定任务字段／必须检验的关系 |
 | --- | --- |
-| `BinFill` | `dynamic`、各色生成数／目标数、对象创建顺序及抓取列表；目标池某色允许分到 0，实际抓取须是同色生成列表前若干块，投入动作总数与目标数相符 |
+| `BinFill` | `dynamic`、各色生成数／目标数、对象创建顺序及抓取列表；目标池某色能否分到 0 由契约 `target_count.rule` 决定（v1 `allow_zero` 允许、v2 `each_target_at_least_one` 不允许），实际抓取须是同色生成列表前若干块，投入动作总数与目标数相符 |
 | `RouteStick` | `rotation_deg`、障碍颜色、`nodes`、`directions`；`len(nodes)=L+1`、`len(directions)=L`，方向仅 `clockwise/counterclockwise`，逐段绑定相同演示和执行对象 |
 | `VideoUnmaskSwap` | 前三容器的红绿蓝映射、抓取对象顺序、`swap_pairs`；第 4 容器恒空，交换发起索引沿用现有映射，搭档预写并在执行开始复核 |
 | `VideoRepick` | 三块同色、`target_object_id`、`num_repeats`、`swap_pairs`；目标唯一且重复抓放不变，首次交换由目标发起 |
+
+**契约（取值域约定）**：`scripts/configs/newtask-v2/injection_contract_v*.json`，顶层 `contract_version`／`generator_seed`／`group_size`／`overrides`／`groups`（11 组，各分「初始化」「事件」两节，字段五键 `key`／`label`／`domain`／`domain_text`／`allocation`／`allocation_text`）。生成器 `scripts/injection/specs.py::build_group(task, difficulty, sampling, contract, seed)` 从契约读离散候选与连续端点，从 `native_sampling.json` 读几何；`plan` 把 `contract_path`、`contract_sha256`（规范 JSON 散列，与文件字节无关）、`contract_version` 写进 `manifest.json`，**不写进规格文档**（`generate_dataset_newseed.py::SPEC_DOCUMENT_FIELDS` 是闭集，多一个顶层字段会让实跑全部起不来）；`check` 按清单加载契约并核散列，`_check_contract_derived` 回算。`operand_sha256` 口径不动。
 
 散列设计：对不含 `spec_sha256` 的记录按固定 UTF-8、键排序、固定分隔符、禁止 NaN 的规范 JSON 序列化取 SHA-256；整个文件另保存字节散列。加载后不得改写规范记录；任务内只修改深拷贝工作态。两次初始化均重新建立 `object_id → actor` 映射，不复用前一次的 actor 引用或已完成交换缓存；检查同 worker 连续两局，防止内容泄漏。
 
@@ -1132,7 +1199,7 @@ PY
 
 ```bash
 command -v uv
-uv run --no-sync python -m tests._shared.injection_campaign collision-reproduce \
+uv run --no-sync python -m scripts.injection.campaign collision-reproduce \
   --source-dir artifacts/collision-preplan/20260909-bin-contact-v2 \
   --output-dir artifacts/collision-replay/20260909-bin-contact-replay-01 \
   --mode both
@@ -1157,10 +1224,10 @@ uv run --no-sync python scripts/generate_dataset_newseed.py \
 ```bash
 command -v uv
 INJECTION_RUN_ID=20260909-new-values-01
-uv run --no-sync python -m tests._shared.injection_campaign plan \
+uv run --no-sync python -m scripts.injection.campaign plan \
   --run-id "$INJECTION_RUN_ID" --seed 20260909 --per-group 100
-uv run --no-sync python -m tests._shared.injection_campaign check --run-id "$INJECTION_RUN_ID"
-uv run --no-sync python -m tests._shared.injection_campaign plot --run-id "$INJECTION_RUN_ID"
+uv run --no-sync python -m scripts.injection.campaign check --run-id "$INJECTION_RUN_ID"
+uv run --no-sync python -m scripts.injection.campaign plot --run-id "$INJECTION_RUN_ID"
 ```
 
 拟新增最小冒烟入口如下。选择固定 `BinFill hard` episode 0，属于 330 条之内；步骤 2 冒烟每任务 1 条、共 4 条，其余三条命令同型只换任务与难度；观察器对照使用另一个子目录，不能覆盖首条产物。冒烟失败停止矩阵，保留该规格：
@@ -1196,7 +1263,7 @@ uv run --no-sync python scripts/generate_dataset_newseed.py \
 ```bash
 mkdir -p artifacts/logs
 tmux new-session -d -s "$INJECTION_RUN_ID-calibration" \
-  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m tests._shared.injection_campaign run --run-id $INJECTION_RUN_ID --phase calibration 2>&1 | tee artifacts/logs/$INJECTION_RUN_ID-calibration.log; code=\$?; echo EXIT_CODE=\$code | tee -a artifacts/logs/$INJECTION_RUN_ID-calibration.log; exit \$code"
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.injection.campaign run --run-id $INJECTION_RUN_ID --phase calibration 2>&1 | tee artifacts/logs/$INJECTION_RUN_ID-calibration.log; code=\$?; echo EXIT_CODE=\$code | tee -a artifacts/logs/$INJECTION_RUN_ID-calibration.log; exit \$code"
 tmux has-session -t "$INJECTION_RUN_ID-calibration"
 tmux attach -t "$INJECTION_RUN_ID-calibration"
 ```

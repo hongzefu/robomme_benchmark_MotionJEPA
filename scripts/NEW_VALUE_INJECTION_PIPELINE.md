@@ -1,18 +1,19 @@
 # 新值注入：候选分布 → 真实 HDF5 → 对拍 → 出图
 
 > **这篇讲什么**：外部生成的固定规格是怎么铺出来的、怎么变成真实仿真轨迹、怎么证明它没被并发改坏、图是怎么画的。
-> **运行编号** `20260910-new-values-04`，代码 `c60be9a`，分支 `newtask-v2`。
+> **运行编号**：规格与跑前分布以 `20260911-contract-v2-05`（契约 v2，2026-09-11 重冻结，本轮只做规格、静态检查与跑前图）为准；330 条实跑、对拍与跑后图仍是 `20260910-new-values-04`（契约 v1 = 原值口径）的结果，两轮规格不同，不互相引用。分支 `newtask-v2`。
+> **取值域与分配的约定**见 [NEW_VALUE_CONTRACT_CHANGELOG.md](NEW_VALUE_CONTRACT_CHANGELOG.md)（契约 JSON v1／v2 的变化与用户决策）。链路代码在 [injection/](injection/)，不依赖 `tests/`。
 > 完整验收口径见根目录 [NEW_VALUE_INJECTION_TEST_PLAN.md](../NEW_VALUE_INJECTION_TEST_PLAN.md)（实测在第 5.9.3 节），
 > 轻量包见 [docs/validation/newtask-v2/20260910-new-values-04/](../docs/validation/newtask-v2/20260910-new-values-04/README.md)。
 > 跑前分布的 2D 细图另见 [injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md](injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md)。
 
 ## 〇、结果速览
 
-**22 项判定：19 PASS、1 FAIL、2 NOT_RUN——方案尚未整体通过。**
+**23 项判定：04 运行 19 PASS、1 FAIL、2 NOT_RUN——方案尚未整体通过；05 重冻结新增 `CONTRACT_DERIVED`，规格类 7 项全 PASS（见第一节末尾）。**
 
 | 分组 | 判定 |
 |---|---|
-| 规格 | `SPEC_SCOPE` `SPEC_REPRODUCIBLE` `COVERAGE_QUOTA` `STATIC_GEOMETRY` `COLLISION_GEOMETRY` `COLLISION_SWEEP` `COLLISION_REPRODUCE` `PLOT_EVIDENCE` |
+| 规格 | `CONTRACT_DERIVED`（05 新增） `SPEC_SCOPE` `SPEC_REPRODUCIBLE` `COVERAGE_QUOTA` `STATIC_GEOMETRY` `COLLISION_GEOMETRY` `COLLISION_SWEEP` `COLLISION_REPRODUCE` `PLOT_EVIDENCE` |
 | 注入生效 | `DEFAULT_PARITY` `SMOKE` `INJECTION_BINDING` |
 | 可执行 | `FEASIBILITY` `RESULT_COVERAGE` `VIDEO_INDEX` `VIDEO_DECODE` `COLLISION_RUNTIME` `DELIVERY` |
 | 并行一致 | `SERIAL_REFERENCE` `PARALLEL_CONTENT` ✅ ／ **`PARALLEL_OVERLAP` FAIL** ／ `PARALLEL_SCALE` NOT_RUN |
@@ -30,14 +31,17 @@
 
 ## 一、候选分布怎么产生
 
-**一句话**：外部 CPU 进程按固定 seed 把每个字段铺满 100 条，视频任务再过一遍真实碰撞盒筛查，通过了才冻结成 JSON。全程不启动仿真。
+**一句话**：外部 CPU 进程**以约定 JSON `scripts/configs/newtask-v2/injection_contract_v*.json` 为派生依据**——取值域与分配办法从契约读，几何常量仍从 `native_sampling.json` 读——按固定 seed 把每个字段铺满 100 条，视频任务再过一遍真实碰撞盒筛查，通过了才冻结成 JSON。全程不启动仿真。
 
 ```
+injection_contract_v2.json ──▶ 每个字段的取值域（domain）、分配办法（allocation）、事件表两列文案
+native_sampling.json       ──▶ 几何（锚点、按钮/孔板盒尺寸、避让间距、region_half_size）与节点表
+        │
 derive_rng(20260909, 任务, 难度, 字段)   每个字段一条独立随机流
         │
-        ├── 独立离散量 ──▶ quota_series   k 类各 floor/ceil(100/k)，再摊到 10 批
-        ├── 连续量    ──▶ stratify       10 粗箱 × 10 细层 → 10 批，每批每箱取 1 条
-        └── 耦合量    ──▶ balanced_choice 只在合法候选内挑用得最少的
+        ├── 独立离散量 ──▶ quota_series   候选列表 = contract.values(字段)，k 类各 floor/ceil(100/k)，再摊到 10 批
+        ├── 连续量    ──▶ stratify       端点 = contract.bounds(分量)，10 粗箱 × 10 细层 → 10 批，每批每箱取 1 条
+        └── 耦合量    ──▶ balanced_choice / rng_ep，规则 = contract.rule(字段)，只在合法候选内挑用得最少的
         │
         ▼  组装候选
   视频任务：check_bin_layout（初态）+ check_swap_sweep（每段交换）
@@ -46,9 +50,9 @@ derive_rng(20260909, 任务, 难度, 字段)   每个字段一条独立随机流
   冻结 specs/<任务>/<难度>.json，每条记 spec_sha256
 ```
 
-代码：[tests/_shared/injection_sampling.py](../tests/_shared/injection_sampling.py)（`derive_rng`／`quota_series`／`stratify`／`balanced_choice`）、[tests/_shared/injection_specs.py](../tests/_shared/injection_specs.py)（四任务的 `build_group`）。
+代码：[scripts/injection/contract.py](injection/contract.py)（`load_contract`／`derive_all`／`RECIPES`）、[scripts/injection/contract_build.py](injection/contract_build.py)（`build-v1`／`build-v2`／`check`）、[scripts/injection/sampling.py](injection/sampling.py)（`derive_rng`／`quota_series`／`stratify`／`balanced_choice`）、[scripts/injection/specs.py](injection/specs.py)（四任务的 `build_group(task, difficulty, sampling, contract, seed)`）。
 
-三处值得单说：
+四处值得单说：
 
 1. **随机流与进程无关**。`derive_rng` 把 `seed|任务|难度|字段` 做 SHA-256 取前 8 字节当子 seed，不用 Python 的 `hash()`（它受 `PYTHONHASHSEED` 影响）。所以 `plan` 跑两遍、甚至倒序调度，1100 条逐条散列全同——这就是 `SPEC_REPRODUCIBLE=PASS compared=1100 differences=0`。
 
@@ -56,7 +60,11 @@ derive_rng(20260909, 任务, 难度, 字段)   每个字段一条独立随机流
 
 3. **碰撞筛查用真实盒体，不是外接圆**。容器是 **6 个**盒体（`build_bin` 的注释说「底板加四壁」，源码还建了中央方块），方块 1 个；判据 `g > ε=1e-6 米` 才算分开，接触与穿入都排除。交换路径不抽帧，用区间二分证明整段分离，证明不出来记 `uncertified` 一律拒绝。见 [src/robomme/robomme_env/utils/bin_collision.py](../src/robomme/robomme_env/utils/bin_collision.py)。
 
-**实测**（`plan` 180.6 秒 / `check` 354.1 秒）：
+4. **取值域有唯一来源，且被回算钉住**。契约里由难度字典或几何算出的域（`spawn_total` 的 6～8、方块 x 的 [-0.28, 0.08]、容器偏移上限 0.0425）都带 `derivation`（recipe 名 + 依赖键），`check` 的 `CONTRACT_DERIVED` 每次拿 `native_sampling.json` 回算；不一致必须落在 `overrides` 白名单里（v2 就登记了 BinFill medium/hard 的 `spawn_total` 两条，`target_count` 的规则切换另记在 `target_count_rule_override`），未登记的漂移与陈旧的登记都判 FAIL。v1 契约驱动的生成器对 04 的 1100 条规格 `spec_sha256` 逐条相同，事件表 125 行零漂移——这是「契约只是把散落的约定抽出来、没有改变 v1 口径」的硬证据。
+
+**05 实测**（契约 v2，2026-09-11 重冻结）：`plan` 179.1 秒 / `check` 357.1 秒；`CONTRACT_DERIVED=PASS fields=155 mismatches=6 overrides=2 version=v2 problems=0`、`SPEC_SCOPE=PASS specs=1100`、`COVERAGE_QUOTA=PASS quota_gaps=0`、`STATIC_GEOMETRY=PASS checked=1100 rejected=0`、`COLLISION_SWEEP=PASS specs=500 rejected=0 min_g_m=0.00042638`、`SPEC_REPRODUCIBLE=PASS compared=1100 differences=0`。BinFill 三组几何拒绝 637／1046／1834（04 为 637／1701／3324；medium／hard 少两块方块落位更容易），其余 8 组与 04 逐位相同、拒绝数不变。
+
+**04 实测**（契约 v1 = 原值口径：`plan` 180.6 秒 / `check` 354.1 秒）：
 
 | 组 | 几何拒绝 | 碰撞拒绝 | 最多用掉候选 |
 |---|---:|---:|---:|
@@ -115,7 +123,7 @@ INJECTION_BINDING=PASS unique=330 bound=327 mismatches=0
 
 ## 三、对拍怎么做的
 
-四类对拍，各自回答一个不同的问题。比较器统一用 [tests/_shared/native_sampling_parity.py](../tests/_shared/native_sampling_parity.py)::`compare_h5`——它显式遍历全部 group、dataset 及各层 attribute，检查类型、形状与内容，不是只挑动作字段。
+四类对拍，各自回答一个不同的问题。比较器统一用 [scripts/injection/h5_compare.py](injection/h5_compare.py)::`compare_h5`——它显式遍历全部 group、dataset 及各层 attribute，检查类型、形状与内容，不是只挑动作字段。
 
 | 对拍 | 比的是什么 | 回答什么 | 实测 |
 |---|---|---|---|
@@ -142,7 +150,7 @@ PARALLEL_OVERLAP=FAIL mode=P0x12 workers_per_gpu=12 peak_distinct_pids=11 sample
 
 ## 四、图怎么出的
 
-出图代码 [tests/_shared/injection_plots.py](../tests/_shared/injection_plots.py)，**跑前跑后版式相同**，跑后多一层结果着色。共 66 张（11 组 × 3 类 × 2 套）。
+出图代码 [scripts/injection/plots.py](injection/plots.py)，**跑前跑后版式相同**，跑后多一层结果着色。共 66 张（11 组 × 3 类 × 2 套）。
 
 | 图 | 函数 | 画什么 | 跑后多什么 |
 |---|---|---|---|
@@ -166,30 +174,36 @@ PARALLEL_OVERLAP=FAIL mode=P0x12 workers_per_gpu=12 peak_distinct_pids=11 sample
 
 ```bash
 command -v uv
-INJECTION_RUN_ID=20260910-new-values-04
+INJECTION_RUN_ID=20260911-contract-v2-05
+# 须在仓库根目录执行（scripts 是命名空间包，scripts/injection 是其中的包）
 
-# 一、候选分布：冻结 11 组 × 100 条（编号不可复用，目录已存在直接拒绝）
-uv run --no-sync python -m tests._shared.injection_campaign plan  --run-id "$INJECTION_RUN_ID"
-uv run --no-sync python -m tests._shared.injection_campaign check --run-id "$INJECTION_RUN_ID"
+# 〇、契约：v1 由原值派生，v2 = v1 + BinFill 对齐 heldout；check 离线回算
+uv run --no-sync python -m scripts.injection.contract_build build-v1 --out scripts/configs/newtask-v2/injection_contract_v1.json
+uv run --no-sync python -m scripts.injection.contract_build build-v2 --base scripts/configs/newtask-v2/injection_contract_v1.json --out scripts/configs/newtask-v2/injection_contract_v2.json
+uv run --no-sync python -m scripts.injection.contract_build check --contract scripts/configs/newtask-v2/injection_contract_v2.json
+
+# 一、候选分布：冻结 11 组 × 100 条（编号不可复用，目录已存在直接拒绝；--contract 必填，check 按清单自动取同一份契约）
+uv run --no-sync python -m scripts.injection.campaign plan  --run-id "$INJECTION_RUN_ID" --contract scripts/configs/newtask-v2/injection_contract_v2.json
+uv run --no-sync python -m scripts.injection.campaign check --run-id "$INJECTION_RUN_ID"
 
 # 二、真实 HDF5：11 组各 episode 0～29 共 330 条
-uv run --no-sync python -m tests._shared.injection_campaign run \
+uv run --no-sync python -m scripts.injection.campaign run \
   --run-id "$INJECTION_RUN_ID" --phase feasibility --tier 12
 
 # 三、对拍
-uv run --no-sync python -m tests._shared.injection_campaign run \
+uv run --no-sync python -m scripts.injection.campaign run \
   --run-id "$INJECTION_RUN_ID" --phase calibration --skip-ladder        # SERIAL_REFERENCE
-uv run --no-sync python -m tests._shared.injection_campaign compare \
+uv run --no-sync python -m scripts.injection.campaign compare \
   --left  artifacts/injection/$INJECTION_RUN_ID/calibration/S0a \
   --right artifacts/injection/$INJECTION_RUN_ID/feasibility/P0x12 \
   --label PARALLEL_CONTENT --subset-only                                # PARALLEL_CONTENT
-uv run --no-sync python -m tests._shared.injection_campaign collision-reproduce \
+uv run --no-sync python -m scripts.injection.campaign collision-reproduce \
   --output-dir artifacts/collision-replay/<新编号> --mode trajectory     # COLLISION_REPRODUCE
 
 # 四、出图与轻量包
-uv run --no-sync python -m tests._shared.injection_campaign plot   --run-id "$INJECTION_RUN_ID" --phase before
-uv run --no-sync python -m tests._shared.injection_campaign plot   --run-id "$INJECTION_RUN_ID" --phase after
-uv run --no-sync python -m tests._shared.injection_campaign report --run-id "$INJECTION_RUN_ID"
+uv run --no-sync python -m scripts.injection.campaign plot   --run-id "$INJECTION_RUN_ID" --phase before
+uv run --no-sync python -m scripts.injection.campaign plot   --run-id "$INJECTION_RUN_ID" --phase after
+uv run --no-sync python -m scripts.injection.campaign report --run-id "$INJECTION_RUN_ID"
 ```
 
 ⚠ 超过五分钟的阶段按 [AGENTS.md](../AGENTS.md) 强制规则第 4 条用 detached tmux 起。

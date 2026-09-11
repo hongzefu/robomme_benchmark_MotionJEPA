@@ -76,7 +76,25 @@ schema 2 配置须用 `--extract-config` 重新导出为 schema 3；新增字段
 检查，`_cross_check` 还确认字段确实接到原调用点。本轮以 `20260909-actions-v3`
 独立重跑全部 15 格四路，五项对拍均有新证据，见第二节。
 
-### 1.5 **没有**开放为可配的东西
+### 1.5 注入规格的取值域与分配：约定 JSON
+
+新值注入专项（第四节）里「每个字段能取什么、怎么铺满 100 条」不再散落在生成器、补零类别表与事件表文案里，
+而是一份版本化的契约 [`configs/newtask-v2/injection_contract_v1.json`](configs/newtask-v2/injection_contract_v1.json)
+（= 现状口径，数值域由 `native_sampling.json` 派生）与
+[`injection_contract_v2.json`](configs/newtask-v2/injection_contract_v2.json)（= v1 + BinFill 对齐 heldout 三处）。
+谁定义什么：
+
+| 文件 | 定义什么 | 谁消费 |
+|---|---|---|
+| `injection_contract_v*.json` | 11 组 × 每字段的事件名、取值域（`domain`／`domain_text`）、分配办法（`allocation`／`allocation_text`）、对原值的 `overrides` | `scripts/injection/specs.py::build_group`（候选分布的派生依据）、`categories.py::legal_categories`（补零）、`injection-before-2d/event_tables.py`（表格两列） |
+| `native_sampling.json` | 几何常量（按钮盒尺寸、孔板边长、锚点坐标、避让间距、`region_half_size`）与结构性输入（节点表、邻接顺序），以及仿真运行时的原值 | 生成器的几何部分、`_static_problems` 的独立复核、`generate_dataset_newseed.py --sampling-config` |
+
+契约里由几何算出的数值是**派生结果**，带 `derivation`（recipe + 依赖键），`check` 的 `CONTRACT_DERIVED`
+每次拿 `native_sampling.json` 回算；想改这类数字要改 `native_sampling.json`，或登记 override。
+**契约只作用于外部规格生成器（`scripts/injection/`），生产入口 `generate_dataset_newseed.py` 不读它。**
+变化与用户决策见 [NEW_VALUE_CONTRACT_CHANGELOG.md](NEW_VALUE_CONTRACT_CHANGELOG.md)。
+
+### 1.6 **没有**开放为可配的东西
 
 物体尺寸、材质、碰撞几何、相机、速度、交换时序、失败恢复、成功阈值都属于原实现，没有动。
 
@@ -88,7 +106,7 @@ schema 2 配置须用 `--extract-config` 重新导出为 schema 3；新增字段
 无调用者的死代码、`VideoRepick` 永不命中的 `region4` 分支、与实际不符的注释等）
 按计划**原样保留、没有顺手修**，只在快照与计划文档里记录。
 
-### 1.6 「固定」是怎么保证的
+### 1.7 「固定」是怎么保证的
 
 取值有两个落点，但**不是两套真值**：
 
@@ -421,49 +439,50 @@ uv run --no-sync python scripts/generate_dataset_newseed.py --merge-only \
 
 ## 四、新值注入专项的编排入口
 
-工具在 `tests._shared.injection_campaign`，属测试侧，**生产代码不导入它**。
+工具在 `scripts/injection/`（包入口 `scripts.injection.campaign`，须在仓库根目录以 `python -m` 运行；不依赖 `tests/`），**生产入口 `generate_dataset_newseed.py` 不导入它**。
 五个子命令，按执行顺序：
 
 ```bash
 command -v uv
-INJECTION_RUN_ID=20260910-new-values-03
+INJECTION_RUN_ID=20260911-contract-v2-05
 
-# 步骤 0：冻结 11 组 × 100 条规格（运行编号不可复用，目录已存在直接拒绝）
-uv run --no-sync python -m tests._shared.injection_campaign plan --run-id "$INJECTION_RUN_ID"
+# 步骤 0：冻结 11 组 × 100 条规格（运行编号不可复用，目录已存在直接拒绝；--contract 必填）
+uv run --no-sync python -m scripts.injection.campaign plan --run-id "$INJECTION_RUN_ID" \
+  --contract scripts/configs/newtask-v2/injection_contract_v2.json
 
 # 步骤 0：从冻结规格独立重算全部计数与几何
-uv run --no-sync python -m tests._shared.injection_campaign check --run-id "$INJECTION_RUN_ID"
+uv run --no-sync python -m scripts.injection.campaign check --run-id "$INJECTION_RUN_ID"
 
 # 步骤 0 / 6：跑前、跑后各一套三类图
-uv run --no-sync python -m tests._shared.injection_campaign plot --run-id "$INJECTION_RUN_ID" --phase before
+uv run --no-sync python -m scripts.injection.campaign plot --run-id "$INJECTION_RUN_ID" --phase before
 
 # 步骤 3 + 4：串行参考两遍，再把每卡 worker 一路往上探到 OOM／超时
-uv run --no-sync python -m tests._shared.injection_campaign run --run-id "$INJECTION_RUN_ID" --phase calibration
+uv run --no-sync python -m scripts.injection.campaign run --run-id "$INJECTION_RUN_ID" --phase calibration
 
 # 步骤 5：用校准选出的档跑 330 条
-uv run --no-sync python -m tests._shared.injection_campaign run --run-id "$INJECTION_RUN_ID" --phase feasibility
+uv run --no-sync python -m scripts.injection.campaign run --run-id "$INJECTION_RUN_ID" --phase feasibility
 
 # 步骤 6：汇总各阶段判定与计数，写轻量包到 docs/validation/newtask-v2/<运行编号>/
-uv run --no-sync python -m tests._shared.injection_campaign report --run-id "$INJECTION_RUN_ID"
+uv run --no-sync python -m scripts.injection.campaign report --run-id "$INJECTION_RUN_ID"
 ```
 
 机器被别人占用、吞吐测不准时，改走这条：
 
 ```bash
 # 只做串行参考，并行三项记 NOT_RUN
-uv run --no-sync python -m tests._shared.injection_campaign run \
+uv run --no-sync python -m scripts.injection.campaign run \
   --run-id "$INJECTION_RUN_ID" --phase calibration --skip-ladder
 # 用显式指定的档直接实跑（结果里标 tier_measured=false）
-uv run --no-sync python -m tests._shared.injection_campaign run \
+uv run --no-sync python -m scripts.injection.campaign run \
   --run-id "$INJECTION_RUN_ID" --phase feasibility --tier 12
 ```
 
 `compare` 单独做两个运行目录的完整 HDF5 逐位对拍，复用
-`tests/_shared/native_sampling_parity.py::compare_h5`（显式遍历全部 group、dataset 及
+`scripts/injection/h5_compare.py::compare_h5`（显式遍历全部 group、dataset 及
 各层 attribute，检查类型、形状与内容）：
 
 ```bash
-uv run --no-sync python -m tests._shared.injection_campaign compare \
+uv run --no-sync python -m scripts.injection.campaign compare \
   --left  artifacts/injection/$INJECTION_RUN_ID/parity/baseline \
   --right artifacts/injection/$INJECTION_RUN_ID/parity/current \
   --label DEFAULT_PARITY
@@ -488,7 +507,7 @@ uv run --no-sync python -m tests._shared.injection_campaign compare \
 ```bash
 mkdir -p artifacts/logs
 tmux new-session -d -s "$INJECTION_RUN_ID-calibration" \
-  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m tests._shared.injection_campaign run \
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.injection.campaign run \
      --run-id $INJECTION_RUN_ID --phase calibration 2>&1 \
      | tee artifacts/logs/$INJECTION_RUN_ID-calibration.log; \
    echo \"EXIT_CODE=\$?\" >> artifacts/logs/$INJECTION_RUN_ID-calibration.log"

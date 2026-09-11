@@ -1,19 +1,23 @@
 # 新值规格的跑前分布：怎么生成、每组随机了什么、结果落成什么样
 
-> 数据：`artifacts/injection/20260910-new-values-04/specs/<任务>/<难度>.json`，11 组 × 100 条 = 1100 条冻结规格，生成 seed `20260909`，`VideoRepick hard` 排除。
-> 判定（`check_result.json`）：`SPEC_SCOPE=PASS specs=1100`、`COVERAGE_QUOTA=PASS batches=10 quota_gaps=0`、`STATIC_GEOMETRY=PASS rejected=0`、`COLLISION_SWEEP=PASS specs=500 rejected=0 min_g_m=0.00042638`、`SPEC_REPRODUCIBLE=PASS differences=0`。
+> 数据：`artifacts/injection/20260911-contract-v2-05/specs/<任务>/<难度>.json`，11 组 × 100 条 = 1100 条冻结规格，生成 seed `20260909`，`VideoRepick hard` 排除。取值域与分配两列取自契约 `scripts/configs/newtask-v2/injection_contract_v2.json`（BinFill 对齐 heldout：medium 6～8 块、hard 8～10 块、多目标色每色至少 1 块），改口径与用户决策见 [NEW_VALUE_CONTRACT_CHANGELOG.md](../NEW_VALUE_CONTRACT_CHANGELOG.md)；上一轮 `20260910-new-values-04`（契约 v1 = 原值口径）原样保留作对照，除 BinFill medium／hard 外 9 组规格与 04 逐条相同。
+> 判定（`check_result.json`）：`CONTRACT_DERIVED=PASS fields=155 mismatches=6 overrides=2 version=v2 problems=0`、`SPEC_SCOPE=PASS specs=1100`、`COVERAGE_QUOTA=PASS batches=10 quota_gaps=0`、`STATIC_GEOMETRY=PASS rejected=0`、`COLLISION_SWEEP=PASS specs=500 rejected=0 min_g_m=0.00042638`、`SPEC_REPRODUCIBLE=PASS differences=0`、`CHECK=PASS elapsed_s=357.1`。
 > 本目录只有只读脚本，不改 `tests/_shared/*`、不改 `src/robomme`、不写原 `plots/`；图只做**跑前**，PNG 放本目录 `figures/`，已 gitignore 不入库，只保留链接（用户要求）。
 >
 > 三条命令（都只读规格 JSON）：
-> - 出图：`uv run python scripts/injection-before-2d/plot_injection_before_2d.py --run-id 20260910-new-values-04`，只画实跑范围前 30 条（ep0～29），每组 7 张、共 77 张，产物放本目录 `figures/<任务>/<难度>/`（已 gitignore 不入库，文档链接指向本地文件，clone 后先跑一次出图），成功打 `PLOT2D_BEFORE=PASS groups=11 files=77 episodes=30`；
-> - 生成第二节的事件表：`uv run python scripts/injection-before-2d/event_tables.py --run-id 20260910-new-values-04 --write`，成功打 `EVENT_TABLES=WRITTEN groups=11 rows=125`；
+> - 出图：`uv run python scripts/injection-before-2d/plot_injection_before_2d.py --run-id 20260911-contract-v2-05`，只画实跑范围前 30 条（ep0～29），每组 7 张、共 77 张，产物放本目录 `figures/<任务>/<难度>/`（已 gitignore 不入库，文档链接指向本地文件，clone 后先跑一次出图），成功打 `PLOT2D_BEFORE=PASS groups=11 files=77 episodes=30`；
+> - 生成第二节的事件表：`uv run python scripts/injection-before-2d/event_tables.py --run-id 20260911-contract-v2-05 --write`（「取值域」「分配」两列取自清单记录的契约，本脚本只算「结果分布」列），成功打 `EVENT_TABLES=WRITTEN groups=11 rows=125`；
 > - 核对文档链接、产物张数与事件表是否漂移：`uv run python scripts/injection-before-2d/check_doc_links.py`，成功打 `DOC_LINKS=PASS … files=77/77 … tables=PASS`。
 
 ## 一、分布是怎么生成的
 
+### 1.0 取值域从哪来：约定 JSON 是派生依据
+
+每个字段「能取哪些值」「用哪种办法铺满 100 条」写在一份版本化的约定 JSON 里——`scripts/configs/newtask-v2/injection_contract_v2.json`（本轮），生成器 `scripts/injection/specs.py::build_group` 从它读离散候选列表与连续区间端点，第二节表格的「取值域」「分配」两列也直接取它的 `domain_text`／`allocation_text`；几何常量（按钮盒尺寸、孔板边长、锚点坐标、避让间距 0.02、`region_half_size`）仍只在 `native_sampling.json`。契约里由几何或难度字典算出的数字都带派生表达式，`check` 的 `CONTRACT_DERIVED` 每次拿 `native_sampling.json` 回算；有意偏离原值的字段必须登记在契约的 `overrides`。v1（原值口径，04 运行）→ v2 只改 BinFill 三处：medium 方块 8～10 → 6～8、hard 10～12 → 8～10、多目标色时每个目标色至少 1 块（heldout 分支 `2fa5660`）；其余 9 组逐字相同（[NEW_VALUE_CONTRACT_CHANGELOG.md](../NEW_VALUE_CONTRACT_CHANGELOG.md)）。
+
 ### 1.1 一个字段一把专属骰子
 
-每一个要随机的量（比如 BinFill/easy 的按钮 x 坐标）都有自己的一把骰子。骰子是这样造的：把 `20260909|BinFill|easy|button_x` 这串字做一次 SHA-256，取前 8 个字节当随机数种子（`tests/_shared/injection_sampling.py::derive_rng`）。换任何一个字（换任务、换难度、换字段名）就是另一把骰子；同一串字在任何机器、任何并行度、任何字典遍历顺序下摇出来的数永远一样。所以 `plan` 跑两遍，1100 条规格逐条散列全同（`SPEC_REPRODUCIBLE=PASS differences=0`）。
+每一个要随机的量（比如 BinFill/easy 的按钮 x 坐标）都有自己的一把骰子。骰子是这样造的：把 `20260909|BinFill|easy|button_x` 这串字做一次 SHA-256，取前 8 个字节当随机数种子（`scripts/injection/sampling.py::derive_rng`）。换任何一个字（换任务、换难度、换字段名）就是另一把骰子；同一串字在任何机器、任何并行度、任何字典遍历顺序下摇出来的数永远一样。所以 `plan` 跑两遍，1100 条规格逐条散列全同（`SPEC_REPRODUCIBLE=PASS differences=0`）。
 
 ### 1.2 连续量（位置、角度）：10 个抽屉，每个抽屉 10 个小格
 
@@ -24,7 +28,7 @@
 3. 100 条规格分成 **10 批**，每批 10 条。**每批的 10 条各占一个不同的抽屉**，同一个抽屉在 10 批里各用一个不同的小格；
 4. 于是 100 条正好把 10 × 10 = 100 个小格填满一遍；小格内的具体位置再随机抖一下。
 
-结果是：任何一批（包括实跑只用的前 3 批 ep0～29）都均匀盖住整条区间，全部 100 条则每个抽屉恰好 10 条。这个「每个抽屉 10 条」就是 `COVERAGE_QUOTA` 对连续量验的东西（`tests/_shared/injection_sampling.py::stratify`）。
+结果是：任何一批（包括实跑只用的前 3 批 ep0～29）都均匀盖住整条区间，全部 100 条则每个抽屉恰好 10 条。这个「每个抽屉 10 条」就是 `COVERAGE_QUOTA` 对连续量验的东西（`scripts/injection/sampling.py::stratify`）。
 
 **拿真实数据走一遍**（BinFill/easy 第 0 批，ep0～ep9 的 `button_x`）。规格 JSON 里每条都存了 `sampling_cells.button_x = [抽屉号, 小格号]`，例如 ep0 存的是 `[0, 9]`，意思是第 0 号抽屉、第 9 个小格，小格区间就是 -0.25 + 9 × 0.001 = [-0.2410, -0.2400)；这条规格实际的 `layout.button_xy[0]` 是 -0.24090228580683687，确实落在里面。谁都可以打开 JSON 自己核对：
 
@@ -45,7 +49,7 @@
 
 ### 1.3 独立的离散量（几块、几次、哪种排列）：发牌
 
-`spawn_total` 这种只能取 4/5/6 的量不是掷骰子，是**发牌**：先按人头把 100 张牌分成 34/33/33，再洗一洗按批发下去（`tests/_shared/injection_sampling.py::quota_series`）。所以最后一定是 `4:34 5:33 6:33`，多一张少一张都不行；两类的量（`dynamic`、`layout_type`）就是 50/50，五类的（RouteStick 起点）就是各 20。全局计数差 ≤ 1，这是 `COVERAGE_QUOTA` 对离散量验的东西。
+`spawn_total` 这种只能取 4/5/6 的量不是掷骰子，是**发牌**：先按人头把 100 张牌分成 34/33/33，再洗一洗按批发下去（`scripts/injection/sampling.py::quota_series`）。所以最后一定是 `4:34 5:33 6:33`，多一张少一张都不行；两类的量（`dynamic`、`layout_type`）就是 50/50，五类的（RouteStick 起点）就是各 20。全局计数差 ≤ 1，这是 `COVERAGE_QUOTA` 对离散量验的东西。
 
 ⚠ **「每一批 10 条也按同比例」只在两类（50/50）时严格成立**（出图时发现，代码未改、规格已冻结，如实记录）。三类 34/33/33 按 `floor(n·(t+1)/10) − floor(n·t/10)` 摊到 10 个批桶时，桶大小是 9, 9, 10, 11, 10, 9, 11, 10, 9, 12，串接成 100 条后批桶边界与 episode 的 `10t～10t+9` 错位。实测 BinFill/easy 的 `spawn_total` 每批 4/5/6 计数是 3/4/3、4/2/4、3/4/3、3/3/4、**5/3/2**、2/3/5、4/4/2、3/3/4、3/3/4、4/4/2。
 
@@ -54,11 +58,11 @@
 | 2（`dynamic`、`layout_type`、两值的 `n_swaps`…） | 50/50 | 10 × 10 | 是，每批恰 5/5 |
 | 3（`spawn_total`、`put_in_total`、`num_repeats`…） | 34/33/33 | 9, 9, 10, 11, 10, 9, 11, 10, 9, 12 | 否，只近似 |
 
-对实跑范围 ep0～29 的实际影响：独立类别的 30 条计数差多数为 0，最大 3（BinFill/hard 的 `put_in_total`）；逐组数字：BinFill easy `put_in_total` 2；medium `initialize_color_order` 2、`spawn_total` 2；hard `initialize_color_order` 2、`spawn_total` 2、`put_in_total` 3；RouteStick hard `L` 1；VideoUnmaskSwap easy `selected` 2、medium `selected`/`color_order` 各 2、hard `color_order` 2；VideoRepick easy `num_repeats`/`target` 各 2、medium `target` 2；其余全部为 0。全局 100 条的计数差 ≤ 1 不受影响。修法（待批，不在本轮）：先保证每批桶恰 10 条，再在桶内配置各类别。
+对实跑范围 ep0～29 的实际影响（05 运行重算）：独立类别的 30 条计数差多数为 0，最大 3（BinFill/hard 的 `put_in_total`）；逐组数字：BinFill easy `put_in_total` 2；medium `initialize_color_order` 2、`spawn_total` 2；hard `initialize_color_order` 2、`spawn_total` 2、`put_in_total` 3；RouteStick hard `L` 1、三档 `direction` 各 1（按段计数，30 条的段数是奇数，天然差 1）；VideoUnmaskSwap easy `selected` 2、medium `selected`/`color_order` 各 2、hard `color_order` 2；VideoRepick easy `num_repeats`/`target` 各 2、medium `target` 2；其余全部为 0。BinFill medium／hard 的 `spawn_total` 换成 6～8／8～10 后每批计数与 04 完全相同——发牌序列只取决于类数（仍是 3 类），牌面换了、顺序没换。全局 100 条的计数差 ≤ 1 不受影响。修法（待批，不在本轮）：先保证每批桶恰 10 条，再在桶内配置各类别。
 
 ### 1.4 受几何或上一步限制的量：谁用得少先轮谁
 
-路线的下一步、交换的对象、目标色池这类量，能取什么值取决于当前位置和场上情况，事先没法发牌。办法是：**每一步只在当前合法的候选里挑历史上用得最少的那个，平局随机**（`tests/_shared/injection_sampling.py::balanced_choice`）。这类量只报实际频数，不承诺严格均匀。两个例子：
+路线的下一步、交换的对象、目标色池这类量，能取什么值取决于当前位置和场上情况，事先没法发牌。办法是：**每一步只在当前合法的候选里挑历史上用得最少的那个，平局随机**（`scripts/injection/sampling.py::balanced_choice`）。这类量只报实际频数，不承诺严格均匀。两个例子：
 
 - RouteStick/hard 的 8 条有向边，550 段走下来是 `8→6:77 0→2:73 6→4:71 6→8:70 2→0:65 4→2:65 4→6:65 2→4:64`——两端节点只有一个邻居，走到头被迫掉头，所以 `0→2`、`8→6` 天然偏多。
 - VideoUnmaskSwap/medium 的交换搭档不是随机的，是「交换开始时水平距离最近的那个」推出来的；四点布局里 `bin_3` 离谁都不是最近，150 次交换里 `bin_3→bin_0/1/2` 三种组合一次没出现。
@@ -67,7 +71,7 @@
 
 ### 1.5 几何／碰撞拒绝之后的重抽（不改配额、不放宽阈值、不减物体）
 
-- BinFill 方块：第 0 块的首次尝试用本条的分层点（这一次计入连续量配额），其余块粗箱轮转散开；候选与按钮／孔板／已放方块（扩 0.02 间隙）相交即照原 `spawn_random_cube` 在**整个区域**重抽，最多 256 次。实测候选／几何拒绝：easy 1136/637、medium 2600/1701、hard 4423/3324。所以方块的**实际位置**不承诺每箱 10，第二节里「采样输入」与「实际位置」分开报。
+- BinFill 方块：第 0 块的首次尝试用本条的分层点（这一次计入连续量配额），其余块粗箱轮转散开；候选与按钮／孔板／已放方块（扩 0.02 间隙）相交即照原 `spawn_random_cube` 在**整个区域**重抽，最多 256 次。实测候选／几何拒绝（05）：easy 1136/637、medium 1745/1046、hard 2733/1834（04 按原值区间是 2600/1701、4423/3324，方块少了两块落位更容易）。所以方块的**实际位置**不承诺每箱 10，第二节里「采样输入」与「实际位置」分开报。
 - 两个视频任务：初态 + 每段交换路径过真实碰撞盒的连续检查（接触即拒，容限 1e-6 m）；被拒后 θ 与每个偏移、朝向都在**同一粗箱**内重抽，粗箱不变所以配额判据不受影响。冻结时用到第几个候选的实际频数见第二节各组的 `collision.candidates_used` 行（VideoRepick/medium 最远用到第 33 个）。
 - RouteStick 无几何拒绝（候选 0）。
 
@@ -106,7 +110,7 @@
 | `put_in_color` 目标色种数 | 1 | 配额 | 1:100 |
 | `target_pool`（要投入的颜色子集） | 场上颜色的子集 | 合法候选内平衡 | red:34 blue:33 green:33；未覆盖 无 |
 | `put_in_total`（投入几块） | 1～3 | 配额 | 1:34 2:33 3:33 |
-| `target_count[颜色]`（每色投几块） | 投入数逐个随机分给目标色，允许 0 | `rng_ep` 逐条随机（耦合） | green=2:14 red=1:13 red=3:13 blue=1:12 blue=2:11 blue=3:10 green=3:10 green=1:9 red=2:8（共 100 个颜色项） |
+| `target_count[颜色]`（每色投几块） | 单色直接给总数；多目标色每色先各 1，余量逐个随机分（heldout 规则，不允许 0） | `rng_ep` 逐条随机（耦合） | green=2:14 red=1:13 red=3:13 blue=1:12 blue=2:11 blue=3:10 green=3:10 green=1:9 red=2:8（共 100 个颜色项） |
 | `actions`（抓哪块） | 按颜色创建顺序遍历，每色取生成列表最前 `target_count` 块 | 推出 | 推出：被抓方块的色内序号 0:34 1:44 2:41 3:40 4:29 5:11（共 199 个动作） |
 
 ### BinFill / medium（100 条）
@@ -117,13 +121,13 @@
 |---|---|---|---|
 | `dynamic`（方块分批出现还是开局全在） | True / False | 配额 50/50 | True:50 False:50 |
 | `colors_present`（场上有哪些颜色） | 红蓝绿里取 2 种 | 配额 | red+blue:34 red+green:33 blue+green:33 |
-| `spawn_total`（生成几块） | 8～10 | 配额 | 8:34 9:33 10:33 |
+| `spawn_total`（生成几块） | 6～8 | 配额 | 6:34 7:33 8:33 |
 | `initialize_color_order`（颜色创建顺序） | 蓝红绿 6 种排列 | 配额 | blue-red-green:17 blue-green-red:17 red-blue-green:17 red-green-blue:17 green-blue-red:16 green-red-blue:16 |
-| `spawn_count[颜色]`（每色生成几块） | 每色至少 max(目标,1)，余量随机摊 | `rng_ep` 逐条随机（耦合） | green=4:23 blue=5:20 red=4:18 red=5:18 green=5:15 blue=3:13 red=6:12 blue=6:11 blue=4:10 green=6:10 red=3:9 blue=2:8 …另 12 类略（共 200 个颜色项） |
-| 方块生成顺序 | (颜色, 序号) 的随机排列 | `rng_ep.permutation` | 生成序首块的颜色 red:39 blue:31 green:30 |
+| `spawn_count[颜色]`（每色生成几块） | 每色至少 max(目标,1)，余量随机摊 | `rng_ep` 逐条随机（耦合） | red=3:22 blue=4:19 green=3:19 blue=3:16 red=4:16 green=4:15 green=5:15 blue=2:14 blue=5:12 green=2:11 red=2:10 red=5:9 …另 7 类略（共 200 个颜色项） |
+| 方块生成顺序 | (颜色, 序号) 的随机排列 | `rng_ep.permutation` | 生成序首块的颜色 red:31 blue:31 green:38 |
 | `button_xy`（按钮中心） | x∈[-0.25,-0.15] y∈[-0.2,0.2] | 分层 | x 10 箱各 10，实测 [-0.2499, -0.1507]；y 10 箱各 10，实测 [-0.1986, 0.1972] |
 | `board.xy`、`board.yaw_deg`（孔板） | x∈[-0.05,0.15] y∈[-0.2,0.2]，yaw∈[-20°,20°] | 分层 | x 10 箱各 10，实测 [-0.0484, 0.1485]；y 10 箱各 10，实测 [-0.1970, 0.1977]；yaw 10 箱各 10，实测 [-19.68, 19.67] |
-| `cubes[i].xy`、`yaw_rad`（每块方块） | x∈[-0.28,0.08] y∈[-0.23,0.23]，yaw 0～2π | 第 0 块首次尝试分层；其余块粗箱轮转；被拒整域重抽 | 采样输入 cube_x 10 箱各 10、cube_y 10 箱各 10、cube_yaw 10 箱各 10；实际位置 x 箱计数 109,79,74,68,95,98,94,96,89,97，实测 [-0.2799, 0.0800]；y 箱计数 131,75,89,78,80,75,76,80,83,132，实测 [-0.2298, 0.2290]；yaw 实测 [0.00, 6.28]（共 899 块） |
+| `cubes[i].xy`、`yaw_rad`（每块方块） | x∈[-0.28,0.08] y∈[-0.23,0.23]，yaw 0～2π | 第 0 块首次尝试分层；其余块粗箱轮转；被拒整域重抽 | 采样输入 cube_x 10 箱各 10、cube_y 10 箱各 10、cube_yaw 10 箱各 10；实际位置 x 箱计数 91,48,54,61,65,68,90,72,70,80，实测 [-0.2794, 0.0797]；y 箱计数 105,61,75,58,65,56,41,57,77,104，实测 [-0.2298, 0.2292]；yaw 实测 [0.00, 6.28]（共 699 块） |
 
 #### 事件（任务要做什么：投入／抓取／路线／交换的选择）
 
@@ -132,8 +136,8 @@
 | `put_in_color` 目标色种数 | 1/2 | 配额 | 1:50 2:50 |
 | `target_pool`（要投入的颜色子集） | 场上颜色的子集 | 合法候选内平衡 | blue+green:21 green:17 red:17 blue:16 red+green:15 red+blue:14；未覆盖 无 |
 | `put_in_total`（投入几块） | 2～4 | 配额 | 2:34 3:33 4:33 |
-| `target_count[颜色]`（每色投几块） | 投入数逐个随机分给目标色，允许 0 | `rng_ep` 逐条随机（耦合） | red=0:24 blue=0:22 green=2:19 green=0:18 blue=2:16 red=2:16 green=1:14 red=1:13 blue=1:12 blue=3:10 red=3:9 green=4:8 …另 3 类略（共 200 个颜色项） |
-| `actions`（抓哪块） | 按颜色创建顺序遍历，每色取生成列表最前 `target_count` 块 | 推出 | 推出：被抓方块的色内序号 0:72 1:69 2:63 3:45 4:30 5:18 6:2（共 299 个动作） |
+| `target_count[颜色]`（每色投几块） | 单色直接给总数；多目标色每色先各 1，余量逐个随机分（heldout 规则，不允许 0） | `rng_ep` 逐条随机（耦合） | red=0:21 blue=2:20 green=1:20 red=1:20 blue=1:19 green=2:19 blue=0:16 green=0:13 red=2:12 red=3:10 blue=4:7 green=3:7 …另 3 类略（共 200 个颜色项） |
+| `actions`（抓哪块） | 按颜色创建顺序遍历，每色取生成列表最前 `target_count` 块 | 推出 | 推出：被抓方块的色内序号 0:83 1:80 2:66 3:43 4:21 5:6（共 299 个动作） |
 
 ### BinFill / hard（100 条）
 
@@ -143,13 +147,13 @@
 |---|---|---|---|
 | `dynamic`（方块分批出现还是开局全在） | True / False | 配额 50/50 | True:50 False:50 |
 | `colors_present`（场上有哪些颜色） | 红蓝绿里取 3 种 | 配额 | red+blue+green:100 |
-| `spawn_total`（生成几块） | 10～12 | 配额 | 10:34 11:33 12:33 |
+| `spawn_total`（生成几块） | 8～10 | 配额 | 8:34 9:33 10:33 |
 | `initialize_color_order`（颜色创建顺序） | 蓝红绿 6 种排列 | 配额 | blue-red-green:17 blue-green-red:17 red-blue-green:17 red-green-blue:17 green-blue-red:16 green-red-blue:16 |
-| `spawn_count[颜色]`（每色生成几块） | 每色至少 max(目标,1)，余量随机摊 | `rng_ep` 逐条随机（耦合） | blue=3:31 green=4:28 red=4:25 blue=4:23 green=3:21 blue=2:20 red=2:20 red=3:19 green=5:18 red=5:15 green=2:13 blue=5:12 …另 10 类略（共 300 个颜色项） |
-| 方块生成顺序 | (颜色, 序号) 的随机排列 | `rng_ep.permutation` | 生成序首块的颜色 red:31 blue:29 green:40 |
+| `spawn_count[颜色]`（每色生成几块） | 每色至少 max(目标,1)，余量随机摊 | `rng_ep` 逐条随机（耦合） | blue=3:37 red=3:33 green=3:30 blue=2:26 green=4:24 red=4:24 green=2:20 red=2:20 blue=4:18 green=1:14 red=1:12 blue=1:10 …另 6 类略（共 300 个颜色项） |
+| 方块生成顺序 | (颜色, 序号) 的随机排列 | `rng_ep.permutation` | 生成序首块的颜色 red:29 blue:33 green:38 |
 | `button_xy`（按钮中心） | x∈[-0.25,-0.15] y∈[-0.2,0.2] | 分层 | x 10 箱各 10，实测 [-0.2500, -0.1504]；y 10 箱各 10，实测 [-0.1963, 0.1962] |
 | `board.xy`、`board.yaw_deg`（孔板） | x∈[-0.05,0.15] y∈[-0.2,0.2]，yaw∈[-20°,20°] | 分层 | x 10 箱各 10，实测 [-0.0485, 0.1488]；y 10 箱各 10，实测 [-0.1988, 0.1991]；yaw 10 箱各 10，实测 [-19.73, 19.95] |
-| `cubes[i].xy`、`yaw_rad`（每块方块） | x∈[-0.28,0.08] y∈[-0.23,0.23]，yaw 0～2π | 第 0 块首次尝试分层；其余块粗箱轮转；被拒整域重抽 | 采样输入 cube_x 10 箱各 10、cube_y 10 箱各 10、cube_yaw 10 箱各 10；实际位置 x 箱计数 140,75,106,81,105,126,112,115,94,145，实测 [-0.2800, 0.0798]；y 箱计数 165,100,104,98,78,110,95,112,95,142，实测 [-0.2299, 0.2297]；yaw 实测 [0.01, 6.28]（共 1099 块） |
+| `cubes[i].xy`、`yaw_rad`（每块方块） | x∈[-0.28,0.08] y∈[-0.23,0.23]，yaw 0～2π | 第 0 块首次尝试分层；其余块粗箱轮转；被拒整域重抽 | 采样输入 cube_x 10 箱各 10、cube_y 10 箱各 10、cube_yaw 10 箱各 10；实际位置 x 箱计数 105,79,75,66,86,103,105,89,89,102，实测 [-0.2790, 0.0800]；y 箱计数 126,93,84,75,77,71,82,83,87,121，实测 [-0.2296, 0.2297]；yaw 实测 [0.01, 6.28]（共 899 块） |
 
 #### 事件（任务要做什么：投入／抓取／路线／交换的选择）
 
@@ -158,8 +162,8 @@
 | `put_in_color` 目标色种数 | 2/3 | 配额 | 2:50 3:50 |
 | `target_pool`（要投入的颜色子集） | 场上颜色的子集 | 合法候选内平衡 | red+blue+green:50 blue+green:17 red+blue:17 red+green:16；未覆盖 无 |
 | `put_in_total`（投入几块） | 3～5 | 配额 | 3:34 4:33 5:33 |
-| `target_count[颜色]`（每色投几块） | 投入数逐个随机分给目标色，允许 0 | `rng_ep` 逐条随机（耦合） | blue=0:31 green=2:30 red=0:30 green=0:29 red=2:28 blue=1:27 blue=2:26 green=1:26 red=1:26 green=3:13 red=3:12 blue=3:11 …另 3 类略（共 300 个颜色项） |
-| `actions`（抓哪块） | 按颜色创建顺序遍历，每色取生成列表最前 `target_count` 块 | 推出 | 推出：被抓方块的色内序号 0:107 1:101 2:84 3:63 4:26 5:12 6:5 7:1（共 399 个动作） |
+| `target_count[颜色]`（每色投几块） | 单色直接给总数；多目标色每色先各 1，余量逐个随机分（heldout 规则，不允许 0） | `rng_ep` 逐条随机（耦合） | green=1:48 red=1:45 blue=1:42 blue=2:31 green=2:28 red=2:25 green=0:17 red=0:17 blue=0:16 red=3:12 blue=3:9 green=3:7 …另 2 类略（共 300 个颜色项） |
+| `actions`（抓哪块） | 按颜色创建顺序遍历，每色取生成列表最前 `target_count` 块 | 推出 | 推出：被抓方块的色内序号 0:156 1:115 2:80 3:36 4:8 5:4（共 399 个动作） |
 
 ### RouteStick / easy（100 条）
 
@@ -347,7 +351,7 @@
 
 ## 三、三种图怎么看
 
-**视角与回放视频对齐**：所有图都按回放视频左起第一格（`base_camera`，eye (0.3, 0, 0.4) → target (0, 0, −0.2)，从机器人一侧俯视）的视角画——画面右 = 世界 +y，画面上 = 世界 −x（远离机器人），机器人在画面下方；横轴标世界 y，纵轴标世界 x（向上减小）。绘图坐标 (u, v) = (y, −x) 是绕 z 轴 −90° 的纯旋转，方块朝向与顺／逆时针弧向不受影响。对齐依据：BinFill/easy ep0（按钮 (−0.241, 0.198) 在画面右上、孔板 (−0.021, −0.149) 在左下）与 VideoUnmaskSwap/easy ep0（红容器 (−0.157, 0.092) 右上、绿容器 (0.093, −0.107) 左下）的视频首帧逐物体核对。回放视频在 `artifacts/injection/20260910-new-values-04/feasibility/P0x12/<任务>/<难度>/videos/`（不入库）。
+**视角与回放视频对齐**：所有图都按回放视频左起第一格（`base_camera`，eye (0.3, 0, 0.4) → target (0, 0, −0.2)，从机器人一侧俯视）的视角画——画面右 = 世界 +y，画面上 = 世界 −x（远离机器人），机器人在画面下方；横轴标世界 y，纵轴标世界 x（向上减小）。绘图坐标 (u, v) = (y, −x) 是绕 z 轴 −90° 的纯旋转，方块朝向与顺／逆时针弧向不受影响。对齐依据：BinFill/easy ep0（按钮 (−0.241, 0.198) 在画面右上、孔板 (−0.021, −0.149) 在左下）与 VideoUnmaskSwap/easy ep0（红容器 (−0.157, 0.092) 右上、绿容器 (0.093, −0.107) 左下）的视频首帧逐物体核对。回放视频在 `artifacts/injection/20260910-new-values-04/feasibility/P0x12/<任务>/<难度>/videos/`（不入库；仍是 04 那轮的产物——05 只重冻结规格未实跑，用来对齐视角的 BinFill/easy ep0 与 VideoUnmaskSwap/easy ep0 在 05 里与 04 规格逐位相同，坐标核对仍成立）。
 
 图只画**实跑范围前 30 条**（ep0～29）：100 条全叠在一起目视不可读，所以降到 30 条，并把每张图拆成「全部叠加 + 按种类拆开」的多个面板。PNG 放在本目录 `figures/<任务>/<难度>/`，不入库，clone 后先跑一次出图命令再看链接。
 

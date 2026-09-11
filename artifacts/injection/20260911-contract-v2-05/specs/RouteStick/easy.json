@@ -1,0 +1,5861 @@
+{
+  "spec_schema_version": 1,
+  "task": "RouteStick",
+  "difficulty": "easy",
+  "generator_seed": 20260909,
+  "derived_seed": 4382171320976484847,
+  "generator_version": "injection-specs-1",
+  "sampling_config_sha256": "124e49f80daf6c359254b9a20e69ba61ae3741b213418bd81b8cd17609e29988",
+  "episodes": [
+    {
+      "episode": 0,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 21.731871332068096,
+        "obstacle_rgb": [
+          [
+            0.3499192446261743,
+            0.39080550233037237,
+            0.40616501404450156
+          ],
+          [
+            0.3708123450031595,
+            0.9885605337447008,
+            0.3771127345193681
+          ],
+          [
+            0.36045376053869793,
+            0.7877704880321716,
+            0.6720000659890564
+          ],
+          [
+            0.8918965598442674,
+            0.6762709383218308,
+            0.7941593651444562
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          3,
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          6
+        ]
+      },
+      "spec_sha256": "137749dc7d713e027f0602b7cd113fb1a849eddd473de78ca1bc400171eb4f1c"
+    },
+    {
+      "episode": 1,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -29.297947993380234,
+        "obstacle_rgb": [
+          [
+            0.3300720618386054,
+            0.6696054712036281,
+            0.4995727697279977
+          ],
+          [
+            0.4663737700040348,
+            0.14001180825401527,
+            0.3768432328205915
+          ],
+          [
+            0.921706724824821,
+            0.038934868322747174,
+            0.3626003072490299
+          ],
+          [
+            0.22629052928243754,
+            0.4836342252567768,
+            0.2537884739076366
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          2,
+          0
+        ],
+        "node_slots": [
+          2,
+          1,
+          0
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          1
+        ]
+      },
+      "spec_sha256": "987624cf3605feb1407efd5169435bc932a1af463a4a1d0627bb643f4313e0fa"
+    },
+    {
+      "episode": 2,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -14.50669530208857,
+        "obstacle_rgb": [
+          [
+            0.09238863777868478,
+            0.9837051798240853,
+            0.08168718294718424
+          ],
+          [
+            0.7521616981908026,
+            0.17598237692340535,
+            0.29456713535988477
+          ],
+          [
+            0.6141843481860908,
+            0.4764787212856887,
+            0.5158772177038877
+          ],
+          [
+            0.4661295875478374,
+            0.46633642690574295,
+            0.47593526236439854
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          5
+        ]
+      },
+      "spec_sha256": "30ec78d43ea8f87edff8425e598aa3305173b7cd2341b00a36c601fe04213016"
+    },
+    {
+      "episode": 3,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -20.334505371039953,
+        "obstacle_rgb": [
+          [
+            0.0701022509825131,
+            0.5535864778100233,
+            0.1255745226791396
+          ],
+          [
+            0.8810931473782084,
+            0.6729481184105305,
+            0.4406361048058237
+          ],
+          [
+            0.4155997817906566,
+            0.8301232990787092,
+            0.08158016031060056
+          ],
+          [
+            0.2350316260373797,
+            0.9060844971422874,
+            0.7563503720768017
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          6
+        ]
+      },
+      "spec_sha256": "3148b95aec897550a0cd7fabf884182e0e24b6f1c2db05b6240ecf387abd2784"
+    },
+    {
+      "episode": 4,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -1.7106673188937869,
+        "obstacle_rgb": [
+          [
+            0.026226022985785358,
+            0.6907311245659062,
+            0.7988658667873445
+          ],
+          [
+            0.3507711021557772,
+            0.9239396455356153,
+            0.5993615177134273
+          ],
+          [
+            0.1365776142541908,
+            0.4309044888237967,
+            0.29632148211879616
+          ],
+          [
+            0.8293714854185922,
+            0.7477900509841108,
+            0.31147589124827857
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          7
+        ]
+      },
+      "spec_sha256": "90f65706a06a0c5713a33a97260dfca59eeac7b5fdf8eca3feb8dbc60fccdca0"
+    },
+    {
+      "episode": 5,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -7.409936453638576,
+        "obstacle_rgb": [
+          [
+            0.22182447344079115,
+            0.25408531104111887,
+            0.5992989490679866
+          ],
+          [
+            0.3123390075310747,
+            0.6157055867145372,
+            0.26158998222733754
+          ],
+          [
+            0.5431442535459735,
+            0.5814003279470119,
+            0.8514774100701477
+          ],
+          [
+            0.9691688616867221,
+            0.2611969887654001,
+            0.5260582646249912
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          7
+        ]
+      },
+      "spec_sha256": "62c86e7eefcba435aeb36533e321a5f9f275c9e5e841af26f3fdfba314299de4"
+    },
+    {
+      "episode": 6,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 24.544582945219965,
+        "obstacle_rgb": [
+          [
+            0.6177278056677774,
+            0.14007497885019538,
+            0.8012344804950255
+          ],
+          [
+            0.6243316260974412,
+            0.48153224664236016,
+            0.15198026891652272
+          ],
+          [
+            0.08681679634477557,
+            0.639809133454293,
+            0.7046830962578715
+          ],
+          [
+            0.5952897626371094,
+            0.09150788305237678,
+            0.03871803737963886
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          0
+        ]
+      },
+      "spec_sha256": "9bebba8e00ebefe25fc70dc72b89d7254240acc67c4d7b28bfd97820e1ec7a89"
+    },
+    {
+      "episode": 7,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 14.466796601136778,
+        "obstacle_rgb": [
+          [
+            0.9744524951053019,
+            0.9252634730986692,
+            0.9652221332552591
+          ],
+          [
+            0.5506565349024373,
+            0.6793877117594687,
+            0.7957387424371857
+          ],
+          [
+            0.15186334918881972,
+            0.5918905601108608,
+            0.42986193148207263
+          ],
+          [
+            0.05613879104149344,
+            0.12694799130266698,
+            0.5717881330165406
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          4
+        ]
+      },
+      "spec_sha256": "e3a8f1a8062a76fef071a7767168e2f837105a8496e12a78e1e32b9a5550c667"
+    },
+    {
+      "episode": 8,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 3.716405009441445,
+        "obstacle_rgb": [
+          [
+            0.21520160337549887,
+            0.12249469513635036,
+            0.5898539351719713
+          ],
+          [
+            0.6658817173781929,
+            0.21598296927449923,
+            0.1720257979576263
+          ],
+          [
+            0.15769498282181527,
+            0.9257216477779903,
+            0.10200895416141398
+          ],
+          [
+            0.561272876421337,
+            0.5190566364152228,
+            0.39006647791341065
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          6
+        ]
+      },
+      "spec_sha256": "e3502fa91671a678776c4dc1a23d253ab65bf2a08b0a96028b566fe5dc8c6753"
+    },
+    {
+      "episode": 9,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 11.4734274211093,
+        "obstacle_rgb": [
+          [
+            0.029546198765047826,
+            0.5469104575740107,
+            0.508209623472837
+          ],
+          [
+            0.5522498448487821,
+            0.11422136251752069,
+            0.02343341062830684
+          ],
+          [
+            0.4346156979632828,
+            0.4609506772831715,
+            0.1897121041350749
+          ],
+          [
+            0.9940580461761356,
+            0.14896057810114416,
+            0.1154591999924095
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          2,
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          9
+        ]
+      },
+      "spec_sha256": "69a5ca137a3e64b79338cfaed33f4878ef1f5a63e746dc82907bd27f4b50772e"
+    },
+    {
+      "episode": 10,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 27.999500514902962,
+        "obstacle_rgb": [
+          [
+            0.004800624835723855,
+            0.24405248806645363,
+            0.0664782784234822
+          ],
+          [
+            0.3357321199444575,
+            0.27750326701570194,
+            0.8312866648468511
+          ],
+          [
+            0.7068247830890939,
+            0.45436967586140287,
+            0.8329537199914623
+          ],
+          [
+            0.7174404980047082,
+            0.6558270234737995,
+            0.2970835341099579
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          6
+        ]
+      },
+      "spec_sha256": "1bc3df5bf50d568718a4698c2ccf1cb23e91af6d1a455fc13bac904fb3fab32e"
+    },
+    {
+      "episode": 11,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -7.072344286915957,
+        "obstacle_rgb": [
+          [
+            0.4384944861806538,
+            0.26693069077179055,
+            0.029614119068339995
+          ],
+          [
+            0.941961792283139,
+            0.3227837612365728,
+            0.9714153982133126
+          ],
+          [
+            0.02463290583365263,
+            0.8537769897356665,
+            0.27225297053391695
+          ],
+          [
+            0.6431331649545066,
+            0.06224330973390779,
+            0.019614984451720274
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          8
+        ]
+      },
+      "spec_sha256": "7944a0c3d632d3ceb9765af9faffa547a4b315cc5f7ee451b14f8582f359b69b"
+    },
+    {
+      "episode": 12,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 4.714709976421851,
+        "obstacle_rgb": [
+          [
+            0.29681058858517007,
+            0.7739231646241939,
+            0.5883962051841983
+          ],
+          [
+            0.2758912044278353,
+            0.7336687521713141,
+            0.9232268199876764
+          ],
+          [
+            0.17647962339501488,
+            0.32464918910339646,
+            0.08252024727535068
+          ],
+          [
+            0.3249004158895127,
+            0.17738557008128186,
+            0.832614047290744
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          7
+        ]
+      },
+      "spec_sha256": "bf466763b46f007ffa0d34b33f61f66e9ba9fe45b4c8992c1a855f37fa5d7668"
+    },
+    {
+      "episode": 13,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 12.454330883721731,
+        "obstacle_rgb": [
+          [
+            0.8938367242566696,
+            0.1397169892575475,
+            0.648491393207743
+          ],
+          [
+            0.6531152719357207,
+            0.3906706935821812,
+            0.6611834468711193
+          ],
+          [
+            0.6931605189658862,
+            0.8316647379202973,
+            0.595016811711699
+          ],
+          [
+            0.4451251837316642,
+            0.15021257612188665,
+            0.8131685234372935
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          0
+        ]
+      },
+      "spec_sha256": "fa037c86d4b2bd971fd3cfcbaed6172e32c2760c8517fbf0deb9c2a12ab16436"
+    },
+    {
+      "episode": 14,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 18.201488714752408,
+        "obstacle_rgb": [
+          [
+            0.6794236070798133,
+            0.5743058758667573,
+            0.5439258278844897
+          ],
+          [
+            0.025123478116695352,
+            0.3872353138506698,
+            0.8726714320684495
+          ],
+          [
+            0.27302384319309336,
+            0.14092529614530924,
+            0.4494367403922551
+          ],
+          [
+            0.687194646279172,
+            0.5318269090168175,
+            0.9902040626330967
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          0
+        ]
+      },
+      "spec_sha256": "66820bcc4b5f6f4749a772abd60c4d45ec84f4233d8295bb0f5b6d062a8f7852"
+    },
+    {
+      "episode": 15,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -23.820501434522036,
+        "obstacle_rgb": [
+          [
+            0.8039018372681348,
+            0.5322581177114115,
+            0.7531522004633094
+          ],
+          [
+            0.8060283745778238,
+            0.4944820334040476,
+            0.21110336904862814
+          ],
+          [
+            0.8883678424006778,
+            0.9410283642996637,
+            0.7799807567659677
+          ],
+          [
+            0.427611229541496,
+            0.07552970878051501,
+            0.2394263941532475
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          0
+        ]
+      },
+      "spec_sha256": "a01d83b96b3c685eeca2758bac620f0f34658e97faf0b019ca0f623549991099"
+    },
+    {
+      "episode": 16,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 7.165252124670367,
+        "obstacle_rgb": [
+          [
+            0.6615155426087055,
+            0.9936123668363951,
+            0.048706152293926275
+          ],
+          [
+            0.9887651851340182,
+            0.8399281313521106,
+            0.4577086340108103
+          ],
+          [
+            0.9208399115448015,
+            0.14964610224576924,
+            0.19911900588096265
+          ],
+          [
+            0.45685175410384715,
+            0.24976294122173848,
+            0.56355855472816
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          2,
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          1
+        ]
+      },
+      "spec_sha256": "b86178cbdc78af2f51a0c3c6a24da707726e0bf454900c4fd0893e8e1ac2c06b"
+    },
+    {
+      "episode": 17,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -29.72388700785775,
+        "obstacle_rgb": [
+          [
+            0.18961614853611108,
+            0.21899578804409414,
+            0.2912123073817201
+          ],
+          [
+            0.7631535804940782,
+            0.7471776522038511,
+            0.43327911958990895
+          ],
+          [
+            0.06938263076570861,
+            0.5191893891661804,
+            0.9027533429048322
+          ],
+          [
+            0.3090426603922518,
+            0.41966163469188744,
+            0.5320094005004732
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          0
+        ]
+      },
+      "spec_sha256": "586572f71aa395853b1d85075b4cda4e256353ed3567271290ea261fc50dcadf"
+    },
+    {
+      "episode": 18,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -12.12663937840075,
+        "obstacle_rgb": [
+          [
+            0.8610633723305525,
+            0.8243072236325797,
+            0.05899508892546723
+          ],
+          [
+            0.6498082542877552,
+            0.9314640774136139,
+            0.10713226165587564
+          ],
+          [
+            0.46142163773357137,
+            0.9368307274871421,
+            0.8714737699846951
+          ],
+          [
+            0.7695642096706262,
+            0.08029517886143855,
+            0.5601432060338707
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          9
+        ]
+      },
+      "spec_sha256": "0df3b325507988d0465760f0750fa179a4252396cf35904504dad011d3e068c5"
+    },
+    {
+      "episode": 19,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -1.800636428422731,
+        "obstacle_rgb": [
+          [
+            0.675599135892528,
+            0.30656770676486944,
+            0.7135791766733383
+          ],
+          [
+            0.1323013150184401,
+            0.48298589077795895,
+            0.7736514462624129
+          ],
+          [
+            0.28757300890673876,
+            0.456123741516243,
+            0.5056587052229107
+          ],
+          [
+            0.8259351361807107,
+            0.2868109096404282,
+            0.5756436580648002
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8
+        ],
+        "node_slots": [
+          2,
+          3,
+          4
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          6
+        ]
+      },
+      "spec_sha256": "9f391485e0773d3d43181fd2ca1735078b67148d3d55cc991d022cf3d45eefb8"
+    },
+    {
+      "episode": 20,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -11.771699954432378,
+        "obstacle_rgb": [
+          [
+            0.6864509066300617,
+            0.9005738586365406,
+            0.11835382127241334
+          ],
+          [
+            0.9752227088996291,
+            0.8151224705110328,
+            0.7549449028770341
+          ],
+          [
+            0.36703059034415,
+            0.9758305555016997,
+            0.05277383735418806
+          ],
+          [
+            0.04638924961285529,
+            0.39990106065358055,
+            0.33338701692569583
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          0
+        ]
+      },
+      "spec_sha256": "ed1aa49562bcd0abe637672fb49844895354e8fa577fa9a7263196d7d25d64fa"
+    },
+    {
+      "episode": 21,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -17.258027778479935,
+        "obstacle_rgb": [
+          [
+            0.4037105318986839,
+            0.3843775915277692,
+            0.8325383855629361
+          ],
+          [
+            0.5950629959172937,
+            0.7016732931838978,
+            0.8442925033156399
+          ],
+          [
+            0.5172599576788647,
+            0.23430246999184068,
+            0.36678046833155753
+          ],
+          [
+            0.5509589594390297,
+            0.8047517732702797,
+            0.17601016114762025
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          1
+        ]
+      },
+      "spec_sha256": "3fd875da5e801305adbb52d770126e2cfe3106dc1102e8e1653ea6da0d05ae79"
+    },
+    {
+      "episode": 22,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 1.0876102192433805,
+        "obstacle_rgb": [
+          [
+            0.49757504474445413,
+            0.6326335678680137,
+            0.9588690262039559
+          ],
+          [
+            0.6744087809338257,
+            0.1492133619153806,
+            0.2539631125374531
+          ],
+          [
+            0.8205459333008395,
+            0.6456443209941455,
+            0.8770146901897747
+          ],
+          [
+            0.8388578586149927,
+            0.06066583350362409,
+            0.4964837244828445
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          1
+        ]
+      },
+      "spec_sha256": "a25f84d6c7ff85a2bc0c29fd3b7f8453ae810cfd2b1c85c175311991e3f29ad3"
+    },
+    {
+      "episode": 23,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 12.672171205347098,
+        "obstacle_rgb": [
+          [
+            0.07898634016913553,
+            0.5329173497118036,
+            0.5850533175874736
+          ],
+          [
+            0.7858694443172586,
+            0.9735110903725108,
+            0.7359831937630549
+          ],
+          [
+            0.4606836143187062,
+            0.010103434602254824,
+            0.7044418511902909
+          ],
+          [
+            0.9063754361838707,
+            0.6781703091799601,
+            0.7206360356631369
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8
+        ],
+        "node_slots": [
+          2,
+          3,
+          4
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          1
+        ]
+      },
+      "spec_sha256": "37383c242fb001232bf8b5d116f3c664f298a2654bac01c9dee5ef70484d478e"
+    },
+    {
+      "episode": 24,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -19.620816131430004,
+        "obstacle_rgb": [
+          [
+            0.1869834017658445,
+            0.32610408698114945,
+            0.4550323953873995
+          ],
+          [
+            0.5948899961863839,
+            0.17415091603454724,
+            0.6421855946345149
+          ],
+          [
+            0.3234887392974415,
+            0.06741709013397845,
+            0.40214825695203094
+          ],
+          [
+            0.16589967691856589,
+            0.8490912048553243,
+            0.16950408740123724
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          7
+        ]
+      },
+      "spec_sha256": "d604567b9cef9109e2d23cc64010600645df5aa603395fbf7dc42b054ee790a2"
+    },
+    {
+      "episode": 25,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 8.533938281414137,
+        "obstacle_rgb": [
+          [
+            0.5826785709877607,
+            0.6713377133205165,
+            0.9555240144451415
+          ],
+          [
+            0.17618722222738203,
+            0.48420602407289703,
+            0.7427318384818455
+          ],
+          [
+            0.1071472200496908,
+            0.45478945720513386,
+            0.9210671629451083
+          ],
+          [
+            0.3211743465759219,
+            0.586026173502525,
+            0.7031208404517304
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          4
+        ]
+      },
+      "spec_sha256": "3330e6bcc6080f31531f72e70a987440236bdbc4ae20e97467d304fc8479c5dc"
+    },
+    {
+      "episode": 26,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -27.71199763340567,
+        "obstacle_rgb": [
+          [
+            0.9720332385034699,
+            0.695091256195276,
+            0.9968072789257012
+          ],
+          [
+            0.2242887708108816,
+            0.297441891777913,
+            0.7711227478481453
+          ],
+          [
+            0.41596854805333994,
+            0.4412699217854561,
+            0.584330191301392
+          ],
+          [
+            0.3299996959062723,
+            0.49289479978737016,
+            0.23738616484877617
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          3
+        ]
+      },
+      "spec_sha256": "82d073744eb7e7c3e4c17adf87ef44e3c01d6547471f3ea4a3f938b9ef9d74d4"
+    },
+    {
+      "episode": 27,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -5.088392307630144,
+        "obstacle_rgb": [
+          [
+            0.5748985447944844,
+            0.595802954716227,
+            0.5603909474864881
+          ],
+          [
+            0.20377222405116913,
+            0.12153866852826278,
+            0.6484278308265773
+          ],
+          [
+            0.23565588104656887,
+            0.5869247951537322,
+            0.39239772996620326
+          ],
+          [
+            0.33025717160648616,
+            0.01492470440589877,
+            0.7518663993179635
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          2,
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          1
+        ]
+      },
+      "spec_sha256": "8106094a791ef49eee7effb3b7b94955cb98b7ea65f0e9c42063deba9a10d92e"
+    },
+    {
+      "episode": 28,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 18.76798968650361,
+        "obstacle_rgb": [
+          [
+            0.3933971097184632,
+            0.14266188723765716,
+            0.0748137028363649
+          ],
+          [
+            0.5382369937110885,
+            0.17749557119726556,
+            0.08133076903536163
+          ],
+          [
+            0.7924228456501468,
+            0.7504328408998826,
+            0.21577837733105043
+          ],
+          [
+            0.6695785298076069,
+            0.859199213607863,
+            0.5043032633706545
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          1
+        ]
+      },
+      "spec_sha256": "f5e0fa817b7105973a728b4f8fa94072532e335931f791ce8507ef51a90a9472"
+    },
+    {
+      "episode": 29,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 26.21567906497227,
+        "obstacle_rgb": [
+          [
+            0.008491713077358298,
+            0.33714811191785954,
+            0.6704950182477007
+          ],
+          [
+            0.6179000414079414,
+            0.8960796724477106,
+            0.007690425311998372
+          ],
+          [
+            0.24479821332331297,
+            0.6546169758877416,
+            0.841505215975975
+          ],
+          [
+            0.8957096303553245,
+            0.34955583230491216,
+            0.08630788736499706
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          3
+        ]
+      },
+      "spec_sha256": "7fc90d5b6b021dc73a7980c0369a9524e219181a69ec50d15aa8d648f4c45c4e"
+    },
+    {
+      "episode": 30,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -8.389097693271246,
+        "obstacle_rgb": [
+          [
+            0.9150440156362484,
+            0.004079129834004824,
+            0.7511127346881273
+          ],
+          [
+            0.5356984267985904,
+            0.48333132597293893,
+            0.37775697668610764
+          ],
+          [
+            0.060053793290537394,
+            0.6072925439310082,
+            0.03837408091514738
+          ],
+          [
+            0.4949702433082448,
+            0.07441008769300328,
+            0.8574870252873156
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          6
+        ]
+      },
+      "spec_sha256": "3dc3cb46e0a963e6e109a08902fcf52014a38e03c3e1ebc6d655bf3aca6bc08e"
+    },
+    {
+      "episode": 31,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -5.533486363452326,
+        "obstacle_rgb": [
+          [
+            0.08316764237523033,
+            0.09018812784735164,
+            0.540870244582569
+          ],
+          [
+            0.9611248765702536,
+            0.9450194920859329,
+            0.7473802122982773
+          ],
+          [
+            0.9104357885891662,
+            0.5420059727789509,
+            0.31456932073189126
+          ],
+          [
+            0.2512165309637684,
+            0.8462363763105405,
+            0.6975753699768549
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          0
+        ]
+      },
+      "spec_sha256": "a72977ec54b59f11eceda1f081bf3f44e47380e32505acf1f0501e11358b099f"
+    },
+    {
+      "episode": 32,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -23.114516357751835,
+        "obstacle_rgb": [
+          [
+            0.943024586983534,
+            0.5663837518669772,
+            0.5823310443198052
+          ],
+          [
+            0.7414849114645173,
+            0.6345391704351279,
+            0.9667997377047182
+          ],
+          [
+            0.5187614169076463,
+            0.6970958105357076,
+            0.5846010221655006
+          ],
+          [
+            0.7568225770958494,
+            0.38861690578443586,
+            0.2824257012259259
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          1
+        ]
+      },
+      "spec_sha256": "74eef7d1b4c4b50e3be9994bf6fc595fe2f4699c10fa1628d753f07028103873"
+    },
+    {
+      "episode": 33,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 28.44465419470201,
+        "obstacle_rgb": [
+          [
+            0.39000906873926044,
+            0.2333583514615698,
+            0.3683218478609208
+          ],
+          [
+            0.5401785998178519,
+            0.41296893182265915,
+            0.6351909073326564
+          ],
+          [
+            0.11491055171674391,
+            0.1223379206278209,
+            0.7899004590274455
+          ],
+          [
+            0.031914534683482376,
+            0.6928457276552125,
+            0.6077900098136075
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          2,
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          7
+        ]
+      },
+      "spec_sha256": "898fdc0f54cf731dda8bbbbc8def45c5d0ab2f872d4fc470a7f13a582211bb2e"
+    },
+    {
+      "episode": 34,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -24.66622755034397,
+        "obstacle_rgb": [
+          [
+            0.07904556115705852,
+            0.6005151415340368,
+            0.04827659094609793
+          ],
+          [
+            0.24361464511035236,
+            0.42663345675631226,
+            0.08715607112874768
+          ],
+          [
+            0.9548766817129245,
+            0.5855987095366036,
+            0.9170191942800242
+          ],
+          [
+            0.1223278308264093,
+            0.4557042275674297,
+            0.832119084716134
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          8
+        ]
+      },
+      "spec_sha256": "b1fa79927dd06285d67bab3e3d75a60a78b02c532b5facf8f1e766d549dfd17a"
+    },
+    {
+      "episode": 35,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -13.313304708184017,
+        "obstacle_rgb": [
+          [
+            0.44428099922279773,
+            0.22837586860579284,
+            0.3167350145894787
+          ],
+          [
+            0.9994958274233301,
+            0.2161452340387191,
+            0.8708757684153549
+          ],
+          [
+            0.5810552509013331,
+            0.5822375136583857,
+            0.8962770707362059
+          ],
+          [
+            0.3097105719283133,
+            0.05006157471421058,
+            0.5918482200417376
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          7
+        ]
+      },
+      "spec_sha256": "ee84ee28a03416c039f48f25389395a9c1b4f1fd7044c274e50b5a66ee5b99e7"
+    },
+    {
+      "episode": 36,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 21.34956460130278,
+        "obstacle_rgb": [
+          [
+            0.4737706004418022,
+            0.33886692333162616,
+            0.7608310337995824
+          ],
+          [
+            0.6295288692066348,
+            0.7889163602696686,
+            0.8828035310461959
+          ],
+          [
+            0.24618846574092323,
+            0.23209508606887908,
+            0.34876195701604507
+          ],
+          [
+            0.24151384212063876,
+            0.08687393279068778,
+            0.8034545726180464
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          5
+        ]
+      },
+      "spec_sha256": "5cd5ddb2de1bb7bdce9749752f097c3530defb81342c3cd623c9357f98552c58"
+    },
+    {
+      "episode": 37,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 6.517636261684004,
+        "obstacle_rgb": [
+          [
+            0.7903122132955648,
+            0.7325430543668839,
+            0.9845434710317061
+          ],
+          [
+            0.3144072223979222,
+            0.43569933441442166,
+            0.18601634195608763
+          ],
+          [
+            0.8295491349958765,
+            0.4826949546853754,
+            0.22686475158685804
+          ],
+          [
+            0.26879747918607944,
+            0.036285689817108335,
+            0.15761379375316253
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          0
+        ]
+      },
+      "spec_sha256": "cb8782e553d286c4bef60ab282bc6152a56cc0f54740208412748d311efd1df4"
+    },
+    {
+      "episode": 38,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 5.953087085809479,
+        "obstacle_rgb": [
+          [
+            0.4405969307140971,
+            0.771930757498947,
+            0.6356384729013079
+          ],
+          [
+            0.46366593511970844,
+            0.7539031270962153,
+            0.37626429098496317
+          ],
+          [
+            0.7774771282310858,
+            0.18108955697459195,
+            0.4940279064375117
+          ],
+          [
+            0.6875899799021022,
+            0.6910394115006508,
+            0.2661998141023634
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          2,
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          9
+        ]
+      },
+      "spec_sha256": "31d2c5775b056175f5ea726e38430f144d5df693586b302c24bca14384734306"
+    },
+    {
+      "episode": 39,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 13.614038146132025,
+        "obstacle_rgb": [
+          [
+            0.026861658621560314,
+            0.3907304405137141,
+            0.11382031244275392
+          ],
+          [
+            0.2543926364536333,
+            0.003785542574326728,
+            0.20064583008508352
+          ],
+          [
+            0.4853622975514874,
+            0.48169397883235776,
+            0.7900207797761415
+          ],
+          [
+            0.11188894295896012,
+            0.1662697657741149,
+            0.012742776375922249
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          2
+        ]
+      },
+      "spec_sha256": "4fe8319d5784e32f68398e46ff7e4b3a4ceab9f180e93bc949dfb960c2d05c55"
+    },
+    {
+      "episode": 40,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -15.76951529576179,
+        "obstacle_rgb": [
+          [
+            0.5784605161795536,
+            0.5191768678845423,
+            0.5587678276726542
+          ],
+          [
+            0.8137789152469351,
+            0.550243454479512,
+            0.8327578269769337
+          ],
+          [
+            0.056828269374952,
+            0.5381290269843552,
+            0.5143686049804007
+          ],
+          [
+            0.32389197872118325,
+            0.8473820866670186,
+            0.6572678816475898
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          2,
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          3
+        ]
+      },
+      "spec_sha256": "c0501160a9fbe0fc0a63c07709c4383dbbf052d789967908d3dcc699ce1d7f1d"
+    },
+    {
+      "episode": 41,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -25.742207816086104,
+        "obstacle_rgb": [
+          [
+            0.8723717330979773,
+            0.535761647839405,
+            0.1772162244816906
+          ],
+          [
+            0.8528581057159211,
+            0.2618506359857874,
+            0.4360073300832513
+          ],
+          [
+            0.17847251715158974,
+            0.8399326506090087,
+            0.8721148511311807
+          ],
+          [
+            0.8662947099934926,
+            0.24199816122220508,
+            0.4517984462198037
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          7
+        ]
+      },
+      "spec_sha256": "14b3848150ff0a5abb6d04035eef7a55ee99f91471d27680f878c968344c7768"
+    },
+    {
+      "episode": 42,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -8.75963707297269,
+        "obstacle_rgb": [
+          [
+            0.48134029618552465,
+            0.9292870911776859,
+            0.22223159829173145
+          ],
+          [
+            0.3255505251982138,
+            0.22140835691813998,
+            0.9814436977071077
+          ],
+          [
+            0.6336578038444615,
+            0.7000068740992995,
+            0.07509587384589855
+          ],
+          [
+            0.29469663663277923,
+            0.9065602576423629,
+            0.9900778316887798
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          5
+        ]
+      },
+      "spec_sha256": "9942e50839aa608cb3c471a0f6ac18f7fb0c8ee335a6ef7c147326bfcb184802"
+    },
+    {
+      "episode": 43,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 20.496661232222458,
+        "obstacle_rgb": [
+          [
+            0.3214843568151414,
+            0.5958764686718008,
+            0.9960442543771939
+          ],
+          [
+            0.12813952103814652,
+            0.8442982842929441,
+            0.12941380127039093
+          ],
+          [
+            0.32068614456899835,
+            0.8771922046805388,
+            0.15571789558341398
+          ],
+          [
+            0.9585517654042174,
+            0.8703635736797697,
+            0.9356034799029903
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          2,
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          4
+        ]
+      },
+      "spec_sha256": "eb6fd5a455efa8ec9a3eede2694e96c043527ed168dea2b2e9956cc60a939127"
+    },
+    {
+      "episode": 44,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -21.73228673858376,
+        "obstacle_rgb": [
+          [
+            0.062287593554171905,
+            0.6523993619785874,
+            0.1712501987148599
+          ],
+          [
+            0.45092461484454216,
+            0.2033244478275601,
+            0.6702954652702469
+          ],
+          [
+            0.1568812352134481,
+            0.7066517102883417,
+            0.1916987348449245
+          ],
+          [
+            0.10061928844468182,
+            0.7601643269028585,
+            0.10831870894606599
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          3
+        ]
+      },
+      "spec_sha256": "c8762b30d5df21928f16b1d32f5e0b90c6c1ae2a2edda1c82eec978bfd0dc540"
+    },
+    {
+      "episode": 45,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 15.609796502384924,
+        "obstacle_rgb": [
+          [
+            0.04455101692212682,
+            0.5734868975847927,
+            0.2940988471463022
+          ],
+          [
+            0.4191937281451136,
+            0.6865388816516781,
+            0.16765384922975568
+          ],
+          [
+            0.6385773841592873,
+            0.3939987139558906,
+            0.4449147920694261
+          ],
+          [
+            0.003061978752393335,
+            0.4970682226217734,
+            0.2670767240382945
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          6
+        ]
+      },
+      "spec_sha256": "dbc24f4b0be9f8de055c634f8353726b99701d6f4427bf65970bdd3113231f90"
+    },
+    {
+      "episode": 46,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 10.689086040593004,
+        "obstacle_rgb": [
+          [
+            0.041553159779044724,
+            0.3905475251976014,
+            0.8038145536943494
+          ],
+          [
+            0.2591444385485856,
+            0.37219801992768276,
+            0.7630996070201334
+          ],
+          [
+            0.9901946209727389,
+            0.31714630572287295,
+            0.2559937204814873
+          ],
+          [
+            0.686735769975304,
+            0.8297328652009716,
+            0.5679941410268309
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          7
+        ]
+      },
+      "spec_sha256": "0a8a5e46c9f5531e96bc997667b9fe918523968acb2ba90e55465c7c89d694d7"
+    },
+    {
+      "episode": 47,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 25.648851806015003,
+        "obstacle_rgb": [
+          [
+            0.006477123787975603,
+            0.919882656121834,
+            0.8495776551679538
+          ],
+          [
+            0.659878210027325,
+            0.331771506226594,
+            0.24553216280357104
+          ],
+          [
+            0.5437218348376134,
+            0.5082930402732198,
+            0.05790235956781098
+          ],
+          [
+            0.8221826100548746,
+            0.6764836761704344,
+            0.19855806324978786
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          2
+        ]
+      },
+      "spec_sha256": "47caf946257f4bae067a708a47f4ae10607276ba3aca80a7f9199cfef1841c9d"
+    },
+    {
+      "episode": 48,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -3.3342809307100687,
+        "obstacle_rgb": [
+          [
+            0.4322315253981507,
+            0.7187583505517823,
+            0.9430666470709972
+          ],
+          [
+            0.12957575579773462,
+            0.8655609517223564,
+            0.12321402014772598
+          ],
+          [
+            0.2261092390411381,
+            0.6268121957847766,
+            0.6184995950094384
+          ],
+          [
+            0.7038439941105555,
+            0.6540015364884706,
+            0.5756397734873822
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          4
+        ]
+      },
+      "spec_sha256": "ee92fe40f93bae2869a01ae10198882c60ed4a802de53ec6be03b0b4a74994ae"
+    },
+    {
+      "episode": 49,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 3.5715271206151655,
+        "obstacle_rgb": [
+          [
+            0.22869298050436726,
+            0.24537879509593574,
+            0.2541077771129371
+          ],
+          [
+            0.7188411267451968,
+            0.2983877405346702,
+            0.4984477829082259
+          ],
+          [
+            0.38518873475982907,
+            0.04703729229936027,
+            0.031146852313265416
+          ],
+          [
+            0.5707017936012895,
+            0.39049715781090855,
+            0.2634603457855751
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          3,
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          5
+        ]
+      },
+      "spec_sha256": "b87afcf4b675a0cfd09559d165e4c28ec5345631d37830c5799a9e44beee4ead"
+    },
+    {
+      "episode": 50,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -15.30622258435068,
+        "obstacle_rgb": [
+          [
+            0.48332645295608934,
+            0.11665047075312207,
+            0.12906630019777787
+          ],
+          [
+            0.4821986504306872,
+            0.7900973381410029,
+            0.7081572695492306
+          ],
+          [
+            0.0823373370337327,
+            0.18411257669196068,
+            0.4685394991551075
+          ],
+          [
+            0.7680879862547443,
+            0.08649382280807083,
+            0.8141391391731472
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          4
+        ]
+      },
+      "spec_sha256": "a04502f926e037847531f5e0b342fb95709c6b6fcf761ee7a5778bebfb3b8032"
+    },
+    {
+      "episode": 51,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -25.880128889338398,
+        "obstacle_rgb": [
+          [
+            0.7790708229549361,
+            0.6355120254061823,
+            0.9739366882996
+          ],
+          [
+            0.1858048934078712,
+            0.3363965775174328,
+            0.5930422511180418
+          ],
+          [
+            0.43753134897007495,
+            0.8029251555445539,
+            0.9610243566359321
+          ],
+          [
+            0.14999134110026935,
+            0.8875356970277752,
+            0.948385617009787
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          2,
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          6
+        ]
+      },
+      "spec_sha256": "3b6ee22b105201a61d4449e0144a314fd63bec71d25afe8db046cfd51df99fa7"
+    },
+    {
+      "episode": 52,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 14.345027163557567,
+        "obstacle_rgb": [
+          [
+            0.6032384552896641,
+            0.7716256515692141,
+            0.3870146611381011
+          ],
+          [
+            0.82341197643563,
+            0.7875478456554472,
+            0.8137853730087243
+          ],
+          [
+            0.2601636700693587,
+            0.34728387580618747,
+            0.7443901789411336
+          ],
+          [
+            0.30711839059271373,
+            0.060085593237575785,
+            0.8240277490302113
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          3
+        ]
+      },
+      "spec_sha256": "f98f9b65dd8e0ecb1358d08678e14561b770ce9435e609de73ae14ee2282db06"
+    },
+    {
+      "episode": 53,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 7.4684094412643205,
+        "obstacle_rgb": [
+          [
+            0.7370442284557648,
+            0.19257633770539728,
+            0.22285235680952786
+          ],
+          [
+            0.5751426889076678,
+            0.2952998735042486,
+            0.3679486775462266
+          ],
+          [
+            0.7056368399226378,
+            0.04975904233246775,
+            0.364436850793461
+          ],
+          [
+            0.4604549522107566,
+            0.9765490928728954,
+            0.4374999664002285
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          2
+        ]
+      },
+      "spec_sha256": "ff843fb1449510c9c8145aa19450f894cd5cbf5d197e89a32b1f07cfd8121492"
+    },
+    {
+      "episode": 54,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -11.017409514124676,
+        "obstacle_rgb": [
+          [
+            0.16383508258271373,
+            0.8792513395679081,
+            0.911164679905607
+          ],
+          [
+            0.9929851702937905,
+            0.022519173255471814,
+            0.8151441571775389
+          ],
+          [
+            0.385164704611067,
+            0.7007915834158365,
+            0.4879870401330212
+          ],
+          [
+            0.5314219951313655,
+            0.6332129991934438,
+            0.31130835916039346
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8
+        ],
+        "node_slots": [
+          2,
+          3,
+          4
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          1
+        ]
+      },
+      "spec_sha256": "251ce2167c0d2c618f2344b095f3ec7705ee8f645241bc42c504736a301a4a1e"
+    },
+    {
+      "episode": 55,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -0.28146797523686473,
+        "obstacle_rgb": [
+          [
+            0.42873198647095656,
+            0.9452259856459851,
+            0.0031799855575985747
+          ],
+          [
+            0.4982995649465388,
+            0.25861161648930153,
+            0.7779526871084845
+          ],
+          [
+            0.888069319238923,
+            0.8477087340079918,
+            0.5017380178785411
+          ],
+          [
+            0.8672907665916155,
+            0.7977561185088865,
+            0.5346235348587377
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          9
+        ]
+      },
+      "spec_sha256": "1203c26eed1de73677e5a4f5032e9f24979d82bdb73208c1477873b470bfeea2"
+    },
+    {
+      "episode": 56,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 29.932851807020853,
+        "obstacle_rgb": [
+          [
+            0.8133519919606284,
+            0.9041385501963856,
+            0.34014813972518154
+          ],
+          [
+            0.05728549739076405,
+            0.3162783415067685,
+            0.3623903832421308
+          ],
+          [
+            0.7488879212937046,
+            0.324208476329761,
+            0.5088628229119518
+          ],
+          [
+            0.37328511644331785,
+            0.325225067747528,
+            0.6051234399569044
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          9
+        ]
+      },
+      "spec_sha256": "a83916e31ca56d9395d6067b1a508f7ee225584bee73f90567202140d79d315d"
+    },
+    {
+      "episode": 57,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 1.995720384739613,
+        "obstacle_rgb": [
+          [
+            0.10170792576540999,
+            0.4684175605708185,
+            0.9759800084354494
+          ],
+          [
+            0.025068938939330265,
+            0.15035221857558756,
+            0.18825841439593227
+          ],
+          [
+            0.37986300031469344,
+            0.14022532343659788,
+            0.8312901927290842
+          ],
+          [
+            0.7859488253136023,
+            0.16590873205221968,
+            0.5177928784983864
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          3
+        ]
+      },
+      "spec_sha256": "e3b5ffcd22778647a56ea73138114779ba6c709b9112eec835e85fd731dae1fc"
+    },
+    {
+      "episode": 58,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 22.214909426571694,
+        "obstacle_rgb": [
+          [
+            0.6847291636934161,
+            0.9309207043679487,
+            0.1987800031665652
+          ],
+          [
+            0.7510282252000843,
+            0.06894150748265049,
+            0.2104430073419784
+          ],
+          [
+            0.9102392922663982,
+            0.12011085647850195,
+            0.36055808930863154
+          ],
+          [
+            0.7032867927585156,
+            0.24013730836607294,
+            0.9981526187878114
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          7
+        ]
+      },
+      "spec_sha256": "3854c16c392556e266b59383f418770ca50cfb1e036b958bf0fa29ac434bc576"
+    },
+    {
+      "episode": 59,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -18.190973959645465,
+        "obstacle_rgb": [
+          [
+            0.6198117414109436,
+            0.990100209907337,
+            0.8113139964106264
+          ],
+          [
+            0.5739367724927608,
+            0.04248765850344138,
+            0.23674317168021575
+          ],
+          [
+            0.3844594930594898,
+            0.13649245879252203,
+            0.24269893418459365
+          ],
+          [
+            0.20004041252053895,
+            0.36984924973108135,
+            0.9875077202638951
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          9
+        ]
+      },
+      "spec_sha256": "6b474a22b7431cba8bb7c43974b5716ef65d0ea4153b678f1223421c8f28a2ab"
+    },
+    {
+      "episode": 60,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 8.232341677364204,
+        "obstacle_rgb": [
+          [
+            0.08389225966660385,
+            0.9149983339896082,
+            0.3170328946920544
+          ],
+          [
+            0.8136220864921844,
+            0.2387226468739546,
+            0.36680165416257793
+          ],
+          [
+            0.15739883927963128,
+            0.8721452335223736,
+            0.8478250992598749
+          ],
+          [
+            0.8650716547416113,
+            0.9881277373038319,
+            0.033762837992554195
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          3
+        ]
+      },
+      "spec_sha256": "fa95aaa11d147992b67e258affd5cf48604238710b4eb54b58c29d0f15d23ec1"
+    },
+    {
+      "episode": 61,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -28.71077101816004,
+        "obstacle_rgb": [
+          [
+            0.9487901987877532,
+            0.08720776759164173,
+            0.27395267843707805
+          ],
+          [
+            0.61154224758332,
+            0.9675665111063474,
+            0.39085772779562866
+          ],
+          [
+            0.6608845012727419,
+            0.009583986293831614,
+            0.1892103027180616
+          ],
+          [
+            0.1503814599226222,
+            0.50324699390408,
+            0.4960051559112947
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          2
+        ]
+      },
+      "spec_sha256": "931de6e743e9028404911933dd2769cd9d95c31bfbe16b1f2d89975e01f71d7b"
+    },
+    {
+      "episode": 62,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -14.27958124886859,
+        "obstacle_rgb": [
+          [
+            0.6258900072184742,
+            0.7050769718867886,
+            0.8381951204526078
+          ],
+          [
+            0.9587043446832322,
+            0.483964890099423,
+            0.04438989171673258
+          ],
+          [
+            0.7326812146252062,
+            0.9007635810337776,
+            0.940118492767789
+          ],
+          [
+            0.05231601133232178,
+            0.6824544504314759,
+            0.7683783076865092
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          3,
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          6
+        ]
+      },
+      "spec_sha256": "4793138a971c74519161085a651670d61ecbc2f0c3cc873cdf6298693455267f"
+    },
+    {
+      "episode": 63,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -3.6173779088451177,
+        "obstacle_rgb": [
+          [
+            0.13845602436682947,
+            0.20024401931657487,
+            0.10232619016432365
+          ],
+          [
+            0.5111393212680947,
+            0.20024758008213528,
+            0.7724146230711586
+          ],
+          [
+            0.04375987127693426,
+            0.05649293389975685,
+            0.049708996287410545
+          ],
+          [
+            0.295537905230545,
+            0.9188180598885851,
+            0.2636646713981038
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          3
+        ]
+      },
+      "spec_sha256": "3b04f2372e19799cb8ccbaf314d81a160072debab62739d66d0d4fe6e0a236d0"
+    },
+    {
+      "episode": 64,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 5.248841937920808,
+        "obstacle_rgb": [
+          [
+            0.0984367275997835,
+            0.44210859215357134,
+            0.6271890057666603
+          ],
+          [
+            0.017032236651463584,
+            0.41387710129117794,
+            0.8985730146813379
+          ],
+          [
+            0.9357105887540471,
+            0.4069347579781968,
+            0.7259206096886155
+          ],
+          [
+            0.9719823430007533,
+            0.6432362361222641,
+            0.3399078053821808
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          3,
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          8
+        ]
+      },
+      "spec_sha256": "3e6ae1ca8e13f291b0573000a58d76013857ab25722a78d894b70dade6763f90"
+    },
+    {
+      "episode": 65,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -21.45294537903202,
+        "obstacle_rgb": [
+          [
+            0.781910970671524,
+            0.4878642019599462,
+            0.3289171915427116
+          ],
+          [
+            0.6625458417136081,
+            0.5292923271417841,
+            0.4993058741406825
+          ],
+          [
+            0.04595968782900417,
+            0.9246270979240734,
+            0.899147426070379
+          ],
+          [
+            0.3185745594543259,
+            0.17555985981126854,
+            0.9408287159517051
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8
+        ],
+        "node_slots": [
+          2,
+          3,
+          4
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          4
+        ]
+      },
+      "spec_sha256": "81fb313ba50591a3aeba2a434fe21db3cabfe05572ca84d634120d601c207a23"
+    },
+    {
+      "episode": 66,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 29.369988153620227,
+        "obstacle_rgb": [
+          [
+            0.058825201232363344,
+            0.4746602108229284,
+            0.7567690694760879
+          ],
+          [
+            0.08600551318996985,
+            0.18506879414734423,
+            0.8202793883746019
+          ],
+          [
+            0.750837375440026,
+            0.4763299607696012,
+            0.42454836283335506
+          ],
+          [
+            0.024597523968584167,
+            0.09244030206104092,
+            0.8088050195203746
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          2,
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          8
+        ]
+      },
+      "spec_sha256": "b958a0becc6ccec2f27ec9a2578ef23c18f5129038f024b877dfe6df4ecba57f"
+    },
+    {
+      "episode": 67,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 19.923874624342247,
+        "obstacle_rgb": [
+          [
+            0.7813606632502901,
+            0.15073552871537255,
+            0.5579182766664019
+          ],
+          [
+            0.6629681785557403,
+            0.0703993589648566,
+            0.32000658501542734
+          ],
+          [
+            0.5779470253080158,
+            0.7233429526594,
+            0.8580590166030774
+          ],
+          [
+            0.9799338311120239,
+            0.7834843264605165,
+            0.12884953504623853
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          3
+        ]
+      },
+      "spec_sha256": "1dd0428ba6fffe9f66c153b52087d0fdd46431beb70979bbacfc56f25c52c64c"
+    },
+    {
+      "episode": 68,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 17.504984986973078,
+        "obstacle_rgb": [
+          [
+            0.7148789021195316,
+            0.04397663740101743,
+            0.5046258256940471
+          ],
+          [
+            0.2584700808317014,
+            0.19819160452385676,
+            0.8791986515275515
+          ],
+          [
+            0.5810079745524005,
+            0.6070365464194868,
+            0.22223586484001
+          ],
+          [
+            0.051084955136513344,
+            0.5468057062864145,
+            0.6261611486430988
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          9
+        ]
+      },
+      "spec_sha256": "e7c5356ae9480d9b3a6a057feedf9aa783f2e24da954d51e2292d057c3f22d5f"
+    },
+    {
+      "episode": 69,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -9.528358273545685,
+        "obstacle_rgb": [
+          [
+            0.4836330048543326,
+            0.0578983386086136,
+            0.7056796111699507
+          ],
+          [
+            0.2013943412816861,
+            0.034199043875462354,
+            0.17383182730039082
+          ],
+          [
+            0.03340275230265288,
+            0.10442260834091932,
+            0.11700513736938623
+          ],
+          [
+            0.7388639312720741,
+            0.5276887145473634,
+            0.8802849790585994
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          4
+        ]
+      },
+      "spec_sha256": "e3ddf70875dadcfb9e85c6984169e15d83a8a63aa9ae94876aacfaf2abbbe214"
+    },
+    {
+      "episode": 70,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 0.368507751366387,
+        "obstacle_rgb": [
+          [
+            0.6777432724565435,
+            0.38605837157865763,
+            0.3687507539964796
+          ],
+          [
+            0.7856209122767162,
+            0.8061525464715142,
+            0.4500714672472951
+          ],
+          [
+            0.3004515606940408,
+            0.869363716233179,
+            0.5021856259374785
+          ],
+          [
+            0.897326013110891,
+            0.02685545073408402,
+            0.853544099153674
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          0
+        ]
+      },
+      "spec_sha256": "b21e2587253e473820de87259ccfa6bf362db3870873f543b4c26c033dfeb341"
+    },
+    {
+      "episode": 71,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 17.226585021067073,
+        "obstacle_rgb": [
+          [
+            0.8582249300151908,
+            0.5275085298543802,
+            0.2986765041501479
+          ],
+          [
+            0.7712767160519993,
+            0.8215416084316826,
+            0.9015305244462352
+          ],
+          [
+            0.6237496342691538,
+            0.3873052754553853,
+            0.38686443441848284
+          ],
+          [
+            0.8862092221293246,
+            0.7894609299251376,
+            0.6835901067330544
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          8
+        ]
+      },
+      "spec_sha256": "726898cd5afa64ff0d03ccd783cc9b0d494384df4d3cb84ea9813cb6cfb6a6b3"
+    },
+    {
+      "episode": 72,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 27.17450611430246,
+        "obstacle_rgb": [
+          [
+            0.07328057796657816,
+            0.22072755963109603,
+            0.18326607153181418
+          ],
+          [
+            0.500776846877445,
+            0.8692821615274224,
+            0.30044692497467607
+          ],
+          [
+            0.120726681818068,
+            0.10780780559657621,
+            0.4469544839668357
+          ],
+          [
+            0.9055942742738476,
+            0.6155263377983391,
+            0.8815026510166251
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8
+        ],
+        "node_slots": [
+          2,
+          3,
+          4
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          5
+        ]
+      },
+      "spec_sha256": "936bf4194b8890e658c99178c63d0f93534cabeedb2cbbd5740b105a9f769493"
+    },
+    {
+      "episode": 73,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 23.433741512299235,
+        "obstacle_rgb": [
+          [
+            0.4790000245209276,
+            0.38938069882831416,
+            0.9075918858671432
+          ],
+          [
+            0.3102779440737734,
+            0.30136694459036983,
+            0.6446784570597289
+          ],
+          [
+            0.4253260649148304,
+            0.3285588002511294,
+            0.07008224683793929
+          ],
+          [
+            0.9281190084292906,
+            0.2207878571566334,
+            0.02612350049116896
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          6,
+          8
+        ],
+        "node_slots": [
+          2,
+          3,
+          4
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          9
+        ]
+      },
+      "spec_sha256": "8d772a9faf917afd4966b3a876d548ec7bfa71a1f0d4a9b6f85918f85d04a400"
+    },
+    {
+      "episode": 74,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 11.198354243816645,
+        "obstacle_rgb": [
+          [
+            0.36096193471576665,
+            0.16503798232900835,
+            0.317353696218025
+          ],
+          [
+            0.6034957654595601,
+            0.16323416590779616,
+            0.5158631972583098
+          ],
+          [
+            0.525991751411434,
+            0.4033620915053966,
+            0.3192070145596325
+          ],
+          [
+            0.6356654243656779,
+            0.38862242237829236,
+            0.006022813459761633
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          3,
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          8
+        ]
+      },
+      "spec_sha256": "2ae19abeec4bf1cc555fa5c8dd9ac2e5e61a7ebebda41d309f6a1a590bb911b1"
+    },
+    {
+      "episode": 75,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -26.743701876596244,
+        "obstacle_rgb": [
+          [
+            0.044976596839085836,
+            0.35013338773996094,
+            0.3819728573871457
+          ],
+          [
+            0.6820842794363993,
+            0.5907312105728972,
+            0.9973852369901992
+          ],
+          [
+            0.46112009730960657,
+            0.7177063722899096,
+            0.42452082839001914
+          ],
+          [
+            0.047735220473522966,
+            0.690261754427582,
+            0.8757239060428538
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          5
+        ]
+      },
+      "spec_sha256": "e9f205c7130e1225ac6958825e2e81f6306b797bb4fad48c3b02eccde871417a"
+    },
+    {
+      "episode": 76,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -1.0710822394744568,
+        "obstacle_rgb": [
+          [
+            0.9093225069414063,
+            0.8455546366356279,
+            0.0007438837824140787
+          ],
+          [
+            0.7014762731836126,
+            0.18588127863887738,
+            0.6600053143958665
+          ],
+          [
+            0.10240734583368705,
+            0.843740324103774,
+            0.5515753778122144
+          ],
+          [
+            0.9759368460324227,
+            0.8680618677854401,
+            0.29328808513562643
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          8
+        ]
+      },
+      "spec_sha256": "21337e7a4beb14ba16a015949b58942e2933ef6abc5a8f3838de402fc8e44236"
+    },
+    {
+      "episode": 77,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -16.520245463566134,
+        "obstacle_rgb": [
+          [
+            0.09643597312744057,
+            0.8962465298861717,
+            0.9508767213718666
+          ],
+          [
+            0.45169271560285174,
+            0.21746606629055576,
+            0.3595935849536296
+          ],
+          [
+            0.9518656300740547,
+            0.07866810290371051,
+            0.027461544593722076
+          ],
+          [
+            0.6940098473937131,
+            0.9296936413722927,
+            0.8528675452916196
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          2
+        ]
+      },
+      "spec_sha256": "7655550324252736ff1ef577469b1277bde51c28d5537a8cc71eda9a0046fd0c"
+    },
+    {
+      "episode": 78,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -6.317208255941885,
+        "obstacle_rgb": [
+          [
+            0.17525439197949044,
+            0.7051581643479358,
+            0.8553639636997575
+          ],
+          [
+            0.294528940898952,
+            0.9606303061592381,
+            0.48970903564968005
+          ],
+          [
+            0.4683634788736909,
+            0.39322908191142225,
+            0.9772421415498612
+          ],
+          [
+            0.5835605092708838,
+            0.08662576638450659,
+            0.7413201656730907
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          3,
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          9
+        ]
+      },
+      "spec_sha256": "0a582a2fbd828340ed74d4d676ee8d42098cc2b8b640a24101d1a8a03951a953"
+    },
+    {
+      "episode": 79,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -20.511865536195725,
+        "obstacle_rgb": [
+          [
+            0.8662453140954014,
+            0.04028671708264542,
+            0.5789486242292696
+          ],
+          [
+            0.2816988368410568,
+            0.8691176105009771,
+            0.49489235294968703
+          ],
+          [
+            0.7375859712086535,
+            0.7027258015845533,
+            0.16334819527816768
+          ],
+          [
+            0.9592320542523574,
+            0.3077728149409673,
+            0.9052241344298044
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          5
+        ]
+      },
+      "spec_sha256": "eb24ce71ce7ee9cb9427aa0b88a180b4808c8a0bfbc3981b3681978acf412dab"
+    },
+    {
+      "episode": 80,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 9.107434618775834,
+        "obstacle_rgb": [
+          [
+            0.638157243876979,
+            0.14490938171846035,
+            0.6386131651827269
+          ],
+          [
+            0.9917796961196338,
+            0.8926124413891335,
+            0.49681063875785914
+          ],
+          [
+            0.30082558760714995,
+            0.1777807346371777,
+            0.08284855179911632
+          ],
+          [
+            0.05036305525650209,
+            0.5208158820222686,
+            0.717005925453187
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          5
+        ]
+      },
+      "spec_sha256": "358ce2af9650dcd9c4b58547dae4d6a941d2c3a8672c04ef9e8ea1f9e698887d"
+    },
+    {
+      "episode": 81,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 2.420516644455226,
+        "obstacle_rgb": [
+          [
+            0.8225271402912873,
+            0.670707418196119,
+            0.8336529885940088
+          ],
+          [
+            0.08756305684933863,
+            0.6547935125131191,
+            0.0002833657944427692
+          ],
+          [
+            0.8601652204720185,
+            0.8429357884718497,
+            0.5100792176232055
+          ],
+          [
+            0.8397510814351329,
+            0.033655336185314244,
+            0.20537977462438073
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          2,
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          4
+        ]
+      },
+      "spec_sha256": "a660af816b1f53e09d8de9996ba9bb63ef674886d50cd22aff7f53bede725db4"
+    },
+    {
+      "episode": 82,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -4.771772031340841,
+        "obstacle_rgb": [
+          [
+            0.5095984305995949,
+            0.3004347815250825,
+            0.3034159280071905
+          ],
+          [
+            0.19431508464692682,
+            0.6652531883789892,
+            0.26819494444239644
+          ],
+          [
+            0.7221615041189506,
+            0.412583774136127,
+            0.15147200647550707
+          ],
+          [
+            0.49009229798383647,
+            0.1750138713127095,
+            0.36286284122810597
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          2
+        ]
+      },
+      "spec_sha256": "a14dbe2ee509f907127f43bb9ad5b798f8f13269b3d94b7d4f1069f7c5da0a70"
+    },
+    {
+      "episode": 83,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -10.316982905453589,
+        "obstacle_rgb": [
+          [
+            0.46019801687170303,
+            0.883318355865894,
+            0.7775957565386488
+          ],
+          [
+            0.25024935063254505,
+            0.6955975094530052,
+            0.3391801544673293
+          ],
+          [
+            0.4374204479071342,
+            0.4958082408607951,
+            0.6931599143364394
+          ],
+          [
+            0.07234435022024155,
+            0.7600876256866305,
+            0.027684130522565575
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          2
+        ]
+      },
+      "spec_sha256": "302a64ae776a8e200bd29ad020b89882696849c1069235a8b69c9c35c83e6fa2"
+    },
+    {
+      "episode": 84,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 19.470738253052296,
+        "obstacle_rgb": [
+          [
+            0.33157527739763526,
+            0.27858625633081735,
+            0.3865504395598519
+          ],
+          [
+            0.054053082512956485,
+            0.581276576814075,
+            0.5450337039464684
+          ],
+          [
+            0.3034798351975394,
+            0.447310815296735,
+            0.8319078877428597
+          ],
+          [
+            0.3709170969962362,
+            0.5270128414889079,
+            0.42868711180846486
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          2
+        ]
+      },
+      "spec_sha256": "6588119c7d21b3c5bd5d9a6c49b415d8f7441122097ca9b725c98f50f242d326"
+    },
+    {
+      "episode": 85,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 15.194925115562526,
+        "obstacle_rgb": [
+          [
+            0.23820968705316037,
+            0.9548231490042041,
+            0.14740271697528906
+          ],
+          [
+            0.8824008463917884,
+            0.5446386143216658,
+            0.7849335008368497
+          ],
+          [
+            0.6397701101362441,
+            0.8317830460081463,
+            0.8788324527602314
+          ],
+          [
+            0.6929388636339495,
+            0.24276318383247442,
+            0.11887156939174348
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          5
+        ]
+      },
+      "spec_sha256": "4ac30a89ddb90602bced51fcb67e40ff81a32a7dfd25020f5dd69d7f0ecb3b4b"
+    },
+    {
+      "episode": 86,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -27.342146541730425,
+        "obstacle_rgb": [
+          [
+            0.7342747448841318,
+            0.1504401057029151,
+            0.6098605955070854
+          ],
+          [
+            0.4218739913885172,
+            0.8465843799304911,
+            0.5509114185260648
+          ],
+          [
+            0.5467273992181589,
+            0.7017310833935978,
+            0.1730120319568622
+          ],
+          [
+            0.9362118942906092,
+            0.3803185049671943,
+            0.08055520046723852
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          2,
+          0,
+          2
+        ],
+        "node_slots": [
+          2,
+          1,
+          0,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          4
+        ]
+      },
+      "spec_sha256": "dcb27d9bfcb7c16ded4770eb2ea7be639b4f746fb80219f77f283bbf331b8262"
+    },
+    {
+      "episode": 87,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 26.608932955127244,
+        "obstacle_rgb": [
+          [
+            0.13957327542526254,
+            0.4825390188515428,
+            0.7509649826246027
+          ],
+          [
+            0.24657719952366453,
+            0.9049866165822775,
+            0.03156400690687011
+          ],
+          [
+            0.23365125598700387,
+            0.8121322214801449,
+            0.936487498754817
+          ],
+          [
+            0.8579686371245742,
+            0.4661927668632261,
+            0.7617623243922463
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          4
+        ]
+      },
+      "spec_sha256": "f5cc20be0ae708114e3ce98e09af747ffc6cc0e6b8501b42bb607f9db74a56bf"
+    },
+    {
+      "episode": 88,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -22.718583304108208,
+        "obstacle_rgb": [
+          [
+            0.19967438419379047,
+            0.13284405062466764,
+            0.13872632839425736
+          ],
+          [
+            0.694312594509518,
+            0.709920317379821,
+            0.848947150709092
+          ],
+          [
+            0.8135302444765361,
+            0.1442748819963704,
+            0.3082951692167457
+          ],
+          [
+            0.5913421815122609,
+            0.5303797232412893,
+            0.4165098063562973
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          2
+        ]
+      },
+      "spec_sha256": "518fec65047f8fb4ffb3793bcadfe51bbc165cafc57584be9667384ed9491e7f"
+    },
+    {
+      "episode": 89,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -12.683246409934775,
+        "obstacle_rgb": [
+          [
+            0.7019667115558275,
+            0.005896426265802446,
+            0.1814370035636329
+          ],
+          [
+            0.504302657144629,
+            0.43723083125479,
+            0.19395282594514796
+          ],
+          [
+            0.05598671841578573,
+            0.18087832667286985,
+            0.5192337277452035
+          ],
+          [
+            0.7131509506779862,
+            0.8038563405632652,
+            0.031676350486198324
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          8
+        ]
+      },
+      "spec_sha256": "167d77bef1a8e52350b26eead280ac02389e559e55baea9200ea07b98a2ff7ce"
+    },
+    {
+      "episode": 90,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -17.91912089901151,
+        "obstacle_rgb": [
+          [
+            0.1203137970336936,
+            0.5951808980026891,
+            0.8510100415415978
+          ],
+          [
+            0.12305177539012269,
+            0.9952396498351448,
+            0.41366510393927836
+          ],
+          [
+            0.6186211299536051,
+            0.20903543549780923,
+            0.4846858563345199
+          ],
+          [
+            0.05966477774504575,
+            0.04125258549063715,
+            0.9577353423734224
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4
+        ],
+        "node_slots": [
+          4,
+          3,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          2,
+          0
+        ]
+      },
+      "spec_sha256": "95470ed2e53109aa531a426581f2c70fdb2883a9131469461a5fd6e6a7de6fc8"
+    },
+    {
+      "episode": 91,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -18.78872467937445,
+        "obstacle_rgb": [
+          [
+            0.34348256421817325,
+            0.9002189354418871,
+            0.6769315043369356
+          ],
+          [
+            0.29502925532262136,
+            0.2944084951410727,
+            0.05121913774616338
+          ],
+          [
+            0.5384811260028295,
+            0.583890972883926,
+            0.9587851061215201
+          ],
+          [
+            0.017318591265242267,
+            0.0641291580852913,
+            0.5154432169948887
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "counterclockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          1,
+          8
+        ]
+      },
+      "spec_sha256": "50113f5a930f978b28dc5c85459310a5f538602ca90c9b90f4bed4eafe29d723"
+    },
+    {
+      "episode": 92,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -2.860336739570883,
+        "obstacle_rgb": [
+          [
+            0.42371619154197615,
+            0.8288697125203744,
+            0.43925374154957986
+          ],
+          [
+            0.5453003103086699,
+            0.7130767313151891,
+            0.7113802064948052
+          ],
+          [
+            0.47634581218405403,
+            0.5506146431997088,
+            0.7952951281659013
+          ],
+          [
+            0.7768019935096404,
+            0.4598032352291681,
+            0.41923555301628623
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          4,
+          5
+        ]
+      },
+      "spec_sha256": "ef77a31a90e0280445070f674026f3a2a3dd1254170f765bd09723bc3ad67fba"
+    },
+    {
+      "episode": 93,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 1.5369324551177357,
+        "obstacle_rgb": [
+          [
+            0.9101957153101703,
+            0.18128201117342946,
+            0.9406424543699611
+          ],
+          [
+            0.5774920458250622,
+            0.7346795452329619,
+            0.6673408058189655
+          ],
+          [
+            0.17154073320052998,
+            0.5676104896007304,
+            0.2136139740405606
+          ],
+          [
+            0.48604200188289615,
+            0.018899307737609505,
+            0.08608075282184446
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          8,
+          6,
+          4,
+          2
+        ],
+        "node_slots": [
+          4,
+          3,
+          2,
+          1
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          5,
+          2
+        ]
+      },
+      "spec_sha256": "b582a9749b95ea95571806a0acd450d13ed29a2bb332c1813e9177b2320de76e"
+    },
+    {
+      "episode": 94,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 23.08419732112535,
+        "obstacle_rgb": [
+          [
+            0.7779851688463219,
+            0.33873527757974464,
+            0.22154116947641755
+          ],
+          [
+            0.02473142153890895,
+            0.20767027082669964,
+            0.3980804911989143
+          ],
+          [
+            0.19265858490190713,
+            0.7676299518786399,
+            0.533011461589178
+          ],
+          [
+            0.5732357308966856,
+            0.31709936604473266,
+            0.390867643268216
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          2,
+          0,
+          2,
+          4
+        ],
+        "node_slots": [
+          1,
+          0,
+          1,
+          2
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          8,
+          8
+        ]
+      },
+      "spec_sha256": "f6718bb22473dac61acc13059a4ae9a507c37ffc9cbf51bf47c8961e5c3dee0f"
+    },
+    {
+      "episode": 95,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 24.708498098783537,
+        "obstacle_rgb": [
+          [
+            0.28901742423969556,
+            0.31857646893604064,
+            0.06822599261120676
+          ],
+          [
+            0.8154400256283044,
+            0.5398878113210686,
+            0.11138718980519546
+          ],
+          [
+            0.06036517576925138,
+            0.4091362212076469,
+            0.7069190679886888
+          ],
+          [
+            0.6753448303876701,
+            0.24995139865970517,
+            0.9879434133618508
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "clockwise",
+          "counterclockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          9,
+          1
+        ]
+      },
+      "spec_sha256": "d070a6d79bac6b34a5694ed85aaa23360ba91ed88453204bb95d0a418186fc74"
+    },
+    {
+      "episode": 96,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -24.428884207835388,
+        "obstacle_rgb": [
+          [
+            0.5582937358946143,
+            0.8750677623690247,
+            0.12504303402497485
+          ],
+          [
+            0.6682738896917834,
+            0.7607585491709195,
+            0.3664882199530113
+          ],
+          [
+            0.2292598183077158,
+            0.6993473883129171,
+            0.8920880999184514
+          ],
+          [
+            0.216750615571204,
+            0.660250165328428,
+            0.5054779805258974
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          2,
+          0
+        ],
+        "node_slots": [
+          2,
+          1,
+          0
+        ],
+        "directions": [
+          "clockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          0,
+          9
+        ]
+      },
+      "spec_sha256": "687ce1955ca44fa64a1557cd19480162a97f85acf05b83f061adc82100e4b942"
+    },
+    {
+      "episode": 97,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": -10.169718946672543,
+        "obstacle_rgb": [
+          [
+            0.908561701057263,
+            0.18814154708988218,
+            0.977561105215092
+          ],
+          [
+            0.6581911702991518,
+            0.7227189832349608,
+            0.8833748982217354
+          ],
+          [
+            0.8029372469528849,
+            0.45736309198987524,
+            0.9024397951082476
+          ],
+          [
+            0.39211572518616045,
+            0.6830292764086114,
+            0.7135815883422837
+          ]
+        ]
+      },
+      "objects": {
+        "L": 3,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "node_slots": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise",
+          "counterclockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          3,
+          3
+        ]
+      },
+      "spec_sha256": "4f5586b4f8d6db2190dd3214d78a8977c0d0f89a55ca315338ec3b174d984e06"
+    },
+    {
+      "episode": 98,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 16.249012183264448,
+        "obstacle_rgb": [
+          [
+            0.05757870504689755,
+            0.9645408026717999,
+            0.9631495585495365
+          ],
+          [
+            0.6331678026965877,
+            0.9553893450638266,
+            0.3286939343024934
+          ],
+          [
+            0.8823816553026212,
+            0.5437974928383575,
+            0.4518830671225881
+          ],
+          [
+            0.9580978168165174,
+            0.01934610536014958,
+            0.023574007534119312
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          4,
+          2,
+          0
+        ],
+        "node_slots": [
+          2,
+          1,
+          0
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          7,
+          7
+        ]
+      },
+      "spec_sha256": "4a7724f338b365254271ee15e0ee7ecbb9054924085f9a47af293c08e82c8cf7"
+    },
+    {
+      "episode": 99,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "layout": {
+        "rotation_deg": 9.609081667583894,
+        "obstacle_rgb": [
+          [
+            0.3759769928315697,
+            0.42914532678529105,
+            0.5312894941045333
+          ],
+          [
+            0.4476886979538841,
+            0.12499078200531055,
+            0.4080971519059101
+          ],
+          [
+            0.1608341077998825,
+            0.202705668006823,
+            0.9450048746066674
+          ],
+          [
+            0.07299001220267898,
+            0.7366216344738705,
+            0.7355124461177933
+          ]
+        ]
+      },
+      "objects": {
+        "L": 2,
+        "allow_backtracking": false
+      },
+      "actions": {
+        "nodes": [
+          6,
+          8,
+          6
+        ],
+        "node_slots": [
+          3,
+          4,
+          3
+        ],
+        "directions": [
+          "counterclockwise",
+          "clockwise"
+        ]
+      },
+      "sampling_cells": {
+        "rotation_deg": [
+          6,
+          6
+        ]
+      },
+      "spec_sha256": "503ade39323631ab4259d87189b81beaac4f7d98b3bce3a09e39da62670af49d"
+    }
+  ]
+}
