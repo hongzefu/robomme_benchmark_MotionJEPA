@@ -3,6 +3,7 @@
 > 数据：`artifacts/injection/20260911-contract-v2-05/specs/<任务>/<难度>.json`，11 组 × 100 条 = 1100 条冻结规格，生成 seed `20260909`，`VideoRepick hard` 排除。取值域与分配两列取自契约 `scripts/configs/newtask-v2/injection_contract_v2.json`（BinFill 对齐 heldout：medium 6～8 块、hard 8～10 块、多目标色每色至少 1 块），改口径与用户决策见 [NEW_VALUE_CONTRACT_CHANGELOG.md](../NEW_VALUE_CONTRACT_CHANGELOG.md)；上一轮 `20260910-new-values-04`（契约 v1 = 原值口径）原样保留作对照，除 BinFill medium／hard 外 9 组规格与 04 逐条相同。
 > 判定（`check_result.json`）：`CONTRACT_DERIVED=PASS fields=155 mismatches=6 overrides=2 version=v2 problems=0`、`SPEC_SCOPE=PASS specs=1100`、`COVERAGE_QUOTA=PASS batches=10 quota_gaps=0`、`STATIC_GEOMETRY=PASS rejected=0`、`COLLISION_SWEEP=PASS specs=500 rejected=0 min_g_m=0.00042638`、`SPEC_REPRODUCIBLE=PASS differences=0`、`CHECK=PASS elapsed_s=357.1`。
 > 本目录只有只读脚本，不改 `tests/_shared/*`、不改 `src/robomme`、不写原 `plots/`；图只做**跑前**，PNG 放本目录 `figures/`，已 gitignore 不入库，只保留链接（用户要求）。
+> 05 的 ep0～29 已按契约 v2 实跑（双卡各 20 worker，档 `feasibility/P01x20/`）；这些真实轨迹上的**采样窗口数轴**（motion 窗口、subgoal 分段、两条帧路；BinFill 以同一条重复两遍模拟 demo）见 [SAMPLING_WINDOWS.md](SAMPLING_WINDOWS.md)。
 >
 > 三条命令（都只读规格 JSON）：
 > - 出图：`uv run python scripts/injection-before-2d/plot_injection_before_2d.py --run-id 20260911-contract-v2-05`，只画实跑范围前 30 条（ep0～29），每组 7 张、共 77 张，产物放本目录 `figures/<任务>/<难度>/`（已 gitignore 不入库，文档链接指向本地文件，clone 后先跑一次出图），成功打 `PLOT2D_BEFORE=PASS groups=11 files=77 episodes=30`；
@@ -351,7 +352,7 @@
 
 ## 三、三种图怎么看
 
-**视角与回放视频对齐**：所有图都按回放视频左起第一格（`base_camera`，eye (0.3, 0, 0.4) → target (0, 0, −0.2)，从机器人一侧俯视）的视角画——画面右 = 世界 +y，画面上 = 世界 −x（远离机器人），机器人在画面下方；横轴标世界 y，纵轴标世界 x（向上减小）。绘图坐标 (u, v) = (y, −x) 是绕 z 轴 −90° 的纯旋转，方块朝向与顺／逆时针弧向不受影响。对齐依据：BinFill/easy ep0（按钮 (−0.241, 0.198) 在画面右上、孔板 (−0.021, −0.149) 在左下）与 VideoUnmaskSwap/easy ep0（红容器 (−0.157, 0.092) 右上、绿容器 (0.093, −0.107) 左下）的视频首帧逐物体核对。回放视频在 `artifacts/injection/20260910-new-values-04/feasibility/P0x12/<任务>/<难度>/videos/`（不入库；仍是 04 那轮的产物——05 只重冻结规格未实跑，用来对齐视角的 BinFill/easy ep0 与 VideoUnmaskSwap/easy ep0 在 05 里与 04 规格逐位相同，坐标核对仍成立）。
+**视角与回放视频对齐**：所有图都按回放视频左起第一格（`base_camera`，eye (0.3, 0, 0.4) → target (0, 0, −0.2)，从机器人一侧俯视）的视角画——画面右 = 世界 +y，画面上 = 世界 −x（远离机器人），机器人在画面下方；横轴标世界 y，纵轴标世界 x（向上减小）。绘图坐标 (u, v) = (y, −x) 是绕 z 轴 −90° 的纯旋转，方块朝向与顺／逆时针弧向不受影响。对齐依据：BinFill/easy ep0（按钮 (−0.241, 0.198) 在画面右上、孔板 (−0.021, −0.149) 在左下）与 VideoUnmaskSwap/easy ep0（红容器 (−0.157, 0.092) 右上、绿容器 (0.093, −0.107) 左下）的视频首帧逐物体核对。回放视频在 `artifacts/injection/20260910-new-values-04/feasibility/P0x12/<任务>/<难度>/videos/`（不入库；视角对齐是在 04 那轮的视频上做的，用来对齐的 BinFill/easy ep0 与 VideoUnmaskSwap/easy ep0 在 05 里与 04 规格逐位相同，坐标核对仍成立；05 自己的实跑视频在 `artifacts/injection/20260911-contract-v2-05/feasibility/P01x20/<任务>/<难度>/videos/`）。
 
 图只画**实跑范围前 30 条**（ep0～29）：100 条全叠在一起目视不可读，所以降到 30 条，并把每张图拆成「全部叠加 + 按种类拆开」的多个面板。PNG 放在本目录 `figures/<任务>/<难度>/`，不入库，clone 后先跑一次出图命令再看链接。
 
