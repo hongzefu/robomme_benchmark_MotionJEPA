@@ -305,3 +305,38 @@ def test_判据常量按计划定死():
     assert bc.MAX_DEPTH == 20
     assert bc.MAX_INTERVALS == 4096
     assert bc.LANE_OFFSET == 0.07
+
+
+# ── 粗筛不改判定，但会改「返回的最小值」的含义 ────────────────────────────────
+def test_粗筛不改变判定结论():
+    """三个容器：0 与 2 撞上、1 离得很远。带不带粗筛都必须判出同一个拒绝。"""
+    states = [_bin_state("bin_0", [0.0, 0.0]), _bin_state("bin_1", [0.0, 0.5]), _bin_state("bin_2", [0.03, 0.0])]
+    fast = bc.check_bin_layout(states)
+    slow = bc.check_bin_layout(states, exhaustive=True)
+    assert fast[1] is not None and slow[1] is not None
+    assert fast[1].reason == slow[1].reason
+    assert {fast[1].object_a, fast[1].object_b} == {slow[1].object_a, slow[1].object_b}
+
+
+def test_全量模式返回真正的全场最小间隙():
+    """0-1 相距 0.10（g=0.04）、0-2 相距 0.50（g 很大）。
+
+    默认模式下 0-2 会被包围球粗筛跳过、不参与最小值；全量模式两对都精算。
+    两种模式都必须判「通过」，且全量模式的最小值不大于默认模式的。
+    """
+    states = [_bin_state("bin_0", [0.0, 0.0]), _bin_state("bin_1", [0.0, 0.10]), _bin_state("bin_2", [0.0, 0.5])]
+    fast_gap, fast_rejection = bc.check_bin_layout(states)
+    slow_gap, slow_rejection = bc.check_bin_layout(states, exhaustive=True)
+    assert fast_rejection is None and slow_rejection is None
+    assert pytest.approx(slow_gap, abs=1e-12) == 0.04
+    assert slow_gap <= fast_gap + 1e-12
+
+
+def test_全部对象都离得远时默认模式退回包围球下界():
+    """全部对象对都被粗筛跳过：没有精算值可报，只能给保守下界，但仍是「已证明分离」。"""
+    states = [_bin_state("bin_0", [0.0, 0.0]), _bin_state("bin_1", [0.0, 0.6])]
+    fast_gap, rejection = bc.check_bin_layout(states)
+    assert rejection is None
+    exact_gap, _ = bc.check_bin_layout(states, exhaustive=True)
+    assert fast_gap <= exact_gap + 1e-12  # 下界不会高估
+    assert fast_gap > bc.EPS_M

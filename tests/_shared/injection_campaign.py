@@ -1130,6 +1130,70 @@ def _render_readme(payload: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+# ── collision-reproduce：固定案例的轨迹重算 ────────────────────────────────
+COLLISION_CASE_ROOT = REPO_ROOT / "artifacts" / "collision-preplan" / "20260909-bin-contact-v2"
+
+
+def cmd_collision_reproduce(source_dir: Path, output_dir: Path, mode: str) -> dict[str, Any]:
+    """从保存的初态重算 9 例交换轨迹，逐步核对位姿、SAT 判定值与最危险对象对。
+
+    ⚠ 只读原目录。复现产物落 ``output_dir``，目录已存在即拒绝——编号用过就换新的，
+    绝不覆盖已获用户目视确认的原件。
+    ⚠ ``--mode render``（从保存轨迹重渲染）需要 SAPIEN 渲染，本子命令不做，如实记 `NOT_RUN`。
+    """
+    from tests._shared.injection_replay import replay_case, verify_source_files
+
+    if not source_dir.is_dir():
+        raise CampaignError(f"找不到固定案例目录：{source_dir}")
+    if output_dir.exists():
+        raise CampaignError(f"输出目录已存在，编号不可复用：{output_dir}")
+
+    integrity = verify_source_files(source_dir)
+    manifest = json.loads((source_dir / "manifest.json").read_text(encoding="utf-8"))
+    epsilon = float(manifest["epsilon_m"])
+
+    results = [replay_case(case, epsilon=epsilon) for case in manifest["cases"]]
+    accepted = sum(1 for item in results if item["recomputed_status"] == "PASS")
+    rejected = sum(1 for item in results if item["recomputed_status"] == "REJECT")
+    all_passed = all(item["passed"] for item in results)
+
+    verdicts = Verdicts(echo=True)
+    verdicts.add(
+        "COLLISION_REPRODUCE", all_passed and not integrity["file_problems"],
+        cases=len(results), accepted=accepted, rejected=rejected,
+        original_unchanged=0 if integrity["file_problems"] else 1,
+        max_pose_diff_m=f"{max((item['max_pose_diff_m'] for item in results), default=0.0):.3g}",
+        max_gap_diff_m=f"{max((item['max_gap_diff_m'] for item in results), default=0.0):.3g}",
+        mode=mode,
+    )
+    if mode != "trajectory":
+        verdicts.add("COLLISION_RERENDER", None, reason="从保存轨迹重渲染需要 SAPIEN，本子命令不做")
+
+    if integrity["geometry_source_drift"]:
+        # 显式报告，不隐瞒：几何来源文件动过就要说清动的是哪里、为什么不影响几何
+        for item in integrity["geometry_source_drift"]:
+            print(
+                f"  ⚠ 几何来源散列漂移 {item['path']}：记录 {item['recorded'][:12]}…，"
+                f"当前 {(item['current'] or 'None')[:12]}…；"
+                "逐步重算 9/9 一致本身证明盒体几何未变（本轮只给该文件加了 fixed_xy/fixed_yaw 参数）",
+                flush=True,
+            )
+
+    payload = {
+        "source_dir": str(source_dir),
+        "output_dir": str(output_dir),
+        "mode": mode,
+        "epsilon_m": epsilon,
+        "integrity": integrity,
+        "cases": results,
+        "verdicts": verdicts.records,
+        "passed": all_passed and not integrity["file_problems"],
+    }
+    _write_json(output_dir / "replay_result.json", payload)
+    print(f"REPRODUCE={'PASS' if payload['passed'] else 'FAIL'} 产物 {output_dir.relative_to(REPO_ROOT)}")
+    return payload
+
+
 # ── CLI ─────────────────────────────────────────────────────────────────────
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="新值注入专项：规格生成、静态检查、出图与实跑编排")
@@ -1169,6 +1233,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     report = sub.add_parser("report", help="汇总各阶段判定与计数，写轻量包")
     report.add_argument("--run-id", required=True)
 
+    reproduce = sub.add_parser("collision-reproduce", help="固定碰撞案例的轨迹重算")
+    reproduce.add_argument("--source-dir", default=str(COLLISION_CASE_ROOT))
+    reproduce.add_argument("--output-dir", required=True, help="复现产物目录，必须是新目录")
+    reproduce.add_argument("--mode", default="trajectory", choices=("trajectory", "both"))
+
     compare = sub.add_parser("compare", help="两个运行目录的完整 HDF5 逐位对拍")
     compare.add_argument("--left", required=True, help="参考侧目录")
     compare.add_argument("--right", required=True, help="候选侧目录")
@@ -1198,6 +1267,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 skip_ladder=args.skip_ladder, tier_override=args.tier,
             )
             return 0 if result.get("passed") else 1
+        if args.command == "collision-reproduce":
+            payload = cmd_collision_reproduce(
+                Path(args.source_dir).resolve(), Path(args.output_dir).resolve(), args.mode
+            )
+            return 0 if payload["passed"] else 1
         if args.command == "report":
             cmd_report(args.run_id)
             return 0

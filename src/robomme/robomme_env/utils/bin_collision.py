@@ -456,12 +456,22 @@ def check_bin_layout(
     *,
     stage: str = "initial",
     raise_on_reject: bool = False,
+    exhaustive: bool = False,
 ) -> tuple[float, CollisionRejection | None]:
     """全部对象两两之间的静态检查；任一对被拒绝，整体拒绝。
 
-    返回 ``(最小判定值, 拒绝证据或 None)``；证据指向全场判定值最小的那一对对象与形状，
+    返回 ``(最小判定值, 拒绝证据或 None)``；证据指向判定值最小的那一对对象与形状，
     与遍历顺序无关。``raise_on_reject`` 为真时改抛 :class:`BinCollisionError`，
     供运行时检查点直接中止该样本。
+
+    ⚠ **返回的最小值在两种模式下语义不同**：
+
+    * ``exhaustive=False``（默认，运行时用）：先用包围球粗筛跳过必然分离的对象对，
+      一次距离计算替掉 36 次 SAT。**判定**（排除与否）完全不受影响——被跳过的对必然
+      分离——但返回的最小值只是「**精算过的那些对**里的最小」。某个被跳过的对真实间隙
+      可能比它更小，只是同样安全。
+    * ``exhaustive=True``（复现核对用）：不粗筛，逐对精算，返回的是真正的全场最小 g。
+      ``COLLISION_REPRODUCE`` 要逐步对照保存下来的 ``sat_gap_m``，必须走这条。
     """
     worst = np.inf
     coarse_worst = np.inf
@@ -473,7 +483,7 @@ def check_bin_layout(
             # 粗筛：球心距减两个半径已经大于 ε 时，这一对的 36 个盒对必然分离，
             # 一次距离计算就能替掉 36 次 SAT。只跳过必然通过的对，判据不变。
             clearance = float(np.linalg.norm(objects[i].p - objects[j].p)) - radii[i] - radii[j]
-            if clearance > EPS_M:
+            if not exhaustive and clearance > EPS_M:
                 # 与 check_swap_sweep 同样的道理：包围球间隙是真实 g 的保守下界，
                 # 不能混进 worst，否则「最危险对象对的最小 g」会被一个远处的对压低
                 coarse_worst = min(coarse_worst, clearance)
