@@ -717,8 +717,13 @@ def cmd_run(
     *,
     skip_ladder: bool = False,
     tier_override: int | None = None,
+    gpus: str = "0",
 ) -> dict[str, Any]:
     """按阶段跑：``calibration``（步骤 3+4）或 ``feasibility``（步骤 5）。
+
+    ``gpus`` 只对 ``feasibility`` + ``--tier`` 生效：逗号分隔的物理卡号，每卡 worker 数由 ``tier`` 给，
+    传给生成器的 ``--workers`` 是总数 ``tier × 卡数``（生成器按 ``workers // len(gpus)`` 摊到每卡）。
+    默认 ``"0"`` 与 04 之前的单卡行为逐字相同；校准阶段不受此参数影响。
 
     每一步都复用生产入口 ``scripts/generate_dataset_newseed.py``，命令、退出码、墙钟与
     资源采样全部留档；本函数只做编排与判定，不自己建仿真。
@@ -904,10 +909,14 @@ def cmd_run(
                 "请显式传 --tier <每卡 worker 数>（PARALLEL_SCALE 会保持 NOT_RUN）"
             )
         if tier_override is not None:
-            # 显式指定档位：档位不是测出来的，报告里必须写明这一点
+            # 显式指定档位：档位不是测出来的，报告里必须写明这一点。
+            # 2026-09-11 用户要求「2gpu并行跑 每个gpu并行worker数量20」：卡号改由 --gpus 给，
+            # 档名 P<卡号串>x<每卡 worker>（单卡仍是 P0x12 这种老名字，双卡如 P01x20）。
             tier = int(tier_override)
-            gpu_ids = ["0"]
-            chosen = {"tier": tier, "mode": f"P0x{tier}", "gpus": gpu_ids, "measured": False}
+            gpu_ids = [item.strip() for item in gpus.split(",") if item.strip()]
+            if not gpu_ids or len(gpu_ids) != len(set(gpu_ids)):
+                raise CampaignError(f"--gpus 非法：{gpus!r}（须是逗号分隔、不重复的物理卡号）")
+            chosen = {"tier": tier, "mode": f"P{''.join(gpu_ids)}x{tier}", "gpus": gpu_ids, "measured": False}
         else:
             tier = int(chosen["tier"])
             gpu_ids = chosen.get("gpus") or ["0"]
@@ -918,10 +927,11 @@ def cmd_run(
         )
         mode = chosen.get("mode") or f"P0x{tier}"
         source = "校准选出的" if chosen.get("measured", True) else "显式指定（未经测速）的"
-        print(f"[实跑] 用{source} {mode}（--gpus {','.join(gpu_ids)} --workers {tier}）跑 330 条", flush=True)
+        total_workers = tier * len(gpu_ids)  # 生成器的 --workers 是总数，按卡数摊成每卡 tier 个
+        print(f"[实跑] 用{source} {mode}（--gpus {','.join(gpu_ids)} --workers {total_workers}，每卡 {tier}）跑 330 条", flush=True)
         result = invoke_generator(
             output_dir=root / "feasibility" / mode, manifest=feas_manifest,
-            gpus=",".join(gpu_ids), workers=tier, log_path=logs / f"feasibility-{mode}.log",
+            gpus=",".join(gpu_ids), workers=total_workers, log_path=logs / f"feasibility-{mode}.log",
             sampling_config=sampling_config, timeout_s=6 * 3600,
         )
         rows = result["rows"]
@@ -966,7 +976,10 @@ def cmd_summarize(run_id: str, mode: str | None = None) -> dict[str, Any]:
     tier = int(mode.rsplit("x", 1)[1]) if "x" in mode else 0
     previous = root / "feasibility_result.json"
     chosen = json.loads(previous.read_text(encoding="utf-8")).get("chosen") if previous.is_file() else None
-    chosen = chosen or {"tier": tier, "mode": mode, "gpus": ["0"], "measured": False}
+    # 没有先前结论时卡号从生成器落盘的 run_parameters.json 取（双卡实跑后不能再假定只有 GPU 0）
+    run_parameters = output_dir / "run_parameters.json"
+    recorded_gpus = json.loads(run_parameters.read_text(encoding="utf-8")).get("gpus") if run_parameters.is_file() else None
+    chosen = chosen or {"tier": tier, "mode": mode, "gpus": [str(g) for g in (recorded_gpus or ["0"])], "measured": False}
 
     verdicts = Verdicts(echo=True)
     payload: dict[str, Any] = {
@@ -1409,6 +1422,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--tier", type=int, default=None,
         help="feasibility 显式指定每卡 worker 数（跳过档位校准时必须给），报告里会标明该档未经测速",
     )
+    runner.add_argument(
+        "--gpus", default="0",
+        help="feasibility + --tier 时用的物理卡号，逗号分隔（如 0,1）；每卡 worker 数由 --tier 给，总 worker = tier × 卡数；默认只用 GPU 0",
+    )
 
     summarize = sub.add_parser("summarize", help="不重跑仿真，用当前代码重算既有实跑结果")
     summarize.add_argument("--run-id", required=True)
@@ -1449,7 +1466,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             tiers = [int(item) for item in args.tiers.split(",")] if args.tiers else None
             result = cmd_run(
                 args.run_id, args.phase, Path(args.sampling_config).resolve(), tiers,
-                skip_ladder=args.skip_ladder, tier_override=args.tier,
+                skip_ladder=args.skip_ladder, tier_override=args.tier, gpus=args.gpus,
             )
             return 0 if result.get("passed") else 1
         if args.command == "collision-reproduce":
