@@ -627,7 +627,11 @@ def _unmask_group(difficulty: str, config: dict[str, Any], parameters: dict[str,
         target_indices = list(initiator_series[episode])
         remaining = [i for i in range(n_bins) if i not in target_indices]
         third = balanced_choice(rng_ep, remaining, third_usage)
-        initiators = ([*target_indices, third])[:n_swaps]
+        # ⚠ 源码**无条件**赋值 swap_pair{1,2,3}_idx1（以及只赋值不读的 target_bin_1/2），
+        # 即使 n_swaps=1 也要有 3 个发起者，否则会 IndexError。所以规格存完整的 3 个，
+        # actions.swap_pairs 只存实际执行的前 n_swaps 段——未执行的那部分也不靠随机。
+        initiators_full = [*target_indices, third]
+        initiators = initiators_full[:n_swaps]
 
         frozen = None
         for trial in range(MAX_CANDIDATES):
@@ -689,6 +693,7 @@ def _unmask_group(difficulty: str, config: dict[str, Any], parameters: dict[str,
                         "hidden": hidden,
                         "empty": empty,
                         "pick_order": pick_order,
+                        "swap_initiators": [f"bin_{i}" for i in initiators_full],
                     },
                     "actions": {
                         "swap_pairs": [
@@ -761,7 +766,9 @@ def _repick_group(difficulty: str, config: dict[str, Any], parameters: dict[str,
         target = int(target_series[episode])
         others = [i for i in range(n_cubes) if i != target]
         tail = [others[i] for i in tail_series[episode]]
-        initiators = ([target, *tail])[:n_swaps]
+        # 同 VideoUnmaskSwap：源码无条件赋值 swap_pair{1,2,3}_idx1，需要完整的 3 个发起者
+        initiators_full = [target, *tail]
+        initiators = initiators_full[:n_swaps]
 
         button_xy = [strata["button_x"].values[episode], strata["button_y"].values[episode]]
         button = button_obb(button_xy, float(button_cfg["scale"]))
@@ -832,6 +839,7 @@ def _repick_group(difficulty: str, config: dict[str, Any], parameters: dict[str,
                         "color": color,
                         "target": f"bin_{target}",
                         "num_repeats": num_repeats,
+                        "swap_initiators": [f"bin_{i}" for i in initiators_full],
                     },
                     "actions": {
                         "swap_pairs": [

@@ -27,6 +27,8 @@ import numpy as np
 
 __all__ = [
     "BinCollisionError",
+    "SpecBindingError",
+    "nearest_partner_index",
     "CollisionRejection",
     "ShapeSpec",
     "ObjectState",
@@ -72,6 +74,21 @@ class BinCollisionError(RuntimeError):
     def __init__(self, rejection: "CollisionRejection") -> None:
         super().__init__(rejection.summary())
         self.rejection = rejection
+
+
+class SpecBindingError(RuntimeError):
+    """运行时实测的对象／动作与规格预写的不一致，对应七类结果里的「实际对象／动作不符」。
+
+    最典型的是交换搭档：规格预写的 ``partner`` 是设计口径（按前一段收尾后的名义位姿算），
+    而 ``step`` 在交换开始那一刻按**实际**位姿重算最近邻。计划第五节步骤 0a 明确要求
+    「不符即失败，禁止换搭档」——所以这里抛错中止该样本，绝不现场改用实际搭档继续跑。
+
+    ``detail`` 里带完整的候选距离表，便于事后判断是临界等距还是真的错绑。
+    """
+
+    def __init__(self, message: str, detail: dict[str, Any] | None = None) -> None:
+        super().__init__(message)
+        self.detail = detail or {}
 
 
 @dataclass(frozen=True)
@@ -447,9 +464,20 @@ def check_bin_layout(
     供运行时检查点直接中止该样本。
     """
     worst = np.inf
+    coarse_worst = np.inf
     worst_rejection: CollisionRejection | None = None
+    # 每个对象的保守包围球半径：盒体顶点到 actor 原点的最大距离
+    radii = [max(item.radii) for item in objects]
     for i in range(len(objects)):
         for j in range(i + 1, len(objects)):
+            # 粗筛：球心距减两个半径已经大于 ε 时，这一对的 36 个盒对必然分离，
+            # 一次距离计算就能替掉 36 次 SAT。只跳过必然通过的对，判据不变。
+            clearance = float(np.linalg.norm(objects[i].p - objects[j].p)) - radii[i] - radii[j]
+            if clearance > EPS_M:
+                # 与 check_swap_sweep 同样的道理：包围球间隙是真实 g 的保守下界，
+                # 不能混进 worst，否则「最危险对象对的最小 g」会被一个远处的对压低
+                coarse_worst = min(coarse_worst, clearance)
+                continue
             gap, rejection = check_pair_static(objects[i], objects[j], stage=stage)
             if rejection is not None and not math.isfinite(gap):
                 if raise_on_reject:
@@ -461,7 +489,10 @@ def check_bin_layout(
         if raise_on_reject:
             raise BinCollisionError(worst_rejection)
         return float(worst), worst_rejection
-    return (float(worst) if math.isfinite(worst) else float("nan")), None
+    if math.isfinite(worst):
+        return float(worst), None
+    # 全部对象对都在粗筛里过掉了：退回包围球下界，仍然是「已证明分离」
+    return (float(coarse_worst) if math.isfinite(coarse_worst) else float("nan")), None
 
 
 def check_bin_state(
@@ -753,6 +784,26 @@ def check_swap_sweep(
         return float(worst), None
     # 全部对象对都在粗筛里过掉了：没有精算值，退回包围球下界，仍然是「已证明分离」
     return (float(coarse_worst) if math.isfinite(coarse_worst) else float("nan")), None
+
+
+def nearest_partner_index(reference: Sequence[float], candidates: Sequence[tuple[int, Sequence[float]]]) -> tuple[int, list[tuple[int, float]]]:
+    """按 ``step`` 的原语义扫描最近邻，返回 ``(选中的序号, 全部候选的距离表)``。
+
+    复刻原实现的两个细节：判定用 ``dist < closest_dist`` **严格小于**，候选按传入顺序
+    （即生成顺序）遍历，因此等距时先出现的胜出——这正是 ``tie_break=first_in_spawn_order``。
+    距离表原样返回，供不一致时留证：临界等距和真的错绑要能分得开。
+    """
+    best_index = -1
+    best_dist = float("inf")
+    table: list[tuple[int, float]] = []
+    origin = np.asarray(reference, dtype=np.float64)[:2]
+    for index, position in candidates:
+        dist = float(np.linalg.norm(origin - np.asarray(position, dtype=np.float64)[:2]))
+        table.append((index, dist))
+        if dist < best_dist:
+            best_dist = dist
+            best_index = index
+    return best_index, table
 
 
 # ── 运行时：从真实 actor 读盒体 ──────────────────────────────────────────────

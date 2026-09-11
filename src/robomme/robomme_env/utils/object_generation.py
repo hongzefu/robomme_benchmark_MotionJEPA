@@ -232,13 +232,21 @@ def spawn_random_cube(
         random_yaw=True,
         include_existing=True,
         include_goal=True,
-        generator=None
+        generator=None,
+        fixed_xy=None,
+        fixed_yaw=None,
     ):
     """
     Drop a cube (onto table) in rectangular region using rejection sampling, and return the cube actor.
     - Uses OBB precise collision (2D projection + SAT), places only if min_gap is satisfied.
     - avoid: Input a list of objects. Can be [actor, ...] or [(actor, pad), ...] (pad in meters).
     - generator: Must pass torch.Generator for randomization.
+
+    新值注入通道（NEW_VALUE_INJECTION_TEST_PLAN 步骤 0a）：传入 ``fixed_xy``（米）与
+    可选的 ``fixed_yaw``（弧度）时**跳过拒绝采样循环**，直接用该位姿建方块，一次随机数
+    都不抽，因此这条路径连 ``generator`` 都不需要。创建仍走下面同一个 ``_finalize_cube``
+    （内部就是原来的 ``actors.build_cube`` 那一段），所以注入版与原版建出的 actor
+    除位姿外完全一致。两个参数都不传时，本函数行为逐字不变。
     """
     # Cache
     if not hasattr(self, "_spawned_cubes"):
@@ -369,10 +377,39 @@ def spawn_random_cube(
             circle_list.append((_actor_xy(self.goal_site), R_goal + R_new_ext + min_gap))
 
     # === Sampling Iteration ===
-    if generator is None:
+    # 固定值路径不抽随机数，因此不要求 generator；原路径的强制要求原样保留
+    if generator is None and fixed_xy is None:
         raise ValueError("spawn_random_cube: generator argument must be explicitly passed for randomization")
 
     device = self.device
+
+    def _finalize_cube(x, y, yaw):
+        """原来内联在循环里的创建段，原路径与固定值路径共用，杜绝两份创建代码漂移。"""
+        q = _yaw_to_quat_tensor(yaw, device=device)
+
+        cube = actors.build_cube(
+            self.scene,
+            half_size=hs_new,
+            color=color,
+            name=name_prefix,  # Use name_prefix directly, do not add counter
+            initial_pose=Pose.create_from_pq(
+                torch.tensor([[x, y, hs_new]], device=device, dtype=torch.float32),
+                q,
+            ),
+        )
+        cube._cube_half_size = hs_new
+        self._spawned_cubes.append(cube)
+        self._spawned_count += 1
+        return cube
+
+    if fixed_xy is not None:
+        # 位姿已由外部规格定死：不做拒绝采样，也不做几何判定——几何可行性已在冻结前
+        # 由 tests/_shared/injection_specs 用同一套 OBB 判据筛过（STATIC_GEOMETRY）。
+        return _finalize_cube(
+            float(fixed_xy[0]),
+            float(fixed_xy[1]),
+            float(fixed_yaw) if fixed_yaw is not None else 0.0,
+        )
 
     for trial in range(int(max_trials)):
         # Use simple uniform sampling to ensure good spatial coverage
@@ -413,22 +450,7 @@ def spawn_random_cube(
             continue
 
         # Passing detection, create cube (pose and collision detection use same yaw to ensure consistency)
-        q = _yaw_to_quat_tensor(yaw, device=device)
-
-        cube = actors.build_cube(
-            self.scene,
-            half_size=hs_new,
-            color=color,
-            name=name_prefix,  # Use name_prefix directly, do not add counter
-            initial_pose=Pose.create_from_pq(
-                torch.tensor([[x, y, hs_new]], device=device, dtype=torch.float32),
-                q,
-            ),
-        )
-        cube._cube_half_size = hs_new
-        self._spawned_cubes.append(cube)
-        self._spawned_count += 1
-        return cube
+        return _finalize_cube(x, y, yaw)
 
     raise RuntimeError("spawn_random_cube: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease cube/decrease min_gap.")
 

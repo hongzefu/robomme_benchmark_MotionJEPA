@@ -153,8 +153,11 @@ def test_real_swap_resolution_matches_baseline_and_preserves_ties(task, points):
         loops = [node for node in ast.walk(step) if isinstance(node, ast.For) and ast.unparse(node.iter) == "range(len(self.swap_schedule))"]
         assert len(loops) == 1
         actors = [SimpleNamespace(position=np.array(point, dtype=float)) for point in points]
+        # _episode_spec=None 表示关闭态（没传 --episode-specs）：新值注入的两个运行时检查点
+        # 都不触发，这个循环的最近邻解析语义必须与历史基线逐字相同——本测试验的正是这一点。
         env = SimpleNamespace(_sampling=resolver(task)[1], swap_schedule=[(actors[0], None, 0, 50)],
-            swap_pair1_idx1=actors[0], swap_pair1_idx2=None, elapsed_steps=0, start_step=0)
+            swap_pair1_idx1=actors[0], swap_pair1_idx2=None, elapsed_steps=0, start_step=0,
+            _episode_spec=None)
         setattr(env, "spawned_bins" if task == "VideoUnmaskSwap" else "spawned_cubes", actors)
         env._get_actor_position = lambda actor: actor.position
         env._refresh_swap_schedule = lambda *args: None

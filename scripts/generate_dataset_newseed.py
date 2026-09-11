@@ -67,6 +67,7 @@ import ast  # noqa: E402
 import copy  # noqa: E402
 import hashlib  # noqa: E402
 import json  # noqa: E402
+import math  # noqa: E402
 import multiprocessing as mp  # noqa: E402
 import re  # noqa: E402
 import resource  # noqa: E402
@@ -1251,6 +1252,9 @@ class EpisodeJob:
     # 已校验的本任务采样配置；普通 dict，随 job 一起 pickle 到 worker。
     # 注意：带上它之后 EpisodeJob 不再可哈希，不得用作 dict key。
     sampling_config: dict[str, Any] | None = field(default=None)
+    # 本条 episode 的固定规格（新值注入）。不传 --episode-specs 时恒为 None，
+    # 此时 gym.make 不多这个 kwarg，链路与改动前逐字相同。
+    episode_spec: dict[str, Any] | None = field(default=None)
 
     @property
     def recovery_mode(self) -> str | None:
@@ -1263,6 +1267,210 @@ class EpisodeJob:
 
     def bump(self, seed: int) -> "EpisodeJob":
         return replace(self, attempt=self.attempt + 1, seed=seed)
+
+
+class EpisodeSpecError(DatasetGenerationError):
+    """``--episode-specs`` 的输入不合法。父进程建池之前就报错，绝不带进 worker。"""
+
+
+#: 规格文档必须有的顶层字段；多一个未知字段也拒绝，避免拼错的键被静默忽略。
+SPEC_DOCUMENT_FIELDS = frozenset(
+    {
+        "spec_schema_version",
+        "task",
+        "difficulty",
+        "generator_seed",
+        "derived_seed",
+        "generator_version",
+        "sampling_config_sha256",
+        "episodes",
+    }
+)
+#: 每条 episode 记录必须有的字段。
+SPEC_RECORD_REQUIRED = ("episode", "task", "difficulty", "layout", "objects", "actions", "spec_sha256")
+
+
+def _spec_canonical_json(payload: Any) -> str:
+    """规范序列化：固定 UTF-8、键排序、固定分隔符、禁止 NaN。
+
+    ⚠ 必须与 ``tests._shared.injection_specs.canonical_json`` 逐字节一致。生产代码不导入
+    ``tests``，所以这里是第二份实现；``tests/lightweight/test_episode_specs.py`` 里有一条
+    定向测试把两边锁在一起，改动任一侧都会立刻红。
+    """
+    return json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+
+
+def spec_record_sha256(record: Mapping[str, Any]) -> str:
+    payload = {key: value for key, value in record.items() if key != "spec_sha256"}
+    return _sha256_bytes(_spec_canonical_json(payload).encode("utf-8"))
+
+
+def _assert_finite(value: Any, where: str) -> None:
+    if isinstance(value, bool):
+        return
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise EpisodeSpecError(f"{where}: 出现非有限数 {value!r}")
+        return
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            _assert_finite(item, f"{where}.{key}")
+        return
+    if isinstance(value, (list, tuple)):
+        for index, item in enumerate(value):
+            _assert_finite(item, f"{where}[{index}]")
+
+
+def validate_episode_spec(record: Mapping[str, Any], task: str, difficulty: str, where: str) -> None:
+    """单条记录的格式校验：必备字段、任务／难度一致、有限数、散列自洽。"""
+    missing = [key for key in SPEC_RECORD_REQUIRED if key not in record]
+    if missing:
+        raise EpisodeSpecError(f"{where}: 缺字段 {missing}")
+    if record["task"] != task or record["difficulty"] != difficulty:
+        raise EpisodeSpecError(
+            f"{where}: 记录标称 {record['task']}/{record['difficulty']}，与文件的 {task}/{difficulty} 不符"
+        )
+    if not isinstance(record["episode"], int) or isinstance(record["episode"], bool):
+        raise EpisodeSpecError(f"{where}: episode 必须是整数")
+    _assert_finite({key: value for key, value in record.items() if key != "spec_sha256"}, where)
+    actual = spec_record_sha256(record)
+    if actual != record["spec_sha256"]:
+        raise EpisodeSpecError(f"{where}: spec_sha256 不符（重算 {actual}，文件写的 {record['spec_sha256']}）")
+
+
+def load_spec_document(path: Path, task: str | None = None, difficulty: str | None = None) -> dict[str, Any]:
+    """读一份规格文档并逐条校验，返回 ``{"task":..,"difficulty":..,"records":{episode: 记录}}``。"""
+    if not path.is_file():
+        raise EpisodeSpecError(f"找不到规格文件：{path}")
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise EpisodeSpecError(f"{path}: 不是合法 JSON：{exc}") from exc
+    if not isinstance(document, dict):
+        raise EpisodeSpecError(f"{path}: 顶层必须是对象")
+    unknown = set(document) - SPEC_DOCUMENT_FIELDS
+    if unknown:
+        raise EpisodeSpecError(f"{path}: 出现未知顶层字段 {sorted(unknown)}")
+    missing = SPEC_DOCUMENT_FIELDS - set(document)
+    if missing:
+        raise EpisodeSpecError(f"{path}: 缺顶层字段 {sorted(missing)}")
+    doc_task = str(document["task"])
+    doc_difficulty = str(document["difficulty"])
+    if task is not None and doc_task != task:
+        raise EpisodeSpecError(f"{path}: 文件是 {doc_task} 的规格，CLI 请求的是 {task}")
+    if difficulty is not None and doc_difficulty != difficulty:
+        raise EpisodeSpecError(f"{path}: 文件是 {doc_difficulty} 的规格，CLI 请求的是 {difficulty}")
+    episodes = document["episodes"]
+    if not isinstance(episodes, list) or not episodes:
+        raise EpisodeSpecError(f"{path}: episodes 必须是非空列表")
+    records: dict[int, dict[str, Any]] = {}
+    for index, record in enumerate(episodes):
+        if not isinstance(record, dict):
+            raise EpisodeSpecError(f"{path}: 第 {index} 条不是对象")
+        validate_episode_spec(record, doc_task, doc_difficulty, f"{path}#{index}")
+        number = int(record["episode"])
+        if number in records:
+            raise EpisodeSpecError(f"{path}: episode {number} 重复")
+        records[number] = record
+    return {"task": doc_task, "difficulty": doc_difficulty, "records": records, "path": str(path)}
+
+
+@dataclass(frozen=True)
+class SpecGroup:
+    """清单里的一组：一个任务／难度、一份规格、一个独立输出根、一段 episode 范围。"""
+
+    task: str
+    difficulty: str
+    spec_path: str
+    output_root: str
+    episodes: tuple[int, ...]
+    records: Mapping[int, Mapping[str, Any]]
+
+
+def load_episode_specs(
+    value: str | Path,
+    repo_root: Path,
+    output: Path,
+    *,
+    task: str | None = None,
+    difficulty: str | None = None,
+    episodes: Sequence[int] | None = None,
+) -> list[SpecGroup]:
+    """解析 ``--episode-specs``：既接受单份规格文件，也接受多组清单。
+
+    * **单组**：文件顶层带 ``spec_schema_version``，配合 ``--env/--difficulty`` 与
+      ``--episodes/--episode-start`` 使用，产物落 ``--output-dir`` 本身。
+    * **清单**：文件顶层带 ``manifest_version``，一次调用把多个任务／难度的 job 混进
+      同一套进程池；每组自带难度与独立输出根 ``<output>/<任务>/<难度>``。
+      同任务不同难度的 seed 与 HDF5 文件名相同，因此**必须**分目录。
+    """
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = (repo_root / path).resolve()
+    if not path.is_file():
+        raise EpisodeSpecError(f"找不到 --episode-specs 指向的文件：{path}")
+    try:
+        head = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise EpisodeSpecError(f"{path}: 不是合法 JSON：{exc}") from exc
+    if not isinstance(head, dict):
+        raise EpisodeSpecError(f"{path}: 顶层必须是对象")
+
+    if "manifest_version" in head:
+        groups_raw = head.get("groups")
+        if not isinstance(groups_raw, list) or not groups_raw:
+            raise EpisodeSpecError(f"{path}: 清单的 groups 必须是非空列表")
+        groups: list[SpecGroup] = []
+        seen: set[tuple[str, str]] = set()
+        for index, item in enumerate(groups_raw):
+            if not isinstance(item, dict):
+                raise EpisodeSpecError(f"{path}: 第 {index} 组不是对象")
+            for key in ("task", "difficulty", "spec_path", "episodes"):
+                if key not in item:
+                    raise EpisodeSpecError(f"{path}: 第 {index} 组缺字段 {key}")
+            group_task = str(item["task"])
+            group_difficulty = str(item["difficulty"])
+            if (group_task, group_difficulty) in seen:
+                raise EpisodeSpecError(f"{path}: 组 {group_task}/{group_difficulty} 重复")
+            seen.add((group_task, group_difficulty))
+            spec_path = Path(item["spec_path"])
+            if not spec_path.is_absolute():
+                spec_path = (path.parent / spec_path).resolve()
+            document = load_spec_document(spec_path, group_task, group_difficulty)
+            wanted = [int(number) for number in item["episodes"]]
+            unknown = [number for number in wanted if number not in document["records"]]
+            if unknown:
+                raise EpisodeSpecError(f"{spec_path}: 清单点名的 episode {unknown[:5]} 不在规格里")
+            groups.append(
+                SpecGroup(
+                    task=group_task,
+                    difficulty=group_difficulty,
+                    spec_path=str(spec_path),
+                    output_root=str(output / group_task / group_difficulty),
+                    episodes=tuple(wanted),
+                    records=document["records"],
+                )
+            )
+        return groups
+
+    if "spec_schema_version" not in head:
+        raise EpisodeSpecError(f"{path}: 既不是规格文件（缺 spec_schema_version）也不是清单（缺 manifest_version）")
+
+    document = load_spec_document(path, task, difficulty)
+    wanted = list(episodes) if episodes is not None else sorted(document["records"])
+    unknown = [number for number in wanted if number not in document["records"]]
+    if unknown:
+        raise EpisodeSpecError(f"{path}: 请求的 episode {unknown[:5]} 不在规格里")
+    return [
+        SpecGroup(
+            task=document["task"],
+            difficulty=document["difficulty"],
+            spec_path=str(path),
+            output_root=str(output),
+            episodes=tuple(wanted),
+            records=document["records"],
+        )
+    ]
 
 
 def _inside(path: Path, root: Path) -> bool:
@@ -1420,6 +1628,113 @@ def _h5_path(output_root: Path, job: EpisodeJob) -> Path:
     return output_root / "hdf5_files" / f"{job.task}_ep{job.episode}_seed{job.seed}.h5"
 
 
+# ── 视频核验（录像器冻结，这里只做只读观测）────────────────────────────────
+# RobommeRecordWrapper 不改、不覆盖、不打补丁：视频就是它现有逻辑的产出。
+# 下面只在 close() 之后按命名规则找文件、数帧、算散列，四态如实登记。
+# 视频判定失败**不改变** HDF5 的 ok 判定，样本也不移出分母。
+VIDEO_STATUS_COMPLETE = "complete"
+VIDEO_STATUS_FRAME_MISMATCH = "frame_mismatch"
+VIDEO_STATUS_MISSING = "missing"
+VIDEO_STATUS_NO_CLOSE = "no_close"
+
+
+def _video_candidates(videos_dir: Path, task: str, episode: int, seed: int) -> tuple[list[Path], list[Path]]:
+    """按 ``<任务>_ep<k>_seed<s>`` 前缀找主视频与 NO_OBJECT 调试视频。
+
+    命名来自 ``RecordWrapper`` 的 ``video_prefix``＝``f"{env_id}_ep{episode}_seed{seed}{fail_recover_suffix}"``，
+    成功名无前缀、失败名加 ``FAILED_``；``NO_OBJECT`` 调试视频另有
+    ``success_NO_OBJECT_`` / ``FAILED_NO_OBJECT_`` 前缀，不当主视频。
+    """
+    if not videos_dir.is_dir():
+        return [], []
+    base = f"{task}_ep{episode}_seed{seed}"
+    main = [path for path in videos_dir.glob(f"{base}*.mp4") if "NO_OBJECT" not in path.name]
+    main += [path for path in videos_dir.glob(f"FAILED_{base}*.mp4") if "NO_OBJECT" not in path.name]
+    no_object = sorted(videos_dir.glob(f"success_NO_OBJECT_{base}*.mp4")) + sorted(
+        videos_dir.glob(f"FAILED_NO_OBJECT_{base}*.mp4")
+    )
+    return sorted(main), no_object
+
+
+def _probe_frame_count(path: Path) -> tuple[int | None, str | None]:
+    """``ffprobe -count_frames`` 逐帧数，不用容器头里的估计值。"""
+    command = [
+        "ffprobe", "-v", "error", "-select_streams", "v:0",
+        "-count_frames", "-show_entries", "stream=nb_read_frames",
+        "-of", "default=nokey=1:noprint_wrappers=1", str(path),
+    ]
+    try:
+        completed = subprocess.run(command, capture_output=True, text=True, timeout=600)
+    except FileNotFoundError:
+        return None, "找不到 ffprobe"
+    except subprocess.TimeoutExpired:
+        return None, "ffprobe 超时"
+    if completed.returncode != 0:
+        return None, f"ffprobe 退出码 {completed.returncode}: {completed.stderr.strip()[:200]}"
+    text = completed.stdout.strip()
+    if not text.isdigit():
+        return None, f"ffprobe 输出不是帧数：{text[:80]!r}"
+    return int(text), None
+
+
+def _video_summary(
+    output_root: Path,
+    job: EpisodeJob,
+    *,
+    timestep_count: int | None,
+    close_error: str | None,
+) -> dict[str, Any]:
+    """``close()`` 之后的纯观测核验，返回一条 ``video`` 记录。
+
+    成功局要求「帧数 == HDF5 的 timestep 数」——这是可核验的等式，因为录像器从正式
+    ``reset()`` 后第一次 ``step`` 的观测起记到终止为止，``NO RECORD`` 阶段按设计跳过。
+    ``FAILED_`` 视频没有 HDF5 可比，只要求帧数 > 0 且可解码。
+    """
+    videos_dir = output_root / "videos"
+    main, no_object = _video_candidates(videos_dir, job.task, job.episode, job.seed)
+    payload: dict[str, Any] = {
+        "status": VIDEO_STATUS_MISSING,
+        "path": None,
+        "frames": None,
+        "frames_expected": timestep_count,
+        "bytes": None,
+        "sha256": None,
+        "no_object_paths": [str(item) for item in no_object],
+        "reason": None,
+    }
+    if not main:
+        payload["reason"] = "videos/ 下没有匹配前缀的主视频" + (f"；close 抛出 {close_error}" if close_error else "")
+        return payload
+    if len(main) > 1:
+        payload["reason"] = f"同一前缀匹配到 {len(main)} 个主视频：{[item.name for item in main]}"
+    path = main[0]
+    payload["path"] = str(path)
+    payload["bytes"] = path.stat().st_size
+    payload["sha256"] = _sha256_bytes(path.read_bytes())
+    frames, error = _probe_frame_count(path)
+    payload["frames"] = frames
+    if frames is None:
+        payload["status"] = VIDEO_STATUS_FRAME_MISMATCH
+        payload["reason"] = error
+        return payload
+    failed_video = path.name.startswith("FAILED_")
+    if failed_video:
+        payload["status"] = VIDEO_STATUS_COMPLETE if frames > 0 else VIDEO_STATUS_FRAME_MISMATCH
+        if frames <= 0:
+            payload["reason"] = "FAILED_ 视频帧数为 0"
+        return payload
+    if timestep_count is None:
+        payload["status"] = VIDEO_STATUS_FRAME_MISMATCH
+        payload["reason"] = "成功名视频但没有可比的 HDF5 timestep 数"
+        return payload
+    if frames != timestep_count:
+        payload["status"] = VIDEO_STATUS_FRAME_MISMATCH
+        payload["reason"] = f"帧数 {frames} != HDF5 timestep 数 {timestep_count}"
+        return payload
+    payload["status"] = VIDEO_STATUS_COMPLETE
+    return payload
+
+
 def _pool_init(gpu: str, cpus: tuple[int, ...] | None, src_root: str) -> None:
     """池进程一生只跑一次：绑卡、压线程、预热 import。
 
@@ -1493,6 +1808,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
     record_env: Any | None = None
     caught: BaseException | None = None
     error_traceback: str | None = None
+    close_error: str | None = None
 
     # import 单独成段：若这里失败，下面的 except 子句会因为异常类未定义而变成 NameError
     try:
@@ -1506,6 +1822,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         import robomme.robomme_env  # noqa: F401
         from robomme.env_record_wrapper import FailsafeTimeout, RobommeRecordWrapper
         from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError
+        from robomme.robomme_env.utils.bin_collision import BinCollisionError, SpecBindingError
         from robomme.robomme_env.utils.planner_fail_safe import (
             FailAwarePandaArmMotionPlanningSolver,
             FailAwarePandaStickMotionPlanningSolver,
@@ -1534,13 +1851,18 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             "finished_at": time.time(),
         }
 
-    # 这五类是「该 seed 不通」，应当换 seed 重试；其余异常视为代码/环境层面的真 bug
+    # 这几类是「该 seed / 该样本不通」，属于任务性失败；其余异常视为代码/环境层面的真 bug。
+    # ⚠ 新增的两类是新值注入的运行时判据：碰撞拒绝与「实际对象／动作不符」。归到任务性失败
+    # 只是为了不被 MAX_NON_TASK_STRIKES 当成代码 bug；正式实跑固定 --max-attempts 1，
+    # 因此它们**不会**触发换 seed 重试——计划明确禁止换 seed、换搭档、补位。
     retryable = (
         SceneGenerationError,
         FailsafeTimeout,
         PlannerExhausted,
         ScrewPlanFailure,
         DatasetGenerationError,
+        BinCollisionError,
+        SpecBindingError,
     )
 
     try:
@@ -1559,6 +1881,9 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         # 只有显式传了 --sampling-config 才多这一个 kwarg；不传时 kwargs 与原版逐字相同
         if job.sampling_config is not None:
             kwargs["sampling_config"] = job.sampling_config
+        # 同理，只有显式传了 --episode-specs 才多这一个 kwarg（DEFAULT_PARITY 靠这条成立）
+        if job.episode_spec is not None:
+            kwargs["episode_spec"] = job.episode_spec
 
         mark = time.monotonic()
         base_env = gym.make(job.task, **kwargs)
@@ -1604,6 +1929,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
                 # h5 落盘与 mp4 编码都发生在 close 里
                 record_env.close()
             except Exception as close_exc:
+                close_error = f"{type(close_exc).__name__}: {close_exc}"
                 if caught is None:
                     caught = close_exc
                     error_traceback = traceback.format_exc()
@@ -1624,7 +1950,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         "peak_rss_mb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1),
     }
     if caught is not None:
-        # 失败的 attempt 不写 h5 内容（RecordWrapper.py:1152 只在 episode_success 时写），
+        # 失败的 attempt 不写 h5 内容（RecordWrapper 只在 episode_success 时写），
         # 但文件在 __init__ 里就被创建了，会留下几 KB 空壳 —— 删掉，
         # 让 hdf5_files/ 里只剩真正成功的轨迹。FAILED_ 视频保留作为失败演进的证据。
         _discard_empty_h5(raw_path, job)
@@ -1635,9 +1961,11 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             "error_type": type(caught).__name__,
             "error": str(caught),
             "traceback": error_traceback,
+            # 视频核验是纯观测：失败局同样登记，FAILED_ 视频只要能解码就算完整
+            "video": _video_summary(output_root, job, timestep_count=None, close_error=close_error),
         }
     try:
-        return {**base, "ok": True, **_raw_summary(raw_path, job)}
+        summary = _raw_summary(raw_path, job)
     except Exception as exc:
         _discard_empty_h5(raw_path, job)
         return {
@@ -1647,7 +1975,18 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             "error_type": type(exc).__name__,
             "error": str(exc),
             "traceback": traceback.format_exc(),
+            "video": _video_summary(output_root, job, timestep_count=None, close_error=close_error),
         }
+    # ⚠ 视频核验放在 ok 判定**之后**且不参与它：视频缺失或帧数不符只让 VIDEO_* 判定失败，
+    # 不改变任务结果，也不删已经落盘的 HDF5。
+    return {
+        **base,
+        "ok": True,
+        **summary,
+        "video": _video_summary(
+            output_root, job, timestep_count=summary.get("timestep_count"), close_error=close_error
+        ),
+    }
 
 
 def _discard_empty_h5(path: Path, job: EpisodeJob) -> None:
@@ -1680,6 +2019,17 @@ def _synth_failure(job: EpisodeJob, exc: BaseException, failure_class: str) -> d
         "error_type": type(exc).__name__,
         "error": str(exc),
         "finished_at": time.time(),
+        # 池崩溃／被杀：worker 没能返回结果，就一定没走到 close()，视频没写出来
+        "video": {
+            "status": VIDEO_STATUS_NO_CLOSE,
+            "path": None,
+            "frames": None,
+            "frames_expected": None,
+            "bytes": None,
+            "sha256": None,
+            "no_object_paths": [],
+            "reason": f"worker 未返回结果（{failure_class}）：{type(exc).__name__}",
+        },
     }
 
 
@@ -1837,6 +2187,23 @@ def _write_metadata(output: Path, task: str, records: Sequence[Mapping[str, Any]
     )
 
 
+def _video_status_counts(*record_groups: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    """汇总四态视频状态；没有 ``video`` 字段的旧记录计入 ``unrecorded``。"""
+    counts = {
+        VIDEO_STATUS_COMPLETE: 0,
+        VIDEO_STATUS_FRAME_MISMATCH: 0,
+        VIDEO_STATUS_MISSING: 0,
+        VIDEO_STATUS_NO_CLOSE: 0,
+        "unrecorded": 0,
+    }
+    for records in record_groups:
+        for item in records:
+            video = item.get("video")
+            status = video.get("status") if isinstance(video, Mapping) else None
+            counts[status if status in counts else "unrecorded"] += 1
+    return counts
+
+
 def _cpu_plan(gpu_ids: Sequence[str], affinity: str) -> dict[str, tuple[int, ...] | None]:
     """把物理核按卡切分。exclusive 模式下每个池只能用自己那一段，用于压住 x264 的自动并行。"""
     if affinity == "none":
@@ -1868,6 +2235,7 @@ def generate_dataset_newseed(
     max_tasks_per_child: int | None = DEFAULT_MAX_TASKS_PER_CHILD,
     affinity: str = "none",
     sampling_config: str | Path | None = None,
+    episode_specs: str | Path | None = None,
 ) -> dict[str, Any]:
     _ensure_layout()
     if episodes < 1:
@@ -1891,12 +2259,34 @@ def generate_dataset_newseed(
     if sampling_config is not None:
         task_configs = load_sampling_config(sampling_config, REPO_ROOT)
 
+    # 新值注入：父进程只读一次规格，校验、索引；建池之前就拒绝错误输入，绝不带进 worker。
+    # 不传 --episode-specs 时 spec_groups 为空，下面所有分支都退回原路径。
+    spec_groups: list[SpecGroup] = []
+    if episode_specs is not None:
+        single_difficulty = None
+        if len(set(cycle)) == 1:
+            single_difficulty = cycle[0]
+        spec_groups = load_episode_specs(
+            episode_specs,
+            REPO_ROOT,
+            output,
+            task=tasks[0] if len(tasks) == 1 else None,
+            difficulty=single_difficulty,
+            episodes=list(range(episode_start, episode_start + episodes)),
+        )
+        if len(spec_groups) > 1:
+            # 清单模式：任务、难度、输出根全部由清单决定，--env/--difficulty 不再参与
+            tasks = sorted({group.task for group in spec_groups})
+
     # 护栏：episode 号太大时 seed 会越过下一代布局的 offset，与 test/val/heldout 的 seed 空间相撞。
     next_offsets = [item.offset for item in LAYOUTS.values() if item.offset > layout.offset]
     if next_offsets:
         seed_ceiling = min(next_offsets)
-        last_episode = episode_start + episodes - 1
-        for task in tasks:
+        if spec_groups:
+            ceiling_checks = [(group.task, max(group.episodes)) for group in spec_groups]
+        else:
+            ceiling_checks = [(task, episode_start + episodes - 1) for task in tasks]
+        for task, last_episode in ceiling_checks:
             max_seed = layout.seed(task, last_episode, MAX_ATTEMPTS - 1)
             if max_seed >= seed_ceiling:
                 raise DatasetGenerationError(
@@ -1912,21 +2302,47 @@ def generate_dataset_newseed(
     else:
         _clear_thread_env()
 
-    jobs = [
-        EpisodeJob(
-            task=task,
-            episode=episode,
-            attempt=0,
-            seed=layout.seed(task, episode, 0),
-            difficulty=difficulty_for(episode, cycle),
-            output_root=str(output),
-            repo_root=str(REPO_ROOT),
-            # 每个 job 拿一份独立副本，worker 之间、同一 worker 的前后两局之间互不共享
-            sampling_config=copy.deepcopy(task_configs[task]) if task in task_configs else None,
-        )
-        for task in tasks
-        for episode in range(episode_start, episode_start + episodes)
-    ]
+    if spec_groups:
+        # 按 episode 轮转入队：同一时刻在跑的 job 分散在各任务上，避免整批堆在同一个任务里。
+        jobs = []
+        depth = max(len(group.episodes) for group in spec_groups)
+        for index in range(depth):
+            for group in spec_groups:
+                if index >= len(group.episodes):
+                    continue
+                episode = group.episodes[index]
+                jobs.append(
+                    EpisodeJob(
+                        task=group.task,
+                        episode=episode,
+                        attempt=0,
+                        seed=layout.seed(group.task, episode, 0),
+                        difficulty=group.difficulty,
+                        output_root=group.output_root,
+                        repo_root=str(REPO_ROOT),
+                        sampling_config=copy.deepcopy(task_configs[group.task]) if group.task in task_configs else None,
+                        # 每个 job 一份独立深拷贝：worker 之间、同一 worker 的前后两局之间不共享可变缓存
+                        episode_spec=copy.deepcopy(dict(group.records[episode])),
+                    )
+                )
+        for group in spec_groups:
+            Path(group.output_root).mkdir(parents=True, exist_ok=True)
+    else:
+        jobs = [
+            EpisodeJob(
+                task=task,
+                episode=episode,
+                attempt=0,
+                seed=layout.seed(task, episode, 0),
+                difficulty=difficulty_for(episode, cycle),
+                output_root=str(output),
+                repo_root=str(REPO_ROOT),
+                # 每个 job 拿一份独立副本，worker 之间、同一 worker 的前后两局之间互不共享
+                sampling_config=copy.deepcopy(task_configs[task]) if task in task_configs else None,
+            )
+            for task in tasks
+            for episode in range(episode_start, episode_start + episodes)
+        ]
 
     parameters = {
         "output_dir": str(output),
@@ -1946,6 +2362,18 @@ def generate_dataset_newseed(
         "save_video_for_recording": True,
         "sampling_config": str(sampling_config) if sampling_config is not None else None,
         "sampling_config_tasks": sorted(task_configs),
+        "episode_specs": str(episode_specs) if episode_specs is not None else None,
+        "episode_spec_groups": [
+            {
+                "task": group.task,
+                "difficulty": group.difficulty,
+                "spec_path": group.spec_path,
+                "output_root": group.output_root,
+                "episodes": list(group.episodes),
+            }
+            for group in spec_groups
+        ],
+        "requested_jobs": len(jobs),
     }
     write_text_atomic(
         output / "run_parameters.json",
@@ -1971,10 +2399,21 @@ def generate_dataset_newseed(
     )
     elapsed = time.monotonic() - started
 
-    for task in tasks:
-        task_records = [item for item in succeeded if item["task"] == task]
-        if task_records:
-            _write_metadata(output, task, task_records)
+    if spec_groups:
+        # 每组写到自己的输出根：同任务不同难度的 HDF5 文件名相同，metadata 也必须分开
+        for group in spec_groups:
+            group_records = [
+                item
+                for item in succeeded
+                if item["task"] == group.task and item.get("difficulty") == group.difficulty
+            ]
+            if group_records:
+                _write_metadata(Path(group.output_root), group.task, group_records)
+    else:
+        for task in tasks:
+            task_records = [item for item in succeeded if item["task"] == task]
+            if task_records:
+                _write_metadata(output, task, task_records)
 
     summary = {
         "parameters": parameters,
@@ -1984,6 +2423,8 @@ def generate_dataset_newseed(
         "elapsed_s": round(elapsed, 1),
         "throughput_ep_per_min": round(len(succeeded) / (elapsed / 60), 2) if elapsed > 0 else None,
         "peak_rss_mb": max((item.get("peak_rss_mb") or 0 for item in succeeded), default=0),
+        # 视频状态计数与 ok 判定分开统计：视频判定失败不改变任务结果，但必须如实汇总
+        "video_status_counts": _video_status_counts(succeeded, exhausted),
     }
     write_text_atomic(
         output / "run_summary.json",
@@ -2024,6 +2465,13 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         default=None,
         metavar="JSON",
         help="常规生成时显式传入四任务的原版采样输入；不传则走源码默认值",
+    )
+    parser.add_argument(
+        "--episode-specs",
+        default=None,
+        metavar="JSON",
+        help="新值注入：单份规格文件，或一次调用混跑多组的清单（顶层 manifest_version）；"
+        "不传则走原随机路径，链路与改动前逐字相同",
     )
     parser.add_argument("--input-dir", default=None, help="--merge-only 的输入目录（生成输出目录）")
     parser.add_argument(
@@ -2129,6 +2577,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             max_tasks_per_child=args.max_tasks_per_child or None,
             affinity=args.affinity,
             sampling_config=args.sampling_config,
+            episode_specs=args.episode_specs,
         )
     except (DatasetGenerationError, SamplingConfigError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

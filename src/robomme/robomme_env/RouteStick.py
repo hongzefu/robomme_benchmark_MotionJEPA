@@ -103,6 +103,21 @@ NATIVE_SAMPLING = {
 }
 
 
+def _resolve_episode_spec(spec, task):
+    """准备本实例专属的固定规格副本（新值注入）；详见 BinFill 同名函数。
+
+    传 ``None``（没传 ``--episode-specs``）时返回 ``None``，此后每个消费点都走原随机路径，
+    链路与改动前逐字相同。
+    """
+    if spec is None:
+        return None
+    if not isinstance(spec, dict):
+        raise ValueError("episode_spec 必须是字典")
+    if spec.get("task") != task:
+        raise ValueError(f"episode_spec 是 {spec.get('task')} 的规格，不能用于 {task}")
+    return copy.deepcopy(spec)
+
+
 def _resolve_sampling_config(cls, override):
     """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
     if override is None:
@@ -164,9 +179,12 @@ class RouteStick(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_stick", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._episode_spec = _resolve_episode_spec(episode_spec, "RouteStick")
+        self._injection_evidence = {}
         self.achieved_list=[]
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
@@ -281,10 +299,16 @@ class RouteStick(BaseEnv):
         col_center = (num_cols - 1) / 2
 
 
+        spec = self._episode_spec
         yaw_cfg = layout_cfg["yaw_deg"]
-        theta = math.radians(
-        (torch.rand(1, generator=generator).item() * yaw_cfg["scale"]) - yaw_cfg["subtract"]
-            )
+        if spec is None:
+            theta = math.radians(
+            (torch.rand(1, generator=generator).item() * yaw_cfg["scale"]) - yaw_cfg["subtract"]
+                )
+        else:
+            # 整排绕世界原点的旋转角由规格定死；节点位置仍由下面同一段公式推出，
+            # 不是创建后再整体挪物体
+            theta = math.radians(float(spec["layout"]["rotation_deg"]))
         #theta=0
         for row in range(num_rows):
             for col in range(num_cols):  # Columns (y direction)
@@ -330,7 +354,7 @@ class RouteStick(BaseEnv):
         self.target_cubes = {}
         self.cubes_on_targets = []
 
-        for target_idx in target_cube_indices:
+        for obstacle_order, target_idx in enumerate(target_cube_indices):
             if target_idx >= len(self.targets_grid):
                 logger.debug(f"[SwingAvoid] Skip cube spawn for target {target_idx}: index out of range.")
                 continue
@@ -358,7 +382,10 @@ class RouteStick(BaseEnv):
             builder = self.scene.create_actor_builder()
 
             cylinder_material = sapien.render.RenderMaterial()
-            random_rgb = torch.rand(3, generator=generator).tolist()
+            if spec is None:
+                random_rgb = torch.rand(3, generator=generator).tolist()
+            else:
+                random_rgb = [float(v) for v in spec["layout"]["obstacle_rgb"][obstacle_order]]
             cylinder_material.set_base_color((*random_rgb, 1))
 
             # Rotate upright then around its own z-axis to align with the target line.
@@ -414,10 +441,34 @@ class RouteStick(BaseEnv):
         fallback_difficulty = self._sampling["parameters"]["configs_fallback_difficulty"]
         cfg = sampling_configs.get(getattr(self, "difficulty", "easy"), sampling_configs[fallback_difficulty])
         length_min, length_max = cfg.get("length")
-        steps = int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item())
         allow_backtracking = bool(cfg.get("backtrack", True))
-
-        traj=generate_dynamic_walk(button_indices,steps=steps,allow_backtracking=allow_backtracking,generator=generator,walk_config=walk_cfg)
+        if spec is None:
+            steps = int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item())
+            traj=generate_dynamic_walk(button_indices,steps=steps,allow_backtracking=allow_backtracking,generator=generator,walk_config=walk_cfg)
+        else:
+            # 规格定死路线：先按 generate_dynamic_walk 的线性邻接语义校验拓扑，
+            # 再直接使用给定路线，不再抽随机数。
+            steps = int(spec["objects"]["L"])
+            traj = [int(v) for v in spec["actions"]["nodes"]]
+            slots = [int(v) for v in spec["actions"]["node_slots"]]
+            if not length_min <= steps <= length_max:
+                raise ValueError(f"规格的段数 {steps} 超出难度 {self.difficulty} 的 [{length_min}, {length_max}]")
+            if len(traj) != steps + 1 or len(slots) != steps + 1:
+                raise ValueError(f"规格的节点数 {len(traj)} 与段数 {steps} 不符（应为 steps+1）")
+            if [button_indices[i] for i in slots] != traj:
+                raise ValueError("规格的 node_slots 与 nodes 不一致")
+            for i in range(steps):
+                if abs(slots[i + 1] - slots[i]) != 1:
+                    raise ValueError(f"规格第 {i} 段不是相邻按钮：{slots[i]} → {slots[i+1]}")
+                if not allow_backtracking and i > 0 and slots[i + 1] == slots[i - 1] and 0 < slots[i] < len(button_indices) - 1:
+                    raise ValueError(f"难度 {self.difficulty} 不允许在非端点主动回退：第 {i} 段")
+            self._injection_evidence = {
+                "spec_sha256": spec.get("spec_sha256"),
+                "episode": spec.get("episode"),
+                "rotation_deg": float(spec["layout"]["rotation_deg"]),
+                "nodes": list(traj),
+                "node_slots": list(slots),
+            }
         self.selected_buttons = [self.buttons_grid[i] for i in traj]
 
         def _stick_side(actor, ref_actor=None):
@@ -441,9 +492,21 @@ class RouteStick(BaseEnv):
         # Randomly decide and record clockwise/counterclockwise direction for each solve_swingonto_withDirection
         self.swing_directions = []
         direction_cfg = walk_cfg["direction"]
-        for _ in self.selected_buttons[1:]:
-            dir_flag = direction_cfg["less_than"] if torch.rand(*direction_cfg["shape"], generator=generator).item() < direction_cfg["threshold"] else direction_cfg["otherwise"]
-            self.swing_directions.append(dir_flag)
+        legal_directions = (direction_cfg["less_than"], direction_cfg["otherwise"])
+        if spec is None:
+            for _ in self.selected_buttons[1:]:
+                dir_flag = direction_cfg["less_than"] if torch.rand(*direction_cfg["shape"], generator=generator).item() < direction_cfg["threshold"] else direction_cfg["otherwise"]
+                self.swing_directions.append(dir_flag)
+        else:
+            # 逐段绕行方向由规格定死；演示与执行两轮任务都读同一份列表，绑定天然一致
+            spec_directions = list(spec["actions"]["directions"])
+            if len(spec_directions) != len(self.selected_buttons) - 1:
+                raise ValueError(f"规格的方向数 {len(spec_directions)} 与段数 {len(self.selected_buttons) - 1} 不符")
+            for dir_flag in spec_directions:
+                if dir_flag not in legal_directions:
+                    raise ValueError(f"规格出现非法绕行方向 {dir_flag!r}")
+                self.swing_directions.append(dir_flag)
+            self._injection_evidence["directions"] = list(self.swing_directions)
         logger.debug(f"[RouteStick] swing direction list: {self.swing_directions}")
 
         current_target=self.selected_buttons[0]

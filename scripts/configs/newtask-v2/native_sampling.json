@@ -17,7 +17,7 @@
   "sources": {
     "BinFill": {
       "path": "src/robomme/robomme_env/BinFill.py",
-      "sha256": "760f34202fd170e0b475737ce80dd0bfda41c0bae6276c6a5801e289a0542429",
+      "sha256": "88d21612a03e3ba4a7fe3efa1989df796bf0ed1e407c8cd95388550ea29cd74a",
       "anchors": [
         "config_easy",
         "config_medium",
@@ -29,7 +29,7 @@
     },
     "RouteStick": {
       "path": "src/robomme/robomme_env/RouteStick.py",
-      "sha256": "31b905a67e288e312a4fc71aad448e1d67d416199f174c20267a7a3ee40f8363",
+      "sha256": "11b8dc7351335eee8865349fadd646b25db6ef19fc663c02470380ec284ef072",
       "anchors": [
         "config_easy",
         "config_medium",
@@ -41,7 +41,7 @@
     },
     "VideoUnmaskSwap": {
       "path": "src/robomme/robomme_env/VideoUnmaskSwap.py",
-      "sha256": "44e1b389a08435f98b4bc2b1230d6101c31c30b40228bcfcc6afad645bf654a7",
+      "sha256": "c313dac5ff1f844cf4ea9714b564c4aec6d8e75a87c503f03df405a171f0a63f",
       "anchors": [
         "config_easy",
         "config_medium",
@@ -53,7 +53,7 @@
     },
     "VideoRepick": {
       "path": "src/robomme/robomme_env/VideoRepick.py",
-      "sha256": "a3e5aa0a44235bcb77525f5035b0385342d8a55d29e07f5a2a3ed1598ff74847",
+      "sha256": "4f877002cacac8fcc0fa25ec954b2fbc6298efa78620d5cdf0257e8a2462f0da",
       "anchors": [
         "config_easy",
         "config_medium",
@@ -65,7 +65,7 @@
     },
     "object_generation": {
       "path": "src/robomme/robomme_env/utils/object_generation.py",
-      "sha256": "ab92c30445b167215cdee9cea73f8e42fb64fc53155d10b523279c203ee27966",
+      "sha256": "3d1f998b2e8c7f29f36584bd755ca267cc23626833e49af3d96df2cda69c915d",
       "anchors": [
         "build_button",
         "spawn_random_cube",

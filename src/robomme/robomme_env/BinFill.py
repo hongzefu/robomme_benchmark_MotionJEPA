@@ -105,6 +105,41 @@ def _resolve_sampling_config(cls, override):
     return resolved
 
 
+def _actor_xyz(actor):
+    """只读取 actor 当前世界位置，供注入证据用；不改状态、不抽随机数。"""
+    pos = actor.pose.p if hasattr(actor, "pose") else actor.get_pose().p
+    if isinstance(pos, torch.Tensor):
+        pos = pos.detach().cpu().numpy()
+    return [float(v) for v in np.asarray(pos).reshape(-1)[:3]]
+
+
+def _actor_quat(actor):
+    """只读取 actor 当前世界朝向（wxyz）。"""
+    quat = actor.pose.q if hasattr(actor, "pose") else actor.get_pose().q
+    if isinstance(quat, torch.Tensor):
+        quat = quat.detach().cpu().numpy()
+    return [float(v) for v in np.asarray(quat).reshape(-1)[:4]]
+
+
+def _resolve_episode_spec(spec, task):
+    """准备本实例专属的固定规格副本（新值注入）。
+
+    与 :func:`_resolve_sampling_config` 同样的道理：gymnasium 会把 kwargs 字典的引用存进
+    ``env.unwrapped.spec.kwargs``，两次初始化又要各自从规格重建工作态，所以这里必须
+    deepcopy 出一份独立副本，任务内只改这份工作态，绝不碰调用方传进来的原对象。
+
+    传 ``None``（即没传 ``--episode-specs``）时返回 ``None``，之后每个消费点都走原随机
+    路径，链路与改动前逐字相同——``DEFAULT_PARITY`` 靠的就是这一条。
+    """
+    if spec is None:
+        return None
+    if not isinstance(spec, dict):
+        raise ValueError("episode_spec 必须是字典")
+    if spec.get("task") != task:
+        raise ValueError(f"episode_spec 是 {spec.get('task')} 的规格，不能用于 {task}")
+    return copy.deepcopy(spec)
+
+
 @register_env("BinFill")
 class BinFill(BaseEnv):
 
@@ -173,9 +208,13 @@ class BinFill(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._episode_spec = _resolve_episode_spec(episode_spec, "BinFill")
+        # 注入生效的只读证据，供对拍观察器核对「创建输入 vs 创建后位姿」
+        self._injection_evidence = {}
         self.robot_init_qpos_noise = robot_init_qpos_noise
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
@@ -222,7 +261,13 @@ class BinFill(BaseEnv):
         self.generator = torch.Generator()
         self.generator.manual_seed(seed)
         dynamic_cfg = self._sampling["parameters"]["dynamic"]
-        self.dynamic=bool(torch.randint(dynamic_cfg["low"], dynamic_cfg["high_exclusive"], tuple(dynamic_cfg["shape"]), generator=self.generator).item())
+        if self._episode_spec is None:
+            self.dynamic=bool(torch.randint(dynamic_cfg["low"], dynamic_cfg["high_exclusive"], tuple(dynamic_cfg["shape"]), generator=self.generator).item())
+        else:
+            # 规格定死 dynamic：不抽这一次 randint。开启态不要求随机流位置与原版对齐——
+            # 凡规格覆盖的量都由规格决定，规格没覆盖的量（如 inject_fail_grasp）继续用
+            # self.generator，取值会因流位置平移而与原版不同，这些量不在验收范围内。
+            self.dynamic=bool(self._episode_spec["layout"]["dynamic"])
 
         # Track the color order and counts used to describe the language goal.
         self.binfill_language_sequence = []
@@ -266,15 +311,28 @@ class BinFill(BaseEnv):
         # Create generator for all randomization
         generator = self.generator
 
+        spec = self._episode_spec
         button_cfg = self._sampling["positions"]["button"]
-        button_obb = build_button(
-            self,
-            center_xy=tuple(button_cfg["center_xy"]),
-            scale=button_cfg["scale"],
-            generator=generator,
-            randomize=button_cfg["randomize"],
-            randomize_range=tuple(button_cfg["randomize_range"]),
-        )
+        if spec is None:
+            button_obb = build_button(
+                self,
+                center_xy=tuple(button_cfg["center_xy"]),
+                scale=button_cfg["scale"],
+                generator=generator,
+                randomize=button_cfg["randomize"],
+                randomize_range=tuple(button_cfg["randomize_range"]),
+            )
+        else:
+            # 规格给的是**最终**中心；关掉 randomize 后 build_button 不抽随机数，
+            # 其余（缩放、travel、连杆、OBB）全走原路径
+            button_obb = build_button(
+                self,
+                center_xy=tuple(spec["layout"]["button_xy"]),
+                scale=button_cfg["scale"],
+                generator=generator,
+                randomize=False,
+                randomize_range=tuple(button_cfg["randomize_range"]),
+            )
         avoid = [button_obb]
 
         # Create square board with square hole
@@ -283,9 +341,16 @@ class BinFill(BaseEnv):
         board_y = board_cfg["y_offset"]
         board_yaw = board_cfg["yaw_deg"]
         board_base = board_cfg["base_position"]
-        x_var = torch.rand(1, generator=generator).item() * board_x["scale"] - board_x["subtract"]  # [-0.25, 0.25]
-        y_var = torch.rand(1, generator=generator).item() * board_y["scale"] - board_y["subtract"]  # [-0.25, 0.25]
-        z_rot_deg = (torch.rand(1, generator=generator).item() * board_yaw["scale"] - board_yaw["subtract"])  # [-20, 20] degrees
+        if spec is None:
+            x_var = torch.rand(1, generator=generator).item() * board_x["scale"] - board_x["subtract"]  # [-0.25, 0.25]
+            y_var = torch.rand(1, generator=generator).item() * board_y["scale"] - board_y["subtract"]  # [-0.25, 0.25]
+            z_rot_deg = (torch.rand(1, generator=generator).item() * board_yaw["scale"] - board_yaw["subtract"])  # [-20, 20] degrees
+        else:
+            # 规格存的是最终位置，这里反解回原公式里的偏移量，位置计算仍走下面同一行
+            board_spec = spec["layout"]["board"]
+            x_var = float(board_spec["xy"][0]) - float(board_base[0])
+            y_var = float(board_spec["xy"][1]) - float(board_base[1])
+            z_rot_deg = float(board_spec["yaw_deg"])
         z_rot_rad = torch.deg2rad(torch.tensor(z_rot_deg))
         # Create rotation quaternion for z-axis rotation
         rot_mat = euler_angles_to_matrix(torch.tensor([[0.0, 0.0, z_rot_rad]]), convention="XYZ")
@@ -323,6 +388,14 @@ class BinFill(BaseEnv):
         num_colors = config['color']  # 1 or 3
         spawn_range = config['spawn_cubes']  # [min, max]
         put_in_color_range = config['put_in_color']
+        spec_counts = None
+        if spec is not None:
+            # 规格直接定死每色的生成数与目标数，下面整段配额抽样一次随机数都不走
+            order = ["red", "blue", "green"]
+            spec_counts = (
+                [int(spec["objects"]["spawn_count"].get(name, 0)) for name in order],
+                [int(spec["objects"]["target_count"].get(name, 0)) for name in order],
+            )
         color_pool = torch.randperm(3, generator=generator).tolist()[:num_colors]
         put_in_color = torch.randint(
             put_in_color_range[0], put_in_color_range[1] + 1, (1,), generator=generator
@@ -334,7 +407,9 @@ class BinFill(BaseEnv):
 
         # First generate target_number (put_in)
         target_numbers = [0, 0, 0]
-        if put_in_color == 1:
+        if spec_counts is not None:
+            spawn_numbers, target_numbers = list(spec_counts[0]), list(spec_counts[1])
+        elif put_in_color == 1:
             # Only one color needs to be put in bin
             selected_idx = active_color_indices[0]
             target_numbers[selected_idx] = torch.randint(put_in_range[0], put_in_range[1] + 1, (1,), generator=generator).item()
@@ -351,9 +426,14 @@ class BinFill(BaseEnv):
         self.green_cubes_target_number = target_numbers[2]
 
         # Then generate spawn_number, ensure spawn >= target
-        total_spawn = torch.randint(spawn_range[0], spawn_range[1] + 1, (1,), generator=generator).item()
+        if spec_counts is not None:
+            total_spawn = sum(spawn_numbers)
+        else:
+            total_spawn = torch.randint(spawn_range[0], spawn_range[1] + 1, (1,), generator=generator).item()
 
-        if num_colors == 1:
+        if spec_counts is not None:
+            pass  # spawn_numbers 已由规格定死
+        elif num_colors == 1:
             # Only one color has cube, choose the one with target (if none, use first color in color_pool)
             spawn_numbers = [0, 0, 0]
             active_idx = next((i for i in color_pool if target_numbers[i] > 0), color_pool[0])
@@ -398,9 +478,28 @@ class BinFill(BaseEnv):
             for idx in range(info["spawn_num"]):
                 cube_tasks.append({"color": info["color"], "name": info["name"], "list": info["list"], "idx": idx})
 
-        # Shuffle generation order
-        shuffle_order = torch.randperm(len(cube_tasks), generator=generator).tolist()
-        cube_tasks = [cube_tasks[i] for i in shuffle_order]
+        if spec is None:
+            # Shuffle generation order
+            shuffle_order = torch.randperm(len(cube_tasks), generator=generator).tolist()
+            cube_tasks = [cube_tasks[i] for i in shuffle_order]
+        else:
+            # 规格的 cubes 列表本身就是生成顺序，直接按它重排并挂上固定位姿；
+            # 名字仍由 name_prefix=f"cube_{名}_{序号}" 拼出，与规格里的 object_id 一致
+            by_identity = {(item["name"], item["idx"]): item for item in cube_tasks}
+            ordered = []
+            for entry in spec["layout"]["cubes"]:
+                key = (entry["color"], int(entry["color_index"]))
+                if key not in by_identity:
+                    raise ValueError(f"规格里的 {entry['object_id']} 不在按 spawn_count 展开的任务列表里")
+                task = dict(by_identity[key])
+                task["fixed_xy"] = [float(entry["xy"][0]), float(entry["xy"][1])]
+                task["fixed_yaw"] = float(entry["yaw_rad"])
+                ordered.append(task)
+            if len(ordered) != len(cube_tasks):
+                raise ValueError(
+                    f"规格给了 {len(ordered)} 块方块，spawn_count 展开是 {len(cube_tasks)} 块"
+                )
+            cube_tasks = ordered
 
         # Spawn cubes in shuffled order
         cubes_cfg = self._sampling["positions"]["cubes"]
@@ -413,6 +512,7 @@ class BinFill(BaseEnv):
                     half_size=self.cube_half_size, min_gap=self.cube_half_size,
                     random_yaw=cubes_cfg["random_yaw"], name_prefix=f"cube_{task['name']}_{task['idx']}",
                     generator=generator,
+                    fixed_xy=task.get("fixed_xy"), fixed_yaw=task.get("fixed_yaw"),
                 )
                 self.all_cubes.append(cube)
                 task["list"].append(cube)
@@ -421,6 +521,28 @@ class BinFill(BaseEnv):
                 logger.debug(f"Failed to spawn {task['name']} cube {task['idx']}: {e}")
 
         logger.debug(f"Generated {len(self.all_cubes)} cubes total (red: {len(self.red_cubes)}, blue: {len(self.blue_cubes)}, green: {len(self.green_cubes)})")
+
+        if spec is not None:
+            # 只读证据：记录「创建输入 vs 创建后 actor 实际位姿」，供 INJECTION_BINDING 核对。
+            # 这里只读位姿，不改任何状态、不抽随机数。
+            self._injection_evidence = {
+                "spec_sha256": spec.get("spec_sha256"),
+                "episode": spec.get("episode"),
+                "button_xy": [float(v) for v in spec["layout"]["button_xy"]],
+                "board": dict(spec["layout"]["board"]),
+                "spawn_count": dict(spec["objects"]["spawn_count"]),
+                "target_count": dict(spec["objects"]["target_count"]),
+                "cubes": [
+                    {
+                        "object_id": entry["object_id"],
+                        "requested_xy": [float(v) for v in entry["xy"]],
+                        "requested_yaw_rad": float(entry["yaw_rad"]),
+                        "actual_p": _actor_xyz(cube),
+                        "actual_q": _actor_quat(cube),
+                    }
+                    for entry, cube in zip(spec["layout"]["cubes"], self.all_cubes)
+                ],
+            }
 
 
 
@@ -442,7 +564,13 @@ class BinFill(BaseEnv):
                 ("red", self.red_cubes, self.red_cubes_target_number),
                 ("green", self.green_cubes, self.green_cubes_target_number),
             ]
-            color_order = torch.randperm(len(color_task_definitions), generator=self.generator).tolist()
+            if self._episode_spec is None:
+                color_order = torch.randperm(len(color_task_definitions), generator=self.generator).tolist()
+            else:
+                # 规格的 initialize_color_order 直接定死定义表 (blue, red, green) 的遍历顺序，
+                # 替代源码这次 randperm。两次初始化都从同一份规格重建，不复用上一次的结果。
+                names = [item[0] for item in color_task_definitions]
+                color_order = [names.index(name) for name in self._episode_spec["objects"]["initialize_color_order"]]
             for color_idx in color_order:
                 color_name, cube_collection, target_number = color_task_definitions[color_idx]
                 if target_number <= 0:

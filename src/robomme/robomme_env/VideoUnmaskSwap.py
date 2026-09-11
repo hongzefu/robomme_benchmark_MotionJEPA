@@ -31,6 +31,14 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.bin_collision import (
+    BinCollisionError,
+    SpecBindingError,
+    check_bin_state,
+    check_swap_sweep,
+    nearest_partner_index,
+    object_state_from_actor,
+)
 from ..logging_utils import logger
 
 
@@ -98,6 +106,26 @@ NATIVE_SAMPLING = {
 }
 
 
+def _resolve_episode_spec(spec, task):
+    """准备本实例专属的固定规格副本（新值注入）；详见 BinFill 同名函数。
+
+    传 ``None``（没传 ``--episode-specs``）时返回 ``None``，此后每个消费点都走原随机路径，
+    链路与改动前逐字相同。
+    """
+    if spec is None:
+        return None
+    if not isinstance(spec, dict):
+        raise ValueError("episode_spec 必须是字典")
+    if spec.get("task") != task:
+        raise ValueError(f"episode_spec 是 {spec.get('task')} 的规格，不能用于 {task}")
+    return copy.deepcopy(spec)
+
+
+def _bin_index_of(name):
+    """把规格里的 ``bin_<i>`` 还原成生成序号 ``i``。"""
+    return int(str(name).rsplit("_", 1)[1])
+
+
 def _resolve_sampling_config(cls, override):
     """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
     if override is None:
@@ -161,9 +189,14 @@ class VideoUnmaskSwap(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._episode_spec = _resolve_episode_spec(episode_spec, "VideoUnmaskSwap")
+        self._injection_evidence = {}
+        # 运行时碰撞与最近邻核验的记录；只有传了规格才写，关闭态恒为空
+        self._runtime_checks = []
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -210,11 +243,14 @@ class VideoUnmaskSwap(BaseEnv):
         generator = torch.Generator()
         generator.manual_seed(seed)
         difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
-        self.swap_times = torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=generator).item()
+        if self._episode_spec is None:
+            self.swap_times = torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=generator).item()
+            self.pick_times = torch.randint(difficulty_cfg['pick_min'], difficulty_cfg['pick_max']+1, (1,), generator=generator).item()
+        else:
+            self.swap_times = int(self._episode_spec["objects"]["n_swaps"])
+            self.pick_times = int(self._episode_spec["objects"]["n_picks"])
         logger.debug(f"Task will swap {self.swap_times} times")
 
-
-        self.pick_times = torch.randint(difficulty_cfg['pick_min'], difficulty_cfg['pick_max']+1, (1,), generator=generator).item()
         logger.debug(f"Task will pick {self.pick_times} times")
 
 
@@ -263,32 +299,53 @@ class VideoUnmaskSwap(BaseEnv):
         region3_tri=[list(point) for point in containers_cfg["region3_tri"]]
         region3_line=[list(point) for point in containers_cfg["region3_line"]]
 
-        # Use generator to randomly select region3_tri or region3_line
-        choice_cfg = containers_cfg["region3_choice"]
-        region3_choice = torch.randint(choice_cfg["low"], choice_cfg["high_exclusive"], (1,), generator=generator).item()
-        region3 = region3_tri if region3_choice == 0 else region3_line
+        spec = self._episode_spec
+        if spec is None:
+            # Use generator to randomly select region3_tri or region3_line
+            choice_cfg = containers_cfg["region3_choice"]
+            region3_choice = torch.randint(choice_cfg["low"], choice_cfg["high_exclusive"], (1,), generator=generator).item()
+            region3 = region3_tri if region3_choice == 0 else region3_line
 
-        if difficulty_cfg['bin']==4:
-            region=region4
+            if difficulty_cfg['bin']==4:
+                region=region4
+            else:
+                 region=region3
+            angle, region = rotate_points_random(region,tuple(containers_cfg["layout_rotation_range_rad"]),generator)
         else:
-             region=region3
-        angle, region = rotate_points_random(region,tuple(containers_cfg["layout_rotation_range_rad"]),generator)
-        
+            # 规格里的 bins[i].xy 就是**最终**位置（锚点旋转 + 各自偏移在冻结前已经算好并过了
+            # 碰撞检查），所以注入路径不再走 rotate_points_random，也就不抽随机数；
+            # 这样实跑位置与规格逐值相同，不受 float32 锚点精度影响。
+            angle = float(spec["layout"]["theta_rad"])
+            region = None
+
         for i in range(difficulty_cfg['bin']):
-            try:
-                bin_actor = spawn_random_bin(
+            if spec is not None:
+                entry = spec["layout"]["bins"][i]
+                if entry["object_id"] != f"bin_{i}":
+                    raise ValueError(f"规格第 {i} 个容器的 object_id 是 {entry['object_id']}，应为 bin_{i}")
+                # 走 spawn_random_bin 末尾同一个 build_bin 调用（含 z=0.002 与 z_rotation_deg），
+                # 只是跳过它的拒绝采样
+                bin_actor = build_bin(
                     self,
-                    avoid=avoid,  # Use current avoidance list, containing all spawned objects
-                    region_center=region[i],
-                    region_half_size=containers_cfg["region_half_size"],
-                    min_gap=self.cube_half_size*1,  # bins need larger gap, increased to 6x to avoid collision
-                    name_prefix=f"bin_{i}",
-                    max_trials=256,
-                    generator=generator,
-                    yaw_scale_deg=containers_cfg["yaw_scale_deg"]
+                    callsign=f"bin_{i}",
+                    position=[float(entry["xy"][0]), float(entry["xy"][1]), 0.002],
+                    z_rotation_deg=float(entry["yaw_deg"]),
                 )
-            except RuntimeError as e:
-                break
+            else:
+                try:
+                    bin_actor = spawn_random_bin(
+                        self,
+                        avoid=avoid,  # Use current avoidance list, containing all spawned objects
+                        region_center=region[i],
+                        region_half_size=containers_cfg["region_half_size"],
+                        min_gap=self.cube_half_size*1,  # bins need larger gap, increased to 6x to avoid collision
+                        name_prefix=f"bin_{i}",
+                        max_trials=256,
+                        generator=generator,
+                        yaw_scale_deg=containers_cfg["yaw_scale_deg"]
+                    )
+                except RuntimeError as e:
+                    break
 
             self.spawned_bins.append(bin_actor)
             # Assign bin to self.bin_0, self.bin_1 etc. attributes
@@ -308,7 +365,11 @@ class VideoUnmaskSwap(BaseEnv):
 
         # Use seed to randomly shuffle color order
 
-        shuffle_indices = torch.randperm(len(cube_colors), generator=generator).tolist()
+        if spec is None:
+            shuffle_indices = torch.randperm(len(cube_colors), generator=generator).tolist()
+        else:
+            # 规格的 color_order 是打乱后的名字序列，这里反解回原定义表 (red, green, blue) 的下标
+            shuffle_indices = [color_names.index(name) for name in spec["objects"]["color_order"]]
         cube_colors = [cube_colors[i] for i in shuffle_indices]
         color_names = [color_names[i] for i in shuffle_indices]
 
@@ -318,7 +379,10 @@ class VideoUnmaskSwap(BaseEnv):
         # Randomly select 3 bins from all bins to generate cube
         selection_cfg = self._sampling["parameters"]["object_selection"]
         num_bins_to_select = min(selection_cfg["hidden_bin_count_max"], len(self.spawned_bins))
-        selected_bin_indices = torch.randperm(selection_cfg["hidden_bin_permutation_size"], generator=generator)[:num_bins_to_select].tolist()
+        if spec is None:
+            selected_bin_indices = torch.randperm(selection_cfg["hidden_bin_permutation_size"], generator=generator)[:num_bins_to_select].tolist()
+        else:
+            selected_bin_indices = [int(v) for v in spec["objects"]["selected"]][:num_bins_to_select]
         selected_bins = [self.spawned_bins[idx] for idx in selected_bin_indices]
         self.selected_bin_indices = selected_bin_indices
         self.selected_bins = selected_bins  # Save selected bins, corresponding to color_names order
@@ -399,7 +463,13 @@ class VideoUnmaskSwap(BaseEnv):
 
        # Randomly select 2 unique bins as target_bin_1 and target_bin_2
         # target_indices are indices into selected_bin_indices (0, 1, 2)
-        target_indices = torch.randperm(len(selected_bin_indices), generator=generator)[:selection_cfg["swap_seed_target_count"]]
+        if spec is None:
+            target_indices = torch.randperm(len(selected_bin_indices), generator=generator)[:selection_cfg["swap_seed_target_count"]]
+        else:
+            # ⚠ 原代码把「藏物排序里的局部位置」直接当生成序号用（U5 的索引混用），这里按原行为
+            # 保留：规格的 swap_initiators 存的就是这些数，前两个当 target_indices，第三个当 third。
+            spec_initiators = [_bin_index_of(name) for name in spec["objects"]["swap_initiators"]]
+            target_indices = torch.tensor(spec_initiators[:selection_cfg["swap_seed_target_count"]])
         # Use selected_bins to get correct bin (corresponding to color_names order)
         self.target_bin_1=self.selected_bins[target_indices[0]]
         self.target_bin_2=self.selected_bins[target_indices[1]]
@@ -408,8 +478,17 @@ class VideoUnmaskSwap(BaseEnv):
         self.target_bin_2_cube_color = color_names[target_indices[1].item()]
         # swap_indices must include target_indices, then select 1 from remaining indices
         remaining_indices = [i for i in range(len(self.spawned_bins)) if i not in target_indices.tolist()]
-        if remaining_indices:
+        # ⚠ 原随机分支必须保持为 third_idx 的**第一个**赋值语句：
+        # tests/lightweight/test_episode_action_sampling.py 用
+        # generate_dataset_newseed._assignment_value 抽「第一个同名赋值」来对拍历史表达式，
+        # 把注入分支写在前面会让它抽到引用 spec_initiators 的那条，测试直接 NameError。
+        if spec is None and remaining_indices:
             third_idx = remaining_indices[torch.randint(0, len(remaining_indices), (1,), generator=generator).item()]
+            swap_indices = torch.cat([target_indices, torch.tensor([third_idx])])
+        elif spec is not None:
+            third_idx = spec_initiators[selection_cfg["swap_seed_target_count"]]
+            if third_idx not in remaining_indices:
+                raise ValueError(f"规格的第三个交换发起者 bin_{third_idx} 不在其余生成序号 {remaining_indices} 里")
             swap_indices = torch.cat([target_indices, torch.tensor([third_idx])])
         else:
             swap_indices = target_indices
@@ -489,6 +568,19 @@ class VideoUnmaskSwap(BaseEnv):
             self.table_scene.initialize(env_idx)
             qpos=reset_panda.get_reset_panda_param("qpos")
             self.agent.reset(qpos)
+            if self._episode_spec is not None:
+                # 初始化复核：读实际碰撞盒查全部容器两两之间。构造期内部 reset 与外层
+                # record_env.reset() 各会走一次，两次都从同一份规格重建，不复用旧 actor。
+                gap, rejection = self._check_state_readonly("initial")
+                self._runtime_checks.append(
+                    {
+                        "kind": "initial",
+                        "min_g_m": None if rejection is not None else gap,
+                        "rejection": None if rejection is None else rejection.as_dict(),
+                    }
+                )
+                if rejection is not None:
+                    raise BinCollisionError(rejection)
 
 
     def _get_obs_extra(self, info: Dict):
@@ -610,6 +702,113 @@ class VideoUnmaskSwap(BaseEnv):
         return {"idx1": first_idx, "idx2": second_idx, "distance": distance}
 
 
+    def _verify_swap_binding(self, sweep_index, initiator, resolved_partner):
+        """核验规格预写的搭档与执行时算出的实际最近邻一致；不符即失败，禁止换搭档。"""
+        pairs = self._episode_spec["actions"]["swap_pairs"]
+        if sweep_index >= len(pairs):
+            raise SpecBindingError(
+                f"第 {sweep_index} 段交换在规格里没有对应条目（规格只有 {len(pairs)} 段）"
+            )
+        expected = pairs[sweep_index]
+        actual_initiator = self.spawned_bins.index(initiator)
+        actual_partner = self.spawned_bins.index(resolved_partner)
+        # 用同一份扫描语义独立复算一次，顺带拿到完整距离表当证据
+        reference = self._get_actor_position(initiator)
+        candidates = [
+            (index, self._get_actor_position(actor))
+            for index, actor in enumerate(self.spawned_bins)
+            if actor is not None and actor is not initiator
+        ]
+        recomputed, table = nearest_partner_index(reference, candidates)
+        detail = {
+            "sweep_index": sweep_index,
+            "control_step": int(self.elapsed_steps),
+            "expected_initiator": expected["initiator"],
+            "expected_partner": expected["partner"],
+            "actual_initiator": f"bin_{actual_initiator}",
+            "actual_partner": f"bin_{actual_partner}",
+            "recomputed_partner": f"bin_{recomputed}",
+            "distances": [[f"bin_{index}", dist] for index, dist in table],
+        }
+        self._runtime_checks.append({"kind": "swap_binding", **detail})
+        if expected["initiator"] != f"bin_{actual_initiator}":
+            raise SpecBindingError(
+                f"第 {sweep_index} 段的发起者是 bin_{actual_initiator}，规格预写 {expected['initiator']}", detail
+            )
+        if expected["partner"] != f"bin_{actual_partner}":
+            raise SpecBindingError(
+                f"第 {sweep_index} 段的实际最近邻是 bin_{actual_partner}，规格预写 {expected['partner']}", detail
+            )
+
+    def _object_states_for_collision(self):
+        """把场上全部容器读成碰撞判据用的状态；只读真实碰撞盒，不用中心距或外接圆。"""
+        return [
+            object_state_from_actor(actor, f"bin_{index}")
+            for index, actor in enumerate(self.spawned_bins)
+            if actor is not None
+        ]
+
+    def _check_swap_sweep_from_actual(self, sweep_index, initiator, partner):
+        """从实际位姿对整段交换路径做连续检查；命中即抛错中止该样本。"""
+        states = {}
+        for index, actor in enumerate(self.spawned_bins):
+            if actor is None:
+                continue
+            states[index] = object_state_from_actor(actor, f"bin_{index}")
+        a = self.spawned_bins.index(initiator)
+        b = self.spawned_bins.index(partner)
+        bystanders = [state for index, state in sorted(states.items()) if index not in (a, b)]
+        gap, rejection = check_swap_sweep(states[a], states[b], bystanders, sweep_index=sweep_index, stage="sweep")
+        self._runtime_checks.append(
+            {
+                "kind": "swap_sweep",
+                "sweep_index": sweep_index,
+                "control_step": int(self.elapsed_steps),
+                "min_g_m": None if rejection is not None else gap,
+                "rejection": None if rejection is None else rejection.as_dict(),
+            }
+        )
+        if rejection is not None:
+            raise BinCollisionError(rejection)
+
+    def _check_state_readonly(self, stage):
+        """某一时刻的只读复核；返回拒绝证据，不抛错，由调用方决定怎么处置。"""
+        gap, rejection = check_bin_state(self._object_states_for_collision(), stage=stage)
+        return gap, rejection
+
+    def _in_swap_window(self):
+        """当前控制步是否落在某一段交换的时间窗内。
+
+        ⚠ 子步检查只在窗口内做。窗口外容器／方块要么静止、要么被
+        ``lift_and_drop_objects_back_to_original`` 逐帧按在原位，初态检查已经覆盖；
+        而子步数远多于控制步，全程每个子步都跑一遍全量 SAT 会把单条样本拖慢十倍以上
+        （实测冒烟时 VideoUnmaskSwap 从 ~47 秒涨到分钟级）。
+        """
+        step = int(self.elapsed_steps)
+        return any(start <= step <= end for _a, _b, start, end in getattr(self, "swap_schedule", []))
+
+    def _before_simulation_step(self):
+        super()._before_simulation_step()
+        if self._episode_spec is None or not self._in_swap_window():
+            return
+        gap, rejection = self._check_state_readonly("substep_before")
+        if rejection is not None:
+            self._runtime_checks.append(
+                {"kind": "substep_before", "control_step": int(self.elapsed_steps), "rejection": rejection.as_dict()}
+            )
+            raise BinCollisionError(rejection)
+
+    def _after_simulation_step(self):
+        super()._after_simulation_step()
+        if self._episode_spec is None or not self._in_swap_window():
+            return
+        gap, rejection = self._check_state_readonly("substep_after")
+        if rejection is not None:
+            self._runtime_checks.append(
+                {"kind": "substep_after", "control_step": int(self.elapsed_steps), "rejection": rejection.as_dict()}
+            )
+            raise BinCollisionError(rejection)
+
     def _refresh_swap_schedule(self):
         if self.swap_times==1:
                     self.swap_schedule = [
@@ -666,6 +865,12 @@ class VideoUnmaskSwap(BaseEnv):
                             closest_dist = dist
                             closest_actor = candidate
                     if closest_actor is not None:
+                        # 新值注入的两个运行时检查点（计划第五节步骤 0d）：先核验搭档身份，
+                        # 再从**实际**起态做整段连续几何检查。关闭态（无规格）两项都不跑，
+                        # 不新增几何读取、不新增随机调用。
+                        if self._episode_spec is not None:
+                            self._verify_swap_binding(i, pair_idx1, closest_actor)
+                            self._check_swap_sweep_from_actual(i, pair_idx1, closest_actor)
                         setattr(self, f'swap_pair{i+1}_idx2', closest_actor)
                         self._refresh_swap_schedule()
 

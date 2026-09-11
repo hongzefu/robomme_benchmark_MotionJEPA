@@ -32,6 +32,14 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.bin_collision import (
+    BinCollisionError,
+    SpecBindingError,
+    check_bin_state,
+    check_swap_sweep,
+    nearest_partner_index,
+    object_state_from_actor,
+)
 
 from ..logging_utils import logger
 
@@ -127,6 +135,26 @@ NATIVE_SAMPLING = {
 }
 
 
+def _resolve_episode_spec(spec, task):
+    """准备本实例专属的固定规格副本（新值注入）；详见 BinFill 同名函数。
+
+    传 ``None``（没传 ``--episode-specs``）时返回 ``None``，此后每个消费点都走原随机路径，
+    链路与改动前逐字相同。
+    """
+    if spec is None:
+        return None
+    if not isinstance(spec, dict):
+        raise ValueError("episode_spec 必须是字典")
+    if spec.get("task") != task:
+        raise ValueError(f"episode_spec 是 {spec.get('task')} 的规格，不能用于 {task}")
+    return copy.deepcopy(spec)
+
+
+def _cube_index_of(name):
+    """把规格里的 ``bin_<i>`` 还原成生成序号 ``i``（VideoRepick 的方块沿用 bin_ 前缀）。"""
+    return int(str(name).rsplit("_", 1)[1])
+
+
 def _resolve_sampling_config(cls, override):
     """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
     if override is None:
@@ -185,9 +213,13 @@ class VideoRepick(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用（含 np.random.seed）与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._episode_spec = _resolve_episode_spec(episode_spec, "VideoRepick")
+        self._injection_evidence = {}
+        self._runtime_checks = []
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -236,11 +268,17 @@ class VideoRepick(BaseEnv):
         self.generator = torch.Generator()
         self.generator.manual_seed(seed)
         repeats_cfg = self._sampling["parameters"]["num_repeats"]
-        self.num_repeats = torch.randint(repeats_cfg["low"], repeats_cfg["high_exclusive"], tuple(repeats_cfg["shape"]), generator=self.generator).item()
+        if self._episode_spec is None:
+            self.num_repeats = torch.randint(repeats_cfg["low"], repeats_cfg["high_exclusive"], tuple(repeats_cfg["shape"]), generator=self.generator).item()
+        else:
+            self.num_repeats = int(self._episode_spec["objects"]["num_repeats"])
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
 
         difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
-        self.swap_times = torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=self.generator).item()
+        if self._episode_spec is None:
+            self.swap_times = torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=self.generator).item()
+        else:
+            self.swap_times = int(self._episode_spec["objects"]["n_swaps"])
         logger.debug(f"Task will swap {self.swap_times} times")
 
 
@@ -277,14 +315,19 @@ class VideoRepick(BaseEnv):
             )
             self.table_scene.build()
 
+            spec = self._episode_spec
             button_cfg = self._sampling["positions"]["button"]
+            button_center = (
+                tuple(button_cfg["center_xy"]) if spec is None else tuple(spec["layout"]["button_xy"])
+            )
             button_obb_1 = build_button(
                 self,
-                center_xy=tuple(button_cfg["center_xy"]),
+                center_xy=button_center,
                 scale=button_cfg["scale"],
                 generator=self.generator,
                 name="button",
-                randomize=button_cfg["randomize"],
+                # 规格给的是**最终**中心，关掉 randomize 后 build_button 不抽随机数
+                randomize=button_cfg["randomize"] if spec is None else False,
                 randomize_range=tuple(button_cfg["randomize_range"])
             )
             # Store first button before building second one
@@ -338,12 +381,18 @@ class VideoRepick(BaseEnv):
                 self.target_cube_1 = self.spawned_cubes[target_idx]
 
             else:
-                idx = torch.randint(0, len(options), (1,), generator=self.generator).item()
+                if spec is None:
+                    idx = torch.randint(0, len(options), (1,), generator=self.generator).item()
+                else:
+                    # 三块同色，颜色由规格定死（原定义表顺序是 red / blue / green）
+                    idx = [item["name"] for item in options].index(spec["objects"]["color"])
                 chosen_color = options[idx]["color"]
 
                 cube_colors = [chosen_color] * 4
-                shuffle_indices = torch.randperm(len(cube_colors), generator=self.generator).tolist()
-                cube_colors = [cube_colors[i] for i in shuffle_indices]
+                if spec is None:
+                    shuffle_indices = torch.randperm(len(cube_colors), generator=self.generator).tolist()
+                    cube_colors = [cube_colors[i] for i in shuffle_indices]
+                # 四个元素全是同一个颜色，打乱与否结果相同；注入路径省掉这次抽样
 
                 self.spawned_cubes = []
 
@@ -353,22 +402,35 @@ class VideoRepick(BaseEnv):
                 region3_tri = [list(point) for point in plain_cfg["region3_tri"]]
                 region3_line = [list(point) for point in plain_cfg["region3_line"]]
 
-                choice_cfg = plain_cfg["region3_choice"]
-                region3_choice = torch.randint(choice_cfg["low"], choice_cfg["high_exclusive"], (1,), generator=self.generator).item()
-                region3 = region3_tri if region3_choice == 0 else region3_line
+                if spec is None:
+                    choice_cfg = plain_cfg["region3_choice"]
+                    region3_choice = torch.randint(choice_cfg["low"], choice_cfg["high_exclusive"], (1,), generator=self.generator).item()
+                    region3 = region3_tri if region3_choice == 0 else region3_line
 
-                if difficulty_cfg['cube'] == 4:
-                    region = region4
+                    if difficulty_cfg['cube'] == 4:
+                        region = region4
+                    else:
+                        region = region3
+                    angle, region = rotate_points_random(region, tuple(plain_cfg["layout_rotation_range_rad"]), self.generator)
                 else:
-                    region = region3
-                angle, region = rotate_points_random(region, tuple(plain_cfg["layout_rotation_range_rad"]), self.generator)
+                    # 规格里的 cubes[i].xy 就是最终位置（锚点旋转 + 偏移在冻结前已算好并过了
+                    # 碰撞检查），注入路径不再走 rotate_points_random，也就不抽随机数
+                    angle = float(spec["layout"]["theta_rad"])
+                    region = None
 
                 for i in range(difficulty_cfg['cube']):
+                    fixed_xy = fixed_yaw = None
+                    if spec is not None:
+                        entry = spec["layout"]["cubes"][i]
+                        if entry["object_id"] != f"bin_{i}":
+                            raise ValueError(f"规格第 {i} 块方块的 object_id 是 {entry['object_id']}，应为 bin_{i}")
+                        fixed_xy = [float(entry["xy"][0]), float(entry["xy"][1])]
+                        fixed_yaw = float(entry["yaw_rad"])
                     try:
                         cube_actor = spawn_random_cube(
                             self,
                             avoid=avoid,
-                            region_center=region[i],
+                            region_center=region[i] if region is not None else plain_cfg["region3_tri"][0],
                             region_half_size=plain_cfg["region_half_size"],
                             min_gap=self.cube_half_size * 1,
                             half_size=self.cube_half_size,
@@ -378,7 +440,9 @@ class VideoRepick(BaseEnv):
                             random_yaw=plain_cfg["random_yaw"],
                             include_existing=plain_cfg["include_existing"],
                             include_goal=plain_cfg["include_goal"],
-                            generator=self.generator
+                            generator=self.generator,
+                            fixed_xy=fixed_xy,
+                            fixed_yaw=fixed_yaw,
 
                         )
                     except RuntimeError as e:
@@ -392,7 +456,10 @@ class VideoRepick(BaseEnv):
                     raise SceneGenerationError("Failed to generate any bin")
 
                 selection_cfg = self._sampling["parameters"]["object_selection"]
-                target_indices = torch.randperm(len(self.spawned_cubes), generator=self.generator)[:selection_cfg["easy_medium_target_count"]].tolist()
+                if spec is None:
+                    target_indices = torch.randperm(len(self.spawned_cubes), generator=self.generator)[:selection_cfg["easy_medium_target_count"]].tolist()
+                else:
+                    target_indices = [_cube_index_of(spec["objects"]["target"])]
                 self.target_cube_1 = self.spawned_cubes[target_indices[0]]
 
                 if self.difficulty != "hard":
@@ -400,8 +467,22 @@ class VideoRepick(BaseEnv):
                     if len(remaining_indices) < 2:
                         raise SceneGenerationError("Not enough cubes for swapping")
 
-                    selected_remaining = torch.randperm(len(remaining_indices), generator=self.generator)[:selection_cfg["swap_remaining_count"]].tolist()
-                    selected_indices = [remaining_indices[i] for i in selected_remaining]
+                    if spec is None:
+                        selected_remaining = torch.randperm(len(remaining_indices), generator=self.generator)[:selection_cfg["swap_remaining_count"]].tolist()
+                        selected_indices = [remaining_indices[i] for i in selected_remaining]
+                    else:
+                        # ⚠ 源码无条件赋值 swap_pair{1,2,3}_idx1，所以规格存的是完整的 3 个发起者：
+                        # 第一个必是目标方块，后两个是另外两块的一个排列
+                        spec_initiators = [_cube_index_of(name) for name in spec["objects"]["swap_initiators"]]
+                        if spec_initiators[0] != target_indices[0]:
+                            raise ValueError(
+                                f"规格的首个交换发起者 bin_{spec_initiators[0]} 不是目标方块 bin_{target_indices[0]}"
+                            )
+                        selected_indices = spec_initiators[1:]
+                        if sorted(selected_indices) != sorted(remaining_indices):
+                            raise ValueError(
+                                f"规格的后续发起者 {selected_indices} 不是其余两块 {remaining_indices} 的排列"
+                            )
                     swap_indices = target_indices + selected_indices
 
                     self.swap_pair1_idx1 = self.spawned_cubes[swap_indices[0]]
@@ -427,6 +508,18 @@ class VideoRepick(BaseEnv):
             self.table_scene.initialize(env_idx)
             qpos=reset_panda.get_reset_panda_param("qpos")
             self.agent.reset(qpos)
+            if self._episode_spec is not None:
+                # 初始化复核：读实际碰撞盒查三个方块两两之间；构造期与正式 reset 各走一次
+                gap, rejection = self._check_state_readonly("initial")
+                self._runtime_checks.append(
+                    {
+                        "kind": "initial",
+                        "min_g_m": None if rejection is not None else gap,
+                        "rejection": None if rejection is None else rejection.as_dict(),
+                    }
+                )
+                if rejection is not None:
+                    raise BinCollisionError(rejection)
             tasks = [
             {
                 "func": (lambda: is_obj_pickup(self, obj=self.target_cube_1)),
@@ -685,6 +778,111 @@ class VideoRepick(BaseEnv):
 
         return {"idx1": first_idx, "idx2": second_idx, "distance": distance}
 
+    def _verify_swap_binding(self, sweep_index, initiator, resolved_partner):
+        """核验规格预写的搭档与执行时算出的实际最近邻一致；不符即失败，禁止换搭档。"""
+        pairs = self._episode_spec["actions"]["swap_pairs"]
+        if sweep_index >= len(pairs):
+            raise SpecBindingError(
+                f"第 {sweep_index} 段交换在规格里没有对应条目（规格只有 {len(pairs)} 段）"
+            )
+        expected = pairs[sweep_index]
+        actual_initiator = self.spawned_cubes.index(initiator)
+        actual_partner = self.spawned_cubes.index(resolved_partner)
+        reference = self._get_actor_position(initiator)
+        candidates = [
+            (index, self._get_actor_position(actor))
+            for index, actor in enumerate(self.spawned_cubes)
+            if actor is not None and actor is not initiator
+        ]
+        recomputed, table = nearest_partner_index(reference, candidates)
+        detail = {
+            "sweep_index": sweep_index,
+            "control_step": int(self.elapsed_steps),
+            "expected_initiator": expected["initiator"],
+            "expected_partner": expected["partner"],
+            "actual_initiator": f"bin_{actual_initiator}",
+            "actual_partner": f"bin_{actual_partner}",
+            "recomputed_partner": f"bin_{recomputed}",
+            "distances": [[f"bin_{index}", dist] for index, dist in table],
+        }
+        self._runtime_checks.append({"kind": "swap_binding", **detail})
+        if expected["initiator"] != f"bin_{actual_initiator}":
+            raise SpecBindingError(
+                f"第 {sweep_index} 段的发起者是 bin_{actual_initiator}，规格预写 {expected['initiator']}", detail
+            )
+        if expected["partner"] != f"bin_{actual_partner}":
+            raise SpecBindingError(
+                f"第 {sweep_index} 段的实际最近邻是 bin_{actual_partner}，规格预写 {expected['partner']}", detail
+            )
+
+    def _object_states_for_collision(self):
+        """把场上三个方块读成碰撞判据用的状态；只读真实碰撞盒。"""
+        return [
+            object_state_from_actor(actor, f"bin_{index}")
+            for index, actor in enumerate(self.spawned_cubes)
+            if actor is not None
+        ]
+
+    def _check_swap_sweep_from_actual(self, sweep_index, initiator, partner):
+        """从实际位姿对整段交换路径做连续检查；命中即抛错中止该样本。"""
+        states = {}
+        for index, actor in enumerate(self.spawned_cubes):
+            if actor is None:
+                continue
+            states[index] = object_state_from_actor(actor, f"bin_{index}")
+        a = self.spawned_cubes.index(initiator)
+        b = self.spawned_cubes.index(partner)
+        bystanders = [state for index, state in sorted(states.items()) if index not in (a, b)]
+        gap, rejection = check_swap_sweep(states[a], states[b], bystanders, sweep_index=sweep_index, stage="sweep")
+        self._runtime_checks.append(
+            {
+                "kind": "swap_sweep",
+                "sweep_index": sweep_index,
+                "control_step": int(self.elapsed_steps),
+                "min_g_m": None if rejection is not None else gap,
+                "rejection": None if rejection is None else rejection.as_dict(),
+            }
+        )
+        if rejection is not None:
+            raise BinCollisionError(rejection)
+
+    def _check_state_readonly(self, stage):
+        """某一时刻的只读复核；返回拒绝证据，不抛错。"""
+        return check_bin_state(self._object_states_for_collision(), stage=stage)
+
+    def _in_swap_window(self):
+        """当前控制步是否落在某一段交换的时间窗内。
+
+        ⚠ 子步检查只在窗口内做。窗口外容器／方块要么静止、要么被
+        ``lift_and_drop_objects_back_to_original`` 逐帧按在原位，初态检查已经覆盖；
+        而子步数远多于控制步，全程每个子步都跑一遍全量 SAT 会把单条样本拖慢十倍以上
+        （实测冒烟时 VideoUnmaskSwap 从 ~47 秒涨到分钟级）。
+        """
+        step = int(self.elapsed_steps)
+        return any(start <= step <= end for _a, _b, start, end in getattr(self, "swap_schedule", []))
+
+    def _before_simulation_step(self):
+        super()._before_simulation_step()
+        if self._episode_spec is None or not self._in_swap_window():
+            return
+        gap, rejection = self._check_state_readonly("substep_before")
+        if rejection is not None:
+            self._runtime_checks.append(
+                {"kind": "substep_before", "control_step": int(self.elapsed_steps), "rejection": rejection.as_dict()}
+            )
+            raise BinCollisionError(rejection)
+
+    def _after_simulation_step(self):
+        super()._after_simulation_step()
+        if self._episode_spec is None or not self._in_swap_window():
+            return
+        gap, rejection = self._check_state_readonly("substep_after")
+        if rejection is not None:
+            self._runtime_checks.append(
+                {"kind": "substep_after", "control_step": int(self.elapsed_steps), "rejection": rejection.as_dict()}
+            )
+            raise BinCollisionError(rejection)
+
     def _refresh_swap_schedule(self,start_step=400):
         if self.swap_times==1:
                     self.swap_schedule = [
@@ -737,6 +935,11 @@ class VideoRepick(BaseEnv):
                                 closest_dist = dist
                                 closest_actor = candidate
                         if closest_actor is not None:
+                            # 新值注入的两个运行时检查点（计划第五节步骤 0d）：先核验搭档身份，
+                            # 再从**实际**起态做整段连续几何检查。关闭态两项都不跑。
+                            if self._episode_spec is not None:
+                                self._verify_swap_binding(i, pair_idx1, closest_actor)
+                                self._check_swap_sweep_from_actual(i, pair_idx1, closest_actor)
                             setattr(self, f'swap_pair{i+1}_idx2', closest_actor)
                             self._refresh_swap_schedule(self.start_step)
 
