@@ -1815,6 +1815,8 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
     caught: BaseException | None = None
     error_traceback: str | None = None
     close_error: str | None = None
+    runtime_checks: list[dict[str, Any]] = []
+    injection_evidence: dict[str, Any] = {}
 
     # import 单独成段：若这里失败，下面的 except 子句会因为异常类未定义而变成 NameError
     try:
@@ -1930,6 +1932,17 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         error_traceback = traceback.format_exc()
     finally:
         if record_env is not None:
+            # ⚠ 必须在 close() **之前**把运行时检查证据取出来：close 之后环境被拆掉，
+            # 两个视频任务在 _initialize_episode / step / 子步里累积的 _runtime_checks
+            # 就没了，COLLISION_RUNTIME 的 checked / missing_checks 将无从计算。
+            try:
+                runtime_checks = [dict(item) for item in getattr(record_env.unwrapped, "_runtime_checks", [])]
+            except Exception:  # noqa: BLE001 - 取证据失败不能影响主流程
+                runtime_checks = []
+            try:
+                injection_evidence = dict(getattr(record_env.unwrapped, "_injection_evidence", {}) or {})
+            except Exception:  # noqa: BLE001
+                injection_evidence = {}
             mark = time.monotonic()
             try:
                 # h5 落盘与 mp4 编码都发生在 close 里
@@ -1949,6 +1962,10 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
         "difficulty": job.difficulty,
         "recovery_mode": job.recovery_mode,
         "bound": dict(_BOUND),
+        # 运行时检查的四态证据与注入绑定证据：成功失败都带，供 COLLISION_RUNTIME 与
+        # INJECTION_BINDING 统计；不传规格时两者都是空的
+        "runtime_checks": runtime_checks,
+        "injection_evidence": injection_evidence,
         "phases": {name: round(value, 3) for name, value in phases.items()},
         "wall_s": round(time.monotonic() - clock, 3),
         "started_at": started,

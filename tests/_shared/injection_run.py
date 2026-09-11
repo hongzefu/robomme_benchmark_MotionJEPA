@@ -212,8 +212,15 @@ def read_result_rows(output_dir: Path) -> list[dict[str, Any]]:
     rows = []
     for (task, episode), record in sorted(latest.items()):
         video = record.get("video") or {}
+        checks = record.get("runtime_checks") or []
+        rejections = [item["rejection"] for item in checks if item.get("rejection")]
         rows.append(
             {
+                # 运行时检查的摘要：完整记录留在 episode_results.jsonl 里，这里只放可统计的部分
+                "runtime_checks_total": len(checks),
+                "runtime_check_kinds": sorted({str(item.get("kind")) for item in checks}),
+                "runtime_rejections": rejections,
+                "injection_bound": bool(record.get("injection_evidence")),
                 "task": task,
                 "difficulty": record.get("difficulty"),
                 "episode": episode,

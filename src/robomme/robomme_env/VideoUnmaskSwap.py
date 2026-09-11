@@ -500,6 +500,31 @@ class VideoUnmaskSwap(BaseEnv):
         self.swap_pair3_idx2=None
         self._refresh_swap_schedule()
 
+        if spec is not None:
+            # 只读证据：创建输入 vs 创建后 actor 实际位姿，供 INJECTION_BINDING 核对。
+            # 只读位姿，不改状态、不抽随机数。
+            self._injection_evidence = {
+                "spec_sha256": spec.get("spec_sha256"),
+                "episode": spec.get("episode"),
+                "theta_rad": float(spec["layout"]["theta_rad"]),
+                "layout_type": spec["layout"]["type"],
+                "n_swaps": self.swap_times,
+                "n_picks": self.pick_times,
+                "selected": list(selected_bin_indices),
+                "color_names": list(color_names),
+                "swap_initiators": [self.spawned_bins.index(getattr(self, f"swap_pair{k}_idx1")) for k in (1, 2, 3)
+                                    if getattr(self, f"swap_pair{k}_idx1", None) is not None],
+                "bins": [
+                    {
+                        "object_id": entry["object_id"],
+                        "requested_xy": [float(v) for v in entry["xy"]],
+                        "requested_yaw_deg": float(entry["yaw_deg"]),
+                        "actual_p": [float(v) for v in self._get_actor_position(actor)[:3]],
+                    }
+                    for entry, actor in zip(spec["layout"]["bins"], self.spawned_bins)
+                ],
+            }
+
         pickup_indices = selection_cfg["pickup_selected_indices"]
         tasks = [
              {

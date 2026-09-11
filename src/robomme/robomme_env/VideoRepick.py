@@ -492,6 +492,29 @@ class VideoRepick(BaseEnv):
                     self.swap_pair2_idx2 = None
                     self.swap_pair3_idx2 = None
                     self._refresh_swap_schedule()
+
+                if spec is not None:
+                    # 只读证据：创建输入 vs 创建后 actor 实际位姿，供 INJECTION_BINDING 核对
+                    self._injection_evidence = {
+                        "spec_sha256": spec.get("spec_sha256"),
+                        "episode": spec.get("episode"),
+                        "theta_rad": float(spec["layout"]["theta_rad"]),
+                        "layout_type": spec["layout"]["type"],
+                        "n_swaps": self.swap_times,
+                        "num_repeats": self.num_repeats,
+                        "color": spec["objects"]["color"],
+                        "target_index": target_indices[0],
+                        "button_xy": [float(v) for v in spec["layout"]["button_xy"]],
+                        "cubes": [
+                            {
+                                "object_id": entry["object_id"],
+                                "requested_xy": [float(v) for v in entry["xy"]],
+                                "requested_yaw_rad": float(entry["yaw_rad"]),
+                                "actual_p": [float(v) for v in self._get_actor_position(actor)[:3]],
+                            }
+                            for entry, actor in zip(spec["layout"]["cubes"], self.spawned_cubes)
+                        ],
+                    }
         except SceneGenerationError:
             raise
         except Exception as exc:

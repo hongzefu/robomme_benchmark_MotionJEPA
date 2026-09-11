@@ -864,7 +864,8 @@ def cmd_run(
             "步骤 5 实跑：11 组各 episode 0～29，共 330 条；其余 770 条本轮不实跑",
         )
         mode = chosen.get("mode") or f"P0x{tier}"
-        print(f"[实跑] 用校准选出的 {mode}（--gpus {','.join(gpu_ids)} --workers {tier}）跑 330 条", flush=True)
+        source = "校准选出的" if chosen.get("measured", True) else "显式指定（未经测速）的"
+        print(f"[实跑] 用{source} {mode}（--gpus {','.join(gpu_ids)} --workers {tier}）跑 330 条", flush=True)
         result = invoke_generator(
             output_dir=root / "feasibility" / mode, manifest=feas_manifest,
             gpus=",".join(gpu_ids), workers=tier, log_path=logs / f"feasibility-{mode}.log",
@@ -892,6 +893,28 @@ def cmd_run(
             complete=videos.get("complete", 0), frame_mismatch=videos.get("frame_mismatch", 0),
             missing=videos.get("missing", 0), no_close=videos.get("no_close", 0), untraceable=untraceable,
         )
+        # COLLISION_RUNTIME：只覆盖两个视频任务（5 组 × 30 条 = 150 条）
+        video_rows = [row for row in rows if row["task"] in ("VideoUnmaskSwap", "VideoRepick")]
+        checked = sum(1 for row in video_rows if row["runtime_checks_total"] > 0)
+        # 「应检查但既未检查也未阻断」：跑完了、任务也通过了，却一条检查记录都没有
+        missing_checks = sum(
+            1 for row in video_rows
+            if row["runtime_checks_total"] == 0 and row["outcome"] == OUTCOME_PASS
+        )
+        runtime_rejected = sum(1 for row in video_rows if row["runtime_rejections"])
+        verdicts.add(
+            "COLLISION_RUNTIME", missing_checks == 0 and bool(video_rows),
+            unique=len(video_rows), checked=checked, missing_checks=missing_checks,
+            rejected=runtime_rejected,
+        )
+        # INJECTION_BINDING：每条成功样本都要有创建输入 vs 创建后位姿的绑定证据
+        bound = sum(1 for row in rows if row["injection_bound"])
+        unbound_success = sum(1 for row in rows if row["outcome"] == OUTCOME_PASS and not row["injection_bound"])
+        verdicts.add(
+            "INJECTION_BINDING", unbound_success == 0 and bound > 0,
+            unique=len(rows), bound=bound, mismatches=unbound_success,
+        )
+
         success_rows = [row for row in rows if row["outcome"] == OUTCOME_PASS]
         decoded = sum(1 for row in success_rows if row["video_frames"] == row["video_frames_expected"])
         failed_videos = sum(1 for row in rows if row["outcome"] != OUTCOME_PASS and row["video_status"] == "complete")
@@ -906,6 +929,10 @@ def cmd_run(
                 "tier_measured": chosen.get("measured", True),
                 "run": {k: v for k, v in result.items() if k != "rows"}, "rows": rows,
                 "outcome_counts": dict(outcomes), "video_counts": dict(videos), "execution_counts": dict(states),
+                "runtime_check_summary": {
+                    "video_rows": len(video_rows), "checked": checked,
+                    "missing_checks": missing_checks, "rejected": runtime_rejected,
+                },
                 "per_group": {
                     f"{task}/{difficulty}": dict(
                         Counter(row["outcome"] for row in rows if row["task"] == task and row["difficulty"] == difficulty)

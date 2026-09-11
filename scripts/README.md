@@ -442,6 +442,20 @@ uv run --no-sync python -m tests._shared.injection_campaign run --run-id "$INJEC
 
 # 步骤 5：用校准选出的档跑 330 条
 uv run --no-sync python -m tests._shared.injection_campaign run --run-id "$INJECTION_RUN_ID" --phase feasibility
+
+# 步骤 6：汇总各阶段判定与计数，写轻量包到 docs/validation/newtask-v2/<运行编号>/
+uv run --no-sync python -m tests._shared.injection_campaign report --run-id "$INJECTION_RUN_ID"
+```
+
+机器被别人占用、吞吐测不准时，改走这条：
+
+```bash
+# 只做串行参考，并行三项记 NOT_RUN
+uv run --no-sync python -m tests._shared.injection_campaign run \
+  --run-id "$INJECTION_RUN_ID" --phase calibration --skip-ladder
+# 用显式指定的档直接实跑（结果里标 tier_measured=false）
+uv run --no-sync python -m tests._shared.injection_campaign run \
+  --run-id "$INJECTION_RUN_ID" --phase feasibility --tier 12
 ```
 
 `compare` 单独做两个运行目录的完整 HDF5 逐位对拍，复用
@@ -457,6 +471,11 @@ uv run --no-sync python -m tests._shared.injection_campaign compare \
 
 `--subset-only` 只判交集（负载阶梯拿 120 条清单里的 16 条固定样本比串行参考时用）；
 该开关只放宽「一侧多出」，交集内的任何差异照样是 FAIL。
+
+`--skip-ladder` 让 `calibration` 只做串行参考、跳过档位阶梯，并行三项如实记 `NOT_RUN`；
+配套的 `--tier <n>` 让 `feasibility` 在没有校准结果时也能跑，但结果里打
+`tier_measured=false`，报告不得把它说成「校准选出的档」。机器被别人重度占用、
+吞吐测量必然失真时走这条路径，比测一组没有意义的数字诚实。
 
 **档位选择的口径**：不设 RSS／`free`／swap 三条软守卫，每卡 worker 从 12 一路加到 32
 （`--tiers` 可改），**实测到 OOM／池崩溃／超时为止**，用最后一个可用且吞吐最高的档做全量。

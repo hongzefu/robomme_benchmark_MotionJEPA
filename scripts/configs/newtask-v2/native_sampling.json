@@ -41,7 +41,7 @@
     },
     "VideoUnmaskSwap": {
       "path": "src/robomme/robomme_env/VideoUnmaskSwap.py",
-      "sha256": "c313dac5ff1f844cf4ea9714b564c4aec6d8e75a87c503f03df405a171f0a63f",
+      "sha256": "bf1b8fa75e7ae43aa4e2c5f6bdc52db6077c9498513b9f97bde4106030de3455",
       "anchors": [
         "config_easy",
         "config_medium",
@@ -53,7 +53,7 @@
     },
     "VideoRepick": {
       "path": "src/robomme/robomme_env/VideoRepick.py",
-      "sha256": "4f877002cacac8fcc0fa25ec954b2fbc6298efa78620d5cdf0257e8a2462f0da",
+      "sha256": "60774bed729dc52e88985deec7c41cc5dc637c43130341ed8951e49a32a72633",
       "anchors": [
         "config_easy",
         "config_medium",
