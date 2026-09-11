@@ -373,3 +373,113 @@ uv run --no-sync python scripts/generate_dataset_newseed.py --merge-only \
 加 `--delete-source` 会在合并成功后删掉逐 episode 源文件（默认保留；合并期间两份并存，
 需要双倍空间）。源文件按生成期写出的 metadata 逐条定位、不 glob，所以目录里混有失败残留
 也不会被误吸。
+
+### 3.4 新值注入（`--episode-specs`）
+
+把「每条 episode 取什么值」从环境内部的随机采样搬到外部的固定规格，用于
+[NEW_VALUE_INJECTION_TEST_PLAN.md](../NEW_VALUE_INJECTION_TEST_PLAN.md) 的专项。
+**不传这个参数时链路与改动前逐字相同**：`gym.make` 不多这个 kwarg，四个任务模块的每个
+消费点都退回原随机路径——`DEFAULT_PARITY` 验的就是这条。
+
+参数接受两种输入，按顶层字段自动区分：
+
+| 输入 | 顶层字段 | 用法 |
+|---|---|---|
+| 单份规格 | `spec_schema_version` | 配合 `--env` 与 `--episodes/--episode-start`，产物落 `--output-dir` 本身 |
+| 混跑清单 | `manifest_version` | 一次调用把多个任务／难度的 job 混进同一套进程池，每组落 `<输出根>/<任务>/<难度>` |
+
+清单必须分目录：同一任务不同难度的 seed 与 HDF5 文件名相同，不分会互相覆盖。
+清单里的 `spec_path` 相对清单文件所在目录：
+
+```json
+{
+  "manifest_version": 1,
+  "groups": [
+    {"task": "BinFill", "difficulty": "hard", "spec_path": "../specs/BinFill/hard.json", "episodes": [0, 1, 2]}
+  ]
+}
+```
+
+父进程在**建池之前**就把规格读完并逐条校验：必备字段、任务／难度一致、非有限数、
+`spec_sha256` 自洽、episode 不重复、未知顶层字段一律拒绝，错误输入绝不带进 worker。
+每个 job 拿一份独立深拷贝，worker 之间、同一 worker 的前后两局之间不共享可变缓存。
+
+**视频核验**在 `close()` 之后做，纯观测：按 `RobommeRecordWrapper` 的
+`video_prefix`（`<任务>_ep<k>_seed<s>[_FailRecover*]`）找文件、`ffprobe -count_frames`
+数帧、算 SHA-256，四态写进每条结果的 `video` 字段：
+
+| 状态 | 含义 |
+|---|---|
+| `complete` | 成功局帧数等于 HDF5 的 timestep 数；`FAILED_` 视频帧数 > 0 且可解码 |
+| `frame_mismatch` | 帧数对不上，或不可解码 |
+| `missing` | `videos/` 下没有匹配前缀的主视频 |
+| `no_close` | worker 没能返回结果（池崩溃／被杀），根本没走到 `close()` |
+
+⚠ 录像器本身**冻结**，不改、不覆盖、不打补丁（[AGENTS.md](../AGENTS.md) 强制规则第 11 条）。
+视频判定失败**不改变**任务结果，也不删已落盘的 HDF5，但 `VIDEO_INDEX`／`VIDEO_DECODE`
+必须如实记失败。
+
+## 四、新值注入专项的编排入口
+
+工具在 `tests._shared.injection_campaign`，属测试侧，**生产代码不导入它**。
+五个子命令，按执行顺序：
+
+```bash
+command -v uv
+INJECTION_RUN_ID=20260910-new-values-03
+
+# 步骤 0：冻结 11 组 × 100 条规格（运行编号不可复用，目录已存在直接拒绝）
+uv run --no-sync python -m tests._shared.injection_campaign plan --run-id "$INJECTION_RUN_ID"
+
+# 步骤 0：从冻结规格独立重算全部计数与几何
+uv run --no-sync python -m tests._shared.injection_campaign check --run-id "$INJECTION_RUN_ID"
+
+# 步骤 0 / 6：跑前、跑后各一套三类图
+uv run --no-sync python -m tests._shared.injection_campaign plot --run-id "$INJECTION_RUN_ID" --phase before
+
+# 步骤 3 + 4：串行参考两遍，再把每卡 worker 一路往上探到 OOM／超时
+uv run --no-sync python -m tests._shared.injection_campaign run --run-id "$INJECTION_RUN_ID" --phase calibration
+
+# 步骤 5：用校准选出的档跑 330 条
+uv run --no-sync python -m tests._shared.injection_campaign run --run-id "$INJECTION_RUN_ID" --phase feasibility
+```
+
+`compare` 单独做两个运行目录的完整 HDF5 逐位对拍，复用
+`tests/_shared/native_sampling_parity.py::compare_h5`（显式遍历全部 group、dataset 及
+各层 attribute，检查类型、形状与内容）：
+
+```bash
+uv run --no-sync python -m tests._shared.injection_campaign compare \
+  --left  artifacts/injection/$INJECTION_RUN_ID/parity/baseline \
+  --right artifacts/injection/$INJECTION_RUN_ID/parity/current \
+  --label DEFAULT_PARITY
+```
+
+`--subset-only` 只判交集（负载阶梯拿 120 条清单里的 16 条固定样本比串行参考时用）；
+该开关只放宽「一侧多出」，交集内的任何差异照样是 FAIL。
+
+**档位选择的口径**：不设 RSS／`free`／swap 三条软守卫，每卡 worker 从 12 一路加到 32
+（`--tiers` 可改），**实测到 OOM／池崩溃／超时为止**，用最后一个可用且吞吐最高的档做全量。
+吞吐的分子只数「成功且视频完整」的条数，同时另报失败数——否则一档跑得快只是因为大量
+样本快速失败，会被误当成加速。任务性失败（规划失败、碰撞拒绝）不算该档不可用，
+那是样本本身的问题，与并发规模无关。
+
+⚠ 超过五分钟的阶段按 [AGENTS.md](../AGENTS.md) 强制规则第 4 条用 detached tmux 起：
+
+```bash
+mkdir -p artifacts/logs
+tmux new-session -d -s "$INJECTION_RUN_ID-calibration" \
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m tests._shared.injection_campaign run \
+     --run-id $INJECTION_RUN_ID --phase calibration 2>&1 \
+     | tee artifacts/logs/$INJECTION_RUN_ID-calibration.log; \
+   echo \"EXIT_CODE=\$?\" >> artifacts/logs/$INJECTION_RUN_ID-calibration.log"
+tmux has-session -t "$INJECTION_RUN_ID-calibration"   # 判死活
+tmux attach -t "$INJECTION_RUN_ID-calibration"        # 围观，Ctrl-b d 脱开
+```
+
+⚠ **依据散列的口径**：规格里冻结的 `sampling_config_sha256` 是
+`native_sampling.json` 里 `parameters` + `positions` 的规范化散列（`operand_sha256`），
+**不是整个文件的字节散列**。该文件还带 `sources.sha256`（四个任务模块的源码指纹），
+接入新值后每改一次源码就得 `--extract-config` 刷新一次；拿文件散列当验收依据，会在一次
+纯源码改动之后把已冻结的规格全部误判成「依据漂移」。文件散列另存为
+`sampling_config_file_sha256`，变了只提示、不拦。

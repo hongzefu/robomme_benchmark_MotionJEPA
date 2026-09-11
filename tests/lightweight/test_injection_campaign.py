@@ -208,3 +208,135 @@ def test_运行编号不合法直接拒绝():
     for bad in ("", "../逃逸", "a/b", ".hidden"):
         with pytest.raises(campaign.CampaignError):
             campaign.run_root(bad)
+
+
+# ── 并发窗口与档位判据（步骤 4）────────────────────────────────────────────
+from tests._shared.injection_run import (  # noqa: E402
+    OUTCOME_PASS,
+    classify_outcome,
+    execution_state,
+    overlap_report,
+    tier_is_unusable,
+    tier_throughput,
+)
+
+
+def _window(pid, gpu, begin, end):
+    return {"task": "T", "episode": 0, "pid": pid, "gpu": gpu, "begin": begin, "end": end}
+
+
+def test_真并发时不同_pid_峰值达到_worker_数():
+    windows = [_window(1, "0", 0, 10), _window(2, "0", 1, 11), _window(3, "0", 2, 12)]
+    report = overlap_report(windows, ["0"], 3)
+    assert report["peak_distinct_pids"] == 3
+    assert report["passed"] is True
+
+
+def test_首尾相接的串行执行不算并发():
+    """三条依次执行、互不重叠：峰值只有 1，达不到 3 个 worker。"""
+    windows = [_window(1, "0", 0, 10), _window(2, "0", 10, 20), _window(3, "0", 20, 30)]
+    report = overlap_report(windows, ["0"], 3)
+    assert report["peak_distinct_pids"] == 1
+    assert report["passed"] is False
+
+
+def test_同一个_pid_重叠不算两个并发():
+    """同一个 worker 的两条记录即使时间上重叠，也只算一个并发。"""
+    windows = [_window(1, "0", 0, 10), _window(1, "0", 1, 11)]
+    report = overlap_report(windows, ["0"], 2)
+    assert report["peak_distinct_pids"] == 1
+    assert report["passed"] is False
+
+
+def test_双卡要求共同窗口大于零():
+    # 两张卡各跑各的且时间错开：每卡峰值够，但没有共同窗口
+    apart = [_window(1, "0", 0, 10), _window(2, "1", 20, 30)]
+    assert overlap_report(apart, ["0", "1"], 1)["both_busy_seconds"] == 0
+    assert overlap_report(apart, ["0", "1"], 1)["passed"] is False
+    together = [_window(1, "0", 0, 10), _window(2, "1", 5, 15)]
+    report = overlap_report(together, ["0", "1"], 1)
+    assert report["both_busy_seconds"] == 5
+    assert report["passed"] is True
+
+
+def test_单卡不要求共同窗口():
+    report = overlap_report([_window(1, "0", 0, 10), _window(2, "0", 1, 9)], ["0"], 2)
+    assert report["both_busy_seconds"] == 0
+    assert report["passed"] is True
+
+
+# ── 档位可用性与吞吐 ────────────────────────────────────────────────────────
+def _tier_result(rows, wall_s=60.0, timed_out=False):
+    return {"rows": rows, "wall_s": wall_s, "timed_out": timed_out}
+
+
+def _row(outcome=OUTCOME_PASS, video="complete", state="completed", error=None):
+    return {"outcome": outcome, "video_status": video, "execution_state": state, "error_type": error}
+
+
+def test_任务性失败不让该档判为不可用():
+    """⚠ 规划失败、碰撞拒绝是样本本身的问题，与并发规模无关，不能误伤档位。"""
+    rows = [_row(), _row("规划失败"), _row("碰撞拒绝")]
+    unusable, _ = tier_is_unusable(_tier_result(rows))
+    assert unusable is False
+
+
+def test_基础设施失败让该档判为不可用():
+    rows = [_row(), _row("未运行", state="infra_error", error="BrokenProcessPool")]
+    unusable, reason = tier_is_unusable(_tier_result(rows))
+    assert unusable is True and "OOM" in reason
+
+
+def test_内存错误也算该档不可用():
+    rows = [_row("未运行", state="infra_error", error="MemoryError")]
+    assert tier_is_unusable(_tier_result(rows))[0] is True
+
+
+def test_超时算该档不可用():
+    assert tier_is_unusable(_tier_result([_row()], timed_out=True))[0] is True
+
+
+def test_吞吐分子只数成功且视频完整的条数():
+    """⚠ 否则一档跑得快只是因为大量样本快速失败，会被误当成加速。"""
+    rows = [_row(), _row(), _row(video="missing"), _row("规划失败")]
+    throughput, delivered, failed = tier_throughput(_tier_result(rows, wall_s=60.0))
+    assert delivered == 2  # 第三条视频缺失、第四条任务失败，都不算交付
+    assert failed == 1
+    assert throughput == pytest.approx(2.0)
+
+
+def test_快速失败不会拿到高吞吐():
+    fast_fail = _tier_result([_row("规划失败") for _ in range(100)], wall_s=10.0)
+    slow_good = _tier_result([_row() for _ in range(10)], wall_s=60.0)
+    assert tier_throughput(fast_fail)[0] == 0.0
+    assert tier_throughput(slow_good)[0] > 0
+
+
+# ── 七类结果分类 ────────────────────────────────────────────────────────────
+@pytest.mark.parametrize(
+    ("record", "expected"),
+    [
+        ({"ok": True}, "通过"),
+        ({"ok": False, "error_type": "EpisodeSpecError", "failure_class": "task"}, "规格拒绝"),
+        ({"ok": False, "error_type": "BinCollisionError", "failure_class": "task"}, "碰撞拒绝"),
+        ({"ok": False, "error_type": "SpecBindingError", "failure_class": "task"}, "实际对象/动作不符"),
+        ({"ok": False, "error_type": "FailsafeTimeout", "failure_class": "task"}, "超时"),
+        ({"ok": False, "error_type": "ScrewPlanFailure", "failure_class": "task"}, "规划失败"),
+        ({"ok": False, "error_type": "SceneGenerationError", "failure_class": "task"}, "规划失败"),
+        ({"ok": False, "error_type": "TypeError", "failure_class": "code"}, "未运行"),
+        ({"ok": False, "error_type": "BrokenProcessPool", "failure_class": "infra"}, "未运行"),
+    ],
+)
+def test_七类结果互斥且系统错误不冒充物理不可行(record, expected):
+    assert classify_outcome(record) == expected
+
+
+def test_执行状态与任务结果分开记():
+    """系统错误计入执行状态，不能冒充物理不可行——两个字段互不覆盖。"""
+    record = {"ok": False, "error_type": "BrokenProcessPool", "failure_class": "infra"}
+    assert execution_state(record) == "infra_error"
+    assert classify_outcome(record) == "未运行"
+    # 任务性失败：确实跑完了，执行状态是 completed，只是任务没成功
+    record = {"ok": False, "error_type": "ScrewPlanFailure", "failure_class": "task"}
+    assert execution_state(record) == "completed"
+    assert classify_outcome(record) == "规划失败"

@@ -80,9 +80,32 @@ def canonical_json(payload: Any) -> str:
     return json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
 
 
+#: 不进规格身份散列的字段。
+#: * ``spec_sha256``：散列自身。
+#: * ``collision``：碰撞**诊断结果**（判定值、用掉几个候选），不是规格原文。
+#:   计划第二部分第二节明确要求「碰撞结果与规格原文分离，不为记录诊断而改写冻结记录或
+#:   其散列」。⚠ 实测踩过这一下：给碰撞检查加了一层不改判据的包围球粗筛之后，
+#:   ``min_g_m`` 的数值变了（粗筛跳过的对不再贡献精算值），同 seed 两次冻结的
+#:   ``VideoUnmaskSwap/hard`` 有 50/100 条散列不同——规格内容一模一样，只是诊断数字变了。
+#:   规格的**身份**只能由布局、对象、动作决定。
+SHA_EXCLUDED_FIELDS = frozenset({"spec_sha256", "collision"})
+
+
 def record_sha256(record: dict[str, Any]) -> str:
-    """对不含 ``spec_sha256`` 的记录取散列。"""
-    payload = {key: value for key, value in record.items() if key != "spec_sha256"}
+    """规格身份散列：排除散列自身与碰撞诊断结果，只覆盖布局、对象、动作。"""
+    payload = {key: value for key, value in record.items() if key not in SHA_EXCLUDED_FIELDS}
+    return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
+
+
+def operand_sha256(sampling: dict[str, Any]) -> str:
+    """规格生成**实际消费的那部分**原值依据的散列：只取 ``parameters`` 与 ``positions``。
+
+    ⚠ 不能用 ``native_sampling.json`` 的整个文件字节散列。该文件里还有
+    ``sources.sha256``——四个任务模块的源码指纹，接入新值后每改一次源码就得刷新一次。
+    拿文件散列当验收依据，会在一次纯源码改动之后把已经冻结的规格全部判成「依据漂移」，
+    而真正的取值域（parameters / positions）根本没动。实测就踩过这一下。
+    """
+    payload = {"parameters": sampling["parameters"], "positions": sampling["positions"]}
     return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
 
 
@@ -166,6 +189,8 @@ class GroupResult:
     stats: dict[str, Any] = field(default_factory=dict)
 
     def as_document(self, sampling_config_sha256: str) -> dict[str, Any]:
+        """``sampling_config_sha256`` 存的是 :func:`operand_sha256`（取值域散列），
+        不是配置文件的字节散列——理由见该函数的说明。"""
         return {
             "spec_schema_version": SPEC_SCHEMA_VERSION,
             "task": self.task,

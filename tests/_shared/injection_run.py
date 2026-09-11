@@ -265,3 +265,91 @@ def tier_throughput(result: dict[str, Any]) -> tuple[float, int, int]:
     failed = sum(1 for row in result["rows"] if row["outcome"] != OUTCOME_PASS)
     minutes = max(result["wall_s"], 1e-9) / 60.0
     return delivered / minutes, delivered, failed
+
+
+# ── 真实并发窗口（PARALLEL_OVERLAP）────────────────────────────────────────
+def solve_windows(output_dir: Path) -> list[dict[str, Any]]:
+    """每条样本真正在跑 step 的时间窗。
+
+    ⚠ 用 ``solve`` 段而不是整条记录的起止：``make``（建环境、导入）、``reset`` 与
+    ``close``（mp4 编码）都可能在多个 worker 之间重叠，但那只是排队与编码重叠，
+    **不是真实并发执行**。计划第 5.7 节明确要求「只有排队／导入重叠不算」。
+    """
+    path = output_dir / "episode_results.jsonl"
+    if not path.is_file():
+        return []
+    windows = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        record = json.loads(line)
+        phases = record.get("phases") or {}
+        bound = record.get("bound") or {}
+        started, finished = record.get("started_at"), record.get("finished_at")
+        if started is None or finished is None or "solve_s" not in phases:
+            continue
+        begin = started + float(phases.get("make_s", 0.0)) + float(phases.get("reset_s", 0.0))
+        end = begin + float(phases["solve_s"])
+        if end <= begin:
+            continue
+        windows.append(
+            {
+                "task": record["task"], "episode": record["episode"],
+                "pid": bound.get("pid"), "gpu": str(bound.get("gpu")),
+                "begin": begin, "end": end,
+            }
+        )
+    return windows
+
+
+def overlap_report(windows: list[dict[str, Any]], gpus: Sequence[str], workers_per_gpu: int) -> dict[str, Any]:
+    """扫描时间线算并发峰值：总体不同 PID 峰值、每卡峰值、双卡共同窗口时长。"""
+    events: list[tuple[float, int, dict[str, Any]]] = []
+    for window in windows:
+        events.append((window["begin"], 1, window))
+        events.append((window["end"], -1, window))
+    # ⚠ 同一时刻先处理结束（-1）再处理开始（+1）：两条首尾相接的窗口（[0,10] 与 [10,20]）
+    # 是串行执行，不是并发。反过来排会在交界处凭空多出一个峰值，把串行误判成真并发。
+    events.sort(key=lambda item: (item[0], item[1]))
+
+    live: dict[int, dict[str, Any]] = {}
+    peak_distinct_pids = 0
+    peak_per_gpu = {gpu: 0 for gpu in gpus}
+    both_busy_seconds = 0.0
+    previous = None
+    counter = 0
+    for timestamp, delta, window in events:
+        if previous is not None and timestamp > previous:
+            by_gpu = {gpu: sum(1 for item in live.values() if item["gpu"] == gpu) for gpu in gpus}
+            if len(gpus) > 1 and all(by_gpu.get(gpu, 0) > 0 for gpu in gpus):
+                both_busy_seconds += timestamp - previous
+        previous = timestamp
+        if delta > 0:
+            counter += 1
+            live[counter] = window
+            window["_key"] = counter
+        else:
+            live.pop(window.get("_key", -1), None)
+        distinct = len({item["pid"] for item in live.values() if item["pid"] is not None})
+        peak_distinct_pids = max(peak_distinct_pids, distinct)
+        for gpu in gpus:
+            count = len({item["pid"] for item in live.values() if item["gpu"] == gpu and item["pid"] is not None})
+            peak_per_gpu[gpu] = max(peak_per_gpu[gpu], count)
+
+    total_workers = workers_per_gpu * len(gpus)
+    # 单卡时「双卡共同窗口 > 0」这条不适用，只验不同 PID 峰值达到 worker 数；
+    # 多卡时才加上每卡峰值与双卡共同窗口两条。
+    passed = (
+        peak_distinct_pids >= total_workers
+        and all(peak_per_gpu[gpu] >= workers_per_gpu for gpu in gpus)
+        and (len(gpus) == 1 or both_busy_seconds > 0)
+    )
+    return {
+        "peak_distinct_pids": peak_distinct_pids,
+        "peak_per_gpu": peak_per_gpu,
+        "both_busy_seconds": round(both_busy_seconds, 3),
+        "workers_per_gpu": workers_per_gpu,
+        "total_workers": total_workers,
+        "samples": len(windows),
+        "passed": passed,
+    }

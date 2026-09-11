@@ -1300,8 +1300,14 @@ def _spec_canonical_json(payload: Any) -> str:
     return json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
 
 
+#: 不进规格身份散列的字段；必须与 ``tests._shared.injection_specs.SHA_EXCLUDED_FIELDS`` 一致。
+#: ``collision`` 是碰撞诊断结果而不是规格原文，检查器内部的无害优化会改变它的数值，
+#: 不该因此让已冻结的规格全部对不上散列。
+SPEC_SHA_EXCLUDED_FIELDS = frozenset({"spec_sha256", "collision"})
+
+
 def spec_record_sha256(record: Mapping[str, Any]) -> str:
-    payload = {key: value for key, value in record.items() if key != "spec_sha256"}
+    payload = {key: value for key, value in record.items() if key not in SPEC_SHA_EXCLUDED_FIELDS}
     return _sha256_bytes(_spec_canonical_json(payload).encode("utf-8"))
 
 
@@ -1332,7 +1338,7 @@ def validate_episode_spec(record: Mapping[str, Any], task: str, difficulty: str,
         )
     if not isinstance(record["episode"], int) or isinstance(record["episode"], bool):
         raise EpisodeSpecError(f"{where}: episode 必须是整数")
-    _assert_finite({key: value for key, value in record.items() if key != "spec_sha256"}, where)
+    _assert_finite({key: value for key, value in record.items() if key not in SPEC_SHA_EXCLUDED_FIELDS}, where)
     actual = spec_record_sha256(record)
     if actual != record["spec_sha256"]:
         raise EpisodeSpecError(f"{where}: spec_sha256 不符（重算 {actual}，文件写的 {record['spec_sha256']}）")

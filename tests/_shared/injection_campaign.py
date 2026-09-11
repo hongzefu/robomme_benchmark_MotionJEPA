@@ -41,6 +41,7 @@ from tests._shared.injection_specs import (  # noqa: E402
     SPEC_SCHEMA_VERSION,
     DEFAULT_SEED,
     build_group,
+    operand_sha256,
     canonical_json,
     record_sha256,
     rotate_xy,
@@ -85,7 +86,10 @@ def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path) -> d
         raise CampaignError(f"运行根目录已存在，编号不可复用：{root}")
 
     sampling = json.loads(sampling_config.read_text(encoding="utf-8"))
-    config_sha = _sha256_file(sampling_config)
+    # 冻结进规格的是「取值域散列」（parameters + positions），不是文件字节散列；
+    # 文件字节散列另存一份作参考，源码指纹刷新时它会变，但不影响验收。
+    config_sha = operand_sha256(sampling)
+    file_sha = _sha256_file(sampling_config)
 
     started = time.monotonic()
     groups_meta: list[dict[str, Any]] = []
@@ -115,7 +119,8 @@ def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path) -> d
         "generator_seed": seed,
         "per_group": per_group,
         "sampling_config_path": str(sampling_config.relative_to(REPO_ROOT)),
-        "sampling_config_sha256": config_sha,
+        "sampling_operands_sha256": config_sha,
+        "sampling_config_file_sha256": file_sha,
         "groups": groups_meta,
         "excluded_groups": [list(item) for item in EXCLUDED_GROUPS],
         "elapsed_s": round(time.monotonic() - started, 1),
@@ -540,8 +545,19 @@ def _states_of(task: str, record: dict[str, Any]) -> dict[int, bc.ObjectState]:
 def cmd_check(run_id: str, sampling_config: Path) -> dict[str, Any]:
     root, manifest, documents = load_group_documents(run_id)
     sampling = json.loads(sampling_config.read_text(encoding="utf-8"))
-    if _sha256_file(sampling_config) != manifest["sampling_config_sha256"]:
-        raise CampaignError("原值配置的散列与冻结时不符，拒绝在漂移的依据上验收")
+    frozen = manifest.get("sampling_operands_sha256") or manifest.get("sampling_config_sha256")
+    if operand_sha256(sampling) != frozen:
+        raise CampaignError(
+            "原值取值域（parameters / positions）的散列与冻结时不符，拒绝在漂移的依据上验收；"
+            f"当前 {operand_sha256(sampling)[:12]}…，冻结时 {str(frozen)[:12]}…"
+        )
+    current_file_sha = _sha256_file(sampling_config)
+    if manifest.get("sampling_config_file_sha256") not in (None, current_file_sha):
+        # 文件动过但取值域没动：正常情况是接入新值后刷新了 sources.sha256，如实报告不拦
+        print(
+            f"  注意：{sampling_config.name} 文件散列已变（多半是刷新了源码指纹），"
+            "但 parameters / positions 未变，继续验收"
+        )
 
     verdicts = Verdicts()
     started = time.monotonic()
@@ -584,15 +600,19 @@ def _index_h5(root: Path) -> dict[tuple[str, int], Path]:
     return index
 
 
-def cmd_compare(left_dir: Path, right_dir: Path, label: str) -> dict[str, Any]:
+def cmd_compare(left_dir: Path, right_dir: Path, label: str, *, subset_only: bool = False) -> dict[str, Any]:
     """逐位比较两个运行目录里同名 episode 的完整 HDF5。
 
     复用 ``tests/_shared/native_sampling_parity.py::compare_h5``——它显式遍历全部
     group、dataset 及各层 attribute，检查类型、形状与内容。保持这个全集覆盖，
     不能只挑动作字段比较。
 
-    只在一侧出现的 episode 单列为 ``only_left``／``only_right``，**不算通过**：
+    只在一侧出现的 episode 单列为 ``only_left``／``only_right``，默认**不算通过**：
     少产物和内容不一致是两种不同的失败，不能互相掩盖。
+
+    ``subset_only=True`` 时只判交集——负载阶梯拿 120 条清单里的那 16 条固定样本去比
+    16 条的串行参考，另外 104 条本来就只在一侧，不该因此判失败。⚠ 这个开关只放宽
+    「一侧多出」，交集内的任何差异照样是 FAIL，两侧交集为空也是 FAIL。
     """
     from tests._shared.native_sampling_parity import compare_h5
 
@@ -608,7 +628,9 @@ def cmd_compare(left_dir: Path, right_dir: Path, label: str) -> dict[str, Any]:
         if detail:
             differences.append({"task": key[0], "episode": key[1], "differences": detail[:20], "count": len(detail)})
 
-    passed = not differences and not only_left and not only_right and bool(shared)
+    passed = not differences and bool(shared)
+    if not subset_only:
+        passed = passed and not only_left and not only_right
     payload = {
         "label": label,
         "left": str(left_dir),
@@ -617,14 +639,243 @@ def cmd_compare(left_dir: Path, right_dir: Path, label: str) -> dict[str, Any]:
         "only_left": [f"{task}/ep{episode}" for task, episode in only_left],
         "only_right": [f"{task}/ep{episode}" for task, episode in only_right],
         "difference_episodes": differences,
+        "subset_only": subset_only,
         "passed": passed,
     }
     print(
         f"{label}={'PASS' if passed else 'FAIL'} compared={len(shared)} "
         f"differences={len(differences)} only_left={len(only_left)} only_right={len(only_right)}"
+        + (" subset_only=1" if subset_only else "")
     )
     for item in differences[:5]:
         print(f"  {item['task']}/ep{item['episode']}: {item['count']} 处差异，首条 {item['differences'][0]}")
+    return payload
+
+
+# ── run：步骤 3～5 的执行编排 ───────────────────────────────────────────────
+def cmd_run(run_id: str, phase: str, sampling_config: Path, tiers: Sequence[int] | None = None) -> dict[str, Any]:
+    """按阶段跑：``calibration``（步骤 3+4）或 ``feasibility``（步骤 5）。
+
+    每一步都复用生产入口 ``scripts/generate_dataset_newseed.py``，命令、退出码、墙钟与
+    资源采样全部留档；本函数只做编排与判定，不自己建仿真。
+    """
+    from tests._shared.injection_run import (
+        CALIBRATION_GROUPS,
+        FEASIBILITY_EPISODES,
+        LOAD_EPISODES,
+        OUTCOME_PASS,
+        SERIAL_EPISODES,
+        WORKER_TIERS,
+        invoke_generator,
+        overlap_report,
+        solve_windows,
+        tier_is_unusable,
+        tier_throughput,
+        write_manifest,
+    )
+
+    root, manifest_doc, documents = load_group_documents(run_id)
+    specs_root = root / "specs"
+    logs = REPO_ROOT / "artifacts" / "logs" / run_id
+    verdicts = Verdicts()
+    payload: dict[str, Any] = {"run_id": run_id, "phase": phase, "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+
+    if phase == "calibration":
+        # ── 步骤 3：16 条固定样本单卡单 worker 跑两遍，建立「标准答案」──────────
+        serial_manifest = write_manifest(
+            root / "manifests" / "serial16.json", CALIBRATION_GROUPS, SERIAL_EPISODES, specs_root,
+            "步骤 3 串行参考：四个校准组各 episode 0～3，共 16 条固定样本",
+        )
+        runs: dict[str, dict[str, Any]] = {}
+        for label in ("S0a", "S0b"):
+            print(f"[串行参考] {label} 开跑（GPU 0，单 worker，16 条）", flush=True)
+            runs[label] = invoke_generator(
+                output_dir=root / "calibration" / label, manifest=serial_manifest,
+                gpus="0", workers=1, log_path=logs / f"{label}.log", sampling_config=sampling_config,
+            )
+            print(f"[串行参考] {label} 完成，墙钟 {runs[label]['wall_s']} 秒，退出码 {runs[label]['exit_code']}", flush=True)
+
+        serial = cmd_compare(root / "calibration" / "S0a", root / "calibration" / "S0b", "SERIAL_REFERENCE")
+        # 两遍同失败的条从可比数里扣除：重复失败不构成成功参考
+        failed_a = {(row["task"], row["episode"]) for row in runs["S0a"]["rows"] if row["outcome"] != OUTCOME_PASS}
+        failed_b = {(row["task"], row["episode"]) for row in runs["S0b"]["rows"] if row["outcome"] != OUTCOME_PASS}
+        both_failed = sorted(failed_a & failed_b)
+        verdicts.add(
+            "SERIAL_REFERENCE", serial["passed"], unique=len(SERIAL_EPISODES) * len(CALIBRATION_GROUPS),
+            comparable=serial["compared"], both_failed=len(both_failed), differences=len(serial["difference_episodes"]),
+        )
+        payload["serial"] = {
+            "runs": {label: {k: v for k, v in item.items() if k != "rows"} for label, item in runs.items()},
+            "compare": serial, "both_failed": [f"{task}/ep{episode}" for task, episode in both_failed],
+            "rows": {label: item["rows"] for label, item in runs.items()},
+        }
+        if not serial["passed"]:
+            print("SERIAL_REFERENCE 未通过：两遍不一致，按计划停止，不进档位阶梯", flush=True)
+            payload["verdicts"] = verdicts.records
+            _write_json(root / "calibration_result.json", payload)
+            for line in verdicts.lines:
+                print(line)
+            return payload
+
+        # ── 步骤 4：120 条清单，每卡 worker 数一路往上探到 OOM／超时为止 ────────
+        load_manifest = write_manifest(
+            root / "manifests" / "load120.json", CALIBRATION_GROUPS, LOAD_EPISODES, specs_root,
+            "步骤 4 负载阶梯：四个校准组各 episode 0～29，共 120 条，每档同一份清单",
+        )
+        # ⚠ 本轮档位阶梯在**单 GPU（GPU 0）**上测（2026-09-10 用户决定：
+        # 「改为在gpu0上测速 单gpu 的worker数量不变」）。原因是 GPU 1 被另一个用户的进程
+        # 占了 33.7 GB，双卡高档位跑不起来。每卡 worker 的阶梯刻度保持不变，
+        # 只是不再乘 2、不再开第二张卡；因此 PARALLEL_* 的结论只覆盖单卡多 worker，
+        # 双卡逐位一致本轮没有取得新值证据，报告里单列。
+        gpu_ids = ["0"]
+        ladder: list[dict[str, Any]] = []
+        stopped_at: dict[str, Any] | None = None
+        for tier in (tiers or WORKER_TIERS):
+            mode = f"P0x{tier}"
+            print(f"[档位阶梯] GPU 0 单卡 {tier} worker（--gpus 0 --workers {tier}）开跑，120 条", flush=True)
+            result = invoke_generator(
+                output_dir=root / "calibration" / mode, manifest=load_manifest,
+                gpus=",".join(gpu_ids), workers=tier, log_path=logs / f"{mode}.log", sampling_config=sampling_config,
+            )
+            unusable, reason = tier_is_unusable(result)
+            throughput, delivered, failed = tier_throughput(result)
+            overlap = overlap_report(solve_windows(root / "calibration" / mode), gpu_ids, tier)
+            content = cmd_compare(
+                root / "calibration" / "S0a", root / "calibration" / mode,
+                f"PARALLEL_CONTENT@{mode}", subset_only=True,
+            )
+            entry = {
+                "tier": tier, "mode": mode, "gpus": list(gpu_ids), "workers": tier,
+                "unusable": unusable, "reason": reason,
+                "wall_s": result["wall_s"], "exit_code": result["exit_code"], "timed_out": result["timed_out"],
+                "delivered": delivered, "failed": failed, "delivered_per_min": round(throughput, 3),
+                "overlap": overlap, "content": content,
+                "resources_before": result["resources_before"], "resources_after": result["resources_after"],
+                "peak_rss_mb": max((row["peak_rss_mb"] or 0 for row in result["rows"]), default=0),
+                "command": result["command"], "log": result["log"],
+            }
+            ladder.append(entry)
+            print(
+                f"[档位阶梯] {mode}：{'不可用（' + reason + '）' if unusable else '可用'}，"
+                f"交付 {delivered} 条 / 失败 {failed} 条 / 墙钟 {result['wall_s']} 秒 / "
+                f"吞吐 {throughput:.3f} 条每分钟 / 峰值 RSS {entry['peak_rss_mb']:.0f} MB",
+                flush=True,
+            )
+            if unusable:
+                # 实测到 OOM／池崩溃／超时：不再往上探，用最后一个可用档
+                stopped_at = entry
+                break
+
+        usable = [item for item in ladder if not item["unusable"] and item["content"]["passed"] and item["overlap"]["passed"]]
+        chosen = max(usable, key=lambda item: item["delivered_per_min"]) if usable else None
+        max_stable = max((item["tier"] for item in ladder if not item["unusable"]), default=None)
+
+        content_ok = bool(ladder) and all(item["content"]["passed"] for item in ladder if not item["unusable"])
+        overlap_ok = bool(ladder) and all(item["overlap"]["passed"] for item in ladder if not item["unusable"])
+        verdicts.add(
+            "PARALLEL_CONTENT", content_ok, unique=16, configs=len([i for i in ladder if not i["unusable"]]),
+            differences=sum(len(item["content"]["difference_episodes"]) for item in ladder),
+        )
+        for item in ladder:
+            if item["unusable"]:
+                continue
+            verdicts.add(
+                "PARALLEL_OVERLAP", item["overlap"]["passed"], mode=item["mode"], gpus=len(gpu_ids),
+                workers_per_gpu=item["tier"], peak_distinct_pids=item["overlap"]["peak_distinct_pids"],
+                both_busy_s=item["overlap"]["both_busy_seconds"],
+            )
+        verdicts.add(
+            "PARALLEL_SCALE", chosen is not None,
+            chosen=chosen["mode"] if chosen else "none",
+            workers_per_gpu=chosen["tier"] if chosen else 0,
+            delivered_per_min=chosen["delivered_per_min"] if chosen else 0,
+            failed=chosen["failed"] if chosen else 0,
+            peak_rss_gb=round((chosen["peak_rss_mb"] if chosen else 0) / 1024, 1),
+            max_stable=f"P0x{max_stable}" if max_stable else "none",
+            highest_failed=stopped_at["mode"] if stopped_at else "none",
+        )
+        payload.update({"ladder": ladder, "chosen": chosen, "max_stable": max_stable, "stopped_at": stopped_at})
+        payload["gpu_note"] = (
+            "本轮档位阶梯在 GPU 0 单卡上测；GPU 1 被另一个用户的进程占用 33.7 GB，"
+            "双卡对拍未做，PARALLEL_* 的结论只覆盖单卡多 worker"
+        )
+        if chosen is None:
+            print("没有任何合格的档：按计划停止并报告，不放宽判据、不换规格", flush=True)
+
+    elif phase == "feasibility":
+        calibration = root / "calibration_result.json"
+        if not calibration.is_file():
+            raise CampaignError(f"实跑前必须先跑校准：缺 {calibration}")
+        chosen = json.loads(calibration.read_text(encoding="utf-8")).get("chosen")
+        if not chosen:
+            raise CampaignError("校准没有选出合格的双卡档，拒绝启动实跑")
+        tier = int(chosen["tier"])
+        gpu_ids = chosen.get("gpus") or ["0"]
+        groups = [(item["task"], item["difficulty"]) for item in manifest_doc["groups"]]
+        feas_manifest = write_manifest(
+            root / "manifests" / "feasibility330.json", groups, FEASIBILITY_EPISODES, specs_root,
+            "步骤 5 实跑：11 组各 episode 0～29，共 330 条；其余 770 条本轮不实跑",
+        )
+        mode = chosen.get("mode") or f"P0x{tier}"
+        print(f"[实跑] 用校准选出的 {mode}（--gpus {','.join(gpu_ids)} --workers {tier}）跑 330 条", flush=True)
+        result = invoke_generator(
+            output_dir=root / "feasibility" / mode, manifest=feas_manifest,
+            gpus=",".join(gpu_ids), workers=tier, log_path=logs / f"feasibility-{mode}.log",
+            sampling_config=sampling_config, timeout_s=6 * 3600,
+        )
+        rows = result["rows"]
+        outcomes = Counter(row["outcome"] for row in rows)
+        videos = Counter(row["video_status"] for row in rows)
+        states = Counter(row["execution_state"] for row in rows)
+        expected = len(groups) * len(FEASIBILITY_EPISODES)
+        verdicts.add(
+            "FEASIBILITY", len(rows) == expected, unique=expected, executed=len(rows),
+            unclassified=sum(1 for row in rows if row["outcome"] not in outcomes),
+            succeeded=outcomes.get(OUTCOME_PASS, 0), attempt=0,
+        )
+        verdicts.add(
+            "RESULT_COVERAGE", len(rows) == expected,
+            all_recorded=len(rows), all_success=outcomes.get(OUTCOME_PASS, 0),
+        )
+        untraceable = sum(
+            1 for row in rows if row["video_status"] in ("missing", "no_close") and not row["video_reason"]
+        )
+        verdicts.add(
+            "VIDEO_INDEX", len(rows) == expected and untraceable == 0, rows=len(rows),
+            complete=videos.get("complete", 0), frame_mismatch=videos.get("frame_mismatch", 0),
+            missing=videos.get("missing", 0), no_close=videos.get("no_close", 0), untraceable=untraceable,
+        )
+        success_rows = [row for row in rows if row["outcome"] == OUTCOME_PASS]
+        decoded = sum(1 for row in success_rows if row["video_frames"] == row["video_frames_expected"])
+        failed_videos = sum(1 for row in rows if row["outcome"] != OUTCOME_PASS and row["video_status"] == "complete")
+        verdicts.add(
+            "VIDEO_DECODE", decoded == len(success_rows), success_rows=len(success_rows),
+            decoded_eq_timesteps=decoded, failed_videos=failed_videos,
+            mismatches=len(success_rows) - decoded,
+        )
+        payload.update(
+            {
+                "tier": tier, "mode": mode, "gpus": gpu_ids,
+                "run": {k: v for k, v in result.items() if k != "rows"}, "rows": rows,
+                "outcome_counts": dict(outcomes), "video_counts": dict(videos), "execution_counts": dict(states),
+                "per_group": {
+                    f"{task}/{difficulty}": dict(
+                        Counter(row["outcome"] for row in rows if row["task"] == task and row["difficulty"] == difficulty)
+                    )
+                    for task, difficulty in groups
+                },
+            }
+        )
+        _write_json(root / "feasibility_results.json", {"run_id": run_id, "tier": tier, "rows": rows})
+    else:
+        raise CampaignError(f"未知阶段 {phase}")
+
+    payload["verdicts"] = verdicts.records
+    payload["passed"] = verdicts.passed
+    _write_json(root / f"{phase}_result.json", payload)
+    for line in verdicts.lines:
+        print(line)
+    print(f"RUN={'PASS' if verdicts.passed else 'FAIL'} phase={phase}")
     return payload
 
 
@@ -647,11 +898,24 @@ def main(argv: Sequence[str] | None = None) -> int:
     plot.add_argument("--run-id", required=True)
     plot.add_argument("--phase", default="before", choices=("before", "after"))
 
+    runner = sub.add_parser("run", help="步骤 3～5 的执行编排")
+    runner.add_argument("--run-id", required=True)
+    runner.add_argument("--phase", required=True, choices=("calibration", "feasibility"))
+    runner.add_argument("--sampling-config", default=str(DEFAULT_SAMPLING_CONFIG))
+    runner.add_argument(
+        "--tiers", default=None,
+        help="逗号分隔的每卡 worker 档位，默认 12,16,20,24,28,32；一路向上探到 OOM／超时为止",
+    )
+
     compare = sub.add_parser("compare", help="两个运行目录的完整 HDF5 逐位对拍")
     compare.add_argument("--left", required=True, help="参考侧目录")
     compare.add_argument("--right", required=True, help="候选侧目录")
     compare.add_argument("--label", default="COMPARE", help="判定行名，如 DEFAULT_PARITY")
     compare.add_argument("--out", default=None, help="把完整结果写到该 JSON")
+    compare.add_argument(
+        "--subset-only", action="store_true",
+        help="只判交集：一侧多出的 episode 照常报告但不判失败（负载阶梯对串行参考时用）",
+    )
 
     args = parser.parse_args(argv)
     try:
@@ -665,8 +929,15 @@ def main(argv: Sequence[str] | None = None) -> int:
 
             cmd_plot(args.run_id, args.phase)
             return 0
+        if args.command == "run":
+            tiers = [int(item) for item in args.tiers.split(",")] if args.tiers else None
+            result = cmd_run(args.run_id, args.phase, Path(args.sampling_config).resolve(), tiers)
+            return 0 if result.get("passed") else 1
         if args.command == "compare":
-            payload = cmd_compare(Path(args.left).resolve(), Path(args.right).resolve(), args.label)
+            payload = cmd_compare(
+                Path(args.left).resolve(), Path(args.right).resolve(), args.label,
+                subset_only=args.subset_only,
+            )
             if args.out:
                 _write_json(Path(args.out), payload)
             return 0 if payload["passed"] else 1

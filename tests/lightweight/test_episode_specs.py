@@ -253,7 +253,9 @@ def test_关闭态的_job_不带规格字段():
 
 
 # ── 冻结产物的真实回归 ──────────────────────────────────────────────────────
-FROZEN = REPO_ROOT / "artifacts" / "injection" / "20260910-new-values-02" / "specs"
+#: 最终口径（身份散列排除 collision 诊断字段）下冻结的运行编号。
+#: 更早的 01／02／03 是开发迭代产物，散列口径不同，不作回归对象。
+FROZEN = REPO_ROOT / "artifacts" / "injection" / "20260910-new-values-04" / "specs"
 
 
 @pytest.mark.skipif(not FROZEN.is_dir(), reason="该运行编号的冻结规格不在工作区")
