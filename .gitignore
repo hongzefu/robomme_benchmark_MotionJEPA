@@ -212,7 +212,22 @@ __marimo__/
 .agents/
 
 # 数据生成产物（h5 与视频体量巨大，不入 git）
-/artifacts/
+# ⚠ 必须写成 /artifacts/* 而不是 /artifacts/——目录级排除无法从内部反选
+/artifacts/*
+!/artifacts/injection/
+/artifacts/injection/*
+!/artifacts/injection/*/
+/artifacts/injection/*/*
+# 关键小产物入库（2026-09-11 用户决定「关键小产物都加入 git」）：冻结规格与三份判定 JSON；
+# feasibility/、calibration/、plots*/、videos/ 等重产物继续忽略
+!/artifacts/injection/*/specs/
+!/artifacts/injection/*/manifest.json
+!/artifacts/injection/*/plan_stats.json
+!/artifacts/injection/*/check_result.json
+# 01～03 是 04 之前的开发迭代产物（格式与散列口径不同，不作交付），整目录继续忽略
+/artifacts/injection/20260910-new-values-01/
+/artifacts/injection/20260910-new-values-02/
+/artifacts/injection/20260910-new-values-03/
 
 # 跑前分布 2D 图产物（约 50 MB，本地生成、不入库；文档链接指向本地文件）
 scripts/injection-before-2d/figures/
