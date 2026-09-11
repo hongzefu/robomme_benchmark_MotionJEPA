@@ -950,7 +950,7 @@ video_sha_mismatch=0`——逐条核了 `videos/` 下的实际文件与 SHA-256�
 
 轻量包在 [docs/validation/newtask-v2/20260910-new-values-04/](docs/validation/newtask-v2/20260910-new-values-04/)。
 
-**本轮验收总计：21 项判定，18 项 PASS、1 项 FAIL（`PARALLEL_OVERLAP`）、
+**本轮验收总计：22 项判定，19 项 PASS、1 项 FAIL（`PARALLEL_OVERLAP`）、
 2 项 NOT_RUN（`PARALLEL_SCALE`、`COLLISION_RERENDER`）。**
 按第 5.7 节「只有全部具名项实际通过才称全方案通过」，本方案**尚未整体通过**，
 未通过与未执行的三项如实单列，不改写成整体通过。
