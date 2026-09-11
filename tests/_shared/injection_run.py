@@ -201,16 +201,19 @@ def read_result_rows(output_dir: Path) -> list[dict[str, Any]]:
     path = output_dir / "episode_results.jsonl"
     if not path.is_file():
         return []
-    latest: dict[tuple[str, int], dict[str, Any]] = {}
+    # ⚠ key 必须带 difficulty。清单混跑时同一个任务有 2～3 个难度，
+    # BinFill/easy/ep0、BinFill/medium/ep0、BinFill/hard/ep0 的 (task, episode) 完全相同，
+    # 只用两元组做 key 会让它们互相覆盖，330 行塌成 4 任务 × 30 = 120 行。
+    latest: dict[tuple[str, str, int], dict[str, Any]] = {}
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         record = json.loads(line)
-        key = (record["task"], int(record["episode"]))
+        key = (record["task"], str(record.get("difficulty")), int(record["episode"]))
         if key not in latest or record.get("attempt", 0) >= latest[key].get("attempt", 0):
             latest[key] = record
     rows = []
-    for (task, episode), record in sorted(latest.items()):
+    for (task, _difficulty, episode), record in sorted(latest.items()):
         video = record.get("video") or {}
         checks = record.get("runtime_checks") or []
         rejections = [item["rejection"] for item in checks if item.get("rejection")]

@@ -586,13 +586,17 @@ def cmd_check(run_id: str, sampling_config: Path) -> dict[str, Any]:
 
 
 # ── compare：两个运行目录的 HDF5 逐位对拍 ───────────────────────────────────
-def _index_h5(root: Path) -> dict[tuple[str, int], Path]:
-    """按 ``(任务, episode)`` 索引一个运行目录下的全部 HDF5。
+def _index_h5(root: Path) -> dict[tuple[str, str, int], Path]:
+    """按 ``(任务, 难度, episode)`` 索引一个运行目录下的全部 HDF5。
 
     清单模式下每组落在 ``<根>/<任务>/<难度>/hdf5_files/`` 里，单组模式落在
-    ``<根>/hdf5_files/``，所以这里直接递归找，不假设层级。
+    ``<根>/hdf5_files/``，所以递归找、从相对路径推难度，不假设固定层级。
+
+    ⚠ key 必须带难度。同一任务不同难度的 HDF5 **文件名完全相同**（`<任务>_ep<k>_seed<s>`，
+    seed 只由任务与 episode 决定），只靠 `(任务, episode)` 会让 easy/medium/hard 互相覆盖，
+    比较时凭空少掉三分之二的样本还看不出来。
     """
-    index: dict[tuple[str, int], Path] = {}
+    index: dict[tuple[str, str, int], Path] = {}
     for path in sorted(root.rglob("hdf5_files/*.h5")):
         name = path.stem  # <任务>_ep<k>_seed<s>
         try:
@@ -600,7 +604,9 @@ def _index_h5(root: Path) -> dict[tuple[str, int], Path]:
             episode = int(rest.split("_seed", 1)[0])
         except (ValueError, IndexError):
             continue
-        index[(task, episode)] = path
+        parts = path.relative_to(root).parts  # <任务>/<难度>/hdf5_files/<名>.h5 或 hdf5_files/<名>.h5
+        difficulty = parts[-3] if len(parts) >= 3 else ""
+        index[(task, difficulty, episode)] = path
     return index
 
 
@@ -630,7 +636,10 @@ def cmd_compare(left_dir: Path, right_dir: Path, label: str, *, subset_only: boo
     for key in shared:
         detail = compare_h5(left[key], right[key])
         if detail:
-            differences.append({"task": key[0], "episode": key[1], "differences": detail[:20], "count": len(detail)})
+            differences.append(
+                {"task": key[0], "difficulty": key[1], "episode": key[2],
+                 "differences": detail[:20], "count": len(detail)}
+            )
 
     passed = not differences and bool(shared)
     if not subset_only:
@@ -640,8 +649,8 @@ def cmd_compare(left_dir: Path, right_dir: Path, label: str, *, subset_only: boo
         "left": str(left_dir),
         "right": str(right_dir),
         "compared": len(shared),
-        "only_left": [f"{task}/ep{episode}" for task, episode in only_left],
-        "only_right": [f"{task}/ep{episode}" for task, episode in only_right],
+        "only_left": [f"{task}/{difficulty}/ep{episode}" for task, difficulty, episode in only_left],
+        "only_right": [f"{task}/{difficulty}/ep{episode}" for task, difficulty, episode in only_right],
         "difference_episodes": differences,
         "subset_only": subset_only,
         "passed": passed,
@@ -652,7 +661,7 @@ def cmd_compare(left_dir: Path, right_dir: Path, label: str, *, subset_only: boo
         + (" subset_only=1" if subset_only else "")
     )
     for item in differences[:5]:
-        print(f"  {item['task']}/ep{item['episode']}: {item['count']} 处差异，首条 {item['differences'][0]}")
+        print(f"  {item['task']}/{item['difficulty']}/ep{item['episode']}: {item['count']} 处差异，首条 {item['differences'][0]}")
     return payload
 
 
@@ -709,8 +718,8 @@ def cmd_run(
 
         serial = cmd_compare(root / "calibration" / "S0a", root / "calibration" / "S0b", "SERIAL_REFERENCE")
         # 两遍同失败的条从可比数里扣除：重复失败不构成成功参考
-        failed_a = {(row["task"], row["episode"]) for row in runs["S0a"]["rows"] if row["outcome"] != OUTCOME_PASS}
-        failed_b = {(row["task"], row["episode"]) for row in runs["S0b"]["rows"] if row["outcome"] != OUTCOME_PASS}
+        failed_a = {(row["task"], row["difficulty"], row["episode"]) for row in runs["S0a"]["rows"] if row["outcome"] != OUTCOME_PASS}
+        failed_b = {(row["task"], row["difficulty"], row["episode"]) for row in runs["S0b"]["rows"] if row["outcome"] != OUTCOME_PASS}
         both_failed = sorted(failed_a & failed_b)
         verdicts.add(
             "SERIAL_REFERENCE", serial["passed"], unique=len(SERIAL_EPISODES) * len(CALIBRATION_GROUPS),
@@ -718,7 +727,8 @@ def cmd_run(
         )
         payload["serial"] = {
             "runs": {label: {k: v for k, v in item.items() if k != "rows"} for label, item in runs.items()},
-            "compare": serial, "both_failed": [f"{task}/ep{episode}" for task, episode in both_failed],
+            "compare": serial,
+            "both_failed": [f"{task}/{difficulty}/ep{episode}" for task, difficulty, episode in both_failed],
             "rows": {label: item["rows"] for label, item in runs.items()},
         }
         if not serial["passed"]:

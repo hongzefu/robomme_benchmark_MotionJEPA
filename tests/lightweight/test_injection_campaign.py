@@ -361,3 +361,60 @@ def test_普通运行时错误不算资源失败():
     rows = [{"outcome": "规划失败", "video_status": "complete", "execution_state": "completed",
              "error_type": "RuntimeError", "error": "planner gave up after 3 tries"}]
     assert tier_is_unusable(_tier_result(rows))[0] is False
+
+
+# ── 同任务不同难度不得互相覆盖 ──────────────────────────────────────────────
+from tests._shared.injection_run import read_result_rows  # noqa: E402
+
+
+def _jsonl(tmp_path, records):
+    path = tmp_path / "episode_results.jsonl"
+    path.write_text("\n".join(json.dumps(item, ensure_ascii=False) for item in records), encoding="utf-8")
+    return tmp_path
+
+
+def test_同任务不同难度的结果行不互相覆盖(tmp_path):
+    """⚠ seed 只由任务与 episode 决定，所以 BinFill/easy/ep0 与 BinFill/hard/ep0 的
+    (task, episode) 完全相同。只用两元组做 key，330 行会塌成 4 任务 × 30 = 120 行。"""
+    root = _jsonl(tmp_path, [
+        {"task": "BinFill", "difficulty": d, "episode": 0, "seed": 4000, "attempt": 0, "ok": True}
+        for d in ("easy", "medium", "hard")
+    ])
+    rows = read_result_rows(root)
+    assert len(rows) == 3
+    assert sorted(row["difficulty"] for row in rows) == ["easy", "hard", "medium"]
+
+
+def test_同一条的重试只保留最后一次(tmp_path):
+    root = _jsonl(tmp_path, [
+        {"task": "BinFill", "difficulty": "hard", "episode": 0, "seed": 4000, "attempt": 0, "ok": False,
+         "failure_class": "task", "error_type": "ScrewPlanFailure"},
+        {"task": "BinFill", "difficulty": "hard", "episode": 0, "seed": 4001, "attempt": 1, "ok": True},
+    ])
+    rows = read_result_rows(root)
+    assert len(rows) == 1
+    assert rows[0]["attempt"] == 1 and rows[0]["outcome"] == "通过"
+
+
+def test_十一组三十条各自独立共三百三十行(tmp_path):
+    groups = [("BinFill", d) for d in ("easy", "medium", "hard")]
+    groups += [("RouteStick", d) for d in ("easy", "medium", "hard")]
+    groups += [("VideoUnmaskSwap", d) for d in ("easy", "medium", "hard")]
+    groups += [("VideoRepick", d) for d in ("easy", "medium")]
+    records = [
+        {"task": task, "difficulty": diff, "episode": ep, "seed": 1, "attempt": 0, "ok": True}
+        for task, diff in groups for ep in range(30)
+    ]
+    rows = read_result_rows(_jsonl(tmp_path, records))
+    assert len(rows) == 330
+
+
+def test_h5_索引按任务难度_episode_三元组(tmp_path):
+    """同名 HDF5 分处不同难度目录，索引必须分得开。"""
+    for diff in ("easy", "hard"):
+        target = tmp_path / "BinFill" / diff / "hdf5_files"
+        target.mkdir(parents=True)
+        (target / "BinFill_ep0_seed4000.h5").write_bytes(b"x")
+    index = campaign._index_h5(tmp_path)
+    assert len(index) == 2
+    assert ("BinFill", "easy", 0) in index and ("BinFill", "hard", 0) in index
