@@ -22,7 +22,8 @@ import numpy as np
 
 from robomme.robomme_env.utils import bin_collision as bc
 
-from .injection_sampling import (
+from .contract import Contract, ContractError, GroupContract
+from .sampling import (
     COARSE_BINS,
     FINE_LAYERS,
     GROUP_SIZE,
@@ -227,60 +228,35 @@ def _count_rejection(stats: dict[str, Any], rejection: bc.CollisionRejection | N
 
 
 # ── BinFill ─────────────────────────────────────────────────────────────────
-def _binfill_group(difficulty: str, config: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
+def _binfill_group(difficulty: str, gc: GroupContract, positions: dict[str, Any], seed: int) -> GroupResult:
+    """取值域与分配办法来自契约 ``gc``；按钮／孔板的盒体尺寸等几何常量仍来自 ``positions``。"""
     rng_root = derive_rng(seed, "BinFill", difficulty)
     derived = int(rng_root.integers(0, 2**62))
 
-    num_colors = int(config["color"])
-    spawn_lo, spawn_hi = (int(v) for v in config["spawn_cubes"])
-    put_color_lo, put_color_hi = (int(v) for v in config["put_in_color"])
-    put_lo, put_hi = (int(v) for v in config["put_in_numbers"])
-
-    combos = list(itertools.combinations(range(3), num_colors))
-    # 源码把 put_in_color 先夹到 [1,3]，再夹到 [1, max(1, num_colors)]；去重后就是合法取值集合
-    color_counts = sorted(
-        {min(max(1, min(3, k)), max(1, num_colors)) for k in range(put_color_lo, put_color_hi + 1)}
-    )
+    # 离散域按契约的 values 顺序铺配额（顺序与此前的 itertools 调用同式，rng 消费逐位不变）
+    combos = gc.values("colors_present")
+    color_counts = gc.values("put_in_color")
 
     rng = derive_rng(seed, "BinFill", difficulty, "discrete")
-    dynamic_series = quota_series([True, False], rng)
+    dynamic_series = quota_series(gc.values("dynamic"), rng)
     combo_series = quota_series(combos, rng)
     put_color_series = quota_series(color_counts, rng)
-    spawn_total_series = quota_series(list(range(spawn_lo, spawn_hi + 1)), rng)
-    put_total_series = quota_series(list(range(put_lo, put_hi + 1)), rng)
-    init_order_series = quota_series(list(itertools.permutations(INITIALIZE_COLOR_DEFS)), rng)
+    spawn_total_series = quota_series(gc.values("spawn_total"), rng)
+    put_total_series = quota_series(gc.values("put_in_total"), rng)
+    init_order_series = quota_series(gc.values("initialize_color_order"), rng)
+    target_rule = gc.rule("target_count")
+    if target_rule not in ("allow_zero", "each_target_at_least_one"):
+        raise ContractError(f"BinFill/{difficulty}: 未知的 target_count 规则 {target_rule!r}")
 
     button_cfg = positions["button"]
     board_cfg = positions["board"]
-    cubes_cfg = positions["cubes"]
-    bx, by = (float(v) for v in button_cfg["center_xy"])
-    rx, ry = (float(v) for v in button_cfg["randomize_range"])
+    # 连续域端点来自契约（契约里的数值由 check 按 positions 回算钉住）
     strata = {
-        "button_x": stratify(bx - rx / 2, bx + rx / 2, derive_rng(seed, "BinFill", difficulty, "button_x")),
-        "button_y": stratify(by - ry / 2, by + ry / 2, derive_rng(seed, "BinFill", difficulty, "button_y")),
-        "board_x": stratify(
-            float(board_cfg["base_position"][0]) - board_cfg["x_offset"]["subtract"],
-            float(board_cfg["base_position"][0]) - board_cfg["x_offset"]["subtract"] + board_cfg["x_offset"]["scale"],
-            derive_rng(seed, "BinFill", difficulty, "board_x"),
-        ),
-        "board_y": stratify(
-            -board_cfg["y_offset"]["subtract"],
-            -board_cfg["y_offset"]["subtract"] + board_cfg["y_offset"]["scale"],
-            derive_rng(seed, "BinFill", difficulty, "board_y"),
-        ),
-        "board_yaw": stratify(
-            -board_cfg["yaw_deg"]["subtract"],
-            -board_cfg["yaw_deg"]["subtract"] + board_cfg["yaw_deg"]["scale"],
-            derive_rng(seed, "BinFill", difficulty, "board_yaw"),
-        ),
+        name: stratify(*gc.bounds(name), derive_rng(seed, "BinFill", difficulty, name))
+        for name in ("button_x", "button_y", "board_x", "board_y", "board_yaw", "cube_x", "cube_y", "cube_yaw")
     }
-    region_center = [float(v) for v in cubes_cfg["region_center"]]
-    region_half = [float(v) for v in cubes_cfg["region_half_size"]]
-    cube_x_lo, cube_x_hi = region_center[0] - region_half[0] + CUBE_HALF_SIZE, region_center[0] + region_half[0] - CUBE_HALF_SIZE
-    cube_y_lo, cube_y_hi = region_center[1] - region_half[1] + CUBE_HALF_SIZE, region_center[1] + region_half[1] - CUBE_HALF_SIZE
-    strata["cube_x"] = stratify(cube_x_lo, cube_x_hi, derive_rng(seed, "BinFill", difficulty, "cube_x"))
-    strata["cube_y"] = stratify(cube_y_lo, cube_y_hi, derive_rng(seed, "BinFill", difficulty, "cube_y"))
-    strata["cube_yaw"] = stratify(0.0, 2 * math.pi, derive_rng(seed, "BinFill", difficulty, "cube_yaw"))
+    cube_x_lo, cube_x_hi = gc.bounds("cube_x")
+    cube_y_lo, cube_y_hi = gc.bounds("cube_y")
 
     target_pool_usage: dict[tuple[int, ...], int] = {}
     stats = _new_stats()
@@ -297,12 +273,27 @@ def _binfill_group(difficulty: str, config: dict[str, Any], positions: dict[str,
         pool_candidates = list(itertools.combinations(colors_idx, put_color))
         target_idx = list(balanced_choice(rng_ep, pool_candidates, target_pool_usage))
 
-        # 目标数分配：与源码同结构（单色直接给总数；多色把总数逐个分出去，允许某色 0）
+        # 目标数分配：单色直接给总数；多色按契约的 rule——
+        #   allow_zero（原值 94449db）：把总数逐个随机分给目标色，某色可为 0；
+        #   each_target_at_least_one（heldout 2fa5660）：先每目标色各 1，余量再逐个随机分。
+        # allow_zero 路径的语句与加入契约之前逐字相同，rng 消费逐位不变。
         target_count = {SPAWN_COLOR_ORDER[i]: 0 for i in colors_idx}
         if put_color == 1:
             target_count[SPAWN_COLOR_ORDER[target_idx[0]]] = put_total
-        else:
+        elif target_rule == "allow_zero":
             for _ in range(put_total):
+                pick = target_idx[int(rng_ep.integers(len(target_idx)))]
+                target_count[SPAWN_COLOR_ORDER[pick]] += 1
+        else:
+            if put_total < len(target_idx):
+                # 源码里对应 total_target 的下界 max(put_in_numbers[0], 目标色数)；三档配置下永远不触发，留作硬闸
+                raise SpecGenerationError(
+                    f"BinFill/{difficulty}/episode {episode}: 投入总数 {put_total} 少于目标色数 {len(target_idx)}，"
+                    "无法保证每色至少 1 块"
+                )
+            for pick in target_idx:
+                target_count[SPAWN_COLOR_ORDER[pick]] += 1
+            for _ in range(put_total - len(target_idx)):
                 pick = target_idx[int(rng_ep.integers(len(target_idx)))]
                 target_count[SPAWN_COLOR_ORDER[pick]] += 1
 
@@ -463,29 +454,23 @@ def _shifted_cell(stratum: Stratified, episode: int, shift: int, rng: np.random.
 
 
 # ── RouteStick ──────────────────────────────────────────────────────────────
-def _routestick_group(difficulty: str, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
+def _routestick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
     """1×9 整排，偶数索引可踩、奇数索引是障碍柱；只固定整排旋转角、路线与逐段绕行方向。"""
     rng_root = derive_rng(seed, "RouteStick", difficulty)
     derived = int(rng_root.integers(0, 2**62))
 
-    length_lo, length_hi = (int(v) for v in config["length"])
     allow_backtracking = bool(config["backtrack"])
     walk_cfg = parameters["walk"]
     node_indices = [int(v) for v in walk_cfg["node_indices"]]
-    direction_cfg = walk_cfg["direction"]
-    directions_pool = (direction_cfg["less_than"], direction_cfg["otherwise"])
+    directions_pool = tuple(gc.values("direction"))
 
     rng = derive_rng(seed, "RouteStick", difficulty, "discrete")
-    length_series = quota_series(list(range(length_lo, length_hi + 1)), rng)
-    start_series = quota_series(list(range(len(node_indices))), rng)
+    length_series = quota_series(gc.values("L"), rng)
+    # 契约存的是节点值（0/2/4/6/8），生成器内部用局部槽位
+    start_series = quota_series([node_indices.index(int(v)) for v in gc.values("start_node")], rng)
 
-    yaw_cfg = positions["yaw_deg"]
     strata = {
-        "rotation_deg": stratify(
-            -float(yaw_cfg["subtract"]),
-            -float(yaw_cfg["subtract"]) + float(yaw_cfg["scale"]),
-            derive_rng(seed, "RouteStick", difficulty, "rotation"),
-        )
+        "rotation_deg": stratify(*gc.bounds("rotation_deg"), derive_rng(seed, "RouteStick", difficulty, "rotation"))
     }
 
     edge_usage: dict[tuple[int, int], int] = {}
@@ -603,37 +588,35 @@ def _simulate_swaps(
 
 
 # ── VideoUnmaskSwap ─────────────────────────────────────────────────────────
-def _unmask_group(difficulty: str, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
+def _unmask_group(difficulty: str, gc: GroupContract, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
     rng_root = derive_rng(seed, "VideoUnmaskSwap", difficulty)
     derived = int(rng_root.integers(0, 2**62))
 
     n_bins = int(config["bin"])
-    containers = positions["containers"]
-    region_half = float(containers["region_half_size"])
-    bin_half = (CUBE_HALF_SIZE * 2.5 + 0.005) * 0.5  # spawn_random_bin 的 bin_half_size
-    offset_limit = region_half - bin_half
-    theta_lo, theta_hi = (float(v) for v in containers["layout_rotation_range_rad"])
-    yaw_scale = float(containers["yaw_scale_deg"])
+    containers = positions["containers"]  # 锚点坐标等几何仍从 positions 取
 
     rng = derive_rng(seed, "VideoUnmaskSwap", difficulty, "discrete")
-    swap_series = quota_series(list(range(int(config["swap_min"]), int(config["swap_max"]) + 1)), rng)
-    pick_series = quota_series(list(range(int(config["pick_min"]), int(config["pick_max"]) + 1)), rng)
+    swap_series = quota_series(gc.values("n_swaps"), rng)
+    pick_series = quota_series(gc.values("n_picks"), rng)
+    # bin=3 时布局按配额；bin=4 时契约给常量，不消费 rng
     layout_series = (
-        quota_series(["region3_tri", "region3_line"], rng) if n_bins == 3 else ["region4"] * GROUP_SIZE
+        quota_series(gc.values("layout_type"), rng)
+        if gc.allocation("layout_type") == "quota"
+        else [gc.constant("layout_type")] * GROUP_SIZE
     )
-    selected_series = quota_series(list(itertools.permutations(range(3))), rng)
-    color_series = quota_series(list(itertools.permutations(UNMASK_COLOR_ORDER)), rng)
-    initiator_series = quota_series(list(itertools.permutations(range(3), 2)), rng)
+    selected_series = quota_series(gc.values("selected"), rng)
+    color_series = quota_series(gc.values("color_order"), rng)
+    initiator_series = quota_series(gc.values("swap_initiators_first_two"), rng)
 
     strata: dict[str, Stratified] = {
-        "theta_rad": stratify(theta_lo, theta_hi, derive_rng(seed, "VideoUnmaskSwap", difficulty, "theta"))
+        "theta_rad": stratify(*gc.bounds("theta_rad"), derive_rng(seed, "VideoUnmaskSwap", difficulty, "theta"))
     }
     for i in range(n_bins):
         for axis in ("dx", "dy"):
             strata[f"bin{i}_{axis}"] = stratify(
-                -offset_limit, offset_limit, derive_rng(seed, "VideoUnmaskSwap", difficulty, f"bin{i}-{axis}")
+                *gc.bounds(f"bin{i}_{axis}"), derive_rng(seed, "VideoUnmaskSwap", difficulty, f"bin{i}-{axis}")
             )
-        strata[f"bin{i}_yaw"] = stratify(0.0, yaw_scale, derive_rng(seed, "VideoUnmaskSwap", difficulty, f"bin{i}-yaw"))
+        strata[f"bin{i}_yaw"] = stratify(*gc.bounds(f"bin{i}_yaw"), derive_rng(seed, "VideoUnmaskSwap", difficulty, f"bin{i}-yaw"))
 
     third_usage: dict[int, int] = {}
     stats = _new_stats()
@@ -742,7 +725,7 @@ def _unmask_group(difficulty: str, config: dict[str, Any], parameters: dict[str,
 
 
 # ── VideoRepick ─────────────────────────────────────────────────────────────
-def _repick_group(difficulty: str, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
+def _repick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
     if difficulty == "hard":
         raise SpecGenerationError("VideoRepick hard 已由用户排除，不生成规格")
 
@@ -750,34 +733,27 @@ def _repick_group(difficulty: str, config: dict[str, Any], parameters: dict[str,
     derived = int(rng_root.integers(0, 2**62))
 
     n_cubes = int(config["cube"])
-    plain = positions["easy_medium_cubes"]
+    plain = positions["easy_medium_cubes"]  # 锚点坐标等几何仍从 positions 取
     button_cfg = positions["button"]
-    region_half = float(plain["region_half_size"])
-    offset_limit = region_half - CUBE_HALF_SIZE
-    theta_lo, theta_hi = (float(v) for v in plain["layout_rotation_range_rad"])
-    repeats_cfg = parameters["num_repeats"]
 
     rng = derive_rng(seed, "VideoRepick", difficulty, "discrete")
-    swap_series = quota_series(list(range(int(config["swap_min"]), int(config["swap_max"]) + 1)), rng)
-    repeat_series = quota_series(list(range(int(repeats_cfg["low"]), int(repeats_cfg["high_exclusive"]))), rng)
-    layout_series = quota_series(["region3_tri", "region3_line"], rng)
-    color_series = quota_series(list(REPICK_COLOR_ORDER), rng)
-    target_series = quota_series(list(range(n_cubes)), rng)
-    tail_series = quota_series([(0, 1), (1, 0)], rng)
+    swap_series = quota_series(gc.values("n_swaps"), rng)
+    repeat_series = quota_series(gc.values("num_repeats"), rng)
+    layout_series = quota_series(gc.values("layout_type"), rng)
+    color_series = quota_series(gc.values("color"), rng)
+    target_series = quota_series(gc.values("target"), rng)
+    tail_series = quota_series(gc.values("tail"), rng)
 
-    bx, by = (float(v) for v in button_cfg["center_xy"])
-    rx, ry = (float(v) for v in button_cfg["randomize_range"])
     strata: dict[str, Stratified] = {
-        "theta_rad": stratify(theta_lo, theta_hi, derive_rng(seed, "VideoRepick", difficulty, "theta")),
-        "button_x": stratify(bx - rx / 2, bx + rx / 2, derive_rng(seed, "VideoRepick", difficulty, "button_x")),
-        "button_y": stratify(by - ry / 2, by + ry / 2, derive_rng(seed, "VideoRepick", difficulty, "button_y")),
+        name: stratify(*gc.bounds(name), derive_rng(seed, "VideoRepick", difficulty, label))
+        for name, label in (("theta_rad", "theta"), ("button_x", "button_x"), ("button_y", "button_y"))
     }
     for i in range(n_cubes):
         for axis in ("dx", "dy"):
             strata[f"cube{i}_{axis}"] = stratify(
-                -offset_limit, offset_limit, derive_rng(seed, "VideoRepick", difficulty, f"cube{i}-{axis}")
+                *gc.bounds(f"cube{i}_{axis}"), derive_rng(seed, "VideoRepick", difficulty, f"cube{i}-{axis}")
             )
-        strata[f"cube{i}_yaw"] = stratify(0.0, 2 * math.pi, derive_rng(seed, "VideoRepick", difficulty, f"cube{i}-yaw"))
+        strata[f"cube{i}_yaw"] = stratify(*gc.bounds(f"cube{i}_yaw"), derive_rng(seed, "VideoRepick", difficulty, f"cube{i}-yaw"))
 
     stats = _new_stats()
     episodes: list[dict[str, Any]] = []
@@ -891,17 +867,24 @@ def _repick_group(difficulty: str, config: dict[str, Any], parameters: dict[str,
 _BUILDERS: dict[str, Callable[..., GroupResult]] = {}
 
 
-def build_group(task: str, difficulty: str, sampling: dict[str, Any], seed: int = DEFAULT_SEED) -> GroupResult:
-    """按任务与难度生成一组 100 条规格。``sampling`` 是 ``native_sampling.json`` 的内容。"""
+def build_group(task: str, difficulty: str, sampling: dict[str, Any], contract: Contract, seed: int = DEFAULT_SEED) -> GroupResult:
+    """按任务与难度生成一组 100 条规格。
+
+    * ``contract``：取值域与分配办法的约定（``injection_contract_v*.json``），离散域的候选列表与
+      连续域的端点都从它读——这是「候选分布怎么产生」的派生依据；
+    * ``sampling``：``native_sampling.json`` 的内容，只再提供几何常量（按钮盒尺寸、孔板边长、
+      锚点坐标、避让间距）与结构性输入（节点表、邻接顺序）。
+    """
     parameters = sampling["parameters"][task]
     positions = sampling["positions"][task]
     config = parameters["configs"][difficulty]
+    gc = contract.group(task, difficulty)
     if task == "BinFill":
-        return _binfill_group(difficulty, config, positions, seed)
+        return _binfill_group(difficulty, gc, positions, seed)
     if task == "RouteStick":
-        return _routestick_group(difficulty, config, parameters, positions, seed)
+        return _routestick_group(difficulty, gc, config, parameters, positions, seed)
     if task == "VideoUnmaskSwap":
-        return _unmask_group(difficulty, config, parameters, positions, seed)
+        return _unmask_group(difficulty, gc, config, parameters, positions, seed)
     if task == "VideoRepick":
-        return _repick_group(difficulty, config, parameters, positions, seed)
+        return _repick_group(difficulty, gc, config, parameters, positions, seed)
     raise SpecGenerationError(f"未知任务 {task}")

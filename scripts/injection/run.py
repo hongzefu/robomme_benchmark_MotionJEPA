@@ -20,6 +20,7 @@ import time
 from pathlib import Path
 from typing import Any, Sequence
 
+# 本文件位于 scripts/injection/，向上两级是仓库根（与搬迁前 tests/_shared/ 同深度，勿改成 parents[1]）
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 #: 四个校准组：三个 hard 加 VideoRepick medium（VideoRepick 没有 hard）。
@@ -147,7 +148,7 @@ def invoke_generator(
     log_path.parent.mkdir(parents=True, exist_ok=True)
     command = [
         sys.executable,
-        str(REPO_ROOT / "scripts" / "generate_dataset_newseed.py"),
+        str(Path(__file__).resolve().parents[1] / "generate_dataset_newseed.py"),  # 与本包同级的生产入口
         "--output-dir", str(output_dir),
         "--gpus", gpus,
         "--workers", str(workers),

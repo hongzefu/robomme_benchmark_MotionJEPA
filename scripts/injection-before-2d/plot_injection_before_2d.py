@@ -60,7 +60,7 @@ DPI = 110
 PANEL_IN = 11.0          # 每个面板的边长（英寸）
 MIN_LONG_EDGE = 2000     # 每张图长边像素下限
 
-# 几何常量（与 tests/_shared/injection_specs.py 一致，这里照抄数值不 import）
+# 几何常量（与 scripts/injection/specs.py 一致，这里照抄数值不 import）
 CUBE_HALF = 0.02
 BIN_HALF = (CUBE_HALF * 2.5 + 0.005) * 0.5  # 0.0275
 BOARD_SIDE, HOLE_SIDE = 0.1, 0.08

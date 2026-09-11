@@ -19,9 +19,9 @@ for extra in (REPO_ROOT, REPO_ROOT / "src"):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-from tests._shared import injection_campaign as campaign  # noqa: E402
-from tests._shared.injection_categories import legal_categories, observed_values  # noqa: E402
-from tests._shared.injection_sampling import (  # noqa: E402
+from scripts.injection import campaign  # noqa: E402
+from scripts.injection.categories import legal_categories, observed_values  # noqa: E402
+from scripts.injection.sampling import (  # noqa: E402
     COARSE_BINS,
     GROUP_SIZE,
     derive_rng,
@@ -29,9 +29,13 @@ from tests._shared.injection_sampling import (  # noqa: E402
     quota_series,
     stratify,
 )
-from tests._shared.injection_specs import GROUPS, seal  # noqa: E402
+from scripts.injection.specs import GROUPS, seal  # noqa: E402
+
+from scripts.injection.contract import load_contract  # noqa: E402
 
 SAMPLING = json.loads((REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "native_sampling.json").read_text())
+#: 合法类别表从契约展开；v1 与 native_sampling.json 派生结果一致，这里用 v1。
+CONTRACT_V1 = load_contract(REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "injection_contract_v1.json")
 
 
 # ── 配额 ────────────────────────────────────────────────────────────────────
@@ -134,7 +138,7 @@ def _dynamic_spread(dynamic_values: list[bool]) -> tuple[int, dict]:
     """
     verdicts = campaign.Verdicts()
     report = campaign._check_quota(
-        {("BinFill", "hard"): _fake_binfill_document(dynamic_values)}, SAMPLING, verdicts
+        {("BinFill", "hard"): _fake_binfill_document(dynamic_values)}, CONTRACT_V1, verdicts
     )
     entry = report["BinFill/hard"]["independent"]["dynamic"]
     return entry["spread"], entry["counts"]
@@ -147,7 +151,7 @@ def test_全部为同一个值时配额判据必须失败():
     assert spread == GROUP_SIZE, "100 条全为 True 却算出计数差 0，补零漏了"
 
     verdicts = campaign.Verdicts()
-    campaign._check_quota({("BinFill", "hard"): _fake_binfill_document([True] * GROUP_SIZE)}, SAMPLING, verdicts)
+    campaign._check_quota({("BinFill", "hard"): _fake_binfill_document([True] * GROUP_SIZE)}, CONTRACT_V1, verdicts)
     record = verdicts.records[-1]
     assert record["name"] == "COVERAGE_QUOTA" and record["status"] == "FAIL"
     assert any("dynamic" in item for item in record["detail"])
@@ -173,7 +177,7 @@ def test_计数差按最大减最小算():
 # ── 合法类别表与观测字段对齐 ────────────────────────────────────────────────
 @pytest.mark.parametrize(("task", "difficulty"), GROUPS)
 def test_每组的合法类别表非空且独立类别都至少一个值(task, difficulty):
-    categories = legal_categories(task, difficulty, SAMPLING)
+    categories = legal_categories(task, difficulty, CONTRACT_V1)
     assert categories["independent"]
     for field, legal in categories["independent"].items():
         assert legal, f"{task}/{difficulty} 的 {field} 没有合法类别"
@@ -211,7 +215,7 @@ def test_运行编号不合法直接拒绝():
 
 
 # ── 并发窗口与档位判据（步骤 4）────────────────────────────────────────────
-from tests._shared.injection_run import (  # noqa: E402
+from scripts.injection.run import (  # noqa: E402
     OUTCOME_PASS,
     classify_outcome,
     execution_state,
@@ -364,7 +368,7 @@ def test_普通运行时错误不算资源失败():
 
 
 # ── 同任务不同难度不得互相覆盖 ──────────────────────────────────────────────
-from tests._shared.injection_run import read_result_rows  # noqa: E402
+from scripts.injection.run import read_result_rows  # noqa: E402
 
 
 def _jsonl(tmp_path, records):

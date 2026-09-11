@@ -27,8 +27,9 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import font_manager  # noqa: E402
 from matplotlib.patches import Circle, Polygon, Rectangle  # noqa: E402
 
-from tests._shared.injection_categories import legal_categories, observed_values  # noqa: E402
-from tests._shared.injection_sampling import COARSE_BINS, GROUP_SIZE  # noqa: E402
+from .categories import legal_categories, observed_values  # noqa: E402
+from .contract import Contract  # noqa: E402
+from .sampling import COARSE_BINS, GROUP_SIZE  # noqa: E402
 
 #: 实跑范围：每组 episode 0～29。范围外的格子在跑后图里标「范围外」，不进分母。
 FEASIBILITY_EPISODES = 30
@@ -277,12 +278,12 @@ def plot_coverage(task: str, difficulty: str, records: list[dict[str, Any]], res
 
 # ── 图 3：对象与动作分布 ────────────────────────────────────────────────────
 def plot_distribution(
-    task: str, difficulty: str, records: list[dict[str, Any]], sampling: dict[str, Any],
+    task: str, difficulty: str, records: list[dict[str, Any]], contract: Contract,
     results: dict[int, str] | None, out: Path,
 ) -> None:
     """图 3：独立类别与耦合类别的横向条形；跑后同一条形按结果分色堆叠。"""
     phase = "跑后" if results else "跑前"
-    categories = legal_categories(task, difficulty, sampling)
+    categories = legal_categories(task, difficulty, contract)
     fields = [(name, legal, True) for name, legal in categories["independent"].items()]
     fields += [(name, legal, False) for name, legal in categories["coupled"].items() if legal]
 
@@ -326,11 +327,12 @@ def plot_distribution(
 
 # ── 入口 ────────────────────────────────────────────────────────────────────
 def cmd_plot(run_id: str, phase: str = "before") -> dict[str, Any]:
-    from tests._shared.injection_campaign import DEFAULT_SAMPLING_CONFIG, CampaignError, load_group_documents, _write_json
+    from .campaign import DEFAULT_SAMPLING_CONFIG, CampaignError, load_group_documents, resolve_contract, _write_json
 
     font = _use_cjk_font()
     root, manifest, documents = load_group_documents(run_id)
-    sampling = json.loads(DEFAULT_SAMPLING_CONFIG.read_text(encoding="utf-8"))
+    sampling = json.loads(DEFAULT_SAMPLING_CONFIG.read_text(encoding="utf-8"))  # 图 1 的几何合法区
+    contract = resolve_contract(manifest)  # 图 3 的合法类别表按冻结时那份契约算
 
     results_by_group: dict[tuple[str, str], dict[int, str]] = {}
     if phase == "after":
@@ -349,7 +351,7 @@ def cmd_plot(run_id: str, phase: str = "before") -> dict[str, Any]:
         target.mkdir(parents=True, exist_ok=True)
         plot_overview(task, difficulty, records, results, target / "overview.png")
         plot_coverage(task, difficulty, records, results, target / "coverage.png")
-        plot_distribution(task, difficulty, records, sampling, results, target / "distribution.png")
+        plot_distribution(task, difficulty, records, contract, results, target / "distribution.png")
         entries.append(
             {
                 "task": task,

@@ -21,7 +21,7 @@ for extra in (REPO_ROOT, REPO_ROOT / "src", REPO_ROOT / "scripts"):
 
 import generate_dataset_newseed as generator  # noqa: E402
 
-from tests._shared.injection_specs import canonical_json, record_sha256, seal  # noqa: E402
+from scripts.injection.specs import canonical_json, record_sha256, seal  # noqa: E402
 
 
 def _minimal_record(episode: int = 0) -> dict:

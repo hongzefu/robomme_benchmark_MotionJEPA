@@ -174,7 +174,7 @@ def verify_source_files(root: Path) -> dict[str, Any]:
             bad.append(f"{name}: 散列不符")
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
     drift = []
-    repo_root = Path(__file__).resolve().parents[2]
+    repo_root = Path(__file__).resolve().parents[2]  # scripts/injection/ 向上两级是仓库根
     for rel, expected in (manifest.get("geometry_sources") or {}).items():
         path = repo_root / rel
         actual = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None

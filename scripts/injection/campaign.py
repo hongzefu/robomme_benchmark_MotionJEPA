@@ -4,7 +4,7 @@
 
 * ``plan``  —— 生成并冻结 11 组 × 100 条规格，写运行根目录与清单（步骤 0）。
 * ``check`` —— 从冻结的规格**独立重算**全部计数与几何，打第 5.7 节的判定行。
-* ``plot``  —— 出跑前／跑后三类图（委托 :mod:`tests._shared.injection_plots`）。
+* ``plot``  —— 出跑前／跑后三类图（委托 :mod:`scripts.injection.plots`）。
 * ``run``   —— 校准与实跑的编排（步骤 2～5），复用生产入口 ``generate_dataset_newseed``。
 
 ``plan`` 拒绝已存在的运行根目录；``check``／``plot`` 只从该编号的冻结清单读输入。
@@ -23,17 +23,17 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Sequence
 
+# 本文件位于 scripts/injection/，向上两级是仓库根（与搬迁前 tests/_shared/ 同深度，勿改成 parents[1]）
 REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from robomme.robomme_env.utils import bin_collision as bc  # noqa: E402
 
-from tests._shared.injection_categories import legal_categories, observed_values  # noqa: E402
-from tests._shared.injection_sampling import COARSE_BINS, GROUP_SIZE  # noqa: E402
-from tests._shared.injection_specs import (  # noqa: E402
+from .categories import legal_categories, observed_values  # noqa: E402
+from .contract import Contract, ContractError, audit_overrides, derive_all, load_contract  # noqa: E402
+from .sampling import COARSE_BINS, GROUP_SIZE  # noqa: E402
+from .specs import (  # noqa: E402
     CUBE_HALF_SIZE,
     EXCLUDED_GROUPS,
     GENERATOR_VERSION,
@@ -77,8 +77,12 @@ def run_root(run_id: str) -> Path:
 
 
 # ── plan ────────────────────────────────────────────────────────────────────
-def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path) -> dict[str, Any]:
-    """生成 11 组规格并冻结。运行编号不可复用：目录已存在直接拒绝。"""
+def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path, contract_path: Path) -> dict[str, Any]:
+    """生成 11 组规格并冻结。运行编号不可复用：目录已存在直接拒绝。
+
+    ``contract_path`` 是取值域与分配的约定（``injection_contract_v*.json``），是候选分布的派生依据；
+    ``sampling_config`` 只再提供几何常量。两者的身份都写进清单。
+    """
     if per_group != GROUP_SIZE:
         raise CampaignError(f"本轮固定每组 {GROUP_SIZE} 条，收到 --per-group {per_group}")
     root = run_root(run_id)
@@ -86,6 +90,12 @@ def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path) -> d
         raise CampaignError(f"运行根目录已存在，编号不可复用：{root}")
 
     sampling = json.loads(sampling_config.read_text(encoding="utf-8"))
+    contract = load_contract(contract_path)
+    if contract.generator_seed != seed:
+        raise CampaignError(f"契约声明 generator_seed={contract.generator_seed}，命令行给的是 {seed}")
+    _mismatches, problems = audit_overrides(contract, sampling)
+    if problems:
+        raise CampaignError("契约与原值回算不一致且未登记 override，拒绝冻结：\n  " + "\n  ".join(problems[:5]))
     # 冻结进规格的是「取值域散列」（parameters + positions），不是文件字节散列；
     # 文件字节散列另存一份作参考，源码指纹刷新时它会变，但不影响验收。
     config_sha = operand_sha256(sampling)
@@ -95,7 +105,7 @@ def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path) -> d
     groups_meta: list[dict[str, Any]] = []
     stats_all: dict[str, Any] = {}
     for task, difficulty in GROUPS:
-        group = build_group(task, difficulty, sampling, seed)
+        group = build_group(task, difficulty, sampling, contract, seed)
         relative = Path("specs") / task / f"{difficulty}.json"
         _write_json(root / relative, group.as_document(config_sha))
         groups_meta.append(
@@ -121,6 +131,9 @@ def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path) -> d
         "sampling_config_path": str(sampling_config.relative_to(REPO_ROOT)),
         "sampling_operands_sha256": config_sha,
         "sampling_config_file_sha256": file_sha,
+        "contract_path": str(contract_path.resolve().relative_to(REPO_ROOT)),
+        "contract_sha256": contract.sha256,
+        "contract_version": contract.version,
         "groups": groups_meta,
         "excluded_groups": [list(item) for item in EXCLUDED_GROUPS],
         "elapsed_s": round(time.monotonic() - started, 1),
@@ -130,6 +143,22 @@ def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path) -> d
     total = sum(item["episodes"] for item in groups_meta)
     print(f"PLAN=OK run_id={run_id} groups={len(groups_meta)} specs={total} elapsed_s={manifest['elapsed_s']}")
     return manifest
+
+
+def resolve_contract(manifest: dict[str, Any], override: Path | None = None) -> Contract:
+    """按清单里的 ``contract_path``／``contract_sha256`` 加载契约；``override`` 只在文件被挪动时用，散列仍须一致。"""
+    recorded = manifest.get("contract_path")
+    if recorded is None and override is None:
+        raise CampaignError("清单没有记录契约（历史运行），请用 --contract 显式指定")
+    path = override if override is not None else (REPO_ROOT / recorded)
+    contract = load_contract(path)
+    expected = manifest.get("contract_sha256")
+    if expected is not None and contract.sha256 != expected:
+        raise CampaignError(
+            f"契约散列与冻结时不符：当前 {contract.sha256[:12]}…（{path}），冻结时 {expected[:12]}…；"
+            "拒绝在漂移的依据上验收"
+        )
+    return contract
 
 
 def load_manifest(run_id: str) -> tuple[Path, dict[str, Any]]:
@@ -207,13 +236,13 @@ def _check_scope(documents: dict[tuple[str, str], dict[str, Any]], verdicts: Ver
 
 
 def _check_reproducible(
-    documents: dict[tuple[str, str], dict[str, Any]], sampling: dict[str, Any], seed: int, verdicts: Verdicts
+    documents: dict[tuple[str, str], dict[str, Any]], sampling: dict[str, Any], contract: Contract, seed: int, verdicts: Verdicts
 ) -> None:
     """同 seed、**不同组调度顺序**独立再生成一次，逐记录散列必须相同。"""
     compared = 0
     differences = 0
     for task, difficulty in reversed(GROUPS):  # 倒序调度，证明结果与顺序无关
-        rebuilt = build_group(task, difficulty, sampling, seed)
+        rebuilt = build_group(task, difficulty, sampling, contract, seed)
         frozen = documents[(task, difficulty)]["episodes"]
         for left, right in zip(frozen, rebuilt.episodes):
             compared += 1
@@ -222,14 +251,26 @@ def _check_reproducible(
     verdicts.add("SPEC_REPRODUCIBLE", differences == 0, compared=compared, differences=differences)
 
 
+def _check_contract_derived(contract: Contract, sampling: dict[str, Any], verdicts: Verdicts) -> None:
+    """契约里每个带派生表达式的域用 native_sampling.json 回算；不一致项必须全部落在 overrides 白名单里。"""
+    mismatches, checked = derive_all(contract, sampling)
+    _, problems = audit_overrides(contract, sampling)
+    verdicts.add(
+        "CONTRACT_DERIVED", not problems, fields=checked, mismatches=len(mismatches),
+        overrides=len(contract.overrides), version=contract.version, problems=len(problems),
+    )
+    if problems:
+        verdicts.records[-1]["detail"] = problems[:10]
+
+
 def _check_quota(
-    documents: dict[tuple[str, str], dict[str, Any]], sampling: dict[str, Any], verdicts: Verdicts
+    documents: dict[tuple[str, str], dict[str, Any]], contract: Contract, verdicts: Verdicts
 ) -> dict[str, Any]:
     """独立类别按完整合法集合补零后计数差 ≤1；连续量验粗箱与批次覆盖。"""
     gaps: list[str] = []
     report: dict[str, Any] = {}
     for (task, difficulty), doc in documents.items():
-        categories = legal_categories(task, difficulty, sampling)
+        categories = legal_categories(task, difficulty, contract)
         counts: dict[str, Counter] = {}
         for record in doc["episodes"]:
             for field, values in observed_values(task, record).items():
@@ -548,9 +589,10 @@ def _states_of(task: str, record: dict[str, Any]) -> dict[int, bc.ObjectState]:
     return states
 
 
-def cmd_check(run_id: str, sampling_config: Path) -> dict[str, Any]:
+def cmd_check(run_id: str, sampling_config: Path, contract_override: Path | None = None) -> dict[str, Any]:
     root, manifest, documents = load_group_documents(run_id)
     sampling = json.loads(sampling_config.read_text(encoding="utf-8"))
+    contract = resolve_contract(manifest, contract_override)
     frozen = manifest.get("sampling_operands_sha256") or manifest.get("sampling_config_sha256")
     if operand_sha256(sampling) != frozen:
         raise CampaignError(
@@ -568,10 +610,11 @@ def cmd_check(run_id: str, sampling_config: Path) -> dict[str, Any]:
     verdicts = Verdicts(echo=True)
     started = time.monotonic()
     _check_scope(documents, verdicts)
-    quota_report = _check_quota(documents, sampling, verdicts)
+    _check_contract_derived(contract, sampling, verdicts)
+    quota_report = _check_quota(documents, contract, verdicts)
     _check_static_geometry(documents, sampling, verdicts)
     _check_collision(documents, verdicts)
-    _check_reproducible(documents, sampling, manifest["generator_seed"], verdicts)
+    _check_reproducible(documents, sampling, contract, manifest["generator_seed"], verdicts)
 
     payload = {
         "run_id": run_id,
@@ -613,7 +656,7 @@ def _index_h5(root: Path) -> dict[tuple[str, str, int], Path]:
 def cmd_compare(left_dir: Path, right_dir: Path, label: str, *, subset_only: bool = False) -> dict[str, Any]:
     """逐位比较两个运行目录里同名 episode 的完整 HDF5。
 
-    复用 ``tests/_shared/native_sampling_parity.py::compare_h5``——它显式遍历全部
+    复用 ``scripts/injection/h5_compare.py::compare_h5``——它显式遍历全部
     group、dataset 及各层 attribute，检查类型、形状与内容。保持这个全集覆盖，
     不能只挑动作字段比较。
 
@@ -624,7 +667,7 @@ def cmd_compare(left_dir: Path, right_dir: Path, label: str, *, subset_only: boo
     16 条的串行参考，另外 104 条本来就只在一侧，不该因此判失败。⚠ 这个开关只放宽
     「一侧多出」，交集内的任何差异照样是 FAIL，两侧交集为空也是 FAIL。
     """
-    from tests._shared.native_sampling_parity import compare_h5
+    from .h5_compare import compare_h5
 
     left = _index_h5(left_dir)
     right = _index_h5(right_dir)
@@ -680,7 +723,7 @@ def cmd_run(
     每一步都复用生产入口 ``scripts/generate_dataset_newseed.py``，命令、退出码、墙钟与
     资源采样全部留档；本函数只做编排与判定，不自己建仿真。
     """
-    from tests._shared.injection_run import (
+    from .run import (
         CALIBRATION_GROUPS,
         FEASIBILITY_EPISODES,
         LOAD_EPISODES,
@@ -916,7 +959,7 @@ def cmd_summarize(run_id: str, mode: str | None = None) -> dict[str, Any]:
     if not output_dir.is_dir():
         raise CampaignError(f"找不到该档的产物：{output_dir}")
 
-    from tests._shared.injection_run import FEASIBILITY_EPISODES, read_result_rows
+    from .run import FEASIBILITY_EPISODES, read_result_rows
 
     rows = read_result_rows(output_dir)
     groups = [(item["task"], item["difficulty"]) for item in manifest_doc["groups"]]
@@ -959,7 +1002,7 @@ def _summarize_feasibility(
     加载的是旧版 ``read_result_rows``（key 少了 difficulty），330 行被统计成 120 行，
     而原始 jsonl 是完整的——这种情况必须能独立重算，不能被迫重跑几小时的仿真。
     """
-    from tests._shared.injection_run import FEASIBILITY_EPISODES, OUTCOME_PASS
+    from .run import FEASIBILITY_EPISODES, OUTCOME_PASS
 
     outcomes = Counter(row["outcome"] for row in rows)
     videos = Counter(row["video_status"] for row in rows)
@@ -1178,7 +1221,7 @@ def _render_readme(payload: dict[str, Any]) -> str:
         "",
         f"生成时间（UTC）：{payload['generated_utc']}",
         "",
-        "> 本报告由 `tests._shared.injection_campaign report` 从各阶段的原始产物汇总，",
+        "> 本报告由 `scripts.injection.campaign report` 从各阶段的原始产物汇总，",
         "> 数字均为实测。重产物（HDF5、视频、PNG）留在 `artifacts/injection/` 原地，",
         "> 这里只存路径、帧数与 SHA-256。",
         "",
@@ -1273,7 +1316,7 @@ def cmd_collision_reproduce(source_dir: Path, output_dir: Path, mode: str) -> di
     绝不覆盖已获用户目视确认的原件。
     ⚠ ``--mode render``（从保存轨迹重渲染）需要 SAPIEN 渲染，本子命令不做，如实记 `NOT_RUN`。
     """
-    from tests._shared.injection_replay import replay_case, verify_source_files
+    from .replay import replay_case, verify_source_files
 
     if not source_dir.is_dir():
         raise CampaignError(f"找不到固定案例目录：{source_dir}")
@@ -1336,10 +1379,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     plan.add_argument("--seed", type=int, default=DEFAULT_SEED)
     plan.add_argument("--per-group", type=int, default=GROUP_SIZE)
     plan.add_argument("--sampling-config", default=str(DEFAULT_SAMPLING_CONFIG))
+    plan.add_argument(
+        "--contract", required=True,
+        help="取值域与分配的约定 JSON（scripts/configs/newtask-v2/injection_contract_v*.json）；必填，不给默认值",
+    )
 
     check = sub.add_parser("check", help="从冻结规格独立重算全部计数与几何")
     check.add_argument("--run-id", required=True)
     check.add_argument("--sampling-config", default=str(DEFAULT_SAMPLING_CONFIG))
+    check.add_argument("--contract", default=None, help="默认按清单 contract_path 加载；只在文件被挪动时显式指定，散列仍须一致")
 
     plot = sub.add_parser("plot", help="出跑前／跑后三类图")
     plot.add_argument("--run-id", required=True)
@@ -1387,12 +1435,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         if args.command == "plan":
-            cmd_plan(args.run_id, args.seed, args.per_group, Path(args.sampling_config).resolve())
+            cmd_plan(args.run_id, args.seed, args.per_group, Path(args.sampling_config).resolve(), Path(args.contract).resolve())
             return 0
         if args.command == "check":
-            return 0 if cmd_check(args.run_id, Path(args.sampling_config).resolve())["passed"] else 1
+            contract_override = Path(args.contract).resolve() if args.contract else None
+            return 0 if cmd_check(args.run_id, Path(args.sampling_config).resolve(), contract_override)["passed"] else 1
         if args.command == "plot":
-            from tests._shared.injection_plots import cmd_plot
+            from .plots import cmd_plot
 
             cmd_plot(args.run_id, args.phase)
             return 0
