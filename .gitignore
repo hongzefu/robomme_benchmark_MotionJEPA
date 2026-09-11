@@ -213,3 +213,6 @@ __marimo__/
 
 # 数据生成产物（h5 与视频体量巨大，不入 git）
 /artifacts/
+
+# 跑前分布 2D 图产物（约 50 MB，本地生成、不入库；文档链接指向本地文件）
+scripts/injection-before-2d/figures/

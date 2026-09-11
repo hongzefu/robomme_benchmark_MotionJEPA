@@ -2,10 +2,10 @@
 
 > 数据：`artifacts/injection/20260910-new-values-04/specs/<任务>/<难度>.json`，11 组 × 100 条 = 1100 条冻结规格，生成 seed `20260909`，`VideoRepick hard` 排除。
 > 判定（`check_result.json`）：`SPEC_SCOPE=PASS specs=1100`、`COVERAGE_QUOTA=PASS batches=10 quota_gaps=0`、`STATIC_GEOMETRY=PASS rejected=0`、`COLLISION_SWEEP=PASS specs=500 rejected=0 min_g_m=0.00042638`、`SPEC_REPRODUCIBLE=PASS differences=0`。
-> 本目录只有只读脚本，不改 `tests/_shared/*`、不改 `src/robomme`、不写原 `plots/`；图只做**跑前**，PNG 放本目录 `figures/` 随仓库提交（用户要求）。
+> 本目录只有只读脚本，不改 `tests/_shared/*`、不改 `src/robomme`、不写原 `plots/`；图只做**跑前**，PNG 放本目录 `figures/`，已 gitignore 不入库，只保留链接（用户要求）。
 >
 > 三条命令（都只读规格 JSON）：
-> - 出图：`uv run python scripts/injection-before-2d/plot_injection_before_2d.py --run-id 20260910-new-values-04`，只画实跑范围前 30 条（ep0～29），每组 7 张、共 77 张，产物放本目录 `figures/<任务>/<难度>/`（git 跟踪，文档直接链接），成功打 `PLOT2D_BEFORE=PASS groups=11 files=77 episodes=30`；
+> - 出图：`uv run python scripts/injection-before-2d/plot_injection_before_2d.py --run-id 20260910-new-values-04`，只画实跑范围前 30 条（ep0～29），每组 7 张、共 77 张，产物放本目录 `figures/<任务>/<难度>/`（已 gitignore 不入库，文档链接指向本地文件，clone 后先跑一次出图），成功打 `PLOT2D_BEFORE=PASS groups=11 files=77 episodes=30`；
 > - 生成第二节的事件表：`uv run python scripts/injection-before-2d/event_tables.py --run-id 20260910-new-values-04 --write`，成功打 `EVENT_TABLES=WRITTEN groups=11 rows=125`；
 > - 核对文档链接、产物张数与事件表是否漂移：`uv run python scripts/injection-before-2d/check_doc_links.py`，成功打 `DOC_LINKS=PASS … files=77/77 … tables=PASS`。
 
@@ -347,7 +347,7 @@
 
 ## 三、三种图怎么看
 
-图只画**实跑范围前 30 条**（ep0～29）：100 条全叠在一起目视不可读，所以降到 30 条，并把每张图拆成「全部叠加 + 按种类拆开」的多个面板。PNG 放在本目录 `figures/<任务>/<难度>/`，随仓库一起提交。
+图只画**实跑范围前 30 条**（ep0～29）：100 条全叠在一起目视不可读，所以降到 30 条，并把每张图拆成「全部叠加 + 按种类拆开」的多个面板。PNG 放在本目录 `figures/<任务>/<难度>/`，不入库，clone 后先跑一次出图命令再看链接。
 
 - **图 1 初始位置**：面板 ① 把该组全部物体叠在同一个绝对坐标轴里；其余面板按物体种类拆开（BinFill：按钮＋孔板／方块；RouteStick：格点／每条一根排并标 ep 号与转角；视频任务：按钮／每个容器或方块），拆开的面板里每个物体标 ep 号。矩形是真实尺寸与朝向，圆是按钮真实底座半径，虚线框／虚线环是 `native_sampling.json` 推出的合法区，容器按藏物颜色填色（灰 = 空），方块按该条统一色填色（黑边 = 目标块）。均匀与否不靠图看，看第二节的数字。
 - **图 2 随机事件**：面板 ① 全部叠加，其余拆开：BinFill 按 `dynamic` 分两面（抓取箭头 被抓方块 → 孔板中心，颜色 = 方块色，实线 = 分批出现、虚线 = 开局全在）；RouteStick 按起点格点分五面（绿星 = 起点，实线弧 = 顺时针绕行、虚线弧 = 逆时针）；视频任务按第 1／2／3 次交换分三面（紫／橙／青 = 发起者 → 搭档，空心圆 = 视频后抓取的容器，空心方 = 目标方块）。ep 号标在孔板／起点／发起者旁。
