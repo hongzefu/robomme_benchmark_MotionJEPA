@@ -160,7 +160,7 @@ PARALLEL_OVERLAP=FAIL mode=P0x12 workers_per_gpu=12 peak_distinct_pids=11 sample
 
 **实测**：`PLOT_EVIDENCE=PASS groups=11 before=11 after=11 thumbnails=1100 font=Noto Sans CJK JP`。产物在 `artifacts/injection/20260910-new-values-04/plots/{before,after}/<任务>/<难度>/`。
 
-跑前分布还有一套更细的 2D 图（只画实跑范围前 30 条，每组三种：初始位置、随机事件、单个 episode，共 77 张，放在 `injection-before-2d/figures/`，不入库需本地出图）与按 11 组分难度、各分「初始化」「事件」两张的「事件 / 取值域 / 分配 / 结果分布」表，见 [injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md](injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md)。
+跑前分布还有一套更细的 2D 图（只画实跑范围前 30 条，视角与回放视频 `base_camera` 对齐：画面右 = +y、画面上 = −x；每组三种：初始位置、随机事件、单个 episode，共 77 张，放在 `injection-before-2d/figures/`，不入库需本地出图）与按 11 组分难度、各分「初始化」「事件」两张的「事件 / 取值域 / 分配 / 结果分布」表，见 [injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md](injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md)。
 
 ## 五、复现命令
 
