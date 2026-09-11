@@ -31,7 +31,7 @@ screw→RRTStar 回退走 mplib/OMPL，种子接口未暴露且有 1 秒墙钟�
 
 15 格，见 [cases.json](cases.json)：`BinFill` 三难度 × `dynamic` 两分支共 6 格，
 `RouteStick` / `VideoUnmaskSwap` / `VideoRepick` 各三难度共 9 格。
-`--difficulty` 是三位 easy/medium/hard 循环配额，`100` 表示全 easy，不是"难度 100"。
+`--difficulty` 是三位 easy/medium/hard 循环配额，`100` 表示全 easy，不是"难度 100"（2026-09-11 新增的第四档 xhard 不进配额，只经规格清单进入）。
 
 原版在某格首次尝试即失败或触发 RRT* 回退时，该格记为受阻并保留记录，
 另选**同格其他 episode** 补足（只换 episode，seed 仍由原公式算出，不自动换 seed 顶替）。

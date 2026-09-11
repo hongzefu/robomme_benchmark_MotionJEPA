@@ -1409,3 +1409,7 @@ L_moving = ||B − A|| + 0.07π + r × ω_bound；L_stationary = 0
 
 - **PhysX 不能用「有接触点」判碰撞**：三例分别有 36、62、66 个接触候选点，最小 `separation` 约 `+0.0120000001 / +0.0002000011 / -0.0002000057` 米，只有按分离值判才与几何一致；9 个姿态全部相符。区间反例在 `s=0.23712158203125` 被拒绝。
 - **四容器三例禁止覆盖或清理**；复现用新目录，分别核对「从初态重算轨迹」与「从保存轨迹重渲染」；跨 GPU／驱动不要求 MP4 逐字节相同。一键复现单列为 `COLLISION_REPRODUCE`，文件已保存 ≠ 工具已完成。
+
+## 附：xhard 扩展（2026-09-11）
+
+本方案冻结的 11 组之外，用户决定给 RouteStick／VideoUnmaskSwap／VideoRepick 各加第四档 `xhard`（RouteStick 段数 8～10；两个视频任务 swap 4～5 次、第 k 次发起者循环沿用 3 个发起者）。独立计划、src 8 处改动清单、闸门与实测结果见 [XHARD_DIFFICULTY_PLAN.md](XHARD_DIFFICULTY_PLAN.md)；契约 v3 与「取值域散列按难度作用域」的改法见 [scripts/NEW_VALUE_CONTRACT_CHANGELOG.md](scripts/NEW_VALUE_CONTRACT_CHANGELOG.md) 第八节。本方案的 11 组、05 运行与全部判定口径不变：06 的旧 11 组规格与 05 逐条相同（`OLD_GROUPS_EQUIVALENCE=PASS compared=1100 differences=0`），05 在新代码下复检仍 `CHECK=PASS`。

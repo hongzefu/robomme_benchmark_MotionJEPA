@@ -194,3 +194,20 @@ def build_v3(base_v2, sampling):
 - 每笔 commit body 按 AGENTS.md 规则 7 六项写（用户原话、计划、分节实施、意外、实验数字、状态与下一步）。
 - 实测数字追加到 `XHARD_DIFFICULTY_PLAN.md` 第一部分之后的「实测结果」子节与 `AGENTS.md` 日志，不改写原计划正文。
 - 临时产物放 `artifacts/xhard-smoke/`（不入库）；scratchpad 只放一次性清单。
+
+---
+
+# 实测结果（2026-09-11 实施完成后追加，不改写上文）
+
+| 阶段 | 判定行（实测） | commit |
+|---|---|---|
+| 0 | 基线：`tests/lightweight` 423 passed / 4 既有失败（199.9 秒）；`campaign check --run-id 05` → `CHECK=PASS elapsed_s=361.6` | — |
+| 1 | `SCOPED_SHA=PASS`（三档作用域 = `124e49f8…`）；阶段 1 代码下 05 复检 `CHECK=PASS elapsed_s=357.3`（含新增循环校验）；轻量 432 passed / 4 既有 | `10.57` |
+| 2 | S1～S8 用户逐条批准（答复「同意」）；`--check-config` 一致、`--source-ref 94449db` 72 项一致；`test_swap_schedule_generic` 18 项；`OLD_TIER_PARITY=PASS compared=4 differences=0`（BinFill/hard、RouteStick/hard、Unmask/hard、Repick/medium 各 ep0 与 05 HDF5 逐位相同）；轻量 452 passed / 4 既有 | `10.58` |
+| 3 | `CONTRACT_BUILT=v3 groups=14`；`CONTRACT_DERIVED=PASS fields=200 mismatches=6 overrides=2 problems=0`（6 处全是 v2 登记的 BinFill 覆盖项）；`V1_V2_UNCHANGED=PASS` | `10.59` |
+| 4 | `PLAN=OK groups=14 specs=1400 elapsed_s=340.0`（xhard 候选用量：RouteStick 0、Unmask ≤4、Repick ≤39）；`CHECK=PASS elapsed_s=655.5`（`SPEC_REPRODUCIBLE compared=1400 differences=0`、`COLLISION_SWEEP specs=700 rejected=0 min_g_m=0.000141418`）；`OLD_GROUPS_EQUIVALENCE=PASS compared=1100 differences=0 shared_groups=11` | `10.59` |
+| 5 | 冒烟：RouteStick/xhard ep0（L=10）T=1000、Unmask/xhard ep0（n=5）T=646 绑定核验 5 段、Repick/xhard ep0（n=4）T=740 核验 4 段；实跑 90 条（`P01x20`，墙钟 1343.3 秒）：`FEASIBILITY=PASS unique=90 succeeded=87`、`COLLISION_RUNTIME=PASS unique=60 missing_checks=0 rejected=0`、`INJECTION_BINDING=PASS bound=88 mismatches=0`、`VIDEO_DECODE=PASS`、`RUN=PASS`；每组 RouteStick 30/30、Repick 29/30（ep5 规划失败）、Unmask 28/30（ep7／ep26 卡死 `kill -9`，与 05 的 VideoRepick 卡死同形态） | `10.60` |
+| 6 | `PLOT2D_BEFORE=PASS groups=14 files=98`；`EVENT_TABLES=PASS groups=14 rows=156 drift=0`；`WINDOWS_EXTRACT=PASS groups=14 episodes=410 swap_fail=0`；`WINDOW_TABLES=PASS rows=410 drift=0`；`WINDOWS_PLOT=PASS files=15`；`DOC_LINKS=PASS files=98/98 windows_files=15/15`；`XHARD_TIMELINE=PASS route_t=[800,1000] unmask_bands=[4,5] unmask_last_end=[264,314] repick_bands=[4,5] repick_b1_minus_s=[12,18]` | `10.61` |
+| 7 | 文档与账本；最终轻量测试见 `10.62` commit body | `10.62` |
+
+与计划的偏差：①「散列作用域」「操作元路径拆分」「组列表真源」三项由方案审查 subagent 在计划期发现并纳入，实施时按计划执行；②`CONTRACT_DERIVED` 的 `mismatches` 实测是 6（按分量计，v2 登记的两条区间 override 各 lo/hi/values 三处），计划文中写的 2 是按 override 条数计，口径不同、结论相同；③两条 VideoUnmaskSwap/xhard 卡死属计划风险登记里预见的情形，处置照 05。

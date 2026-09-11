@@ -12,14 +12,14 @@
 
 ## 一、固定了哪些
 
-### 1.1 十二份难度字典（四任务 × 三难度）
+### 1.1 十五份难度字典（四任务 × 三难度，三任务另有第四档 xhard）
 
-| 任务 | easy | medium | hard |
-| --- | --- | --- | --- |
-| `BinFill` | `color=1`<br>`spawn_cubes=[4,6]`<br>`put_in_color=[1,1]`<br>`put_in_numbers=[1,3]` | `color=2`<br>`[8,10]`<br>`[1,2]`<br>`[2,4]` | `color=3`<br>`[10,12]`<br>`[2,3]`<br>`[3,5]` |
-| `RouteStick` | `length=[2,3]`<br>`backtrack=False` | `[4,5]`<br>`False` | `[4,7]`<br>`True` |
-| `VideoUnmaskSwap` | `bin=3`<br>`swap 1–2`<br>`pick 1–2` | `bin=4`<br>`swap 1–2`<br>`pick 1–1` | `bin=4`<br>`swap 2–3`<br>`pick 2–2` |
-| `VideoRepick` | `cube=3`<br>`swap 1–2` | `cube=3`<br>`swap 2–3` | `swap 0–0`<br>（`cluster`/`swap` 是死字段，源码从不读它们） |
+| 任务 | easy | medium | hard | xhard（2026-09-11 新增） |
+| --- | --- | --- | --- | --- |
+| `BinFill` | `color=1`<br>`spawn_cubes=[4,6]`<br>`put_in_color=[1,1]`<br>`put_in_numbers=[1,3]` | `color=2`<br>`[8,10]`<br>`[1,2]`<br>`[2,4]` | `color=3`<br>`[10,12]`<br>`[2,3]`<br>`[3,5]` | 无 |
+| `RouteStick` | `length=[2,3]`<br>`backtrack=False` | `[4,5]`<br>`False` | `[4,7]`<br>`True` | `[8,10]`<br>`True`（其余同 hard） |
+| `VideoUnmaskSwap` | `bin=3`<br>`swap 1–2`<br>`pick 1–2` | `bin=4`<br>`swap 1–2`<br>`pick 1–1` | `bin=4`<br>`swap 2–3`<br>`pick 2–2` | `bin=4`<br>`swap 4–5`<br>`pick 2–2`（其余同 hard；第 4/5 次发起者循环沿用前 3 个） |
+| `VideoRepick` | `cube=3`<br>`swap 1–2` | `cube=3`<br>`swap 2–3` | `swap 0–0`<br>（`cluster`/`swap` 是死字段，源码从不读它们） | `cube=3`<br>`swap 4–5`（其余同 medium；发起者循环同上） |
 
 区间语义按来源区分：写在难度字典里的 `[min,max]` 由 `torch.randint(low, high+1)` 消费，
 **含两端**；直接写在源码里的 `torch.randint(a, b)` 是半开区间，不含 `b`。
@@ -323,6 +323,8 @@ uv run --no-sync python scripts/generate_dataset_newseed.py \
 > ⚠️ `--difficulty` 是 easy/medium/hard 的**循环配额**，不是难度值。
 > `211` = 每 4 局里 2 easy + 1 medium + 1 hard；`100` = 全 easy，`010` = 全 medium，
 > `001` = 全 hard。它不是「难度 100」。
+> 第四档 `xhard` **不进这个配额**：它只经 `--episode-specs` 清单里每组的 `difficulty` 字段进入（环境侧显式 `difficulty="xhard"`），
+> 随机路径的 `seed % 3` 兜底也不会落到它。
 
 **seed 不读表，由公式现算**（`seed_layout.py`）：
 

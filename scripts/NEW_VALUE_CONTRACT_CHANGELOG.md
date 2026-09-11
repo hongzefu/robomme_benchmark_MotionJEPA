@@ -1,6 +1,6 @@
-# 注入取值域约定 JSON：v1 与 v2 的变化与用户决策
+# 注入取值域约定 JSON：v1、v2 与 v3 的变化与用户决策
 
-> **两份文件**：[configs/newtask-v2/injection_contract_v1.json](configs/newtask-v2/injection_contract_v1.json)（= 现状口径，`20260910-new-values-04` 就是按它冻结的）、[configs/newtask-v2/injection_contract_v2.json](configs/newtask-v2/injection_contract_v2.json)（= v1 + BinFill 对齐 heldout 三处，`20260911-contract-v2-05` 按它冻结）。
+> **三份文件**：[configs/newtask-v2/injection_contract_v1.json](configs/newtask-v2/injection_contract_v1.json)（= 现状口径，`20260910-new-values-04` 就是按它冻结的）、[configs/newtask-v2/injection_contract_v2.json](configs/newtask-v2/injection_contract_v2.json)（= v1 + BinFill 对齐 heldout 三处，`20260911-contract-v2-05` 按它冻结）、[configs/newtask-v2/injection_contract_v3.json](configs/newtask-v2/injection_contract_v3.json)（= v2 + 三个 xhard 组，`20260911-contract-v3-06` 按它冻结；见第八节）。
 > **一句话**：契约只管事件表的三列——事件叫什么、能取哪些值、怎么铺满 100 条；几何常量（按钮盒尺寸、孔板边长、锚点坐标、避让间距、`region_half_size`）仍只在 [configs/newtask-v2/native_sampling.json](configs/newtask-v2/native_sampling.json)。
 > 链路代码在 [injection/](injection/)（2026-09-11 从 `tests/_shared/` 搬入，不依赖 `tests/`）；整体流程见 [NEW_VALUE_INJECTION_PIPELINE.md](NEW_VALUE_INJECTION_PIPELINE.md)。
 
@@ -109,3 +109,63 @@ uv run --no-sync python -m pytest tests/lightweight/test_injection_contract.py t
 - `operand_sha256` 口径不动：契约散列另起 `contract_sha256`，04 的清单仍可复核。
 - `_static_problems` 继续直连 `native_sampling.json`，作为不经过契约的独立几何校验链；`bin_half` 的公式在那里保留一份内联。
 - 04 运行目录只读，不写任何新文件。
+
+## 八、v3 = v2 + 三个 xhard 组（2026-09-11）
+
+依据：用户决定给三个任务加第四档 `xhard`，计划见 [../XHARD_DIFFICULTY_PLAN.md](../XHARD_DIFFICULTY_PLAN.md)。
+
+**用户决策原话（逐字）**：
+
+> 给出方案 给videorepick和videpunmaskswap加入swap 4-5次 作为xhard难度模式
+>
+> 其他和videorepick medium videpunmaskswap hard保持一致
+>
+> 给routestick增加xhard模式 和hard保持一致 但是走的段数增加8-10
+
+追问三选一答复：RouteStick 段数「落在 8～10」；第 4、5 次 swap 的发起者「循环沿用 3 个发起者」；「契约 v3 + 新 run 只跑 3 个 xhard 组」。
+
+### 8.1 改了什么
+
+| # | 组 | 取值域 | 来源 |
+|---|---|---|---|
+| 1 | `RouteStick/xhard` | `L` = `[8, 9, 10]`（配额 34/33/33），`edge.backtrack = true`，其余与 hard 逐字同式 | `RouteStick.config_xhard = {'length': [8, 10], 'backtrack': True}` |
+| 2 | `VideoUnmaskSwap/xhard` | `n_swaps` = `[4, 5]`（配额 50/50），`n_picks` = `[2]`，`layout_type` 常量 region4，其余与 hard 同式 | `VideoUnmaskSwap.config_xhard = {"bin": 4, "swap_min": 4, "swap_max": 5, "pick_min": 2, "pick_max": 2}` |
+| 3 | `VideoRepick/xhard` | `n_swaps` = `[4, 5]`（配额 50/50），`tail`／`target`／`layout_type` 与 medium 同式 | `VideoRepick.config_xhard = {"cube": 3, "swap_min": 4, "swap_max": 5}` |
+
+两个视频组的 `swap_pairs` 域文案加一句「第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者）」；三档文案逐字不变。**没有新 recipe、没有新字段、没有新 override**：`overrides` 与 `target_count_rule_override` 原样继承 v2。顶层多两个键：`contract_version = "v3"`、`added_groups_v3`。
+
+**发起者循环规则**：源码只有 3 个发起者槽位（`swap_pair1/2/3_idx1`），对象数不变（Repick 3 块、Unmask 4 个容器）时 4～5 次 swap 必须重复发起者。约定第 k 次（k 从 0 起）发起者 = 循环基 `swap_initiators[k mod 3]`，即 a、b、c、a、b——相邻两次发起者必不同，不会出现「同一块自己换回去」。规格 `objects.swap_initiators` 仍存 3 个循环基，`actions.swap_pairs` 存实际 n 段（搭档仍按每段起始时的水平最近邻逐段模拟）。`campaign check` 的 `STATIC_GEOMETRY` 新增此项校验，对旧 11 组恒成立。
+
+### 8.2 取值域散列改为按难度作用域
+
+源码加了 `config_xhard`、`native_sampling.json` 多了 `configs.xhard` 之后，全量 `operand_sha256` 必变，会让 04／05 的 `check` 一开头就以「依据漂移」拒绝、v1／v2 契约的逐字节测试变红。`specs.py::operand_sha256(sampling, difficulties)` 改为只保留本契约／本清单消费到的难度键（`positions` 不动）：
+
+| 场景 | 作用域 | 散列 |
+|---|---|---|
+| v1／v2 契约、04／05 清单复检 | `{easy, medium, hard}` | `124e49f8…`（与冻结值逐位相同） |
+| v3 契约、06 清单 | `{easy, medium, hard, xhard}` | `97c9af660ca5…` |
+
+与该函数既有 docstring 的立论一致：「纯源码改动不该把已冻结规格判成依据漂移」。⚠ 与之配套：`generate_dataset_newseed.py::SAMPLING_OPERAND_PATHS` 里三任务的 `configs` 从整块改为按 `.easy/.medium/.hard` 三条，固定基线 `94449db` 只担保原三档；`native_sampling.json` 与 `src/robomme` 必须同版本——旧快照配新源码会在 `load_sampling_config` 报「缺少字段 ['xhard']」。
+
+### 8.3 怎么证明旧的没变
+
+| 证据 | 命令 | 实测 |
+|---|---|---|
+| v1／v2 文件零字节改动 | `git diff --quiet -- injection_contract_v1.json injection_contract_v2.json` | 通过 |
+| v3 只追加三组 | `tests/lightweight/test_operand_scope.py`（v2→v3 同名 11 组逐字相同、`added_groups_v3` 三组、builder 逐字节重建） | 通过 |
+| v3 回算 | `contract_build check --contract injection_contract_v3.json` | `CONTRACT_DERIVED=PASS fields=200 mismatches=6 overrides=2 problems=0`（6 处不一致全是 v2 登记的 BinFill 覆盖项） |
+| 05 在新代码、新快照下仍可验收 | `campaign check --run-id 20260911-contract-v2-05` | `CHECK=PASS elapsed_s=357.3` |
+| 06 的旧 11 组规格与 05 逐条相同 | `campaign specs-diff --left 20260911-contract-v2-05 --right 20260911-contract-v3-06` | `OLD_GROUPS_EQUIVALENCE=PASS compared=1100 differences=0 shared_groups=11` |
+| 三档仿真产物逐位不变 | 用 05 规格四任务各跑 1 条，`campaign compare … --subset-only` | `OLD_TIER_PARITY=PASS compared=4 differences=0` |
+
+06 冻结：`PLAN=OK groups=14 specs=1400 elapsed_s=340.0`；xhard 组候选用量 `plan_stats.json`：RouteStick 0、VideoUnmaskSwap 最多 4、VideoRepick 最多 39（medium 是 33），`MAX_CANDIDATES=256` 远未耗尽；两个视频 xhard 组 100 条的 `min_g_m` 分别 0.00014／0.00419。
+
+### 8.4 复现命令
+
+```bash
+uv run --no-sync python -m scripts.injection.contract_build build-v3 --base scripts/configs/newtask-v2/injection_contract_v2.json --out scripts/configs/newtask-v2/injection_contract_v3.json
+uv run --no-sync python -m scripts.injection.contract_build check --contract scripts/configs/newtask-v2/injection_contract_v3.json
+uv run --no-sync python -m scripts.injection.campaign plan  --run-id 20260911-contract-v3-06 --contract scripts/configs/newtask-v2/injection_contract_v3.json
+uv run --no-sync python -m scripts.injection.campaign check --run-id 20260911-contract-v3-06
+uv run --no-sync python -m scripts.injection.campaign specs-diff --left 20260911-contract-v2-05 --right 20260911-contract-v3-06
+```

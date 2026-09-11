@@ -1414,3 +1414,20 @@
 - 意外：Repick 像素校验首版用相对阈值把收尾两帧滤掉（末尾无跳变、帧差两千级、之后严格为 0），改绝对阈值 100；改后 57 条里 49 条两法相等、8 条差 1 帧（首个静止帧关节位移 0.0097～0.0102 卡在阈值边缘），差 ≤ 1 帧时取像素法并记录两值。
 - 验证：`WINDOWS_EXTRACT=PASS episodes=323 swap_episodes=147 swap_fail=0 swap_warn=0 swap_pixel_adjusted=8`；`WINDOWS_PLOT=PASS files=12`；`WINDOW_TABLES=PASS rows=323 drift=0`；`DOC_LINKS=PASS`；单测 19 项 + 注入子集共 106 项全绿；目视 VideoUnmaskSwap/hard、VideoRepick/medium 两图。
 - 当前状态与后续：commit 10.56；05 串行对拍与跑后图未做；三条卡死的 VideoRepick seed 根因待查。
+
+### 2026-09-11 America/Detroit — xhard 难度扩展：开始实施（计划 `XHARD_DIFFICULTY_PLAN.md`）
+
+- 状态：进行中。计划已落仓库根；阶段 1（脚本侧前置）与阶段 2（src 8 处逐条获批落地）已提交（10.57、10.58），契约 v3 已建成，`20260911-contract-v3-06` 冻结中。
+- 用户要求：原话「给出方案 给videorepick和videpunmaskswap加入swap 4-5次 作为xhard难度模式」「其他和videorepick medium videpunmaskswap hard保持一致」「给routestick增加xhard模式 和hard保持一致 但是走的段数增加8-10」；追问答复：段数落在 8～10、第 4/5 次发起者循环沿用 3 个发起者、契约 v3 + 新 run 只跑 3 个 xhard 组；「同意开始实现 并且把你的plan放在仓库根目录」；src 8 处改动清单逐条列出后答复「同意」。
+- 实施：①`specs.py::operand_sha256` 加难度作用域（三档作用域散列仍为 05 冻结值 `124e49f8…`），`SAMPLING_OPERAND_PATHS` 三任务 configs 按难度拆条，`cmd_plan` 组列表改由契约驱动、`_check_reproducible` 遍历清单全部组、`_static_problems` 加「第 k 段发起者 = swap_initiators[k mod 3]」；②src：`VALID_DIFFICULTIES` 加 xhard，三任务 `config_xhard`（RouteStick `length=[8,10]`；Unmask `swap 4–5`；Repick `swap 4–5`），两个视频任务 `_load_scene` 补第 4/5 发起者槽位（循环基）、`_refresh_swap_schedule` 改通式；`native_sampling.json` 重导。
+- 验证（到目前）：05 基线与阶段 1 后复检均 `CHECK=PASS`（361.6／357.3 秒）；`--check-config --source-ref 94449db` 72 项一致；`test_swap_schedule_generic` 18 项；`OLD_TIER_PARITY=PASS compared=4 differences=0`（05 规格四任务各 1 条与 05 HDF5 逐位相同）；轻量全量 452 passed / 4 既有失败；`CONTRACT_BUILT=v3 groups=14`、`CONTRACT_DERIVED=PASS fields=200 mismatches=6 overrides=2 problems=0`，v1/v2 文件零改动。
+- 当前状态与后续：待 06 冻结与 `check`、`specs-diff` 旧组对拍、xhard 冒烟与 90 条实跑、出图与文档；完成后另记一条。
+
+### 2026-09-11 America/Detroit — xhard 难度扩展：完成（`10.57`～`10.62`）
+
+- 状态：完成。三任务各加一档 `xhard`；契约 v3；`20260911-contract-v3-06` 冻结 14 组 1400 条、实跑 3 个 xhard 组 90 条；数轴与跑前分布扩到 14 组；三档逐位不变。计划与实测汇总在 `XHARD_DIFFICULTY_PLAN.md`（末尾「实测结果」子节）。
+- 用户要求：见上一条「开始实施」；实施中无新增指令。
+- 实施：①`10.57` 脚本侧前置（散列作用域、操作元路径拆分、组列表由契约／清单驱动、发起者循环校验、提取器可选四键）；②`10.58` src 8 处逐条获批落地 + `native_sampling.json` 重导 + 调度通式单测 + 三档 4 条 HDF5 对拍；③`10.59` `build-v3`、规格生成器发起者循环、`run --groups`、`specs-diff`、跑后图透明度，冻结 06 并入库四类小产物；④`10.60` 冒烟 3 条 + 实跑 90 条 + 报告轻量包；⑤`10.61` 可视化三脚本适配 14 组、数轴合并两次实跑、五色、事件面板 K 化，两份 md 重写；⑥`10.62` 文档（CHANGELOG 第八节、PIPELINE 06 节与命令、README §1.1、TEST_PLAN 附录、docs/validation README）与本条。
+- 意外：VideoUnmaskSwap/xhard ep7／ep26 卡死（h5 96 字节、CPU 100%、RSS 爬到 4.3／6.9 GB、超 18 分钟），按 05 口径 `kill -9`，池记 `BrokenProcessPool`；VideoRepick/xhard ep5 规划失败。单测按 `config_medium = ` 找字面量失败（源码无空格），改正则。05 复检会重写其 `check_result.json` 的 `elapsed_s`，按只读红线 `git checkout` 还原。
+- 验证：`OLD_TIER_PARITY=PASS compared=4 differences=0`；05 复检 `CHECK=PASS`；`OLD_GROUPS_EQUIVALENCE=PASS compared=1100 differences=0`；06 `CHECK=PASS elapsed_s=655.5`（`SPEC_REPRODUCIBLE compared=1400`、`COLLISION_SWEEP specs=700 rejected=0 min_g_m=0.000141418`）；`RUN=PASS`（`FEASIBILITY unique=90 succeeded=87`、`INJECTION_BINDING mismatches=0`、`COLLISION_RUNTIME unique=60 missing_checks=0`）；`PLOT2D_BEFORE files=98`、`WINDOWS_EXTRACT groups=14 episodes=410 swap_fail=0`、`WINDOWS_PLOT files=15`、`DOC_LINKS files=98/98 windows_files=15/15 drift=0`、`XHARD_TIMELINE=PASS route_t=[800,1000] unmask_bands=[4,5] repick_bands=[4,5]`；轻量测试全量最终结果见 `10.62` commit body（既有 4 条失败不变）。
+- 当前状态与后续：`run.py::CALIBRATION_GROUPS`、评测链 `env_metadata` 未纳入 xhard（用户决定）；VideoUnmaskSwap/xhard 两条卡死与 05 的 VideoRepick 卡死根因仍未查；05 的串行对拍、跑后图未做。

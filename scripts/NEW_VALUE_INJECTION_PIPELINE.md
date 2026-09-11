@@ -29,6 +29,18 @@
 
 ⚠ 两类失败性质不同：5 条规划失败全在 `BinFill`、签名统一是 `DatasetGenerationError: 环境报告失败`，与原值基线同类（计划第 5.9.2 节里 `BinFill hard/ep3` 五轮同样失败），是任务自身成功率；3 条「未运行」是**人为中断**——它们在往 `RecordWrapper` 的 `fail_safe_limit = 2000` 步爬（`VideoRepick/easy/ep0` 已跑 112 分钟、RSS 14.9 GB），按用户决定 `kill -9`，本该得到的是「超时」。
 
+### 06（2026-09-11）：第四档 xhard，只实跑 3 个新组
+
+用户决定给 RouteStick／VideoUnmaskSwap／VideoRepick 加 `xhard`（段数 8～10；swap 4～5 次、第 k 次发起者循环沿用 3 个发起者），计划与逐项判据见 [../XHARD_DIFFICULTY_PLAN.md](../XHARD_DIFFICULTY_PLAN.md)，契约 v3 与散列作用域见 [NEW_VALUE_CONTRACT_CHANGELOG.md](NEW_VALUE_CONTRACT_CHANGELOG.md) 第八节。`20260911-contract-v3-06` 按 v3 冻结 14 组 × 100 = 1400 条（旧 11 组与 05 逐条相同：`OLD_GROUPS_EQUIVALENCE=PASS compared=1100 differences=0`），`check` 全 PASS（`SPEC_REPRODUCIBLE compared=1400`、`COLLISION_SWEEP specs=700 rejected=0 min_g_m=0.000141418`、`CHECK=PASS elapsed_s=655.5`），只实跑 3 个 xhard 组 × ep0～29 = 90 条（`--groups`，`P01x20`，墙钟 1343 秒）：**通过 87（96.7%）**、规划失败 1、未运行 2。
+
+| 组 | 通过 | 其他 |
+|---|---:|---|
+| `RouteStick` xhard（L=8～10） | 30 | — |
+| `VideoUnmaskSwap` xhard（swap 4～5） | 28 | 未运行 2（ep7／ep26 卡死，与 05 的三条 VideoRepick 同形态，`kill -9`） |
+| `VideoRepick` xhard（swap 4～5） | 29 | 规划失败 1（ep5，`DatasetGenerationError`） |
+
+三档逐位不变的证据：src 改动后用 05 规格四任务各跑 1 条与 05 的 HDF5 逐位对拍 `OLD_TIER_PARITY=PASS compared=4 differences=0`；05 在新代码与新快照下复检仍 `CHECK=PASS`。报告：[../docs/validation/newtask-v2/20260911-contract-v3-06/README.md](../docs/validation/newtask-v2/20260911-contract-v3-06/README.md)。数轴与跑前分布已扩到 14 组（[injection-before-2d/SAMPLING_WINDOWS.md](injection-before-2d/SAMPLING_WINDOWS.md)、[injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md](injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md)）：RouteStick/xhard 的 T 落在 800～1000（T = 100·L），两个视频 xhard 组的 swap 竖带 4～5 条。
+
 ## 一、候选分布怎么产生
 
 **一句话**：外部 CPU 进程**以约定 JSON `scripts/configs/newtask-v2/injection_contract_v*.json` 为派生依据**——取值域与分配办法从契约读，几何常量仍从 `native_sampling.json` 读——按固定 seed 把每个字段铺满 100 条，视频任务再过一遍真实碰撞盒筛查，通过了才冻结成 JSON。全程不启动仿真。
@@ -206,6 +218,16 @@ uv run --no-sync python -m scripts.injection.campaign collision-reproduce \
 uv run --no-sync python -m scripts.injection.campaign plot   --run-id "$INJECTION_RUN_ID" --phase before
 uv run --no-sync python -m scripts.injection.campaign plot   --run-id "$INJECTION_RUN_ID" --phase after
 uv run --no-sync python -m scripts.injection.campaign report --run-id "$INJECTION_RUN_ID"
+
+# 五、xhard（06）：契约 v3 = v2 + 三个 xhard 组；冻结 14 组；只实跑 3 个 xhard 组；数轴合并 05 与 06
+uv run --no-sync python -m scripts.injection.contract_build build-v3 --base scripts/configs/newtask-v2/injection_contract_v2.json --out scripts/configs/newtask-v2/injection_contract_v3.json
+uv run --no-sync python -m scripts.injection.campaign plan  --run-id 20260911-contract-v3-06 --contract scripts/configs/newtask-v2/injection_contract_v3.json
+uv run --no-sync python -m scripts.injection.campaign check --run-id 20260911-contract-v3-06
+uv run --no-sync python -m scripts.injection.campaign specs-diff --left 20260911-contract-v2-05 --right 20260911-contract-v3-06   # 旧 11 组逐条相同
+uv run --no-sync python -m scripts.injection.campaign run --run-id 20260911-contract-v3-06 --phase feasibility --tier 20 --gpus 0,1 \
+  --groups RouteStick/xhard,VideoUnmaskSwap/xhard,VideoRepick/xhard
+uv run --no-sync python -m scripts.injection.campaign report --run-id 20260911-contract-v3-06
+uv run --no-sync python scripts/injection-before-2d/window_timeline.py extract --rollout-run-id 20260911-contract-v2-05,20260911-contract-v3-06
 ```
 
 ⚠ 超过五分钟的阶段按 [AGENTS.md](../AGENTS.md) 强制规则第 4 条用 detached tmux 起。
