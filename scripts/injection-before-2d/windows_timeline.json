@@ -12801,7 +12801,23 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 1,
@@ -12835,7 +12851,18 @@
       12,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 2,
@@ -12869,7 +12896,18 @@
       10,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 3,
@@ -12903,7 +12941,18 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 4,
@@ -12927,7 +12976,18 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 5,
@@ -12961,7 +13021,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 6,
@@ -12985,7 +13061,18 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 7,
@@ -13009,7 +13096,23 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 8,
@@ -13043,7 +13146,23 @@
       12,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_0"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 9,
@@ -13067,7 +13186,23 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 10,
@@ -13091,7 +13226,18 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 11,
@@ -13115,7 +13261,18 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 12,
@@ -13139,7 +13296,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 13,
@@ -13173,7 +13346,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 14,
@@ -13207,7 +13391,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 15,
@@ -13231,7 +13431,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 16,
@@ -13265,7 +13481,18 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 17,
@@ -13289,7 +13516,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 18,
@@ -13323,7 +13566,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 19,
@@ -13357,7 +13611,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 20,
@@ -13391,7 +13661,18 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 21,
@@ -13415,7 +13696,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 22,
@@ -13439,7 +13731,23 @@
       12,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 23,
@@ -13463,7 +13771,18 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 24,
@@ -13487,7 +13806,23 @@
       9,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_0"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 25,
@@ -13521,7 +13856,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 26,
@@ -13555,7 +13906,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 27,
@@ -13589,7 +13956,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 28,
@@ -13623,7 +14006,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 29,
@@ -13647,7 +14041,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    }
   ],
   "VideoUnmaskSwap/medium": [
@@ -13673,7 +14078,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 1,
@@ -13697,7 +14113,18 @@
       12,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 2,
@@ -13721,7 +14148,23 @@
       10,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 3,
@@ -13745,7 +14188,23 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 4,
@@ -13769,7 +14228,23 @@
       10,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 5,
@@ -13793,7 +14268,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 6,
@@ -13817,7 +14308,18 @@
       10,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 7,
@@ -13841,7 +14343,18 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 8,
@@ -13865,7 +14378,23 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 9,
@@ -13889,7 +14418,18 @@
       13,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 10,
@@ -13913,7 +14453,23 @@
       9,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 11,
@@ -13937,7 +14493,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 12,
@@ -13961,7 +14528,18 @@
       9,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 13,
@@ -13985,7 +14563,23 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 14,
@@ -14009,7 +14603,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 15,
@@ -14033,7 +14638,23 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 16,
@@ -14057,7 +14678,23 @@
       9,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 17,
@@ -14081,7 +14718,23 @@
       10,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 18,
@@ -14105,7 +14758,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 19,
@@ -14129,7 +14793,18 @@
       12,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 20,
@@ -14153,7 +14828,18 @@
       9,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 21,
@@ -14177,7 +14863,23 @@
       9,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 22,
@@ -14201,7 +14903,23 @@
       6,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 23,
@@ -14225,7 +14943,23 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 24,
@@ -14249,7 +14983,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 25,
@@ -14273,7 +15023,18 @@
       6,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 26,
@@ -14297,7 +15058,18 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 27,
@@ -14321,7 +15093,18 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    },
    {
     "episode": 28,
@@ -14345,7 +15128,23 @@
       12,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 29,
@@ -14369,7 +15168,18 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": null,
+    "swap_check": "PASS"
    }
   ],
   "VideoUnmaskSwap/hard": [
@@ -14405,7 +15215,28 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ],
+     [
+      164,
+      214,
+      "bin_3↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 1,
@@ -14439,7 +15270,23 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 2,
@@ -14473,7 +15320,28 @@
       9,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ],
+     [
+      164,
+      214,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 3,
@@ -14507,7 +15375,28 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_0"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_1"
+     ],
+     [
+      164,
+      214,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 4,
@@ -14541,7 +15430,23 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 5,
@@ -14575,7 +15480,23 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 6,
@@ -14609,7 +15530,23 @@
       6,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 7,
@@ -14643,7 +15580,28 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ],
+     [
+      164,
+      214,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 8,
@@ -14677,7 +15635,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 9,
@@ -14711,7 +15685,28 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ],
+     [
+      164,
+      214,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 10,
@@ -14745,7 +15740,23 @@
       10,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 11,
@@ -14779,7 +15790,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 12,
@@ -14813,7 +15840,28 @@
       9,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_0"
+     ],
+     [
+      164,
+      214,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 13,
@@ -14847,7 +15895,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 14,
@@ -14881,7 +15945,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 15,
@@ -14915,7 +15995,28 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_0"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_1"
+     ],
+     [
+      164,
+      214,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 16,
@@ -14949,7 +16050,28 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_3"
+     ],
+     [
+      164,
+      214,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 17,
@@ -14983,7 +16105,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 18,
@@ -15017,7 +16155,28 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_0"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_1"
+     ],
+     [
+      164,
+      214,
+      "bin_3↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 19,
@@ -15051,7 +16210,28 @@
       12,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ],
+     [
+      164,
+      214,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 20,
@@ -15085,7 +16265,23 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 21,
@@ -15119,7 +16315,28 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_3"
+     ],
+     [
+      164,
+      214,
+      "bin_3↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 22,
@@ -15153,7 +16370,23 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 23,
@@ -15187,7 +16420,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 24,
@@ -15221,7 +16470,28 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_0"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_0"
+     ],
+     [
+      164,
+      214,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 25,
@@ -15255,7 +16525,28 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_1↔bin_2"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_3"
+     ],
+     [
+      164,
+      214,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 26,
@@ -15289,7 +16580,23 @@
       8,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    },
    {
     "episode": 27,
@@ -15323,7 +16630,28 @@
       9,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_0"
+     ],
+     [
+      164,
+      214,
+      "bin_3↔bin_0"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 28,
@@ -15357,7 +16685,28 @@
       11,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_0↔bin_3"
+     ],
+     [
+      114,
+      164,
+      "bin_1↔bin_2"
+     ],
+     [
+      164,
+      214,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 214,
+    "swap_check": "PASS"
    },
    {
     "episode": 29,
@@ -15391,7 +16740,23 @@
       7,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      64,
+      114,
+      "bin_2↔bin_1"
+     ],
+     [
+      114,
+      164,
+      "bin_0↔bin_3"
+     ]
+    ],
+    "swap_source": "schedule",
+    "swap_pixel_first": 64,
+    "swap_pixel_end": 164,
+    "swap_check": "PASS"
    }
   ],
   "VideoRepick/easy": [
@@ -15452,7 +16817,21 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      230,
+      280,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 230,
+    "swap_start_joint": 230,
+    "swap_start_pixel": 230,
+    "swap_pixel_end": 280,
+    "b1_minus_s": 15,
+    "swap_check": "PASS"
    },
    {
     "episode": 2,
@@ -15516,7 +16895,26 @@
       39,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      203,
+      253,
+      "bin_2↔bin_0"
+     ],
+     [
+      253,
+      303,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 203,
+    "swap_start_joint": 203,
+    "swap_start_pixel": 203,
+    "swap_pixel_end": 303,
+    "b1_minus_s": 16,
+    "swap_check": "PASS"
    },
    {
     "episode": 3,
@@ -15585,7 +16983,21 @@
       36,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      198,
+      248,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 198,
+    "swap_start_joint": 198,
+    "swap_start_pixel": 198,
+    "swap_pixel_end": 248,
+    "b1_minus_s": 16,
+    "swap_check": "PASS"
    },
    {
     "episode": 4,
@@ -15639,7 +17051,26 @@
       38,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      197,
+      247,
+      "bin_1↔bin_0"
+     ],
+     [
+      247,
+      297,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 197,
+    "swap_start_joint": 197,
+    "swap_start_pixel": 197,
+    "swap_pixel_end": 297,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 5,
@@ -15693,7 +17124,26 @@
       42,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      195,
+      245,
+      "bin_2↔bin_1"
+     ],
+     [
+      245,
+      295,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 195,
+    "swap_start_joint": 195,
+    "swap_start_pixel": 195,
+    "swap_pixel_end": 295,
+    "b1_minus_s": 17,
+    "swap_check": "PASS"
    },
    {
     "episode": 6,
@@ -15742,7 +17192,21 @@
       40,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      193,
+      243,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 193,
+    "swap_start_joint": 193,
+    "swap_start_pixel": 193,
+    "swap_pixel_end": 243,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 7,
@@ -15816,7 +17280,26 @@
       43,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      195,
+      245,
+      "bin_0↔bin_1"
+     ],
+     [
+      245,
+      295,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 195,
+    "swap_start_joint": 195,
+    "swap_start_pixel": 195,
+    "swap_pixel_end": 295,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 8,
@@ -15885,7 +17368,21 @@
       46,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      193,
+      243,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 193,
+    "swap_start_joint": 194,
+    "swap_start_pixel": 193,
+    "swap_pixel_end": 243,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 9,
@@ -15954,7 +17451,21 @@
       36,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      197,
+      247,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 197,
+    "swap_start_joint": 197,
+    "swap_start_pixel": 197,
+    "swap_pixel_end": 247,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 10,
@@ -16003,7 +17514,21 @@
       39,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      188,
+      238,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 188,
+    "swap_start_joint": 188,
+    "swap_start_pixel": 188,
+    "swap_pixel_end": 238,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 11,
@@ -16052,7 +17577,21 @@
       38,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      185,
+      235,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 185,
+    "swap_start_joint": 186,
+    "swap_start_pixel": 185,
+    "swap_pixel_end": 235,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 12,
@@ -16121,7 +17660,21 @@
       40,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      197,
+      247,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 197,
+    "swap_start_joint": 197,
+    "swap_start_pixel": 197,
+    "swap_pixel_end": 247,
+    "b1_minus_s": 16,
+    "swap_check": "PASS"
    },
    {
     "episode": 13,
@@ -16180,7 +17733,21 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      192,
+      242,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 192,
+    "swap_start_joint": 192,
+    "swap_start_pixel": 192,
+    "swap_pixel_end": 242,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 14,
@@ -16244,7 +17811,26 @@
       36,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      225,
+      275,
+      "bin_0↔bin_2"
+     ],
+     [
+      275,
+      325,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 225,
+    "swap_start_joint": 225,
+    "swap_start_pixel": 225,
+    "swap_pixel_end": 325,
+    "b1_minus_s": 16,
+    "swap_check": "PASS"
    },
    {
     "episode": 15,
@@ -16308,7 +17894,26 @@
       39,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      194,
+      244,
+      "bin_0↔bin_2"
+     ],
+     [
+      244,
+      294,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 194,
+    "swap_start_joint": 194,
+    "swap_start_pixel": 194,
+    "swap_pixel_end": 294,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 16,
@@ -16362,7 +17967,26 @@
       40,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      210,
+      260,
+      "bin_1↔bin_2"
+     ],
+     [
+      260,
+      310,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 210,
+    "swap_start_joint": 210,
+    "swap_start_pixel": 210,
+    "swap_pixel_end": 310,
+    "b1_minus_s": 15,
+    "swap_check": "PASS"
    },
    {
     "episode": 17,
@@ -16436,7 +18060,26 @@
       39,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      187,
+      237,
+      "bin_2↔bin_1"
+     ],
+     [
+      237,
+      287,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 187,
+    "swap_start_joint": 187,
+    "swap_start_pixel": 187,
+    "swap_pixel_end": 287,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 18,
@@ -16495,7 +18138,21 @@
       39,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      199,
+      249,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 199,
+    "swap_start_joint": 199,
+    "swap_start_pixel": 199,
+    "swap_pixel_end": 249,
+    "b1_minus_s": 14,
+    "swap_check": "PASS"
    },
    {
     "episode": 19,
@@ -16549,7 +18206,26 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      207,
+      257,
+      "bin_0↔bin_2"
+     ],
+     [
+      257,
+      307,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 207,
+    "swap_start_joint": 207,
+    "swap_start_pixel": 207,
+    "swap_pixel_end": 307,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 20,
@@ -16623,7 +18299,26 @@
       42,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      199,
+      249,
+      "bin_0↔bin_1"
+     ],
+     [
+      249,
+      299,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 199,
+    "swap_start_joint": 199,
+    "swap_start_pixel": 199,
+    "swap_pixel_end": 299,
+    "b1_minus_s": 16,
+    "swap_check": "PASS"
    },
    {
     "episode": 21,
@@ -16687,7 +18382,26 @@
       38,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      220,
+      270,
+      "bin_1↔bin_2"
+     ],
+     [
+      270,
+      320,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 220,
+    "swap_start_joint": 220,
+    "swap_start_pixel": 220,
+    "swap_pixel_end": 320,
+    "b1_minus_s": 17,
+    "swap_check": "PASS"
    },
    {
     "episode": 22,
@@ -16756,7 +18470,21 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      187,
+      237,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 187,
+    "swap_start_joint": 187,
+    "swap_start_pixel": 187,
+    "swap_pixel_end": 237,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 23,
@@ -16805,7 +18533,21 @@
       39,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      217,
+      267,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 217,
+    "swap_start_joint": 217,
+    "swap_start_pixel": 217,
+    "swap_pixel_end": 267,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 24,
@@ -16869,7 +18611,26 @@
       40,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      187,
+      237,
+      "bin_2↔bin_1"
+     ],
+     [
+      237,
+      287,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 187,
+    "swap_start_joint": 187,
+    "swap_start_pixel": 187,
+    "swap_pixel_end": 287,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 25,
@@ -16923,7 +18684,26 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      203,
+      253,
+      "bin_2↔bin_1"
+     ],
+     [
+      253,
+      303,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 203,
+    "swap_start_joint": 203,
+    "swap_start_pixel": 203,
+    "swap_pixel_end": 303,
+    "b1_minus_s": 16,
+    "swap_check": "PASS"
    },
    {
     "episode": 27,
@@ -16972,7 +18752,21 @@
       43,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      196,
+      246,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 196,
+    "swap_start_joint": 195,
+    "swap_start_pixel": 196,
+    "swap_pixel_end": 246,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 28,
@@ -17036,7 +18830,26 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      207,
+      257,
+      "bin_0↔bin_2"
+     ],
+     [
+      257,
+      307,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 207,
+    "swap_start_joint": 207,
+    "swap_start_pixel": 207,
+    "swap_pixel_end": 307,
+    "b1_minus_s": 15,
+    "swap_check": "PASS"
    },
    {
     "episode": 29,
@@ -17085,7 +18898,21 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      190,
+      240,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 190,
+    "swap_start_joint": 190,
+    "swap_start_pixel": 190,
+    "swap_pixel_end": 240,
+    "b1_minus_s": 14,
+    "swap_check": "PASS"
    }
   ],
   "VideoRepick/medium": [
@@ -17166,7 +18993,31 @@
       45,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      223,
+      273,
+      "bin_1↔bin_2"
+     ],
+     [
+      273,
+      323,
+      "bin_0↔bin_2"
+     ],
+     [
+      323,
+      373,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 223,
+    "swap_start_joint": 223,
+    "swap_start_pixel": 223,
+    "swap_pixel_end": 373,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 1,
@@ -17230,7 +19081,26 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      203,
+      253,
+      "bin_0↔bin_1"
+     ],
+     [
+      253,
+      303,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 203,
+    "swap_start_joint": 203,
+    "swap_start_pixel": 203,
+    "swap_pixel_end": 303,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 2,
@@ -17309,7 +19179,31 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      205,
+      255,
+      "bin_1↔bin_2"
+     ],
+     [
+      255,
+      305,
+      "bin_0↔bin_1"
+     ],
+     [
+      305,
+      355,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 205,
+    "swap_start_joint": 205,
+    "swap_start_pixel": 205,
+    "swap_pixel_end": 355,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 3,
@@ -17373,7 +19267,26 @@
       38,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      195,
+      245,
+      "bin_2↔bin_0"
+     ],
+     [
+      245,
+      295,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 195,
+    "swap_start_joint": 195,
+    "swap_start_pixel": 195,
+    "swap_pixel_end": 295,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 4,
@@ -17427,7 +19340,26 @@
       36,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      194,
+      244,
+      "bin_0↔bin_2"
+     ],
+     [
+      244,
+      294,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 194,
+    "swap_start_joint": 193,
+    "swap_start_pixel": 194,
+    "swap_pixel_end": 294,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 5,
@@ -17491,7 +19423,26 @@
       40,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      209,
+      259,
+      "bin_1↔bin_2"
+     ],
+     [
+      259,
+      309,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 209,
+    "swap_start_joint": 209,
+    "swap_start_pixel": 209,
+    "swap_pixel_end": 309,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 6,
@@ -17550,7 +19501,31 @@
       38,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      192,
+      242,
+      "bin_0↔bin_2"
+     ],
+     [
+      242,
+      292,
+      "bin_2↔bin_0"
+     ],
+     [
+      292,
+      342,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 192,
+    "swap_start_joint": 191,
+    "swap_start_pixel": 192,
+    "swap_pixel_end": 342,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 7,
@@ -17629,7 +19604,31 @@
       40,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      190,
+      240,
+      "bin_2↔bin_0"
+     ],
+     [
+      240,
+      290,
+      "bin_1↔bin_0"
+     ],
+     [
+      290,
+      340,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 190,
+    "swap_start_joint": 189,
+    "swap_start_pixel": 190,
+    "swap_pixel_end": 340,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 8,
@@ -17688,7 +19687,31 @@
       39,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      195,
+      245,
+      "bin_2↔bin_1"
+     ],
+     [
+      245,
+      295,
+      "bin_0↔bin_1"
+     ],
+     [
+      295,
+      345,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 195,
+    "swap_start_joint": 195,
+    "swap_start_pixel": 195,
+    "swap_pixel_end": 345,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 9,
@@ -17752,7 +19775,26 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      199,
+      249,
+      "bin_2↔bin_1"
+     ],
+     [
+      249,
+      299,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 199,
+    "swap_start_joint": 199,
+    "swap_start_pixel": 199,
+    "swap_pixel_end": 299,
+    "b1_minus_s": 15,
+    "swap_check": "PASS"
    },
    {
     "episode": 10,
@@ -17816,7 +19858,26 @@
       37,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      190,
+      240,
+      "bin_1↔bin_2"
+     ],
+     [
+      240,
+      290,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 190,
+    "swap_start_joint": 190,
+    "swap_start_pixel": 190,
+    "swap_pixel_end": 290,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 11,
@@ -17890,7 +19951,26 @@
       42,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      205,
+      255,
+      "bin_2↔bin_0"
+     ],
+     [
+      255,
+      305,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 205,
+    "swap_start_joint": 206,
+    "swap_start_pixel": 205,
+    "swap_pixel_end": 305,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 12,
@@ -17949,7 +20029,31 @@
       41,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      215,
+      265,
+      "bin_1↔bin_2"
+     ],
+     [
+      265,
+      315,
+      "bin_2↔bin_1"
+     ],
+     [
+      315,
+      365,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 215,
+    "swap_start_joint": 215,
+    "swap_start_pixel": 215,
+    "swap_pixel_end": 365,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 13,
@@ -18003,7 +20107,26 @@
       40,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      199,
+      249,
+      "bin_0↔bin_2"
+     ],
+     [
+      249,
+      299,
+      "bin_1↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 199,
+    "swap_start_joint": 199,
+    "swap_start_pixel": 199,
+    "swap_pixel_end": 299,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 14,
@@ -18082,7 +20205,31 @@
       39,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      195,
+      245,
+      "bin_1↔bin_2"
+     ],
+     [
+      245,
+      295,
+      "bin_0↔bin_1"
+     ],
+     [
+      295,
+      345,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 195,
+    "swap_start_joint": 194,
+    "swap_start_pixel": 195,
+    "swap_pixel_end": 345,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 15,
@@ -18161,7 +20308,31 @@
       41,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      205,
+      255,
+      "bin_0↔bin_2"
+     ],
+     [
+      255,
+      305,
+      "bin_1↔bin_0"
+     ],
+     [
+      305,
+      355,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 205,
+    "swap_start_joint": 205,
+    "swap_start_pixel": 205,
+    "swap_pixel_end": 355,
+    "b1_minus_s": 15,
+    "swap_check": "PASS"
    },
    {
     "episode": 16,
@@ -18215,7 +20386,26 @@
       40,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      186,
+      236,
+      "bin_2↔bin_1"
+     ],
+     [
+      236,
+      286,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 186,
+    "swap_start_joint": 186,
+    "swap_start_pixel": 186,
+    "swap_pixel_end": 286,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 17,
@@ -18284,7 +20474,31 @@
       38,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      204,
+      254,
+      "bin_0↔bin_2"
+     ],
+     [
+      254,
+      304,
+      "bin_2↔bin_0"
+     ],
+     [
+      304,
+      354,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 204,
+    "swap_start_joint": 204,
+    "swap_start_pixel": 204,
+    "swap_pixel_end": 354,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 18,
@@ -18358,7 +20572,26 @@
       42,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      194,
+      244,
+      "bin_1↔bin_2"
+     ],
+     [
+      244,
+      294,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 194,
+    "swap_start_joint": 194,
+    "swap_start_pixel": 194,
+    "swap_pixel_end": 294,
+    "b1_minus_s": 14,
+    "swap_check": "PASS"
    },
    {
     "episode": 19,
@@ -18427,7 +20660,31 @@
       34,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      198,
+      248,
+      "bin_2↔bin_1"
+     ],
+     [
+      248,
+      298,
+      "bin_1↔bin_2"
+     ],
+     [
+      298,
+      348,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 198,
+    "swap_start_joint": 198,
+    "swap_start_pixel": 198,
+    "swap_pixel_end": 348,
+    "b1_minus_s": 12,
+    "swap_check": "PASS"
    },
    {
     "episode": 20,
@@ -18491,7 +20748,26 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      218,
+      268,
+      "bin_1↔bin_0"
+     ],
+     [
+      268,
+      318,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 218,
+    "swap_start_joint": 218,
+    "swap_start_pixel": 218,
+    "swap_pixel_end": 318,
+    "b1_minus_s": 17,
+    "swap_check": "PASS"
    },
    {
     "episode": 21,
@@ -18550,7 +20826,31 @@
       42,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      195,
+      245,
+      "bin_0↔bin_2"
+     ],
+     [
+      245,
+      295,
+      "bin_1↔bin_0"
+     ],
+     [
+      295,
+      345,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 195,
+    "swap_start_joint": 195,
+    "swap_start_pixel": 195,
+    "swap_pixel_end": 345,
+    "b1_minus_s": 16,
+    "swap_check": "PASS"
    },
    {
     "episode": 22,
@@ -18604,7 +20904,26 @@
       36,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      196,
+      246,
+      "bin_1↔bin_2"
+     ],
+     [
+      246,
+      296,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 196,
+    "swap_start_joint": 196,
+    "swap_start_pixel": 196,
+    "swap_pixel_end": 296,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 23,
@@ -18663,7 +20982,31 @@
       41,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      192,
+      242,
+      "bin_2↔bin_0"
+     ],
+     [
+      242,
+      292,
+      "bin_1↔bin_0"
+     ],
+     [
+      292,
+      342,
+      "bin_0↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 192,
+    "swap_start_joint": 192,
+    "swap_start_pixel": 192,
+    "swap_pixel_end": 342,
+    "b1_minus_s": 15,
+    "swap_check": "PASS"
    },
    {
     "episode": 24,
@@ -18732,7 +21075,31 @@
       40,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      194,
+      244,
+      "bin_0↔bin_2"
+     ],
+     [
+      244,
+      294,
+      "bin_1↔bin_0"
+     ],
+     [
+      294,
+      344,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 194,
+    "swap_start_joint": 194,
+    "swap_start_pixel": 194,
+    "swap_pixel_end": 344,
+    "b1_minus_s": 17,
+    "swap_check": "PASS"
    },
    {
     "episode": 25,
@@ -18806,7 +21173,26 @@
       35,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      201,
+      251,
+      "bin_2↔bin_0"
+     ],
+     [
+      251,
+      301,
+      "bin_0↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 201,
+    "swap_start_joint": 201,
+    "swap_start_pixel": 201,
+    "swap_pixel_end": 301,
+    "b1_minus_s": 13,
+    "swap_check": "PASS"
    },
    {
     "episode": 27,
@@ -18880,7 +21266,26 @@
       42,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      225,
+      275,
+      "bin_0↔bin_2"
+     ],
+     [
+      275,
+      325,
+      "bin_2↔bin_0"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 225,
+    "swap_start_joint": 225,
+    "swap_start_pixel": 225,
+    "swap_pixel_end": 325,
+    "b1_minus_s": 15,
+    "swap_check": "PASS"
    },
    {
     "episode": 28,
@@ -18944,7 +21349,26 @@
       39,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      208,
+      258,
+      "bin_2↔bin_0"
+     ],
+     [
+      258,
+      308,
+      "bin_1↔bin_2"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 208,
+    "swap_start_joint": 208,
+    "swap_start_pixel": 208,
+    "swap_pixel_end": 308,
+    "b1_minus_s": 17,
+    "swap_check": "PASS"
    },
    {
     "episode": 29,
@@ -19023,7 +21447,31 @@
       41,
       "All tasks completed"
      ]
-    ]
+    ],
+    "swaps": [
+     [
+      198,
+      248,
+      "bin_0↔bin_2"
+     ],
+     [
+      248,
+      298,
+      "bin_1↔bin_0"
+     ],
+     [
+      298,
+      348,
+      "bin_2↔bin_1"
+     ]
+    ],
+    "swap_source": "joint_static",
+    "swap_start": 198,
+    "swap_start_joint": 198,
+    "swap_start_pixel": 198,
+    "swap_pixel_end": 348,
+    "b1_minus_s": 14,
+    "swap_check": "PASS"
    }
   ]
  },
@@ -19086,5 +21534,10 @@
    "failure_class": "infra"
   }
  ],
- "unknown_labels": {}
+ "unknown_labels": {},
+ "swap_summary": {
+  "episodes": 147,
+  "fail": 0,
+  "warn": 0
+ }
 }

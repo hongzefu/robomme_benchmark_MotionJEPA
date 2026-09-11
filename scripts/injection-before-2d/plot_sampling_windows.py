@@ -28,7 +28,7 @@ from matplotlib.patches import Patch, Rectangle  # noqa: E402
 HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
-from plot_injection_before_2d import use_cjk_font  # noqa: E402
+from plot_injection_before_2d import SWAP_COLORS, use_cjk_font  # noqa: E402
 from window_timeline import (  # noqa: E402
     BANDS, BUDGETS, GROUPS, TIMELINE_JSON, WIN, deltas, frame_path, phase_segments, representatives, short_label,
     window_counts, window_starts,
@@ -68,11 +68,21 @@ def draw_track(ax, row: dict[str, Any], y: float, xmax: float, axis_px: float) -
     top, bottom = y + 0.06, y + 0.94
     sg_top, sg_bottom = y + 0.72, y + 0.94        # subgoal 块
     win_base = y + 0.66                            # 窗口细条最底一行
-    f8_y, f32_top, f32_bottom = y + 0.30, y + 0.08, y + 0.24
+    f8_y, f32_top, f32_bottom = y + 0.33, y + 0.15, y + 0.27
     for start, length, kind in phase_segments(row):
         ax.add_patch(Rectangle((start, top), length, bottom - top, facecolor=COLOR[kind], alpha=0.09, edgecolor="none", zorder=1))
         ax.plot([start, start], [top, bottom], color=COLOR[kind], linewidth=0.8, alpha=0.7, zorder=2)
     char_px = 7 * DPI / 72
+    # swap 事件：贯穿整行的半透明竖带（第 1/2/3 次紫/橙/青，与跑前图 2 同色），顶部小字「换k a↔b」；校验不过画虚线空框
+    swap_ok = row.get("swap_check") == "PASS"
+    for k, (s, e, label) in enumerate(row.get("swaps", [])):
+        color = SWAP_COLORS[k % len(SWAP_COLORS)]
+        ax.add_patch(Rectangle((s, top), e - s, bottom - top, facecolor=color if swap_ok else "none", edgecolor=color,
+                               linewidth=0.7, linestyle="-" if swap_ok else "--", alpha=0.18 if swap_ok else 0.9, zorder=2))
+        text = f"换{k + 1} {label.replace('bin_', '')}"
+        width_px = (e - s) / xmax * axis_px
+        shown = text if width_px >= len(text) * char_px * 0.75 + 4 else str(k + 1)
+        ax.text(s + (e - s) / 2, y + 0.02, shown, fontsize=6.5, ha="center", va="top", color=color, fontweight="bold", zorder=7)
     for i, (start, length, text) in enumerate(row["segs"]):
         ax.add_patch(Rectangle((start, sg_top), length, sg_bottom - sg_top, facecolor=COLOR["sg_a"] if i % 2 == 0 else COLOR["sg_b"],
                                edgecolor=COLOR["sg_line"], linewidth=0.4, zorder=3))
@@ -99,9 +109,9 @@ def draw_track(ax, row: dict[str, Any], y: float, xmax: float, axis_px: float) -
 def _draw_board(items: list[tuple[str, Any]], xmax: float, title: str, out: Path) -> None:
     """items 里每项是 ("header", 文本) 或 ("row", 左栏标签, row)。"""
     n = len(items)
-    fig_h = ROW_IN * n + 2.6
+    fig_h = ROW_IN * n + 2.9
     fig = plt.figure(figsize=(FIG_W_IN, fig_h))
-    ax = fig.add_axes([AX_LEFT, 1.6 / fig_h, AX_RIGHT - AX_LEFT, 1 - (1.6 + 0.9) / fig_h])
+    ax = fig.add_axes([AX_LEFT, 1.9 / fig_h, AX_RIGHT - AX_LEFT, 1 - (1.9 + 0.9) / fig_h])
     axis_px = FIG_W_IN * DPI * (AX_RIGHT - AX_LEFT)
     for y, item in enumerate(items):
         if item[0] == "header":
@@ -132,8 +142,9 @@ def _draw_board(items: list[tuple[str, Any]], xmax: float, title: str, out: Path
                Line2D([], [], marker="o", linestyle="", color=COLOR["f8"], markersize=5, label=f"帧路 N={BUDGETS[1]}"),
                Patch(facecolor="none", edgecolor=COLOR["empty"], linestyle="--", label=f"段 < {WIN} 帧，铺不出窗口"),
                Patch(facecolor=COLOR["demo"], alpha=0.15, label="淡蓝底 = demo 段（BinFill 为同一条重复两遍的模拟 demo）"),
-               Patch(facecolor=COLOR["exec"], alpha=0.15, label="淡绿底 = exec 段")]
-    fig.legend(handles=handles, loc="lower center", ncol=4, fontsize=9, framealpha=0.95, bbox_to_anchor=(0.5, 0.02))
+               Patch(facecolor=COLOR["exec"], alpha=0.15, label="淡绿底 = exec 段"),
+               *[Patch(facecolor=SWAP_COLORS[k], alpha=0.35, edgecolor=SWAP_COLORS[k], label=f"第 {k + 1} 次 swap（换k 发起者↔搭档；Unmask 按调度常量、Repick 按关节静止反解）") for k in range(3)]]
+    fig.legend(handles=handles, loc="lower center", ncol=4, fontsize=9, framealpha=0.95, bbox_to_anchor=(0.5, 0.01))
     fig.suptitle(title, fontsize=14, y=1 - 0.35 / fig_h)
     fig.text(0.5, 1 - 0.72 / fig_h, f"窗口 [f, f+{WIN - 1}]（{WIN} 帧）、stride 16、不跨 demo／exec 段，每段窗口数 len(range(0, max(0, L-{WIN - 1}), 16))；"
              f"帧路 round(linspace(0, T-1, N))，Δ = (T-1)/(N-1)；N={BUDGETS[0]} 与 N={BUDGETS[1]} 是帧预算不是切分步长",

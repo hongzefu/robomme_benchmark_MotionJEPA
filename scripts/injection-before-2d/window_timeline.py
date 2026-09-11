@@ -45,6 +45,12 @@ GROUPS: list[tuple[str, str]] = [
 WIN, STRIDE, BUDGETS = 33, 16, (32, 8)
 BANDS = ("最短", "中位", "最长")
 SIMULATED_DEMO_TASKS = ("BinFill",)
+# swap 事件（2026-09-11 用户要求「videounmaskswap和videorepick的swap事件能标出来吗」）
+SWAP_TASKS = ("VideoUnmaskSwap", "VideoRepick")
+SWAP_START, SWAP_LEN = 64, 50           # VideoUnmaskSwap._refresh_swap_schedule：第 k 次 swap = [64+50(k-1), 64+50k]
+STATIC_HOLD, STATIC_THRESHOLD = 20, 0.01  # VideoRepick 热身段 static_check(20)；is_static 阈值 0.2 rad/s × 控制周期 0.05 s
+B1_MINUS_S_RANGE = (5, 30)               # 关节法 S 与第一个 swap-static 段起始的合理差（实测 12～17）
+FREEZE_THRESHOLD = 100.0                 # VideoRepick 最后一次 swap 结束后画面冻结、帧差严格为 0；100 以下视为渲染噪声
 
 
 # ── 窗口公式（纯函数）─────────────────────────────────────────────────────────
@@ -96,6 +102,147 @@ def representatives(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     """按 T 排序取最短／中位（下标 n//2）／最长三条，与 artifact 的三档同规则。"""
     ordered = sorted(rows, key=lambda r: (r["total"], r["episode"]))
     return {"最短": ordered[0], "中位": ordered[len(ordered) // 2], "最长": ordered[-1]}
+
+
+# ── swap 事件 ─────────────────────────────────────────────────────────────────
+def _pair_label(pair: dict[str, Any]) -> str:
+    return f"{pair['initiator']}↔{pair['partner']}"
+
+
+def unmask_swaps(n_swaps: int, pairs: list[dict[str, Any]]) -> list[list[Any]]:
+    """VideoUnmaskSwap：调度常量，第 k 次 swap = [64 + 50(k-1), 64 + 50k]，之间无间隔。"""
+    return [[SWAP_START + SWAP_LEN * k, SWAP_START + SWAP_LEN * (k + 1), _pair_label(pairs[k])] for k in range(n_swaps)]
+
+
+def repick_swaps(start: int, n_swaps: int, pairs: list[dict[str, Any]]) -> list[list[Any]]:
+    """VideoRepick：从闩锁的 start 起每 50 帧一次，首尾相接。"""
+    return [[start + SWAP_LEN * k, start + SWAP_LEN * (k + 1), _pair_label(pairs[k])] for k in range(n_swaps)]
+
+
+def load_specs(run_id: str, task: str, difficulty: str) -> dict[int, dict[str, Any]]:
+    """从该运行的冻结规格读每条的 n_swaps 与 swap_pairs（只取 initiator/partner）。"""
+    path = REPO_ROOT / "artifacts" / "injection" / run_id / "specs" / task / f"{difficulty}.json"
+    out = {}
+    for item in json.loads(path.read_text(encoding="utf-8"))["episodes"]:
+        pairs = [{"initiator": p["initiator"], "partner": p["partner"]} for p in item["actions"]["swap_pairs"]]
+        n_swaps = int(item["objects"]["n_swaps"])
+        if n_swaps != len(pairs):
+            raise ValueError(f"{path} ep{item['episode']}: n_swaps={n_swaps} 与 swap_pairs 数 {len(pairs)} 不一致")
+        out[int(item["episode"])] = {"n_swaps": n_swaps, "pairs": pairs}
+    return out
+
+
+def first_swap_static(segs: list[list[Any]], demo: int) -> tuple[int | None, int | None]:
+    """返回 (热身 static 段起始帧, 第一个 swap-static 段起始帧 B1)：demo 内第 1 个 static 是热身；B1 取其后第一个长度 48～60 的 static，
+    没有则退到第 2 个 static。"""
+    statics = [(int(s), int(l)) for s, l, text in segs if int(s) < demo and str(text).strip().lower() == "static"]
+    if not statics:
+        return None, None
+    warm = statics[0][0]
+    b1 = next((s for s, l in statics[1:] if 48 <= l <= 60), None)
+    if b1 is None and len(statics) > 1:
+        b1 = statics[1][0]
+    return warm, b1
+
+
+def static_start_from_deltas(deltas: list[float], first_index: int, hold: int = STATIC_HOLD, threshold: float = STATIC_THRESHOLD) -> int | None:
+    """复现 static_check：deltas[i] 是帧 first_index+i 相对前一帧的最大关节位移；不静止即重新计数，
+    连续 hold 帧静止（帧 t0..t0+hold-1）后返回 S = t0 + hold；找不到返回 None。"""
+    run = 0
+    for i, d in enumerate(deltas):
+        run = run + 1 if d <= threshold else 0
+        if run >= hold:
+            return first_index + i + 1
+    return None
+
+
+def joint_static_start(h5_path: Path, warm_start: int, demo_end: int) -> int | None:
+    """VideoRepick：从热身段起读 obs/joint_state[:7]，相邻帧差分近似 qvel，按 static_check(20) 反解 swap 起点 S。"""
+    import h5py
+    import numpy as np
+
+    base = max(int(warm_start) - 1, 0)
+    with h5py.File(h5_path, "r") as handle:
+        group = handle[[name for name in handle if name.startswith("episode_")][0]]
+        q = np.stack([np.asarray(group[f"timestep_{t}/obs/joint_state"][()])[:7] for t in range(base, demo_end)])
+    deltas = np.abs(np.diff(q, axis=0)).max(axis=1).tolist()  # deltas[i] ↔ 帧 base+1+i
+    return static_start_from_deltas(deltas, base + 1)
+
+
+def frame_diffs(h5_path: Path, lo: int, hi: int) -> dict[int, float]:
+    """diff[t] = Σ|front_rgb[t] − front_rgb[t−1]|，t ∈ [lo, hi]（lo ≥ 1）。只在机械臂已静止的区间内使用。"""
+    import h5py
+    import numpy as np
+
+    lo = max(int(lo), 1)
+    out: dict[int, float] = {}
+    with h5py.File(h5_path, "r") as handle:
+        group = handle[[name for name in handle if name.startswith("episode_")][0]]
+        prev = np.asarray(group[f"timestep_{lo - 1}/obs/front_rgb"][()], dtype=np.int32)
+        for t in range(lo, int(hi) + 1):
+            cur = np.asarray(group[f"timestep_{t}/obs/front_rgb"][()], dtype=np.int32)
+            out[t] = float(np.abs(cur - prev).sum())
+            prev = cur
+    return out
+
+
+def solve_swap_end(diffs: dict[int, float], absolute: float | None = None) -> int | None:
+    """区间内最后一个超阈值的帧。默认阈值 max(0.1×最大值, 500)（VideoUnmaskSwap：最后一次 swap 在 end_step 直接 set_pose
+    并放回方块，是个 2.5 万级尖峰）；``absolute`` 给定时用绝对阈值（VideoRepick：末尾没有尖峰，smoothstep 收尾帧差只有
+    两千级，但之后画面冻结、帧差严格为 0，所以取最后一个 > 100 的帧）。"""
+    if not diffs:
+        return None
+    threshold = absolute if absolute is not None else max(0.1 * max(diffs.values()), 500.0)
+    hits = [t for t, v in diffs.items() if v > threshold]
+    return max(hits) if hits else None
+
+
+def solve_swap_first_change(diffs: dict[int, float]) -> int | None:
+    """区间内第一个超阈值的帧（VideoUnmaskSwap 用：帧 64 方块被藏起、交换开始）。"""
+    if not diffs:
+        return None
+    threshold = max(0.1 * max(diffs.values()), 500.0)
+    hits = [t for t, v in diffs.items() if v > threshold]
+    return min(hits) if hits else None
+
+
+def annotate_swaps(task: str, entry: dict[str, Any], spec: dict[str, Any], h5_path: Path) -> None:
+    """给一条视频任务的 entry 加 swaps / swap_source / swap_check 等字段（就地修改）。"""
+    n, pairs = spec["n_swaps"], spec["pairs"]
+    demo, total = int(entry["demo"]), int(entry["total"])
+    warm, b1 = first_swap_static(entry["segs"], demo)
+    if task == "VideoUnmaskSwap":
+        # 公式给区间；像素差只做校验：帧 40～63 静置、64 首次变化；n≥2 时最后一次结束帧 64+50n < demo，也校验
+        swaps = unmask_swaps(n, pairs)
+        expected_end = SWAP_START + SWAP_LEN * n
+        diffs = frame_diffs(h5_path, 40, demo - 1)
+        first_change = solve_swap_first_change(diffs)
+        pixel_end = solve_swap_end(diffs) if expected_end < demo else None
+        check = "PASS" if first_change == SWAP_START and (pixel_end is None or pixel_end == expected_end) else "FAIL"
+        entry.update({"swaps": swaps, "swap_source": "schedule", "swap_pixel_first": first_change,
+                      "swap_pixel_end": pixel_end, "swap_check": check})
+        return
+    # VideoRepick：关节静止法反解 S_joint，像素差在 [S_joint-5, demo-1] 内取画面冻结前的最后一帧 E，S_pix = E - 50n。
+    # 关节差分在 0.01 rad 阈值边缘（0.0097～0.0102）会与仿真器内部 qvel 差一帧，而画面冻结没有歧义（之后帧差严格为 0），
+    # 所以两者差 ≤ 1 帧时以像素为准并把两个值都记下来；差 > 1 帧才判 FAIL。05 实测：57 条里 49 条两法相等、8 条差 1 帧。
+    s_joint = joint_static_start(h5_path, warm, demo) if warm is not None else None
+    if s_joint is None:
+        entry.update({"swaps": [], "swap_source": "joint_static", "swap_start": None, "swap_start_joint": None,
+                      "swap_start_pixel": None, "swap_pixel_end": None, "b1_minus_s": None, "swap_check": "FAIL"})
+        return
+    diffs = frame_diffs(h5_path, s_joint - 5, demo - 1)
+    pixel_end = solve_swap_end(diffs, absolute=FREEZE_THRESHOLD)
+    s_pix = (pixel_end - SWAP_LEN * n) if pixel_end is not None else None
+    if s_pix is not None and abs(s_pix - s_joint) <= 1:
+        start, check = s_pix, "PASS"
+    else:
+        start, check = s_joint, "FAIL"
+    b1_minus_s = (b1 - start) if b1 is not None else None
+    if check == "PASS" and (b1_minus_s is None or not B1_MINUS_S_RANGE[0] <= b1_minus_s <= B1_MINUS_S_RANGE[1]):
+        check = "WARN"
+    entry.update({"swaps": repick_swaps(start, n, pairs), "swap_source": "joint_static", "swap_start": start,
+                  "swap_start_joint": s_joint, "swap_start_pixel": s_pix, "swap_pixel_end": pixel_end,
+                  "b1_minus_s": b1_minus_s, "swap_check": check})
 
 
 # ── subgoal 短标（04 实跑 322 条只出现 31 种文本，规则表覆盖全部）─────────────────
@@ -195,6 +342,8 @@ def extract(run_id: str, source: Path) -> dict[str, Any]:
     skipped: list[dict[str, Any]] = []
     failed: list[dict[str, Any]] = []
     unknown_labels: dict[str, int] = {}
+    specs: dict[tuple[str, str], dict[int, dict[str, Any]]] = {}
+    swap_summary = {"episodes": 0, "fail": 0, "warn": 0}
     for (task, difficulty, episode), row in sorted(latest.items()):
         key = f"{task}/{difficulty}"
         if key not in groups:
@@ -217,6 +366,15 @@ def extract(run_id: str, source: Path) -> dict[str, Any]:
             if not known:
                 unknown_labels[text] = unknown_labels.get(text, 0) + 1
         entry = {"episode": episode, "seed": int(row["seed"]), "recovery_mode": row.get("recovery_mode"), **record}
+        if task in SWAP_TASKS:
+            if (task, difficulty) not in specs:
+                specs[(task, difficulty)] = load_specs(run_id, task, difficulty)
+            annotate_swaps(task, entry, specs[(task, difficulty)][episode], h5_path)
+            swap_summary["episodes"] += 1
+            if entry["swap_check"] == "FAIL":
+                swap_summary["fail"] += 1
+            elif entry["swap_check"] == "WARN":
+                swap_summary["warn"] += 1
         if task in SIMULATED_DEMO_TASKS:
             entry = simulate_binfill_demo(entry)
         groups[key].append(entry)
@@ -230,6 +388,7 @@ def extract(run_id: str, source: Path) -> dict[str, Any]:
         "skipped": skipped,
         "failed_rows": failed,
         "unknown_labels": unknown_labels,
+        "swap_summary": swap_summary,
     }
 
 
@@ -245,6 +404,18 @@ def _seq_text(row: dict[str, Any]) -> str:
             parts.append("‖")
         parts.append(f"{short_label(text)[0]} {length}")
     return " · ".join(parts).replace(" · ‖ · ", " ‖ ")
+
+
+def _swap_text(row: dict[str, Any]) -> str:
+    parts = [f"{k + 1}: {s}–{e} {label}" for k, (s, e, label) in enumerate(row.get("swaps", []))]
+    text = " · ".join(parts) or "—"
+    if row.get("swap_source") == "joint_static":
+        sj, sp = row.get("swap_start_joint"), row.get("swap_start_pixel")
+        text += (f"（关节法 S={sj} = 像素法，B1−S={row.get('b1_minus_s')}）" if sj == sp
+                 else f"（关节法 S={sj}、像素法 S={sp}，取像素法，B1−S={row.get('b1_minus_s')}）")
+    if row.get("swap_check") != "PASS":
+        text = f"⚠{row.get('swap_check')} " + text
+    return text
 
 
 def render_tables(data: dict[str, Any]) -> tuple[str, int]:
@@ -274,15 +445,18 @@ def render_tables(data: dict[str, Any]) -> tuple[str, int]:
         key = f"{task}/{difficulty}"
         rows = sorted(data["groups"].get(key, []), key=lambda r: r["episode"])
         simulated = bool(rows and rows[0].get("simulated_demo"))
+        has_swaps = task in SWAP_TASKS
         lines += [f"### {task} / {difficulty}（{len(rows)} 条" + ("；模拟 demo：同一条重复两遍，T = 2×原 T" if simulated else "") + "）", "",
-                  "| ep | seed | T | demo | 段数 | 窗口 demo+exec=合计 | Δ32 | Δ8 | 段序列（短标 帧数，‖ = demo→exec） |",
-                  "|---|---|---|---|---|---|---|---|---|"]
+                  "| ep | seed | T | demo | 段数 | 窗口 demo+exec=合计 | Δ32 | Δ8 | 段序列（短标 帧数，‖ = demo→exec） |"
+                  + (" swap 起止帧（发起者↔搭档） |" if has_swaps else ""),
+                  "|---|---|---|---|---|---|---|---|---|" + ("---|" if has_swaps else "")]
         for r in rows:
             d, e = window_counts(r)
             d32, d8 = deltas(r["total"])
             t_cell = f"{r['total']} = 2×{r['original_total']}" if simulated else str(r["total"])
             lines.append(f"| {r['episode']} | {r['seed']} | {t_cell} | {r['demo']} | {len(r['segs'])} | {d}+{e}={d + e}"
-                         f"{'（无 motion token）' if d + e == 0 else ''} | {d32:.1f} | {d8:.1f} | {_seq_text(r)} |")
+                         f"{'（无 motion token）' if d + e == 0 else ''} | {d32:.1f} | {d8:.1f} | {_seq_text(r)} |"
+                         + (f" {_swap_text(r)} |" if has_swaps else ""))
             total_rows += 1
         lines.append("")
     return "\n" + "\n".join(lines).rstrip("\n") + "\n", total_rows
@@ -336,11 +510,22 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  ⚠ 规则表未覆盖的 subgoal 文本（兜底截断）：{text!r} × {count}", file=sys.stderr)
         for item in payload["skipped"]:
             print(f"  跳过 {item['task']}/{item['difficulty']} ep{item['episode']}：{item['reason']}", file=sys.stderr)
+        for key, rows in payload["groups"].items():
+            for r in rows:
+                if r.get("swap_check") not in (None, "PASS"):
+                    print(f"  swap {r['swap_check']}：{key} ep{r['episode']} start={r.get('swap_start')} joint={r.get('swap_start_joint')} "
+                          f"pixel={r.get('swap_start_pixel')} b1_minus_s={r.get('b1_minus_s')} first={r.get('swap_pixel_first')}", file=sys.stderr)
+        adjusted = sum(1 for rows in payload["groups"].values() for r in rows
+                       if r.get("swap_start_joint") is not None and r.get("swap_start_joint") != r.get("swap_start"))
+        payload["swap_summary"]["pixel_adjusted"] = adjusted
         groups_ok = sum(1 for rows in payload["groups"].values() if rows)
-        ok = groups_ok == len(GROUPS) and payload["episodes"] > 0
+        sw = payload["swap_summary"]
+        ok = groups_ok == len(GROUPS) and payload["episodes"] > 0 and sw["fail"] == 0
         print(f"WINDOWS_EXTRACT={'PASS' if ok else 'FAIL'} groups={groups_ok} episodes={payload['episodes']} "
               f"skipped={len(payload['skipped'])} failed_rows={len(payload['failed_rows'])} "
-              f"unknown_labels={len(payload['unknown_labels'])} out={out.relative_to(REPO_ROOT) if out.is_relative_to(REPO_ROOT) else out}")
+              f"unknown_labels={len(payload['unknown_labels'])} swap_episodes={sw['episodes']} swap_fail={sw['fail']} swap_warn={sw['warn']} "
+              f"swap_pixel_adjusted={sw.get('pixel_adjusted', 0)} "
+              f"out={out.relative_to(REPO_ROOT) if out.is_relative_to(REPO_ROOT) else out}")
         return 0 if ok else 1
 
     json_path, doc_path = Path(args.json), Path(args.doc)

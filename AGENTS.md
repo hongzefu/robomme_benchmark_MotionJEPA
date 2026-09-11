@@ -1405,3 +1405,12 @@
 - 意外：三条 VideoRepick（easy ep0、easy ep26、medium ep26）与 04 同样的 seed 卡死（worker 100% CPU 18～31 分钟、h5 停在 96 字节，生成器无单条超时），手工 `kill -9` 三个 worker 后进程池按 `BrokenProcessPool` 记失败、正常收尾；全量 `tests/lightweight/` 有 4 条既有失败（`test_TaskGoal.py` 两条、`test_step_error_handling.py` 两条）与本轮无关。
 - 验证：`RUN=PASS phase=feasibility`（`FEASIBILITY=PASS succeeded=323`、`VIDEO_DECODE=PASS decoded_eq_timesteps=323`）；`WINDOWS_EXTRACT=PASS groups=11 episodes=323 skipped=0 failed_rows=7 unknown_labels=0`；`WINDOWS_PLOT=PASS groups=11 files=12 min_long_edge_px=2860`；`WINDOW_TABLES=PASS rows=323 drift=0`；`DOC_LINKS=PASS files=77/77 windows_files=12/12 tables=PASS window_tables=PASS`；公式对拍 artifact（T=200/demo 100 → 5+5=10、Δ32=6.4、Δ8=28.4）通过；核心测试子集 99 项全绿，全量 416 通过 / 4 既有失败。
 - 当前状态与后续：两次 commit（10.54 多卡实跑、10.55 数轴）；05 的串行对拍、跑后图未做；三条卡死的 VideoRepick seed 待另查根因。
+
+### 2026-09-11 America/Detroit — 数轴标出 VideoUnmaskSwap／VideoRepick 的 swap 事件
+
+- 状态：完成。两个视频任务 147 条全部带 swap 起止帧，图上画成贯穿整行的半透明竖带，md 表加「swap 起止帧」列。
+- 用户要求：原话「videounmaskswap和videorepick的swap事件能标出来吗？」「VideoRepick为什么没有公式？直接在聊天和我解释」「VideoRepick可以用solve_reset 并 hold(20)的joint angle来辅助判定吗」。
+- 实施：VideoUnmaskSwap 按 `_refresh_swap_schedule` 常量 `[64+50(k−1), 64+50k]`（`n_swaps`／发起者↔搭档取冻结规格）；VideoRepick 无闭式公式（起点 = 抓、放、复位实际帧数 + 判静 20 帧，且与 h5 static 段边界不对齐、早 12～17 帧），按用户建议用 `obs/joint_state` 相邻差分复现 `is_static`（0.2 rad/s × 0.05 s = 0.01 rad/帧）+ `static_check(20)` 反解 S；像素差限定在机械臂静止区间内做交叉校验（Unmask 首变帧 = 64、n≥2 结束帧 = 64+50n；Repick 画面冻结前最后一帧 = S+50n）。
+- 意外：Repick 像素校验首版用相对阈值把收尾两帧滤掉（末尾无跳变、帧差两千级、之后严格为 0），改绝对阈值 100；改后 57 条里 49 条两法相等、8 条差 1 帧（首个静止帧关节位移 0.0097～0.0102 卡在阈值边缘），差 ≤ 1 帧时取像素法并记录两值。
+- 验证：`WINDOWS_EXTRACT=PASS episodes=323 swap_episodes=147 swap_fail=0 swap_warn=0 swap_pixel_adjusted=8`；`WINDOWS_PLOT=PASS files=12`；`WINDOW_TABLES=PASS rows=323 drift=0`；`DOC_LINKS=PASS`；单测 19 项 + 注入子集共 106 项全绿；目视 VideoUnmaskSwap/hard、VideoRepick/medium 两图。
+- 当前状态与后续：commit 10.56；05 串行对拍与跑后图未做；三条卡死的 VideoRepick seed 根因待查。

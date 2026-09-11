@@ -158,3 +158,74 @@ def test_tables_roundtrip(wt, tmp_path):
     doc_path.write_text(text.replace("8+8=16", "8+8=17"), encoding="utf-8")
     ok, rows, drift = wt.check(json_path, doc_path)
     assert (ok, rows) == (False, 3) and drift >= 2
+
+
+# ── swap 事件 ─────────────────────────────────────────────────────────────────
+PAIRS3 = [{"initiator": "bin_0", "partner": "bin_2"}, {"initiator": "bin_1", "partner": "bin_0"}, {"initiator": "bin_2", "partner": "bin_1"}]
+
+
+@pytest.mark.parametrize("n,demo_len", [(1, 114), (2, 168), (3, 216)])
+def test_unmask_swaps_schedule(wt, n, demo_len):
+    swaps = wt.unmask_swaps(n, PAIRS3)
+    assert [s[:2] for s in swaps] == [[64 + 50 * k, 64 + 50 * (k + 1)] for k in range(n)]
+    assert swaps[0][2] == "bin_0↔bin_2"
+    # demo 段长 = 6·ceil((64+50n)/6)
+    assert 6 * -(-(64 + 50 * n) // 6) == demo_len
+    assert swaps[-1][1] <= demo_len
+
+
+def test_static_start_from_deltas_reproduces_static_check(wt):
+    # 帧 165 起：运动（>0.01）到 182，183 起静止；中途 190 抖一下重置计数 → 首个连续 20 帧静止是 191..210，S = 211
+    deltas = [0.02] * 18 + [0.005] * 7 + [0.03] + [0.001] * 60
+    assert wt.static_start_from_deltas(deltas, 165) == 165 + 18 + 7 + 1 + 20
+    # 不抖动：183 起静止 → S = 203
+    deltas = [0.02] * 18 + [0.005] * 60
+    assert wt.static_start_from_deltas(deltas, 165) == 203
+    assert wt.static_start_from_deltas([0.02] * 30, 165) is None
+    assert wt.static_start_from_deltas([0.0] * 19, 165) is None
+
+
+def test_solve_swap_end_and_first_change(wt):
+    diffs = {t: v for t, v in zip(range(198, 320), [0] * 5 + [1791, 5487, 6912] + [17000] * 40 + [28000] + [120] * 73)}
+    assert wt.solve_swap_end(diffs) == 198 + 5 + 3 + 40
+    # 阈值 = 10% × 尖峰 = 2800：203 帧的 1791 低于阈值，首个超阈值帧是 204（真实 Unmask 的 64 帧是 2.5 万级跳变，不受此影响）
+    assert wt.solve_swap_first_change(diffs) == 204
+    # VideoRepick 口径：末尾无尖峰、收尾帧差两千级、之后严格为 0 → 绝对阈值 100 取最后一个非零帧
+    diffs = {t: v for t, v in zip(range(198, 320), [0, 6, 9] + [1791, 5487] + [17000] * 46 + [34000] + [17000] * 46 + [2495, 2265] + [0] * 22)}
+    assert wt.solve_swap_end(diffs, absolute=wt.FREEZE_THRESHOLD) == 198 + 3 + 2 + 93 + 1
+    assert wt.solve_swap_end(diffs) == 198 + 3 + 2 + 93 - 1  # 相对阈值 3400 会把收尾两帧滤掉，这正是 Repick 不能用它的原因
+    assert wt.solve_swap_end({}) is None
+
+
+def test_repick_swaps_and_first_swap_static(wt):
+    assert [s[:2] for s in wt.repick_swaps(203, 2, PAIRS3)] == [[203, 253], [253, 303]]
+    segs = [[0, 119, "pick up the cube"], [119, 46, "drop the cube on the table"], [165, 54, "static"], [219, 54, "static"],
+            [273, 54, "static"], [327, 100, "pick up the correct cube for the first time"], [427, 40, "static"]]
+    assert wt.first_swap_static(segs, 327) == (165, 219)
+    segs2 = [[0, 119, "pick up the cube"], [119, 46, "drop the cube on the table"], [165, 43, "static"], [208, 70, "static"]]
+    assert wt.first_swap_static(segs2, 278) == (165, 208)  # 没有 48～60 的段时退到第 2 个 static
+    assert wt.first_swap_static([[0, 10, "pick up the cube"]], 10) == (None, None)
+
+
+def test_tables_include_swap_column(wt, tmp_path):
+    data = _synthetic_timeline(wt)
+    data["groups"]["VideoUnmaskSwap/easy"] = [
+        {"episode": 0, "seed": 5000, "total": 335, "demo": 168, "recovery_mode": None,
+         "segs": [[0, 168, "static"], [168, 156, "pick up the container that hides the red cube"], [324, 11, "All tasks completed"]],
+         "swaps": wt.unmask_swaps(2, PAIRS3), "swap_source": "schedule", "swap_pixel_first": 64, "swap_pixel_end": 164, "swap_check": "PASS"}]
+    data["groups"]["VideoRepick/easy"] = [
+        {"episode": 2, "seed": 9200, "total": 700, "demo": 327, "recovery_mode": None,
+         "segs": [[0, 119, "pick up the cube"], [119, 46, "drop the cube on the table"], [165, 54, "static"], [219, 54, "static"], [273, 54, "static"],
+                  [327, 300, "pick up the correct cube for the first time"], [627, 73, "All tasks completed"]],
+         "swaps": wt.repick_swaps(203, 2, PAIRS3), "swap_source": "joint_static", "swap_start": 203, "swap_start_joint": 204,
+         "swap_start_pixel": 203, "swap_pixel_end": 303, "b1_minus_s": 16, "swap_check": "WARN"}]
+    text, rows = wt.render_tables(data)
+    assert rows == 5
+    assert "| 段序列（短标 帧数，‖ = demo→exec） | swap 起止帧（发起者↔搭档） |" in text
+    assert "| 1: 64–114 bin_0↔bin_2 · 2: 114–164 bin_1↔bin_0 |" in text
+    assert "| ⚠WARN 1: 203–253 bin_0↔bin_2 · 2: 253–303 bin_1↔bin_0（关节法 S=204、像素法 S=203，取像素法，B1−S=16） |" in text
+    data["groups"]["VideoRepick/easy"][0].update({"swap_start_joint": 203, "swap_check": "PASS"})
+    text, _ = wt.render_tables(data)
+    assert "bin_1↔bin_0（关节法 S=203 = 像素法，B1−S=16） |" in text and "⚠" not in text.split("### VideoRepick / easy")[1]
+    # 非视频任务的表没有这一列
+    assert "| 0 | 16000 | 300 | 150 | 7 | 8+8=16 | 9.6 | 42.7 | 绕左逆 50 · 绕右顺 50 · 绕右顺 50 ‖ 绕左逆 50 · 绕右顺 50 · 绕右顺 43 · 完成 7 |\n" in text
