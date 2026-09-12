@@ -18,7 +18,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, Mapping, Sequence
 
 # 本文件位于 scripts/injection/，向上两级是仓库根（与搬迁前 tests/_shared/ 同深度，勿改成 parents[1]）
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -96,9 +96,28 @@ def execution_state(record: dict[str, Any]) -> str:
     return "completed"  # 任务性失败：确实跑完了，只是任务没成功
 
 
-def write_manifest(path: Path, groups: Sequence[tuple[str, str]], episodes: Sequence[int], specs_root: Path, note: str) -> Path:
-    """写一份混跑清单；``spec_path`` 相对清单文件所在目录。"""
+def write_manifest(
+    path: Path,
+    groups: Sequence[tuple[str, str]],
+    episodes: Sequence[int] | Mapping[tuple[str, str], Sequence[int]],
+    specs_root: Path,
+    note: str,
+) -> Path:
+    """写一份混跑清单；``spec_path`` 相对清单文件所在目录。
+
+    ``episodes`` 既可以是所有组共用的一段序号（05～09 的口径，输出逐字节不变），也可以是
+    ``{(任务, 难度): 序号列表}`` 的映射（2026-09-12 每 env 400 条交付：各组实跑条数不同）；
+    映射里缺某组直接报错，不静默给空列表。
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
+
+    def _episodes_of(task: str, difficulty: str) -> list[int]:
+        if isinstance(episodes, Mapping):
+            if (task, difficulty) not in episodes:
+                raise KeyError(f"清单缺 {task}/{difficulty} 的 episode 区间")
+            return [int(item) for item in episodes[(task, difficulty)]]
+        return list(episodes)
+
     payload = {
         "manifest_version": 1,
         "note": note,
@@ -107,7 +126,7 @@ def write_manifest(path: Path, groups: Sequence[tuple[str, str]], episodes: Sequ
                 "task": task,
                 "difficulty": difficulty,
                 "spec_path": os.path.relpath(specs_root / task / f"{difficulty}.json", path.parent),
-                "episodes": list(episodes),
+                "episodes": _episodes_of(task, difficulty),
             }
             for task, difficulty in groups
         ],
@@ -256,6 +275,9 @@ def read_result_rows(output_dir: Path) -> list[dict[str, Any]]:
                 "video_reason": video.get("reason"),
                 "wall_s": record.get("wall_s"),
                 "peak_rss_mb": record.get("peak_rss_mb"),
+                # 交付清单要用：HDF5 绝对路径与帧数（失败条没有 h5，两者为 None）
+                "h5_path": record.get("h5_path"),
+                "timestep_count": record.get("timestep_count"),
             }
         )
     return rows

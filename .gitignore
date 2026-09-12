@@ -232,6 +232,12 @@ __marimo__/
 !/artifacts/injection/*/logs/
 !/artifacts/injection/*/logs/*.log
 !/artifacts/injection/*/feasibility/
+# 2026-09-12 每 env 400 条交付：env-check 结果、严格交付清单、每档一份的实跑判定 JSON 入库
+!/artifacts/injection/*/env_check/
+!/artifacts/injection/*/env_check_result.json
+!/artifacts/injection/*/env_check_result_*.json
+!/artifacts/injection/*/delivery_manifest.json
+!/artifacts/injection/*/feasibility_result_*.json
 /artifacts/injection/*/feasibility/*/*/*/hdf5_files/
 /artifacts/injection/*/feasibility/*/*/*/videos/
 /artifacts/injection/*/feasibility/**/*.h5

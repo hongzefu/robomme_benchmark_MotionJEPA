@@ -1324,6 +1324,8 @@ SPEC_DOCUMENT_FIELDS = frozenset(
         "episodes",
     }
 )
+#: 可选的顶层字段：``blocks``（2026-09-12 每组候选按 100 条 block 扩容时才写；07/09 的文档没有这一键）。
+SPEC_DOCUMENT_OPTIONAL_FIELDS = frozenset({"blocks"})
 #: 每条 episode 记录必须有的字段。
 SPEC_RECORD_REQUIRED = ("episode", "task", "difficulty", "layout", "objects", "actions", "spec_sha256")
 
@@ -1392,7 +1394,7 @@ def load_spec_document(path: Path, task: str | None = None, difficulty: str | No
         raise EpisodeSpecError(f"{path}: 不是合法 JSON：{exc}") from exc
     if not isinstance(document, dict):
         raise EpisodeSpecError(f"{path}: 顶层必须是对象")
-    unknown = set(document) - SPEC_DOCUMENT_FIELDS
+    unknown = set(document) - SPEC_DOCUMENT_FIELDS - SPEC_DOCUMENT_OPTIONAL_FIELDS
     if unknown:
         raise EpisodeSpecError(f"{path}: 出现未知顶层字段 {sorted(unknown)}")
     missing = SPEC_DOCUMENT_FIELDS - set(document)

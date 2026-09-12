@@ -34,6 +34,7 @@ from robomme.robomme_env.utils import bin_collision as bc  # noqa: E402
 
 from .categories import legal_categories, observed_values  # noqa: E402
 from .contract import Contract, ContractError, audit_overrides, derive_all, load_contract  # noqa: E402
+from .delivery import DeliveryConfig, DeliveryError, build_delivery_manifest, load_delivery_config  # noqa: E402
 from .sampling import COARSE_BINS, GROUP_SIZE  # noqa: E402
 from .specs import (  # noqa: E402
     CUBE_HALF_SIZE,
@@ -79,22 +80,44 @@ def run_root(run_id: str) -> Path:
 
 
 # ── plan ────────────────────────────────────────────────────────────────────
-def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path, contract_path: Path) -> dict[str, Any]:
-    """按契约里的组列表生成规格并冻结（v2 契约 11 组，v3 契约 14 组）。运行编号不可复用：目录已存在直接拒绝。
+def cmd_plan(
+    run_id: str,
+    seed: int,
+    per_group: int,
+    sampling_config: Path,
+    contract_path: Path,
+    delivery_config: Path | None = None,
+) -> dict[str, Any]:
+    """按契约里的组列表生成规格并冻结（v2 契约 11 组，v3 契约 14 组）。运行编号不可复用：清单已存在直接拒绝。
 
     ``contract_path`` 是取值域与分配的约定（``injection_contract_v*.json``），是候选分布的派生依据；
     ``sampling_config`` 只再提供几何常量。两者的身份都写进清单。
+
+    ``delivery_config``（2026-09-12 每 env 400 条交付引入）：给出时每组候选数 = 该组 ``blocks × 100``
+    （block 0 与不给配置时逐条散列相同），配置文件的路径与散列一并冻结进清单；不给时每组固定 100 条，
+    07/08/09 的命令行行为逐字不变。
+
+    ⚠ 目录存在判据改为「``manifest.json`` 已存在」而不是「目录已存在」：全量日志要先落到
+    ``<运行根>/logs/`` 里（该目录被 git 跟踪），tmux 的 ``tee`` 必须先建目录，plan 不能因此拒绝。
     """
     if per_group != GROUP_SIZE:
-        raise CampaignError(f"本轮固定每组 {GROUP_SIZE} 条，收到 --per-group {per_group}")
+        raise CampaignError(f"本轮固定每组 {GROUP_SIZE} 条（多 block 时每 block 100 条），收到 --per-group {per_group}")
     root = run_root(run_id)
-    if root.exists():
-        raise CampaignError(f"运行根目录已存在，编号不可复用：{root}")
+    if (root / "manifest.json").exists() or (root / "specs").exists():
+        raise CampaignError(f"运行编号已冻结过，编号不可复用：{root}")
 
     sampling = json.loads(sampling_config.read_text(encoding="utf-8"))
     contract = load_contract(contract_path)
     if contract.generator_seed != seed:
         raise CampaignError(f"契约声明 generator_seed={contract.generator_seed}，命令行给的是 {seed}")
+    delivery: DeliveryConfig | None = None
+    blocks_by_group: dict[tuple[str, str], int] = {}
+    if delivery_config is not None:
+        try:
+            delivery = load_delivery_config(delivery_config, contract)
+        except DeliveryError as exc:
+            raise CampaignError(f"交付配置不合法：{exc}") from exc
+        blocks_by_group = delivery.blocks_by_group()
     _mismatches, problems = audit_overrides(contract, sampling)
     if problems:
         raise CampaignError("契约与原值回算不一致且未登记 override，拒绝冻结：\n  " + "\n  ".join(problems[:5]))
@@ -109,22 +132,24 @@ def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path, cont
     groups_meta: list[dict[str, Any]] = []
     stats_all: dict[str, Any] = {}
     for task, difficulty in groups:
-        group = build_group(task, difficulty, sampling, contract, seed)
+        blocks = int(blocks_by_group.get((task, difficulty), 1))
+        group = build_group(task, difficulty, sampling, contract, seed, blocks=blocks)
         relative = Path("specs") / task / f"{difficulty}.json"
         _write_json(root / relative, group.as_document(config_sha))
-        groups_meta.append(
-            {
-                "task": task,
-                "difficulty": difficulty,
-                "path": str(relative),
-                "file_sha256": _sha256_file(root / relative),
-                "episodes": len(group.episodes),
-                "derived_seed": group.derived_seed,
-            }
-        )
+        meta = {
+            "task": task,
+            "difficulty": difficulty,
+            "path": str(relative),
+            "file_sha256": _sha256_file(root / relative),
+            "episodes": len(group.episodes),
+            "derived_seed": group.derived_seed,
+        }
+        if blocks > 1:
+            meta["blocks"] = blocks
+        groups_meta.append(meta)
         stats_all[f"{task}/{difficulty}"] = {k: v for k, v in group.stats.items() if k != "rejections"}
         stats_all[f"{task}/{difficulty}"]["rejection_samples"] = group.stats["rejections"][:8]
-        print(f"  冻结 {task}/{difficulty}: {len(group.episodes)} 条", flush=True)
+        print(f"  冻结 {task}/{difficulty}: {len(group.episodes)} 条（{blocks} 个 block）", flush=True)
 
     manifest = {
         "run_id": run_id,
@@ -142,6 +167,10 @@ def cmd_plan(run_id: str, seed: int, per_group: int, sampling_config: Path, cont
         "excluded_groups": [list(item) for item in EXCLUDED_GROUPS],
         "elapsed_s": round(time.monotonic() - started, 1),
     }
+    if delivery is not None:
+        manifest["delivery_config_path"] = str(delivery_config.resolve().relative_to(REPO_ROOT))
+        manifest["delivery_config_sha256"] = delivery.sha256
+        manifest["blocks"] = {f"{task}/{difficulty}": blocks for (task, difficulty), blocks in blocks_by_group.items()}
     _write_json(root / "manifest.json", manifest)
     _write_json(root / "plan_stats.json", stats_all)
     total = sum(item["episodes"] for item in groups_meta)
@@ -210,15 +239,24 @@ class Verdicts:
         return all(item["status"] == "PASS" for item in self.records)
 
 
+def _blocks_of(doc: dict[str, Any]) -> int:
+    """规格文档由几个 100 条 block 组成；07/09 的文档没有 ``blocks`` 键，即 1。"""
+    return int(doc.get("blocks", 1))
+
+
 def _check_scope(documents: dict[tuple[str, str], dict[str, Any]], verdicts: Verdicts) -> None:
     problems: list[str] = []
     total = 0
+    blocks_seen: set[int] = set()
     for (task, difficulty), doc in documents.items():
         episodes = doc["episodes"]
         total += len(episodes)
+        blocks = _blocks_of(doc)
+        blocks_seen.add(blocks)
         numbers = [item["episode"] for item in episodes]
-        if sorted(numbers) != list(range(GROUP_SIZE)):
-            problems.append(f"{task}/{difficulty} 的 episode 号有缺号／重复／越界")
+        # 多 block 时 episode 号恰为 range(blocks × 100)；文档写的 blocks 与条数不符也算问题
+        if blocks < 1 or sorted(numbers) != list(range(GROUP_SIZE * blocks)):
+            problems.append(f"{task}/{difficulty} 的 episode 号有缺号／重复／越界（blocks={blocks}）")
         for item in episodes:
             if item["task"] != task or item["difficulty"] != difficulty:
                 problems.append(f"{task}/{difficulty}/episode {item['episode']} 的任务或难度不符")
@@ -227,11 +265,14 @@ def _check_scope(documents: dict[tuple[str, str], dict[str, Any]], verdicts: Ver
     excluded_present = [key for key in documents if list(key) in [list(e) for e in EXCLUDED_GROUPS]]
     if excluded_present:
         problems.append(f"排除组仍被生成：{excluded_present}")
+    fields: dict[str, Any] = {"groups": len(documents), "specs": total}
+    if blocks_seen != {1}:
+        # 只在有多 block 组时打 blocks 字段，07/09 的判定行逐字不变
+        fields["blocks"] = "/".join(str(b) for b in sorted(blocks_seen))
     verdicts.add(
         "SPEC_SCOPE",
         not problems,
-        groups=len(documents),
-        specs=total,
+        **fields,
         excluded="+".join(f"{task}-{difficulty}" for task, difficulty in EXCLUDED_GROUPS),
         problems=len(problems),
     )
@@ -246,8 +287,12 @@ def _check_reproducible(
     compared = 0
     differences = 0
     for task, difficulty in reversed(list(documents)):  # 按清单倒序调度全部组，证明结果与顺序无关
-        rebuilt = build_group(task, difficulty, sampling, contract, seed)
-        frozen = documents[(task, difficulty)]["episodes"]
+        doc = documents[(task, difficulty)]
+        rebuilt = build_group(task, difficulty, sampling, contract, seed, blocks=_blocks_of(doc))
+        frozen = doc["episodes"]
+        # ⚠ 两边条数不一致也是差异：zip 会静默截断，blocks 记错时会被判成 PASS
+        if len(frozen) != len(rebuilt.episodes):
+            differences += abs(len(frozen) - len(rebuilt.episodes))
         for left, right in zip(frozen, rebuilt.episodes):
             compared += 1
             if left["spec_sha256"] != right["spec_sha256"]:
@@ -273,61 +318,82 @@ def _check_quota(
     """独立类别按完整合法集合补零后计数差 ≤1；连续量验粗箱与批次覆盖。"""
     gaps: list[str] = []
     report: dict[str, Any] = {}
+    blocks_seen: set[int] = set()
     for (task, difficulty), doc in documents.items():
         categories = legal_categories(task, difficulty, contract)
-        counts: dict[str, Counter] = {}
-        for record in doc["episodes"]:
-            for field, values in observed_values(task, record).items():
-                bucket = counts.setdefault(field, Counter())
-                for value in values:
-                    bucket[canonical_json(value)] += 1
-        group_report: dict[str, Any] = {"independent": {}, "coupled": {}, "continuous": {}}
-
-        for field, legal in categories["independent"].items():
-            observed = counts.get(field, Counter())
-            # ⚠ 按完整合法类别补零，否则「100 条全为同一值」也会算出计数差 0
-            table = {canonical_json(value): observed.get(canonical_json(value), 0) for value in legal}
-            spread = max(table.values()) - min(table.values())
-            group_report["independent"][field] = {"counts": table, "spread": spread}
-            if spread > 1:
-                gaps.append(f"{task}/{difficulty} 的 {field} 计数差 {spread} > 1")
-
-        for field, legal in categories["coupled"].items():
-            observed = counts.get(field, Counter())
-            table = dict(observed)
-            uncovered = [canonical_json(v) for v in legal if canonical_json(v) not in table]
-            group_report["coupled"][field] = {"counts": table, "uncovered": uncovered}
-
-        # 连续量：从 sampling_cells 独立重算粗箱与批次覆盖
-        cells: dict[str, list[int]] = {}
-        for record in doc["episodes"]:
-            for name, (coarse, _fine) in record["sampling_cells"].items():
-                cells.setdefault(name, []).append(int(coarse))
-        for name, series in cells.items():
-            per_bin = Counter(series)
-            batch_cover = [len(set(series[t * COARSE_BINS : (t + 1) * COARSE_BINS])) for t in range(COARSE_BINS)]
-            ok = all(per_bin.get(b, 0) == GROUP_SIZE // COARSE_BINS for b in range(COARSE_BINS)) and all(
-                value == COARSE_BINS for value in batch_cover
+        blocks = _blocks_of(doc)
+        blocks_seen.add(blocks)
+        # 多 block 时按 block 切片各自判（每个 block 自成一份 100 条均衡样本；两个各自 spread≤1 的 block
+        # 合并后可能 spread=2，整组判会假阳）。blocks=1 时 report 形状与此前逐字相同。
+        ordered = sorted(doc["episodes"], key=lambda item: int(item["episode"]))
+        block_reports: list[dict[str, Any]] = []
+        for block in range(blocks):
+            block_reports.append(
+                _quota_block_report(task, difficulty, categories, ordered[block * GROUP_SIZE : (block + 1) * GROUP_SIZE], gaps, block if blocks > 1 else None)
             )
-            group_report["continuous"][name] = {
-                "per_bin": {str(b): per_bin.get(b, 0) for b in range(COARSE_BINS)},
-                "batch_coverage": batch_cover,
-                "ok": ok,
-            }
-            if not ok:
-                gaps.append(f"{task}/{difficulty} 的连续量 {name} 分箱或批次覆盖不达标")
-        report[f"{task}/{difficulty}"] = group_report
+        report[f"{task}/{difficulty}"] = block_reports[0] if blocks == 1 else {"blocks": block_reports}
 
-    verdicts.add(
-        "COVERAGE_QUOTA",
-        not gaps,
-        groups=len(documents),
-        batches=COARSE_BINS,
-        quota_gaps=len(gaps),
-    )
+    fields: dict[str, Any] = {"groups": len(documents), "batches": COARSE_BINS}
+    if blocks_seen != {1}:
+        fields["blocks"] = "/".join(str(b) for b in sorted(blocks_seen))
+    verdicts.add("COVERAGE_QUOTA", not gaps, **fields, quota_gaps=len(gaps))
     if gaps:
         verdicts.records[-1]["detail"] = gaps[:10]
     return report
+
+
+def _quota_block_report(
+    task: str,
+    difficulty: str,
+    categories: dict[str, Any],
+    records: Sequence[dict[str, Any]],
+    gaps: list[str],
+    block: int | None,
+) -> dict[str, Any]:
+    """一个 100 条 block 的配额报告；``block`` 为 None 表示单 block 组（报错文案不带 block 号）。"""
+    where = f"{task}/{difficulty}" + (f"/block{block}" if block is not None else "")
+    counts: dict[str, Counter] = {}
+    for record in records:
+        for field, values in observed_values(task, record).items():
+            bucket = counts.setdefault(field, Counter())
+            for value in values:
+                bucket[canonical_json(value)] += 1
+    group_report: dict[str, Any] = {"independent": {}, "coupled": {}, "continuous": {}}
+
+    for field, legal in categories["independent"].items():
+        observed = counts.get(field, Counter())
+        # ⚠ 按完整合法类别补零，否则「100 条全为同一值」也会算出计数差 0
+        table = {canonical_json(value): observed.get(canonical_json(value), 0) for value in legal}
+        spread = max(table.values()) - min(table.values())
+        group_report["independent"][field] = {"counts": table, "spread": spread}
+        if spread > 1:
+            gaps.append(f"{where} 的 {field} 计数差 {spread} > 1")
+
+    for field, legal in categories["coupled"].items():
+        observed = counts.get(field, Counter())
+        table = dict(observed)
+        uncovered = [canonical_json(v) for v in legal if canonical_json(v) not in table]
+        group_report["coupled"][field] = {"counts": table, "uncovered": uncovered}
+
+    # 连续量：从 sampling_cells 独立重算粗箱与批次覆盖
+    cells: dict[str, list[int]] = {}
+    for record in records:
+        for name, (coarse, _fine) in record["sampling_cells"].items():
+            cells.setdefault(name, []).append(int(coarse))
+    for name, series in cells.items():
+        per_bin = Counter(series)
+        batch_cover = [len(set(series[t * COARSE_BINS : (t + 1) * COARSE_BINS])) for t in range(COARSE_BINS)]
+        ok = all(per_bin.get(b, 0) == GROUP_SIZE // COARSE_BINS for b in range(COARSE_BINS)) and all(
+            value == COARSE_BINS for value in batch_cover
+        )
+        group_report["continuous"][name] = {
+            "per_bin": {str(b): per_bin.get(b, 0) for b in range(COARSE_BINS)},
+            "batch_coverage": batch_cover,
+            "ok": ok,
+        }
+        if not ok:
+            gaps.append(f"{where} 的连续量 {name} 分箱或批次覆盖不达标")
+    return group_report
 
 
 def _check_static_geometry(
@@ -675,20 +741,39 @@ def _select_groups(groups: Sequence[tuple[str, str]], groups_filter: Sequence[st
     return [group for group in groups if group in wanted]
 
 
-def cmd_specs_diff(left_run: str, right_run: str, label: str = "OLD_GROUPS_EQUIVALENCE") -> dict[str, Any]:
+def cmd_specs_diff(
+    left_run: str, right_run: str, label: str = "OLD_GROUPS_EQUIVALENCE", episode_scope: str = "union"
+) -> dict[str, Any]:
     """两次冻结运行里**共有的组**逐条比 ``spec_sha256``（xhard 扩展：06 的旧 11 组必须与 05 逐条相同）。
 
     只比两边都有的组；一边独有的组只报告、不判失败。判定行 ``<label>=PASS compared=<n> differences=<n> shared_groups=<n>``。
+
+    ``episode_scope``（2026-09-12 多 block 扩容引入）：
+    * ``union``（默认，历史语义不变）：比两边 episode 号的并集，一边独有的号算差异；
+    * ``intersection``：只比两边都有的号；
+    * ``block0``：只比 ``episode < 100``，且**要求两边在每个共有组上都完整覆盖 range(100)**，缺号即差异——
+      用来证明扩容后的 block 0 与 07/09 逐条相同（``BLOCK0_EQUIVALENCE``），不会因为缺条而假 PASS。
     """
+    if episode_scope not in ("union", "intersection", "block0"):
+        raise CampaignError(f"--episode-scope 只能是 union / intersection / block0：{episode_scope}")
     _, _, left_docs = load_group_documents(left_run)
     _, _, right_docs = load_group_documents(right_run)
     shared = [key for key in left_docs if key in right_docs]
     compared = differences = 0
+    left_only_eps = right_only_eps = 0
     diff_samples: list[str] = []
     for task, difficulty in shared:
         left_eps = {item["episode"]: item["spec_sha256"] for item in left_docs[(task, difficulty)]["episodes"]}
         right_eps = {item["episode"]: item["spec_sha256"] for item in right_docs[(task, difficulty)]["episodes"]}
-        for episode in sorted(set(left_eps) | set(right_eps)):
+        if episode_scope == "union":
+            scope = sorted(set(left_eps) | set(right_eps))
+        elif episode_scope == "intersection":
+            scope = sorted(set(left_eps) & set(right_eps))
+        else:
+            scope = list(range(GROUP_SIZE))
+        left_only_eps += len(set(left_eps) - set(right_eps))
+        right_only_eps += len(set(right_eps) - set(left_eps))
+        for episode in scope:
             compared += 1
             if left_eps.get(episode) != right_eps.get(episode):
                 differences += 1
@@ -698,10 +783,12 @@ def cmd_specs_diff(left_run: str, right_run: str, label: str = "OLD_GROUPS_EQUIV
         "left": left_run, "right": right_run, "shared_groups": ["/".join(k) for k in shared],
         "left_only": ["/".join(k) for k in left_docs if k not in right_docs],
         "right_only": ["/".join(k) for k in right_docs if k not in left_docs],
+        "episode_scope": episode_scope, "left_only_episodes": left_only_eps, "right_only_episodes": right_only_eps,
         "compared": compared, "differences": differences, "samples": diff_samples,
         "passed": differences == 0 and compared > 0,
     }
-    print(f"{label}={'PASS' if payload['passed'] else 'FAIL'} compared={compared} differences={differences} shared_groups={len(shared)} "
+    scope_text = "" if episode_scope == "union" else f" scope={episode_scope}"
+    print(f"{label}={'PASS' if payload['passed'] else 'FAIL'} compared={compared} differences={differences} shared_groups={len(shared)}{scope_text} "
           f"right_only={','.join(payload['right_only']) or '-'}")
     return payload
 
@@ -773,8 +860,21 @@ def cmd_run(
     gpus: str = "0",
     groups_filter: Sequence[str] | None = None,
     episodes_per_group: int | None = None,
+    delivery_config: Path | None = None,
+    episode_range: tuple[int, int] | None = None,
+    skip_done: bool = False,
+    wall_limit_h: float = 6.0,
+    label: str | None = None,
 ) -> dict[str, Any]:
     """按阶段跑：``calibration``（步骤 3+4）或 ``feasibility``（步骤 5）。
+
+    2026-09-12 每 env 400 条交付新增（都只对 ``feasibility`` 生效）：
+    * ``delivery_config``：每组实跑 ``range(run_episodes)``（各组条数不同），与 ``--episodes`` 互斥；
+    * ``episode_range=(a, b)``：每组只跑 episode ``a～b-1``（缺口补跑用），与上两者互斥；
+    * ``skip_done``：从既有 ``episode_results.jsonl`` 里剔除已「通过」的 (任务, 难度, episode)，中断后同命令续跑；
+    * ``wall_limit_h``：整批墙钟上限（小时），默认 6 与 07 相同；
+    * ``label``：清单文件名后缀 ``manifests/feasibility_<label>_<n>.json``，不给时沿用 ``feasibility<n>.json``。
+    日志改落 ``<运行根>/logs/``（被 git 跟踪），不再落 ``artifacts/logs/``。
 
     ``episodes_per_group``（2026-09-12 引入，08 RouteStick 四档各 5 条专项重出）只对 ``feasibility``
     生效：每组实跑 episode ``0～N-1``；默认 ``None`` 沿用 ``FEASIBILITY_EPISODES``（30 条，07 及之前逐字不变）。
@@ -806,7 +906,7 @@ def cmd_run(
 
     root, manifest_doc, documents = load_group_documents(run_id)
     specs_root = root / "specs"
-    logs = REPO_ROOT / "artifacts" / "logs" / run_id
+    logs = root / "logs"
     verdicts = Verdicts()
     payload: dict[str, Any] = {"run_id": run_id, "phase": phase, "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
 
@@ -982,37 +1082,93 @@ def cmd_run(
             tier = int(chosen["tier"])
             gpu_ids = chosen.get("gpus") or ["0"]
         groups = _select_groups([(item["task"], item["difficulty"]) for item in manifest_doc["groups"]], groups_filter)
-        if episodes_per_group is not None:
-            if not 1 <= int(episodes_per_group) <= GROUP_SIZE:
-                raise CampaignError(f"--episodes 必须在 1～{GROUP_SIZE} 之间：{episodes_per_group}")
-            episodes: tuple[int, ...] = tuple(range(int(episodes_per_group)))
+        available = {(item["task"], item["difficulty"]): int(item.get("episodes", GROUP_SIZE)) for item in manifest_doc["groups"]}
+        if sum(x is not None for x in (episodes_per_group, delivery_config, episode_range)) > 1:
+            raise CampaignError("--episodes、--delivery-config、--episode-range 三者互斥，只能给一个")
+        episodes_by_group: dict[tuple[str, str], list[int]]
+        if delivery_config is not None:
+            try:
+                delivery = load_delivery_config(delivery_config, resolve_contract(manifest_doc))
+            except DeliveryError as exc:
+                raise CampaignError(f"交付配置不合法：{exc}") from exc
+            if manifest_doc.get("delivery_config_sha256") not in (None, delivery.sha256):
+                raise CampaignError("交付配置与冻结时不符（散列不同），拒绝按漂移的口径实跑")
+            episodes_by_group = delivery.episodes_by_group(groups)
+            scope_note = "按交付配置各组实跑 range(run_episodes)"
+        elif episode_range is not None:
+            lo, hi = int(episode_range[0]), int(episode_range[1])
+            if not 0 <= lo < hi:
+                raise CampaignError(f"--episode-range 须满足 0 ≤ a < b：{episode_range}")
+            episodes_by_group = {group: list(range(lo, hi)) for group in groups}
+            scope_note = f"缺口补跑：每组 episode {lo}～{hi - 1}"
+        elif episodes_per_group is not None:
+            if int(episodes_per_group) < 1:
+                raise CampaignError(f"--episodes 必须 ≥ 1：{episodes_per_group}")
+            episodes_by_group = {group: list(range(int(episodes_per_group))) for group in groups}
+            scope_note = f"每组 episode 0～{int(episodes_per_group) - 1}"
         else:
-            episodes = FEASIBILITY_EPISODES
-        total_episodes = len(groups) * len(episodes)
-        feas_manifest = write_manifest(
-            root / "manifests" / f"feasibility{total_episodes}.json", groups, episodes, specs_root,
-            f"步骤 5 实跑：{len(groups)} 组各 episode 0～{len(episodes) - 1}，共 {total_episodes} 条；"
-            f"其余 {len(manifest_doc['groups']) * GROUP_SIZE - total_episodes} 条本轮不实跑",
-        )
+            episodes_by_group = {group: list(FEASIBILITY_EPISODES) for group in groups}
+            scope_note = f"每组 episode 0～{len(FEASIBILITY_EPISODES) - 1}"
+        for group, wanted in episodes_by_group.items():
+            if wanted and max(wanted) >= available[group]:
+                raise CampaignError(
+                    f"--episodes/--episode-range 越界：{'/'.join(group)} 只冻结了 {available[group]} 条，"
+                    f"实跑区间到 episode {max(wanted)}；不静默截断"
+                )
         mode = chosen.get("mode") or f"P0x{tier}"
+        skipped = 0
+        if skip_done:
+            from .run import read_result_rows
+
+            done = {
+                (row["task"], str(row["difficulty"]), int(row["episode"]))
+                for row in read_result_rows(root / "feasibility" / mode)
+                if row["outcome"] == OUTCOME_PASS
+            }
+            for group, wanted in list(episodes_by_group.items()):
+                kept = [ep for ep in wanted if (group[0], group[1], ep) not in done]
+                skipped += len(wanted) - len(kept)
+                episodes_by_group[group] = kept
+            episodes_by_group = {group: wanted for group, wanted in episodes_by_group.items() if wanted}
+            groups = [group for group in groups if group in episodes_by_group]
+            if not groups:
+                raise CampaignError("--skip-done 后没有剩余可跑的条：全部已通过")
+        total_episodes = sum(len(v) for v in episodes_by_group.values())
+        manifest_name = f"feasibility_{label}_{total_episodes}.json" if label else f"feasibility{total_episodes}.json"
+        feas_manifest = write_manifest(
+            root / "manifests" / manifest_name, groups, episodes_by_group, specs_root,
+            f"步骤 5 实跑：{len(groups)} 组，{scope_note}，共 {total_episodes} 条"
+            + (f"（--skip-done 剔除已通过 {skipped} 条）" if skip_done else "")
+            + f"；冻结候选合计 {sum(available.values())} 条，其余本轮不实跑",
+        )
         source = "校准选出的" if chosen.get("measured", True) else "显式指定（未经测速）的"
         total_workers = tier * len(gpu_ids)  # 生成器的 --workers 是总数，按卡数摊成每卡 tier 个
         print(f"[实跑] 用{source} {mode}（--gpus {','.join(gpu_ids)} --workers {total_workers}，每卡 {tier}）跑 {total_episodes} 条", flush=True)
         result = invoke_generator(
             output_dir=root / "feasibility" / mode, manifest=feas_manifest,
-            gpus=",".join(gpu_ids), workers=total_workers, log_path=logs / f"feasibility-{mode}.log",
-            sampling_config=sampling_config, timeout_s=6 * 3600,
+            gpus=",".join(gpu_ids), workers=total_workers,
+            # 同一档多次 invoke（smoke、--skip-done 续跑、缺口补跑）各自留一份生成器日志，不互相覆盖
+            log_path=logs / (f"feasibility-{mode}.log" if not (logs / f"feasibility-{mode}.log").exists() else f"feasibility-{mode}-{time.strftime('%Y%m%dT%H%M%S')}.log"),
+            sampling_config=sampling_config, timeout_s=int(float(wall_limit_h) * 3600),
             # 07 起：单条墙钟 600 秒（pebble 只杀该 worker）；BinFill 交付版直出「同一条重复两遍」的 demo
             episode_timeout_s=FEASIBILITY_EPISODE_TIMEOUT_S, binfill_demo=True,
         )
         rows = result["rows"]
+        # 分母：这一档目录里累计应有的行数（清单条数 + 之前已通过而被 --skip-done 剔除的条），
+        # 否则续跑一次后 FEASIBILITY 的 executed 会大于 unique
         payload.update(
-            _summarize_feasibility(root, rows, groups, verdicts, tier, mode, gpu_ids, chosen, expected_rows=total_episodes)
+            _summarize_feasibility(
+                root, rows, groups, verdicts, tier, mode, gpu_ids, chosen,
+                expected_rows=total_episodes + skipped,
+            )
         )
         payload["run"] = {k: v for k, v in result.items() if k != "rows"}
+        payload["scope"] = {"note": scope_note, "skipped_done": skipped, "manifest": str(feas_manifest.relative_to(REPO_ROOT))}
         payload["verdicts"] = verdicts.records
         payload["passed"] = verdicts.passed
         _write_json(root / f"{phase}_result.json", payload)
+        # 每档另留一份，smoke（P0x1）与正式档（P01x20）不互相覆盖
+        _write_json(root / f"{phase}_result_{mode}.json", payload)
         for line in verdicts.lines:
             print(line)
         print(f"RUN={'PASS' if verdicts.passed else 'FAIL'} phase={phase}")
@@ -1201,6 +1357,111 @@ def _summarize_feasibility(
     return summary
 
 
+# ── env-check：额外候选「可以产生环境」的核验（2026-09-12）──────────────────
+def cmd_env_check(
+    run_id: str,
+    delivery_config: Path,
+    sampling_config: Path,
+    *,
+    tier: int,
+    gpus: str = "0",
+    groups_filter: Sequence[str] | None = None,
+    limit: int | None = None,
+    label: str | None = None,
+    timeout_s: float = 120.0,
+) -> dict[str, Any]:
+    """对每组实跑区间之后的候选按序做 ``gym.make + reset + close``（不套录像器、零产物），
+    攒够交付配置里的 ``extra_candidates`` 条 reset 通过者即停。
+
+    产物：``<运行根>/env_check/<任务>/<难度>.jsonl`` 与 ``env_check_result.json``（``label`` 给出时落
+    ``env_check/_<label>/``，smoke 用，不计入正式）。判定行 ``ENV_RESET``（每组）与 ``ENV_CHECK``（汇总）。
+    ⚠ 语义边界见 :data:`scripts.injection.env_check.SEMANTIC_NOTE`：reset 通过 ≠ 能出 h5。
+    """
+    from .env_check import EnvCheckPlan, run_env_check
+
+    root, manifest_doc, documents = load_group_documents(run_id)
+    try:
+        delivery = load_delivery_config(delivery_config, resolve_contract(manifest_doc))
+    except DeliveryError as exc:
+        raise CampaignError(f"交付配置不合法：{exc}") from exc
+    if manifest_doc.get("delivery_config_sha256") not in (None, delivery.sha256):
+        raise CampaignError("交付配置与冻结时不符（散列不同），拒绝按漂移的口径核验")
+    gpu_ids = [item.strip() for item in gpus.split(",") if item.strip()]
+    if not gpu_ids or len(gpu_ids) != len(set(gpu_ids)):
+        raise CampaignError(f"--gpus 非法：{gpus!r}")
+    groups = _select_groups([(item["task"], item["difficulty"]) for item in manifest_doc["groups"]], groups_filter)
+    plans = []
+    for task, difficulty in groups:
+        group = delivery.group(task, difficulty)
+        if group.env_check_start >= len(documents[(task, difficulty)]["episodes"]):
+            raise CampaignError(f"{task}/{difficulty} 实跑区间之后没有剩余候选可核验")
+        plans.append(EnvCheckPlan(task, difficulty, group.env_check_start, group.extra_candidates, limit))
+    out_dir = root / "env_check" / (f"_{label}" if label else "")
+    print(f"[env-check] {len(plans)} 组，每组从实跑区间之后按序核验、攒够 {delivery.extra_candidates} 条通过即停；"
+          f"--gpus {','.join(gpu_ids)} 每卡 {tier} worker，单条 {timeout_s:.0f} 秒", flush=True)
+    payload = run_env_check(
+        documents, plans, gpus=gpu_ids, workers_per_gpu=int(tier), sampling_config=sampling_config,
+        out_dir=out_dir, repo_root=REPO_ROOT, timeout_s=float(timeout_s),
+    )
+    payload["run_id"] = run_id
+    payload["delivery_config"] = {"path": str(delivery.path), "sha256": delivery.sha256}
+    payload["label"] = label
+    target = root / (f"env_check_result_{label}.json" if label else "env_check_result.json")
+    _write_json(target, payload)
+    verdicts = Verdicts()
+    for item in payload["verdicts"]:
+        verdicts.add(item["name"], item["passed"], **item["fields"])
+    for line in verdicts.lines:
+        print(line)
+    print(f"ENV_CHECK_RUN={'PASS' if payload['passed'] else 'FAIL'} run_id={run_id} out={target.relative_to(REPO_ROOT)}")
+    return payload
+
+
+# ── delivery：严格交付清单（2026-09-12）───────────────────────────────────────
+def cmd_delivery(run_id: str, delivery_config: Path, *, hash_mode: str = "full", workers: int = 8) -> dict[str, Any]:
+    """扫全部实跑档目录的结果行，每组按 episode 升序取前 ``target_h5`` 条通过为正式、其余通过为 spare，
+    写 ``delivery_manifest.json``；判定行 ``DELIVERY_400``（每 env）与 ``DELIVERY_TOTAL``。"""
+    from .run import read_result_rows
+
+    root, manifest_doc, documents = load_group_documents(run_id)
+    try:
+        delivery = load_delivery_config(delivery_config, resolve_contract(manifest_doc))
+    except DeliveryError as exc:
+        raise CampaignError(f"交付配置不合法：{exc}") from exc
+    feasibility_root = root / "feasibility"
+    if not feasibility_root.is_dir():
+        raise CampaignError(f"找不到实跑产物：{feasibility_root}")
+    # 合并全部档目录（smoke 的 P0x1 与正式的 P01x20）；同一条在多个档里都有时保留正式档（按目录名排序靠后者）
+    merged: dict[tuple[str, str, int], dict[str, Any]] = {}
+    modes = sorted(item.name for item in feasibility_root.iterdir() if item.is_dir())
+    for mode in modes:
+        for row in read_result_rows(feasibility_root / mode):
+            key = (row["task"], str(row["difficulty"]), int(row["episode"]))
+            if key not in merged or row["outcome"] == "通过" or merged[key]["outcome"] != "通过":
+                merged[key] = {**row, "mode": mode}
+    rows = [merged[key] for key in sorted(merged)]
+    spec_sha = {
+        (task, difficulty, int(item["episode"])): item["spec_sha256"]
+        for (task, difficulty), doc in documents.items()
+        for item in doc["episodes"]
+    }
+    env_check_path = root / "env_check_result.json"
+    env_check_result = json.loads(env_check_path.read_text(encoding="utf-8")) if env_check_path.is_file() else None
+    payload = build_delivery_manifest(
+        rows, delivery, run_id=run_id, repo_root=REPO_ROOT, env_check_result=env_check_result,
+        hash_mode=hash_mode, workers=int(workers), spec_sha_by_key=spec_sha,
+    )
+    payload["modes"] = modes
+    _write_json(root / "delivery_manifest.json", payload)
+    verdicts = Verdicts()
+    for item in payload["verdicts"]:
+        verdicts.add(item["name"], item["passed"], **item["fields"])
+    for line in verdicts.lines:
+        print(line)
+    print(f"DELIVERY_RUN={'PASS' if payload['passed'] else 'FAIL'} run_id={run_id} rows={len(rows)} modes={','.join(modes)}")
+    return payload
+
+
 # ── report：步骤 6 的轻量包与交付核对 ───────────────────────────────────────
 def cmd_report(run_id: str) -> dict[str, Any]:
     """汇总全部阶段的判定与计数，写轻量包到 ``docs/validation/newtask-v2/<运行编号>/``。
@@ -1232,6 +1493,16 @@ def cmd_report(run_id: str) -> dict[str, Any]:
     external = _load("external_evidence.json")
     if external:
         verdicts.extend(external.get("verdicts", []))
+
+    # 2026-09-12：env-check 与严格交付的判定并入（两份 JSON 也复制进轻量包）
+    env_check = _load("env_check_result.json")
+    delivery_manifest = _load("delivery_manifest.json")
+    for payload_extra in (env_check, delivery_manifest):
+        if payload_extra:
+            extra = Verdicts()
+            for item in payload_extra.get("verdicts", []):
+                extra.add(item["name"], item["passed"], **item["fields"])
+            verdicts.extend(extra.records)
 
     # 单独跑出来的并行实测覆盖校准阶段的 NOT_RUN 占位。
     # ⚠ 只覆盖「确实另行测过」的项：PARALLEL_SCALE 没测过，它的 NOT_RUN 必须原样保留。
@@ -1320,8 +1591,22 @@ def cmd_report(run_id: str) -> dict[str, Any]:
         "plots": {phase: (item or {}).get("groups") for phase, item in plots.items()},
         "rows": rows,
     }
+    payload["env_check"] = {k: v for k, v in (env_check or {}).items() if k != "verdicts"} or None
+    payload["delivery_400"] = (
+        {k: v for k, v in delivery_manifest.items() if k not in ("verdicts", "groups")} | {
+            "groups": {
+                key: {k: v for k, v in value.items() if k not in ("primary", "spare_rows", "failures")}
+                for key, value in delivery_manifest.get("groups", {}).items()
+            }
+        }
+        if delivery_manifest else None
+    )
     _write_json(target / "report.json", payload)
     _write_json(target / "result_rows.json", {"run_id": run_id, "rows": rows})
+    if env_check:
+        _write_json(target / "env_check_result.json", env_check)
+    if delivery_manifest:
+        _write_json(target / "delivery_manifest.json", delivery_manifest)
     (target / "README.md").write_text(_render_readme(payload), encoding="utf-8")
 
     for record in delivery.records:
@@ -1398,6 +1683,35 @@ def _render_readme(payload: dict[str, Any]) -> str:
             )
         chosen = payload.get("calibration_chosen")
         lines += ["", f"选中档位：**{chosen['mode'] if chosen else '无'}**"]
+
+    delivery_400 = payload.get("delivery_400")
+    if delivery_400:
+        lines += [
+            "", "## 三·一、严格交付（每 env 400 条，按 episode 序取前 N 条通过为正式）", "",
+            "| env | 目标 | 交付 | spare | 失败 | 组数 |", "|---|---:|---:|---:|---:|---:|",
+        ]
+        for env, item in delivery_400.get("envs", {}).items():
+            lines.append(f"| {env} | {item.get('target')} | {item.get('delivered')} | {item.get('spare')} | {item.get('failed')} | {len(item.get('groups', []))} |")
+        lines += ["", "| 组 | 目标 | 实跑 | 结果行 | 通过 | 交付 | spare | 失败 |", "|---|---:|---:|---:|---:|---:|---:|---:|"]
+        for key, item in delivery_400.get("groups", {}).items():
+            lines.append(
+                f"| {key} | {item.get('target_h5')} | {item.get('run_episodes')} | {item.get('rows')} | {item.get('passed')} | "
+                f"{item.get('delivered')} | {item.get('spare')} | {item.get('failed')} |"
+            )
+        if delivery_400.get("shortfall"):
+            lines += ["", "⚠ 缺口：" + "; ".join(f"{s['group']} 缺 {s['missing']}（剩余候选 {s['remaining_candidates']}）" for s in delivery_400["shortfall"])]
+    env_check = payload.get("env_check")
+    if env_check:
+        lines += [
+            "", "## 三·二、额外候选 env-check（只 make + reset + close，零产物）", "",
+            f"> {env_check.get('note', '')}", "",
+            "| 组 | 起点 | 核验 | 通过 | 失败 | 交付 | 缺口 |", "|---|---:|---:|---:|---:|---:|---:|",
+        ]
+        for key, item in env_check.get("groups", {}).items():
+            lines.append(
+                f"| {key} | {item.get('start')} | {item.get('checked')} | {item.get('passed')} | {item.get('failed')} | "
+                f"{len(item.get('delivered', []))} | {item.get('shortfall')} |"
+            )
 
     failures = [row for row in payload.get("rows", []) if row["outcome"] != "通过"]
     if failures:
@@ -1502,6 +1816,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--contract", required=True,
         help="取值域与分配的约定 JSON（scripts/configs/newtask-v2/injection_contract_v*.json）；必填，不给默认值",
     )
+    plan.add_argument(
+        "--delivery-config", default=None,
+        help="交付配置 JSON（scripts/configs/newtask-v2/delivery_400.json）：每组候选 = blocks × 100；不给时每组 100 条",
+    )
 
     check = sub.add_parser("check", help="从冻结规格独立重算全部计数与几何")
     check.add_argument("--run-id", required=True)
@@ -1540,6 +1858,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--episodes", type=int, default=None,
         help="feasibility 每组实跑条数（episode 0～N-1）；默认 30（07 及之前的口径）。08 RouteStick 四档各 5 条用 5",
     )
+    runner.add_argument("--delivery-config", default=None, help="feasibility 按交付配置各组实跑 range(run_episodes)；与 --episodes 互斥")
+    runner.add_argument("--episode-range", default=None, help="feasibility 每组只跑 episode a-b（含 a 不含 b），缺口补跑用；如 155-170")
+    runner.add_argument("--skip-done", action="store_true", help="剔除该档目录里已通过的条，中断后同命令续跑")
+    runner.add_argument("--wall-limit-h", type=float, default=6.0, help="整批墙钟上限（小时），默认 6")
+    runner.add_argument("--label", default=None, help="清单文件名后缀 manifests/feasibility_<label>_<n>.json")
+
+    env_check = sub.add_parser("env-check", help="额外候选核验：对实跑区间之后的候选只做 make+reset+close，零产物")
+    env_check.add_argument("--run-id", required=True)
+    env_check.add_argument("--delivery-config", required=True)
+    env_check.add_argument("--sampling-config", default=str(DEFAULT_SAMPLING_CONFIG))
+    env_check.add_argument("--tier", type=int, required=True, help="每卡 worker 数")
+    env_check.add_argument("--gpus", default="0")
+    env_check.add_argument("--groups", default=None, help="只核验这些组，逗号分隔的 任务/难度")
+    env_check.add_argument("--limit", type=int, default=None, help="每组最多核验多少条候选（smoke 用）")
+    env_check.add_argument("--label", default=None, help="给出时产物落 env_check/_<label>/ 与 env_check_result_<label>.json，不计入正式")
+    env_check.add_argument("--timeout", type=float, default=120.0, help="单条 make+reset 墙钟上限（秒）")
+
+    delivery = sub.add_parser("delivery", help="严格交付清单：每组按 episode 序取前 target_h5 条通过为正式")
+    delivery.add_argument("--run-id", required=True)
+    delivery.add_argument("--delivery-config", required=True)
+    delivery.add_argument("--hash", default="full", choices=("full", "size-only", "none"), help="h5 校验和口径")
+    delivery.add_argument("--workers", type=int, default=8)
 
     summarize = sub.add_parser("summarize", help="不重跑仿真，用当前代码重算既有实跑结果")
     summarize.add_argument("--run-id", required=True)
@@ -1557,6 +1897,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     specs_diff.add_argument("--left", required=True, help="参考侧 run id")
     specs_diff.add_argument("--right", required=True, help="候选侧 run id")
     specs_diff.add_argument("--label", default="OLD_GROUPS_EQUIVALENCE")
+    specs_diff.add_argument("--episode-scope", default="union", choices=("union", "intersection", "block0"),
+                            help="union=并集（历史语义）；intersection=只比共有号；block0=只比前 100 条且要求两边都完整")
 
     compare = sub.add_parser("compare", help="两个运行目录的完整 HDF5 逐位对拍")
     compare.add_argument("--left", required=True, help="参考侧目录")
@@ -1571,7 +1913,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         if args.command == "plan":
-            cmd_plan(args.run_id, args.seed, args.per_group, Path(args.sampling_config).resolve(), Path(args.contract).resolve())
+            cmd_plan(
+                args.run_id, args.seed, args.per_group, Path(args.sampling_config).resolve(), Path(args.contract).resolve(),
+                delivery_config=Path(args.delivery_config).resolve() if args.delivery_config else None,
+            )
             return 0
         if args.command == "check":
             contract_override = Path(args.contract).resolve() if args.contract else None
@@ -1588,7 +1933,21 @@ def main(argv: Sequence[str] | None = None) -> int:
                 skip_ladder=args.skip_ladder, tier_override=args.tier, gpus=args.gpus,
                 groups_filter=[item.strip() for item in args.groups.split(",") if item.strip()] if args.groups else None,
                 episodes_per_group=args.episodes,
+                delivery_config=Path(args.delivery_config).resolve() if args.delivery_config else None,
+                episode_range=tuple(int(x) for x in args.episode_range.split("-", 1)) if args.episode_range else None,
+                skip_done=args.skip_done, wall_limit_h=args.wall_limit_h, label=args.label,
             )
+            return 0 if result.get("passed") else 1
+        if args.command == "env-check":
+            result = cmd_env_check(
+                args.run_id, Path(args.delivery_config).resolve(), Path(args.sampling_config).resolve(),
+                tier=args.tier, gpus=args.gpus,
+                groups_filter=[item.strip() for item in args.groups.split(",") if item.strip()] if args.groups else None,
+                limit=args.limit, label=args.label, timeout_s=args.timeout,
+            )
+            return 0 if result.get("passed") else 1
+        if args.command == "delivery":
+            result = cmd_delivery(args.run_id, Path(args.delivery_config).resolve(), hash_mode=args.hash, workers=args.workers)
             return 0 if result.get("passed") else 1
         if args.command == "collision-reproduce":
             payload = cmd_collision_reproduce(
@@ -1602,7 +1961,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             cmd_report(args.run_id)
             return 0
         if args.command == "specs-diff":
-            return 0 if cmd_specs_diff(args.left, args.right, args.label)["passed"] else 1
+            return 0 if cmd_specs_diff(args.left, args.right, args.label, args.episode_scope)["passed"] else 1
         if args.command == "compare":
             payload = cmd_compare(
                 Path(args.left).resolve(), Path(args.right).resolve(), args.label,

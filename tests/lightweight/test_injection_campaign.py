@@ -500,3 +500,23 @@ def test_作用域无视频任务组时碰撞运行时判定不算失败(tmp_pat
     )
     record = next(item for item in verdicts.records if item["name"] == "COLLISION_RUNTIME")
     assert record["status"] == "FAIL" and record["scope"] == "1_video_groups"
+
+
+def test_实跑清单上限随冻结条数放大(tmp_path, monkeypatch):
+    """每组冻结 200 条后，``--episodes 150`` 不再越界；上限按清单里各组的 ``episodes`` 算，
+    超过（201 > 200）仍要拒绝、不静默截断。"""
+    import scripts.injection.campaign as mod
+    import scripts.injection.run as run_mod
+
+    manifest_doc = {"groups": [{"task": "RouteStick", "difficulty": "easy", "episodes": 200}]}
+    monkeypatch.setattr(mod, "load_group_documents", lambda run_id: (tmp_path, manifest_doc, {}))
+
+    class _Reached(RuntimeError):
+        """越界检查已放行、走到写清单这一步的哨兵（再往后就要真跑生成器了）。"""
+
+    monkeypatch.setattr(run_mod, "write_manifest", lambda *a, **k: (_ for _ in ()).throw(_Reached()))
+
+    with pytest.raises(_Reached):
+        campaign.cmd_run("x", "feasibility", tmp_path / "s.json", tier_override=1, episodes_per_group=150)
+    with pytest.raises(campaign.CampaignError, match="--episodes"):
+        campaign.cmd_run("x", "feasibility", tmp_path / "s.json", tier_override=1, episodes_per_group=201)

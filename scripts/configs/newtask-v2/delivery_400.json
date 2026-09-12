@@ -1,0 +1,25 @@
+{
+  "config_version": 1,
+  "note": "每 env 400 条 h5 按难度平均；实跑余量 1.15×；每档额外 50 条只做 env-check 不出 h5（2026-09-12 用户口径）",
+  "contract_path": "scripts/configs/newtask-v2/injection_contract_v3.json",
+  "contract_sha256": "bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6",
+  "per_env_target": 400,
+  "margin": 1.15,
+  "extra_candidates": 50,
+  "groups": [
+    {"task": "BinFill", "difficulty": "easy", "target_h5": 134, "run_episodes": 155, "blocks": 3},
+    {"task": "BinFill", "difficulty": "medium", "target_h5": 133, "run_episodes": 153, "blocks": 3},
+    {"task": "BinFill", "difficulty": "hard", "target_h5": 133, "run_episodes": 153, "blocks": 3},
+    {"task": "RouteStick", "difficulty": "easy", "target_h5": 100, "run_episodes": 115, "blocks": 2},
+    {"task": "RouteStick", "difficulty": "medium", "target_h5": 100, "run_episodes": 115, "blocks": 2},
+    {"task": "RouteStick", "difficulty": "hard", "target_h5": 100, "run_episodes": 115, "blocks": 2},
+    {"task": "VideoUnmaskSwap", "difficulty": "easy", "target_h5": 100, "run_episodes": 115, "blocks": 2},
+    {"task": "VideoUnmaskSwap", "difficulty": "medium", "target_h5": 100, "run_episodes": 115, "blocks": 2},
+    {"task": "VideoUnmaskSwap", "difficulty": "hard", "target_h5": 100, "run_episodes": 115, "blocks": 2},
+    {"task": "VideoRepick", "difficulty": "easy", "target_h5": 134, "run_episodes": 155, "blocks": 3},
+    {"task": "VideoRepick", "difficulty": "medium", "target_h5": 133, "run_episodes": 153, "blocks": 3},
+    {"task": "RouteStick", "difficulty": "xhard", "target_h5": 100, "run_episodes": 115, "blocks": 2},
+    {"task": "VideoUnmaskSwap", "difficulty": "xhard", "target_h5": 100, "run_episodes": 115, "blocks": 2},
+    {"task": "VideoRepick", "difficulty": "xhard", "target_h5": 133, "run_episodes": 153, "blocks": 3}
+  ]
+}

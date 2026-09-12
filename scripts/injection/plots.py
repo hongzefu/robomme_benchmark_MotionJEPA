@@ -264,7 +264,8 @@ def plot_coverage(task: str, difficulty: str, records: list[dict[str, Any]], res
         counts = Counter(record["sampling_cells"][name][0] for record in records)
         values = [counts.get(b, 0) for b in range(COARSE_BINS)]
         ax.bar(range(COARSE_BINS), values, color="#5c9ccc")
-        ax.axhline(GROUP_SIZE / COARSE_BINS, color="#c62828", linestyle="--", linewidth=0.9)
+        # 多 block 组每箱应有 blocks×10 条：参考线按实际条数算，不写死 100
+        ax.axhline(len(records) / COARSE_BINS, color="#c62828", linestyle="--", linewidth=0.9)
         ax.set_title(name, fontsize=9)
         ax.set_xticks(range(COARSE_BINS))
         ax.tick_params(labelsize=7)

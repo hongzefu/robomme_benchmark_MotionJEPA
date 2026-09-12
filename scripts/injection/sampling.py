@@ -146,6 +146,39 @@ def stratify(low: float, high: float, rng: np.random.Generator, *, total: int = 
     return Stratified(low=low, high=high, values=values, bin_of=bin_of, layer_of=layer_of)
 
 
+def block_label(label: str, block: int) -> str:
+    """第 ``block`` 个 100 条 block 的随机流标签（2026-09-12 每 env 400 条交付引入）。
+
+    block 0 **原样返回**传入标签，因此 ``blocks=1`` 时派生的每一条流与此前逐位相同——
+    这是「扩容后前 100 条与 07/09 冻结逐条散列不变」的根据；block ≥1 挂 ``@block<b>`` 后缀，
+    与 block 0 完全独立、可单独复现、可追加而不动已冻结的 block。
+    """
+    if block < 0:
+        raise ValueError(f"block 序号不能为负：{block}")
+    return label if block == 0 else f"{label}@block{block}"
+
+
+def concat_strata(parts: Sequence[Stratified]) -> Stratified:
+    """把逐 block 各自 ``stratify`` 出来的计划按 block 顺序拼接成一份。
+
+    ``values`` / ``bin_of`` / ``layer_of`` 直接首尾相接，全局 episode 号 ``b×100+i`` 就是拼接后的下标；
+    ``cell_bounds`` / ``coarse_bounds`` / ``resample`` 只按下标查表，与总条数无关，拼接后照用。
+    """
+    if not parts:
+        raise ValueError("至少要有一个 block")
+    low, high = parts[0].low, parts[0].high
+    for part in parts[1:]:
+        if part.low != low or part.high != high:
+            raise ValueError("各 block 的取值区间必须相同")
+    return Stratified(
+        low=low,
+        high=high,
+        values=[v for part in parts for v in part.values],
+        bin_of=[b for part in parts for b in part.bin_of],
+        layer_of=[l for part in parts for l in part.layer_of],
+    )
+
+
 def balanced_choice(rng: np.random.Generator, candidates: Sequence[Any], usage: dict[Any, int]) -> Any:
     """在合法候选里挑一个：优先用得最少的，平局随机。
 

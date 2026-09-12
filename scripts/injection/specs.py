@@ -30,6 +30,8 @@ from .sampling import (
     GROUP_SIZE,
     Stratified,
     balanced_choice,
+    block_label,
+    concat_strata,
     derive_rng,
     quota_series,
     stratify,
@@ -223,11 +225,17 @@ class GroupResult:
     episodes: list[dict[str, Any]]
     strata: dict[str, Stratified] = field(default_factory=dict)
     stats: dict[str, Any] = field(default_factory=dict)
+    #: 本组由几个 100 条 block 组成（2026-09-12 每 env 400 条交付引入）；1 = 07/09 的口径。
+    blocks: int = 1
 
     def as_document(self, sampling_config_sha256: str) -> dict[str, Any]:
         """``sampling_config_sha256`` 存的是 :func:`operand_sha256`（取值域散列），
-        不是配置文件的字节散列——理由见该函数的说明。"""
-        return {
+        不是配置文件的字节散列——理由见该函数的说明。
+
+        ``blocks`` 键**只在 blocks > 1 时写入**：blocks=1 的文档必须与 07/09 逐字节相同，
+        否则规格文件散列与清单里的 ``file_sha256`` 都会变。
+        """
+        doc = {
             "spec_schema_version": SPEC_SCHEMA_VERSION,
             "task": self.task,
             "difficulty": self.difficulty,
@@ -237,6 +245,9 @@ class GroupResult:
             "sampling_config_sha256": sampling_config_sha256,
             "episodes": self.episodes,
         }
+        if self.blocks > 1:
+            doc["blocks"] = self.blocks
+        return doc
 
 
 def _new_stats() -> dict[str, Any]:
@@ -262,8 +273,73 @@ def _count_rejection(stats: dict[str, Any], rejection: bc.CollisionRejection | N
         stats["rejections"].append(rejection.as_dict())
 
 
+_BLOCK_COUNTERS = ("candidates_tried", "rejected_geometry", "rejected_contact", "rejected_numerical_boundary", "rejected_uncertified")
+
+
+def _block_begin(stats: dict[str, Any], episode: int, blocks: int, usages: Sequence[dict[Any, int]]) -> None:
+    """每个 block 的第一条 episode 前调用：重置耦合量的 usage 字典，并给 per-block 统计打快照。
+
+    usage 按 block 重置是一次性决策（2026-09-12）：每个 block 都是自洽的 100 条均衡样本，
+    追加第 3 个 block 不会改变第 2 个；block 0 本来就是第一个，不受影响。blocks=1 时本函数
+    只在 episode 0 调一次，此时 usage 本来就是空的、快照也不落盘，行为逐位不变。
+    """
+    if episode % GROUP_SIZE != 0:
+        return
+    block = episode // GROUP_SIZE
+    if block > 0:
+        for usage in usages:
+            usage.clear()
+        _block_end(stats, block - 1, blocks)
+    stats["_snapshot"] = {key: stats[key] for key in _BLOCK_COUNTERS}
+    stats["_block_max"] = 0
+
+
+def _block_end(stats: dict[str, Any], block: int, blocks: int) -> None:
+    """一个 block 结束：blocks > 1 时把该 block 的增量计数与候选峰值记进 ``stats['per_block']``。"""
+    if blocks <= 1:
+        return
+    snapshot = stats.get("_snapshot") or {key: 0 for key in _BLOCK_COUNTERS}
+    entry = {key: stats[key] - snapshot[key] for key in _BLOCK_COUNTERS}
+    entry["max_candidates_used"] = int(stats.get("_block_max", 0))
+    per_block = stats.setdefault("per_block", [])
+    while len(per_block) <= block:
+        per_block.append(None)
+    per_block[block] = entry
+
+
+def _finish_stats(stats: dict[str, Any], blocks: int) -> dict[str, Any]:
+    """组结束：收尾最后一个 block 并去掉私有键，保证 blocks=1 时 ``stats`` 形状与此前逐字相同。"""
+    _block_end(stats, blocks - 1, blocks)
+    stats.pop("_snapshot", None)
+    stats.pop("_block_max", None)
+    return stats
+
+
+def _note_candidates_used(stats: dict[str, Any], used: int) -> None:
+    stats["max_candidates_used"] = max(stats["max_candidates_used"], used)
+    stats["_block_max"] = max(int(stats.get("_block_max", 0)), used)
+
+
+def _block_rngs(seed: int, task: str, difficulty: str, label: str, blocks: int) -> list[np.random.Generator]:
+    """逐 block 派生同一标签的随机流；第 0 条标签不带后缀，与此前逐位相同。"""
+    return [derive_rng(seed, task, difficulty, block_label(label, b)) for b in range(blocks)]
+
+
+def _block_stratify(gc: GroupContract, name: str, seed: int, task: str, difficulty: str, label: str, blocks: int) -> Stratified:
+    """连续量按 block 各自分层后拼接；blocks=1 时就是原来那一次 ``stratify``。"""
+    return concat_strata([stratify(*gc.bounds(name), rng) for rng in _block_rngs(seed, task, difficulty, label, blocks)])
+
+
+def _block_quota(values: Sequence[Any], rngs: Sequence[np.random.Generator]) -> list[Any]:
+    """离散量按 block 各自铺配额后拼接；同一 block 内多字段共享一条流、按调用顺序消费。"""
+    series: list[Any] = []
+    for rng in rngs:
+        series.extend(quota_series(values, rng))
+    return series
+
+
 # ── BinFill ─────────────────────────────────────────────────────────────────
-def _binfill_group(difficulty: str, gc: GroupContract, positions: dict[str, Any], seed: int) -> GroupResult:
+def _binfill_group(difficulty: str, gc: GroupContract, positions: dict[str, Any], seed: int, *, blocks: int = 1) -> GroupResult:
     """取值域与分配办法来自契约 ``gc``；按钮／孔板的盒体尺寸等几何常量仍来自 ``positions``。"""
     rng_root = derive_rng(seed, "BinFill", difficulty)
     derived = int(rng_root.integers(0, 2**62))
@@ -272,13 +348,14 @@ def _binfill_group(difficulty: str, gc: GroupContract, positions: dict[str, Any]
     combos = gc.values("colors_present")
     color_counts = gc.values("put_in_color")
 
-    rng = derive_rng(seed, "BinFill", difficulty, "discrete")
-    dynamic_series = quota_series(gc.values("dynamic"), rng)
-    combo_series = quota_series(combos, rng)
-    put_color_series = quota_series(color_counts, rng)
-    spawn_total_series = quota_series(gc.values("spawn_total"), rng)
-    put_total_series = quota_series(gc.values("put_in_total"), rng)
-    init_order_series = quota_series(gc.values("initialize_color_order"), rng)
+    # 同一 block 内六个离散字段共享一条 "discrete" 流、按此顺序消费（顺序绝不能动）；block ≥1 各自另派一条流
+    rngs = _block_rngs(seed, "BinFill", difficulty, "discrete", blocks)
+    dynamic_series = _block_quota(gc.values("dynamic"), rngs)
+    combo_series = _block_quota(combos, rngs)
+    put_color_series = _block_quota(color_counts, rngs)
+    spawn_total_series = _block_quota(gc.values("spawn_total"), rngs)
+    put_total_series = _block_quota(gc.values("put_in_total"), rngs)
+    init_order_series = _block_quota(gc.values("initialize_color_order"), rngs)
     target_rule = gc.rule("target_count")
     if target_rule not in ("allow_zero", "each_target_at_least_one"):
         raise ContractError(f"BinFill/{difficulty}: 未知的 target_count 规则 {target_rule!r}")
@@ -287,7 +364,7 @@ def _binfill_group(difficulty: str, gc: GroupContract, positions: dict[str, Any]
     board_cfg = positions["board"]
     # 连续域端点来自契约（契约里的数值由 check 按 positions 回算钉住）
     strata = {
-        name: stratify(*gc.bounds(name), derive_rng(seed, "BinFill", difficulty, name))
+        name: _block_stratify(gc, name, seed, "BinFill", difficulty, name, blocks)
         for name in ("button_x", "button_y", "board_x", "board_y", "board_yaw", "cube_x", "cube_y", "cube_yaw")
     }
     cube_x_lo, cube_x_hi = gc.bounds("cube_x")
@@ -297,7 +374,8 @@ def _binfill_group(difficulty: str, gc: GroupContract, positions: dict[str, Any]
     stats = _new_stats()
     episodes: list[dict[str, Any]] = []
 
-    for episode in range(GROUP_SIZE):
+    for episode in range(GROUP_SIZE * blocks):
+        _block_begin(stats, episode, blocks, (target_pool_usage,))
         rng_ep = derive_rng(seed, "BinFill", difficulty, f"episode-{episode}")
         colors_idx = list(combo_series[episode])
         put_color = min(put_color_series[episode], len(colors_idx))
@@ -413,7 +491,7 @@ def _binfill_group(difficulty: str, gc: GroupContract, positions: dict[str, Any]
                 }
             )
         )
-    return GroupResult("BinFill", difficulty, seed, derived, episodes, strata, stats)
+    return GroupResult("BinFill", difficulty, seed, derived, episodes, strata, _finish_stats(stats, blocks), blocks)
 
 
 def _place_binfill_cubes(
@@ -489,7 +567,7 @@ def _shifted_cell(stratum: Stratified, episode: int, shift: int, rng: np.random.
 
 
 # ── RouteStick ──────────────────────────────────────────────────────────────
-def _routestick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
+def _routestick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int, *, blocks: int = 1) -> GroupResult:
     """1×9 整排，偶数索引可踩、奇数索引是障碍柱；只固定整排旋转角、路线与逐段绕行方向。"""
     rng_root = derive_rng(seed, "RouteStick", difficulty)
     derived = int(rng_root.integers(0, 2**62))
@@ -499,13 +577,13 @@ def _routestick_group(difficulty: str, gc: GroupContract, config: dict[str, Any]
     node_indices = [int(v) for v in walk_cfg["node_indices"]]
     directions_pool = tuple(gc.values("direction"))
 
-    rng = derive_rng(seed, "RouteStick", difficulty, "discrete")
-    length_series = quota_series(gc.values("L"), rng)
+    rngs = _block_rngs(seed, "RouteStick", difficulty, "discrete", blocks)
+    length_series = _block_quota(gc.values("L"), rngs)
     # 契约存的是节点值（0/2/4/6/8），生成器内部用局部槽位
-    start_series = quota_series([node_indices.index(int(v)) for v in gc.values("start_node")], rng)
+    start_series = _block_quota([node_indices.index(int(v)) for v in gc.values("start_node")], rngs)
 
     strata = {
-        "rotation_deg": stratify(*gc.bounds("rotation_deg"), derive_rng(seed, "RouteStick", difficulty, "rotation"))
+        "rotation_deg": _block_stratify(gc, "rotation_deg", seed, "RouteStick", difficulty, "rotation", blocks)
     }
 
     edge_usage: dict[tuple[int, int], int] = {}
@@ -513,7 +591,8 @@ def _routestick_group(difficulty: str, gc: GroupContract, config: dict[str, Any]
     episodes: list[dict[str, Any]] = []
     stats = _new_stats()
 
-    for episode in range(GROUP_SIZE):
+    for episode in range(GROUP_SIZE * blocks):
+        _block_begin(stats, episode, blocks, (edge_usage, direction_usage))
         rng_ep = derive_rng(seed, "RouteStick", difficulty, f"episode-{episode}")
         steps = int(length_series[episode])
         rotation_deg = strata["rotation_deg"].values[episode]
@@ -558,7 +637,7 @@ def _routestick_group(difficulty: str, gc: GroupContract, config: dict[str, Any]
                 }
             )
         )
-    return GroupResult("RouteStick", difficulty, seed, derived, episodes, strata, stats)
+    return GroupResult("RouteStick", difficulty, seed, derived, episodes, strata, _finish_stats(stats, blocks), blocks)
 
 
 # ── 两个视频任务共用的布局与交换模拟 ──────────────────────────────────────────
@@ -623,41 +702,42 @@ def _simulate_swaps(
 
 
 # ── VideoUnmaskSwap ─────────────────────────────────────────────────────────
-def _unmask_group(difficulty: str, gc: GroupContract, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
+def _unmask_group(difficulty: str, gc: GroupContract, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int, *, blocks: int = 1) -> GroupResult:
     rng_root = derive_rng(seed, "VideoUnmaskSwap", difficulty)
     derived = int(rng_root.integers(0, 2**62))
 
     n_bins = int(config["bin"])
     containers = positions["containers"]  # 锚点坐标等几何仍从 positions 取
 
-    rng = derive_rng(seed, "VideoUnmaskSwap", difficulty, "discrete")
-    swap_series = quota_series(gc.values("n_swaps"), rng)
-    pick_series = quota_series(gc.values("n_picks"), rng)
+    rngs = _block_rngs(seed, "VideoUnmaskSwap", difficulty, "discrete", blocks)
+    swap_series = _block_quota(gc.values("n_swaps"), rngs)
+    pick_series = _block_quota(gc.values("n_picks"), rngs)
     # bin=3 时布局按配额；bin=4 时契约给常量，不消费 rng
     layout_series = (
-        quota_series(gc.values("layout_type"), rng)
+        _block_quota(gc.values("layout_type"), rngs)
         if gc.allocation("layout_type") == "quota"
-        else [gc.constant("layout_type")] * GROUP_SIZE
+        else [gc.constant("layout_type")] * (GROUP_SIZE * blocks)
     )
-    selected_series = quota_series(gc.values("selected"), rng)
-    color_series = quota_series(gc.values("color_order"), rng)
-    initiator_series = quota_series(gc.values("swap_initiators_first_two"), rng)
+    selected_series = _block_quota(gc.values("selected"), rngs)
+    color_series = _block_quota(gc.values("color_order"), rngs)
+    initiator_series = _block_quota(gc.values("swap_initiators_first_two"), rngs)
 
     strata: dict[str, Stratified] = {
-        "theta_rad": stratify(*gc.bounds("theta_rad"), derive_rng(seed, "VideoUnmaskSwap", difficulty, "theta"))
+        "theta_rad": _block_stratify(gc, "theta_rad", seed, "VideoUnmaskSwap", difficulty, "theta", blocks)
     }
     for i in range(n_bins):
         for axis in ("dx", "dy"):
-            strata[f"bin{i}_{axis}"] = stratify(
-                *gc.bounds(f"bin{i}_{axis}"), derive_rng(seed, "VideoUnmaskSwap", difficulty, f"bin{i}-{axis}")
+            strata[f"bin{i}_{axis}"] = _block_stratify(
+                gc, f"bin{i}_{axis}", seed, "VideoUnmaskSwap", difficulty, f"bin{i}-{axis}", blocks
             )
-        strata[f"bin{i}_yaw"] = stratify(*gc.bounds(f"bin{i}_yaw"), derive_rng(seed, "VideoUnmaskSwap", difficulty, f"bin{i}-yaw"))
+        strata[f"bin{i}_yaw"] = _block_stratify(gc, f"bin{i}_yaw", seed, "VideoUnmaskSwap", difficulty, f"bin{i}-yaw", blocks)
 
     third_usage: dict[int, int] = {}
     stats = _new_stats()
     episodes: list[dict[str, Any]] = []
 
-    for episode in range(GROUP_SIZE):
+    for episode in range(GROUP_SIZE * blocks):
+        _block_begin(stats, episode, blocks, (third_usage,))
         rng_ep = derive_rng(seed, "VideoUnmaskSwap", difficulty, f"episode-{episode}")
         n_swaps = int(swap_series[episode])
         n_picks = int(pick_series[episode])
@@ -715,7 +795,7 @@ def _unmask_group(difficulty: str, gc: GroupContract, config: dict[str, Any], pa
                 "报缺口并停止冻结"
             )
         theta, bins, pairs, initial_gap, sweep_gap, used = frozen
-        stats["max_candidates_used"] = max(stats["max_candidates_used"], used)
+        _note_candidates_used(stats, used)
 
         hidden = {colors[i]: f"bin_{selected[i]}" for i in range(3)}
         pick_order = [f"bin_{selected[i]}" for i in parameters["object_selection"]["pickup_selected_indices"][:n_picks]]
@@ -757,11 +837,11 @@ def _unmask_group(difficulty: str, gc: GroupContract, config: dict[str, Any], pa
                 }
             )
         )
-    return GroupResult("VideoUnmaskSwap", difficulty, seed, derived, episodes, strata, stats)
+    return GroupResult("VideoUnmaskSwap", difficulty, seed, derived, episodes, strata, _finish_stats(stats, blocks), blocks)
 
 
 # ── VideoRepick ─────────────────────────────────────────────────────────────
-def _repick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int) -> GroupResult:
+def _repick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], parameters: dict[str, Any], positions: dict[str, Any], seed: int, *, blocks: int = 1) -> GroupResult:
     if difficulty == "hard":
         raise SpecGenerationError("VideoRepick hard 已由用户排除，不生成规格")
 
@@ -772,29 +852,30 @@ def _repick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], pa
     plain = positions["easy_medium_cubes"]  # 锚点坐标等几何仍从 positions 取
     button_cfg = positions["button"]
 
-    rng = derive_rng(seed, "VideoRepick", difficulty, "discrete")
-    swap_series = quota_series(gc.values("n_swaps"), rng)
-    repeat_series = quota_series(gc.values("num_repeats"), rng)
-    layout_series = quota_series(gc.values("layout_type"), rng)
-    color_series = quota_series(gc.values("color"), rng)
-    target_series = quota_series(gc.values("target"), rng)
-    tail_series = quota_series(gc.values("tail"), rng)
+    rngs = _block_rngs(seed, "VideoRepick", difficulty, "discrete", blocks)
+    swap_series = _block_quota(gc.values("n_swaps"), rngs)
+    repeat_series = _block_quota(gc.values("num_repeats"), rngs)
+    layout_series = _block_quota(gc.values("layout_type"), rngs)
+    color_series = _block_quota(gc.values("color"), rngs)
+    target_series = _block_quota(gc.values("target"), rngs)
+    tail_series = _block_quota(gc.values("tail"), rngs)
 
     strata: dict[str, Stratified] = {
-        name: stratify(*gc.bounds(name), derive_rng(seed, "VideoRepick", difficulty, label))
+        name: _block_stratify(gc, name, seed, "VideoRepick", difficulty, label, blocks)
         for name, label in (("theta_rad", "theta"), ("button_x", "button_x"), ("button_y", "button_y"))
     }
     for i in range(n_cubes):
         for axis in ("dx", "dy"):
-            strata[f"cube{i}_{axis}"] = stratify(
-                *gc.bounds(f"cube{i}_{axis}"), derive_rng(seed, "VideoRepick", difficulty, f"cube{i}-{axis}")
+            strata[f"cube{i}_{axis}"] = _block_stratify(
+                gc, f"cube{i}_{axis}", seed, "VideoRepick", difficulty, f"cube{i}-{axis}", blocks
             )
-        strata[f"cube{i}_yaw"] = stratify(*gc.bounds(f"cube{i}_yaw"), derive_rng(seed, "VideoRepick", difficulty, f"cube{i}-yaw"))
+        strata[f"cube{i}_yaw"] = _block_stratify(gc, f"cube{i}_yaw", seed, "VideoRepick", difficulty, f"cube{i}-yaw", blocks)
 
     stats = _new_stats()
     episodes: list[dict[str, Any]] = []
 
-    for episode in range(GROUP_SIZE):
+    for episode in range(GROUP_SIZE * blocks):
+        _block_begin(stats, episode, blocks, ())
         rng_ep = derive_rng(seed, "VideoRepick", difficulty, f"episode-{episode}")
         n_swaps = int(swap_series[episode])
         num_repeats = int(repeat_series[episode])
@@ -862,7 +943,7 @@ def _repick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], pa
                 "报缺口并停止冻结"
             )
         theta, cubes, pairs, initial_gap, sweep_gap, used = frozen
-        stats["max_candidates_used"] = max(stats["max_candidates_used"], used)
+        _note_candidates_used(stats, used)
 
         episodes.append(
             seal(
@@ -897,15 +978,19 @@ def _repick_group(difficulty: str, gc: GroupContract, config: dict[str, Any], pa
                 }
             )
         )
-    return GroupResult("VideoRepick", difficulty, seed, derived, episodes, strata, stats)
+    return GroupResult("VideoRepick", difficulty, seed, derived, episodes, strata, _finish_stats(stats, blocks), blocks)
 
 
 # ── 对外入口 ────────────────────────────────────────────────────────────────
 _BUILDERS: dict[str, Callable[..., GroupResult]] = {}
 
 
-def build_group(task: str, difficulty: str, sampling: dict[str, Any], contract: Contract, seed: int = DEFAULT_SEED) -> GroupResult:
-    """按任务与难度生成一组 100 条规格。
+def build_group(task: str, difficulty: str, sampling: dict[str, Any], contract: Contract, seed: int = DEFAULT_SEED, *, blocks: int = 1) -> GroupResult:
+    """按任务与难度生成一组 ``blocks × 100`` 条规格（默认 1 个 block = 100 条，07/09 口径）。
+
+    * ``blocks``（2026-09-12 每 env 400 条交付引入）：block 0 的随机流标签与此前逐字相同，因此
+      前 100 条与 blocks=1 时逐条散列相同；block ≥1 用 ``<标签>@block<b>`` 各自独立派生，
+      每个 block 内仍是 10 粗箱 × 10 细层的分层与按批均衡的配额；episode 号 = ``b×100+i``。
 
     * ``contract``：取值域与分配办法的约定（``injection_contract_v*.json``），离散域的候选列表与
       连续域的端点都从它读——这是「候选分布怎么产生」的派生依据；
@@ -916,12 +1001,14 @@ def build_group(task: str, difficulty: str, sampling: dict[str, Any], contract: 
     positions = sampling["positions"][task]
     config = parameters["configs"][difficulty]
     gc = contract.group(task, difficulty)
+    if blocks < 1:
+        raise SpecGenerationError(f"blocks 必须 ≥ 1：{blocks}")
     if task == "BinFill":
-        return _binfill_group(difficulty, gc, positions, seed)
+        return _binfill_group(difficulty, gc, positions, seed, blocks=blocks)
     if task == "RouteStick":
-        return _routestick_group(difficulty, gc, config, parameters, positions, seed)
+        return _routestick_group(difficulty, gc, config, parameters, positions, seed, blocks=blocks)
     if task == "VideoUnmaskSwap":
-        return _unmask_group(difficulty, gc, config, parameters, positions, seed)
+        return _unmask_group(difficulty, gc, config, parameters, positions, seed, blocks=blocks)
     if task == "VideoRepick":
-        return _repick_group(difficulty, gc, config, parameters, positions, seed)
+        return _repick_group(difficulty, gc, config, parameters, positions, seed, blocks=blocks)
     raise SpecGenerationError(f"未知任务 {task}")

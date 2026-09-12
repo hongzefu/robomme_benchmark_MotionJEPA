@@ -167,3 +167,37 @@ def test_specs_diff_只比共有组并逐条比散列(tmp_path, monkeypatch):
     assert not payload["passed"]
     make_run("right2", {("A", "easy"): ["x", "y"], ("A", "hard"): ["p"], ("A", "xhard"): ["z"]})
     assert campaign.cmd_specs_diff("left", "right2")["passed"]
+
+
+def test_specs_diff的block0作用域只比前一百条(tmp_path, monkeypatch):
+    """多 block 扩容后要证明「block 0 与 09 逐条相同」：只比 episode < 100，
+    且两边都必须完整覆盖 range(100)，缺号即差异——不能因为少比几条而假 PASS。"""
+    monkeypatch.setattr(campaign, "INJECTION_ROOT", tmp_path)
+
+    def make_run(run_id: str, groups: dict[tuple[str, str], list[tuple[int, str]]]) -> None:
+        root = tmp_path / run_id
+        meta = []
+        for (task, difficulty), items in groups.items():
+            doc = {"episodes": [{"episode": ep, "spec_sha256": sha} for ep, sha in items]}
+            path = root / "specs" / task / f"{difficulty}.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(doc), encoding="utf-8")
+            meta.append({"task": task, "difficulty": difficulty, "path": f"specs/{task}/{difficulty}.json", "file_sha256": campaign._sha256_file(path)})
+        (root / "manifest.json").write_text(json.dumps({"groups": meta}), encoding="utf-8")
+
+    block0 = [(ep, f"s{ep}") for ep in range(100)]
+    block1 = [(ep, f"t{ep}") for ep in range(100, 200)]
+    make_run("left100", {("A", "easy"): list(block0), ("A", "hard"): list(block0)})
+    make_run("right200", {("A", "easy"): block0 + block1, ("A", "hard"): block0 + block1})
+
+    payload = campaign.cmd_specs_diff("left100", "right200", "BLOCK0_EQUIVALENCE", episode_scope="block0")
+    assert payload["compared"] == 200 and payload["differences"] == 0 and payload["passed"]
+    # union 作用域下右侧独有的 100 号 × 2 组算差异
+    union = campaign.cmd_specs_diff("left100", "right200", "OLD", episode_scope="union")
+    assert union["compared"] == 400 and union["differences"] == 200 and not union["passed"]
+
+    # 右侧缺 episode 5：block0 作用域必须把缺号算成差异
+    missing = [item for item in block0 if item[0] != 5] + block1
+    make_run("right199", {("A", "easy"): list(missing), ("A", "hard"): block0 + block1})
+    payload = campaign.cmd_specs_diff("left100", "right199", "BLOCK0_EQUIVALENCE", episode_scope="block0")
+    assert payload["compared"] == 200 and payload["differences"] == 1 and not payload["passed"]
