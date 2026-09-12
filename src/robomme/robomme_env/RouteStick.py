@@ -778,7 +778,7 @@ class RouteStick(BaseEnv):
             self,
             self.agent.tcp.pose.p,
             start_step=cur_step,
-            end_step=cur_step + 20,  # 2026-09-12 用户决定白球尾迹减半：存活 40 步→20 步（规则 11 逐条获批）
+            end_step=cur_step + 10,  # 2026-09-12 用户决定白球尾迹两次减半：存活 40 步→20 步→10 步（规则 11 逐条获批）
             cur_step=cur_step,
             disk_radius=0.005,
         )

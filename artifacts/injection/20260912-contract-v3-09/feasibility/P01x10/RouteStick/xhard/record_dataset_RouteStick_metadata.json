@@ -1,0 +1,36 @@
+{
+  "env_id": "RouteStick",
+  "record_count": 5,
+  "records": [
+    {
+      "task": "RouteStick",
+      "episode": 0,
+      "seed": 16000,
+      "difficulty": "xhard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 1,
+      "seed": 16100,
+      "difficulty": "xhard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 2,
+      "seed": 16200,
+      "difficulty": "xhard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 3,
+      "seed": 16300,
+      "difficulty": "xhard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 4,
+      "seed": 16400,
+      "difficulty": "xhard"
+    }
+  ]
+}

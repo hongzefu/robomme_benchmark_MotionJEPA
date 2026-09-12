@@ -4,15 +4,15 @@
 画面唯一差异是桌面白球尾迹的存活步数（``RouteStick.step`` 里 ``highlight_position`` 的
 ``end_step`` 40→20）。一颗球盖住某像素的时长 = 存活步数 + 后续相邻球重叠带来的延长量 E；
 两次运行的运动完全一样，E 逐像素相同，所以「该像素最长连续白帧游程」之差 run07 − run08
-在尾迹像素上应恰为 20，在机械臂等非尾迹像素上为 0。这比像素面积比值干净——Panda 机械臂本身
+在尾迹像素上应恰为两侧存活步数之差（``--expected-diff``，08 对 07 是 20，09 对 07 是 30、09 对 08 是 10），在机械臂等非尾迹像素上为 0。这比像素面积比值干净——Panda 机械臂本身
 是白色的，面积法分母会被它污染（实测面积比 0.733 而非 0.5）。
 
 做法：逐帧取三通道均 ≥ ``WHITE_THRESHOLD`` 的像素为「白」，剔除首帧就是白的静态像素（靶盘白环、
 文字），对每个像素算最长连续白帧游程；取 run07 ≥ ``MIN_RUN_LEFT`` 且 run07 − run08 > 0 的像素
-（只有尾迹像素会有正差），看差值的中位数与落在 [18, 22] 的占比。
+（只有尾迹像素会有正差），看差值的中位数与落在 期望值 ±2 的占比。
 
-判定行：``TRAIL_HALVED=PASS|FAIL median_diff=<中位数> share_18_22=<占比> n=<像素数> left_frames=<帧数> right_frames=<帧数> left=<run> right=<run>``，
-PASS 条件：n ≥ 100、中位数在 [18, 22]、占比 ≥ 0.4、两侧帧数相同。
+判定行：``TRAIL_HALVED=PASS|FAIL expected=<期望差> median_diff=<中位数> share_pm2=<占比> n=<像素数> left_frames=<帧数> right_frames=<帧数> left=<run> right=<run>``，
+PASS 条件：n ≥ 100、中位数在 期望值 ±2 内、占比 ≥ 0.4、两侧帧数相同。
 
 用法（仓库根目录）::
 
@@ -33,9 +33,10 @@ import numpy as np
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 WHITE_THRESHOLD = 170  # 球体有明暗，230 只抓到高光；170 实测把尾迹像素从 41 个放大到 458 个而机械臂差值仍为 0
-MIN_RUN_LEFT = 30  # 参考侧游程至少 30 帧：短于存活步数的像素多半是机械臂扫过，不是尾迹
+MIN_RUN_LEFT = 30  # 参考侧（07，存活 40 步）游程至少 30 帧：短于存活步数的像素多半是机械臂扫过，不是尾迹；参考侧换 08 时用 --min-run-left 15
 MIN_PIXELS = 100
-MEDIAN_RANGE = (18, 22)
+EXPECTED_DIFF = 20
+MEDIAN_TOLERANCE = 2
 MIN_SHARE = 0.4
 
 
@@ -82,6 +83,8 @@ def main() -> int:
     parser.add_argument("--difficulty", default="easy")
     parser.add_argument("--episode", type=int, default=0)
     parser.add_argument("--out", default=None, help="把差值直方图与结论写到该 JSON")
+    parser.add_argument("--expected-diff", type=int, default=EXPECTED_DIFF, help="两侧存活步数之差（默认 20：08 对 07）")
+    parser.add_argument("--min-run-left", type=int, default=MIN_RUN_LEFT, help="参考侧游程下限（默认 30；参考侧是 08 时用 15）")
     args = parser.parse_args()
 
     left_video = _find_video(args.left, args.left_mode, args.difficulty, args.episode)
@@ -89,17 +92,18 @@ def main() -> int:
     left, left_frames = _longest_white_runs(left_video)
     right, right_frames = _longest_white_runs(right_video)
     diff = left - right
-    trail = (left >= MIN_RUN_LEFT) & (diff > 0)
+    lo, hi = args.expected_diff - MEDIAN_TOLERANCE, args.expected_diff + MEDIAN_TOLERANCE
+    trail = (left >= args.min_run_left) & (diff > 0)
     values = diff[trail]
     n = int(values.size)
     median = float(np.median(values)) if n else float("nan")
-    share = float(np.mean((values >= MEDIAN_RANGE[0]) & (values <= MEDIAN_RANGE[1]))) if n else 0.0
+    share = float(np.mean((values >= lo) & (values <= hi))) if n else 0.0
     passed = (
-        n >= MIN_PIXELS and MEDIAN_RANGE[0] <= median <= MEDIAN_RANGE[1]
+        n >= MIN_PIXELS and lo <= median <= hi
         and share >= MIN_SHARE and left_frames == right_frames
     )
     line = (
-        f"TRAIL_HALVED={'PASS' if passed else 'FAIL'} median_diff={median:.1f} share_18_22={share:.3f} n={n} "
+        f"TRAIL_HALVED={'PASS' if passed else 'FAIL'} expected={args.expected_diff} median_diff={median:.1f} share_pm2={share:.3f} n={n} "
         f"left_frames={left_frames} right_frames={right_frames} difficulty={args.difficulty} episode={args.episode} "
         f"left={args.left} right={args.right}"
     )
@@ -107,10 +111,10 @@ def main() -> int:
     if args.out:
         histogram = {str(k): int(v) for k, v in zip(*np.unique(values, return_counts=True))} if n else {}
         Path(args.out).write_text(json.dumps({
-            "verdict_line": line, "passed": passed, "median_diff": median, "share_18_22": share, "n_trail_pixels": n,
+            "verdict_line": line, "passed": passed, "expected_diff": args.expected_diff, "median_diff": median, "share_pm2": share, "n_trail_pixels": n,
             "left_frames": left_frames, "right_frames": right_frames,
-            "white_threshold": WHITE_THRESHOLD, "min_run_left": MIN_RUN_LEFT, "min_pixels": MIN_PIXELS,
-            "median_range": MEDIAN_RANGE, "min_share": MIN_SHARE,
+            "white_threshold": WHITE_THRESHOLD, "min_run_left": args.min_run_left, "min_pixels": MIN_PIXELS,
+            "median_range": [lo, hi], "min_share": MIN_SHARE,
             "left_video": str(left_video.relative_to(REPO_ROOT)), "right_video": str(right_video.relative_to(REPO_ROOT)),
             "diff_histogram": histogram,
         }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

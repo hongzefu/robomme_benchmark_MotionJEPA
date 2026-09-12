@@ -1,0 +1,14 @@
+{
+  "manifest_version": 1,
+  "note": "步骤 5 实跑：1 组各 episode 0～0，共 1 条；其余 1399 条本轮不实跑",
+  "groups": [
+    {
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "spec_path": "../specs/RouteStick/easy.json",
+      "episodes": [
+        0
+      ]
+    }
+  ]
+}

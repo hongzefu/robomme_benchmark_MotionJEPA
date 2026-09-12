@@ -29,7 +29,7 @@
     },
     "RouteStick": {
       "path": "src/robomme/robomme_env/RouteStick.py",
-      "sha256": "0c02b40d9ded01ecb143710fdd5eb186f7bf15c37e57efd8193e04cf7d92c82b",
+      "sha256": "7dced06e589a59bc3c06b806d87e872886a841ddb1f7f37aadd02ec7b7e61aef",
       "anchors": [
         "config_easy",
         "config_medium",
