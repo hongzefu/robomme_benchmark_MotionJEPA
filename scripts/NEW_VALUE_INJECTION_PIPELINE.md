@@ -1,10 +1,10 @@
 # 新值注入：候选分布 → 真实 HDF5 → 对拍 → 出图
 
 > **这篇讲什么**：外部生成的固定规格是怎么铺出来的、怎么变成真实仿真轨迹、怎么证明它没被并发改坏、图是怎么画的。
-> **运行编号**：**现行以 `20260911-contract-v3-07` 为准**；`20260912-contract-v3-08`（2026-09-12）是 RouteStick 白球尾迹减半（`RouteStick.step` 里 `highlight_position` 存活步数 40→20）后的**专项重出**，`20260912-contract-v3-09`（同日）再减半到 10 步；两者规格与 07 逐条相同、只实跑 RouteStick 四档各 5 条，见〇节 08／09 子节；**RouteStick 当前代码状态是 10 步（09）**，其余 10 组仍以 07 为准（2026-09-12 全量重跑 14 组 × 30 = 420 条，带单条 600 秒超时与 BinFill 直出 demo，规格与 06 逐条相同；见〇节 07 子节与第二节第 5、6 条）。历史对照：规格与跑前分布曾以 `20260911-contract-v2-05`（契约 v2，2026-09-11 重冻结，本轮只做规格、静态检查与跑前图）为准；330 条实跑、对拍与跑后图仍是 `20260910-new-values-04`（契约 v1 = 原值口径）的结果，两轮规格不同，不互相引用。分支 `newtask-v2`。
+> **运行编号**：**现行以 `20260912-contract-v3-10` 为最终口径**（2026-09-12）：每个 env 严格交付 400 条 h5、难度平均分（4 档 env 每档 100，BinFill／VideoRepick 三档 134/133/133），每组候选按 100 条 block 扩容（前 100 条与 07/09 逐条散列相同）、实跑目标 × 1.15 条、每组另交付 50 条只做 env-check 不出 h5 的候选，RouteStick 全部按 10 步尾迹出；见〇节 10 子节、第一节第 5 条、第二节第 7 条与二·五／二·六。历史对照：`20260911-contract-v3-07` 是 14 组 × 30 = 420 条的上一版全量（RouteStick 尾迹 40 步），`20260912-contract-v3-08`／`09` 是 RouteStick 尾迹 40→20→10 的专项重出（四档各 5 条）。历史对照：规格与跑前分布曾以 `20260911-contract-v2-05`（契约 v2，2026-09-11 重冻结，本轮只做规格、静态检查与跑前图）为准；330 条实跑、对拍与跑后图仍是 `20260910-new-values-04`（契约 v1 = 原值口径）的结果，两轮规格不同，不互相引用。分支 `newtask-v2`。
 > **取值域与分配的约定**见 [NEW_VALUE_CONTRACT_CHANGELOG.md](NEW_VALUE_CONTRACT_CHANGELOG.md)（契约 JSON v1／v2 的变化与用户决策）。链路代码在 [injection/](injection/)，不依赖 `tests/`。
 > 完整验收口径见根目录 [NEW_VALUE_INJECTION_TEST_PLAN.md](../NEW_VALUE_INJECTION_TEST_PLAN.md)（实测在第 5.9.3 节），
-> 轻量包见 [docs/validation/newtask-v2/20260910-new-values-04/](../docs/validation/newtask-v2/20260910-new-values-04/README.md)。
+> 轻量包见 [docs/validation/newtask-v2/20260912-contract-v3-10/](../docs/validation/newtask-v2/20260912-contract-v3-10/README.md)（04 的在 [20260910-new-values-04/](../docs/validation/newtask-v2/20260910-new-values-04/README.md)）。
 > 跑前分布的 2D 细图另见 [injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md](injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md)。
 
 ## 〇、结果速览
@@ -28,6 +28,42 @@
 | `VideoRepick` easy／medium | 28／29 | 未运行 2／1 |
 
 ⚠ 两类失败性质不同：5 条规划失败全在 `BinFill`、签名统一是 `DatasetGenerationError: 环境报告失败`，与原值基线同类（计划第 5.9.2 节里 `BinFill hard/ep3` 五轮同样失败），是任务自身成功率；3 条「未运行」是**人为中断**——它们在往 `RecordWrapper` 的 `fail_safe_limit = 2000` 步爬（`VideoRepick/easy/ep0` 已跑 112 分钟、RSS 14.9 GB），按用户决定 `kill -9`，本该得到的是「超时」。
+
+### 10（2026-09-12）：每 env 400 条严格交付 + 每档 50 条纯候选——**现行最终口径**
+
+用户指令（原话）：「给出方案 沿用目前的机制 生成每个env 400个数据集h5 难度平均分布 注意因为会有生成失败 候选要有余量 在此基础上给每个env每个难度再增加50个候选不生成数据集 只生成候选 可以产生环境。这次的完整产物和log都要进git 除了h5和图片视频等大文件」「候选产物要进git 保证之后可复现 候选的生成和h5的生成log 如果可以也进入git」。拍板口径：三档 env 按 134/133/133；严格交付目标数（多出的成功条标 spare、h5 保留、清单单列）；实跑余量统一 1.15×；额外候选多备、交付恰好 50 条 reset 通过者。交付配置单一真相源 [configs/newtask-v2/delivery_400.json](configs/newtask-v2/delivery_400.json)（每组 `target_h5`／`run_episodes = ceil(target×1.15)`／`blocks`），契约 v3 不变。
+
+| 阶段 | 命令口径 | 实测 |
+|---|---:|---|
+| 冻结 | 14 组、每组 `blocks×100` 条（3 档 env 300、4 档 env 200），共 **3400** | `PLAN=OK elapsed_s=675.3`；`BLOCK0_EQUIVALENCE=PASS compared=1400 differences=0` 对 07 与 09 均成立 |
+| 检查 | 六项判定按 block 切片 | `SPEC_SCOPE blocks=2/3`、`COVERAGE_QUOTA quota_gaps=0`、`STATIC_GEOMETRY checked=3400`、`COLLISION_SWEEP specs=1700 rejected=0 min_g_m=1.4025e-05`、`SPEC_REPRODUCIBLE compared=3400 differences=0`，`CHECK=PASS elapsed_s=1338.5` |
+| 实跑 | 各组 `range(run_episodes)` 共 **1842** 条，双卡各 20 worker `P01x20` | 墙钟 **6685 秒（1 小时 51 分）**，16.12 条/分，通过 **1796（97.5%）**，成功条 `wall_s` 中位 126 秒、最大 241 秒，峰值 RSS 7.0 GB，产物 846 GB |
+| env-check | 每组从 `run_episodes` 起按序核验，攒够 50 条 reset 通过即停 | 14 组各 checked=50 passed=50，`ENV_CHECK=PASS delivered=700 shortfall=0`，492.7 秒 |
+| 交付 | 每组按 episode 升序取前 `target_h5` 条通过为正式 | `DELIVERY_400=PASS` ×4，`DELIVERY_TOTAL=PASS delivered=1600 spare=196 h5_missing=0 h5_sha_mismatch=0` |
+
+```
+FEASIBILITY=PASS unique=1842 executed=1842 unclassified=0 succeeded=1796 attempt=0
+VIDEO_INDEX=PASS rows=1842 complete=1818 frame_mismatch=3 missing=0 no_close=21 untraceable=0
+COLLISION_RUNTIME=PASS unique=921 checked=900 missing_checks=0 rejected=1 scope=7_video_groups
+INJECTION_BINDING=PASS unique=1842 bound=1821 mismatches=0
+VIDEO_DECODE=PASS success_rows=1796 decoded_eq_timesteps=1796 failed_videos=22 mismatches=0
+DELIVERY_400=PASS env=BinFill target=400 delivered=400 spare=38 failed=23 groups=3
+DELIVERY_400=PASS env=RouteStick target=400 delivered=400 spare=60 failed=0 groups=4
+DELIVERY_400=PASS env=VideoUnmaskSwap target=400 delivered=400 spare=58 failed=2 groups=4
+DELIVERY_400=PASS env=VideoRepick target=400 delivered=400 spare=40 failed=21 groups=3
+DELIVERY=PASS specs=3400 result_rows=1842 missing=0 videos_on_disk=1821 videos_expected=1821 video_sha_mismatch=0
+```
+
+| 组 | 目标 | 实跑 | 通过 | 交付 | spare | 失败 |
+|---|---:|---:|---:|---:|---:|---|
+| `BinFill` easy／medium／hard | 134／133／133 | 155／153／153 | 150／149／139 | 134／133／133 | 16／16／6 | 环境报告失败 3／4／13，demo 转换错 2／0／1 |
+| `RouteStick` easy／medium／hard／xhard | 100 ×4 | 115 ×4 | 115 ×4 | 100 ×4 | 15 ×4 | — |
+| `VideoUnmaskSwap` easy／medium／hard／xhard | 100 ×4 | 115 ×4 | 115／115／115／113 | 100 ×4 | 15／15／15／13 | xhard 超时 2 |
+| `VideoRepick` easy／medium／xhard | 134／133／133 | 155／153／153 | 150／146／144 | 134／133／133 | 16／13／11 | 超时 5／7／7，xhard 另有环境报告失败 1、运行时碰撞拒绝 1 |
+
+46 条失败按 `error_type`：`DatasetGenerationError` 21（BinFill 20 条，与 04～07 同类）、`EpisodeWallClockTimeout` 21（全在两个视频任务，600 秒自动终止）、`BinFillDemoError` 3（BinFill easy ep125／ep146、hard ep152：demo 视频转换时 ffmpeg `Broken pipe`，h5 原件保留、按失败计不交付——**10 新出现的失败形态**，40 worker 下 ffmpeg 管道偶发中断，根因未查）、`BinCollisionError` 1（VideoRepick/xhard ep100，运行时 `substep_after` 数值边界 g=7.15e-08）。每组通过数都超目标，最小余量 BinFill/hard +6，没有触发补跑。
+
+正式数据在 `artifacts/injection/20260912-contract-v3-10/feasibility/P01x20/<任务>/<难度>/hdf5_files/`，**正式 1600 条与 spare 196 条由 `delivery_manifest.json` 里每条的 `role` 区分**（primary／spare，均带 h5 相对路径、字节数、SHA-256、seed、`spec_sha256`）；额外候选在 `env_check/<任务>/<难度>.jsonl` 里 `delivered=true` 的 50 条。入库：候选规格 3400 条（8.8 MB）、manifest／plan_stats／check_result、两档的 `episode_results.jsonl` 与运行参数、14 组 metadata、`env_check/` 与 `env_check_result.json`、`delivery_manifest.json`、`logs/` 下十份阶段日志（plan／check／smoke／env-check-smoke／feasibility-P0x1／feasibility-P01x20／run10／env-check／delivery／postrun），h5／mp4 继续不入。报告：[../docs/validation/newtask-v2/20260912-contract-v3-10/README.md](../docs/validation/newtask-v2/20260912-contract-v3-10/README.md)。
 
 ### 06（2026-09-11）：第四档 xhard，只实跑 3 个新组
 
@@ -119,6 +155,10 @@ derive_rng(20260909, 任务, 难度, 字段)   每个字段一条独立随机流
 
 4. **取值域有唯一来源，且被回算钉住**。契约里由难度字典或几何算出的域（`spawn_total` 的 6～8、方块 x 的 [-0.28, 0.08]、容器偏移上限 0.0425）都带 `derivation`（recipe 名 + 依赖键），`check` 的 `CONTRACT_DERIVED` 每次拿 `native_sampling.json` 回算；不一致必须落在 `overrides` 白名单里（v2 就登记了 BinFill medium/hard 的 `spawn_total` 两条，`target_count` 的规则切换另记在 `target_count_rule_override`），未登记的漂移与陈旧的登记都判 FAIL。v1 契约驱动的生成器对 04 的 1100 条规格 `spec_sha256` 逐条相同，事件表 125 行零漂移——这是「契约只是把散落的约定抽出来、没有改变 v1 口径」的硬证据。
 
+5. **每组候选按 100 条 block 扩容，block 0 逐条不变（10 起）**。`build_group(..., blocks=k)`：block 0 的每条随机流标签与此前逐字相同，block b≥1 用 `sampling.block_label` 挂 `@block<b>` 后缀各自独立派生（离散量一 block 一条 `discrete` 流按原顺序消费配额，连续量逐 block `stratify` 后 `concat_strata` 拼接），episode 号 = `b×100+i`，episode 流 `episode-<n>` 本就以全局号为键。`balanced_choice` 的 usage 字典在 block 边界重置，因此每个 block 都是自洽的 100 条均衡样本，追加 block 不改已冻结 block。**为什么不把 `stratify` 泛化成 10×L**：`permutation(FINE_LAYERS)` 的形状与 `span=1/total` 都随 L 变，`quota_counts(k, 200)` 的批内比例也变，前 100 条散列必然全变。规格文档只在 `blocks>1` 时写顶层 `blocks` 键（blocks=1 的文件与 07/09 逐字节相同），生产加载器把它列为可选字段；`check` 的 `SPEC_SCOPE` 按 `range(blocks×100)` 判、`COVERAGE_QUOTA` **按 block 切片判**（两个各自计数差 ≤1 的 block 合并后可到 2，实测 VideoRepick/easy 的 `num_repeats` 每 block 34/33/33、合并 68/66/66，整组判会假阳）、`SPEC_REPRODUCIBLE` 补了「重建条数不一致也算差异」（原 `zip` 会静默截断）；`specs-diff --episode-scope block0` 只比前 100 条且要求两边都完整覆盖 `range(100)`，缺号即差异。
+
+**10 实测**（契约 v3 不变，2026-09-12，14 组 3400 条）：`plan` 675.3 秒 / `check` 1338.5 秒；`BLOCK0_EQUIVALENCE=PASS compared=1400 differences=0`（对 07、对 09 各一次）；逐 block 候选峰值 VideoRepick/medium 33／10／58、VideoRepick/xhard 39／14／40，其余 ≤5，远低于 256 上限。
+
 **05 实测**（契约 v2，2026-09-11 重冻结）：`plan` 179.1 秒 / `check` 357.1 秒；`CONTRACT_DERIVED=PASS fields=155 mismatches=6 overrides=2 version=v2 problems=0`、`SPEC_SCOPE=PASS specs=1100`、`COVERAGE_QUOTA=PASS quota_gaps=0`、`STATIC_GEOMETRY=PASS checked=1100 rejected=0`、`COLLISION_SWEEP=PASS specs=500 rejected=0 min_g_m=0.00042638`、`SPEC_REPRODUCIBLE=PASS compared=1100 differences=0`。BinFill 三组几何拒绝 637／1046／1834（04 为 637／1701／3324；medium／hard 少两块方块落位更容易），其余 8 组与 04 逐位相同、拒绝数不变。
 
 **04 实测**（契约 v1 = 原值口径：`plan` 180.6 秒 / `check` 354.1 秒）：
@@ -156,7 +196,7 @@ step 里每段交换：核验最近邻搭档 → 从实际起态做连续碰撞�
 
 代码：[generate_dataset_newseed.py](generate_dataset_newseed.py) 的 `--episode-specs`、`load_episode_specs`、`_worker`、`_video_summary`；四个任务模块的 `__init__`／`_load_scene`／`_initialize_episode`／`step`。
 
-六处关键设计（第 5、6 条为 07 新增）：
+七处关键设计（第 5、6 条为 07 新增，第 7 条为 10 新增）：
 
 1. **不传 `--episode-specs` 时链路逐字不变**。每个消费点都写成 `if spec is None: 原路径 else: 用规格`，`gym.make` 也不多传这个 kwarg。这正是 `DEFAULT_PARITY` 能成立的前提。
 
@@ -170,7 +210,9 @@ step 里每段交换：核验最近邻搭档 → 从实际起态做连续碰撞�
 
 6. **单条 episode 墙钟 600 秒（07 起）**。用户决策原话「卡死降低到600」。背景：05 的 `VideoRepick` easy ep0／ep26、medium ep26 与 06 的 `VideoUnmaskSwap` xhard ep7／ep26 共五条 seed 卡死（CPU 100%、RSS 爬到 4～7 GB、h5 停在 96 字节、18 分钟以上），录像器的 2000 步 failsafe 管不到（卡死不走 `step`），整批只有 6 小时的 subprocess 超时，只能人肉 `kill -9`，而 `ProcessPoolExecutor` 一杀就整池 `BrokenProcessPool`、同池在飞任务被连坐记 infra 失败。改法：进程池换 `pebble.ProcessPool`（`uv add pebble`，5.2.2），`schedule(_worker, timeout=600)` 到时只对该 worker SIGTERM→SIGKILL 并自动补进程；父进程按派发时刻复核确实跑满（3.11 的 `concurrent.futures.TimeoutError` 就是内建 `TimeoutError`，不能只看异常类型），合成 `failure_class="timeout"`、`error_type="EpisodeWallClockTimeout"` 的结果行（带 `wall_s`、`timeout_s`、非空 `video.reason`），删掉 96 字节 stub 与 `.demo-tmp` 残留，有内容的 h5 只登记 `orphan_h5` 不删；`run.py` 把它与 `FailsafeTimeout` 一起归「超时」／`timeout`，不算资源性失败、不封档位、不计入 `MAX_NON_TASK_STRIKES`。阈值依据：05 成功条 `wall_s` 中位 115 秒、最大 200.9 秒，无一条超过 400 秒。生成器 `--episode-timeout` 默认 600、0 为不限；并行标定框架 `tests/_shared/parallel_calibration.py` 显式传 0 以保持旧行为。
 
-**实测**：330 条墙钟约 1 小时 53 分（GPU 0 单卡 12 worker）。
+7. **按交付配置各组实跑不同区间，中断可续、缺口可补（10 起）**。`campaign run --delivery-config` 时每组实跑 `range(run_episodes)`（3 档 env 155/153/153、4 档 env 115），清单 `manifests/feasibility_<label>_<n>.json` 由 `run.write_manifest` 按组写各自区间（旧的「所有组共用一段序号」输出逐字节不变）；`--episode-range a-b` 供缺口补跑；`--skip-done` 从该档目录既有 `episode_results.jsonl` 剔除已通过的三元组、同命令续跑，分母按「清单条数 + 剔除数」算；`--wall-limit-h` 整批墙钟上限（10 用 12 小时）；`feasibility_result_<档>.json` 每档一份，smoke 的 `P0x1` 与正式 `P01x20` 不互相覆盖；生成器日志改落 `<运行根>/logs/`（被 git 跟踪）。**仍是一次 invoke 跑全部 14 组**：同一档目录多次 invoke 会让 `run_parameters.json` 与清单被后者覆盖、`summarize` 分母错，所以不按 env 拆跑。
+
+**实测**：330 条墙钟约 1 小时 53 分（GPU 0 单卡 12 worker）；10 的 1842 条双卡 40 worker 墙钟 1 小时 51 分（16.12 条/分）。
 
 ```
 FEASIBILITY=PASS   unique=330 executed=330 unclassified=0 succeeded=322 attempt=0
@@ -181,6 +223,18 @@ INJECTION_BINDING=PASS unique=330 bound=327 mismatches=0
 ```
 
 注入确实生效的直接证据（`VideoUnmaskSwap/hard/ep0` 直连验证）：交换次数 3、抓取次数 2 与规格一致；四个容器的实际 xy 与规格逐值相同，最大差 **5.18e-09**（float32 存储精度）；`initial` 复核记到 **2 次**——正是「构造期内部 reset 与外层 `record_env.reset()` 各一次」；三段交换的**预写搭档 = 执行时实际最近邻 = 独立复算结果**，全部一致。
+
+## 二·五、额外候选怎么证明「可以产生环境」（10 起）
+
+**一句话**：对实跑区间之后的候选按 episode 序只做 `gym.make(任务, episode_spec=规格) → env.reset() → 取证据 → env.close()`，**不套 `RobommeRecordWrapper`、不建 planner、不 step**，零 h5／mp4／metadata；每组攒够 `extra_candidates=50` 条 reset 通过者即停，交付集 = 按 episode 序最前的 50 条通过者。
+
+代码 [scripts/injection/env_check.py](injection/env_check.py)（`check_one`／`run_env_check`／`EnvCheckPlan`），入口 `campaign env-check --run-id … --delivery-config … --tier 20 --gpus 0,1`。`check_one` 的 `gym.make` kwargs 与 `_worker` 逐字一致（`obs_mode="rgb+depth+segmentation"`、`control_mode="pd_joint_pos"`、`render_mode="rgb_array"`、`reward_mode="dense"`、`seed=SeedLayout("train").seed(任务, episode, 0)`、`difficulty`、`sampling_config`、`episode_spec`），每卡一个 pebble 池复用生成器的 `_pool_init` 与 `_cpu_plan`（绑卡、亲和、线程压制同源），单条 120 秒超时；模块顶层只 import 标准库，gym 在 worker 函数内 import（spawn 子进程会重跑顶层）。结果分类复用 `run.classify_outcome` 七类；在飞批次的结果照常落盘但 `counted=false`。产物 `env_check/<任务>/<难度>.jsonl`（每行 episode／seed／spec_sha256／outcome／phases／bound／injection_bound／counted／delivered）与 `env_check_result.json`；判定行 `ENV_RESET=PASS group=… start=… checked=… passed=… delivered=50`（每组）与 `ENV_CHECK=PASS groups=14 … delivered=700 shortfall=0`。
+
+⚠ **语义边界**：该判据只覆盖 `_load_scene` + `_initialize_episode`（含两个视频任务对实际 actor 初态的碰撞复核），**不覆盖** step 期的 `SpecBindingError`、规划可解性、录像器 2000 步保护与任务成功判定。这 50 条只承诺「能产生环境」，不是「可用样本」；`reset` 通过 ≠ 能出 h5。10 实测 720 条核验（含在飞 20 条）零失败，`make` 中位 20.1 秒、`reset` 中位 0.07 秒、单条最长 23.1 秒。
+
+## 二·六、严格交付怎么切（10 起）
+
+`campaign delivery --run-id … --delivery-config … --hash full`（[scripts/injection/delivery.py](injection/delivery.py)::`build_delivery_manifest`）：扫 `feasibility/*/episode_results.jsonl` 合并全部档（smoke 的 `P0x1` 与正式 `P01x20`）按 (任务, 难度, episode) 去重，每组按 **episode 升序取前 `target_h5` 条「通过」为 `primary`**、其余通过为 `spare`（h5 保留）、非通过进 `failures`；每条记 h5 相对路径、字节数、SHA-256（8 进程并行）、seed、`spec_sha256`、`timestep_count`、视频状态；被 env-check 也记过的 episode 标 `also_env_checked`（10 为 0 条——env-check 从实跑区间之后开始，两者不交叠）。判定行每 env 一条 `DELIVERY_400`（`delivered<target` 即 FAIL 并在 `shortfall` 列缺口组与剩余候选数，补跑走 `run --groups <组> --episode-range <a>-<b> --skip-done`）加 `DELIVERY_TOTAL`。`load_delivery_config` 的硬校验：每 env `sum(target_h5)==400` 且组内极差 ≤1、`run_episodes==ceil(target×margin)`、`blocks×100 ≥ run_episodes+extra_candidates`、组列表与契约同序、契约散列一致——手改任一数字都会被拒。`report` 把 `delivery_manifest.json` 与 `env_check_result.json` 的判定并入轻量包并复制两份 JSON。
 
 ## 三、对拍怎么做的
 
@@ -318,6 +372,23 @@ for d in easy medium hard xhard; do
   uv run --no-sync python docs/validation/newtask-v2/20260912-contract-v3-08/trail_check.py --left 20260912-contract-v3-08 --left-mode P01x10 \
     --right $RID --right-mode P01x10 --difficulty $d --episode 0 --expected-diff 10 --min-run-left 15 --out docs/validation/newtask-v2/$RID/trail_check_vs08_$d.json
 done   # TRAIL_HALVED=PASS median_diff=30.0 ×4、10.0 ×4
+
+# 八、10（2026-09-12）：每 env 400 条严格交付 + 每档 50 条纯候选（现行最终口径）
+RID=20260912-contract-v3-10; CFG=scripts/configs/newtask-v2/delivery_400.json
+uv run --no-sync python scripts/generate_dataset_newseed.py --extract-config scripts/configs/newtask-v2/native_sampling.json --check-config
+mkdir -p artifacts/injection/$RID/logs   # plan 的冲突判据已改为「manifest.json 已存在」，先建 logs/ 让 tee 落盘
+# 每个超 5 分钟的阶段都按下面的 tmux 模板起（日志落 artifacts/injection/$RID/logs/<阶段>.log，随产物入库）：
+#   tmux new-session -d -s inj10-<阶段> "cd <仓库根>; set -o pipefail; PYTHONUNBUFFERED=1 <命令> 2>&1 | tee artifacts/injection/$RID/logs/<阶段>.log; echo \"EXIT_CODE=\$?\" >> artifacts/injection/$RID/logs/<阶段>.log"
+uv run --no-sync python -m scripts.injection.campaign plan  --run-id $RID --contract scripts/configs/newtask-v2/injection_contract_v3.json --delivery-config $CFG   # 3400 条，675 秒
+uv run --no-sync python -m scripts.injection.campaign check --run-id $RID                                                                                          # 1338 秒
+uv run --no-sync python -m scripts.injection.campaign specs-diff --left 20260911-contract-v3-07 --right $RID --label BLOCK0_EQUIVALENCE --episode-scope block0   # compared=1400 differences=0
+uv run --no-sync python -m scripts.injection.campaign env-check --run-id $RID --delivery-config $CFG --groups BinFill/easy --tier 1 --gpus 0 --limit 1 --label smoke   # 零产物 smoke
+uv run --no-sync python -m scripts.injection.campaign run --run-id $RID --phase feasibility --tier 1 --gpus 0 --episodes 1 --groups RouteStick/easy --label smoke     # 档 P0x1
+uv run --no-sync python -m scripts.injection.campaign run --run-id $RID --phase feasibility --tier 20 --gpus 0,1 --delivery-config $CFG --wall-limit-h 12 --label all  # 1842 条，6685 秒
+#   中断续跑：同命令加 --skip-done；某组交付不足时补跑：--groups <组> --episode-range <a>-<b> --skip-done
+uv run --no-sync python -m scripts.injection.campaign env-check --run-id $RID --delivery-config $CFG --tier 20 --gpus 0,1                                           # 700 条，493 秒
+uv run --no-sync python -m scripts.injection.campaign delivery  --run-id $RID --delivery-config $CFG --hash full --workers 8
+uv run --no-sync python -m scripts.injection.campaign report    --run-id $RID
 ```
 
 ⚠ 超过五分钟的阶段按 [AGENTS.md](../AGENTS.md) 强制规则第 4 条用 detached tmux 起。
@@ -330,6 +401,7 @@ done   # TRAIL_HALVED=PASS median_diff=30.0 ×4、10.0 ×4
 | `PARALLEL_OVERLAP` | **FAIL** | 峰值 11 < worker 数 12；成因见第三节，是真并发但判据口径与调度现实不符，按用户决定不放宽 |
 | `PARALLEL_SCALE` | NOT_RUN | 机器被另一用户占 639% CPU、GPU 1 占 33.7 GB，单条从 98.6 秒慢到 316 秒，吞吐测量失真，用户决定跳过档位校准 |
 | `COLLISION_RERENDER` | NOT_RUN | 从保存轨迹重渲染需要 SAPIEN 渲染，本轮未做 |
+| `PLOT_EVIDENCE`（10） | NOT_RUN | `plots.py` 图 1 按 10×10 = 100 条排版，3400 条候选未出图；图片本就不入库 |
 
 还有三点边界要说清（07 之后再加两点，见列表末尾）：
 
@@ -337,4 +409,6 @@ done   # TRAIL_HALVED=PASS median_diff=30.0 ×4、10.0 ×4
 - 并行证据只覆盖 **GPU 0 单卡多 worker**。GPU 1 被他人占用，双卡对拍本轮没有取得新值证据，不能外推到双卡。
 - 图表生成不等于逐图目视完成，视频文件存在不等于已人工观看。四容器三例是**此前**已获用户目视确认的，那个状态不外推到本轮的 330 条。
 - **07 的 BinFill 视频与录像器直出不逐位一致**：后一遍是二次 libx264 编码，前一遍红框圈住整张成品帧（原生红框不圈 goal 文字条）；逐位视频对拍不能用 07 的 BinFill mp4，h5 不受影响。05 的 BinFill h5（无 demo）与 07 的（2×T）也不能逐位互比。
+- **10 的 46 条失败与 3 条 `BinFillDemoError`**：demo 转换的 ffmpeg `Broken pipe` 是新形态，根因未查，h5 原件保留但按失败计；env-check 的「reset 通过」不是「可出 h5」；`injection-before-2d` 数轴／跑前分布／事件表仍基于 07，未按 10 重出。
+- **seed 跨任务不唯一**：`SeedLayout.seed = env_code×1000 + episode×100 + attempt`，episode ≥10 就跨进下一个任务的块（既存性质，01～09 同样如此）；交付清单主键是 (任务, 难度, episode)，不要拿 seed 做跨任务主键。
 - **慢条剔除只作用于数轴统计层**，不删 h5、不改 `episode_results.jsonl`；5 条超时与 5 条规划失败的根因（卡死点、`环境报告失败`）本轮仍未查。
