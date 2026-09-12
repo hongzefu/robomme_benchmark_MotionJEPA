@@ -224,6 +224,18 @@ __marimo__/
 !/artifacts/injection/*/manifest.json
 !/artifacts/injection/*/plan_stats.json
 !/artifacts/injection/*/check_result.json
+# 2026-09-12 用户决定「最新真实 HDF5 所需的候选分布文件和其他小产物尽可能都加进去」：
+# 判定 JSON、清单、日志、每档运行参数/汇总/逐条结果/各组 metadata 入库；h5 与 mp4 继续忽略
+!/artifacts/injection/*/feasibility_result.json
+!/artifacts/injection/*/feasibility_results.json
+!/artifacts/injection/*/manifests/
+!/artifacts/injection/*/logs/
+!/artifacts/injection/*/logs/*.log
+!/artifacts/injection/*/feasibility/
+/artifacts/injection/*/feasibility/*/*/*/hdf5_files/
+/artifacts/injection/*/feasibility/*/*/*/videos/
+/artifacts/injection/*/feasibility/**/*.h5
+/artifacts/injection/*/feasibility/**/*.mp4
 # 01～03 是 04 之前的开发迭代产物（格式与散列口径不同，不作交付），整目录继续忽略
 /artifacts/injection/20260910-new-values-01/
 /artifacts/injection/20260910-new-values-02/

@@ -494,7 +494,7 @@ uv run --no-sync python -m scripts.injection.campaign compare \
 该开关只放宽「一侧多出」，交集内的任何差异照样是 FAIL。
 
 `--skip-ladder` 让 `calibration` 只做串行参考、跳过档位阶梯，并行三项如实记 `NOT_RUN`；
-配套的 `--tier <n>` 让 `feasibility` 在没有校准结果时也能跑，但结果里打
+`--episodes <N>`（2026-09-12 加，默认 30）让 `feasibility` 每组只实跑 episode 0～N-1（08 RouteStick 四档各 5 条用 5），清单文件名随总条数变（`manifests/feasibility20.json`），`summarize` 的分母也按该清单各组 `episodes` 求和。配套的 `--tier <n>` 让 `feasibility` 在没有校准结果时也能跑，但结果里打
 `tier_measured=false`，报告不得把它说成「校准选出的档」。机器被别人重度占用、
 吞吐测量必然失真时走这条路径，比测一组没有意义的数字诚实。
 

@@ -1,0 +1,63 @@
+{
+  "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/feasibility/P0x1",
+  "env": "all",
+  "tasks": [
+    "PickXtimes",
+    "StopCube",
+    "SwingXtimes",
+    "BinFill",
+    "VideoUnmaskSwap",
+    "VideoUnmask",
+    "ButtonUnmaskSwap",
+    "ButtonUnmask",
+    "VideoRepick",
+    "VideoPlaceButton",
+    "VideoPlaceOrder",
+    "PickHighlight",
+    "InsertPeg",
+    "MoveCube",
+    "PatternLock",
+    "RouteStick"
+  ],
+  "episodes": 100,
+  "episode_start": 0,
+  "workers": 1,
+  "gpus": [
+    "0"
+  ],
+  "seed_layout": "train",
+  "difficulty_ratio": "211",
+  "difficulty_cycle": [
+    "easy",
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "max_attempts": 1,
+  "limit_threads": true,
+  "max_tasks_per_child": 8,
+  "affinity": "per-gpu",
+  "episode_timeout_s": 600.0,
+  "binfill_demo": true,
+  "save_video_for_recording": true,
+  "sampling_config": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json",
+  "sampling_config_tasks": [
+    "BinFill",
+    "RouteStick",
+    "VideoRepick",
+    "VideoUnmaskSwap"
+  ],
+  "episode_specs": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/manifests/feasibility1.json",
+  "episode_spec_groups": [
+    {
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/specs/RouteStick/easy.json",
+      "output_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/feasibility/P0x1/RouteStick/easy",
+      "episodes": [
+        0
+      ]
+    }
+  ],
+  "requested_jobs": 1
+}

@@ -1,7 +1,7 @@
 # 新值注入：候选分布 → 真实 HDF5 → 对拍 → 出图
 
 > **这篇讲什么**：外部生成的固定规格是怎么铺出来的、怎么变成真实仿真轨迹、怎么证明它没被并发改坏、图是怎么画的。
-> **运行编号**：**现行以 `20260911-contract-v3-07` 为准**（2026-09-12 全量重跑 14 组 × 30 = 420 条，带单条 600 秒超时与 BinFill 直出 demo，规格与 06 逐条相同；见〇节 07 子节与第二节第 5、6 条）。历史对照：规格与跑前分布曾以 `20260911-contract-v2-05`（契约 v2，2026-09-11 重冻结，本轮只做规格、静态检查与跑前图）为准；330 条实跑、对拍与跑后图仍是 `20260910-new-values-04`（契约 v1 = 原值口径）的结果，两轮规格不同，不互相引用。分支 `newtask-v2`。
+> **运行编号**：**现行以 `20260911-contract-v3-07` 为准**；`20260912-contract-v3-08`（2026-09-12）是 RouteStick 白球尾迹减半（`RouteStick.step` 里 `highlight_position` 存活步数 40→20）后的**专项重出**，规格与 07 逐条相同、只实跑 RouteStick 四档各 5 条，见〇节 08 子节；其余 10 组仍以 07 为准（2026-09-12 全量重跑 14 组 × 30 = 420 条，带单条 600 秒超时与 BinFill 直出 demo，规格与 06 逐条相同；见〇节 07 子节与第二节第 5、6 条）。历史对照：规格与跑前分布曾以 `20260911-contract-v2-05`（契约 v2，2026-09-11 重冻结，本轮只做规格、静态检查与跑前图）为准；330 条实跑、对拍与跑后图仍是 `20260910-new-values-04`（契约 v1 = 原值口径）的结果，两轮规格不同，不互相引用。分支 `newtask-v2`。
 > **取值域与分配的约定**见 [NEW_VALUE_CONTRACT_CHANGELOG.md](NEW_VALUE_CONTRACT_CHANGELOG.md)（契约 JSON v1／v2 的变化与用户决策）。链路代码在 [injection/](injection/)，不依赖 `tests/`。
 > 完整验收口径见根目录 [NEW_VALUE_INJECTION_TEST_PLAN.md](../NEW_VALUE_INJECTION_TEST_PLAN.md)（实测在第 5.9.3 节），
 > 轻量包见 [docs/validation/newtask-v2/20260910-new-values-04/](../docs/validation/newtask-v2/20260910-new-values-04/README.md)。
@@ -63,6 +63,22 @@ DELIVERY=PASS specs=1400 result_rows=420 missing=0 videos_on_disk=415 videos_exp
 **5 条超时正是 04／05／06 三轮里人肉 `kill -9` 的那五个 seed**——同 seed 三轮复现，卡死是确定性的；这次由生成器在 600 秒自动终止、记 `failure_class="timeout"`、96 字节 stub 自动清除，其余 415 条不受影响（对比 05／06：一条被杀整池崩、同池在飞条连坐）。成功条 `wall_s` 中位 108 秒、最大 205 秒，与 600 秒阈值间距明确。BinFill 86 条成功条全部完成转换（`binfill_demo_converted=86`，转换耗时中位 11.4 秒、最大 21.9 秒，`final_timesteps == 2×original_timesteps == timestep_count` 逐条成立）；整轮产物 185 GB。数轴、跑前分布、事件表与两份 md 全部改为只基于 07（[injection-before-2d/SAMPLING_WINDOWS.md](injection-before-2d/SAMPLING_WINDOWS.md)、[injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md](injection-before-2d/NEW_VALUE_DISTRIBUTION_BEFORE.md)），慢条剔除清单见 SAMPLING_WINDOWS.md 第三节末尾「剔除的慢条」表（交用户复核）。报告：[../docs/validation/newtask-v2/20260911-contract-v3-07/README.md](../docs/validation/newtask-v2/20260911-contract-v3-07/README.md)。
 
 ⚠ 实跑起跑 3 分钟后曾因误删 in-flight 的 96 字节 h5（清理历史 stub 的 `find -delete` 没限定目录）被停掉、清空 `feasibility/` 后重跑，上表是干净重跑的结果；教训记在 AGENTS.md 日志。
+
+### 08（2026-09-12）：RouteStick 白球尾迹减半，四档各 5 条专项重出
+
+用户决定（原话）：「给出方案 把RouteStick的桌面白色小球轨迹降低一半 重新生成 每个难度5episode」；经确认「降低一半」指**白球尾迹存活步数 40→20**（不动贝塞尔侧向偏移 0.2、挥动高度 0.07、段数 `length`），难度取 easy／medium／hard／xhard 四档，产物新建 08 目录、07 原样保留。`src/robomme/robomme_env/RouteStick.py::RouteStick.step` 里 `highlight_position(..., end_step=cur_step + 40)` 改 `+ 20`（规则 11 逐条获批），随之 `native_sampling.json` 的 `sources.RouteStick.sha256` 由 `--extract-config` 重导出（`parameters`／`positions` 逐字节不变，`--check-config` 一致）。`campaign run` 新增 `--episodes N`（默认 30），`summarize` 的分母改从实跑清单各组 `episodes` 求和（旧产物无 `run_parameters.json` 时退回组数 × 30）；`COLLISION_RUNTIME` 在作用域没有视频任务组时不再因 `unique=0` 判 FAIL（判定行加 `scope=<n>_video_groups`）。
+
+`20260912-contract-v3-08`：`PLAN=OK specs=1400 elapsed_s=335.3`、`CHECK=PASS elapsed_s=659.7`、与 07 `OLD_GROUPS_EQUIVALENCE=PASS compared=1400 differences=0`；smoke `--tier 1 --episodes 1 --groups RouteStick/easy`（档 `P0x1`，1 条通过）后正式 `--tier 10 --gpus 0,1 --episodes 5`（档 `P01x10`，20 worker 一波），**墙钟 97.5 秒**，`RUN=PASS`，四档各 5 条全部通过、无超时无规划失败；逐条 `timestep_count` 与 07 同 episode 完全一致（easy 300/200/200/300/300，medium 500/500/500/400/400，hard 400/600/600/500/500，xhard 1000/800/900/800/800），说明轨迹本身没变。
+
+```
+FEASIBILITY=PASS unique=20 executed=20 unclassified=0 succeeded=20 attempt=0
+COLLISION_RUNTIME=PASS unique=0 checked=0 missing_checks=0 rejected=0 scope=0_video_groups
+INJECTION_BINDING=PASS unique=20 bound=20 mismatches=0
+VIDEO_DECODE=PASS success_rows=20 decoded_eq_timesteps=20 failed_videos=0 mismatches=0
+DELIVERY=PASS specs=1400 result_rows=20 missing=0 videos_on_disk=20 videos_expected=20 video_sha_mismatch=0
+```
+
+**尾迹确实减半的证据**（[trail_check.py](../docs/validation/newtask-v2/20260912-contract-v3-08/trail_check.py)）：同一规格同一 seed 下 07 与 08 的机械臂轨迹逐帧相同，每个像素「最长连续白帧游程」之差 run07 − run08 在尾迹像素上应恰为 20（球间重叠带来的延长量两边相同、抵消），在机械臂像素上为 0。四档 ep0 实测差值中位数均为 **20.0**、落在 [18, 22] 的占比 0.61／0.74／0.61／0.61（easy／medium／hard／xhard，尾迹像素 458／1207／617／2061 个）：`TRAIL_HALVED=PASS` ×4，逐档 JSON 在同目录 `trail_check_<难度>.json`。⚠ 像素面积比值法不可用：Panda 机械臂本身是白色，实测面积比 0.733 而非 0.5。报告：[../docs/validation/newtask-v2/20260912-contract-v3-08/README.md](../docs/validation/newtask-v2/20260912-contract-v3-08/README.md)。
 
 ## 一、候选分布怎么产生
 
@@ -271,6 +287,21 @@ uv run --no-sync python scripts/injection-before-2d/plot_sampling_windows.py
 uv run --no-sync python scripts/injection-before-2d/plot_injection_before_2d.py --run-id $RID
 uv run --no-sync python scripts/injection-before-2d/event_tables.py --write
 uv run --no-sync python scripts/injection-before-2d/check_doc_links.py
+
+# 六、08（2026-09-12）：RouteStick 尾迹减半专项重出，四档各 5 条（--episodes 是 08 新加的开关，默认仍 30）
+RID=20260912-contract-v3-08
+uv run --no-sync python scripts/generate_dataset_newseed.py --extract-config scripts/configs/newtask-v2/native_sampling.json   # 改过 RouteStick.py 后重导出源码指纹
+uv run --no-sync python scripts/generate_dataset_newseed.py --extract-config scripts/configs/newtask-v2/native_sampling.json --check-config
+uv run --no-sync python -m scripts.injection.campaign plan  --run-id $RID --contract scripts/configs/newtask-v2/injection_contract_v3.json
+uv run --no-sync python -m scripts.injection.campaign check --run-id $RID
+uv run --no-sync python -m scripts.injection.campaign specs-diff --left 20260911-contract-v3-07 --right $RID   # OLD_GROUPS_EQUIVALENCE compared=1400 differences=0
+uv run --no-sync python -m scripts.injection.campaign run --run-id $RID --phase feasibility --tier 1 --gpus 0 --episodes 1 --groups RouteStick/easy   # smoke，档 P0x1
+uv run --no-sync python -m scripts.injection.campaign run --run-id $RID --phase feasibility --tier 10 --gpus 0,1 --episodes 5 \
+  --groups RouteStick/easy,RouteStick/medium,RouteStick/hard,RouteStick/xhard   # 档 P01x10，墙钟 97.5 秒
+uv run --no-sync python -m scripts.injection.campaign report --run-id $RID
+for d in easy medium hard xhard; do uv run --no-sync python docs/validation/newtask-v2/$RID/trail_check.py \
+  --left 20260911-contract-v3-07 --left-mode P01x20 --right $RID --right-mode P01x10 --difficulty $d --episode 0 \
+  --out docs/validation/newtask-v2/$RID/trail_check_$d.json; done   # TRAIL_HALVED=PASS median_diff=20.0 ×4
 ```
 
 ⚠ 超过五分钟的阶段按 [AGENTS.md](../AGENTS.md) 强制规则第 4 条用 detached tmux 起。

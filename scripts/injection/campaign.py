@@ -772,8 +772,12 @@ def cmd_run(
     tier_override: int | None = None,
     gpus: str = "0",
     groups_filter: Sequence[str] | None = None,
+    episodes_per_group: int | None = None,
 ) -> dict[str, Any]:
     """按阶段跑：``calibration``（步骤 3+4）或 ``feasibility``（步骤 5）。
+
+    ``episodes_per_group``（2026-09-12 引入，08 RouteStick 四档各 5 条专项重出）只对 ``feasibility``
+    生效：每组实跑 episode ``0～N-1``；默认 ``None`` 沿用 ``FEASIBILITY_EPISODES``（30 条，07 及之前逐字不变）。
 
     ``groups_filter``（2026-09-11 加 xhard 时引入）只对 ``feasibility`` 生效：逗号分隔的 ``任务/难度``，
     只跑清单里这些组；默认 ``None`` 跑清单全部组（05 及之前的行为逐字不变）。未知键直接拒绝。
@@ -978,10 +982,16 @@ def cmd_run(
             tier = int(chosen["tier"])
             gpu_ids = chosen.get("gpus") or ["0"]
         groups = _select_groups([(item["task"], item["difficulty"]) for item in manifest_doc["groups"]], groups_filter)
-        total_episodes = len(groups) * len(FEASIBILITY_EPISODES)
+        if episodes_per_group is not None:
+            if not 1 <= int(episodes_per_group) <= GROUP_SIZE:
+                raise CampaignError(f"--episodes 必须在 1～{GROUP_SIZE} 之间：{episodes_per_group}")
+            episodes: tuple[int, ...] = tuple(range(int(episodes_per_group)))
+        else:
+            episodes = FEASIBILITY_EPISODES
+        total_episodes = len(groups) * len(episodes)
         feas_manifest = write_manifest(
-            root / "manifests" / f"feasibility{total_episodes}.json", groups, FEASIBILITY_EPISODES, specs_root,
-            f"步骤 5 实跑：{len(groups)} 组各 episode 0～{len(FEASIBILITY_EPISODES) - 1}，共 {total_episodes} 条；"
+            root / "manifests" / f"feasibility{total_episodes}.json", groups, episodes, specs_root,
+            f"步骤 5 实跑：{len(groups)} 组各 episode 0～{len(episodes) - 1}，共 {total_episodes} 条；"
             f"其余 {len(manifest_doc['groups']) * GROUP_SIZE - total_episodes} 条本轮不实跑",
         )
         mode = chosen.get("mode") or f"P0x{tier}"
@@ -996,7 +1006,9 @@ def cmd_run(
             episode_timeout_s=FEASIBILITY_EPISODE_TIMEOUT_S, binfill_demo=True,
         )
         rows = result["rows"]
-        payload.update(_summarize_feasibility(root, rows, groups, verdicts, tier, mode, gpu_ids, chosen))
+        payload.update(
+            _summarize_feasibility(root, rows, groups, verdicts, tier, mode, gpu_ids, chosen, expected_rows=total_episodes)
+        )
         payload["run"] = {k: v for k, v in result.items() if k != "rows"}
         payload["verdicts"] = verdicts.records
         payload["passed"] = verdicts.passed
@@ -1007,6 +1019,28 @@ def cmd_run(
         return payload
 
     raise CampaignError(f"未知阶段 {phase}")
+
+
+def _feasibility_manifest_scope(output_dir: Path, plan_manifest: dict[str, Any]) -> tuple[list[tuple[str, str]], int]:
+    """读这一档实跑用的清单，返回（组列表，应有行数 = 各组 episodes 之和）。
+
+    清单路径取 ``run_parameters.json`` 的 ``episode_specs``；找不到时退回计划清单全部组 × 30
+    （05／07 的口径），保证旧产物仍能 ``summarize``。
+    """
+    from .run import FEASIBILITY_EPISODES
+
+    fallback_groups = [(item["task"], item["difficulty"]) for item in plan_manifest["groups"]]
+    run_parameters = output_dir / "run_parameters.json"
+    manifest_path: Path | None = None
+    if run_parameters.is_file():
+        recorded = json.loads(run_parameters.read_text(encoding="utf-8")).get("episode_specs")
+        if recorded:
+            manifest_path = Path(recorded)
+    if manifest_path is None or not manifest_path.is_file():
+        return fallback_groups, len(fallback_groups) * len(FEASIBILITY_EPISODES)
+    document = json.loads(manifest_path.read_text(encoding="utf-8"))
+    groups = [(item["task"], item["difficulty"]) for item in document["groups"]]
+    return groups, sum(len(item["episodes"]) for item in document["groups"])
 
 
 def cmd_summarize(run_id: str, mode: str | None = None) -> dict[str, Any]:
@@ -1030,10 +1064,12 @@ def cmd_summarize(run_id: str, mode: str | None = None) -> dict[str, Any]:
     if not output_dir.is_dir():
         raise CampaignError(f"找不到该档的产物：{output_dir}")
 
-    from .run import FEASIBILITY_EPISODES, read_result_rows
+    from .run import read_result_rows
 
     rows = read_result_rows(output_dir)
-    groups = [(item["task"], item["difficulty"]) for item in manifest_doc["groups"]]
+    # 组与分母以这一档实跑用的清单为准（run_parameters.json 记的 episode_specs），
+    # 不再假定「计划清单全部组 × 30 条」——06 只跑 3 组、08 每组 5 条都不符合那个假定。
+    groups, expected_rows = _feasibility_manifest_scope(output_dir, manifest_doc)
     tier = int(mode.rsplit("x", 1)[1]) if "x" in mode else 0
     previous = root / "feasibility_result.json"
     chosen = json.loads(previous.read_text(encoding="utf-8")).get("chosen") if previous.is_file() else None
@@ -1048,10 +1084,12 @@ def cmd_summarize(run_id: str, mode: str | None = None) -> dict[str, Any]:
         "phase": "feasibility",
         "recomputed_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "recomputed_from": str(output_dir / "episode_results.jsonl"),
-        "expected_rows": len(groups) * len(FEASIBILITY_EPISODES),
+        "expected_rows": expected_rows,
     }
     payload.update(
-        _summarize_feasibility(root, rows, groups, verdicts, tier, mode, chosen.get("gpus") or ["0"], chosen)
+        _summarize_feasibility(
+            root, rows, groups, verdicts, tier, mode, chosen.get("gpus") or ["0"], chosen, expected_rows=expected_rows
+        )
     )
     payload["verdicts"] = verdicts.records
     payload["passed"] = verdicts.passed
@@ -1068,8 +1106,11 @@ def _summarize_feasibility(
     mode: str,
     gpu_ids: Sequence[str],
     chosen: dict[str, Any],
+    expected_rows: int | None = None,
 ) -> dict[str, Any]:
     """从实跑结果行（05 为 330 行，按 组数 × 30 参数化）算出实跑阶段的全部判定与计数。
+
+    ``expected_rows`` 是应有行数（各组 episodes 之和）；不传时按 组数 × 30 算（05／07 口径）。
 
     ⚠ 抽成独立函数是为了让 ``summarize`` 子命令能在**不重跑仿真**的前提下，
     用当前代码重新统计既有的 ``episode_results.jsonl``。实测踩过一次：父进程启动时
@@ -1088,7 +1129,7 @@ def _summarize_feasibility(
     error_types = Counter(
         str(row["error_type"] or "-") for row in rows if row["outcome"] != OUTCOME_PASS
     )
-    expected = len(groups) * len(FEASIBILITY_EPISODES)
+    expected = len(groups) * len(FEASIBILITY_EPISODES) if expected_rows is None else int(expected_rows)
     verdicts.add(
         "FEASIBILITY", len(rows) == expected, unique=expected, executed=len(rows),
         unclassified=sum(1 for row in rows if row["outcome"] not in outcomes),
@@ -1115,10 +1156,13 @@ def _summarize_feasibility(
         if row["runtime_checks_total"] == 0 and row["outcome"] == OUTCOME_PASS
     )
     runtime_rejected = sum(1 for row in video_rows if row["runtime_rejections"])
+    # 作用域里根本没有视频任务组（08 只跑 RouteStick 四组）时，「一条检查都没有」不是漏检而是无从检查：
+    # 只在作用域含视频任务组却一行视频结果都没有时才判 FAIL，避免把不适用当成失败；scope 字段写明口径。
+    video_groups = [group for group in groups if group[0] in ("VideoUnmaskSwap", "VideoRepick")]
     verdicts.add(
-        "COLLISION_RUNTIME", missing_checks == 0 and bool(video_rows),
+        "COLLISION_RUNTIME", missing_checks == 0 and (bool(video_rows) or not video_groups),
         unique=len(video_rows), checked=checked, missing_checks=missing_checks,
-        rejected=runtime_rejected,
+        rejected=runtime_rejected, scope=f"{len(video_groups)}_video_groups",
     )
     # INJECTION_BINDING：每条成功样本都要有创建输入 vs 创建后位姿的绑定证据
     bound = sum(1 for row in rows if row["injection_bound"])
@@ -1492,6 +1536,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--groups", default=None,
         help="feasibility 只跑清单里这些组，逗号分隔的 任务/难度（如 RouteStick/xhard,VideoRepick/xhard）；默认跑清单全部组",
     )
+    runner.add_argument(
+        "--episodes", type=int, default=None,
+        help="feasibility 每组实跑条数（episode 0～N-1）；默认 30（07 及之前的口径）。08 RouteStick 四档各 5 条用 5",
+    )
 
     summarize = sub.add_parser("summarize", help="不重跑仿真，用当前代码重算既有实跑结果")
     summarize.add_argument("--run-id", required=True)
@@ -1539,6 +1587,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.run_id, args.phase, Path(args.sampling_config).resolve(), tiers,
                 skip_ladder=args.skip_ladder, tier_override=args.tier, gpus=args.gpus,
                 groups_filter=[item.strip() for item in args.groups.split(",") if item.strip()] if args.groups else None,
+                episodes_per_group=args.episodes,
             )
             return 0 if result.get("passed") else 1
         if args.command == "collision-reproduce":

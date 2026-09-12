@@ -430,3 +430,73 @@ def test_h5_索引按任务难度_episode_三元组(tmp_path):
     index = campaign._index_h5(tmp_path)
     assert len(index) == 2
     assert ("BinFill", "easy", 0) in index and ("BinFill", "hard", 0) in index
+
+
+# ── 每组实跑条数可配（2026-09-12，08 RouteStick 四档各 5 条） ──────────────────
+def test_实跑清单条数由_episodes_参数决定且默认仍是三十(tmp_path):
+    """``write_manifest`` 只按传入的 episodes 写；``--episodes 5`` 时每组恰 0～4，默认走 30。"""
+    from scripts.injection.run import FEASIBILITY_EPISODES, write_manifest
+
+    groups = [("RouteStick", d) for d in ("easy", "medium", "hard", "xhard")]
+    specs_root = tmp_path / "specs"
+    five = write_manifest(tmp_path / "manifests" / "feasibility20.json", groups, tuple(range(5)), specs_root, "n")
+    doc = json.loads(five.read_text(encoding="utf-8"))
+    assert [item["episodes"] for item in doc["groups"]] == [[0, 1, 2, 3, 4]] * 4
+    assert sum(len(item["episodes"]) for item in doc["groups"]) == 20
+    assert FEASIBILITY_EPISODES == tuple(range(30))
+
+
+def test_episodes_越界被拒(tmp_path, monkeypatch):
+    """0 或超过每组规格数（100）的条数直接拒绝，不静默截断。"""
+    import scripts.injection.campaign as mod
+
+    monkeypatch.setattr(mod, "load_group_documents", lambda run_id: (tmp_path, {"groups": [{"task": "RouteStick", "difficulty": "easy"}]}, {}))
+    for bad in (0, GROUP_SIZE + 1):
+        with pytest.raises(campaign.CampaignError, match="--episodes"):
+            campaign.cmd_run("x", "feasibility", tmp_path / "s.json", tier_override=1, episodes_per_group=bad)
+
+
+def test_summarize_分母取自实跑清单而非计划清单乘三十(tmp_path):
+    """06 只跑 3 组、08 每组 5 条都不满足「计划清单全部组 × 30」；分母必须从
+    ``run_parameters.json`` 指向的实跑清单按各组 episodes 求和。"""
+    from scripts.injection.run import write_manifest
+
+    plan_manifest = {"groups": [{"task": t, "difficulty": d} for t in ("BinFill", "RouteStick") for d in ("easy", "hard")]}
+    output_dir = tmp_path / "feasibility" / "P01x10"
+    output_dir.mkdir(parents=True)
+    manifest = write_manifest(
+        tmp_path / "manifests" / "feasibility10.json",
+        [("RouteStick", "easy"), ("RouteStick", "hard")], tuple(range(5)), tmp_path / "specs", "n",
+    )
+    (output_dir / "run_parameters.json").write_text(json.dumps({"episode_specs": str(manifest)}), encoding="utf-8")
+    groups, expected = campaign._feasibility_manifest_scope(output_dir, plan_manifest)
+    assert groups == [("RouteStick", "easy"), ("RouteStick", "hard")]
+    assert expected == 10
+    # 没有 run_parameters.json（05 之前的旧产物）时退回 计划全部组 × 30
+    legacy = tmp_path / "feasibility" / "P0x12"
+    legacy.mkdir()
+    groups, expected = campaign._feasibility_manifest_scope(legacy, plan_manifest)
+    assert len(groups) == 4 and expected == 120
+
+
+def test_作用域无视频任务组时碰撞运行时判定不算失败(tmp_path):
+    """08 只跑 RouteStick 四组：没有任何视频任务结果行是「不适用」，不是「漏检」；
+    作用域含视频任务组却零行时仍必须 FAIL。"""
+    verdicts = campaign.Verdicts()
+    base = {"outcome": "通过", "video_status": "complete", "video_reason": "", "runtime_checks_total": 0,
+            "runtime_rejections": [], "injection_bound": True, "video_frames": 10, "video_frames_expected": 10, "error_type": None, "execution_state": "completed",
+            "task": "RouteStick", "difficulty": "easy", "episode": 0, "wall_s": 1.0, "attempt": 0, "seed": 1,
+            "timesteps": 10, "h5_path": None, "video_path": None}
+    rows = [dict(base, episode=i) for i in range(2)]
+    campaign._summarize_feasibility(
+        tmp_path, rows, [("RouteStick", "easy")], verdicts, 1, "P0x1", ["0"], {}, expected_rows=2,
+    )
+    record = next(item for item in verdicts.records if item["name"] == "COLLISION_RUNTIME")
+    assert record["status"] == "PASS" and record["unique"] == 0 and record["scope"] == "0_video_groups"
+    verdicts = campaign.Verdicts()
+    campaign._summarize_feasibility(
+        tmp_path, rows, [("RouteStick", "easy"), ("VideoRepick", "easy")], verdicts, 1, "P0x1", ["0"], {},
+        expected_rows=2,
+    )
+    record = next(item for item in verdicts.records if item["name"] == "COLLISION_RUNTIME")
+    assert record["status"] == "FAIL" and record["scope"] == "1_video_groups"

@@ -1,0 +1,92 @@
+{
+  "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/feasibility/P01x10",
+  "env": "all",
+  "tasks": [
+    "RouteStick"
+  ],
+  "episodes": 100,
+  "episode_start": 0,
+  "workers": 20,
+  "gpus": [
+    "0",
+    "1"
+  ],
+  "seed_layout": "train",
+  "difficulty_ratio": "211",
+  "difficulty_cycle": [
+    "easy",
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "max_attempts": 1,
+  "limit_threads": true,
+  "max_tasks_per_child": 8,
+  "affinity": "per-gpu",
+  "episode_timeout_s": 600.0,
+  "binfill_demo": true,
+  "save_video_for_recording": true,
+  "sampling_config": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json",
+  "sampling_config_tasks": [
+    "BinFill",
+    "RouteStick",
+    "VideoRepick",
+    "VideoUnmaskSwap"
+  ],
+  "episode_specs": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/manifests/feasibility20.json",
+  "episode_spec_groups": [
+    {
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/specs/RouteStick/easy.json",
+      "output_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/feasibility/P01x10/RouteStick/easy",
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "medium",
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/specs/RouteStick/medium.json",
+      "output_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/feasibility/P01x10/RouteStick/medium",
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "hard",
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/specs/RouteStick/hard.json",
+      "output_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/feasibility/P01x10/RouteStick/hard",
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "xhard",
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/specs/RouteStick/xhard.json",
+      "output_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-08/feasibility/P01x10/RouteStick/xhard",
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  ],
+  "requested_jobs": 20
+}
