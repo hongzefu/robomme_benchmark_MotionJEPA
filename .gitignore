@@ -230,4 +230,6 @@ __marimo__/
 /artifacts/injection/20260910-new-values-03/
 
 # 跑前分布 2D 图产物（约 50 MB，本地生成、不入库；文档链接指向本地文件）
-scripts/injection-before-2d/figures/
+# 出图目录整体不入库，只反选总览图一张（目录级排除无法从内部反选，须写成 figures/*）
+scripts/injection-before-2d/figures/*
+!scripts/injection-before-2d/figures/windows_overview.png

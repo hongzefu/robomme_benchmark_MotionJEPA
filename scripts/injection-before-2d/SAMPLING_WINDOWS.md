@@ -2,7 +2,7 @@
 
 > 数据：`20260911-contract-v3-07` 一次实跑（契约 v3 与 06 逐条相同，`OLD_GROUPS_EQUIVALENCE compared=1400 differences=0`），14 组 × ep0～29 = 420 条计划，双卡各 20 worker，单条墙钟上限 600 秒（pebble 单任务超时，超时条记 `failure_class="timeout"`），BinFill 三组的 h5 由生成器直出「同一条重复两遍」的 demo（前半 `is_video_demo=True`）。05（旧 11 组）与 06（3 个 xhard 组）作为历史对照不再合并进图表。JSON 里每条行记 `run_id`、`group_sources` 记每组来源运行。每条的总帧数 T 取 `episode_results.jsonl` 的 `timestep_count`，demo 段长度取 h5 里 `info/is_video_demo` 为 True 的前缀，subgoal 分段按 `info/is_subgoal_boundary` 切、标签取 `info/simple_subgoal`（`RobommeRecordWrapper.step` 写入，边界由 `current_task_index` 变化判定）。抽出来的每条 T／demo／分段落在本目录 [windows_timeline.json](windows_timeline.json)（入库，clone 后不必重开 h5）。
 > 只画**成功**的条：跑失败（规划失败、进程池崩溃）或 h5 截断的条登记在 JSON 的 `failed_rows` / `skipped` 与第三节汇总表的「跳过／失败」列，不补跑、不补估。**慢条剔除**（2026-09-11 用户定「慢条『单段大于 400 帧』或『T 大于组中位 2 倍』这两个都加」）：成功条里任一命中 `单段 > 400 帧` 或 `T > 组中位 × 2`（组中位按剔除前算，一次性判定；BinFill 按后一遍原 T 判）的条从统计、代表与总览里移出，只在分组图里灰化＋斜纹画出，逐条列在第三节末尾「剔除的慢条」表供复核；**只剔统计，不删 h5**。
-> 画法与上一会话的 artifact「采样窗口与 eval 成功率」逐字一致，本文档只落 md 与 PNG，不发布 artifact（用户要求）。PNG 放本目录 `figures/`，已 gitignore 不入库，clone 后先跑出图命令再看链接。
+> 画法与上一会话的 artifact「采样窗口与 eval 成功率」逐字一致，本文档只落 md 与 PNG，不发布 artifact（用户要求）。PNG 放本目录 `figures/`，除总览图 `figures/windows_overview.png`（2026-09-12 用户要求入库）外已 gitignore 不入库，clone 后先跑出图命令再看其余链接。
 >
 > 三条命令（都只读）：
 > - 抽轨迹：`uv run python scripts/injection-before-2d/window_timeline.py extract --rollout-run-id 20260911-contract-v3-07`（逗号分隔可传多个运行，后者覆盖前者的同 key 行）（约 3 分钟：每帧读三个标量，两个视频任务另读 `obs/joint_state` 与 demo 段的 `obs/front_rgb` 反解／校验 swap），成功打 `WINDOWS_EXTRACT=PASS groups=14 episodes=… skipped=… failed_rows=… unknown_labels=0 swap_episodes=… swap_fail=0 swap_warn=0 swap_pixel_adjusted=… excluded_slow=…`；
