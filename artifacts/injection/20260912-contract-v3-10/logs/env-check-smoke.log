@@ -1,0 +1,4 @@
+[env-check] 1 组，每组从实跑区间之后按序核验、攒够 50 条通过即停；--gpus 0 每卡 1 worker，单条 120 秒
+ENV_RESET=PASS group=BinFill/easy start=155 checked=1 passed=1 failed=0 delivered=1
+ENV_CHECK=PASS groups=1 checked=1 passed=1 delivered=1 shortfall=0
+ENV_CHECK_RUN=PASS run_id=20260912-contract-v3-10 out=artifacts/injection/20260912-contract-v3-10/env_check_result_smoke.json

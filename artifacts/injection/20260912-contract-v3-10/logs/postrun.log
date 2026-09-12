@@ -1,0 +1,2 @@
+DELIVERY=PASS specs=3400 result_rows=1842 missing=0 videos_on_disk=1821 videos_expected=1821 video_sha_mismatch=0
+REPORT=OK run_id=20260912-contract-v3-10 轻量包 docs/validation/newtask-v2/20260912-contract-v3-10

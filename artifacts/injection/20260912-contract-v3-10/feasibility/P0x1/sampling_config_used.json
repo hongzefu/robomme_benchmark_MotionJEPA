@@ -1,0 +1,524 @@
+{
+  "BinFill": {
+    "parameters": {
+      "configs": {
+        "easy": {
+          "color": 1,
+          "spawn_cubes": [
+            4,
+            6
+          ],
+          "put_in_color": [
+            1,
+            1
+          ],
+          "put_in_numbers": [
+            1,
+            3
+          ]
+        },
+        "medium": {
+          "color": 2,
+          "spawn_cubes": [
+            8,
+            10
+          ],
+          "put_in_color": [
+            1,
+            2
+          ],
+          "put_in_numbers": [
+            2,
+            4
+          ]
+        },
+        "hard": {
+          "color": 3,
+          "spawn_cubes": [
+            10,
+            12
+          ],
+          "put_in_color": [
+            2,
+            3
+          ],
+          "put_in_numbers": [
+            3,
+            5
+          ]
+        }
+      },
+      "dynamic": {
+        "sampler": "torch.randint",
+        "low": 0,
+        "high_exclusive": 2,
+        "shape": [
+          1
+        ],
+        "cast": "bool"
+      }
+    },
+    "positions": {
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "randomize": true,
+        "randomize_range": [
+          0.1,
+          0.4
+        ],
+        "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range",
+        "scale": 1.5,
+        "randomize_range_origin": "原值取自 build_button 形参默认值；原调用点未传，现由本快照显式传入"
+      },
+      "board": {
+        "base_position": [
+          0.15,
+          0,
+          0
+        ],
+        "x_offset": {
+          "scale": 0.2,
+          "subtract": 0.2
+        },
+        "y_offset": {
+          "scale": 0.4,
+          "subtract": 0.2
+        },
+        "yaw_deg": {
+          "scale": 40,
+          "subtract": 20
+        },
+        "x_expression": "0.15 + (u * 0.2 - 0.2)",
+        "y_expression": "u * 0.4 - 0.2",
+        "yaw_expression": "u * 40.0 - 20.0",
+        "board_side": 0.1,
+        "hole_side": 0.08,
+        "thickness": 0.05,
+        "consumer": "build_board_with_hole 只是位置接收方，内部无随机"
+      },
+      "cubes": {
+        "region_center": [
+          -0.1,
+          0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ],
+        "random_yaw": true,
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi",
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "include_existing": false,
+        "include_goal": false,
+        "rng_per_trial": [
+          "x",
+          "y",
+          "yaw"
+        ]
+      }
+    }
+  },
+  "RouteStick": {
+    "parameters": {
+      "configs": {
+        "easy": {
+          "length": [
+            2,
+            3
+          ],
+          "backtrack": false
+        },
+        "medium": {
+          "length": [
+            4,
+            5
+          ],
+          "backtrack": false
+        },
+        "hard": {
+          "length": [
+            4,
+            7
+          ],
+          "backtrack": true
+        },
+        "xhard": {
+          "length": [
+            8,
+            10
+          ],
+          "backtrack": true
+        }
+      },
+      "configs_fallback_difficulty": "easy",
+      "walk": {
+        "node_indices": [
+          0,
+          2,
+          4,
+          6,
+          8
+        ],
+        "start_selection": "randint",
+        "neighbor_order": [
+          -1,
+          1
+        ],
+        "force_reverse_at_endpoint": true,
+        "direction": {
+          "sampler": "torch.rand",
+          "shape": [
+            1
+          ],
+          "threshold": 0.5,
+          "less_than": "clockwise",
+          "otherwise": "counterclockwise"
+        }
+      }
+    },
+    "positions": {
+      "grid_center": [
+        -0.1,
+        0
+      ],
+      "grid_spacing_x": 0.07,
+      "grid_spacing_y": 0.07,
+      "rotation_center": [
+        0,
+        0
+      ],
+      "yaw_deg": {
+        "scale": 60,
+        "subtract": 30
+      },
+      "yaw_expression": "math.radians(u * 60 - 30)",
+      "grid_spacing_x_effect": "num_rows=1 使 row 偏移恒为 0，该参数对结果无影响（死参数）",
+      "target_builder": "build_gray_white_target",
+      "obstacle_builder": "_load_scene 内联 create_actor_builder",
+      "cylinder_radius": 0.015,
+      "cylinder_height": 0.1,
+      "obstacle_color": {
+        "sampler": "torch.rand",
+        "shape": [
+          3
+        ],
+        "count": 4,
+        "position_in_stream": "theta 之后、steps 之前，每根障碍柱一次"
+      },
+      "walk_start": {
+        "sampler": "torch.randint",
+        "low": 0,
+        "high_exclusive": 5,
+        "note": "generate_dynamic_walk 未传 start_idx 时抽取，是路线随机流的第一次抽取"
+      }
+    }
+  },
+  "VideoUnmaskSwap": {
+    "parameters": {
+      "configs": {
+        "easy": {
+          "bin": 3,
+          "swap_min": 1,
+          "swap_max": 2,
+          "pick_min": 1,
+          "pick_max": 2
+        },
+        "medium": {
+          "bin": 4,
+          "swap_min": 1,
+          "swap_max": 2,
+          "pick_min": 1,
+          "pick_max": 1
+        },
+        "hard": {
+          "bin": 4,
+          "swap_min": 2,
+          "swap_max": 3,
+          "pick_min": 2,
+          "pick_max": 2
+        },
+        "xhard": {
+          "bin": 4,
+          "swap_min": 4,
+          "swap_max": 5,
+          "pick_min": 2,
+          "pick_max": 2
+        }
+      },
+      "object_selection": {
+        "hidden_bin_permutation_size": 3,
+        "hidden_bin_count_max": 3,
+        "pickup_selected_indices": [
+          0,
+          1
+        ],
+        "swap_seed_target_count": 2
+      },
+      "swap_selection": {
+        "initiator_mapping": "selected_local_indices_into_spawned_bins",
+        "remaining_selection": "randint_from_spawned_indices_excluding_local_targets",
+        "partner": {
+          "selection": "nearest",
+          "position_axes": [
+            0,
+            1
+          ],
+          "resolve_at": "swap_start",
+          "exclude_self": true,
+          "tie_break": "first_in_spawn_order"
+        }
+      }
+    },
+    "positions": {
+      "containers": {
+        "region3_tri": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0
+          ]
+        ],
+        "region3_line": [
+          [
+            0,
+            -0.15
+          ],
+          [
+            0,
+            0.15
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "region4": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0.1
+          ],
+          [
+            0.1,
+            -0.1
+          ]
+        ],
+        "region3_choice": {
+          "sampler": "torch.randint",
+          "low": 0,
+          "high_exclusive": 2,
+          "order": [
+            "region3_tri",
+            "region3_line"
+          ]
+        },
+        "layout_rotation_range_rad": [
+          0,
+          180
+        ],
+        "region_half_size": 0.07,
+        "yaw_scale_deg": 90.0,
+        "yaw_expression": "u * 90.0",
+        "rotation_center": [
+          0,
+          0
+        ],
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "spawn_random_bin_default_min_gap": 0.05,
+        "spawn_random_bin_has_include_flags": false
+      }
+    }
+  },
+  "VideoRepick": {
+    "parameters": {
+      "configs": {
+        "easy": {
+          "cube": 3,
+          "swap_min": 1,
+          "swap_max": 2
+        },
+        "medium": {
+          "cube": 3,
+          "swap_min": 2,
+          "swap_max": 3
+        },
+        "hard": {
+          "cluster": true,
+          "swap": null,
+          "swap_min": 0,
+          "swap_max": 0
+        },
+        "xhard": {
+          "cube": 3,
+          "swap_min": 4,
+          "swap_max": 5
+        }
+      },
+      "num_repeats": {
+        "sampler": "torch.randint",
+        "low": 1,
+        "high_exclusive": 4,
+        "shape": [
+          1
+        ]
+      },
+      "hard_spawn_rounds": 5,
+      "object_selection": {
+        "easy_medium_target_count": 1,
+        "hard_target_low": 0,
+        "swap_remaining_count": 2
+      },
+      "swap_selection": {
+        "initiator_mapping": "target_then_permuted_remaining_spawned_indices",
+        "remaining_selection": "randperm_without_target",
+        "partner": {
+          "selection": "nearest",
+          "position_axes": [
+            0,
+            1
+          ],
+          "resolve_at": "swap_start",
+          "exclude_self": true,
+          "tie_break": "first_in_spawn_order"
+        }
+      }
+    },
+    "positions": {
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "randomize": true,
+        "randomize_range": [
+          0.1,
+          0.1
+        ],
+        "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range",
+        "scale": 1.5,
+        "randomize_range_origin": "VideoRepick 调用点显式传入"
+      },
+      "easy_medium_cubes": {
+        "region3_tri": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0
+          ]
+        ],
+        "region3_line": [
+          [
+            0,
+            -0.15
+          ],
+          [
+            0,
+            0.15
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "region4": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0.1
+          ],
+          [
+            0.1,
+            -0.1
+          ]
+        ],
+        "region3_choice": {
+          "sampler": "torch.randint",
+          "low": 0,
+          "high_exclusive": 2,
+          "order": [
+            "region3_tri",
+            "region3_line"
+          ]
+        },
+        "layout_rotation_range_rad": [
+          0,
+          180
+        ],
+        "region_half_size": 0.07,
+        "random_yaw": true,
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi",
+        "rotation_center": [
+          0,
+          0
+        ],
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "include_existing": true,
+        "include_goal": true,
+        "include_flags_origin": "原值取自 spawn_random_cube 形参默认 True；原调用点未传，现由本快照显式传入",
+        "region4_reachable": false
+      },
+      "hard_cubes": {
+        "region_center": [
+          -0.1,
+          0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ],
+        "random_yaw": true,
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi",
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "include_existing": false,
+        "include_goal": false
+      }
+    }
+  }
+}

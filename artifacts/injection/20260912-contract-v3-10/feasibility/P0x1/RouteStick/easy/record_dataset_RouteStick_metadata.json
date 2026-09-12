@@ -1,0 +1,12 @@
+{
+  "env_id": "RouteStick",
+  "record_count": 1,
+  "records": [
+    {
+      "task": "RouteStick",
+      "episode": 0,
+      "seed": 16000,
+      "difficulty": "easy"
+    }
+  ]
+}

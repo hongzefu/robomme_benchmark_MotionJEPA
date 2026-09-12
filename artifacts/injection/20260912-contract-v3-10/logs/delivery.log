@@ -1,0 +1,11 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+DELIVERY_400=PASS env=BinFill target=400 delivered=400 spare=38 failed=23 groups=3
+DELIVERY_400=PASS env=RouteStick target=400 delivered=400 spare=60 failed=0 groups=4
+DELIVERY_400=PASS env=VideoUnmaskSwap target=400 delivered=400 spare=58 failed=2 groups=4
+DELIVERY_400=PASS env=VideoRepick target=400 delivered=400 spare=40 failed=21 groups=3
+DELIVERY_TOTAL=PASS envs=4 delivered=1600 spare=196 h5_missing=0 h5_sha_mismatch=0
+DELIVERY_RUN=PASS run_id=20260912-contract-v3-10 rows=1842 modes=P01x20,P0x1
+EXIT_CODE=0

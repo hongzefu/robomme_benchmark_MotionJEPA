@@ -1,0 +1,8 @@
+[实跑] 用显式指定（未经测速）的 P0x1（--gpus 0 --workers 1，每卡 1）跑 1 条
+FEASIBILITY=PASS unique=1 executed=1 unclassified=0 succeeded=1 attempt=0
+RESULT_COVERAGE=PASS all_recorded=1 all_success=1
+VIDEO_INDEX=PASS rows=1 complete=1 frame_mismatch=0 missing=0 no_close=0 untraceable=0
+COLLISION_RUNTIME=PASS unique=0 checked=0 missing_checks=0 rejected=0 scope=0_video_groups
+INJECTION_BINDING=PASS unique=1 bound=1 mismatches=0
+VIDEO_DECODE=PASS success_rows=1 decoded_eq_timesteps=1 failed_videos=0 mismatches=0
+RUN=PASS phase=feasibility

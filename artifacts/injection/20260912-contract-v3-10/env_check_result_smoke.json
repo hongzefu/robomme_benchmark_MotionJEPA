@@ -1,0 +1,59 @@
+{
+  "gpus": [
+    "0"
+  ],
+  "workers_per_gpu": 1,
+  "timeout_s": 120.0,
+  "started_utc": "2026-09-12T17:06:29Z",
+  "elapsed_s": 4.949,
+  "groups": {
+    "BinFill/easy": {
+      "start": 155,
+      "need": 1,
+      "checked": 1,
+      "passed": 1,
+      "failed": 0,
+      "delivered": [
+        155
+      ],
+      "outcome_counts": {
+        "通过": 1
+      },
+      "shortfall": 0,
+      "exhausted": true
+    }
+  },
+  "verdicts": [
+    {
+      "name": "ENV_RESET",
+      "passed": true,
+      "fields": {
+        "group": "BinFill/easy",
+        "start": 155,
+        "checked": 1,
+        "passed": 1,
+        "failed": 0,
+        "delivered": 1
+      }
+    },
+    {
+      "name": "ENV_CHECK",
+      "passed": true,
+      "fields": {
+        "groups": 1,
+        "checked": 1,
+        "passed": 1,
+        "delivered": 1,
+        "shortfall": 0
+      }
+    }
+  ],
+  "passed": true,
+  "note": "本核验只覆盖 gym.make + 一次 env.reset()（即 _load_scene 与 _initialize_episode，含两个视频任务在 _initialize_episode 里对实际 actor 初态所做的碰撞复核）；不套 RobommeRecordWrapper、不建 planner、不 step，因此不覆盖 step 期的 SpecBindingError、规划可解性（螺旋／RRT* 能否解出轨迹）、录像器的步数保护与任务成功判定。结论只到「该候选能产生环境」为止：reset 通过 ≠ 能出 h5。",
+  "run_id": "20260912-contract-v3-10",
+  "delivery_config": {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/delivery_400.json",
+    "sha256": "081113d9f16e1a688661e4829220cf98c45361aef3ad133323f1b7d50316fdcc"
+  },
+  "label": "smoke"
+}

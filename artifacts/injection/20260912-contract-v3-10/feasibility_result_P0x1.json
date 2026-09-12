@@ -1,0 +1,238 @@
+{
+  "run_id": "20260912-contract-v3-10",
+  "phase": "feasibility",
+  "started_utc": "2026-09-12T17:05:51Z",
+  "tier": 1,
+  "mode": "P0x1",
+  "gpus": [
+    "0"
+  ],
+  "tier_measured": false,
+  "rows": [
+    {
+      "runtime_checks_total": 0,
+      "runtime_check_kinds": [],
+      "runtime_rejections": [],
+      "injection_bound": true,
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "episode": 0,
+      "seed": 16000,
+      "attempt": 0,
+      "execution_state": "completed",
+      "outcome": "通过",
+      "error_type": null,
+      "error": "",
+      "video_status": "complete",
+      "video_frames": 300,
+      "video_frames_expected": 300,
+      "video_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P0x1/RouteStick/easy/videos/RouteStick_ep0_seed16000_easy_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+      "video_sha256": "468cf3b5c00344e394eac963653f51304c32a5d6228fdc2a3e07a5257445b0e0",
+      "video_reason": null,
+      "wall_s": 14.334,
+      "peak_rss_mb": 2760.9,
+      "h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P0x1/RouteStick/easy/hdf5_files/RouteStick_ep0_seed16000.h5",
+      "timestep_count": 300
+    }
+  ],
+  "outcome_counts": {
+    "通过": 1
+  },
+  "video_counts": {
+    "complete": 1
+  },
+  "execution_counts": {
+    "completed": 1
+  },
+  "error_type_counts": {},
+  "runtime_check_summary": {
+    "video_rows": 0,
+    "checked": 0,
+    "missing_checks": 0,
+    "rejected": 0
+  },
+  "per_group": {
+    "RouteStick/easy": {
+      "通过": 1
+    }
+  },
+  "run": {
+    "command": [
+      "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3",
+      "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/generate_dataset_newseed.py",
+      "--output-dir",
+      "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P0x1",
+      "--gpus",
+      "0",
+      "--workers",
+      "1",
+      "--layout",
+      "train",
+      "--max-attempts",
+      "1",
+      "--max-tasks-per-child",
+      "8",
+      "--affinity",
+      "per-gpu",
+      "--episode-specs",
+      "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/manifests/feasibility_smoke_1.json",
+      "--sampling-config",
+      "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json",
+      "--episode-timeout",
+      "600.0",
+      "--binfill-demo"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_s": 18.7,
+    "log": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/logs/feasibility-P0x1.log",
+    "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P0x1",
+    "summary": {
+      "parameters": {
+        "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P0x1",
+        "env": "all",
+        "tasks": [
+          "PickXtimes",
+          "StopCube",
+          "SwingXtimes",
+          "BinFill",
+          "VideoUnmaskSwap",
+          "VideoUnmask",
+          "ButtonUnmaskSwap",
+          "ButtonUnmask",
+          "VideoRepick",
+          "VideoPlaceButton",
+          "VideoPlaceOrder",
+          "PickHighlight",
+          "InsertPeg",
+          "MoveCube",
+          "PatternLock",
+          "RouteStick"
+        ],
+        "episodes": 100,
+        "episode_start": 0,
+        "workers": 1,
+        "gpus": [
+          "0"
+        ],
+        "seed_layout": "train",
+        "difficulty_ratio": "211",
+        "difficulty_cycle": [
+          "easy",
+          "easy",
+          "medium",
+          "hard"
+        ],
+        "max_attempts": 1,
+        "limit_threads": true,
+        "max_tasks_per_child": 8,
+        "affinity": "per-gpu",
+        "episode_timeout_s": 600.0,
+        "binfill_demo": true,
+        "save_video_for_recording": true,
+        "sampling_config": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json",
+        "sampling_config_tasks": [
+          "BinFill",
+          "RouteStick",
+          "VideoRepick",
+          "VideoUnmaskSwap"
+        ],
+        "episode_specs": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/manifests/feasibility_smoke_1.json",
+        "episode_spec_groups": [
+          {
+            "task": "RouteStick",
+            "difficulty": "easy",
+            "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/specs/RouteStick/easy.json",
+            "output_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P0x1/RouteStick/easy",
+            "episodes": [
+              0
+            ]
+          }
+        ],
+        "requested_jobs": 1
+      },
+      "requested_count": 1,
+      "success_count": 1,
+      "exhausted_count": 0,
+      "elapsed_s": 18.4,
+      "throughput_ep_per_min": 3.27,
+      "peak_rss_mb": 2760.9,
+      "video_status_counts": {
+        "complete": 1,
+        "frame_mismatch": 0,
+        "missing": 0,
+        "no_close": 0,
+        "unrecorded": 0
+      },
+      "timeout_count": 0,
+      "binfill_demo_converted": 0
+    },
+    "resources_before": {
+      "mem_available_gb": 354.6,
+      "swap_used_gb": 8.0,
+      "disk_free_gb": 2546.1
+    },
+    "resources_after": {
+      "mem_available_gb": 354.3,
+      "swap_used_gb": 8.0,
+      "disk_free_gb": 2546.0
+    }
+  },
+  "scope": {
+    "note": "每组 episode 0～0",
+    "skipped_done": 0,
+    "manifest": "artifacts/injection/20260912-contract-v3-10/manifests/feasibility_smoke_1.json"
+  },
+  "verdicts": [
+    {
+      "name": "FEASIBILITY",
+      "status": "PASS",
+      "unique": 1,
+      "executed": 1,
+      "unclassified": 0,
+      "succeeded": 1,
+      "attempt": 0
+    },
+    {
+      "name": "RESULT_COVERAGE",
+      "status": "PASS",
+      "all_recorded": 1,
+      "all_success": 1
+    },
+    {
+      "name": "VIDEO_INDEX",
+      "status": "PASS",
+      "rows": 1,
+      "complete": 1,
+      "frame_mismatch": 0,
+      "missing": 0,
+      "no_close": 0,
+      "untraceable": 0
+    },
+    {
+      "name": "COLLISION_RUNTIME",
+      "status": "PASS",
+      "unique": 0,
+      "checked": 0,
+      "missing_checks": 0,
+      "rejected": 0,
+      "scope": "0_video_groups"
+    },
+    {
+      "name": "INJECTION_BINDING",
+      "status": "PASS",
+      "unique": 1,
+      "bound": 1,
+      "mismatches": 0
+    },
+    {
+      "name": "VIDEO_DECODE",
+      "status": "PASS",
+      "success_rows": 1,
+      "decoded_eq_timesteps": 1,
+      "failed_videos": 0,
+      "mismatches": 0
+    }
+  ],
+  "passed": true
+}

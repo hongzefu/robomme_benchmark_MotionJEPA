@@ -1,0 +1,13 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[实跑] 用显式指定（未经测速）的 P01x20（--gpus 0,1 --workers 40，每卡 20）跑 1842 条
+FEASIBILITY=PASS unique=1842 executed=1842 unclassified=0 succeeded=1796 attempt=0
+RESULT_COVERAGE=PASS all_recorded=1842 all_success=1796
+VIDEO_INDEX=PASS rows=1842 complete=1818 frame_mismatch=3 missing=0 no_close=21 untraceable=0
+COLLISION_RUNTIME=PASS unique=921 checked=900 missing_checks=0 rejected=1 scope=7_video_groups
+INJECTION_BINDING=PASS unique=1842 bound=1821 mismatches=0
+VIDEO_DECODE=PASS success_rows=1796 decoded_eq_timesteps=1796 failed_videos=22 mismatches=0
+RUN=PASS phase=feasibility
+EXIT_CODE=0
