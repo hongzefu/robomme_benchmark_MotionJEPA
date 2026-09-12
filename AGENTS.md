@@ -1496,3 +1496,9 @@
 - 做了什么：①`specs.py`/`sampling.py` 候选按 100 条 block 扩容（block 0 标签不变、block≥1 挂 `@block<b>`、usage 按 block 重置、`blocks` 键仅 >1 时写）；②新配置 `delivery_400.json` 与 `delivery.py`（硬校验 + 严格交付清单）、`env_check.py`（make+reset+close 零产物，复用 `_pool_init`）；③`campaign.py` 加 `plan --delivery-config`、`run --delivery-config/--episode-range/--skip-done/--wall-limit-h/--label`、`env-check`、`delivery`、`specs-diff --episode-scope block0`，check 按 block 判、`report` 并入两份新 JSON，日志改落 `<运行根>/logs/`；④生产加载器接受可选 `blocks` 键；⑤`.gitignore` 反选新产物；⑥10 全链路：plan 675 秒 → check 1338 秒 → `BLOCK0_EQUIVALENCE` 对 07/09 各 PASS → 两条 smoke → 全量 1842 条 6685 秒（通过 1796）→ env-check 700 条 493 秒零失败 → delivery（1600 primary 全带 sha256，spare 196）→ report；⑦PIPELINE.md 以 10 为最终口径改写。
 - 意外：env-check 判定行字段 `passed` 与 `Verdicts.add` 形参撞名（加 `add_record`）；`--limit` smoke 误判缺口（need 截到 limit）；原 `--episodes` 上界测试因去掉 100 硬上界而失败，改按清单各组冻结条数判；10 新出现 3 条 `BinFillDemoError`（ffmpeg Broken pipe）与 1 条运行时 `BinCollisionError`（数值边界 g=7e-8），均计失败、未交付；4 条既有测试失败（`test_TaskGoal` ×2、`test_step_error_handling` ×2）在 HEAD 上同样失败，未动。
 - 当前状态：正式 1600 条 h5 在 `artifacts/injection/20260912-contract-v3-10/feasibility/P01x20/`，由 `delivery_manifest.json` 的 `role=primary` 定；846 GB，`/data` 剩 1.7 TB；07/08/09 数据保留。未做：10 的跑前/跑后出图、数轴与事件表按 10 重出、`BinFillDemoError` 根因。
+
+### 2026-09-12 America/Detroit — `artifacts/` 清理：只保留 10，删除 07/08/09 与旧日志（`10.77`）
+
+- 用户指令原话：「综述你产出的文件结构 只保留这次的产物 之前的全部删除」。
+- 做了什么：按 `10.67` 同一口径删除 `artifacts/injection/20260911-contract-v3-07`（185 GB）、`20260912-contract-v3-08`（7 GB）、`20260912-contract-v3-09`（7 GB）与未跟踪的 `artifacts/logs/`（380 KB），`git rm --cached` 其 107 个跟踪小文件；`docs/validation/newtask-v2/` 下 07/08/09 的报告保留作记录。`/data` 余量 1.7 TB → 1.9 TB。`artifacts/` 现只有 `injection/20260912-contract-v3-10/`（1.1 TB 中约 846 GB 为 h5/mp4）。
+- 后果与未做：`scripts/injection-before-2d/`（数轴／跑前分布／事件表／`check_doc_links.py`）默认运行编号仍是 07，其数据源已删，`check_doc_links.py` 现报 `20260911-contract-v3-07 的清单没有记录契约`；按 10 重出这套图表与文档属另一项工作，未做。
