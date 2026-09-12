@@ -596,7 +596,11 @@ def build_manifest(
                 "archive": plan.rel_path, "member": member_path(plan.top_dir, name),
                 "h5_sha256": sha, "h5_bytes": row.get("bytes"),
                 "timestep_count": row.get("timestep_count"),
-                "videos": video_by_episode.get((plan.task, plan.difficulty, int(row["episode"])), []),
+                # smoke 档与正式档的 ep0 同名前缀会互相匹配：按角色只取各自前缀下的视频
+                "videos": [
+                    rel for rel in video_by_episode.get((plan.task, plan.difficulty, int(row["episode"])), [])
+                    if rel.startswith("smoke/") == (plan.role == "smoke")
+                ],
             })
 
     failures: list[dict] = []
@@ -607,7 +611,7 @@ def build_manifest(
             failures.append({
                 "task": task, "difficulty": difficulty, "episode": episode,
                 "outcome": row.get("outcome"), "error_type": row.get("error_type"),
-                "videos": video_by_episode.get((task, difficulty, episode), []),
+                "videos": [rel for rel in video_by_episode.get((task, difficulty, episode), []) if not rel.startswith("smoke/")],
             })
 
     delivery_path = layout.run_root / "delivery_manifest.json"
@@ -1189,7 +1193,7 @@ def write_manifest_files(layout: ReleaseLayout, packing: dict | None = None) -> 
     staged = _require(layout.release_dir / "staged.json", "staging 断点", "hf_release.py stage")
     pack_results = _require(layout.release_dir / "pack_results.json", "打包断点", "hf_release.py pack")
     delivery = _require_delivery(layout)
-    plans = plan_archives(delivery, layout.run_root, check_exists=False)
+    plans = plan_archives(delivery, layout.run_root, check_exists=True)  # 须为 True：smoke 行的 h5 sha256 只在这里现算
     files = [StagedFile(
         rel_path=item["rel_path"], src=Path(item["src"]) if item["src"] else None,
         bytes=item["bytes"], sha256=item["sha256"], kind=item["kind"],
@@ -1236,6 +1240,22 @@ def write_manifest_files(layout: ReleaseLayout, packing: dict | None = None) -> 
     return {"passed": True, "manifest": manifest, "sums_lines": sums.count("\n")}
 
 
+def expected_members(manifest: dict, run_root: Path) -> dict[str, dict[str, str]]:
+    """每个归档的期望成员集合：MANIFEST 里的 h5（散列逐字来自交付清单）+ 该组的 metadata.json（按源文件现算）。
+
+    metadata.json 不在 MANIFEST 的 episodes 里，不加进来会被判成「多余成员」。
+    """
+    expected: dict[str, dict[str, str]] = {}
+    for row in manifest["episodes"]:
+        expected.setdefault(row["archive"], {})[row["member"]] = row["h5_sha256"]
+    for item in manifest.get("archives", []):
+        top = archive_top_dir(item["task"], item["difficulty"], item["role"])
+        src = group_source_dir(run_root, item["task"], item["difficulty"], item["role"]) / group_metadata_name(item["task"])
+        if src.is_file():
+            expected.setdefault(item["path"], {})[f"{top}/{group_metadata_name(item['task'])}"] = sha256_file(src)
+    return expected
+
+
 def verify_local(layout: ReleaseLayout, *, jobs: int = 8, sample: int | None = None) -> dict:
     """本地复核：归档自身 sha256 对 SHA256SUMS，再逐成员 h5 sha256 对 MANIFEST。"""
     manifest = _require(layout.staging / "MANIFEST.json", "MANIFEST.json", "hf_release.py manifest")
@@ -1244,9 +1264,7 @@ def verify_local(layout: ReleaseLayout, *, jobs: int = 8, sample: int | None = N
         raise ReleaseError(f"缺少 {sums_path}；请先跑 hf_release.py manifest")
     sums = {line.split("  ", 1)[1]: line.split("  ", 1)[0] for line in sums_path.read_text(encoding="utf-8").splitlines() if line}
 
-    expected: dict[str, dict[str, str]] = {}
-    for row in manifest["episodes"]:
-        expected.setdefault(row["archive"], {})[row["member"]] = row["h5_sha256"]
+    expected = expected_members(manifest, layout.run_root)
     archives = [item["path"] for item in manifest["archives"]]
     if sample:
         archives = archives[:sample]
@@ -1394,9 +1412,7 @@ def verify_sample(layout: ReleaseLayout, *, archives: int = 4, videos: int = 3, 
     video_rows = manifest.get("videos", [])
     picked_videos = rng.sample(video_rows, min(videos, len(video_rows))) if video_rows else []
 
-    expected: dict[str, dict[str, str]] = {}
-    for row in manifest["episodes"]:
-        expected.setdefault(row["archive"], {})[row["member"]] = row["h5_sha256"]
+    expected = expected_members(manifest, layout.run_root)
     sums = {item["path"]: item["sha256"] for item in manifest["archives"]}
 
     from huggingface_hub import hf_hub_download
