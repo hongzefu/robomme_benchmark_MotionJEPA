@@ -33,7 +33,7 @@ from typing import Any, Callable
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[1]
-DEFAULT_ROLLOUT_RUN_ID = "20260911-contract-v2-05,20260911-contract-v3-06"  # 逗号分隔多个运行，后者覆盖前者的同 key 行
+DEFAULT_ROLLOUT_RUN_ID = "20260911-contract-v3-07"  # 07 一次实跑 14 组；逗号分隔可传多个运行，后者覆盖前者的同 key 行
 TIMELINE_JSON = HERE / "windows_timeline.json"
 DOC = HERE / "SAMPLING_WINDOWS.md"
 BEGIN = "<!-- AUTO:WINDOW_TABLES BEGIN -->"

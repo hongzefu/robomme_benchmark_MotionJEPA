@@ -1,11 +1,11 @@
 # 采样窗口数轴：14 组实跑轨迹上 motion 窗口、subgoal 分段与两条帧路怎么排布
 
-> 数据：两次实跑合并——旧 11 组来自 `artifacts/injection/20260911-contract-v2-05/feasibility/P01x20/`（契约 v2，11 组 × 30 = 330 条计划），2026-09-11 新增的 `xhard` 三组来自 `artifacts/injection/20260911-contract-v3-06/feasibility/P01x20/`（契约 v3，只实跑 RouteStick／VideoUnmaskSwap／VideoRepick 的 xhard 各 ep0～29，3 × 30 = 90 条；06 的旧 11 组规格与 05 逐条相同，不重跑）；都是双卡各 20 worker。JSON 里每条行记 `run_id`、`group_sources` 记每组来源运行。每条的总帧数 T 取 `episode_results.jsonl` 的 `timestep_count`，demo 段长度取 h5 里 `info/is_video_demo` 为 True 的前缀，subgoal 分段按 `info/is_subgoal_boundary` 切、标签取 `info/simple_subgoal`（`RobommeRecordWrapper.step` 写入，边界由 `current_task_index` 变化判定）。抽出来的每条 T／demo／分段落在本目录 [windows_timeline.json](windows_timeline.json)（入库，clone 后不必重开 h5）。
-> 只画**成功**的条：跑失败（规划失败、进程池崩溃）或 h5 截断的条登记在 JSON 的 `failed_rows` / `skipped` 与第三节汇总表的「跳过／失败」列，不补跑、不补估。
+> 数据：`20260911-contract-v3-07` 一次实跑（契约 v3 与 06 逐条相同，`OLD_GROUPS_EQUIVALENCE compared=1400 differences=0`），14 组 × ep0～29 = 420 条计划，双卡各 20 worker，单条墙钟上限 600 秒（pebble 单任务超时，超时条记 `failure_class="timeout"`），BinFill 三组的 h5 由生成器直出「同一条重复两遍」的 demo（前半 `is_video_demo=True`）。05（旧 11 组）与 06（3 个 xhard 组）作为历史对照不再合并进图表。JSON 里每条行记 `run_id`、`group_sources` 记每组来源运行。每条的总帧数 T 取 `episode_results.jsonl` 的 `timestep_count`，demo 段长度取 h5 里 `info/is_video_demo` 为 True 的前缀，subgoal 分段按 `info/is_subgoal_boundary` 切、标签取 `info/simple_subgoal`（`RobommeRecordWrapper.step` 写入，边界由 `current_task_index` 变化判定）。抽出来的每条 T／demo／分段落在本目录 [windows_timeline.json](windows_timeline.json)（入库，clone 后不必重开 h5）。
+> 只画**成功**的条：跑失败（规划失败、进程池崩溃）或 h5 截断的条登记在 JSON 的 `failed_rows` / `skipped` 与第三节汇总表的「跳过／失败」列，不补跑、不补估。**慢条剔除**（2026-09-11 用户定「慢条『单段大于 400 帧』或『T 大于组中位 2 倍』这两个都加」）：成功条里任一命中 `单段 > 400 帧` 或 `T > 组中位 × 2`（组中位按剔除前算，一次性判定；BinFill 按后一遍原 T 判）的条从统计、代表与总览里移出，只在分组图里灰化＋斜纹画出，逐条列在第三节末尾「剔除的慢条」表供复核；**只剔统计，不删 h5**。
 > 画法与上一会话的 artifact「采样窗口与 eval 成功率」逐字一致，本文档只落 md 与 PNG，不发布 artifact（用户要求）。PNG 放本目录 `figures/`，已 gitignore 不入库，clone 后先跑出图命令再看链接。
 >
 > 三条命令（都只读）：
-> - 抽轨迹：`uv run python scripts/injection-before-2d/window_timeline.py extract --rollout-run-id 20260911-contract-v2-05,20260911-contract-v3-06`（逗号分隔多个运行，后者覆盖前者的同 key 行）（约 3 分钟：每帧读三个标量，两个视频任务另读 `obs/joint_state` 与 demo 段的 `obs/front_rgb` 反解／校验 swap），成功打 `WINDOWS_EXTRACT=PASS groups=11 episodes=… skipped=… failed_rows=… unknown_labels=0 swap_episodes=147 swap_fail=0 swap_warn=0 swap_pixel_adjusted=8`；
+> - 抽轨迹：`uv run python scripts/injection-before-2d/window_timeline.py extract --rollout-run-id 20260911-contract-v3-07`（逗号分隔可传多个运行，后者覆盖前者的同 key 行）（约 3 分钟：每帧读三个标量，两个视频任务另读 `obs/joint_state` 与 demo 段的 `obs/front_rgb` 反解／校验 swap），成功打 `WINDOWS_EXTRACT=PASS groups=14 episodes=… skipped=… failed_rows=… unknown_labels=0 swap_episodes=… swap_fail=0 swap_warn=0 swap_pixel_adjusted=… excluded_slow=…`；
 > - 出图：`uv run python scripts/injection-before-2d/plot_sampling_windows.py`，14 组各一张 `4_windows.png` + 一张总览，成功打 `WINDOWS_PLOT=PASS groups=14 files=15`；
 > - 第三节自动表：`uv run python scripts/injection-before-2d/window_timeline.py tables --write`（`--check` 只比对），`check_doc_links.py` 一并核本文档的链接、张数与表是否漂移。
 
@@ -14,7 +14,7 @@
 - **窗口**：`[f, f+32]`（33 帧），stride 16，**不跨 demo／exec 段**——demo 与 exec 各自从段起点铺，每段窗口数 `len(range(0, max(0, L-32), 16))`（`window_timeline.py::window_starts`）；一条 episode 的 motion token 数 = demo 窗口 + exec 窗口。段不足 33 帧铺不出窗口，图上画虚线空框，表里标「无 motion token」。
 - **帧路**：`round(linspace(0, T-1, N))`，Δ = `(T-1)/(N-1)`；N=32 与 N=8 是帧预算（`512 // (16×1)` 与 `128 // (16×1)`），**不是**切分步长（`window_timeline.py::frame_path`，四舍五入用 `floor(x+0.5)` 与 JS `Math.round` 一致）。
 - **demo 段**：RouteStick 是「先演示一遍再执行一遍」，demo 恰为前半（每段固定 50 帧，T = 100·L）；VideoUnmaskSwap 的 demo 只有一段 `static`（机械臂静止旁观容器互换）；VideoRepick 的 demo 是 `pick up the cube`、`drop the cube on the table`、若干 `static`。
-- **BinFill 模拟 demo**（2026-09-11 用户要求「binfill任务改为加入模拟的demo 即为把一个任务重复两遍」）：BinFill 原本没有 demo（`BinFill.py` 的 task_list 全部 `demonstration=False`），本文档在**可视化与统计层**把每条整条复制一遍接在自己后面：`T' = 2T`，`demo = T`，分段序列复制一份整体右移 T（`window_timeline.py::simulate_binfill_demo`）。图与表只展示模拟后的版本，T 列写成 `2×原 T`；`src/robomme` 未改。
+- **BinFill 模拟 demo**（2026-09-11 用户要求「binfill任务改为加入模拟的demo 即为把一个任务重复两遍」，随后选定路线 B「在这里直接生成模拟demo的h5」）：BinFill 原本没有 demo（`BinFill.py` 的 task_list 全部 `demonstration=False`，`src/robomme` 未改）。07 起由生成入口在录像器 `close()` 之后直出：h5 的 `timestep_0..N-1` 是原轨迹复制（`is_video_demo=True`）、`timestep_N..2N-1` 是原轨迹，视频前一遍加红框（`generate_dataset_newseed.py::_binfill_demo_deliverable`，细节见 [../NEW_VALUE_INJECTION_PIPELINE.md](../NEW_VALUE_INJECTION_PIPELINE.md) 第二节第 5 条）。数轴脚本读到 `demo == T/2` 的 BinFill 条就原样使用（`demo_source="recorded"`）；只有旧 05 那种 `demo == 0` 的条才在统计层用 `window_timeline.py::simulate_binfill_demo` 复制一遍（`demo_source="simulated"`）。两种来源的 T 列都写成 `2×原 T`。
 - **数轴演示**（RouteStick/easy，T=300、demo=150）：demo 段 `range(0, 118, 16)` → 0, 16, …, 112 共 8 个窗口，exec 段同样 8 个，motion token = 16；Δ32 = 299/31 = 9.6，Δ8 = 299/7 = 42.7。对拍锚点：artifact 里 RouteStick easy 最短（T=200、demo 100）为 5+5=10、Δ32=6.4、Δ8=28.4，本脚本对 T=200 的条得到同样三个数。
 - **BinFill 演示**（若原 T=678、8 段）：模拟后 T'=1356、demo=678，两段各 `range(0, 646, 16)` = 41 个窗口，合计 82；Δ32 = 1355/31 = 43.7。
 
@@ -45,14 +45,14 @@ h5 里没有任何字段记 swap 时刻：整个 demo 段 `info/simple_subgoal` 
 | RouteStick/easy | [图 4](figures/RouteStick/easy/4_windows.png) |
 | RouteStick/medium | [图 4](figures/RouteStick/medium/4_windows.png) |
 | RouteStick/hard | [图 4](figures/RouteStick/hard/4_windows.png) |
-| RouteStick/xhard（06） | [图 4](figures/RouteStick/xhard/4_windows.png) |
+| RouteStick/xhard | [图 4](figures/RouteStick/xhard/4_windows.png) |
 | VideoUnmaskSwap/easy | [图 4](figures/VideoUnmaskSwap/easy/4_windows.png) |
 | VideoUnmaskSwap/medium | [图 4](figures/VideoUnmaskSwap/medium/4_windows.png) |
 | VideoUnmaskSwap/hard | [图 4](figures/VideoUnmaskSwap/hard/4_windows.png) |
-| VideoUnmaskSwap/xhard（06） | [图 4](figures/VideoUnmaskSwap/xhard/4_windows.png) |
+| VideoUnmaskSwap/xhard | [图 4](figures/VideoUnmaskSwap/xhard/4_windows.png) |
 | VideoRepick/easy | [图 4](figures/VideoRepick/easy/4_windows.png) |
 | VideoRepick/medium | [图 4](figures/VideoRepick/medium/4_windows.png) |
-| VideoRepick/xhard（06） | [图 4](figures/VideoRepick/xhard/4_windows.png) |
+| VideoRepick/xhard | [图 4](figures/VideoRepick/xhard/4_windows.png) |
 
 ## 三、逐条数字
 
@@ -61,24 +61,24 @@ h5 里没有任何字段记 swap 时刻：整个 demo 段 `info/simple_subgoal` 
 <!-- AUTO:WINDOW_TABLES BEGIN -->
 ### 汇总（每组：条数、T、demo 长度、motion token 数）
 
-| 组 | 条数 | T 最短 / 中位 / 最长 | demo 最短 / 中位 / 最长 | 窗口 最少 / 中位 / 最多 | 铺不出窗口 | 跳过／失败 |
-|---|---|---|---|---|---|---|
-| BinFill/easy（模拟 demo） | 29 | 536 / 914 / 1454 | 268 / 457 / 727 | 30 / 54 / 88 | 0 | 1 |
-| BinFill/medium（模拟 demo） | 30 | 852 / 1301 / 1758 | 426 / 650.5 / 879 | 50 / 78 / 106 | 0 | 0 |
-| BinFill/hard（模拟 demo） | 27 | 1158 / 1658 / 2156 | 579 / 829 / 1078 | 70 / 100 / 132 | 0 | 3 |
-| RouteStick/easy | 30 | 200 / 250 / 300 | 100 / 125 / 150 | 10 / 13 / 16 | 0 | 0 |
-| RouteStick/medium | 30 | 400 / 450 / 500 | 200 / 225 / 250 | 22 / 25 / 28 | 0 | 0 |
-| RouteStick/hard | 30 | 400 / 600 / 700 | 200 / 300 / 350 | 22 / 34 / 40 | 0 | 0 |
-| RouteStick/xhard | 30 | 800 / 900 / 1000 | 400 / 450 / 500 | 46 / 54 / 60 | 0 | 0 |
-| VideoUnmaskSwap/easy | 30 | 215 / 346 / 517 | 114 / 141 / 168 | 11 / 19 / 29 | 0 | 0 |
-| VideoUnmaskSwap/medium | 30 | 213 / 269 / 365 | 114 / 141 / 168 | 11 / 14 / 20 | 0 | 0 |
-| VideoUnmaskSwap/hard | 30 | 411 / 457.5 / 552 | 168 / 192 / 216 | 23 / 25.5 / 31 | 0 | 0 |
-| VideoUnmaskSwap/xhard | 28 | 505 / 565.5 / 1312 | 264 / 291 / 318 | 29 / 32 / 79 | 0 | 2 |
-| VideoRepick/easy | 28 | 508 / 704 / 866 | 252 / 303.5 / 349 | 28 / 41 / 51 | 0 | 2 |
-| VideoRepick/medium | 29 | 575 / 766 / 968 | 306 / 348 / 398 | 33 / 45 / 57 | 0 | 1 |
-| VideoRepick/xhard | 29 | 684 / 858 / 1130 | 420 / 468 / 492 | 40 / 51 / 67 | 0 | 1 |
+| 组 | 条数 | T 最短 / 中位 / 最长 | demo 最短 / 中位 / 最长 | 窗口 最少 / 中位 / 最多 | 铺不出窗口 | 跳过／失败 | 慢条剔除 |
+|---|---|---|---|---|---|---|---|
+| BinFill/easy（demo 由生成器直出（重复两遍）） | 29 | 536 / 914 / 1454 | 268 / 457 / 727 | 30 / 54 / 88 | 0 | 1 | 0 |
+| BinFill/medium（demo 由生成器直出（重复两遍）） | 30 | 852 / 1301 / 1758 | 426 / 650.5 / 879 | 50 / 78 / 106 | 0 | 0 | 0 |
+| BinFill/hard（demo 由生成器直出（重复两遍）） | 27 | 1158 / 1658 / 2156 | 579 / 829 / 1078 | 70 / 100 / 132 | 0 | 3 | 0 |
+| RouteStick/easy | 30 | 200 / 250 / 300 | 100 / 125 / 150 | 10 / 13 / 16 | 0 | 0 | 0 |
+| RouteStick/medium | 30 | 400 / 450 / 500 | 200 / 225 / 250 | 22 / 25 / 28 | 0 | 0 | 0 |
+| RouteStick/hard | 30 | 400 / 600 / 700 | 200 / 300 / 350 | 22 / 34 / 40 | 0 | 0 | 0 |
+| RouteStick/xhard | 30 | 800 / 900 / 1000 | 400 / 450 / 500 | 46 / 54 / 60 | 0 | 0 | 0 |
+| VideoUnmaskSwap/easy | 30 | 215 / 346 / 517 | 114 / 141 / 168 | 11 / 19 / 29 | 0 | 0 | 0 |
+| VideoUnmaskSwap/medium | 30 | 213 / 269 / 365 | 114 / 141 / 168 | 11 / 14 / 20 | 0 | 0 | 0 |
+| VideoUnmaskSwap/hard | 30 | 411 / 457.5 / 552 | 168 / 192 / 216 | 23 / 25.5 / 31 | 0 | 0 | 0 |
+| VideoUnmaskSwap/xhard | 27 | 505 / 564 / 663 | 264 / 264 / 318 | 29 / 32 / 38 | 0 | 2 | 1 |
+| VideoRepick/easy | 28 | 508 / 704 / 866 | 252 / 303.5 / 349 | 28 / 41 / 51 | 0 | 2 | 0 |
+| VideoRepick/medium | 29 | 575 / 766 / 968 | 306 / 348 / 398 | 33 / 45 / 57 | 0 | 1 | 0 |
+| VideoRepick/xhard | 29 | 684 / 858 / 1130 | 420 / 468 / 492 | 40 / 51 / 67 | 0 | 1 | 0 |
 
-### BinFill / easy（29 条；模拟 demo：同一条重复两遍，T = 2×原 T）
+### BinFill / easy（29 条；demo 由生成器直出（重复两遍），T = 2×原 T）
 
 | ep | seed | T | demo | 段数 | 窗口 demo+exec=合计 | Δ32 | Δ8 | 段序列（短标 帧数，‖ = demo→exec） |
 |---|---|---|---|---|---|---|---|---|
@@ -112,7 +112,7 @@ h5 里没有任何字段记 swap 时刻：整个 demo 段 `info/simple_subgoal` 
 | 28 | 6800 | 1186 = 2×593 | 593 | 16 | 36+36=72 | 38.2 | 169.3 | 抓绿1 110 · 投箱 60 · 抓绿2 104 · 投箱 69 · 抓绿3 84 · 投箱 66 · 按钮 61 · 完成 39 ‖ 抓绿1 110 · 投箱 60 · 抓绿2 104 · 投箱 69 · 抓绿3 84 · 投箱 66 · 按钮 61 · 完成 39 |
 | 29 | 6900 | 1256 = 2×628 | 628 | 16 | 38+38=76 | 40.5 | 179.3 | 抓蓝1 116 · 投箱 78 · 抓蓝2 105 · 投箱 65 · 抓蓝3 95 · 投箱 66 · 按钮 65 · 完成 38 ‖ 抓蓝1 116 · 投箱 78 · 抓蓝2 105 · 投箱 65 · 抓蓝3 95 · 投箱 66 · 按钮 65 · 完成 38 |
 
-### BinFill / medium（30 条；模拟 demo：同一条重复两遍，T = 2×原 T）
+### BinFill / medium（30 条；demo 由生成器直出（重复两遍），T = 2×原 T）
 
 | ep | seed | T | demo | 段数 | 窗口 demo+exec=合计 | Δ32 | Δ8 | 段序列（短标 帧数，‖ = demo→exec） |
 |---|---|---|---|---|---|---|---|---|
@@ -147,7 +147,7 @@ h5 里没有任何字段记 swap 时刻：整个 demo 段 `info/simple_subgoal` 
 | 28 | 6800 | 1326 = 2×663 | 663 | 16 | 40+40=80 | 42.7 | 189.3 | 抓绿1 143 · 投箱 85 · 抓绿2 102 · 投箱 69 · 抓蓝1 102 · 投箱 62 · 按钮 62 · 完成 38 ‖ 抓绿1 143 · 投箱 85 · 抓绿2 102 · 投箱 69 · 抓蓝1 102 · 投箱 62 · 按钮 62 · 完成 38 |
 | 29 | 6900 | 1544 = 2×772 | 772 | 20 | 47+47=94 | 49.8 | 220.4 | 抓红1 105 · 投箱 67 · 抓红2 81 · 投箱 61 · 抓红3 106 · 投箱 75 · 抓绿1 96 · 投箱 79 · 按钮 66 · 完成 36 ‖ 抓红1 105 · 投箱 67 · 抓红2 81 · 投箱 61 · 抓红3 106 · 投箱 75 · 抓绿1 96 · 投箱 79 · 按钮 66 · 完成 36 |
 
-### BinFill / hard（27 条；模拟 demo：同一条重复两遍，T = 2×原 T）
+### BinFill / hard（27 条；demo 由生成器直出（重复两遍），T = 2×原 T）
 
 | ep | seed | T | demo | 段数 | 窗口 demo+exec=合计 | Δ32 | Δ8 | 段序列（短标 帧数，‖ = demo→exec） |
 |---|---|---|---|---|---|---|---|---|
@@ -424,7 +424,7 @@ h5 里没有任何字段记 swap 时刻：整个 demo 段 `info/simple_subgoal` 
 | 28 | 7800 | 452 | 216 | 5 | 12+13=25 | 14.5 | 64.4 | 静止 216 ‖ 抓蓝容 100 · 放容 41 · 抓绿容 84 · 完成 11 | 1: 64–114 bin_0↔bin_3 · 2: 114–164 bin_1↔bin_2 · 3: 164–214 bin_2↔bin_1 |
 | 29 | 7900 | 424 | 168 | 5 | 9+14=23 | 13.6 | 60.4 | 静止 168 ‖ 抓蓝容 104 · 放容 49 · 抓绿容 96 · 完成 7 | 1: 64–114 bin_2↔bin_1 · 2: 114–164 bin_0↔bin_3 |
 
-### VideoUnmaskSwap / xhard（28 条）
+### VideoUnmaskSwap / xhard（27 条；剔除 1 条）
 
 | ep | seed | T | demo | 段数 | 窗口 demo+exec=合计 | Δ32 | Δ8 | 段序列（短标 帧数，‖ = demo→exec） | swap 起止帧（发起者↔搭档） |
 |---|---|---|---|---|---|---|---|---|---|
@@ -433,7 +433,6 @@ h5 里没有任何字段记 swap 时刻：整个 demo 段 `info/simple_subgoal` 
 | 2 | 5200 | 579 | 264 | 5 | 15+18=33 | 18.6 | 82.6 | 静止 264 ‖ 抓蓝容 163 · 放容 48 · 抓红容 95 · 完成 9 | 1: 64–114 bin_0↔bin_3 · 2: 114–164 bin_1↔bin_2 · 3: 164–214 bin_3↔bin_0 · 4: 214–264 bin_0↔bin_3 |
 | 3 | 5300 | 659 | 318 | 5 | 18+20=38 | 21.2 | 94.0 | 静止 318 ‖ 抓蓝容 110 · 放容 47 · 抓绿容 176 · 完成 8 | 1: 64–114 bin_2↔bin_1 · 2: 114–164 bin_1↔bin_2 · 3: 164–214 bin_0↔bin_3 · 4: 214–264 bin_2↔bin_1 · 5: 264–314 bin_1↔bin_2 |
 | 4 | 5400 | 663 | 318 | 5 | 18+20=38 | 21.4 | 94.6 | 静止 318 ‖ 抓绿容 197 · 放容 41 · 抓蓝容 99 · 完成 8 | 1: 64–114 bin_2↔bin_1 · 2: 114–164 bin_0↔bin_3 · 3: 164–214 bin_3↔bin_0 · 4: 214–264 bin_2↔bin_1 · 5: 264–314 bin_0↔bin_3 |
-| 5 | 5500 | 1312 | 318 | 5 | 18+61=79 | 42.3 | 187.3 | 静止 318 ‖ 抓绿容 108 · 放容 52 · 抓红容 828 · 完成 6 | 1: 64–114 bin_1↔bin_2 · 2: 114–164 bin_2↔bin_1 · 3: 164–214 bin_0↔bin_3 · 4: 214–264 bin_1↔bin_2 · 5: 264–314 bin_2↔bin_1 |
 | 6 | 5600 | 520 | 264 | 5 | 15+14=29 | 16.7 | 74.1 | 静止 264 ‖ 抓红容 102 · 放容 48 · 抓绿容 95 · 完成 11 | 1: 64–114 bin_1↔bin_0 · 2: 114–164 bin_0↔bin_1 · 3: 164–214 bin_2↔bin_3 · 4: 214–264 bin_1↔bin_0 |
 | 8 | 5800 | 521 | 264 | 5 | 15+15=30 | 16.8 | 74.3 | 静止 264 ‖ 抓红容 118 · 放容 48 · 抓蓝容 81 · 完成 10 | 1: 64–114 bin_0↔bin_1 · 2: 114–164 bin_1↔bin_0 · 3: 164–214 bin_3↔bin_2 · 4: 214–264 bin_0↔bin_1 |
 | 9 | 5900 | 577 | 318 | 5 | 18+15=33 | 18.6 | 82.3 | 静止 318 ‖ 抓绿容 100 · 放容 41 · 抓蓝容 109 · 完成 9 | 1: 64–114 bin_1↔bin_2 · 2: 114–164 bin_0↔bin_3 · 3: 164–214 bin_2↔bin_1 · 4: 214–264 bin_1↔bin_2 · 5: 264–314 bin_0↔bin_3 |
@@ -557,4 +556,10 @@ h5 里没有任何字段记 swap 时刻：整个 demo 段 `info/simple_subgoal` 
 | 27 | 11700 | 952 | 453 | 15 | 27+30=57 | 30.7 | 135.9 | 抓块 118 · 放桌 60 · 静止 59 · 静止 54 · 静止 54 · 静止 54 · 静止 54 ‖ 抓对1 105 · 放下 50 · 抓对2 70 · 放下 50 · 抓对3 70 · 放下 50 · 按钮停 66 · 完成 38 | 1: 224–274 bin_0↔bin_2 · 2: 274–324 bin_1↔bin_0 · 3: 324–374 bin_2↔bin_1 · 4: 374–424 bin_0↔bin_2（关节法 S=224 = 像素法，B1−S=13） |
 | 28 | 11800 | 684 | 427 | 11 | 25+15=40 | 22.0 | 97.6 | 抓块 113 · 放桌 46 · 静止 52 · 静止 54 · 静止 54 · 静止 54 · 静止 54 ‖ 抓对1 108 · 放下 52 · 按钮停 59 · 完成 38 | 1: 198–248 bin_1↔bin_2 · 2: 248–298 bin_2↔bin_1 · 3: 298–348 bin_0↔bin_2 · 4: 348–398 bin_1↔bin_0（关节法 S=198 = 像素法，B1−S=13） |
 | 29 | 11900 | 861 | 457 | 13 | 27+24=51 | 27.7 | 122.9 | 抓块 124 · 放桌 55 · 静止 62 · 静止 54 · 静止 54 · 静止 54 · 静止 54 ‖ 抓对1 116 · 放下 62 · 抓对2 70 · 放下 52 · 按钮停 64 · 完成 40 | 1: 228–278 bin_1↔bin_2 · 2: 278–328 bin_2↔bin_1 · 3: 328–378 bin_0↔bin_2 · 4: 378–428 bin_1↔bin_0（关节法 S=228 = 像素法，B1−S=13） |
+
+### 剔除的慢条（供复核；规则：单段 > 400 帧 或 T > 组中位 × 2，中位按剔除前算；BinFill 按后一遍原 T）
+
+| 组 | ep | seed | T | 组中位 T | 最长段（标签 帧数） | 命中原因 | h5 |
+|---|---|---|---|---|---|---|---|
+| VideoUnmaskSwap/xhard | 5 | 5500 | 1312 | 565.5 | 抓红容 828 | 单段 828 帧 > 400；T=1312 > 2×组中位 565.5 | /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260911-contract-v3-07/feasibility/P01x20/VideoUnmaskSwap/xhard/hdf5_files/VideoUnmaskSwap_ep5_seed5500.h5 |
 <!-- AUTO:WINDOW_TABLES END -->

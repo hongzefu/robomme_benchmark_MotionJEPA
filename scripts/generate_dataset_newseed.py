@@ -1877,6 +1877,10 @@ def _binfill_demo_deliverable(output_root: Path, job: EpisodeJob, timestep_count
             raise BinFillDemoError(f"{video_tmp}: 重编后 {frames_out} 帧 != {2 * timestep_count}（{error}）")
         os.replace(h5_tmp, raw_path)
         os.replace(video_tmp, video_path)
+        try:
+            video_tmp.parent.rmdir()  # 隐藏临时目录由同组 worker 共用：只在已空时删得掉，非空就留给最后一个
+        except OSError:
+            pass
     except Exception as exc:
         h5_tmp.unlink(missing_ok=True)
         if video_tmp is not None:

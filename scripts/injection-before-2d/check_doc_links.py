@@ -1,7 +1,7 @@
 """核对本目录两份文档：相对链接全部存在、figures/ 产物数量与尺寸达标、两份自动表与数据未漂移。
 
-* ``NEW_VALUE_DISTRIBUTION_BEFORE.md``：77 张跑前 2D 图（``figures/manifest.json``）+ 事件表（``event_tables.check``）；
-* ``SAMPLING_WINDOWS.md``：12 张采样窗口数轴（``figures/windows_manifest.json``）+ 逐条窗口表（``window_timeline.check``）。
+* ``NEW_VALUE_DISTRIBUTION_BEFORE.md``：98 张跑前 2D 图（``figures/manifest.json``）+ 事件表（``event_tables.check``）；
+* ``SAMPLING_WINDOWS.md``：15 张采样窗口数轴（``figures/windows_manifest.json``）+ 逐条窗口表（``window_timeline.check``）。
 """
 
 from __future__ import annotations

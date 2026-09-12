@@ -39,7 +39,7 @@ from scripts.injection.contract import Contract, ContractError, GroupContract, l
 
 NATIVE_SAMPLING_CONFIG = REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "native_sampling.json"
 DOC = HERE / "NEW_VALUE_DISTRIBUTION_BEFORE.md"
-DEFAULT_RUN_ID = "20260911-contract-v3-06"  # 14 组的冻结规格（旧 11 组与 05 逐条相同）
+DEFAULT_RUN_ID = "20260911-contract-v3-07"  # 14 组的冻结规格（与 06 逐条相同，OLD_GROUPS_EQUIVALENCE compared=1400 differences=0）
 BEGIN = "<!-- AUTO:EVENT_TABLES BEGIN -->"
 END = "<!-- AUTO:EVENT_TABLES END -->"
 

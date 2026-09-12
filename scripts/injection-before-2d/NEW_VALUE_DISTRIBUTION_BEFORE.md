@@ -1,13 +1,13 @@
 # 新值规格的跑前分布：怎么生成、每组随机了什么、结果落成什么样
 
-> 数据：`artifacts/injection/20260911-contract-v3-06/specs/<任务>/<难度>.json`，14 组 × 100 条 = 1400 条冻结规格（2026-09-11 新增 RouteStick／VideoUnmaskSwap／VideoRepick 的 `xhard` 三组），生成 seed `20260909`，`VideoRepick hard` 排除。取值域与分配两列取自契约 `scripts/configs/newtask-v2/injection_contract_v3.json`（= v2 + 三个 xhard 组；v2 = BinFill 对齐 heldout：medium 6～8 块、hard 8～10 块、多目标色每色至少 1 块），改口径与用户决策见 [NEW_VALUE_CONTRACT_CHANGELOG.md](../NEW_VALUE_CONTRACT_CHANGELOG.md)；旧 11 组规格与 `20260911-contract-v2-05` 逐条相同（`OLD_GROUPS_EQUIVALENCE=PASS compared=1100 differences=0`），05 与 04 原样保留作对照。
+> 数据：`artifacts/injection/20260911-contract-v3-07/specs/<任务>/<难度>.json`（与 06 逐条相同，`OLD_GROUPS_EQUIVALENCE compared=1400 differences=0`；07 是 2026-09-12 带单条 600 秒超时与 BinFill 直出 demo 的全量重跑），14 组 × 100 条 = 1400 条冻结规格（2026-09-11 新增 RouteStick／VideoUnmaskSwap／VideoRepick 的 `xhard` 三组），生成 seed `20260909`，`VideoRepick hard` 排除。取值域与分配两列取自契约 `scripts/configs/newtask-v2/injection_contract_v3.json`（= v2 + 三个 xhard 组；v2 = BinFill 对齐 heldout：medium 6～8 块、hard 8～10 块、多目标色每色至少 1 块），改口径与用户决策见 [NEW_VALUE_CONTRACT_CHANGELOG.md](../NEW_VALUE_CONTRACT_CHANGELOG.md)；旧 11 组规格与 `20260911-contract-v2-05` 逐条相同（`OLD_GROUPS_EQUIVALENCE=PASS compared=1100 differences=0`），05 与 04 原样保留作对照。
 > 判定（`check_result.json`）：`CONTRACT_DERIVED=PASS fields=200 mismatches=6 overrides=2 version=v3 problems=0`、`SPEC_SCOPE=PASS groups=14 specs=1400`、`COVERAGE_QUOTA=PASS batches=10 quota_gaps=0`、`STATIC_GEOMETRY=PASS checked=1400 rejected=0`（含新增的「第 k 段发起者 = swap_initiators[k mod 3]」校验）、`COLLISION_SWEEP=PASS specs=700 rejected=0 min_g_m=0.000141418`、`SPEC_REPRODUCIBLE=PASS compared=1400 differences=0`、`CHECK=PASS elapsed_s=655.5`。
 > 本目录只有只读脚本，不改 `tests/_shared/*`、不改 `src/robomme`、不写原 `plots/`；图只做**跑前**，PNG 放本目录 `figures/`，已 gitignore 不入库，只保留链接（用户要求）。
 > 05 的 ep0～29 已按契约 v2 实跑（双卡各 20 worker，档 `feasibility/P01x20/`）；这些真实轨迹上的**采样窗口数轴**（motion 窗口、subgoal 分段、两条帧路；BinFill 以同一条重复两遍模拟 demo）见 [SAMPLING_WINDOWS.md](SAMPLING_WINDOWS.md)。
 >
 > 三条命令（都只读规格 JSON）：
-> - 出图：`uv run python scripts/injection-before-2d/plot_injection_before_2d.py --run-id 20260911-contract-v3-06`，只画实跑范围前 30 条（ep0～29），每组 7 张、共 98 张，产物放本目录 `figures/<任务>/<难度>/`（已 gitignore 不入库，文档链接指向本地文件，clone 后先跑一次出图），成功打 `PLOT2D_BEFORE=PASS groups=14 files=98 episodes=30`；xhard 视频组的事件图按最大 swap 次数画「①全部 + 第 1～5 次」六个面板；
-> - 生成第二节的事件表：`uv run python scripts/injection-before-2d/event_tables.py --run-id 20260911-contract-v3-06 --write`（「取值域」「分配」两列取自清单记录的契约，本脚本只算「结果分布」列），成功打 `EVENT_TABLES=WRITTEN groups=14 rows=156`；
+> - 出图：`uv run python scripts/injection-before-2d/plot_injection_before_2d.py --run-id 20260911-contract-v3-07`，只画实跑范围前 30 条（ep0～29），每组 7 张、共 98 张，产物放本目录 `figures/<任务>/<难度>/`（已 gitignore 不入库，文档链接指向本地文件，clone 后先跑一次出图），成功打 `PLOT2D_BEFORE=PASS groups=14 files=98 episodes=30`；xhard 视频组的事件图按最大 swap 次数画「①全部 + 第 1～5 次」六个面板；
+> - 生成第二节的事件表：`uv run python scripts/injection-before-2d/event_tables.py --run-id 20260911-contract-v3-07 --write`（「取值域」「分配」两列取自清单记录的契约，本脚本只算「结果分布」列），成功打 `EVENT_TABLES=WRITTEN groups=14 rows=156`；
 > - 核对文档链接、产物张数与事件表是否漂移：`uv run python scripts/injection-before-2d/check_doc_links.py`，成功打 `DOC_LINKS=PASS … files=77/77 … tables=PASS`。
 
 ## 一、分布是怎么生成的
