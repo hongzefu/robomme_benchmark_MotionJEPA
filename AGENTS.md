@@ -1502,3 +1502,8 @@
 - 用户指令原话：「综述你产出的文件结构 只保留这次的产物 之前的全部删除」。
 - 做了什么：按 `10.67` 同一口径删除 `artifacts/injection/20260911-contract-v3-07`（185 GB）、`20260912-contract-v3-08`（7 GB）、`20260912-contract-v3-09`（7 GB）与未跟踪的 `artifacts/logs/`（380 KB），`git rm --cached` 其 107 个跟踪小文件；`docs/validation/newtask-v2/` 下 07/08/09 的报告保留作记录。`/data` 余量 1.7 TB → 1.9 TB。`artifacts/` 现只有 `injection/20260912-contract-v3-10/`（1.1 TB 中约 846 GB 为 h5/mp4）。
 - 后果与未做：`scripts/injection-before-2d/`（数轴／跑前分布／事件表／`check_doc_links.py`）默认运行编号仍是 07，其数据源已删，`check_doc_links.py` 现报 `20260911-contract-v3-07 的清单没有记录契约`；按 10 重出这套图表与文档属另一项工作，未做。
+
+### 2026-09-12 America/Detroit — 删除 train 中被拒绝条目的 h5，回放视频保留（`10.78`）
+
+- 用户指令原话：「train中被拒绝的删除h5 replay视频不要删除」。
+- 做了什么：按 `delivery_manifest.json` 各组 `failures` 逐条查 `hdf5_files/`，46 条拒绝条里只有 3 条还有 h5（BinFill/easy ep125、ep146 与 BinFill/hard ep152，demo 转换失败后保留的单遍原件，300／485／701 MB），已删除；其余 43 条（环境报告失败、超时、碰撞拒绝）本来就没有 h5。视频一个未动（三条的 mp4 仍在）。删后 `feasibility/P01x20` 下 h5 恰为 1796 个 = 通过条数（正式 1600 + spare 196）。
