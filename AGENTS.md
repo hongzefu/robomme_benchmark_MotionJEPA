@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 当前版本对原始训练种子生成的非布局差异对抗审计 | 审计完成；「仅布局不同」被反例否定 | 对比 `c0e7f04` 与远端已核验的 `3a5951a834ea014f63724647ab0bc091eb9f109d`：07 BinFill 中／高档生成数减少 2，目标色规则改变，86 条成功轨迹复制为模拟演示；easy ep0 全部 678 对帧的 12882 个非改写字段逐字节相同；RouteStick 规格排除连续三段同方向；相关短测 41 passed，4.02 秒；[完整审计与复现命令](docs/validation/newtask-v2/20260912-train-nonlayout-audit.md) | 当前原生默认路径未重跑新旧仿真对拍；不将旧原值结果迁移为07一致性证明。本轮不改生成行为 |
 | `artifacts/` 清理：除 07 外全部删除（`10.67`） | 完成 | 删除前 `artifacts/` 约 745 GB（injection 463 GB：04 121 GB、05 107 GB、06 44 GB、02 7.1 GB、01 579 MB、03 2.9 MB；parallel-calibration 39 GB、parity 32 GB、native-baseline 25 GB、xhard-smoke 3.3 GB、smoke 1.3 GB、keyframes 362 MB、review 242 MB 等），删后只剩 `artifacts/injection/20260911-contract-v3-07`（185 GB）与 `artifacts/logs/20260911-contract-v3-07`；git 跟踪的 04/05/06 小文件 45 个一并 `git rm`；`/data` 可用 2.2 TB → 2.6 TB；受影响测试 17 条按既有 `skipif` 跳过、151 通过 | 文档里指向 04/05/06 `artifacts/injection/<编号>/specs` 的历史链接已失效，仅作历史记录 |
 | 07 全量重出：pebble 单条 600 秒超时、BinFill 直出模拟 demo（路线 B）、数轴慢条剔除（运行编号 `20260911-contract-v3-07`，`10.64`～`10.66`） | 完成 | 14 组 × 30 = 420 条：`RUN=PASS`、`FEASIBILITY succeeded=410`、超时 5（04／05／06 三轮卡死的同五个 seed，600～626 秒被自动终止）、规划失败 5；`VIDEO_DECODE mismatches=0`、`DELIVERY=PASS`；BinFill 86 条全部直出 demo（`final==2×original`）；数轴 `WINDOWS_EXTRACT groups=14 episodes=409 excluded_slow=1`（VideoUnmaskSwap/xhard ep5）、`DOC_LINKS=PASS` | 剔除清单交用户复核；5 条卡死 seed 与 BinFill「环境报告失败」根因未查 |
 | 注入链路搬入 `scripts/injection/`、取值域契约 JSON v1／v2、BinFill 对齐 heldout 重冻结（运行编号 `20260911-contract-v2-05`） | 代码搬迁、契约 v1／v2、v2 重冻结与跑前图完成；本轮不实跑仿真 | 搬迁后对 04 重跑 `check` 全 PASS（`SPEC_REPRODUCIBLE compared=1100 differences=0`）；`CONTRACT_DERIVED=PASS fields=155 mismatches=0 overrides=0`（v1）／`mismatches=6 overrides=2 problems=0`（v2）；v1 契约驱动生成器对 04 的 1100 条 `spec_sha256` 逐条相同；`EVENT_TABLES=PASS rows=125 drift=0`（04+v1）；05：`PLAN=OK specs=1100 elapsed_s=179.1`、`CONTRACT_DERIVED`／`SPEC_SCOPE`／`COVERAGE_QUOTA`／`STATIC_GEOMETRY`／`COLLISION_GEOMETRY`／`COLLISION_SWEEP min_g_m=0.00042638`／`SPEC_REPRODUCIBLE` 全 PASS（`CHECK=PASS elapsed_s=357.1`）、`PLOT2D_BEFORE=PASS files=77`、`DOC_LINKS=PASS tables=PASS drift=0`；除 BinFill medium／hard 外 9 组规格与 04 逐条相同。详见 [scripts/NEW_VALUE_CONTRACT_CHANGELOG.md](scripts/NEW_VALUE_CONTRACT_CHANGELOG.md) 与计划第 5.9.4 节 | 05 的 330 条实跑、对拍与跑后图未做；04 的实跑结论不迁移到 05 |
@@ -238,6 +239,20 @@
 | newtask-v2 计划对抗审查与修订（2.24） | 完成（文档、快照补录、账本） | 11 路只读对抗审查；补齐随机流清单与疑似旧错误清单，改写 seed 入口、两次 reset、导入顺序因果链、防漂移检查对象；按用户决策改写确定性退出路径、预算口径、PNG 留档、①依赖③、旧测试工厂保留、12 任务保留、A 路 worktree、清理后抽样复验；JSON 只增不改 | 等用户授权后按修订计划实施；本轮未创建分支或 worktree、未生成、未对拍 |
 
 ## 追加式执行日志
+
+### 2026-09-12 America/Detroit — 当前版本对原始训练种子生成的非布局差异对抗审计：开始
+
+- 用户要求：原话「对抗验证 这一版本的生成 除了环境的布局有所不同外」「其他和 https://github.com/hongzefu/robomme_benchmark_MotionJEPA/tree/dataset-gen-NewSeed 生成原始的train seed 有什么区别」。
+- 范围与计划：以 `c0e7f04` 和远端已核验的 `3a5951a834ea014f63724647ab0bc091eb9f109d` 为代码锚点，先区分未启用注入的默认入口与 07 规格注入，再并行审查四环境及公共组件、取值域与动作规格、历史对拍证据；核验现存产物中的非布局反例，逐项给出代码锚点和证据边界。只作审计与必要的文档留档，不修改或覆盖 `src/robomme/`，不重跑全量生成。
+- 初始状态：工作区干净；当前分支 `newtask-v2`；`command -v uv` 返回 `/home/hongzefu/.local/bin/uv`。网页抓取未成功，已通过仓库远端只读查询确认分支 SHA，并使用对应 Git 对象进行比较。
+- 已发现线索：当前入口存在显式 `--binfill-demo`、600 秒单条超时和规格注入分支；这些线索仍需与 07 的实际参数及 HDF5 核验后再下结论。
+
+### 2026-09-12 America/Detroit — 非布局差异审计：核心反例完成实测
+
+- 代码证据：`_planner_classes`、`_execute_tasks`、`_write_metadata` 与基线 AST 完全相同；四环境相机、机器人加载、观察与成功判断方法 AST 相同；录像器和求解器文件没有变化。依赖锁解析后只新增 `pebble==5.2.2`，原锁定包版本未变。
+- 非布局反例：契约 v3 将 BinFill medium／hard 方块总数从原 8～10／10～12 改为 6～8／8～10，并要求每个目标颜色至少投入一个；RouteStick 的跨 episode 方向均衡排除了连续三段同方向。07 三个新增 xhard 与缺席的 VideoRepick hard 也改变任务覆盖。
+- 产物实测：07 共 420 条结果、410 个成功 HDF5，86 条成功 BinFill 全部转换；BinFill easy ep0 的 678 对帧共 12882 个非改写 dataset、444664566 字节全部相同，前半 `is_video_demo=True`、`is_completed=False`。数轴剔除的 VideoUnmaskSwap xhard ep5 HDF5 仍在且末帧完成，未将统计剔除误当原数据删除。
+- 验证：`command -v uv && timeout 240s uv run --no-sync python -m pytest tests/lightweight/test_seed_layout.py tests/lightweight/test_binfill_demo_duplicate.py tests/lightweight/test_episode_timeout.py tests/lightweight/test_native_sampling_config.py -q`，退出 0，`41 passed in 4.02s`。本轮没有执行仿真生成；上述测试与现存产物核验不能替代当前版本的全量原值逐帧对拍。
 
 ### 2026-07-13 — `/init`
 
@@ -1451,3 +1466,10 @@
 - 实施：先 `du` 与 `git ls-files artifacts` 留档（62 个跟踪文件）；`artifacts/*` 里除 `injection/`、`logs/` 外的目录整体删除；`artifacts/injection/*` 除 `20260911-contract-v3-07` 外逐目录 `git rm -r --cached` 再删除（04 14 个、05 14 个、06 17 个跟踪文件）；`artifacts/logs/*` 除 07 外删除；被删的还有本轮冒烟目录 `artifacts/smoke/`、`artifacts/parity/20260912-pebble-check`、`artifacts/parity-evidence/20260912-pebble-check`。删除前各目录大小：injection 463 GB（07 185、04 121、05 107、06 44、02 7.1、01 0.58、03 0.003）、parallel-calibration 39 GB、parity 32 GB、native-baseline 25 GB、xhard-smoke 3.3 GB、smoke 1.3 GB、keyframes 362 MB、review 242 MB、parity-evidence 74 MB、test-tmp 9.9 MB、collision-preplan 7.7 MB、parity-pack 5.9 MB、parity-incremental 5.6 MB、logs 1.7 MB、collision-replay 16 KB、commit-collision-plan-10.20.md 16 KB。
 - 验证：删后 `artifacts/` 只剩 `injection/20260911-contract-v3-07`（185 GB）与 `logs/20260911-contract-v3-07`；`git ls-files artifacts` 17 个（全是 07）；`df /data` 可用 2.2 TB → 2.6 TB；`tests/lightweight/{test_injection_contract,test_operand_scope,test_episode_specs,test_bin_collision,test_native_sampling_config,test_native_sampling_evidence}.py` → 151 passed, 17 skipped（引用 04/05 冻结规格的用例按既有 `skipif` 跳过）。
 - 当前状态与后续：文档（PIPELINE.md 05/06 段、CHANGELOG 第八节、XHARD 计划、docs/validation 04/05/06 报告）里指向 `artifacts/injection/{04,05,06}/specs` 的链接已失效，作历史记录未改；07 的规格仍是 `OLD_GROUPS_EQUIVALENCE compared=1400 differences=0` 与 06 逐条相同的那份。
+
+### 2026-09-12 America/Detroit — 原始训练种子非布局差异审计：完成留档
+
+- 结果：[完整审计](docs/validation/newtask-v2/20260912-train-nonlayout-audit.md) 按四环境给出非布局差异，并单列种子／难度、随机失败抓取、拒绝／超时、数轴统计与原始数据的边界。`NON_LAYOUT_EQUIVALENCE=FAIL scope=07` 已由现存数据和代码反例成立，不需要假装已做新旧全量仿真。
+- 验证与复现：报告中的 BinFill 全帧读取命令实际执行退出0，`BINFILL_ALL_FIELDS=PASS N=678 timesteps=1356 compared_datasets=12882 compared_bytes=444664566 mismatches=0`；RouteStick 四档400条规格的三连同向检查输出0；BinFill三组配额均34/33/33；`DOC_CHECK=PASS local_links=10 bash_blocks=4`；相关41项短测通过；`git diff --check` 与录像器冻结检查退出0。独立复核确认逐环境数值、方向论证和seed口径准确。
+- 意外与处置：目标分支 VideoUnmaskSwap 的train metadata已有400条，未沿用旧100条假设；07参数摘要仍显示默认211和100条，但实际清单决定14组各30条；原始历史对拍大文件已删除，仅保留轻量报告，明确不宣称可以现场读取旧大文件复验。报告完整列明这些容易误判的边界。
+- 当前状态与后续：本轮只修改本账本并新增审计文档，提交沿用 `10.69`；生成代码、配置和现有产物没有改动。当前默认路径与旧版的仿真逐帧对拍为 `CURRENT_DEFAULT_PARITY=NOT_RUN`，潜在修订需后续另定范围。
