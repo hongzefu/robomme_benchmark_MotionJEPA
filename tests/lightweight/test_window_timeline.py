@@ -237,7 +237,7 @@ def test_groups_是十四组且与注入组列表一致(wt):
     from scripts.injection.specs import GROUPS_V3
 
     assert wt.GROUPS == list(GROUPS_V3) and len(wt.GROUPS) == 14
-    assert wt.GROUPS[-3:] == [("RouteStick", "xhard"), ("VideoUnmaskSwap", "xhard"), ("VideoRepick", "xhard")]
+    assert wt.GROUPS[3:7] == [("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"), ("RouteStick", "xhard")]
 
 
 def test_跑前图的swap颜色扩到五色且前三色不变():

@@ -223,6 +223,25 @@
 | 每段去哪（有向边） | 线性邻接 ±1；允许回退 | 合法候选内平衡 | 8→6:77 0→2:73 6→4:71 6→8:70 2→0:65 4→2:65 4→6:65 2→4:64（共 550 段）；未覆盖 无 |
 | 每段绕行方向 `directions` | clockwise / counterclockwise | 合法候选内平衡 | clockwise:275 counterclockwise:275（共 550 段） |
 
+### RouteStick / xhard（100 条）
+
+#### 初始化（场景开局是什么样：物体种类、数量、位姿、藏物关系）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `rotation_deg`（整排绕世界原点转） | [-30°, 30°] | 分层 | 10 箱各 10，实测 [-29.63, 29.50] |
+| `obstacle_rgb[4]`（4 根障碍柱颜色） | 每根一个随机 RGB，各通道 [0,1) | `rng_ep` 随机（只影响观感） | 通道值 箱计数 120,123,121,121,121,129,116,115,122,112，实测 [0.000, 0.999]（共 1200 个通道值） |
+| 9 个格点位置 | 由 `rotation_deg` 唯一确定 | 推出 | 推出：900 个格点 x 实测 [-0.2254, 0.0515]，y 实测 [-0.2973, 0.2973] |
+
+#### 事件（任务要做什么：投入／抓取／路线／交换的选择）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `L`（走几段） | 8～10 | 配额 | 8:34 9:33 10:33 |
+| 起点 `nodes[0]` | 0/2/4/6/8 | 配额各 20 | 0:20 2:20 4:20 6:20 8:20 |
+| 每段去哪（有向边） | 线性邻接 ±1；允许回退 | 合法候选内平衡 | 8→6:122 0→2:115 6→4:114 6→8:113 2→0:110 2→4:110 4→2:108 4→6:107（共 899 段）；未覆盖 无 |
+| 每段绕行方向 `directions` | clockwise / counterclockwise | 合法候选内平衡 | clockwise:449 counterclockwise:450（共 899 段） |
+
 ### VideoUnmaskSwap / easy（100 条）
 
 #### 初始化（场景开局是什么样：物体种类、数量、位姿、藏物关系）
@@ -301,6 +320,32 @@
 | `pick_order`（视频后抓取顺序） | `selected` 的前 `n_picks` 个 | 推出 | 推出：bin_0→bin_1:17 bin_0→bin_2:17 bin_1→bin_0:17 bin_1→bin_2:17 bin_2→bin_0:16 bin_2→bin_1:16 |
 | `swap_pairs[k].partner`（交换搭档） | 交换开始时的水平最近邻，等距取序号小者 | 推出（执行时核验，不符即失败） | 推出：bin_2→bin_1:66 bin_0→bin_3:58 bin_1→bin_2:55 bin_0→bin_1:16 bin_1→bin_0:14 bin_3→bin_0:12 bin_0→bin_2:8 bin_2→bin_0:8 bin_2→bin_3:7 bin_1→bin_3:5 bin_3→bin_1:1（共 250 次交换）；未覆盖 bin_3→bin_2 |
 
+### VideoUnmaskSwap / xhard（100 条）
+
+#### 初始化（场景开局是什么样：物体种类、数量、位姿、藏物关系）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `layout_type`（锚点布局） | 四点（固定） | 常量 | region4:100 |
+| `selected`（藏物容器排序） | 前三个容器的 6 种排列 | 配额 | 0-1-2:17 0-2-1:17 1-0-2:17 1-2-0:17 2-0-1:16 2-1-0:16 |
+| `color_order`（藏物颜色顺序） | 红绿蓝 6 种排列 | 配额 | red-green-blue:17 red-blue-green:17 green-red-blue:17 green-blue-red:17 blue-red-green:16 blue-green-red:16 |
+| `theta_rad`（整组绕原点转） | [0, 180] 弧度（原单位就是弧度，不是度） | 分层；被拒同粗箱重抽 | 10 箱各 10，实测 [1.71, 179.29] |
+| `bins[i].xy`、`yaw_deg`（每个容器） | 锚点旋转后各偏移 ≤ 0.0425，yaw 0～90° | 分层；被拒同粗箱重抽 | bin_0：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0419, 0.0423]，yaw 实测 [0.49, 89.36]；bin_1：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0420, 0.0422]，yaw 实测 [0.14, 89.99]；bin_2：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0424, 0.0422]，yaw 实测 [0.83, 89.93]；bin_3：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0420, 0.0423]，yaw 实测 [0.45, 89.61] |
+| `hidden`（颜色→容器） | 由 `selected` + `color_order` 算出 | 推出 | 推出：green→bin_1:41 red→bin_0:38 blue→bin_0:35 blue→bin_2:34 red→bin_2:34 green→bin_2:32 blue→bin_1:31 red→bin_1:28 green→bin_0:27（共 300 项）；未覆盖 无 |
+| `empty`（空容器） | 不在 `selected` 里的容器 | 推出 | 推出：bin_3:100 |
+| `collision.candidates_used`（冻结用了第几个候选） | 1～256 | 几何／碰撞被拒后重抽的落地结果 | 1:95 2:4 4:1 |
+
+#### 事件（任务要做什么：投入／抓取／路线／交换的选择）
+
+| 事件 | 取值域 | 分配 | 结果分布 |
+|---|---|---|---|
+| `n_swaps`（交换几次） | 4～5 | 配额 | 4:50 5:50 |
+| `n_picks`（视频后抓几个） | 2 | 配额 | 2:100 |
+| 前两个发起者 `swap_initiators[:2]` | 3 取 2 的 6 种有序对（原代码把藏物序号当生成序号用，照抄） | 配额 | bin_0-bin_1:17 bin_0-bin_2:17 bin_1-bin_0:17 bin_1-bin_2:17 bin_2-bin_0:16 bin_2-bin_1:16 |
+| 第三个发起者 `swap_initiators[2]` | 其余生成序号 | 合法候选内平衡 | bin_3:26 bin_1:25 bin_2:25 bin_0:24；未覆盖 无 |
+| `pick_order`（视频后抓取顺序） | `selected` 的前 `n_picks` 个 | 推出 | 推出：bin_0→bin_1:17 bin_0→bin_2:17 bin_1→bin_0:17 bin_1→bin_2:17 bin_2→bin_0:16 bin_2→bin_1:16 |
+| `swap_pairs[k].partner`（交换搭档） | 交换开始时的水平最近邻，等距取序号小者；第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者） | 推出（执行时核验，不符即失败） | 推出：bin_1→bin_2:112 bin_2→bin_1:110 bin_0→bin_3:107 bin_3→bin_0:23 bin_0→bin_1:22 bin_2→bin_0:20 bin_1→bin_0:19 bin_0→bin_2:13 bin_2→bin_3:12 bin_1→bin_3:9 bin_3→bin_2:2 bin_3→bin_1:1（共 450 次交换）；未覆盖 无 |
+
 ### VideoRepick / easy（100 条）
 
 > 注：VideoRepick 的三块方块在规格里 `object_id` 是 `bin_0/1/2`（沿用源码命名），下表照此写。
@@ -349,51 +394,6 @@
 | 后续发起者顺序 `tail` | 另外两块的 2 种排列 | 配额 | bin_0-bin_1:14 bin_0-bin_2:20 bin_1-bin_0:19 bin_1-bin_2:16 bin_2-bin_0:13 bin_2-bin_1:18 |
 | `swap_pairs[k].partner`（交换搭档） | 交换开始时的水平最近邻，等距取序号小者 | 推出（执行时核验，不符即失败） | 推出：bin_0→bin_2:50 bin_1→bin_2:48 bin_2→bin_0:43 bin_2→bin_1:42 bin_1→bin_0:35 bin_0→bin_1:32（共 250 次交换）；未覆盖 无 |
 
-### RouteStick / xhard（100 条）
-
-#### 初始化（场景开局是什么样：物体种类、数量、位姿、藏物关系）
-
-| 事件 | 取值域 | 分配 | 结果分布 |
-|---|---|---|---|
-| `rotation_deg`（整排绕世界原点转） | [-30°, 30°] | 分层 | 10 箱各 10，实测 [-29.63, 29.50] |
-| `obstacle_rgb[4]`（4 根障碍柱颜色） | 每根一个随机 RGB，各通道 [0,1) | `rng_ep` 随机（只影响观感） | 通道值 箱计数 120,123,121,121,121,129,116,115,122,112，实测 [0.000, 0.999]（共 1200 个通道值） |
-| 9 个格点位置 | 由 `rotation_deg` 唯一确定 | 推出 | 推出：900 个格点 x 实测 [-0.2254, 0.0515]，y 实测 [-0.2973, 0.2973] |
-
-#### 事件（任务要做什么：投入／抓取／路线／交换的选择）
-
-| 事件 | 取值域 | 分配 | 结果分布 |
-|---|---|---|---|
-| `L`（走几段） | 8～10 | 配额 | 8:34 9:33 10:33 |
-| 起点 `nodes[0]` | 0/2/4/6/8 | 配额各 20 | 0:20 2:20 4:20 6:20 8:20 |
-| 每段去哪（有向边） | 线性邻接 ±1；允许回退 | 合法候选内平衡 | 8→6:122 0→2:115 6→4:114 6→8:113 2→0:110 2→4:110 4→2:108 4→6:107（共 899 段）；未覆盖 无 |
-| 每段绕行方向 `directions` | clockwise / counterclockwise | 合法候选内平衡 | clockwise:449 counterclockwise:450（共 899 段） |
-
-### VideoUnmaskSwap / xhard（100 条）
-
-#### 初始化（场景开局是什么样：物体种类、数量、位姿、藏物关系）
-
-| 事件 | 取值域 | 分配 | 结果分布 |
-|---|---|---|---|
-| `layout_type`（锚点布局） | 四点（固定） | 常量 | region4:100 |
-| `selected`（藏物容器排序） | 前三个容器的 6 种排列 | 配额 | 0-1-2:17 0-2-1:17 1-0-2:17 1-2-0:17 2-0-1:16 2-1-0:16 |
-| `color_order`（藏物颜色顺序） | 红绿蓝 6 种排列 | 配额 | red-green-blue:17 red-blue-green:17 green-red-blue:17 green-blue-red:17 blue-red-green:16 blue-green-red:16 |
-| `theta_rad`（整组绕原点转） | [0, 180] 弧度（原单位就是弧度，不是度） | 分层；被拒同粗箱重抽 | 10 箱各 10，实测 [1.71, 179.29] |
-| `bins[i].xy`、`yaw_deg`（每个容器） | 锚点旋转后各偏移 ≤ 0.0425，yaw 0～90° | 分层；被拒同粗箱重抽 | bin_0：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0419, 0.0423]，yaw 实测 [0.49, 89.36]；bin_1：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0420, 0.0422]，yaw 实测 [0.14, 89.99]；bin_2：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0424, 0.0422]，yaw 实测 [0.83, 89.93]；bin_3：dx/dy/yaw 各 10 箱各 10，偏移实测 [-0.0420, 0.0423]，yaw 实测 [0.45, 89.61] |
-| `hidden`（颜色→容器） | 由 `selected` + `color_order` 算出 | 推出 | 推出：green→bin_1:41 red→bin_0:38 blue→bin_0:35 blue→bin_2:34 red→bin_2:34 green→bin_2:32 blue→bin_1:31 red→bin_1:28 green→bin_0:27（共 300 项）；未覆盖 无 |
-| `empty`（空容器） | 不在 `selected` 里的容器 | 推出 | 推出：bin_3:100 |
-| `collision.candidates_used`（冻结用了第几个候选） | 1～256 | 几何／碰撞被拒后重抽的落地结果 | 1:95 2:4 4:1 |
-
-#### 事件（任务要做什么：投入／抓取／路线／交换的选择）
-
-| 事件 | 取值域 | 分配 | 结果分布 |
-|---|---|---|---|
-| `n_swaps`（交换几次） | 4～5 | 配额 | 4:50 5:50 |
-| `n_picks`（视频后抓几个） | 2 | 配额 | 2:100 |
-| 前两个发起者 `swap_initiators[:2]` | 3 取 2 的 6 种有序对（原代码把藏物序号当生成序号用，照抄） | 配额 | bin_0-bin_1:17 bin_0-bin_2:17 bin_1-bin_0:17 bin_1-bin_2:17 bin_2-bin_0:16 bin_2-bin_1:16 |
-| 第三个发起者 `swap_initiators[2]` | 其余生成序号 | 合法候选内平衡 | bin_3:26 bin_1:25 bin_2:25 bin_0:24；未覆盖 无 |
-| `pick_order`（视频后抓取顺序） | `selected` 的前 `n_picks` 个 | 推出 | 推出：bin_0→bin_1:17 bin_0→bin_2:17 bin_1→bin_0:17 bin_1→bin_2:17 bin_2→bin_0:16 bin_2→bin_1:16 |
-| `swap_pairs[k].partner`（交换搭档） | 交换开始时的水平最近邻，等距取序号小者；第 k 次发起者 = swap_initiators[k mod 3]（4～5 次时循环沿用 3 个发起者） | 推出（执行时核验，不符即失败） | 推出：bin_1→bin_2:112 bin_2→bin_1:110 bin_0→bin_3:107 bin_3→bin_0:23 bin_0→bin_1:22 bin_2→bin_0:20 bin_1→bin_0:19 bin_0→bin_2:13 bin_2→bin_3:12 bin_1→bin_3:9 bin_3→bin_2:2 bin_3→bin_1:1（共 450 次交换）；未覆盖 无 |
-
 ### VideoRepick / xhard（100 条）
 
 > 注：VideoRepick 的三块方块在规格里 `object_id` 是 `bin_0/1/2`（沿用源码命名），下表照此写。
@@ -437,13 +437,13 @@
 | RouteStick/easy | [图 1](figures/RouteStick/easy/1_positions.png) | [图 2](figures/RouteStick/easy/2_events.png) | [1](figures/RouteStick/easy/3_episodes_p1.png) [2](figures/RouteStick/easy/3_episodes_p2.png) [3](figures/RouteStick/easy/3_episodes_p3.png) [4](figures/RouteStick/easy/3_episodes_p4.png) [5](figures/RouteStick/easy/3_episodes_p5.png) |
 | RouteStick/medium | [图 1](figures/RouteStick/medium/1_positions.png) | [图 2](figures/RouteStick/medium/2_events.png) | [1](figures/RouteStick/medium/3_episodes_p1.png) [2](figures/RouteStick/medium/3_episodes_p2.png) [3](figures/RouteStick/medium/3_episodes_p3.png) [4](figures/RouteStick/medium/3_episodes_p4.png) [5](figures/RouteStick/medium/3_episodes_p5.png) |
 | RouteStick/hard | [图 1](figures/RouteStick/hard/1_positions.png) | [图 2](figures/RouteStick/hard/2_events.png) | [1](figures/RouteStick/hard/3_episodes_p1.png) [2](figures/RouteStick/hard/3_episodes_p2.png) [3](figures/RouteStick/hard/3_episodes_p3.png) [4](figures/RouteStick/hard/3_episodes_p4.png) [5](figures/RouteStick/hard/3_episodes_p5.png) |
+| RouteStick/xhard（06 新增） | [图 1](figures/RouteStick/xhard/1_positions.png) | [图 2](figures/RouteStick/xhard/2_events.png) | [1](figures/RouteStick/xhard/3_episodes_p1.png) [2](figures/RouteStick/xhard/3_episodes_p2.png) [3](figures/RouteStick/xhard/3_episodes_p3.png) [4](figures/RouteStick/xhard/3_episodes_p4.png) [5](figures/RouteStick/xhard/3_episodes_p5.png) |
 | VideoUnmaskSwap/easy | [图 1](figures/VideoUnmaskSwap/easy/1_positions.png) | [图 2](figures/VideoUnmaskSwap/easy/2_events.png) | [1](figures/VideoUnmaskSwap/easy/3_episodes_p1.png) [2](figures/VideoUnmaskSwap/easy/3_episodes_p2.png) [3](figures/VideoUnmaskSwap/easy/3_episodes_p3.png) [4](figures/VideoUnmaskSwap/easy/3_episodes_p4.png) [5](figures/VideoUnmaskSwap/easy/3_episodes_p5.png) |
 | VideoUnmaskSwap/medium | [图 1](figures/VideoUnmaskSwap/medium/1_positions.png) | [图 2](figures/VideoUnmaskSwap/medium/2_events.png) | [1](figures/VideoUnmaskSwap/medium/3_episodes_p1.png) [2](figures/VideoUnmaskSwap/medium/3_episodes_p2.png) [3](figures/VideoUnmaskSwap/medium/3_episodes_p3.png) [4](figures/VideoUnmaskSwap/medium/3_episodes_p4.png) [5](figures/VideoUnmaskSwap/medium/3_episodes_p5.png) |
 | VideoUnmaskSwap/hard | [图 1](figures/VideoUnmaskSwap/hard/1_positions.png) | [图 2](figures/VideoUnmaskSwap/hard/2_events.png) | [1](figures/VideoUnmaskSwap/hard/3_episodes_p1.png) [2](figures/VideoUnmaskSwap/hard/3_episodes_p2.png) [3](figures/VideoUnmaskSwap/hard/3_episodes_p3.png) [4](figures/VideoUnmaskSwap/hard/3_episodes_p4.png) [5](figures/VideoUnmaskSwap/hard/3_episodes_p5.png) |
+| VideoUnmaskSwap/xhard（06 新增） | [图 1](figures/VideoUnmaskSwap/xhard/1_positions.png) | [图 2](figures/VideoUnmaskSwap/xhard/2_events.png) | [1](figures/VideoUnmaskSwap/xhard/3_episodes_p1.png) [2](figures/VideoUnmaskSwap/xhard/3_episodes_p2.png) [3](figures/VideoUnmaskSwap/xhard/3_episodes_p3.png) [4](figures/VideoUnmaskSwap/xhard/3_episodes_p4.png) [5](figures/VideoUnmaskSwap/xhard/3_episodes_p5.png) |
 | VideoRepick/easy | [图 1](figures/VideoRepick/easy/1_positions.png) | [图 2](figures/VideoRepick/easy/2_events.png) | [1](figures/VideoRepick/easy/3_episodes_p1.png) [2](figures/VideoRepick/easy/3_episodes_p2.png) [3](figures/VideoRepick/easy/3_episodes_p3.png) [4](figures/VideoRepick/easy/3_episodes_p4.png) [5](figures/VideoRepick/easy/3_episodes_p5.png) |
 | VideoRepick/medium | [图 1](figures/VideoRepick/medium/1_positions.png) | [图 2](figures/VideoRepick/medium/2_events.png) | [1](figures/VideoRepick/medium/3_episodes_p1.png) [2](figures/VideoRepick/medium/3_episodes_p2.png) [3](figures/VideoRepick/medium/3_episodes_p3.png) [4](figures/VideoRepick/medium/3_episodes_p4.png) [5](figures/VideoRepick/medium/3_episodes_p5.png) |
-| RouteStick/xhard（06 新增） | [图 1](figures/RouteStick/xhard/1_positions.png) | [图 2](figures/RouteStick/xhard/2_events.png) | [1](figures/RouteStick/xhard/3_episodes_p1.png) [2](figures/RouteStick/xhard/3_episodes_p2.png) [3](figures/RouteStick/xhard/3_episodes_p3.png) [4](figures/RouteStick/xhard/3_episodes_p4.png) [5](figures/RouteStick/xhard/3_episodes_p5.png) |
-| VideoUnmaskSwap/xhard（06 新增） | [图 1](figures/VideoUnmaskSwap/xhard/1_positions.png) | [图 2](figures/VideoUnmaskSwap/xhard/2_events.png) | [1](figures/VideoUnmaskSwap/xhard/3_episodes_p1.png) [2](figures/VideoUnmaskSwap/xhard/3_episodes_p2.png) [3](figures/VideoUnmaskSwap/xhard/3_episodes_p3.png) [4](figures/VideoUnmaskSwap/xhard/3_episodes_p4.png) [5](figures/VideoUnmaskSwap/xhard/3_episodes_p5.png) |
 | VideoRepick/xhard（06 新增） | [图 1](figures/VideoRepick/xhard/1_positions.png) | [图 2](figures/VideoRepick/xhard/2_events.png) | [1](figures/VideoRepick/xhard/3_episodes_p1.png) [2](figures/VideoRepick/xhard/3_episodes_p2.png) [3](figures/VideoRepick/xhard/3_episodes_p3.png) [4](figures/VideoRepick/xhard/3_episodes_p4.png) [5](figures/VideoRepick/xhard/3_episodes_p5.png) |
 
 示例（VideoUnmaskSwap/medium 的图 1、图 2 与图 3 第 1 页，RouteStick/hard 的图 2）：

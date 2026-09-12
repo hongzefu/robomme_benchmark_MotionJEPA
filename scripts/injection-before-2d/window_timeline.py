@@ -41,11 +41,10 @@ END = "<!-- AUTO:WINDOW_TABLES END -->"
 # 2026-09-11 加 xhard 三组；旧 11 组的轨迹来自 05 实跑，xhard 来自 06（--rollout-run-id 可给多个运行，后者覆盖前者）。
 GROUPS: list[tuple[str, str]] = [
     ("BinFill", "easy"), ("BinFill", "medium"), ("BinFill", "hard"),
-    ("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"),
-    ("VideoUnmaskSwap", "easy"), ("VideoUnmaskSwap", "medium"), ("VideoUnmaskSwap", "hard"),
-    ("VideoRepick", "easy"), ("VideoRepick", "medium"),
-    ("RouteStick", "xhard"), ("VideoUnmaskSwap", "xhard"), ("VideoRepick", "xhard"),
-]
+    ("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"), ("RouteStick", "xhard"),
+    ("VideoUnmaskSwap", "easy"), ("VideoUnmaskSwap", "medium"), ("VideoUnmaskSwap", "hard"), ("VideoUnmaskSwap", "xhard"),
+    ("VideoRepick", "easy"), ("VideoRepick", "medium"), ("VideoRepick", "xhard"),
+]  # 按任务分组、每任务 easy→medium→hard→xhard（2026-09-11 用户要求总览按 task 排列）
 WIN, STRIDE, BUDGETS = 33, 16, (32, 8)
 BANDS = ("最短", "中位", "最长")
 SIMULATED_DEMO_TASKS = ("BinFill",)

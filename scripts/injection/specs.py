@@ -68,8 +68,15 @@ XHARD_GROUPS: tuple[tuple[str, str], ...] = (
     ("VideoUnmaskSwap", "xhard"),
     ("VideoRepick", "xhard"),
 )
-#: 契约 v3 的完整组列表（14 组）。运行期（plan／check／run）不读这两个常量，一律由契约或清单驱动。
-GROUPS_V3: tuple[tuple[str, str], ...] = GROUPS + XHARD_GROUPS
+#: 契约 v3 的完整组列表（14 组），**按任务分组、每任务 easy→medium→hard→xhard**——这是出图与文档的展示顺序
+#: （2026-09-11 用户要求总览「按照task来排列」）。运行期（plan／check／run）不读这两个常量，一律由契约或清单驱动；
+#: v3 契约 JSON 里的组键序仍是 11 + 3（冻结时的顺序），与此无关。
+GROUPS_V3: tuple[tuple[str, str], ...] = (
+    ("BinFill", "easy"), ("BinFill", "medium"), ("BinFill", "hard"),
+    ("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"), ("RouteStick", "xhard"),
+    ("VideoUnmaskSwap", "easy"), ("VideoUnmaskSwap", "medium"), ("VideoUnmaskSwap", "hard"), ("VideoUnmaskSwap", "xhard"),
+    ("VideoRepick", "easy"), ("VideoRepick", "medium"), ("VideoRepick", "xhard"),
+)
 
 #: ``BinFill`` 的颜色池顺序（``native_semantics.BinFill.spawn_color_order``），只是索引口径。
 SPAWN_COLOR_ORDER = ("red", "blue", "green")

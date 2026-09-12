@@ -43,7 +43,12 @@ GROUPS = (
 EXCLUDED_GROUPS = (("VideoRepick", "hard"),)
 #: 2026-09-11 用户决定新增的 xhard 三组；``GROUPS`` 保持 11 组（v1／v2 的输入清单）不动。
 XHARD_GROUPS = (("RouteStick", "xhard"), ("VideoUnmaskSwap", "xhard"), ("VideoRepick", "xhard"))
-GROUPS_V3 = GROUPS + XHARD_GROUPS
+GROUPS_V3 = (
+    ("BinFill", "easy"), ("BinFill", "medium"), ("BinFill", "hard"),
+    ("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"), ("RouteStick", "xhard"),
+    ("VideoUnmaskSwap", "easy"), ("VideoUnmaskSwap", "medium"), ("VideoUnmaskSwap", "hard"), ("VideoUnmaskSwap", "xhard"),
+    ("VideoRepick", "easy"), ("VideoRepick", "medium"), ("VideoRepick", "xhard"),
+)  # 按任务分组的展示顺序，与 specs.GROUPS_V3 相同
 
 #: BinFill 对齐 heldout 分支 ``cvpr2026Challenge-heldOutSeed-4-5/4``（commit 2fa5660）的三条 override（v2）。
 HELDOUT_COMMIT = "2fa5660d8b78f31a6735538660d18a8e830bff63"

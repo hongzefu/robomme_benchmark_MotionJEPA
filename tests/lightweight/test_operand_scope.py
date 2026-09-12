@@ -62,7 +62,14 @@ def test_difficulties_of_与组列表常量():
     assert specs.difficulties_of(specs.GROUPS) == {"easy", "medium", "hard"}
     assert specs.difficulties_of(specs.GROUPS_V3) == {"easy", "medium", "hard", "xhard"}
     assert len(specs.GROUPS) == 11 and len(specs.GROUPS_V3) == 14
-    assert specs.GROUPS_V3[:11] == specs.GROUPS
+    assert set(specs.GROUPS_V3) == set(specs.GROUPS) | set(specs.XHARD_GROUPS)
+    # 展示顺序按任务分组：同任务连续，且每任务内 easy→medium→hard→xhard
+    tasks = [t for t, _ in specs.GROUPS_V3]
+    assert tasks == sorted(tasks, key=tasks.index)
+    rank = {"easy": 0, "medium": 1, "hard": 2, "xhard": 3}
+    for task in dict.fromkeys(tasks):
+        diffs = [rank[d] for t, d in specs.GROUPS_V3 if t == task]
+        assert diffs == sorted(diffs), task
     assert specs.XHARD_GROUPS == (("RouteStick", "xhard"), ("VideoUnmaskSwap", "xhard"), ("VideoRepick", "xhard"))
     # 两个模块各留一份常量，必须逐项相同
     assert tuple(contract_build.GROUPS) == specs.GROUPS
