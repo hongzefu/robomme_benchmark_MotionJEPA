@@ -3,7 +3,8 @@
 * 窗口公式与上一会话 artifact「采样窗口与 eval 成功率」的数字逐条对拍；
 * BinFill「同一条重复两遍」的模拟 demo；
 * 31 种 subgoal 文本的短标规则全部命中；
-* 自动表写入／校验往返无漂移。
+* 自动表写入／校验往返无漂移（含慢条剔除列与剔除清单）；
+* BinFill demo 幂等（07 起生成器直出）与慢条剔除（单段过长 / T 远超组中位）。
 不依赖数据集、不开 h5。
 """
 
@@ -134,11 +135,19 @@ def _synthetic_timeline(wt):
     groups["BinFill/easy"] = [wt.simulate_binfill_demo(
         {"episode": 0, "seed": 4000, "total": 249, "demo": 0, "recovery_mode": None,
          "segs": [[0, 103, "pick up the first green cube"], [103, 59, "put it into the bin"], [162, 51, "press the button"], [213, 36, "All tasks completed"]]})]
+    dropped = {"episode": 2, "seed": 16200, "total": 900, "demo": 0, "recovery_mode": None, "run_id": "synthetic",
+               "h5_path": "/tmp/ep2.h5",
+               "segs": [[0, 425, "pick up the cube"], [425, 300, "put it down"], [725, 175, "All tasks completed"]]}
     return {"rollout_run_id": "synthetic", "source": "x", "window": 33, "stride": 16, "budgets": [32, 8], "binfill_simulated_demo": True,
-            "episodes": 3, "groups": groups,
+            "episodes": 3, "episodes_before_exclusion": 4, "groups": groups,
             "skipped": [{"task": "VideoRepick", "difficulty": "easy", "episode": 0, "reason": "OSError"}],
             "failed_rows": [{"task": "BinFill", "difficulty": "easy", "episode": 10, "error_type": "DatasetGenerationError"}],
-            "unknown_labels": {}}
+            "unknown_labels": {},
+            "excluded_slow": [{"task": "RouteStick", "difficulty": "easy", "episode": 2, "seed": 16200, "run_id": "synthetic",
+                               "total": 900, "effective_total": 900, "group_median": 250, "longest_segment_frames": 425,
+                               "longest_segment_label": "抓块", "reasons": ["单段 425 帧 > 400", "T=900 > 2×组中位 250"],
+                               "h5_path": "/tmp/ep2.h5", "row": dropped}],
+            "exclusion_rule": {"max_segment_frames": 400, "t_median_factor": 2.0, "median_basis": "剔除前按组"}}
 
 
 def test_tables_roundtrip(wt, tmp_path):
@@ -271,3 +280,173 @@ def test_extract_多运行后者覆盖前者(wt, tmp_path, monkeypatch):
     assert by_key[("RouteStick", "xhard", 0)]["error_type"] == "Z"
     with pytest.raises(ValueError):
         wt.extract(["only-one"], [a, b])
+
+
+# ── BinFill demo 幂等（2026-09-12）：07 起生成器直出「重复两遍」的 h5 ────────────
+def _binfill_jsonl(tmp_path, total: int, episode: int = 0):
+    """造一个只有一条 BinFill/easy 成功行的 episode_results.jsonl 目录。"""
+    source = tmp_path / "run"
+    source.mkdir()
+    source.joinpath("episode_results.jsonl").write_text(json.dumps(
+        {"task": "BinFill", "difficulty": "easy", "episode": episode, "seed": 4000, "ok": True,
+         "h5_path": str(tmp_path / "fake.h5"), "timestep_count": total, "recovery_mode": None}) + "\n", encoding="utf-8")
+    return source
+
+
+def test_binfill_已录demo不翻倍(wt, tmp_path, monkeypatch):
+    """demo == total/2 的 h5（07 起生成器直出）只校验、不再翻倍，来源记 recorded。"""
+    source = _binfill_jsonl(tmp_path, 400)
+    monkeypatch.setattr(wt, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(wt, "read_episode", lambda path: {
+        "total": 400, "demo": 200,
+        "segs": [[0, 120, "pick up the first blue cube"], [120, 80, "put it into the bin"],
+                 [200, 120, "pick up the first blue cube"], [320, 80, "put it into the bin"]]})
+    payload = wt.extract(["run-07"], [source])
+    rows = payload["groups"]["BinFill/easy"]
+    assert len(rows) == 1 and payload["skipped"] == []
+    row = rows[0]
+    assert (row["total"], row["demo"], row["original_total"]) == (400, 200, 200)
+    assert row["simulated_demo"] is True and row["demo_source"] == "recorded"
+    assert len(row["segs"]) == 4  # 没有被再复制一遍
+    assert payload["binfill_demo_source"] == {"BinFill/easy": "recorded"}
+    assert wt.effective_total(row) == 200
+
+
+def test_binfill_demo前缀不是一半入skipped(wt, tmp_path, monkeypatch):
+    source = _binfill_jsonl(tmp_path, 401)
+    monkeypatch.setattr(wt, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(wt, "read_episode", lambda path: {
+        "total": 401, "demo": 200, "segs": [[0, 200, "pick up the first blue cube"], [200, 201, "put it into the bin"]]})
+    payload = wt.extract(["run-07"], [source])
+    assert payload["groups"]["BinFill/easy"] == []
+    assert len(payload["skipped"]) == 1
+    assert payload["skipped"][0]["reason"] == "BinFill demo 前缀不是全长一半"
+    assert payload["skipped"][0]["episode"] == 0 and payload["binfill_demo_source"] == {}
+
+
+def test_binfill_旧数据仍模拟demo(wt, tmp_path, monkeypatch):
+    """05/06 的旧 h5 没有 demo 前缀 → 仍走 simulate_binfill_demo，来源记 simulated。"""
+    source = _binfill_jsonl(tmp_path, 249)
+    monkeypatch.setattr(wt, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(wt, "read_episode", lambda path: {
+        "total": 249, "demo": 0, "segs": [[0, 130, "pick up the first blue cube"], [130, 119, "put it into the bin"]]})
+    payload = wt.extract(["run-05"], [source])
+    row = payload["groups"]["BinFill/easy"][0]
+    assert (row["total"], row["demo"], row["original_total"], row["demo_source"]) == (498, 249, 249, "simulated")
+    assert payload["binfill_demo_source"] == {"BinFill/easy": "simulated"}
+
+
+# ── 慢条剔除（2026-09-12）────────────────────────────────────────────────────
+def _row(episode: int, total: int, segs: list[list]) -> dict:
+    return {"episode": episode, "seed": 16000 + episode, "run_id": "run-07", "total": total, "demo": 0,
+            "h5_path": f"/tmp/ep{episode}.h5", "segs": segs}
+
+
+def test_apply_slow_exclusion_两条规则(wt):
+    """5 条一组：一条单段 401 帧、一条 T = 2.1×中位；中位按剔除前算，其余行原样留下。"""
+    rows = [
+        _row(0, 200, [[0, 120, "pick up the cube"], [120, 80, "put it down"]]),
+        _row(1, 220, [[0, 130, "pick up the cube"], [130, 90, "put it down"]]),
+        _row(2, 240, [[0, 140, "pick up the cube"], [140, 100, "put it down"]]),
+        _row(3, 450, [[0, 401, "pick up the cube"], [401, 49, "put it down"]]),   # 只命中「单段 > 400」
+        _row(4, 504, [[0, 300, "pick up the cube"], [300, 204, "put it down"]]),  # 只命中「T > 2×中位」
+    ]
+    groups = {f"{t}/{d}": [] for t, d in wt.GROUPS}
+    groups["RouteStick/easy"] = list(rows)
+    kept, excluded = wt.apply_slow_exclusion(groups)
+    assert [r["episode"] for r in kept["RouteStick/easy"]] == [0, 1, 2]
+    assert kept["RouteStick/easy"] == rows[:3]  # 留下的行一字未动
+    assert [e["episode"] for e in excluded] == [3, 4]
+    # 中位按剔除前的 5 条算 = 240（若剔除后再算会变成 220）
+    assert [e["group_median"] for e in excluded] == [240, 240]
+    assert excluded[0]["reasons"] == ["单段 401 帧 > 400"]
+    assert excluded[1]["reasons"] == ["T=504 > 2×组中位 240"]
+    assert (excluded[0]["task"], excluded[0]["difficulty"], excluded[0]["seed"]) == ("RouteStick", "easy", 16003)
+    assert (excluded[0]["longest_segment_frames"], excluded[0]["longest_segment_label"]) == (401, "抓块")
+    assert excluded[0]["h5_path"] == "/tmp/ep3.h5" and excluded[0]["run_id"] == "run-07"
+    assert excluded[1]["total"] == 504 and excluded[1]["effective_total"] == 504
+    assert wt.exclusion_reasons(rows[0], 240) == []
+
+
+def test_apply_slow_exclusion_两条规则可同时命中(wt):
+    groups = {f"{t}/{d}": [] for t, d in wt.GROUPS}
+    groups["RouteStick/easy"] = [_row(0, 200, [[0, 200, "pick up the cube"]]),
+                                 _row(1, 200, [[0, 200, "pick up the cube"]]),
+                                 _row(2, 900, [[0, 425, "pick up the cube"], [425, 300, "put it down"],
+                                               [725, 175, "All tasks completed"]])]
+    _kept, excluded = wt.apply_slow_exclusion(groups)
+    assert excluded[0]["reasons"] == ["单段 425 帧 > 400", "T=900 > 2×组中位 200"]
+
+
+def test_apply_slow_exclusion_binfill按原T判(wt):
+    """BinFill 的 T 是两倍，判定与文案都按 original_total（后一遍的真实长度）。"""
+    def binfill(episode: int, original: int) -> dict:
+        half = original // 2
+        row = _row(episode, original, [[0, half, "pick up the first blue cube"], [half, original - half, "put it into the bin"]])
+        return {**wt.simulate_binfill_demo(row), "demo_source": "simulated"}
+
+    groups = {f"{t}/{d}": [] for t, d in wt.GROUPS}
+    groups["BinFill/easy"] = [binfill(0, 200), binfill(1, 220), binfill(2, 240), binfill(3, 260), binfill(4, 600)]
+    kept, excluded = wt.apply_slow_exclusion(groups)
+    assert [r["episode"] for r in kept["BinFill/easy"]] == [0, 1, 2, 3]
+    assert len(excluded) == 1 and excluded[0]["total"] == 1200 and excluded[0]["effective_total"] == 600
+    assert excluded[0]["group_median"] == 240  # 按 original_total 而不是 2 倍后的 480
+    assert excluded[0]["reasons"] == ["T=600 > 2×组中位 240"]
+
+
+def test_extract_剔除慢条并重算统计(wt, tmp_path, monkeypatch):
+    """extract 末尾做剔除：episodes 是剔除后的条数，episodes_before_exclusion 是剔除前的。"""
+    source = tmp_path / "run"
+    source.mkdir()
+    lines = [json.dumps({"task": "RouteStick", "difficulty": "easy", "episode": e, "seed": 16000 + e, "ok": True,
+                         "h5_path": str(tmp_path / f"{e}.h5"), "timestep_count": t, "recovery_mode": None})
+             for e, t in enumerate([200, 220, 240, 260, 900])]
+    source.joinpath("episode_results.jsonl").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    monkeypatch.setattr(wt, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(wt, "read_episode", lambda path: {
+        "total": {"0": 200, "1": 220, "2": 240, "3": 260, "4": 900}[Path(path).stem], "demo": 0,
+        "segs": [[0, {"0": 200, "1": 220, "2": 240, "3": 260, "4": 900}[Path(path).stem], "pick up the cube"]]})
+    payload = wt.extract(["run-07"], [source])
+    assert (payload["episodes"], payload["episodes_before_exclusion"]) == (4, 5)
+    assert [e["episode"] for e in payload["excluded_slow"]] == [4]
+    assert payload["exclusion_rule"] == {"max_segment_frames": 400, "t_median_factor": 2.0, "median_basis": "剔除前按组"}
+    assert payload["excluded_slow"][0]["h5_path"] == str(tmp_path / "4.h5")
+
+
+def test_tables_含慢条剔除列与清单(wt):
+    """汇总表最右多一列「慢条剔除」，自动段末尾多一张剔除清单表。"""
+    text, rows = wt.render_tables(_synthetic_timeline(wt))
+    assert rows == 3  # 剔除清单不计入逐条行数
+    assert "| 铺不出窗口 | 跳过／失败 | 慢条剔除 |" in text and "|---|---|---|---|---|---|---|---|" in text
+    assert "| RouteStick/easy | 2 | 200 / 250 / 300 | 100 / 125 / 150 | 10 / 13 / 16 | 0 | 0 | 1 |" in text
+    assert "| VideoRepick/easy | 0 | — | — | — | — | 1 | 0 |" in text  # 空组行也补了一格
+    assert "### RouteStick / easy（2 条；剔除 1 条）" in text
+    assert "| 组 | ep | seed | T | 组中位 T | 最长段（标签 帧数） | 命中原因 | h5 |" in text
+    assert ("| RouteStick/easy | 2 | 16200 | 900 | 250 | 抓块 425 | 单段 425 帧 > 400；T=900 > 2×组中位 250 | /tmp/ep2.h5 |"
+            in text)
+    assert "剔除的慢条（供复核；规则：单段 > 400 帧 或 T > 组中位 × 2，中位按剔除前算；BinFill 按后一遍原 T）" in text
+
+
+def test_tables_无剔除时清单表出占位行(wt):
+    data = _synthetic_timeline(wt)
+    data["excluded_slow"] = []
+    text, _ = wt.render_tables(data)
+    assert "| （本轮无剔除） | | | | | | | |" in text
+    assert "### RouteStick / easy（2 条）" in text and "；剔除" not in text.split("### RouteStick / easy")[1]
+    # 旧 JSON（没有 excluded_slow 等键）也要能渲染
+    for key in ("excluded_slow", "exclusion_rule", "episodes_before_exclusion"):
+        data.pop(key, None)
+    text2, _ = wt.render_tables(data)
+    assert text2 == text
+
+
+def test_binfill已录demo的表头文案(wt):
+    data = _synthetic_timeline(wt)
+    data["groups"]["BinFill/easy"][0]["demo_source"] = "recorded"
+    text, _ = wt.render_tables(data)
+    assert "| BinFill/easy（demo 由生成器直出（重复两遍）） | 1 |" in text
+    assert "### BinFill / easy（1 条；demo 由生成器直出（重复两遍），T = 2×原 T）" in text
+    data["groups"]["BinFill/easy"][0]["demo_source"] = "simulated"
+    text, _ = wt.render_tables(data)
+    assert "| BinFill/easy（模拟 demo） | 1 |" in text
+    assert "### BinFill / easy（1 条；模拟 demo：同一条重复两遍，T = 2×原 T）" in text

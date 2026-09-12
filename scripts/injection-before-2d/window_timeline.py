@@ -6,8 +6,11 @@
   总帧数 T、demo 段长度（``info/is_video_demo`` 为 True 的前缀）与 subgoal 分段
   （``info/is_subgoal_boundary`` 为 True 的帧切开，标签取 ``info/simple_subgoal``），
   写成本目录 ``windows_timeline.json``（小文件，入库；clone 后不必重开 h5 就能核对）。
-  **BinFill 在这一步就做「模拟 demo」**：同一条重复两遍，前一遍记 demo、后一遍记 exec
+  **BinFill 的 demo 是「同一条重复两遍」**：前一遍记 demo、后一遍记 exec
   （2026-09-11 用户要求「binfill任务改为加入模拟的demo 即为把一个任务重复两遍」）。
+  07 起生成器直出就是重复两遍的 h5（``demo == total/2``），本脚本只校验不再翻倍（``demo_source="recorded"``）；
+  05/06 的旧数据没有 demo 前缀，仍在这一步用 ``simulate_binfill_demo`` 补出来（``demo_source="simulated"``）。
+  另外 extract 末尾会做**慢条剔除**（见 ``apply_slow_exclusion``）：单段过长或 T 远超组中位的 episode 移出统计。
 * ``tables``：按窗口公式算每条的窗口数与帧路步长，生成 ``SAMPLING_WINDOWS.md`` 的自动表
   （``--write`` 写入标记区间，``--check`` 只比对，供 ``check_doc_links.py`` 调用）。
 
@@ -54,6 +57,9 @@ SWAP_START, SWAP_LEN = 64, 50           # VideoUnmaskSwap._refresh_swap_schedule
 STATIC_HOLD, STATIC_THRESHOLD = 20, 0.01  # VideoRepick 热身段 static_check(20)；is_static 阈值 0.2 rad/s × 控制周期 0.05 s
 B1_MINUS_S_RANGE = (5, 30)               # 关节法 S 与第一个 swap-static 段起始的合理差（实测 12～17）
 FREEZE_THRESHOLD = 100.0                 # VideoRepick 最后一次 swap 结束后画面冻结、帧差严格为 0；100 以下视为渲染噪声
+# 慢条剔除（2026-09-12）：卡在单个 subgoal 上磨的 episode 不进统计与代表条
+MAX_SEGMENT_FRAMES = 400                 # 单个 subgoal 段超过这么多帧即判「磨」
+SLOW_T_MEDIAN_FACTOR = 2.0               # 有效 T 超过「组中位 × 该倍数」即判慢
 
 
 # ── 窗口公式（纯函数）─────────────────────────────────────────────────────────
@@ -99,6 +105,68 @@ def simulate_binfill_demo(row: dict[str, Any]) -> dict[str, Any]:
         "simulated_demo": True,
         "segs": [list(s) for s in row["segs"]] + [[int(s) + total, int(l), text] for s, l, text in row["segs"]],
     }
+
+
+# ── 慢条剔除（单段过长 / T 远超组中位）──────────────────────────────────────
+def effective_total(row: dict[str, Any]) -> int:
+    """判定慢条用的「有效总帧数」：BinFill 的 T 是同一条重复两遍后的两倍，取 ``original_total``
+    （即后一遍的真实长度）；其它任务直接用 ``total``。"""
+    original = row.get("original_total")
+    return int(original) if original is not None else int(row["total"])
+
+
+def max_segment(row: dict[str, Any]) -> tuple[int, str]:
+    """该行 segs 里最长的一段，返回 (帧数, 中文短标)；并列时取靠前的一段。没有 segs 时返回 (0, "—")。"""
+    segs = row.get("segs") or []
+    if not segs:
+        return 0, "—"
+    _start, length, text = max(segs, key=lambda s: int(s[1]))
+    return int(length), short_label(str(text))[0]
+
+
+def exclusion_reasons(row: dict[str, Any], group_median: float) -> list[str]:
+    """该行命中的剔除原因文案列表（空列表 = 不剔除）。两条规则各自独立、可同时命中：
+    ① 任一 subgoal 段超过 ``MAX_SEGMENT_FRAMES`` 帧；② 有效 T 超过 ``组中位 × SLOW_T_MEDIAN_FACTOR``。"""
+    reasons: list[str] = []
+    frames, _label = max_segment(row)
+    if frames > MAX_SEGMENT_FRAMES:
+        reasons.append(f"单段 {frames} 帧 > {MAX_SEGMENT_FRAMES}")
+    total = effective_total(row)
+    if total > group_median * SLOW_T_MEDIAN_FACTOR:
+        reasons.append(f"T={total} > {SLOW_T_MEDIAN_FACTOR:g}×组中位 {_fmt(group_median)}")
+    return reasons
+
+
+def apply_slow_exclusion(groups: dict[str, list[dict[str, Any]]]) -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, Any]]]:
+    """把每组里的慢条移出来，返回 (剔除后的 groups, 剔除清单)。
+
+    组中位按 ``effective_total`` 在**剔除前**算一次（``statistics.median``），一次性判定、不迭代——
+    否则剔掉最慢的几条后中位会继续下移、把本来正常的条也带走。清单每项除了判定用的数字外还带整行
+    （``row`` 键），出图脚本据此把被剔除的行灰化画出来。
+    """
+    kept: dict[str, list[dict[str, Any]]] = {}
+    excluded: list[dict[str, Any]] = []
+    for key, rows in groups.items():
+        if not rows:
+            kept[key] = list(rows)
+            continue
+        task, difficulty = key.split("/", 1)
+        group_median = statistics.median([effective_total(r) for r in rows])
+        keep_rows: list[dict[str, Any]] = []
+        for row in rows:
+            reasons = exclusion_reasons(row, group_median)
+            if not reasons:
+                keep_rows.append(row)
+                continue
+            frames, label = max_segment(row)
+            excluded.append({
+                "task": task, "difficulty": difficulty, "episode": row.get("episode"), "seed": row.get("seed"),
+                "run_id": row.get("run_id"), "total": row.get("total"), "effective_total": effective_total(row),
+                "group_median": group_median, "longest_segment_frames": frames, "longest_segment_label": label,
+                "reasons": reasons, "h5_path": row.get("h5_path"), "row": row,
+            })
+        kept[key] = keep_rows
+    return kept, excluded
 
 
 def representatives(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -383,19 +451,42 @@ def extract(run_ids: Sequence[str] | str, sources: Sequence[Path] | Path) -> dic
                 unknown_labels[text] = unknown_labels.get(text, 0) + 1
         run_id = row["run_id"]
         group_sources[key] = run_id
-        entry = {"episode": episode, "seed": int(row["seed"]), "recovery_mode": row.get("recovery_mode"), "run_id": run_id, **record}
+        entry = {"episode": episode, "seed": int(row["seed"]), "recovery_mode": row.get("recovery_mode"), "run_id": run_id,
+                 "h5_path": str(h5_path), **record}
         if task in SWAP_TASKS:
             if (run_id, task, difficulty) not in specs:
                 specs[(run_id, task, difficulty)] = load_specs(run_id, task, difficulty)
             annotate_swaps(task, entry, specs[(run_id, task, difficulty)][episode], h5_path)
-            swap_summary["episodes"] += 1
-            if entry["swap_check"] == "FAIL":
-                swap_summary["fail"] += 1
-            elif entry["swap_check"] == "WARN":
-                swap_summary["warn"] += 1
         if task in SIMULATED_DEMO_TASKS:
-            entry = simulate_binfill_demo(entry)
+            # 07 起生成器直出「同一条重复两遍」的 h5：已有 demo 前缀就只校验、不再翻倍；
+            # 05/06 的旧数据没有 demo 前缀，仍在这里模拟出来。
+            if entry["demo"] > 0:
+                if entry["total"] != 2 * entry["demo"]:
+                    skipped.append({"task": task, "difficulty": difficulty, "episode": episode, "seed": row.get("seed"),
+                                    "h5_path": str(h5_path), "reason": "BinFill demo 前缀不是全长一半"})
+                    continue
+                entry = {**entry, "original_total": entry["demo"], "simulated_demo": True, "demo_source": "recorded"}
+            else:
+                entry = {**simulate_binfill_demo(entry), "demo_source": "simulated"}
         groups[key].append(entry)
+    groups, excluded_slow = apply_slow_exclusion(groups)
+    # swap 统计与 BinFill demo 来源都按剔除后的 groups 重算
+    for rows in groups.values():
+        for r in rows:
+            if "swap_check" not in r:
+                continue
+            swap_summary["episodes"] += 1
+            if r["swap_check"] == "FAIL":
+                swap_summary["fail"] += 1
+            elif r["swap_check"] == "WARN":
+                swap_summary["warn"] += 1
+    binfill_demo_source: dict[str, str] = {}
+    for task, difficulty in GROUPS:
+        if task not in SIMULATED_DEMO_TASKS:
+            continue
+        kinds = {r.get("demo_source") for r in groups.get(f"{task}/{difficulty}", [])}
+        if kinds:
+            binfill_demo_source[f"{task}/{difficulty}"] = kinds.pop() if len(kinds) == 1 else "mixed"
     return {
         "rollout_run_id": ",".join(run_ids),
         "rollout_run_ids": list(run_ids),
@@ -403,12 +494,17 @@ def extract(run_ids: Sequence[str] | str, sources: Sequence[Path] | Path) -> dic
         "group_sources": group_sources,
         "window": WIN, "stride": STRIDE, "budgets": list(BUDGETS),
         "binfill_simulated_demo": True,
+        "binfill_demo_source": binfill_demo_source,
         "episodes": sum(len(rows) for rows in groups.values()),
+        "episodes_before_exclusion": sum(len(rows) for rows in groups.values()) + len(excluded_slow),
         "groups": groups,
         "skipped": skipped,
         "failed_rows": failed,
         "unknown_labels": unknown_labels,
         "swap_summary": swap_summary,
+        "excluded_slow": excluded_slow,
+        "exclusion_rule": {"max_segment_frames": MAX_SEGMENT_FRAMES, "t_median_factor": SLOW_T_MEDIAN_FACTOR,
+                           "median_basis": "剔除前按组"},
     }
 
 
@@ -438,47 +534,79 @@ def _swap_text(row: dict[str, Any]) -> str:
     return text
 
 
+def demo_note(rows: list[dict[str, Any]], *, in_title: bool) -> str:
+    """BinFill 的 demo 来源文案：07 起由生成器直出、05/06 是脚本模拟；非 BinFill 返回空串。
+
+    ``in_title`` 为真时给组表标题用（带「T = 2×原 T」），否则给汇总表的组名后缀用。
+    """
+    if not rows or not rows[0].get("simulated_demo"):
+        return ""
+    if rows[0].get("demo_source") == "recorded":
+        return "；demo 由生成器直出（重复两遍），T = 2×原 T" if in_title else "（demo 由生成器直出（重复两遍））"
+    return "；模拟 demo：同一条重复两遍，T = 2×原 T" if in_title else "（模拟 demo）"
+
+
 def render_tables(data: dict[str, Any]) -> tuple[str, int]:
     lines = ["### 汇总（每组：条数、T、demo 长度、motion token 数）", "",
-             "| 组 | 条数 | T 最短 / 中位 / 最长 | demo 最短 / 中位 / 最长 | 窗口 最少 / 中位 / 最多 | 铺不出窗口 | 跳过／失败 |",
-             "|---|---|---|---|---|---|---|"]
+             "| 组 | 条数 | T 最短 / 中位 / 最长 | demo 最短 / 中位 / 最长 | 窗口 最少 / 中位 / 最多 | 铺不出窗口 | 跳过／失败 | 慢条剔除 |",
+             "|---|---|---|---|---|---|---|---|"]
     skipped = {}
     for item in data.get("skipped", []) + data.get("failed_rows", []):
         skipped[f"{item['task']}/{item['difficulty']}"] = skipped.get(f"{item['task']}/{item['difficulty']}", 0) + 1
+    excluded_slow = data.get("excluded_slow", [])
+    excluded_count: dict[str, int] = {}
+    for item in excluded_slow:
+        key = f"{item['task']}/{item['difficulty']}"
+        excluded_count[key] = excluded_count.get(key, 0) + 1
     total_rows = 0
     for task, difficulty in GROUPS:
         key = f"{task}/{difficulty}"
         rows = data["groups"].get(key, [])
         if not rows:
-            lines.append(f"| {key} | 0 | — | — | — | — | {skipped.get(key, 0)} |")
+            lines.append(f"| {key} | 0 | — | — | — | — | {skipped.get(key, 0)} | {excluded_count.get(key, 0)} |")
             continue
         totals = [r["total"] for r in rows]
         demos = [r["demo"] for r in rows]
         tokens = [sum(window_counts(r)) for r in rows]
         zero = sum(1 for t in tokens if t == 0)
-        label = key + ("（模拟 demo）" if rows[0].get("simulated_demo") else "")
+        label = key + demo_note(rows, in_title=False)
         lines.append(f"| {label} | {len(rows)} | {min(totals)} / {_fmt(statistics.median(totals))} / {max(totals)} "
                      f"| {min(demos)} / {_fmt(statistics.median(demos))} / {max(demos)} "
-                     f"| {min(tokens)} / {_fmt(statistics.median(tokens))} / {max(tokens)} | {zero} | {skipped.get(key, 0)} |")
+                     f"| {min(tokens)} / {_fmt(statistics.median(tokens))} / {max(tokens)} | {zero} | {skipped.get(key, 0)} "
+                     f"| {excluded_count.get(key, 0)} |")
     lines.append("")
     for task, difficulty in GROUPS:
         key = f"{task}/{difficulty}"
         rows = sorted(data["groups"].get(key, []), key=lambda r: r["episode"])
-        simulated = bool(rows and rows[0].get("simulated_demo"))
         has_swaps = task in SWAP_TASKS
-        lines += [f"### {task} / {difficulty}（{len(rows)} 条" + ("；模拟 demo：同一条重复两遍，T = 2×原 T" if simulated else "") + "）", "",
+        dropped = excluded_count.get(key, 0)
+        lines += [f"### {task} / {difficulty}（{len(rows)} 条" + demo_note(rows, in_title=True)
+                  + (f"；剔除 {dropped} 条" if dropped else "") + "）", "",
                   "| ep | seed | T | demo | 段数 | 窗口 demo+exec=合计 | Δ32 | Δ8 | 段序列（短标 帧数，‖ = demo→exec） |"
                   + (" swap 起止帧（发起者↔搭档） |" if has_swaps else ""),
                   "|---|---|---|---|---|---|---|---|---|" + ("---|" if has_swaps else "")]
         for r in rows:
             d, e = window_counts(r)
             d32, d8 = deltas(r["total"])
-            t_cell = f"{r['total']} = 2×{r['original_total']}" if simulated else str(r["total"])
+            t_cell = f"{r['total']} = 2×{r['original_total']}" if r.get("simulated_demo") else str(r["total"])
             lines.append(f"| {r['episode']} | {r['seed']} | {t_cell} | {r['demo']} | {len(r['segs'])} | {d}+{e}={d + e}"
                          f"{'（无 motion token）' if d + e == 0 else ''} | {d32:.1f} | {d8:.1f} | {_seq_text(r)} |"
                          + (f" {_swap_text(r)} |" if has_swaps else ""))
             total_rows += 1
         lines.append("")
+    # 剔除清单：不计入逐条行数（total_rows），只供人工复核
+    lines += [f"### 剔除的慢条（供复核；规则：单段 > {MAX_SEGMENT_FRAMES} 帧 或 T > 组中位 × {SLOW_T_MEDIAN_FACTOR:g}，"
+              "中位按剔除前算；BinFill 按后一遍原 T）", "",
+              "| 组 | ep | seed | T | 组中位 T | 最长段（标签 帧数） | 命中原因 | h5 |",
+              "|---|---|---|---|---|---|---|---|"]
+    if not excluded_slow:
+        lines.append("| （本轮无剔除） | | | | | | | |")
+    for item in excluded_slow:
+        lines.append(f"| {item['task']}/{item['difficulty']} | {item.get('episode')} | {item.get('seed')} "
+                     f"| {item.get('effective_total')} | {_fmt(item.get('group_median', 0))} "
+                     f"| {item.get('longest_segment_label')} {item.get('longest_segment_frames')} "
+                     f"| {'；'.join(item.get('reasons', []))} | {item.get('h5_path') or '—'} |")
+    lines.append("")
     return "\n" + "\n".join(lines).rstrip("\n") + "\n", total_rows
 
 
@@ -531,6 +659,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  ⚠ 规则表未覆盖的 subgoal 文本（兜底截断）：{text!r} × {count}", file=sys.stderr)
         for item in payload["skipped"]:
             print(f"  跳过 {item['task']}/{item['difficulty']} ep{item['episode']}：{item['reason']}", file=sys.stderr)
+        for item in payload["excluded_slow"]:
+            print(f"  剔除 {item['task']}/{item['difficulty']} ep{item['episode']} seed{item['seed']}："
+                  f"{'；'.join(item['reasons'])}", file=sys.stderr)
         for key, rows in payload["groups"].items():
             for r in rows:
                 if r.get("swap_check") not in (None, "PASS"):
@@ -545,7 +676,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"WINDOWS_EXTRACT={'PASS' if ok else 'FAIL'} groups={groups_ok} episodes={payload['episodes']} "
               f"skipped={len(payload['skipped'])} failed_rows={len(payload['failed_rows'])} "
               f"unknown_labels={len(payload['unknown_labels'])} swap_episodes={sw['episodes']} swap_fail={sw['fail']} swap_warn={sw['warn']} "
-              f"swap_pixel_adjusted={sw.get('pixel_adjusted', 0)} "
+              f"swap_pixel_adjusted={sw.get('pixel_adjusted', 0)} excluded_slow={len(payload['excluded_slow'])} "
               f"out={out.relative_to(REPO_ROOT) if out.is_relative_to(REPO_ROOT) else out}")
         return 0 if ok else 1
 
