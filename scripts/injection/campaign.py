@@ -234,6 +234,16 @@ class Verdicts:
         if self.echo:
             print(line, flush=True)
 
+    def add_record(self, name: str, passed: bool | None, fields: dict[str, Any]) -> None:
+        """按字典汇入：字段名可与 ``add`` 的形参（如 ``passed``）同名，env-check 的判定行就有 passed 计数。"""
+        status = "NOT_RUN" if passed is None else ("PASS" if passed else "FAIL")
+        rendered = " ".join(f"{key}={value}" for key, value in fields.items())
+        line = f"{name}={status}" + (f" {rendered}" if rendered else "")
+        self.lines.append(line)
+        self.records.append({"name": name, "status": status, **fields})
+        if self.echo:
+            print(line, flush=True)
+
     @property
     def passed(self) -> bool:
         return all(item["status"] == "PASS" for item in self.records)
@@ -1395,7 +1405,9 @@ def cmd_env_check(
         group = delivery.group(task, difficulty)
         if group.env_check_start >= len(documents[(task, difficulty)]["episodes"]):
             raise CampaignError(f"{task}/{difficulty} 实跑区间之后没有剩余候选可核验")
-        plans.append(EnvCheckPlan(task, difficulty, group.env_check_start, group.extra_candidates, limit))
+        # --limit（smoke）时需求条数也截到 limit：只核验 1 条却按 50 条算缺口没有意义
+        need = min(group.extra_candidates, int(limit)) if limit else group.extra_candidates
+        plans.append(EnvCheckPlan(task, difficulty, group.env_check_start, need, limit))
     out_dir = root / "env_check" / (f"_{label}" if label else "")
     print(f"[env-check] {len(plans)} 组，每组从实跑区间之后按序核验、攒够 {delivery.extra_candidates} 条通过即停；"
           f"--gpus {','.join(gpu_ids)} 每卡 {tier} worker，单条 {timeout_s:.0f} 秒", flush=True)
@@ -1410,7 +1422,7 @@ def cmd_env_check(
     _write_json(target, payload)
     verdicts = Verdicts()
     for item in payload["verdicts"]:
-        verdicts.add(item["name"], item["passed"], **item["fields"])
+        verdicts.add_record(item["name"], item["passed"], dict(item["fields"]))
     for line in verdicts.lines:
         print(line)
     print(f"ENV_CHECK_RUN={'PASS' if payload['passed'] else 'FAIL'} run_id={run_id} out={target.relative_to(REPO_ROOT)}")
@@ -1455,7 +1467,7 @@ def cmd_delivery(run_id: str, delivery_config: Path, *, hash_mode: str = "full",
     _write_json(root / "delivery_manifest.json", payload)
     verdicts = Verdicts()
     for item in payload["verdicts"]:
-        verdicts.add(item["name"], item["passed"], **item["fields"])
+        verdicts.add_record(item["name"], item["passed"], dict(item["fields"]))
     for line in verdicts.lines:
         print(line)
     print(f"DELIVERY_RUN={'PASS' if payload['passed'] else 'FAIL'} run_id={run_id} rows={len(rows)} modes={','.join(modes)}")
@@ -1501,7 +1513,7 @@ def cmd_report(run_id: str) -> dict[str, Any]:
         if payload_extra:
             extra = Verdicts()
             for item in payload_extra.get("verdicts", []):
-                extra.add(item["name"], item["passed"], **item["fields"])
+                extra.add_record(item["name"], item["passed"], dict(item["fields"]))
             verdicts.extend(extra.records)
 
     # 单独跑出来的并行实测覆盖校准阶段的 NOT_RUN 占位。
