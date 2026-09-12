@@ -1,0 +1,17 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+SPEC_SCOPE=PASS groups=14 specs=3400 blocks=2/3 excluded=VideoRepick-hard problems=0
+CONTRACT_DERIVED=PASS fields=200 mismatches=6 overrides=2 version=v3 problems=0
+COVERAGE_QUOTA=PASS groups=14 batches=10 blocks=2/3 quota_gaps=0
+STATIC_GEOMETRY=PASS checked=3400 rejected=0
+COLLISION_GEOMETRY=PASS bin_shapes=6 cube_shapes=1 four_object_pairs=6 note=真实-actor-对照在步骤2冒烟
+COLLISION_SWEEP=PASS specs=1700 rejected=0 uncertified=0 min_g_m=1.4025e-05
+SPEC_REPRODUCIBLE=PASS compared=3400 differences=0
+CHECK=PASS elapsed_s=1338.5
+=-
+  import pkg_resources
+  import pynvml  # type: ignore[import]
+BLOCK0_EQUIVALENCE_VS09=PASS compared=1400 differences=0 shared_groups=14 scope=block0 right_only=-
+EXIT_CODE=0

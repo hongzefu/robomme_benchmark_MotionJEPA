@@ -1,0 +1,166 @@
+{
+  "run_id": "20260912-contract-v3-10",
+  "spec_schema_version": 1,
+  "generator_version": "injection-specs-1",
+  "generator_seed": 20260909,
+  "per_group": 100,
+  "sampling_config_path": "scripts/configs/newtask-v2/native_sampling.json",
+  "sampling_operands_sha256": "97c9af660ca51b7edd238a3a82e2933e0ffa8c6c34882838cc79cb6becaf51d6",
+  "sampling_config_file_sha256": "acf29ac45146e591350ffe2bf626a4da7d0ef2fa9b45caa8def1390fdcfb9df0",
+  "contract_path": "scripts/configs/newtask-v2/injection_contract_v3.json",
+  "contract_sha256": "bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6",
+  "contract_version": "v3",
+  "groups": [
+    {
+      "task": "BinFill",
+      "difficulty": "easy",
+      "path": "specs/BinFill/easy.json",
+      "file_sha256": "25c52a1405512b9fb4d1e6ca9ec91c52135b165757be73233775f717601ffad6",
+      "episodes": 300,
+      "derived_seed": 4376944528890220841,
+      "blocks": 3
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "medium",
+      "path": "specs/BinFill/medium.json",
+      "file_sha256": "cdb3b769a268d648b0843ba62db04a2105cdeeee06d2d5d650cf745092bbc4f5",
+      "episodes": 300,
+      "derived_seed": 1958415824907756837,
+      "blocks": 3
+    },
+    {
+      "task": "BinFill",
+      "difficulty": "hard",
+      "path": "specs/BinFill/hard.json",
+      "file_sha256": "a19d2798e709202f4c641d25a35cae35988d316c756f32f881f758ffca11fa6a",
+      "episodes": 300,
+      "derived_seed": 3046420257101781341,
+      "blocks": 3
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "path": "specs/RouteStick/easy.json",
+      "file_sha256": "c04f78600c5dfd0f4f629f664b2b666141f1863bfcd8fbe3426a3c20f3f51d4f",
+      "episodes": 200,
+      "derived_seed": 4382171320976484847,
+      "blocks": 2
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "medium",
+      "path": "specs/RouteStick/medium.json",
+      "file_sha256": "d6899725fac49658a861a81a687373d822a5c0810831305c363c17c8c983ada0",
+      "episodes": 200,
+      "derived_seed": 1837596961066380489,
+      "blocks": 2
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "hard",
+      "path": "specs/RouteStick/hard.json",
+      "file_sha256": "3fc4dfc93a3010d1a4b02cdfe3222a4fa7899c62f168208211277a2ee8cb06f9",
+      "episodes": 200,
+      "derived_seed": 3572294338664173765,
+      "blocks": 2
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "easy",
+      "path": "specs/VideoUnmaskSwap/easy.json",
+      "file_sha256": "a8ed36e26c5ae331574e559ece84de459a6d41ce33dc6067a1316cdec86f480d",
+      "episodes": 200,
+      "derived_seed": 2936234438205985719,
+      "blocks": 2
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "medium",
+      "path": "specs/VideoUnmaskSwap/medium.json",
+      "file_sha256": "3d34e62bb633559718f38457ec9e4e7055f2268a8b7898c0c2e05080af60debf",
+      "episodes": 200,
+      "derived_seed": 1670245059873226381,
+      "blocks": 2
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "hard",
+      "path": "specs/VideoUnmaskSwap/hard.json",
+      "file_sha256": "bb53c988510bb416cadf9376ec3cffb37451e77240e11a0cfabf7a8bf9ecd2c6",
+      "episodes": 200,
+      "derived_seed": 3962218849130754633,
+      "blocks": 2
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "easy",
+      "path": "specs/VideoRepick/easy.json",
+      "file_sha256": "c27c0f6459a0d5e71379ac0912b79a0bf9c4f42f720533fbe64e85a88c9951ea",
+      "episodes": 300,
+      "derived_seed": 2120666622641982513,
+      "blocks": 3
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "medium",
+      "path": "specs/VideoRepick/medium.json",
+      "file_sha256": "3566b84299134343aca51c00a7b7e1e4b5084725f744969c66ea19ff33bd6481",
+      "episodes": 300,
+      "derived_seed": 3948504269543975770,
+      "blocks": 3
+    },
+    {
+      "task": "RouteStick",
+      "difficulty": "xhard",
+      "path": "specs/RouteStick/xhard.json",
+      "file_sha256": "aba58631cceffd2aea514b50841302aadcbbe8fea12ebcd9bd34da95f8ed2dd4",
+      "episodes": 200,
+      "derived_seed": 3648507855298477914,
+      "blocks": 2
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard",
+      "path": "specs/VideoUnmaskSwap/xhard.json",
+      "file_sha256": "484f5803e43f81eb765499aa554c847d203d56b1d1cd766b7e7207495edabdbe",
+      "episodes": 200,
+      "derived_seed": 1044668722123704814,
+      "blocks": 2
+    },
+    {
+      "task": "VideoRepick",
+      "difficulty": "xhard",
+      "path": "specs/VideoRepick/xhard.json",
+      "file_sha256": "4e581d9bf458ebee18d2e1055a59957942f102db9f20d6e98454b05fb88eb79a",
+      "episodes": 300,
+      "derived_seed": 499850642321052521,
+      "blocks": 3
+    }
+  ],
+  "excluded_groups": [
+    [
+      "VideoRepick",
+      "hard"
+    ]
+  ],
+  "elapsed_s": 675.3,
+  "delivery_config_path": "scripts/configs/newtask-v2/delivery_400.json",
+  "delivery_config_sha256": "081113d9f16e1a688661e4829220cf98c45361aef3ad133323f1b7d50316fdcc",
+  "blocks": {
+    "BinFill/easy": 3,
+    "BinFill/medium": 3,
+    "BinFill/hard": 3,
+    "RouteStick/easy": 2,
+    "RouteStick/medium": 2,
+    "RouteStick/hard": 2,
+    "VideoUnmaskSwap/easy": 2,
+    "VideoUnmaskSwap/medium": 2,
+    "VideoUnmaskSwap/hard": 2,
+    "VideoRepick/easy": 3,
+    "VideoRepick/medium": 3,
+    "RouteStick/xhard": 2,
+    "VideoUnmaskSwap/xhard": 2,
+    "VideoRepick/xhard": 3
+  }
+}

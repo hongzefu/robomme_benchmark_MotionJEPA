@@ -1,0 +1,20 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+  冻结 BinFill/easy: 300 条（3 个 block）
+  冻结 BinFill/medium: 300 条（3 个 block）
+  冻结 BinFill/hard: 300 条（3 个 block）
+  冻结 RouteStick/easy: 200 条（2 个 block）
+  冻结 RouteStick/medium: 200 条（2 个 block）
+  冻结 RouteStick/hard: 200 条（2 个 block）
+  冻结 VideoUnmaskSwap/easy: 200 条（2 个 block）
+  冻结 VideoUnmaskSwap/medium: 200 条（2 个 block）
+  冻结 VideoUnmaskSwap/hard: 200 条（2 个 block）
+  冻结 VideoRepick/easy: 300 条（3 个 block）
+  冻结 VideoRepick/medium: 300 条（3 个 block）
+  冻结 RouteStick/xhard: 200 条（2 个 block）
+  冻结 VideoUnmaskSwap/xhard: 200 条（2 个 block）
+  冻结 VideoRepick/xhard: 300 条（3 个 block）
+PLAN=OK run_id=20260912-contract-v3-10 groups=14 specs=3400 elapsed_s=675.3
+EXIT_CODE=0
