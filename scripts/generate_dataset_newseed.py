@@ -76,8 +76,7 @@ import sys  # noqa: E402
 import time  # noqa: E402
 import traceback  # noqa: E402
 from collections import deque  # noqa: E402
-from concurrent.futures import FIRST_COMPLETED, Future, ProcessPoolExecutor, wait  # noqa: E402
-from concurrent.futures.process import BrokenProcessPool  # noqa: E402
+from concurrent.futures import FIRST_COMPLETED, Future, wait  # noqa: E402
 from dataclasses import dataclass, field, replace  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any, Mapping, Sequence  # noqa: E402
@@ -114,6 +113,17 @@ DEFAULT_MAX_TASKS_PER_CHILD = 8
 # 同一个 episode 连续这么多次非任务性失败（真 bug、池崩溃）就放弃，
 # 避免对着一个必然复现的 bug 空转到 attempt 上限
 MAX_NON_TASK_STRIKES = 3
+# 单条 episode 的墙钟上限（秒）：超过就只杀该 worker（pebble 单任务超时，池不崩），记 timeout 行。
+# 依据：05 实跑 323 条成功条 wall_s 中位 115 秒、最大 200.9 秒，无一条超过 400 秒；
+# 而 05/06 五条卡死条都跑了 18 分钟以上（CPU 100%、h5 停在 96 字节）。0 表示不限。
+DEFAULT_EPISODE_TIMEOUT_S = 600.0
+# BinFill「模拟 demo」转换用的临时文件：h5 用「原名 + 后缀」（不以 .h5 结尾，避免被 campaign 的
+# hdf5_files/*.h5 索引误认）；mp4 因 imageio 按扩展名选后端必须保留 .mp4，改放进 videos/ 下的隐藏子目录
+# （_video_candidates 的 glob 不递归，看不见它）。两者都与正式文件同一文件系统，os.replace 原子生效。
+BINFILL_TMP_SUFFIX = ".demo-tmp"
+BINFILL_TMP_DIRNAME = ".demo-tmp"
+# demo 半段视频的红框宽度（像素），与录像器 RecordWrapper._add_red_border 的默认值相同
+BINFILL_DEMO_BORDER_PX = 10
 
 TIMESTEP_RE = re.compile(r"^timestep_(\d+)$")
 
@@ -123,6 +133,10 @@ _BOUND: dict[str, Any] = {}
 
 class DatasetGenerationError(RuntimeError):
     """生成过程违反约定。"""
+
+
+class BinFillDemoError(RuntimeError):
+    """BinFill「同一条重复两遍」转换失败（磁盘、解码等基础设施问题），不入 retryable，按代码类失败熔断。"""
 
 
 class PlannerExhausted(RuntimeError):
@@ -1276,6 +1290,9 @@ class EpisodeJob:
     # 本条 episode 的固定规格（新值注入）。不传 --episode-specs 时恒为 None，
     # 此时 gym.make 不多这个 kwarg，链路与改动前逐字相同。
     episode_spec: dict[str, Any] | None = field(default=None)
+    # BinFill 交付版转换开关：close() 之后把 h5/mp4 整条复制一遍接在自己前面当 demo。
+    # 默认关，只由 campaign 的 feasibility 分支打开；不开时链路与改动前逐字相同。
+    binfill_demo: bool = False
 
     @property
     def recovery_mode(self) -> str | None:
@@ -1762,12 +1779,132 @@ def _video_summary(
     return payload
 
 
+# ── BinFill「模拟 demo」交付版转换（录像器冻结，这里只读成品文件再写回）──────────
+# 用户决策（2026-09-11）：「binfill任务改为加入模拟的demo 即为把一个任务重复两遍」，
+# 落地方式选路线 B：不改 src/robomme，在 close() 之后把成品 h5 与 mp4 整条复制一遍接在自己前面：
+#   h5   timestep_0..N-1  = 原轨迹复制（info/is_video_demo=True、info/is_completed=False，其余逐字段原样）
+#        timestep_N..2N-1 = 原轨迹（原样右移 N）；setup 一份不动；末帧仍是原成功末帧
+#   mp4  前 N 帧 = 原帧加 10 px 纯红边框；后 N 帧 = 原帧；同参重编（libx264 quality=8 fps=30）
+# 与录像器原生 demo 的差异：原生先加框再把 goal 文字条 vstack 在上方（红色上边条落在文字条下沿），
+# 这里对整张成品帧加框（上边条在 y=0）；另外后半段是二次 libx264 编码，像素不再与录像器直出逐位一致。
+
+
+def _binfill_duplicate_h5(raw_path: Path, tmp_path: Path, job: EpisodeJob, timestep_count: int) -> None:
+    """把 ``raw_path`` 的唯一 episode 复制成「demo 半段 + 原样半段」写到 ``tmp_path``。
+
+    ``timestep_count`` 来自已经通过 ``_raw_summary`` 校验的 N（timestep 从 0 连续、无 ``_dup`` 组），
+    这里不再自己猜名字。用 ``Group.copy`` 逐组搬运，object/bytes 字符串与各 dtype 原样保真。
+    """
+    name = f"episode_{job.episode}"
+    with h5py.File(raw_path, "r") as src, h5py.File(tmp_path, "w") as dst:
+        group = src[name]
+        out = dst.create_group(name)
+        for index in range(timestep_count):
+            if bool(group[f"timestep_{index}"]["info"]["is_video_demo"][()]):
+                raise BinFillDemoError(f"{raw_path}: 第 {index} 帧已是 demo 帧，原件不该带 demo")
+        # 前一遍：demo 半段
+        for index in range(timestep_count):
+            group.copy(f"timestep_{index}", out, name=f"timestep_{index}")
+            info = out[f"timestep_{index}"]["info"]
+            info["is_video_demo"][()] = True
+            info["is_completed"][()] = False
+        # 后一遍：原样右移 N
+        for index in range(timestep_count):
+            group.copy(f"timestep_{index}", out, name=f"timestep_{timestep_count + index}")
+        group.copy("setup", out, name="setup")
+
+
+def _binfill_duplicate_video(video_path: Path, tmp_path: Path, *, border_width: int = BINFILL_DEMO_BORDER_PX) -> int:
+    """把 ``video_path`` 逐帧读两遍写成「红框半段 + 原样半段」到 ``tmp_path``，返回读到的原帧数。
+
+    两遍都是流式：任何时刻内存里只有一帧（worker RSS 已在 5 GB 量级，禁止把整段帧列表缓存）。
+    ``get_meta_data()["nframes"]`` 是 inf，帧数只能靠迭代计数。
+    """
+    import imageio  # 延迟 import：spawn 子进程会以 __mp_main__ 重跑本模块顶层
+
+    frames_in = 0
+    with imageio.get_writer(str(tmp_path), fps=30, codec="libx264", quality=8) as writer:
+        with imageio.get_reader(str(video_path)) as reader:
+            for frame in reader:
+                height, width = frame.shape[:2]
+                if frames_in == 0 and (height % 16 or width % 16):
+                    raise BinFillDemoError(f"{video_path}: 帧尺寸 {width}x{height} 不是 16 的倍数，重编会被宏块缩放")
+                bordered = np.array(frame, copy=True)
+                bordered[:border_width, :] = (255, 0, 0)
+                bordered[-border_width:, :] = (255, 0, 0)
+                bordered[:, :border_width] = (255, 0, 0)
+                bordered[:, -border_width:] = (255, 0, 0)
+                writer.append_data(bordered)
+                frames_in += 1
+        with imageio.get_reader(str(video_path)) as reader:
+            for frame in reader:
+                writer.append_data(frame)
+    if frames_in == 0:
+        raise BinFillDemoError(f"{video_path}: 读不到任何帧")
+    return frames_in
+
+
+def _binfill_demo_deliverable(output_root: Path, job: EpisodeJob, timestep_count: int) -> dict[str, Any]:
+    """close() 之后把 BinFill 成品 h5 与主视频转成「同一条重复两遍」的交付版，原地覆盖。
+
+    顺序：h5 写临时 → 复核 2N 连续且末帧 is_completed 为真 → 找主视频 → 视频写临时 → ffprobe 数帧 == 2N
+    → 两次 ``os.replace``。任一步失败都清掉临时文件、原件不动、抛 ``BinFillDemoError``。
+    """
+    started = time.monotonic()
+    raw_path = _h5_path(output_root, job)
+    h5_tmp = raw_path.with_name(raw_path.name + BINFILL_TMP_SUFFIX)
+    main, _no_object = _video_candidates(output_root / "videos", job.task, job.episode, job.seed)
+    main = [item for item in main if not item.name.startswith("FAILED_")]
+    video_tmp: Path | None = None
+    try:
+        h5_tmp.unlink(missing_ok=True)
+        _binfill_duplicate_h5(raw_path, h5_tmp, job, timestep_count)
+        with h5py.File(h5_tmp, "r") as handle:
+            indices, done, errors = inspect_episode_terminal(handle[f"episode_{job.episode}"], f"{h5_tmp}/episode_{job.episode}")
+        if errors or done is not True or len(indices) != 2 * timestep_count:
+            raise BinFillDemoError(f"{h5_tmp}: 倍增后校验失败 errors={errors} done={done} timesteps={len(indices)}")
+        if len(main) != 1:
+            raise BinFillDemoError(f"{job.task}/episode_{job.episode}: 期望恰好一个成功主视频，找到 {[item.name for item in main]}")
+        video_path = main[0]
+        video_tmp = video_path.parent / BINFILL_TMP_DIRNAME / video_path.name
+        video_tmp.parent.mkdir(exist_ok=True)
+        video_tmp.unlink(missing_ok=True)
+        frames_in = _binfill_duplicate_video(video_path, video_tmp)
+        if frames_in != timestep_count:
+            raise BinFillDemoError(f"{video_path}: 原视频 {frames_in} 帧 != HDF5 timestep 数 {timestep_count}")
+        frames_out, error = _probe_frame_count(video_tmp)
+        if frames_out != 2 * timestep_count:
+            raise BinFillDemoError(f"{video_tmp}: 重编后 {frames_out} 帧 != {2 * timestep_count}（{error}）")
+        os.replace(h5_tmp, raw_path)
+        os.replace(video_tmp, video_path)
+    except Exception as exc:
+        h5_tmp.unlink(missing_ok=True)
+        if video_tmp is not None:
+            video_tmp.unlink(missing_ok=True)
+        if isinstance(exc, BinFillDemoError):
+            raise
+        raise BinFillDemoError(f"{job.task}/episode_{job.episode}: 转换失败 {type(exc).__name__}: {exc}") from exc
+    return {
+        "applied": True,
+        "original_timesteps": timestep_count,
+        "final_timesteps": 2 * timestep_count,
+        "video_path": str(video_path),
+        "video_frames_in": frames_in,
+        "video_frames_out": frames_out,
+        "video_bytes": video_path.stat().st_size,
+        "video_sha256": _sha256_bytes(video_path.read_bytes()),
+        "border_width": BINFILL_DEMO_BORDER_PX,
+        "elapsed_s": round(time.monotonic() - started, 3),
+    }
+
+
 def _pool_init(gpu: str, cpus: tuple[int, ...] | None, src_root: str) -> None:
     """池进程一生只跑一次：绑卡、压线程、预热 import。
 
     绑卡必须早于任何 torch / sapien import —— 此刻 CUDA 尚未初始化（本模块顶层只 import
     了 h5py/numpy，二者不碰 CUDA），所以 setenv 有效且对该进程终身有效。
-    GPU 号是池的静态属性（从 initargs 来），因此 worker 被回收或崩溃重建后依然正确。
+    GPU 号是池的静态属性（从 initargs 来），因此 worker 被回收或崩溃重建后依然正确
+    （pebble 每起一个新 worker 都会重跑本函数）。
     """
     global _BOUND
     os.environ["CUDA_VISIBLE_DEVICES"] = gpu
@@ -1975,31 +2112,35 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
                     error_traceback = traceback.format_exc()
             phases["close_s"] = time.monotonic() - mark
 
-    base = {
-        "task": job.task,
-        "episode": job.episode,
-        "attempt": job.attempt,
-        "seed": job.seed,
-        "difficulty": job.difficulty,
-        "recovery_mode": job.recovery_mode,
-        "bound": dict(_BOUND),
-        # 运行时检查的四态证据与注入绑定证据：成功失败都带，供 COLLISION_RUNTIME 与
-        # INJECTION_BINDING 统计；不传规格时两者都是空的
-        "runtime_checks": runtime_checks,
-        "injection_evidence": injection_evidence,
-        "phases": {name: round(value, 3) for name, value in phases.items()},
-        "wall_s": round(time.monotonic() - clock, 3),
-        "started_at": started,
-        "finished_at": time.time(),
-        "peak_rss_mb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1),
-    }
+    def base() -> dict[str, Any]:
+        # 每次返回前现算：wall_s / phases / peak_rss_mb 必须把 BinFill 转换（若有）也算进去，
+        # 否则墙钟与 600 秒单条超时不同口径，ru_maxrss 高水位会归到同 worker 的下一条身上
+        return {
+            "task": job.task,
+            "episode": job.episode,
+            "attempt": job.attempt,
+            "seed": job.seed,
+            "difficulty": job.difficulty,
+            "recovery_mode": job.recovery_mode,
+            "bound": dict(_BOUND),
+            # 运行时检查的四态证据与注入绑定证据：成功失败都带，供 COLLISION_RUNTIME 与
+            # INJECTION_BINDING 统计；不传规格时两者都是空的
+            "runtime_checks": runtime_checks,
+            "injection_evidence": injection_evidence,
+            "phases": {name: round(value, 3) for name, value in phases.items()},
+            "wall_s": round(time.monotonic() - clock, 3),
+            "started_at": started,
+            "finished_at": time.time(),
+            "peak_rss_mb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1),
+        }
+
     if caught is not None:
         # 失败的 attempt 不写 h5 内容（RecordWrapper 只在 episode_success 时写），
         # 但文件在 __init__ 里就被创建了，会留下几 KB 空壳 —— 删掉，
         # 让 hdf5_files/ 里只剩真正成功的轨迹。FAILED_ 视频保留作为失败演进的证据。
         _discard_empty_h5(raw_path, job)
         return {
-            **base,
+            **base(),
             "ok": False,
             "failure_class": "task" if isinstance(caught, retryable) else "code",
             "error_type": type(caught).__name__,
@@ -2013,7 +2154,7 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
     except Exception as exc:
         _discard_empty_h5(raw_path, job)
         return {
-            **base,
+            **base(),
             "ok": False,
             "failure_class": "task" if isinstance(exc, retryable) else "code",
             "error_type": type(exc).__name__,
@@ -2021,12 +2162,35 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
             "traceback": traceback.format_exc(),
             "video": _video_summary(output_root, job, timestep_count=None, close_error=close_error),
         }
+    binfill_demo: dict[str, Any] = {"applied": False}
+    if job.binfill_demo and job.task == "BinFill":
+        # 顺序：先 _raw_summary 拿到已校验的 N → 转换 → 再 _raw_summary 拿到 2N（并证明倍增后仍连续、末帧仍为真）。
+        # jsonl 的 timestep_count 必须是 2N：数轴脚本会拿它与 h5 帧数硬比对。
+        mark = time.monotonic()
+        try:
+            binfill_demo = _binfill_demo_deliverable(output_root, job, int(summary["timestep_count"]))
+            summary = _raw_summary(raw_path, job)
+        except Exception as exc:
+            phases["binfill_demo_s"] = time.monotonic() - mark
+            # 转换失败是基础设施/代码问题（磁盘满、解码坏），不是该 seed 不通：记 code，让熔断生效；原件已保留
+            return {
+                **base(),
+                "ok": False,
+                "failure_class": "code",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+                "traceback": traceback.format_exc(),
+                "binfill_demo": {"applied": False, "error": str(exc)},
+                "video": _video_summary(output_root, job, timestep_count=None, close_error=close_error),
+            }
+        phases["binfill_demo_s"] = time.monotonic() - mark
     # ⚠ 视频核验放在 ok 判定**之后**且不参与它：视频缺失或帧数不符只让 VIDEO_* 判定失败，
     # 不改变任务结果，也不删已经落盘的 HDF5。
     return {
-        **base,
+        **base(),
         "ok": True,
         **summary,
+        "binfill_demo": binfill_demo,
         "video": _video_summary(
             output_root, job, timestep_count=summary.get("timestep_count"), close_error=close_error
         ),
@@ -2077,6 +2241,85 @@ def _synth_failure(job: EpisodeJob, exc: BaseException, failure_class: str) -> d
     }
 
 
+def _discard_timeout_artifacts(output_root: Path, job: EpisodeJob) -> dict[str, Any]:
+    """超时被杀的 worker 没走到 close()：清掉 96 字节 h5 stub 与 ``*.demo-tmp`` 残留；有内容的正式 h5 不删只登记。
+
+    HDF5 的文件锁随进程死亡由内核释放，父进程这里能正常打开判断。
+    """
+    raw_path = _h5_path(output_root, job)
+    discarded: list[str] = []
+    orphan_h5: str | None = None
+    if raw_path.is_file():
+        has_content = False
+        try:
+            with h5py.File(raw_path, "r") as handle:
+                has_content = f"episode_{job.episode}" in handle
+        except Exception:  # noqa: BLE001 - 打不开就是 stub，照删
+            has_content = False
+        if has_content:
+            orphan_h5 = str(raw_path)
+        else:
+            try:
+                raw_path.unlink()
+                discarded.append(str(raw_path))
+            except OSError:
+                pass
+    prefix = f"{job.task}_ep{job.episode}_seed{job.seed}"
+    for folder, pattern in (
+        (output_root / "hdf5_files", f"{prefix}*{BINFILL_TMP_SUFFIX}"),
+        (output_root / "videos" / BINFILL_TMP_DIRNAME, f"{prefix}*.mp4"),
+    ):
+        if not folder.is_dir():
+            continue
+        for item in folder.glob(pattern):
+            try:
+                item.unlink()
+                discarded.append(str(item))
+            except OSError:
+                pass
+    return {"discarded": discarded, "orphan_h5": orphan_h5}
+
+
+def _synth_timeout(job: EpisodeJob, timeout_s: float, *, wall_s: float, cleanup: Mapping[str, Any]) -> dict[str, Any]:
+    """单条墙钟超时：pebble 杀掉该 worker 后，父进程合成一条 ``failure_class="timeout"`` 的记录。
+
+    字段与 ``_worker`` 的失败行对齐（phases/peak_rss_mb 等给空值），``video.reason`` 必须非空，
+    否则 VIDEO_INDEX 会把 ``no_close`` 且无 reason 的行记成 untraceable。
+    """
+    return {
+        "task": job.task,
+        "episode": job.episode,
+        "attempt": job.attempt,
+        "seed": job.seed,
+        "difficulty": job.difficulty,
+        "recovery_mode": job.recovery_mode,
+        "ok": False,
+        "failure_class": "timeout",
+        "error_type": "EpisodeWallClockTimeout",
+        "error": f"单条墙钟超过 {timeout_s:g} 秒被终止（实测 {wall_s:.1f} 秒），worker 未走到 close()",
+        "timed_out": True,
+        "timeout_s": timeout_s,
+        "wall_s": round(wall_s, 3),
+        "phases": {},
+        "peak_rss_mb": None,
+        "runtime_checks": [],
+        "injection_evidence": {},
+        "discarded": list(cleanup.get("discarded", [])),
+        "orphan_h5": cleanup.get("orphan_h5"),
+        "finished_at": time.time(),
+        "video": {
+            "status": VIDEO_STATUS_NO_CLOSE,
+            "path": None,
+            "frames": None,
+            "frames_expected": None,
+            "bytes": None,
+            "sha256": None,
+            "no_object_paths": [],
+            "reason": f"单条墙钟超过 {timeout_s:g} 秒被终止，worker 未走到 close()",
+        },
+    }
+
+
 def _run_jobs(
     jobs: Sequence[EpisodeJob],
     gpu_ids: Sequence[str],
@@ -2086,125 +2329,148 @@ def _run_jobs(
     max_attempts: int,
     max_tasks_per_child: int | None,
     cpu_plan: Mapping[str, tuple[int, ...] | None],
+    episode_timeout_s: float = DEFAULT_EPISODE_TIMEOUT_S,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """每卡一个池，按剩余容量动态派发；失败 attempt+1 重新入队；池崩溃则重建。"""
+    """每卡一个 pebble 池，按剩余容量动态派发；失败 attempt+1 重新入队；单条超时只杀该 worker。
+
+    换 pebble 的原因：``ProcessPoolExecutor`` 杀任意一个 worker 就整池 ``BrokenProcessPool``，
+    同池在飞任务被连坐；pebble 的 ``schedule(timeout=)`` 到时只 SIGTERM→SIGKILL 该 worker 并自动补进程，
+    worker 意外死亡（``ProcessExpired``）同样只污染那一个 future，池不需要重建。
+    ``episode_timeout_s`` 必须有默认值：``tests/_shared/parity_worker_isolation.py`` 按关键字调用且不传它。
+    """
+    from pebble import ProcessExpired, ProcessPool  # 延迟 import：spawn 子进程会以 __mp_main__ 重跑本模块顶层
+
     layout = get_layout(layout_name)
     context = mp.get_context("spawn")
     per_gpu = max(1, workers // len(gpu_ids))
+    timeout = float(episode_timeout_s) if episode_timeout_s and episode_timeout_s > 0 else None
 
-    def new_pool(gpu: str) -> ProcessPoolExecutor:
-        return ProcessPoolExecutor(
+    def new_pool(gpu: str) -> Any:
+        return ProcessPool(
             max_workers=per_gpu,
-            mp_context=context,
+            max_tasks=int(max_tasks_per_child or 0),  # pebble 里 0 才是「永不回收」，不能传 None
             initializer=_pool_init,
             initargs=(gpu, cpu_plan.get(gpu), str(SRC_ROOT)),
-            max_tasks_per_child=max_tasks_per_child,
+            context=context,
         )
 
     pools = {gpu: new_pool(gpu) for gpu in gpu_ids}
     capacity = {gpu: per_gpu for gpu in gpu_ids}
     pending: deque[EpisodeJob] = deque(jobs)
-    inflight: dict[Future, tuple[str, EpisodeJob]] = {}
+    inflight: dict[Future, tuple[str, EpisodeJob, float]] = {}
     succeeded: list[dict[str, Any]] = []
     exhausted: list[dict[str, Any]] = []
     total = len(jobs)
-    # 连续的非任务性失败（真 bug、池崩溃）计数，用来避免对着同一个 bug 空转到 attempt 上限
+    # 连续的非任务性失败（真 bug、worker 崩溃）计数，用来避免对着同一个 bug 空转到 attempt 上限；
+    # 超时不计入：它是该 seed 的运行结果，不是代码问题
     strikes: dict[tuple[str, int], int] = {}
 
-    with jsonl_path.open("a", buffering=1, encoding="utf-8") as sink:
+    try:
+        with jsonl_path.open("a", buffering=1, encoding="utf-8") as sink:
 
-        def record(result: Mapping[str, Any]) -> None:
-            sink.write(json.dumps(result, ensure_ascii=False) + "\n")
+            def record(result: Mapping[str, Any]) -> None:
+                sink.write(json.dumps(result, ensure_ascii=False) + "\n")
 
-        while pending or inflight:
-            while pending and any(capacity[gpu] > 0 for gpu in gpu_ids):
-                gpu = max(gpu_ids, key=lambda item: capacity[item])
-                if capacity[gpu] <= 0:
+            while pending or inflight:
+                while pending and any(capacity[gpu] > 0 for gpu in gpu_ids):
+                    gpu = max(gpu_ids, key=lambda item: capacity[item])
+                    if capacity[gpu] <= 0:
+                        break
+                    job = pending.popleft()
+                    # 必须按模块全局名 _worker 派发：parity_worker_isolation 靠猴补它做记账
+                    future = pools[gpu].schedule(_worker, args=(job,), timeout=timeout)
+                    inflight[future] = (gpu, job, time.monotonic())
+                    capacity[gpu] -= 1
+
+                if not inflight:
                     break
-                job = pending.popleft()
-                inflight[pools[gpu].submit(_worker, job)] = (gpu, job)
-                capacity[gpu] -= 1
+                finished, _ = wait(list(inflight), return_when=FIRST_COMPLETED)
 
-            if not inflight:
-                break
-            finished, _ = wait(list(inflight), return_when=FIRST_COMPLETED)
-
-            broken: set[str] = set()
-            for future in finished:
-                gpu, job = inflight.pop(future)
-                capacity[gpu] += 1
-                try:
-                    result = future.result()
-                except BrokenProcessPool as exc:
-                    broken.add(gpu)
-                    result = _synth_failure(job, exc, "infra")
-                except BaseException as exc:  # noqa: BLE001
-                    result = _synth_failure(job, exc, "infra")
-                record(result)
-                key = (job.task, job.episode)
-                if result.get("ok"):
-                    strikes.pop(key, None)
-                    succeeded.append(result)
-                    print(
-                        f"[{len(succeeded)}/{total}] {job.task}/episode_{job.episode} "
-                        f"succeeded with seed {job.seed} (attempt {job.attempt}, "
-                        f"{result.get('wall_s')}s)",
-                        flush=True,
-                    )
-                    continue
-
-                if result.get("failure_class") == "task":
-                    strikes.pop(key, None)
-                else:
-                    strikes[key] = strikes.get(key, 0) + 1
-
-                if strikes.get(key, 0) >= MAX_NON_TASK_STRIKES:
-                    exhausted.append(result)
-                    print(
-                        f"    {job.task}/episode_{job.episode} 连续 {MAX_NON_TASK_STRIKES} 次非任务性失败"
-                        f"（{result.get('error_type')}），判定为代码问题，放弃",
-                        flush=True,
-                    )
-                elif job.attempt + 1 < max_attempts:
-                    print(
-                        f"    {job.task}/episode_{job.episode} seed {job.seed} failed "
-                        f"({result.get('error_type')}), retrying attempt {job.attempt + 1}",
-                        flush=True,
-                    )
-                    pending.append(job.bump(layout.seed(job.task, job.episode, job.attempt + 1)))
-                else:
-                    exhausted.append(result)
-                    print(
-                        f"    {job.task}/episode_{job.episode} 用尽 {max_attempts} 次 attempt，放弃",
-                        flush=True,
-                    )
-
-            # 池整体崩溃（worker 段错误会让 in-flight 与 pending 的 future 全部失败）：
-            # 重建该池，并把它名下未完成的 job 退回队列，否则一次段错误就会报废整批任务。
-            for gpu in broken:
-                print(f"    GPU {gpu} 的进程池已损坏，正在重建", flush=True)
-                for future, (owner, job) in list(inflight.items()):
-                    if owner != gpu:
-                        continue
-                    inflight.pop(future)
+                for future in finished:
+                    gpu, job, submitted = inflight.pop(future)
                     capacity[gpu] += 1
-                    record(_synth_failure(job, RuntimeError("池重建，任务退回队列"), "infra"))
-                    if job.attempt + 1 < max_attempts:
-                        pending.appendleft(
-                            job.bump(layout.seed(job.task, job.episode, job.attempt + 1))
+                    elapsed = time.monotonic() - submitted
+                    try:
+                        result = future.result()
+                    except TimeoutError as exc:
+                        # 3.11 起 concurrent.futures.TimeoutError 就是内建 TimeoutError（OSError 子类），
+                        # worker import 阶段的 OSError 家族也可能长这样：再核派发时刻，只有确实跑满才算超时
+                        if timeout is not None and elapsed >= 0.95 * timeout:
+                            cleanup = _discard_timeout_artifacts(Path(job.output_root), job)
+                            result = _synth_timeout(job, timeout, wall_s=elapsed, cleanup=cleanup)
+                        else:
+                            result = _synth_failure(job, exc, "infra")
+                    except ProcessExpired as exc:
+                        # worker 意外死亡（段错误 / OOM killer）：pebble 只污染这一个 future 并自动补进程
+                        result = _synth_failure(job, exc, "infra")
+                        result["error"] = f"{exc}（exitcode={getattr(exc, 'exitcode', None)}）"
+                        cleanup = _discard_timeout_artifacts(Path(job.output_root), job)
+                        result["discarded"] = cleanup["discarded"]
+                    except BaseException as exc:  # noqa: BLE001
+                        result = _synth_failure(job, exc, "infra")
+                    record(result)
+                    key = (job.task, job.episode)
+                    if result.get("ok"):
+                        strikes.pop(key, None)
+                        succeeded.append(result)
+                        print(
+                            f"[{len(succeeded)}/{total}] {job.task}/episode_{job.episode} "
+                            f"succeeded with seed {job.seed} (attempt {job.attempt}, "
+                            f"{result.get('wall_s')}s)",
+                            flush=True,
                         )
+                        continue
+
+                    if result.get("failure_class") in ("task", "timeout"):
+                        strikes.pop(key, None)
                     else:
-                        exhausted.append(_synth_failure(job, RuntimeError("池重建且已用尽 attempt"), "infra"))
-                try:
-                    pools[gpu].shutdown(wait=False, cancel_futures=True)
-                except Exception:  # noqa: BLE001
-                    pass
-                pools[gpu] = new_pool(gpu)
-                capacity[gpu] = per_gpu
+                        strikes[key] = strikes.get(key, 0) + 1
+
+                    if result.get("failure_class") == "timeout":
+                        print(
+                            f"    {job.task}/episode_{job.episode} seed {job.seed} 单条墙钟超过 "
+                            f"{timeout:g} 秒被终止（实测 {elapsed:.0f} 秒）",
+                            flush=True,
+                        )
+                    if strikes.get(key, 0) >= MAX_NON_TASK_STRIKES:
+                        exhausted.append(result)
+                        print(
+                            f"    {job.task}/episode_{job.episode} 连续 {MAX_NON_TASK_STRIKES} 次非任务性失败"
+                            f"（{result.get('error_type')}），判定为代码问题，放弃",
+                            flush=True,
+                        )
+                    elif job.attempt + 1 < max_attempts:
+                        print(
+                            f"    {job.task}/episode_{job.episode} seed {job.seed} failed "
+                            f"({result.get('error_type')}), retrying attempt {job.attempt + 1}",
+                            flush=True,
+                        )
+                        pending.append(job.bump(layout.seed(job.task, job.episode, job.attempt + 1)))
+                    else:
+                        exhausted.append(result)
+                        print(
+                            f"    {job.task}/episode_{job.episode} 用尽 {max_attempts} 次 attempt，放弃",
+                            flush=True,
+                        )
+    except BaseException:
+        # 调度循环本身出错（写盘失败、KeyboardInterrupt）：立刻终止所有 worker，不让进程泄漏
+        for pool in pools.values():
+            try:
+                pool.stop()
+                pool.join()
+            except Exception:  # noqa: BLE001
+                pass
+        raise
 
     for pool in pools.values():
         try:
-            pool.shutdown(wait=True)
+            pool.close()
+            pool.join(timeout=120)
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            pool.stop()
+            pool.join()
         except Exception:  # noqa: BLE001
             pass
     return succeeded, exhausted
@@ -2280,6 +2546,8 @@ def generate_dataset_newseed(
     affinity: str = "none",
     sampling_config: str | Path | None = None,
     episode_specs: str | Path | None = None,
+    episode_timeout_s: float = DEFAULT_EPISODE_TIMEOUT_S,
+    binfill_demo: bool = False,
 ) -> dict[str, Any]:
     _ensure_layout()
     if episodes < 1:
@@ -2367,6 +2635,7 @@ def generate_dataset_newseed(
                         sampling_config=copy.deepcopy(task_configs[group.task]) if group.task in task_configs else None,
                         # 每个 job 一份独立深拷贝：worker 之间、同一 worker 的前后两局之间不共享可变缓存
                         episode_spec=copy.deepcopy(dict(group.records[episode])),
+                        binfill_demo=binfill_demo,
                     )
                 )
         for group in spec_groups:
@@ -2383,6 +2652,7 @@ def generate_dataset_newseed(
                 repo_root=str(REPO_ROOT),
                 # 每个 job 拿一份独立副本，worker 之间、同一 worker 的前后两局之间互不共享
                 sampling_config=copy.deepcopy(task_configs[task]) if task in task_configs else None,
+                binfill_demo=binfill_demo,
             )
             for task in tasks
             for episode in range(episode_start, episode_start + episodes)
@@ -2403,6 +2673,8 @@ def generate_dataset_newseed(
         "limit_threads": limit_threads,
         "max_tasks_per_child": max_tasks_per_child,
         "affinity": affinity,
+        "episode_timeout_s": episode_timeout_s,
+        "binfill_demo": binfill_demo,
         "save_video_for_recording": True,
         "sampling_config": str(sampling_config) if sampling_config is not None else None,
         "sampling_config_tasks": sorted(task_configs),
@@ -2440,6 +2712,7 @@ def generate_dataset_newseed(
         max_attempts=max_attempts,
         max_tasks_per_child=max_tasks_per_child,
         cpu_plan=_cpu_plan(gpu_ids, affinity),
+        episode_timeout_s=episode_timeout_s,
     )
     elapsed = time.monotonic() - started
 
@@ -2469,6 +2742,9 @@ def generate_dataset_newseed(
         "peak_rss_mb": max((item.get("peak_rss_mb") or 0 for item in succeeded), default=0),
         # 视频状态计数与 ok 判定分开统计：视频判定失败不改变任务结果，但必须如实汇总
         "video_status_counts": _video_status_counts(succeeded, exhausted),
+        # 单条墙钟超时的条数（按最终放弃的 attempt 计）与 BinFill 交付版转换成功的条数
+        "timeout_count": sum(1 for item in exhausted if item.get("failure_class") == "timeout"),
+        "binfill_demo_converted": sum(1 for item in succeeded if (item.get("binfill_demo") or {}).get("applied")),
     }
     write_text_atomic(
         output / "run_summary.json",
@@ -2561,6 +2837,17 @@ def _args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         choices=("none", "per-gpu"),
         help="per-gpu 时把物理核按卡切分并绑定，用于压住 ffmpeg/x264 的自动并行",
     )
+    parser.add_argument(
+        "--episode-timeout",
+        type=float,
+        default=DEFAULT_EPISODE_TIMEOUT_S,
+        help="单条 episode 墙钟上限（秒）：超时只杀该 worker、记 EpisodeWallClockTimeout，池不崩；0 表示不限",
+    )
+    parser.add_argument(
+        "--binfill-demo",
+        action="store_true",
+        help="BinFill 交付版：close() 之后把成品 h5/mp4 整条复制一遍接在自己前面当 demo（is_video_demo=True、红框）",
+    )
     return parser.parse_args(argv)
 
 
@@ -2622,6 +2909,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             affinity=args.affinity,
             sampling_config=args.sampling_config,
             episode_specs=args.episode_specs,
+            episode_timeout_s=args.episode_timeout,
+            binfill_demo=args.binfill_demo,
         )
     except (DatasetGenerationError, SamplingConfigError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

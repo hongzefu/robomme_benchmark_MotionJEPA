@@ -325,6 +325,7 @@ def test_快速失败不会拿到高吞吐():
         ({"ok": False, "error_type": "BinCollisionError", "failure_class": "task"}, "碰撞拒绝"),
         ({"ok": False, "error_type": "SpecBindingError", "failure_class": "task"}, "实际对象/动作不符"),
         ({"ok": False, "error_type": "FailsafeTimeout", "failure_class": "task"}, "超时"),
+        ({"ok": False, "error_type": "EpisodeWallClockTimeout", "failure_class": "timeout"}, "超时"),
         ({"ok": False, "error_type": "ScrewPlanFailure", "failure_class": "task"}, "规划失败"),
         ({"ok": False, "error_type": "SceneGenerationError", "failure_class": "task"}, "规划失败"),
         ({"ok": False, "error_type": "TypeError", "failure_class": "code"}, "未运行"),
@@ -344,6 +345,13 @@ def test_执行状态与任务结果分开记():
     record = {"ok": False, "error_type": "ScrewPlanFailure", "failure_class": "task"}
     assert execution_state(record) == "completed"
     assert classify_outcome(record) == "规划失败"
+    # 单条墙钟超时（pebble 杀 worker）：执行状态 timeout、任务结果「超时」，且不算资源性失败（不封档）
+    record = {"ok": False, "error_type": "EpisodeWallClockTimeout", "failure_class": "timeout"}
+    assert execution_state(record) == "timeout"
+    assert classify_outcome(record) == "超时"
+    rows = [{"outcome": "超时", "video_status": "no_close", "execution_state": "timeout",
+             "error_type": "EpisodeWallClockTimeout", "error": "单条墙钟超过 600 秒被终止"}]
+    assert tier_is_unusable(_tier_result(rows))[0] is False
 
 
 def test_cuda_显存_oom_也算该档不可用():

@@ -232,6 +232,8 @@ def command_for(root: Path, mode: str, task: str, difficulty: str, count: int = 
             "--episodes", str(count), "--episode-start", "0", "--workers", str(workers),
             "--gpus", ",".join(gpus), "--layout", "train", "--difficulty", "001" if difficulty == "hard" else "010",
             "--max-attempts", "1", "--max-tasks-per-child", "8", "--affinity", "none",
+            # 并行标定由本框架自己的 timeout 管墙钟，关掉生成器的单条超时以保持旧行为
+            "--episode-timeout", "0",
             "--sampling-config", str(CONFIG)]
 
 

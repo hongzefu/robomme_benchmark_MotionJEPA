@@ -52,6 +52,10 @@ OUTCOME_TIMEOUT = "超时"
 OUTCOME_NOT_RUN = "未运行"
 
 
+#: 归入「超时」的 error_type：录像器步数上限与生成器单条墙钟上限
+WALL_TIMEOUT_ERROR_TYPES = ("FailsafeTimeout", "EpisodeWallClockTimeout")
+
+
 def classify_outcome(record: dict[str, Any]) -> str:
     """把 worker 返回的一条记录翻成七类互斥的任务结果。
 
@@ -68,7 +72,8 @@ def classify_outcome(record: dict[str, Any]) -> str:
         return OUTCOME_COLLISION
     if error_type == "SpecBindingError":
         return OUTCOME_BINDING
-    if error_type == "FailsafeTimeout":
+    if error_type in WALL_TIMEOUT_ERROR_TYPES or failure_class == "timeout":
+        # FailsafeTimeout 是录像器 2000 步上限；EpisodeWallClockTimeout 是生成器单条墙钟上限（pebble 杀 worker）
         return OUTCOME_TIMEOUT
     if failure_class in ("code", "infra"):
         return OUTCOME_NOT_RUN
@@ -82,7 +87,7 @@ def execution_state(record: dict[str, Any]) -> str:
     if record.get("ok"):
         return "completed"
     failure_class = str(record.get("failure_class") or "")
-    if str(record.get("error_type") or "") == "FailsafeTimeout":
+    if str(record.get("error_type") or "") in WALL_TIMEOUT_ERROR_TYPES or failure_class == "timeout":
         return "timeout"
     if failure_class == "code":
         return "code_error"
@@ -140,10 +145,14 @@ def invoke_generator(
     log_path: Path,
     sampling_config: Path | None,
     timeout_s: int = TIER_TIMEOUT_S,
+    episode_timeout_s: float | None = None,
+    binfill_demo: bool = False,
 ) -> dict[str, Any]:
     """调一次生产入口跑完整份清单，记录完整命令、退出码、墙钟与资源采样。
 
     走 subprocess 而不是同进程调用：命令可原样复现、退出码明确、进程池崩溃不会带塌编排。
+    ``episode_timeout_s`` / ``binfill_demo`` 只在显式给出时追加到命令行（校准与档位阶梯的命令行
+    与 05/06 逐字相同；feasibility 分支显式传 600 秒与 BinFill 转换）。
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -161,6 +170,10 @@ def invoke_generator(
     ]
     if sampling_config is not None:
         command += ["--sampling-config", str(sampling_config)]
+    if episode_timeout_s is not None:
+        command += ["--episode-timeout", str(episode_timeout_s)]
+    if binfill_demo:
+        command += ["--binfill-demo"]
 
     before = _sample_resources()
     started = time.monotonic()
@@ -275,7 +288,12 @@ _OOM_TEXT_MARKERS = ("out of memory", "outofmemory", "cuda error", "cudaerrormem
 
 
 def _is_resource_failure(row: dict[str, Any]) -> bool:
-    """这一条是不是资源性失败（该档撑不住），而不是样本自身的任务性失败。"""
+    """这一条是不是资源性失败（该档撑不住），而不是样本自身的任务性失败。
+
+    单条墙钟超时（``timeout``）不算：它是该 seed 的运行结果（卡死），与并发规模无关。
+    """
+    if row.get("execution_state") == "timeout":
+        return False
     if row.get("execution_state") == "infra_error":
         return True
     error_type = str(row.get("error_type") or "")

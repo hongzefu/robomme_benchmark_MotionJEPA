@@ -25,6 +25,8 @@ from typing import Any, Sequence
 
 # 本文件位于 scripts/injection/，向上两级是仓库根（与搬迁前 tests/_shared/ 同深度，勿改成 parents[1]）
 REPO_ROOT = Path(__file__).resolve().parents[2]
+#: feasibility 实跑的单条 episode 墙钟上限（秒），用户 2026-09-11 定「卡死降低到600」
+FEASIBILITY_EPISODE_TIMEOUT_S = 600.0
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
@@ -990,6 +992,8 @@ def cmd_run(
             output_dir=root / "feasibility" / mode, manifest=feas_manifest,
             gpus=",".join(gpu_ids), workers=total_workers, log_path=logs / f"feasibility-{mode}.log",
             sampling_config=sampling_config, timeout_s=6 * 3600,
+            # 07 起：单条墙钟 600 秒（pebble 只杀该 worker）；BinFill 交付版直出「同一条重复两遍」的 demo
+            episode_timeout_s=FEASIBILITY_EPISODE_TIMEOUT_S, binfill_demo=True,
         )
         rows = result["rows"]
         payload.update(_summarize_feasibility(root, rows, groups, verdicts, tier, mode, gpu_ids, chosen))
