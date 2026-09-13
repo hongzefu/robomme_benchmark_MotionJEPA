@@ -1507,3 +1507,11 @@
 
 - 用户指令原话：「train中被拒绝的删除h5 replay视频不要删除」。
 - 做了什么：按 `delivery_manifest.json` 各组 `failures` 逐条查 `hdf5_files/`，46 条拒绝条里只有 3 条还有 h5（BinFill/easy ep125、ep146 与 BinFill/hard ep152，demo 转换失败后保留的单遍原件，300／485／701 MB），已删除；其余 43 条（环境报告失败、超时、碰撞拒绝）本来就没有 h5。视频一个未动（三条的 mp4 仍在）。删后 `feasibility/P01x20` 下 h5 恰为 1796 个 = 通过条数（正式 1600 + spare 196）。
+
+### 2026-09-12 America/Detroit — 运行 10 全部产物发布到 HF 公开数据集 `HongzeFu/robomme-4task-h5-20260912-v2`（`10.79`～`10.81`）
+
+- 用户指令原话：「给出方案把这次导出集体放入hugging face bucket 设置为公开 命名和我现有的一致 用户批准 做好sha256校验」「仓库名是robomme-4task-h5-20260912-v2！」「所有的都上传」「你来决定最高效率的压缩方式 不要动h5文件本身」「双层校验」「HongzeFu」「放链接但不公开」「License没问题」「开始」。
+- 做了什么：新脚本 `scripts/hf_release.py`（plan/pack/stage/manifest/verify-local/upload/verify-remote/verify-sample，顺序守卫、磁盘自检、归档冻结快照）。h5 不合并不改动，按任务×难度打 `record_dataset_<任务>_<难度>.h5.tar.xz`（正式 14、spare 14、smoke 1，包内 `<top_dir>/hdf5_files/<原名>.h5` + metadata.json，tar pax owner=0 mtime=0）；`xz -6 -T16` 两路并发：880 GB → 100.2 GB，比 8.78×，99 分钟；1949 个 mp4 硬链接逐文件上传；74 个小产物进 `meta/`；仓库内 `MANIFEST.json`（每条 h5 sha256 逐字来自 delivery_manifest）、`SHA256SUMS`、README（apache-2.0，写明与官方集「单个合并 h5」的形状差别、git 链接为私有仓库）、`tarxz_h5.py`。
+- 判定行：`HF_PACK=PASS archives=29 failed=0`；`HF_MANIFEST=PASS episodes=1797 primary=1600 spare=196 videos=1949 files=2055`；`HF_PACK_VERIFY=PASS archives=29 h5=1826 mismatch=0`（含 29 份 metadata）；`HF_UPLOAD=PASS files=2056 bytes=126607515571 revision=604f16da36d6b6d175884df8fb687dc08e0a36eb wall_s=1174.6`（≈108 MB/s）；`HF_REMOTE_VERIFY=PASS files=2056 lfs_sha_match=1978 blob_match=77 mismatch=0 missing=0 extra=1`（extra 为 HF 自建 `.gitattributes`）；`HF_SAMPLE_VERIFY=PASS archives=4 h5=471 videos=3 mismatch=0`。
+- 意外：①首轮 manifest 报 smoke 行缺 h5 sha256（write_manifest_files 用了 check_exists=False）；②smoke 与正式档 ep0 视频同名前缀互相匹配；③首轮 verify-local 把包内 metadata.json 判成 extra；④`upload_large_folder` 给每文件写 `.metadata` 旁车，2 个 247 字符的 `success_NO_OBJECT_VideoRepick_*` 视频触发 OSError 36「File name too long」，改为排除后用 `upload_file` 补传；⑤把 `HF_HOME` 指到 /data 会丢 token（401），改只设 `HF_HUB_CACHE`/`HF_XET_CACHE`。
+- 当前状态：数据集公开可下载（`hf download HongzeFu/robomme-4task-h5-20260912-v2 --repo-type dataset`）。留档 `artifacts/injection/20260912-contract-v3-10/hf_release/`（MANIFEST/SHA256SUMS/README/tarxz_h5.py、release/*.json、精简日志）入库。`artifacts/hf-staging/`（118 GB，视频为硬链接）与 `.cache/huggingface/` 下载缓存尚未清理，待用户确认。

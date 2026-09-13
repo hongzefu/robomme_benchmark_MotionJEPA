@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "archives": [
+    "record_dataset_BinFill_medium.h5.tar.xz",
+    "record_dataset_RouteStick_xhard.h5.tar.xz",
+    "record_dataset_VideoRepick_easy.h5.tar.xz",
+    "record_dataset_VideoUnmaskSwap_hard.h5.tar.xz"
+  ],
+  "videos": [
+    "videos/VideoRepick/easy/VideoRepick_ep154_seed24400_easy_watch_the_video_carefully_then_pick_up_the_same_block_that_was_previously_picked_up_again_finally_put_it_down_and_press_the_button_to_stop__ALT__watch_the_video__HASH__e2fc0787253e.mp4",
+    "videos/RouteStick/xhard/RouteStick_ep105_seed26500_xhard_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+    "videos/VideoUnmaskSwap/xhard/VideoUnmaskSwap_ep49_seed9900_xhard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ],
+  "mismatch": []
+}

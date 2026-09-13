@@ -1,0 +1,121 @@
+{
+  "generated_utc": "2026-09-12T22:32:28+00:00",
+  "archives": {
+    "record_dataset_BinFill_easy.h5.tar.xz": [
+      10713074308,
+      1789249068143392499
+    ],
+    "record_dataset_BinFill_hard.h5.tar.xz": [
+      18411696984,
+      1789248336731926243
+    ],
+    "record_dataset_BinFill_medium.h5.tar.xz": [
+      14509316936,
+      1789247894230389072
+    ],
+    "record_dataset_RouteStick_easy.h5.tar.xz": [
+      2164410520,
+      1789246339372894879
+    ],
+    "record_dataset_RouteStick_hard.h5.tar.xz": [
+      4748516896,
+      1789251034526212497
+    ],
+    "record_dataset_RouteStick_medium.h5.tar.xz": [
+      3882782920,
+      1789251562572940507
+    ],
+    "record_dataset_RouteStick_xhard.h5.tar.xz": [
+      7754051768,
+      1789250870712299018
+    ],
+    "record_dataset_VideoRepick_easy.h5.tar.xz": [
+      6729896780,
+      1789250024438740856
+    ],
+    "record_dataset_VideoRepick_medium.h5.tar.xz": [
+      6848628424,
+      1789249893251826230
+    ],
+    "record_dataset_VideoRepick_xhard.h5.tar.xz": [
+      6875866496,
+      1789249217730288443
+    ],
+    "record_dataset_VideoUnmaskSwap_easy.h5.tar.xz": [
+      1756104312,
+      1789251508536960501
+    ],
+    "record_dataset_VideoUnmaskSwap_hard.h5.tar.xz": [
+      2432454740,
+      1789251241801102592
+    ],
+    "record_dataset_VideoUnmaskSwap_medium.h5.tar.xz": [
+      1081467364,
+      1789251695733893050
+    ],
+    "record_dataset_VideoUnmaskSwap_xhard.h5.tar.xz": [
+      2592716112,
+      1789250408602541413
+    ],
+    "smoke/record_dataset_RouteStick_easy_smoke.h5.tar.xz": [
+      26966848,
+      1789252283379673187
+    ],
+    "spare/record_dataset_BinFill_easy_spare.h5.tar.xz": [
+      1186105932,
+      1789251835531842254
+    ],
+    "spare/record_dataset_BinFill_hard_spare.h5.tar.xz": [
+      759121004,
+      1789252122688734922
+    ],
+    "spare/record_dataset_BinFill_medium_spare.h5.tar.xz": [
+      1827872180,
+      1789251778780862992
+    ],
+    "spare/record_dataset_RouteStick_easy_spare.h5.tar.xz": [
+      328039332,
+      1789252278815674956
+    ],
+    "spare/record_dataset_RouteStick_hard_spare.h5.tar.xz": [
+      704882956,
+      1789252127847732959
+    ],
+    "spare/record_dataset_RouteStick_medium_spare.h5.tar.xz": [
+      588489028,
+      1789252211283701029
+    ],
+    "spare/record_dataset_RouteStick_xhard_spare.h5.tar.xz": [
+      1173291640,
+      1789251937727804508
+    ],
+    "spare/record_dataset_VideoRepick_easy_spare.h5.tar.xz": [
+      798049960,
+      1789251942133802869
+    ],
+    "spare/record_dataset_VideoRepick_medium_spare.h5.tar.xz": [
+      700229040,
+      1789252031867769292
+    ],
+    "spare/record_dataset_VideoRepick_xhard_spare.h5.tar.xz": [
+      555809388,
+      1789252029861770047
+    ],
+    "spare/record_dataset_VideoUnmaskSwap_easy_spare.h5.tar.xz": [
+      260866128,
+      1789252253043684931
+    ],
+    "spare/record_dataset_VideoUnmaskSwap_hard_spare.h5.tar.xz": [
+      360432232,
+      1789252232331692925
+    ],
+    "spare/record_dataset_VideoUnmaskSwap_medium_spare.h5.tar.xz": [
+      159141424,
+      1789252281824673790
+    ],
+    "spare/record_dataset_VideoUnmaskSwap_xhard_spare.h5.tar.xz": [
+      318385796,
+      1789252176245714476
+    ]
+  }
+}

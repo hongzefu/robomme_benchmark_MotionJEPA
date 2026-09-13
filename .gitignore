@@ -238,6 +238,8 @@ __marimo__/
 !/artifacts/injection/*/env_check_result_*.json
 !/artifacts/injection/*/delivery_manifest.json
 !/artifacts/injection/*/feasibility_result_*.json
+# 2026-09-12 HF 发布留档：MANIFEST/SHA256SUMS/README/tarxz_h5.py 副本入库
+!/artifacts/injection/*/hf_release/
 /artifacts/injection/*/feasibility/*/*/*/hdf5_files/
 /artifacts/injection/*/feasibility/*/*/*/videos/
 /artifacts/injection/*/feasibility/**/*.h5

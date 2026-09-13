@@ -1,0 +1,276 @@
+{
+  "generated_utc": "2026-09-12T22:31:23+00:00",
+  "packing": {
+    "tool": "tar|xz",
+    "preset": 6,
+    "threads": 16,
+    "tar": "--format=pax --owner=0 --group=0 --numeric-owner --mtime=@0"
+  },
+  "archives": {
+    "record_dataset_BinFill_hard.h5.tar.xz": {
+      "rel_path": "record_dataset_BinFill_hard.h5.tar.xz",
+      "bytes": 18411696984,
+      "sha256": "6e8fa8e69ab79ca44add0e3339926039391310d288cd68b02c4b12d114ed5b53",
+      "member_count": 134,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 1983.414
+    },
+    "record_dataset_BinFill_medium.h5.tar.xz": {
+      "rel_path": "record_dataset_BinFill_medium.h5.tar.xz",
+      "bytes": 14509316936,
+      "sha256": "79905fe0765c2f28499c0182d6c003fb01c50b980d053ce39225a72f4c28eb93",
+      "member_count": 134,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 1540.992
+    },
+    "record_dataset_BinFill_easy.h5.tar.xz": {
+      "rel_path": "record_dataset_BinFill_easy.h5.tar.xz",
+      "bytes": 10713074308,
+      "sha256": "29be7d27dbe79095257c713c9959172175e9ad87a742c000b21f6aa4ee76d260",
+      "member_count": 135,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 1173.869
+    },
+    "record_dataset_VideoRepick_xhard.h5.tar.xz": {
+      "rel_path": "record_dataset_VideoRepick_xhard.h5.tar.xz",
+      "bytes": 6875866496,
+      "sha256": "4ed7b79b383cd9ab61bcaeb20f8ddfd93e7f1957a32782587e3392c4ab5c06c1",
+      "member_count": 134,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 881.007
+    },
+    "record_dataset_VideoRepick_medium.h5.tar.xz": {
+      "rel_path": "record_dataset_VideoRepick_medium.h5.tar.xz",
+      "bytes": 6848628424,
+      "sha256": "3751aec482ca1bfec5a13e36d5e711548a384551fb1ccc34861cbd647d2c409c",
+      "member_count": 134,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 825.119
+    },
+    "record_dataset_VideoRepick_easy.h5.tar.xz": {
+      "rel_path": "record_dataset_VideoRepick_easy.h5.tar.xz",
+      "bytes": 6729896780,
+      "sha256": "fa322659d3ad79e472e0adc5e73c0e4c8a44ecc6f37e8632839d98fa98087b26",
+      "member_count": 135,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 806.728
+    },
+    "record_dataset_RouteStick_xhard.h5.tar.xz": {
+      "rel_path": "record_dataset_RouteStick_xhard.h5.tar.xz",
+      "bytes": 7754051768,
+      "sha256": "f4b847f814158543af938ae80bfc0d781d9ad56d3d4eb76b77d68cfe8da2fa3f",
+      "member_count": 101,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 977.421
+    },
+    "record_dataset_VideoUnmaskSwap_xhard.h5.tar.xz": {
+      "rel_path": "record_dataset_VideoUnmaskSwap_xhard.h5.tar.xz",
+      "bytes": 2592716112,
+      "sha256": "fb6d15b6c6ae66497a6fc6dbf8f2495fc68c17f6950f8156e0e0c1b526d56fb2",
+      "member_count": 101,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 384.164
+    },
+    "record_dataset_RouteStick_hard.h5.tar.xz": {
+      "rel_path": "record_dataset_RouteStick_hard.h5.tar.xz",
+      "bytes": 4748516896,
+      "sha256": "54cb559ce202626a8f85f78fcaf77fc98ee52d1af8c27279577f36bd1090788c",
+      "member_count": 101,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 625.976
+    },
+    "record_dataset_VideoUnmaskSwap_hard.h5.tar.xz": {
+      "rel_path": "record_dataset_VideoUnmaskSwap_hard.h5.tar.xz",
+      "bytes": 2432454740,
+      "sha256": "6ad1ca42493d1a2fa5bf9d9f064895f043c309544edef8bdcf3185caffbe8afe",
+      "member_count": 101,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 371.148
+    },
+    "record_dataset_RouteStick_medium.h5.tar.xz": {
+      "rel_path": "record_dataset_RouteStick_medium.h5.tar.xz",
+      "bytes": 3882782920,
+      "sha256": "96ba90dc626243e0111761fafee2193aebb9be3d1da7107f1e9a8e54286c77f4",
+      "member_count": 101,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 528.001
+    },
+    "record_dataset_VideoUnmaskSwap_easy.h5.tar.xz": {
+      "rel_path": "record_dataset_VideoUnmaskSwap_easy.h5.tar.xz",
+      "bytes": 1756104312,
+      "sha256": "794d5f8a7dfed1080652b665cd03832bbb095fcc012cd08c24b72b61e51ace24",
+      "member_count": 101,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 266.702
+    },
+    "record_dataset_VideoUnmaskSwap_medium.h5.tar.xz": {
+      "rel_path": "record_dataset_VideoUnmaskSwap_medium.h5.tar.xz",
+      "bytes": 1081467364,
+      "sha256": "43dd67a806832d1ed2ea37b1aa4830604fc23fafa821f95f5b1d372ca61c6456",
+      "member_count": 101,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 187.222
+    },
+    "record_dataset_RouteStick_easy.h5.tar.xz": {
+      "rel_path": "record_dataset_RouteStick_easy.h5.tar.xz",
+      "bytes": 2164410520,
+      "sha256": "d3e3836cdbe933f5efd45d5e9199e65fba3539f46b1fa824078fa2f1986dde44",
+      "member_count": 101,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 0.0,
+      "resumed": true
+    },
+    "spare/record_dataset_BinFill_medium_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_BinFill_medium_spare.h5.tar.xz",
+      "bytes": 1827872180,
+      "sha256": "cfbe8ede9c9cefd7498d186cac5fe7b7347c33ed24bd456dce9e1b18f72af0ce",
+      "member_count": 17,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 216.204
+    },
+    "spare/record_dataset_BinFill_easy_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_BinFill_easy_spare.h5.tar.xz",
+      "bytes": 1186105932,
+      "sha256": "ef4dd86655b50251990f5e0185e9c9f9b548ef79483677ac0f98ebd2864bd9f3",
+      "member_count": 17,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 139.849
+    },
+    "spare/record_dataset_RouteStick_xhard_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_RouteStick_xhard_spare.h5.tar.xz",
+      "bytes": 1173291640,
+      "sha256": "d6ad3164873aea88090ee6672a9522e90f9d1b13f2ff25bb08d104f7bb696d14",
+      "member_count": 16,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 158.964
+    },
+    "spare/record_dataset_VideoRepick_easy_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_VideoRepick_easy_spare.h5.tar.xz",
+      "bytes": 798049960,
+      "sha256": "8042b0d8fe7576387aefbe22362ff20b0bcb3b50958098bf4040d75efb6c4b74",
+      "member_count": 17,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 106.527
+    },
+    "spare/record_dataset_VideoRepick_medium_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_VideoRepick_medium_spare.h5.tar.xz",
+      "bytes": 700229040,
+      "sha256": "78926a81fce604aff65fc28c1bb5cfa455a6d2028466cd3c5635f3149629abe0",
+      "member_count": 14,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 94.122
+    },
+    "spare/record_dataset_VideoRepick_xhard_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_VideoRepick_xhard_spare.h5.tar.xz",
+      "bytes": 555809388,
+      "sha256": "9561ab2389887f53101e247258b24571484cd5de4e93c0fdc674f6a972119c55",
+      "member_count": 12,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 87.723
+    },
+    "spare/record_dataset_BinFill_hard_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_BinFill_hard_spare.h5.tar.xz",
+      "bytes": 759121004,
+      "sha256": "b1b2fbd4f9d1500fa2fd6cf755413740dd86436057bafd77e20f8edeec999bb0",
+      "member_count": 7,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 92.845
+    },
+    "spare/record_dataset_RouteStick_hard_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_RouteStick_hard_spare.h5.tar.xz",
+      "bytes": 704882956,
+      "sha256": "06d315316a91dc742178a0358ea665e7f92b16a13300ee94c74cfd77ffbe8d31",
+      "member_count": 16,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 95.988
+    },
+    "spare/record_dataset_VideoUnmaskSwap_xhard_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_VideoUnmaskSwap_xhard_spare.h5.tar.xz",
+      "bytes": 318385796,
+      "sha256": "b01c381b56a41bbce9172046c871eb3e7e82ac9afd863a7fbb71a25e593780bd",
+      "member_count": 14,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 53.677
+    },
+    "spare/record_dataset_RouteStick_medium_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_RouteStick_medium_spare.h5.tar.xz",
+      "bytes": 588489028,
+      "sha256": "92d11788c20222cdfe4eb00c87d4d2b4409a5e037b5a6e5d4b97c45113932d70",
+      "member_count": 16,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 83.434
+    },
+    "spare/record_dataset_VideoUnmaskSwap_hard_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_VideoUnmaskSwap_hard_spare.h5.tar.xz",
+      "bytes": 360432232,
+      "sha256": "02b2b5f1c2a611d59247d4e122cd27f832506a5725c54bab2593d09ad4d5f87a",
+      "member_count": 16,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 56.041
+    },
+    "spare/record_dataset_VideoUnmaskSwap_easy_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_VideoUnmaskSwap_easy_spare.h5.tar.xz",
+      "bytes": 260866128,
+      "sha256": "9d9c5b30463eeccdfe6313f376a46db5da4cf488a9de02afa4c0924350e6c814",
+      "member_count": 16,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 41.745
+    },
+    "spare/record_dataset_RouteStick_easy_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_RouteStick_easy_spare.h5.tar.xz",
+      "bytes": 328039332,
+      "sha256": "99576ad239968f7ec2af7611213e0ff9c3529afb860c58fa7b5855fc86d2ab92",
+      "member_count": 16,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 46.386
+    },
+    "spare/record_dataset_VideoUnmaskSwap_medium_spare.h5.tar.xz": {
+      "rel_path": "spare/record_dataset_VideoUnmaskSwap_medium_spare.h5.tar.xz",
+      "bytes": 159141424,
+      "sha256": "3cc75c863adb1a29e99d62da25880c530707c4880cb125ba4304053299f50c83",
+      "member_count": 16,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 28.756
+    },
+    "smoke/record_dataset_RouteStick_easy_smoke.h5.tar.xz": {
+      "rel_path": "smoke/record_dataset_RouteStick_easy_smoke.h5.tar.xz",
+      "bytes": 26966848,
+      "sha256": "1b2656ac4558d0ce82466b3f33d04ec75c8ff4b43ea0884dce455436061d2754",
+      "member_count": 2,
+      "xz_preset": 6,
+      "xz_threads": 16,
+      "wall_s": 4.464
+    }
+  },
+  "failed": [],
+  "raw_bytes": 879711836900,
+  "out_bytes": 100248667448
+}

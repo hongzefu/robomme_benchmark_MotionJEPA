@@ -1,0 +1,10 @@
+{
+  "lfs_sha_match": 1978,
+  "blob_match": 77,
+  "mismatch": [],
+  "missing": [],
+  "extra": [
+    ".gitattributes"
+  ],
+  "passed": true
+}

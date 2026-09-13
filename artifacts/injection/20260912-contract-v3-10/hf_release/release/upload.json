@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "repo_id": "HongzeFu/robomme-4task-h5-20260912-v2",
+  "revision": "604f16da36d6b6d175884df8fb687dc08e0a36eb",
+  "files": 2056,
+  "bytes": 126607515571,
+  "workers": 8,
+  "include": null,
+  "long_named": [
+    "videos/VideoRepick/medium/success_NO_OBJECT_VideoRepick_ep1_seed9100_FailRecoverZ_medium_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+    "videos/VideoRepick/xhard/success_NO_OBJECT_VideoRepick_ep3_seed9300_FailRecoverXY_xhard_watch_the_video_carefully_then_pick_up_the_same_block_that_was_previously_picked_up_again_finally_put_it_down_and_press_the_button_to_stop__ALT__watch_the_video__HASH__e2fc0787253e.mp4"
+  ],
+  "generated_utc": "2026-09-12T23:53:53+00:00"
+}

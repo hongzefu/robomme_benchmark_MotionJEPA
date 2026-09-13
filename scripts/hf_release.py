@@ -1321,11 +1321,32 @@ def upload(layout: ReleaseLayout, *, workers: int = 8, include: Sequence[str] | 
     started = time.time()
     api = HfApi()
     api.create_repo(layout.repo_id, repo_type="dataset", private=False, exist_ok=True)
+    # upload_large_folder 会给每个文件写 <文件名>.metadata 旁车；文件名超过 255-9 字符时旁车建不出来
+    # （实测 2 个 247 字符的 success_NO_OBJECT_VideoRepick_* 视频触发 OSError 36）。
+    # 这类文件从大目录上传里排除，之后用不写旁车的 upload_file 逐个补传。
+    long_named = sorted(
+        str(path.relative_to(layout.staging)) for path in layout.staging.rglob("*")
+        if path.is_file() and ".release" not in path.parts and ".cache" not in path.parts
+        and len(path.name) + len(".metadata") > 255
+    )
     api.upload_large_folder(
         repo_id=layout.repo_id, folder_path=str(layout.staging), repo_type="dataset",
         num_workers=workers, allow_patterns=list(include) if include else None,
-        ignore_patterns=UPLOAD_IGNORE,
+        ignore_patterns=list(UPLOAD_IGNORE) + long_named,
     )
+    uploaded_long: list[str] = []
+    if long_named and not include:
+        remote = {item.path for item in api.list_repo_tree(layout.repo_id, repo_type="dataset", recursive=True)}
+        for rel in long_named:
+            if rel in remote:
+                continue
+            api.upload_file(
+                path_or_fileobj=str(layout.staging / rel), path_in_repo=rel,
+                repo_id=layout.repo_id, repo_type="dataset",
+                commit_message=f"补传超长文件名视频 {Path(rel).name[:40]}…",
+            )
+            uploaded_long.append(rel)
+        print(f"LONG_NAME_UPLOAD files={len(long_named)} uploaded_now={len(uploaded_long)}")
     revision = api.dataset_info(layout.repo_id).sha
     staged = _read_json(layout.release_dir / "staged.json")
     files = len(staged.get("files", [])) + 4
@@ -1334,6 +1355,7 @@ def upload(layout: ReleaseLayout, *, workers: int = 8, include: Sequence[str] | 
         "passed": True, "repo_id": layout.repo_id, "revision": revision,
         "files": files, "bytes": total, "workers": workers,
         "include": list(include) if include else None,
+        "long_named": long_named,
         "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
     _write_json(layout.release_dir / "upload.json", payload)
