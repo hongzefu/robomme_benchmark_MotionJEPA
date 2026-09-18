@@ -8,6 +8,7 @@ from .episode_config_resolver import (
     BenchmarkEnvBuilder,
     load_episode_metadata,
     get_episode_metadata,
+    make_env_for_spec,
 )
 from .episode_dataset_resolver import (
     EpisodeDatasetResolver,
