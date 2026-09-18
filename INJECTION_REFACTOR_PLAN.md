@@ -206,9 +206,9 @@ scripts/injection/
 | `split` | `train`：episode < 该组 `run_episodes`；`test`：其余 | `candidates` 包冻结时按 `delivery_400.json` 写死，之后不变 |
 | `role` | `pending` → `primary` / `spare` / `failed` / `unused` | 冻结时写 `pending`；`rollout` 结束后回写 |
 
-两维交叉后的含义与 run 10 的实际条数：
+**补查前：run 10 的已有状态。** 下表的 838 条尚未 reset，不是本计划补查完成后的最终数量：
 
-| split | role | 含义 | run 10 |
+| split | role | 含义 | run 10 补查前 |
 |---|---|---|---:|
 | train | primary | 出了 h5 且按 episode 升序进该组前 `target_h5` 条 | 1600 |
 | train | spare | 出了 h5 但超出 `target_h5` 的余量，h5 保留 | 196 |
@@ -217,6 +217,20 @@ scripts/injection/
 | test | spare | reset 通过但超出 50 条 | 20 |
 | test | failed | reset 失败 | 0 |
 | test | unused | 该组攒够 50 条通过后停止，从未 reset 过 | 838 |
+
+**补查后：按本计划将 838 条全部检查完，表格应如下。** 令 `X` 为这 838 条中 reset 通过的数量，`0 ≤ X ≤ 838`；原有 train 结果与 700 条 test primary 名单不变：
+
+| split | role | 含义 | run 10 补查后 |
+|---|---|---|---:|
+| train | primary | 正式选用的 h5 | 1600 |
+| train | spare | 成功生成的备用 h5 | 196 |
+| train | failed | h5 生成失败，未形成合格交付 h5 | 46 |
+| test | primary | 正式选用的测试候选，保持原名单 | 700 |
+| test | spare | reset 通过的备用候选 | **20＋X** |
+| test | failed | reset 失败的候选 | **838－X** |
+| test | unused | 尚未检查的候选 | **0** |
+
+**若 838 条全部通过，即 `X=838`：test spare 为 858，test failed 为 0，test unused 为 0。** 这是条件示例，不是实测结果；补查尚未执行，不能提前把 X 写死。补查前后均为 3400 条候选，其中 train 1842 条、test 1558 条。
 
 700 是 14 个 env × 难度组各 50 条之和（BinFill 150、RouteStick 200、VideoUnmaskSwap 200、VideoRepick 150），不是每 env 50 条；这是 2026-09-12「给每个env每个难度再增加50个候选」的口径，用户确认不改。
 
