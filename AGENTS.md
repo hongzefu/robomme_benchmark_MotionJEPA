@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 注入重构计划对抗审查（2026-09-17） | 审查完成；计划未通过 | 确认九项缺陷；原记录加候选元数据后散列校验拒绝；沿用停点规则补查 unused 只执行 600、剩 238；数轴反例最长段 828 > 400；定向测试 65 passed / 9 skipped，5.24 秒；[审查报告与复现命令](docs/validation/newtask-v2/20260917-injection-refactor-audit.md) | 先修订各项契约与验收；本轮不实施重构，原计划、生产代码、数据保持原状 |
 | 每 env 400 条严格交付 + 每档 50 条纯候选 `20260912-contract-v3-10`（`10.72`～`10.76`） | 完成 | 候选按 100 条 block 扩容（14 组 3400 条，`PLAN=OK elapsed_s=675.3`、`CHECK=PASS elapsed_s=1338.5`、对 07/09 `BLOCK0_EQUIVALENCE=PASS compared=1400 differences=0`）；实跑 1842 条双卡 40 worker 墙钟 6685 秒通过 1796（97.5%）`RUN=PASS`；env-check 14 组各 50 条 reset 全通过 `ENV_CHECK=PASS delivered=700`；`DELIVERY_400=PASS` ×4、`DELIVERY_TOTAL=PASS delivered=1600 spare=196 h5_missing=0`；`REPORT=OK`，[README](docs/validation/newtask-v2/20260912-contract-v3-10/README.md)；候选/结果/清单/十份阶段日志约 30 MB 入库 | 正式数据见 `delivery_manifest.json` 的 primary；`BinFillDemoError`（ffmpeg Broken pipe ×3）根因待查；数轴/跑前分布仍基于 07 |
 | RouteStick 白球尾迹减半专项重出 `20260912-contract-v3-08`（四档各 5 条）+ 07 小产物入库（`10.70`） | 完成 | `RouteStick.step` 白球存活 40→20（规则 11 获批）、快照重导出 `--check-config` 一致；08 `PLAN=OK specs=1400 elapsed_s=335.3`、`CHECK=PASS elapsed_s=659.7`、与 07 `OLD_GROUPS_EQUIVALENCE=PASS compared=1400 differences=0`；`campaign run --episodes 5 --tier 10 --gpus 0,1` 墙钟 97.5 秒 `RUN=PASS`，20/20 通过、逐条 `timestep_count` 与 07 同 episode 相同；四档 ep0 `TRAIL_HALVED=PASS median_diff=20.0`（[trail_check.py](docs/validation/newtask-v2/20260912-contract-v3-08/trail_check.py)）；07 目录新增 22 个小文件入库（两份 feasibility 判定、清单、日志、P01x20 运行参数/汇总/逐条结果/14 组 metadata，约 2.3 MB）；lightweight 467 passed / 4 failed（4 条在 HEAD `1f7cbd8` 同样失败，既有） | 其余 10 组仍以 07 为准；若要全量按新尾迹重出，走同一 runbook 去掉 `--groups`/`--episodes` |
 | 当前版本对原始训练种子生成的非布局差异对抗审计 | 审计完成；「仅布局不同」被反例否定 | 对比 `c0e7f04` 与远端已核验的 `3a5951a834ea014f63724647ab0bc091eb9f109d`：07 BinFill 中／高档生成数减少 2，目标色规则改变，86 条成功轨迹复制为模拟演示；easy ep0 全部 678 对帧的 12882 个非改写字段逐字节相同；RouteStick 规格排除连续三段同方向；相关短测 41 passed，4.02 秒；[完整审计与复现命令](docs/validation/newtask-v2/20260912-train-nonlayout-audit.md) | 当前原生默认路径未重跑新旧仿真对拍；不将旧原值结果迁移为07一致性证明。本轮不改生成行为 |
@@ -1515,3 +1516,17 @@
 - 判定行：`HF_PACK=PASS archives=29 failed=0`；`HF_MANIFEST=PASS episodes=1797 primary=1600 spare=196 videos=1949 files=2055`；`HF_PACK_VERIFY=PASS archives=29 h5=1826 mismatch=0`（含 29 份 metadata）；`HF_UPLOAD=PASS files=2056 bytes=126607515571 revision=604f16da36d6b6d175884df8fb687dc08e0a36eb wall_s=1174.6`（≈108 MB/s）；`HF_REMOTE_VERIFY=PASS files=2056 lfs_sha_match=1978 blob_match=77 mismatch=0 missing=0 extra=1`（extra 为 HF 自建 `.gitattributes`）；`HF_SAMPLE_VERIFY=PASS archives=4 h5=471 videos=3 mismatch=0`。
 - 意外：①首轮 manifest 报 smoke 行缺 h5 sha256（write_manifest_files 用了 check_exists=False）；②smoke 与正式档 ep0 视频同名前缀互相匹配；③首轮 verify-local 把包内 metadata.json 判成 extra；④`upload_large_folder` 给每文件写 `.metadata` 旁车，2 个 247 字符的 `success_NO_OBJECT_VideoRepick_*` 视频触发 OSError 36「File name too long」，改为排除后用 `upload_file` 补传；⑤把 `HF_HOME` 指到 /data 会丢 token（401），改只设 `HF_HUB_CACHE`/`HF_XET_CACHE`。
 - 当前状态：数据集公开可下载（`hf download HongzeFu/robomme-4task-h5-20260912-v2 --repo-type dataset`）。留档 `artifacts/injection/20260912-contract-v3-10/hf_release/`（MANIFEST/SHA256SUMS/README/tarxz_h5.py、release/*.json、精简日志）入库。`artifacts/hf-staging/`（118 GB，视频为硬链接）与 `.cache/huggingface/` 下载缓存已按用户指令「删除本地」删除（`10.82`），源 h5 1796 个与视频完好，`/data` 余 1.9 TB。
+
+### 2026-09-17 America/Detroit — 注入重构计划对抗审查开始
+
+- 用户指令原话：「/data/hongzefu/robomme\_benchmark\_MotionJEPANewTask/INJECTION\_REFACTOR\_PLAN.md」「对抗验证正确性」。
+- 审查锚点：`e35d7f3`，起始工作区干净。先核对计划与源码、运行 10 现有小产物，再做不启动仿真的最小反例和定向测试；重点为规格散列、划分与回写、对拍判据、迁移依赖和产物保留。
+- 授权边界：本轮只审查并按仓库约定记录结果，不修改计划所描述的实现，不迁移或删除数据，不触碰 `src/robomme/`。
+
+### 2026-09-17 America/Detroit — 注入重构计划对抗审查完成（`11.06`）
+
+- 结果：九项缺陷为规格散列边界错误、逐条筛查证据缺采集机制、unused 全量补查与停点矛盾、临时对拍回写正式候选且重复 reset、数轴固定条数忽略慢条剔除、移动产物缺路径改写、删除模块缺测试依赖迁移、忽略规则漏收日志及漏排 smoke 大文件、BinFill 视频仅比帧数可放过错配。完整证据、修订要求和可复现命令见 [审查报告](docs/validation/newtask-v2/20260917-injection-refactor-audit.md)。
+- 重要验证：`command -v uv` 确认可用，全部 Python 通过 `uv run --no-sync`。实际旧候选加新元数据后触发 `EpisodeSpecError`；复用 `_GroupState` 的纯内存反例输出原流程 `720 / 838 / 0`，unused 补查 `600 / 238 / 131`（依次为执行、剩余、缺口）；只读运行 10 的 VideoUnmaskSwap/xhard/ep5，1312 帧、最长段 828 帧，必被 400 帧阈值剔除。探针均退出 0，没有启动环境。
+- 测试：`timeout 240s uv run --no-sync python -m pytest tests/lightweight/test_episode_specs.py tests/lightweight/test_env_check.py tests/lightweight/test_injection_delivery.py tests/lightweight/test_injection_blocks.py -q`，退出 0，`65 passed, 9 skipped, 2 warnings in 5.24s`。跳过项依赖已清理的历史冻结规格，未当作通过。报告三个 Python 复现块语法与本地链接检查 `AUDIT_DOC=PASS python_blocks=3 local_links=1`；`git diff --check` 和录像器冻结检查通过。
+- 意外与边界：排除了“720 条 reset 因异步完成顺序必然无法复现”的疑点，现有实现按批收齐并排序后计数。忽略规则问题依据静态匹配；全量 timeline、视频解码、新链路仿真和迁移均未执行。当前短测通过不等于新方案正确。
+- 本轮只新增审查报告并更新本账本，未修改 `INJECTION_REFACTOR_PLAN.md`，未推送远端。下一步由用户决定修订计划及后续实施授权。
