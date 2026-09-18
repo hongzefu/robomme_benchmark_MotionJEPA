@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 注入重构实施阶段 0～1（2026-09-17） | 进行中 | 用户指令「开始实现」；分支 `newtask-v2.1refractor`，起点 `2bcd9cc`，工作区干净；依据修订后的 `INJECTION_REFACTOR_PLAN.md` | 冻结阶段 0 基线，然后实施候选包和阶段 1 全量对拍；后续阶段单独推进 |
 | 注入重构计划对抗审查（2026-09-17） | 审查完成；计划未通过 | 确认九项缺陷；原记录加候选元数据后散列校验拒绝；沿用停点规则补查 unused 只执行 600、剩 238；数轴反例最长段 828 > 400；定向测试 65 passed / 9 skipped，5.24 秒；[审查报告与复现命令](docs/validation/newtask-v2/20260917-injection-refactor-audit.md) | 先修订各项契约与验收；本轮不实施重构，原计划、生产代码、数据保持原状 |
 | 每 env 400 条严格交付 + 每档 50 条纯候选 `20260912-contract-v3-10`（`10.72`～`10.76`） | 完成 | 候选按 100 条 block 扩容（14 组 3400 条，`PLAN=OK elapsed_s=675.3`、`CHECK=PASS elapsed_s=1338.5`、对 07/09 `BLOCK0_EQUIVALENCE=PASS compared=1400 differences=0`）；实跑 1842 条双卡 40 worker 墙钟 6685 秒通过 1796（97.5%）`RUN=PASS`；env-check 14 组各 50 条 reset 全通过 `ENV_CHECK=PASS delivered=700`；`DELIVERY_400=PASS` ×4、`DELIVERY_TOTAL=PASS delivered=1600 spare=196 h5_missing=0`；`REPORT=OK`，[README](docs/validation/newtask-v2/20260912-contract-v3-10/README.md)；候选/结果/清单/十份阶段日志约 30 MB 入库 | 正式数据见 `delivery_manifest.json` 的 primary；`BinFillDemoError`（ffmpeg Broken pipe ×3）根因待查；数轴/跑前分布仍基于 07 |
 | RouteStick 白球尾迹减半专项重出 `20260912-contract-v3-08`（四档各 5 条）+ 07 小产物入库（`10.70`） | 完成 | `RouteStick.step` 白球存活 40→20（规则 11 获批）、快照重导出 `--check-config` 一致；08 `PLAN=OK specs=1400 elapsed_s=335.3`、`CHECK=PASS elapsed_s=659.7`、与 07 `OLD_GROUPS_EQUIVALENCE=PASS compared=1400 differences=0`；`campaign run --episodes 5 --tier 10 --gpus 0,1` 墙钟 97.5 秒 `RUN=PASS`，20/20 通过、逐条 `timestep_count` 与 07 同 episode 相同；四档 ep0 `TRAIL_HALVED=PASS median_diff=20.0`（[trail_check.py](docs/validation/newtask-v2/20260912-contract-v3-08/trail_check.py)）；07 目录新增 22 个小文件入库（两份 feasibility 判定、清单、日志、P01x20 运行参数/汇总/逐条结果/14 组 metadata，约 2.3 MB）；lightweight 467 passed / 4 failed（4 条在 HEAD `1f7cbd8` 同样失败，既有） | 其余 10 组仍以 07 为准；若要全量按新尾迹重出，走同一 runbook 去掉 `--groups`/`--episodes` |
@@ -1530,3 +1531,11 @@
 - 测试：`timeout 240s uv run --no-sync python -m pytest tests/lightweight/test_episode_specs.py tests/lightweight/test_env_check.py tests/lightweight/test_injection_delivery.py tests/lightweight/test_injection_blocks.py -q`，退出 0，`65 passed, 9 skipped, 2 warnings in 5.24s`。跳过项依赖已清理的历史冻结规格，未当作通过。报告三个 Python 复现块语法与本地链接检查 `AUDIT_DOC=PASS python_blocks=3 local_links=1`；`git diff --check` 和录像器冻结检查通过。
 - 意外与边界：排除了“720 条 reset 因异步完成顺序必然无法复现”的疑点，现有实现按批收齐并排序后计数。忽略规则问题依据静态匹配；全量 timeline、视频解码、新链路仿真和迁移均未执行。当前短测通过不等于新方案正确。
 - 本轮只新增审查报告并更新本账本，未修改 `INJECTION_REFACTOR_PLAN.md`，未推送远端。下一步由用户决定修订计划及后续实施授权。
+
+### 2026-09-17 America/Detroit — 注入重构阶段 0：冻结实施基线
+
+- 用户指令原话：「/data/hongzefu/robomme\_benchmark\_MotionJEPANewTask/INJECTION\_REFACTOR\_PLAN.md」「开始实现」。
+- 状态：阶段 0 完成，阶段 1 待实施；起点 `2bcd9cc`（11.08），分支 `newtask-v2.1refractor`，初始工作区干净。
+- 计划与实施：先固定旧代码、配置、依赖锁和运行 10 清单，再建立候选包、过程观测与封套校验，阶段 1 以 3400 条旧规格完整对拍为硬闸；其余阶段按原计划边界推进。
+- 证据：`docs/validation/newtask-v2/20260917-injection-refactor/baseline.sha256` 冻结 221 个文件；`sha256sum -c docs/validation/newtask-v2/20260917-injection-refactor/baseline.sha256 --quiet` 退出 0。范围及复验命令见同目录 README。
+- 本阶段无代码改动，没有运行仿真；不改现有数据、不触碰环境源码、不推送。大型产物的全文件散列核验留到阶段 7 迁移前。
