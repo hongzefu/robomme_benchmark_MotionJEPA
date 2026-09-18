@@ -245,3 +245,21 @@ git diff --quiet c336390 -- src/robomme
 当前阶段 0 原清单的登记差异只有计划追加记录和生成器这两项；其余 219 个旧文件保持原字节。九个轻量产物（参数、摘要、实际使用的配置、逐条结果、metadata、指纹、测试日志、冒烟日志和对拍结果）逐个入库，HDF5/mp4 留在本地、不入库。未改忽略规则，未修改或覆盖任何 `src/robomme/` 行为，未推送。
 
 阶段 2 已完成；阶段 3 待单独批准，将使用旧工具冻结运行 10 的图表和数轴完整基线。没有提前执行 210 条 HDF5 对拍、838 条 reset 补查或现有目录迁移。
+
+## 阶段 3：旧图表基线
+
+用户后续原话「一口气全做完 不要再来问我了」，一次授权剩余阶段。阶段 3 从 `e53173d` 起，旧图表模块与输入不改，使用[独立采集入口](capture_baseline.py) 调用旧算法，图表及原始数据层落在运行 10 的 [`rollout/logs/baseline/`](../../../../artifacts/injection/20260912-contract-v3-10/rollout/logs/baseline/)。
+
+```bash
+command -v uv
+uv run --no-sync python -m pytest tests/lightweight/test_window_timeline.py -q
+mkdir -p artifacts/injection/20260912-contract-v3-10/rollout/logs
+tmux new-session -d -s injection-baseline -c "$PWD" \
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python docs/validation/newtask-v2/20260917-injection-refactor/capture_baseline.py \
+  2>&1 | tee artifacts/injection/20260912-contract-v3-10/rollout/logs/baseline.log; \
+  echo \"EXIT_CODE=\$?\" >> artifacts/injection/20260912-contract-v3-10/rollout/logs/baseline.log"
+```
+
+短测 34 passed，2.79 秒。采集退出 0，977.79 秒：`BASELINE_CAPTURED=PASS png=113 tables=14 before=1796 kept=1795 excluded=1 skipped=0`。98 张跑前图、15 张数轴图、14 组 156 行事件表已冻结；旧规则只剔除 1 条慢条。全部输入与输出散列记入 `manifest.json`，旧 timeline 和窗口表原样保留。复验采集须在旧源码仍在的基线提交上使用新的输出目录，不覆盖现有基线；阶段 8 删除旧入口后，本采集脚本属于历史复现材料。
+
+实施调整：发现冻结的 `hf_release.py` 仍导入旧 delivery 的判定行格式化函数，故最终仅保留该公共纯函数；旧配置加载、交付清单生成与 CLI 流程仍按计划删除或迁入新包。这样保持发布脚本不变且模块导入闭包成立。

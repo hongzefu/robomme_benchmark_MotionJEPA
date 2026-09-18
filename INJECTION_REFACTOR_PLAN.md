@@ -3,6 +3,7 @@
 > **权威性**：本文是新值注入链路（候选分布 → 真实 HDF5）重构的唯一计划，当前位于 `newtask-v2.1refractor` 分支。生产代码锚点为 `92e8152`（10.84），对抗审查锚点为 `956703e`（11.06）；工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。commit 编号沿用「主序号.流水号」体例，接续当前 `git log`。
 > **分支**：本计划与全部实施都在 **`newtask-v2.1refractor`** 上（用户 2026-09-17 原话「这个md计划 要从newtask-v2.1refractor开始」），该分支自 `newtask-v2` 的 `bf2c9ac`（11.04）切出；11.01 到 11.04 四条计划提交已在 `newtask-v2` 上，随切分支带入。
 > **授权边界**：本文只规划不实施。第一部分第十节的每个阶段都须用户单独批准后才动手；「未来可做」不等于本轮授权。
+> **当前授权更新（2026-09-18）**：用户后续原话「一口气全做完 不要再来问我了」，剩余阶段 3～9 已一次授权，覆盖前述逐阶段询问要求。按具名硬闸连续执行，保留环境冻结、数据完整性和恢复协议等技术约束。
 > **口径来源**：现行 h5 生成流程 = `20260912-contract-v3-10`（每 env 400 条严格交付），其机制细节见 [scripts/NEW_VALUE_INJECTION_PIPELINE.md](scripts/NEW_VALUE_INJECTION_PIPELINE.md)；重构后该文档被 `scripts/INJECTION.md` 取代。
 > **决策史**：契约 v1→v3、xhard、BinFill demo 直出等历史决策本轮**不整理、不搬运**（用户 2026-09-17 原话「决策史先不管」），全部留在 git 历史与 `newtask-v2` 分支。
 > **本轮修订**：用户原话「有哪些需要用户注意 其他的你来决策修改md计划」「需要注意的 现在就让我决策」。依据 [九项对抗审查](docs/validation/newtask-v2/20260917-injection-refactor-audit.md) 修订设计与验收，不代表代码已经实现或实跑已经通过。
@@ -401,6 +402,10 @@ L2 不把 1796 当成剔除后条数：旧 `apply_slow_exclusion` 会剔除最�
 - `LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`：旧入口取自固定提交，新旧完整环境参数直接执行各自 worker 的实际构造语句，包含恢复参数；全部角色在内存副本回写后再读，仍零差异。
 - `SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`：RouteStick/easy/ep0，seed 16000，单卡、单 worker；新旧 HDF5 均 300 帧、200071952 字节，SHA-256 为 `27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b`。生成 18.2 秒，新增散列读取 0.121 秒，退出 0。
 - 定向回归 73 passed / 4 skipped，19.46 秒；仓库内测试夹具修订后补测 11 passed，10.28 秒。未进行跨次视频内容对拍，未实跑其他任务；阶段 3～9 待后续批准。完整命令、基线歧义核实及轻量产物见[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md)。
+
+### 10.3 阶段 3 实施记录（2026-09-18）
+
+用户已一次授权剩余阶段。旧工具源码不改，通过独立采集入口只指定运行编号和输出路径：98 张跑前图、15 张数轴图、14 组事件表（156 行）均已冻结。`BASELINE_CAPTURED=PASS png=113 tables=14 before=1796 kept=1795 excluded=1 skipped=0`，977.79 秒、退出 0。旧数轴定向测试 34 passed，2.79 秒。完整清单、逐文件散列、原始 timeline 与表见运行 10 的 `rollout/logs/baseline/`；图片留在本地，散列和轻量数据入库。后续 L2 须严格比较这 1795 条保留记录及 1 条完整剔除记录。
 
 ---
 

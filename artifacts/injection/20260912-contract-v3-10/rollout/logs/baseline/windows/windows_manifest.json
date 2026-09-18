@@ -1,0 +1,86 @@
+{
+  "rollout_run_id": "20260912-contract-v3-10",
+  "episodes": 1795,
+  "excluded_slow": 1,
+  "font": "Noto Sans CJK JP",
+  "dpi": 110,
+  "files": [
+    "BinFill/easy/4_windows.png",
+    "BinFill/medium/4_windows.png",
+    "BinFill/hard/4_windows.png",
+    "RouteStick/easy/4_windows.png",
+    "RouteStick/medium/4_windows.png",
+    "RouteStick/hard/4_windows.png",
+    "RouteStick/xhard/4_windows.png",
+    "VideoUnmaskSwap/easy/4_windows.png",
+    "VideoUnmaskSwap/medium/4_windows.png",
+    "VideoUnmaskSwap/hard/4_windows.png",
+    "VideoUnmaskSwap/xhard/4_windows.png",
+    "VideoRepick/easy/4_windows.png",
+    "VideoRepick/medium/4_windows.png",
+    "VideoRepick/xhard/4_windows.png",
+    "windows_overview.png"
+  ],
+  "sizes": {
+    "BinFill/easy/4_windows.png": [
+      2860,
+      10549
+    ],
+    "BinFill/medium/4_windows.png": [
+      2860,
+      10480
+    ],
+    "BinFill/hard/4_windows.png": [
+      2860,
+      9798
+    ],
+    "RouteStick/easy/4_windows.png": [
+      2860,
+      8162
+    ],
+    "RouteStick/medium/4_windows.png": [
+      2860,
+      8162
+    ],
+    "RouteStick/hard/4_windows.png": [
+      2860,
+      8162
+    ],
+    "RouteStick/xhard/4_windows.png": [
+      2860,
+      8162
+    ],
+    "VideoUnmaskSwap/easy/4_windows.png": [
+      2860,
+      8162
+    ],
+    "VideoUnmaskSwap/medium/4_windows.png": [
+      2860,
+      8162
+    ],
+    "VideoUnmaskSwap/hard/4_windows.png": [
+      2860,
+      8162
+    ],
+    "VideoUnmaskSwap/xhard/4_windows.png": [
+      2860,
+      8025
+    ],
+    "VideoRepick/easy/4_windows.png": [
+      2860,
+      10549
+    ],
+    "VideoRepick/medium/4_windows.png": [
+      2860,
+      10276
+    ],
+    "VideoRepick/xhard/4_windows.png": [
+      2860,
+      10139
+    ],
+    "windows_overview.png": [
+      2860,
+      4138
+    ]
+  }
+}

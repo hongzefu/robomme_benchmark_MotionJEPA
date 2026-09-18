@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 注入重构阶段 3～9 连续实施（2026-09-18） | 阶段 3 完成；阶段 4 开始；后续全部已获批 | 用户原话「一口气全做完 不要再来问我了」；`BASELINE_CAPTURED=PASS png=113 tables=14 before=1796 kept=1795 excluded=1 skipped=0`，977.79 秒；数轴短测 34 passed；恢复逻辑预备短测 5 passed | 连续完成归并、L3/L4 与 unused、L2、完整迁移、旧入口清理、最终冒烟；不再逐阶段询问，不跳硬闸 |
 | 注入重构实施阶段 2（2026-09-17） | 完成，阶段 3 待单独批准 | `LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`；RouteStick/easy/ep0 的 `SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`，300 帧、200071952 字节，生成 18.2 秒、散列 0.121 秒；短测 73 passed / 4 skipped，夹具修订补测 11 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 3 用旧图表工具对运行 10 冻结完整图表与数轴基线；获批后开始 |
 | 注入重构实施阶段 0～1（2026-09-17） | 完成 | 阶段 0 `41f5fa2`（11.09）；阶段 1 全量 3400 条完整规格零差异、11 项判定全 PASS，1986.59 秒，EXIT_CODE=0；11514 条拒绝事件；短测 60 passed / 9 skipped，补测 14 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 2 已获批并完成，见上行 |
 | 注入重构计划对抗审查（2026-09-17） | 审查完成；计划未通过 | 确认九项缺陷；原记录加候选元数据后散列校验拒绝；沿用停点规则补查 unused 只执行 600、剩 238；数轴反例最长段 828 > 400；定向测试 65 passed / 9 skipped，5.24 秒；[审查报告与复现命令](docs/validation/newtask-v2/20260917-injection-refactor-audit.md) | 先修订各项契约与验收；本轮不实施重构，原计划、生产代码、数据保持原状 |
@@ -1586,3 +1587,15 @@
 - 实跑输出 `artifacts/injection/refactor-stage2-smoke/rollout/`；RouteStick/easy/ep0、seed=16000、GPU 0、单 worker、单次尝试，整体 18.2 秒、worker 14.034 秒、散列读取 0.121 秒，退出 0。新旧 HDF5 均 300 帧、200071952 字节、SHA-256 `27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b`，`SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`；视频 complete，不宣称跨次内容一致。
 - 意外与核实：旧交付清单把此条 primary 指向 `P0x1`，实测该文件与 `P01x20` 的同条文件大小/散列相同，故基线无歧义。短测最初显式指定仓库内 basetemp；复核发现默认 pytest 的临时路径会与生成器输出守卫冲突，改成测试局部的仓库内夹具后补测通过。
 - 当前：源候选散列 `f578ca6e7d0c475d577943e08473874631515a835983eedc98ee7d345469ba02` 未变，环境源码与录像器未改；只留单条生成证据，不启动 210 条对拍、reset 补查或迁移。阶段 3 待单独批准，未推送。详细命令和九个轻量留档文件见实施 README。
+
+### 2026-09-17 America/Detroit — 剩余阶段一次授权，阶段 3 开始
+
+- 用户指令原话：「一口气全做完 不要再来问我了」。本条授权覆盖计划阶段 3～9 的逐阶段批准要求；按原计划的具名硬闸连续推进，不再重复询问。保持 src 冻结、不改采样/录像、run10 只移动不删大文件、保留恢复清单与差异证据等技术约束。
+- 阶段 3 先使用旧图表算法读取运行 10，冻结 113 张图、14 组事件表与 1796 条成功轨迹经原慢条规则处理后的数轴；输出进入运行 10 的 rollout/logs/baseline，旧产物原位不动。后续按计划依次归并结果、独立 B 对拍和原 720 键 reset 对拍、838 条补查、图表等价、完整性迁移、入口清理与最终冒烟。
+
+### 2026-09-18 America/Detroit — 阶段 3 旧图表基线冻结完成，阶段 4 开始
+
+- `capture_baseline.py` 直接调用原四个旧模块的算法，仅指定输入/输出路径，源码与旧输入前后散列一致。`BASELINE_CAPTURED=PASS png=113 tables=14 before=1796 kept=1795 excluded=1 skipped=0 elapsed_s=977.79`，`EXIT_CODE=0`。98 张跑前图与 15 张数轴图、156 行事件表、原 timeline、窗口表与输出散列均保留；基线图片不入库。
+- 定向旧数轴测试 34 passed，2.79 秒；新结果状态模块的预备测试 5 passed，20.28 秒，尚未用它改写运行十。数据读取期间仅准备独立新模块，没有改变旧模块或输入，基线通过后才执行阶段 4 的实际归并。
+- 新发现：`hf_release.py` 实际导入 `scripts.injection.delivery::render_verdict_line`。遵守发布脚本冻结，阶段 8 保留该唯一公共格式化函数，删除旧 delivery 的配置/交付流程，其余逻辑迁入新包；不靠修改发布脚本绕过依赖闭包。
+- 下一步：迁入 1842 条实跑与 720 条 reset 结果，冻结 L4 范围及逐文件路径映射，核对原角色 1600/196/46 与 700/20/838。后续不再逐阶段询问。
