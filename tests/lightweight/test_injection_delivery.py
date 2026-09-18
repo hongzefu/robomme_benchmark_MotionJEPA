@@ -23,15 +23,14 @@ for extra in (REPO_ROOT, REPO_ROOT / "src"):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-from scripts.injection.contract import load_contract  # noqa: E402
-from scripts.injection.delivery import (  # noqa: E402
-    DeliveryError,
-    build_delivery_manifest,
-    load_delivery_config,
-    render_verdict_line,
-)
-from scripts.injection.run import OUTCOME_PASS  # noqa: E402
-from scripts.injection.sampling import GROUP_SIZE  # noqa: E402
+from scripts.injection.candidates.contract import load_contract  # noqa: E402
+from scripts.injection.candidates.config import DeliveryError, load_delivery_config
+from scripts.injection.delivery import render_verdict_line
+from scripts.injection.rollout.state import assign_roles, StateError, file_sha
+from scripts.injection.rollout.report import report
+from types import SimpleNamespace
+from scripts.injection.rollout.run import OUTCOME_PASS  # noqa: E402
+from scripts.injection.candidates.sampling import GROUP_SIZE  # noqa: E402
 
 CONFIG_PATH = REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "delivery_400.json"
 CONTRACT_PATH = REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "injection_contract_v3.json"
@@ -145,130 +144,81 @@ def _tiny_config(tmp_path: Path, *, target_h5: int = 3):
     return load_delivery_config(path)
 
 
-def _row(episode: int, *, outcome: str = OUTCOME_PASS, h5_path: str | None = None, **extra):
-    row = {
-        "task": "BinFill",
-        "difficulty": "easy",
-        "episode": episode,
-        "seed": 1000 + episode,
-        "outcome": outcome,
-        "error_type": None if outcome == OUTCOME_PASS else "RuntimeError",
-        "error": "" if outcome == OUTCOME_PASS else "x" * 500,
-        "video_status": "complete",
-        "h5_path": h5_path if h5_path is not None else f"/tmp/fake/ep{episode}.h5",
-        "timestep_count": 120 + episode,
-    }
-    row.update(extra)
-    return row
+def _state(tmp_path, successes, target=3, resets=2):
+    """小文件经过真实角色分配及报告核验，不绕过成品散列。"""
+    header = {"run_id": "fixture", "group_provenance": {"BinFill/easy": {}},
+              "delivery_config_snapshot": {"groups": [{"task": "BinFill", "difficulty": "easy", "target_h5": target}],
+                                           "extra_candidates": 2}}
+    candidates, rows = [], []
+    for episode, ok in enumerate([*successes, *([True] * resets)]):
+        kind = "h5" if episode < len(successes) else "reset"
+        candidate = {"task": "BinFill", "difficulty": "easy", "episode": episode, "seed": 1000 + episode,
+                     "spec_sha256": str(episode), "split": "train" if kind == "h5" else "test"}
+        candidates.append(candidate)
+        row = {**candidate, "kind": kind, "ok": ok, "error_type": None if ok else "测试失败",
+               "outcome": "通过" if ok else "规划失败"}
+        if kind == "h5" and ok:
+            path = tmp_path / f"ep{episode}.h5"
+            path.write_bytes(b"fixture" * (episode + 1))
+            row.update(h5_path=str(path), h5_sha256=file_sha(path), h5_bytes=path.stat().st_size)
+        rows.append(row)
+    rows = assign_roles(header, candidates, list(reversed(rows)))
+    return SimpleNamespace(state=tmp_path, logs=tmp_path / "logs",
+                           load=lambda: (header, candidates, rows),
+                           audit=lambda: {"pending": 0, "unused": 0, "results": len(rows)})
 
 
 def test_严格交付按episode序取前N条成功(tmp_path):
-    config = _tiny_config(tmp_path, target_h5=3)
-    rows = [
-        _row(0),
-        _row(1, outcome="规划失败"),  # 夹在中间的失败条必须被跳过、顺延
-        _row(2),
-        _row(3, outcome="碰撞拒绝"),
-        _row(4),
-    ]
-    # 故意打乱输入顺序，验证内部按 episode 升序
-    manifest = build_delivery_manifest(
-        list(reversed(rows)), config, run_id="t1", repo_root=tmp_path, hash_mode="none"
-    )
-    group = manifest["groups"]["BinFill/easy"]
-    assert [item["episode"] for item in group["primary"]] == [0, 2, 4]
-    assert group["spare_rows"] == []
-    assert [item["episode"] for item in group["failures"]] == [1, 3]
-    assert len(group["failures"][0]["error"]) <= 200
-    assert group["delivered"] == 3 and group["failed"] == 2 and group["passed"] == 3
-    assert manifest["envs"]["BinFill"]["delivered"] == 3
-    assert manifest["shortfall"] == []
-    assert manifest["passed"] is True
-    assert render_verdict_line(manifest["verdicts"][0]).startswith("DELIVERY_400=PASS env=BinFill")
+    store = _state(tmp_path, [True, False, True, False, True])
+    rows = store.load()[2]
+    assert [r["episode"] for r in rows if r["kind"] == "h5" and r["role"] == "primary"] == [0, 2, 4]
+    assert [r["episode"] for r in rows if r["role"] == "failed"] == [1, 3]
+    assert report(store)["passed"] is True
 
 
 def test_多出的成功条标spare且保留h5路径(tmp_path):
-    config = _tiny_config(tmp_path, target_h5=2)
-    rows = [_row(i) for i in range(5)]
-    manifest = build_delivery_manifest(rows, config, run_id="t2", repo_root=Path("/tmp"), hash_mode="none")
-    group = manifest["groups"]["BinFill/easy"]
-    assert [item["episode"] for item in group["primary"]] == [0, 1]
-    assert [item["episode"] for item in group["spare_rows"]] == [2, 3, 4]
-    assert all(item["role"] == "spare" for item in group["spare_rows"])
-    assert all(item["h5_path"] for item in group["spare_rows"])  # 备件仍记 h5 路径
-    assert group["spare_rows"][0]["h5_path"] == "fake/ep2.h5"  # 相对 repo_root
-    assert group["spare_rows"][0]["bytes"] is None and group["spare_rows"][0]["sha256"] is None
-    assert group["spare_rows"][0]["timestep_count"] == 122
-    assert manifest["envs"]["BinFill"]["spare"] == 3
+    store = _state(tmp_path, [True] * 5, target=2)
+    rows = [r for r in store.load()[2] if r["kind"] == "h5"]
+    assert [r["episode"] for r in rows if r["role"] == "primary"] == [0, 1]
+    assert [r["episode"] for r in rows if r["role"] == "spare"] == [2, 3, 4]
+    assert all(Path(r["h5_path"]).is_file() and r["h5_sha256"] for r in rows)
+    assert report(store)["passed"]
 
 
-def test_交付不足时判定行失败并报缺口(tmp_path):
-    config = _tiny_config(tmp_path, target_h5=3)
-    rows = [_row(0), _row(1, outcome="超时"), _row(2, outcome="超时")]
-    manifest = build_delivery_manifest(rows, config, run_id="t3", repo_root=tmp_path, hash_mode="none")
-    assert manifest["passed"] is False
-    assert manifest["shortfall"] == [
-        {
-            "env": "BinFill",
-            "group": "BinFill/easy",
-            "missing": 2,
-            "remaining_candidates": GROUP_SIZE - 3,
-        }
-    ]
-    line = render_verdict_line(manifest["verdicts"][0])
-    assert line.startswith("DELIVERY_400=FAIL")
-    assert "delivered=1" in line
-    total = manifest["verdicts"][-1]
-    assert total["name"] == "DELIVERY_TOTAL" and total["passed"] is False
-    assert total["fields"]["h5_sha_mismatch"] == 0
+def test_交付不足时失败且局部运行不冒充完整交付(tmp_path):
+    store = _state(tmp_path, [True, False, False])
+    with pytest.raises(StateError, match="配额不足"):
+        report(store)
+    result = report(store, purpose="smoke")
+    assert result["quota_gaps"] == ["BinFill/easy"] and result["purpose"] == "smoke"
 
 
-def test_env_check交集标记also_env_checked(tmp_path):
-    config = _tiny_config(tmp_path, target_h5=2)
-    rows = [_row(0), _row(1, outcome="规划失败"), _row(2), _row(3)]
-    env_check = {"groups": {"BinFill/easy": {"episodes": [1, 3, 99]}}}
-    manifest = build_delivery_manifest(
-        rows, config, run_id="t4", repo_root=tmp_path, env_check_result=env_check, hash_mode="none"
-    )
-    group = manifest["groups"]["BinFill/easy"]
-    marked = {
-        item["episode"]
-        for item in [*group["primary"], *group["spare_rows"], *group["failures"]]
-        if item.get("also_env_checked")
-    }
-    assert marked == {1, 3}  # 99 不在本组结果里，交集把它排除
+def test_reset与h5角色分开且不能交叉冒充(tmp_path):
+    store = _state(tmp_path, [True, False, True, True], target=2, resets=3)
+    header, candidates, rows = store.load()
+    assert [r["episode"] for r in rows if r["kind"] == "reset" and r["role"] == "primary"] == [4, 5]
+    assert next(r for r in rows if r["episode"] == 6)["role"] == "spare"
+    rows[0]["kind"] = "reset"
+    with pytest.raises(StateError, match="身份不符"):
+        assign_roles(header, candidates, rows)
 
 
-def test_size_only模式记录字节数(tmp_path):
-    config = _tiny_config(tmp_path, target_h5=2)
-    files = []
-    for index in range(2):
-        path = tmp_path / f"ep{index}.h5"
-        path.write_bytes(b"h5" * (index + 1))
-        files.append(str(path))
-    rows = [_row(0, h5_path=files[0]), _row(1, h5_path=files[1])]
-    manifest = build_delivery_manifest(
-        rows, config, run_id="t5", repo_root=tmp_path, hash_mode="size-only"
-    )
-    group = manifest["groups"]["BinFill/easy"]
-    assert [item["bytes"] for item in group["primary"]] == [2, 4]
-    assert all(item["sha256"] is None for item in group["primary"])
-    assert manifest["hash_mode"] == "size-only"
-    assert manifest["verdicts"][-1]["fields"]["h5_missing"] == 0
+def test_报告记录实际大小与散列(tmp_path):
+    store = _state(tmp_path, [True, True], target=2)
+    report(store)
+    integrity = json.loads((store.logs / "h5_integrity.json").read_text())
+    assert integrity["passed"] and integrity["checked"] == 2
+    assert [r["bytes"] for r in integrity["files"]] == [7, 14]
+    assert all(r["sha256"] == file_sha(Path(r["path"])) for r in integrity["files"])
 
 
-def test_full模式并行算散列且缺文件记h5_missing(tmp_path):
-    import hashlib
-
-    config = _tiny_config(tmp_path, target_h5=2)
-    present = tmp_path / "ep0.h5"
-    present.write_bytes(b"abc")
-    rows = [_row(0, h5_path=str(present)), _row(1, h5_path=str(tmp_path / "missing.h5"))]
-    manifest = build_delivery_manifest(
-        rows, config, run_id="t6", repo_root=tmp_path, hash_mode="full", workers=2
-    )
-    primary = manifest["groups"]["BinFill/easy"]["primary"]
-    assert primary[0]["sha256"] == hashlib.sha256(b"abc").hexdigest()
-    assert primary[0]["bytes"] == 3
-    assert primary[1]["h5_missing"] is True and primary[1]["bytes"] is None
-    assert manifest["verdicts"][-1]["fields"]["h5_missing"] == 1
+@pytest.mark.parametrize("change", ["missing", "same_size_changed"])
+def test_缺文件与等长篡改均拒绝(tmp_path, change):
+    store = _state(tmp_path, [True, True], target=2)
+    path = Path(store.load()[2][0]["h5_path"])
+    if change == "missing":
+        path.unlink()
+    else:
+        path.write_bytes(b"x" * path.stat().st_size)
+    with pytest.raises(StateError, match="缺失或散列不符"):
+        report(store)

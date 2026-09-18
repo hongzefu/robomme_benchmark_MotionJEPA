@@ -18,16 +18,13 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MODULE_PATH = REPO_ROOT / "scripts" / "injection-before-2d" / "window_timeline.py"
+
 
 
 @pytest.fixture(scope="module")
 def wt():
-    spec = importlib.util.spec_from_file_location("window_timeline", MODULE_PATH)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules["window_timeline"] = module
-    spec.loader.exec_module(module)
-    return module
+    from scripts.injection.rollout import windows
+    return windows
 
 
 # artifact DATA 里的代表条：(T, demo) → (demo 窗口, exec 窗口)
@@ -156,7 +153,9 @@ def test_tables_roundtrip(wt, tmp_path):
     doc_path = tmp_path / "doc.md"
     doc_path.write_text(f"# x\n\n{wt.BEGIN}\n{wt.END}\n", encoding="utf-8")
     assert wt.check(json_path, doc_path) == (False, 3, 1) or wt.check(json_path, doc_path)[0] is False
-    assert wt.main(["tables", "--json", str(json_path), "--doc", str(doc_path), "--write"]) == 0
+    before, _, after = wt.split_region(doc_path.read_text(encoding="utf-8"))
+    block, _ = wt.render_tables(wt.load_timeline(json_path))
+    doc_path.write_text(before + block + after, encoding="utf-8")
     assert wt.check(json_path, doc_path) == (True, 3, 0)
     text = doc_path.read_text(encoding="utf-8")
     assert "| 0 | 16000 | 300 | 150 | 7 | 8+8=16 | 9.6 | 42.7 | 绕左逆 50 · 绕右顺 50 · 绕右顺 50 ‖ 绕左逆 50 · 绕右顺 50 · 绕右顺 43 · 完成 7 |" in text
@@ -243,14 +242,14 @@ def test_tables_include_swap_column(wt, tmp_path):
 # ── xhard 扩展（2026-09-11）：14 组真源、5 色、多运行合并 ──────────────────────
 def test_groups_是十四组且与注入组列表一致(wt):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    from scripts.injection.specs import GROUPS_V3
+    from scripts.injection.candidates.specs import GROUPS_V3
 
     assert wt.GROUPS == list(GROUPS_V3) and len(wt.GROUPS) == 14
     assert wt.GROUPS[3:7] == [("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"), ("RouteStick", "xhard")]
 
 
 def test_跑前图的swap颜色扩到五色且前三色不变():
-    source = (Path(__file__).resolve().parents[2] / "scripts" / "injection-before-2d" / "plot_injection_before_2d.py").read_text(encoding="utf-8")
+    source = (Path(__file__).resolve().parents[2] / "scripts" / "injection" / "candidates" / "figures.py").read_text(encoding="utf-8")
     assert 'SWAP_COLORS = ["#6a1b9a", "#ef6c00", "#00838f", "#ad1457", "#5d4037"]' in source
 
 
@@ -262,24 +261,26 @@ def test_unmask_xhard_四五次调度(wt, n):
     assert all(swaps[k][1] == swaps[k + 1][0] for k in range(n - 1))
 
 
-def test_extract_多运行后者覆盖前者(wt, tmp_path, monkeypatch):
-    """两个运行的 episode_results.jsonl 合并：同 key 取后者；行里记 run_id；不开 h5（全部造成失败行）。"""
-    a, b = tmp_path / "a", tmp_path / "b"
-    for d in (a, b):
-        d.mkdir()
-    a.joinpath("episode_results.jsonl").write_text(
-        json.dumps({"task": "RouteStick", "difficulty": "hard", "episode": 0, "seed": 1, "ok": False, "error_type": "X"}) + "\n", encoding="utf-8")
-    b.joinpath("episode_results.jsonl").write_text(
-        json.dumps({"task": "RouteStick", "difficulty": "hard", "episode": 0, "seed": 1, "ok": False, "error_type": "Y"}) + "\n"
-        + json.dumps({"task": "RouteStick", "difficulty": "xhard", "episode": 0, "seed": 1, "ok": False, "error_type": "Z"}) + "\n", encoding="utf-8")
+def _extract(wt, run_id, source):
+    """测试夹具把结果交给新唯一表接口，不重建旧多运行覆盖逻辑。"""
+    from types import SimpleNamespace
+    rows = [dict(json.loads(line), kind="h5") for line in (source / "episode_results.jsonl").read_text().splitlines()]
+    store = SimpleNamespace(state=source, load=lambda: ({"run_id": run_id}, [], rows))
+    return wt.extract_results(store)
+
+
+def test_extract_重复键拒绝且不同难度独立(wt, tmp_path, monkeypatch):
     monkeypatch.setattr(wt, "REPO_ROOT", tmp_path)
-    payload = wt.extract(["run-a", "run-b"], [a, b])
-    assert payload["rollout_run_ids"] == ["run-a", "run-b"] and payload["rollout_run_id"] == "run-a,run-b"
-    by_key = {(r["task"], r["difficulty"], r["episode"]): r for r in payload["failed_rows"]}
-    assert by_key[("RouteStick", "hard", 0)]["error_type"] == "Y"  # 后者覆盖前者
-    assert by_key[("RouteStick", "xhard", 0)]["error_type"] == "Z"
-    with pytest.raises(ValueError):
-        wt.extract(["only-one"], [a, b])
+    source = tmp_path / "run"
+    source.mkdir()
+    path = source / "episode_results.jsonl"
+    row = {"task": "RouteStick", "difficulty": "hard", "episode": 0, "seed": 1, "ok": False, "error_type": "X"}
+    path.write_text(json.dumps(row) + "\n" + json.dumps(row) + "\n")
+    with pytest.raises(ValueError, match="重复键"):
+        _extract(wt, "one", source)
+    path.write_text(json.dumps(row) + "\n" + json.dumps(dict(row, difficulty="xhard")) + "\n")
+    result = _extract(wt, "one", source)
+    assert len(result["failed_rows"]) == 2
 
 
 # ── BinFill demo 幂等（2026-09-12）：07 起生成器直出「重复两遍」的 h5 ────────────
@@ -301,7 +302,7 @@ def test_binfill_已录demo不翻倍(wt, tmp_path, monkeypatch):
         "total": 400, "demo": 200,
         "segs": [[0, 120, "pick up the first blue cube"], [120, 80, "put it into the bin"],
                  [200, 120, "pick up the first blue cube"], [320, 80, "put it into the bin"]]})
-    payload = wt.extract(["run-07"], [source])
+    payload = _extract(wt, "run-07", source)
     rows = payload["groups"]["BinFill/easy"]
     assert len(rows) == 1 and payload["skipped"] == []
     row = rows[0]
@@ -317,7 +318,7 @@ def test_binfill_demo前缀不是一半入skipped(wt, tmp_path, monkeypatch):
     monkeypatch.setattr(wt, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(wt, "read_episode", lambda path: {
         "total": 401, "demo": 200, "segs": [[0, 200, "pick up the first blue cube"], [200, 201, "put it into the bin"]]})
-    payload = wt.extract(["run-07"], [source])
+    payload = _extract(wt, "run-07", source)
     assert payload["groups"]["BinFill/easy"] == []
     assert len(payload["skipped"]) == 1
     assert payload["skipped"][0]["reason"] == "BinFill demo 前缀不是全长一半"
@@ -330,7 +331,7 @@ def test_binfill_旧数据仍模拟demo(wt, tmp_path, monkeypatch):
     monkeypatch.setattr(wt, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(wt, "read_episode", lambda path: {
         "total": 249, "demo": 0, "segs": [[0, 130, "pick up the first blue cube"], [130, 119, "put it into the bin"]]})
-    payload = wt.extract(["run-05"], [source])
+    payload = _extract(wt, "run-05", source)
     row = payload["groups"]["BinFill/easy"][0]
     assert (row["total"], row["demo"], row["original_total"], row["demo_source"]) == (498, 249, 249, "simulated")
     assert payload["binfill_demo_source"] == {"BinFill/easy": "simulated"}
@@ -406,7 +407,7 @@ def test_extract_剔除慢条并重算统计(wt, tmp_path, monkeypatch):
     monkeypatch.setattr(wt, "read_episode", lambda path: {
         "total": {"0": 200, "1": 220, "2": 240, "3": 260, "4": 900}[Path(path).stem], "demo": 0,
         "segs": [[0, {"0": 200, "1": 220, "2": 240, "3": 260, "4": 900}[Path(path).stem], "pick up the cube"]]})
-    payload = wt.extract(["run-07"], [source])
+    payload = _extract(wt, "run-07", source)
     assert (payload["episodes"], payload["episodes_before_exclusion"]) == (4, 5)
     assert [e["episode"] for e in payload["excluded_slow"]] == [4]
     assert payload["exclusion_rule"] == {"max_segment_frames": 400, "t_median_factor": 2.0, "median_basis": "剔除前按组"}

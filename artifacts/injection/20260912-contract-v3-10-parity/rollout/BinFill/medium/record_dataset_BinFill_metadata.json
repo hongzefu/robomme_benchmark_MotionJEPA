@@ -1,0 +1,96 @@
+{
+  "env_id": "BinFill",
+  "record_count": 15,
+  "records": [
+    {
+      "task": "BinFill",
+      "episode": 0,
+      "seed": 4000,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 1,
+      "seed": 4100,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 2,
+      "seed": 4200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 3,
+      "seed": 4300,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 4,
+      "seed": 4400,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 5,
+      "seed": 4500,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 6,
+      "seed": 4600,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 7,
+      "seed": 4700,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 8,
+      "seed": 4800,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 9,
+      "seed": 4900,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 10,
+      "seed": 5000,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 11,
+      "seed": 5100,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 12,
+      "seed": 5200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 13,
+      "seed": 5300,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 14,
+      "seed": 5400,
+      "difficulty": "medium"
+    }
+  ]
+}

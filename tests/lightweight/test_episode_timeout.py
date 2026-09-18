@@ -14,7 +14,9 @@ GENERATOR = REPO_ROOT / "scripts" / "generate_dataset_newseed.py"
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.injection.run import _is_resource_failure, classify_outcome, execution_state  # noqa: E402
+from scripts.injection.rollout.run import classify_outcome, execution_state
+from tests._shared.frozen_injection import load as frozen_load
+_is_resource_failure = frozen_load("run")._is_resource_failure  # noqa: E402
 
 
 @pytest.fixture(scope="module")

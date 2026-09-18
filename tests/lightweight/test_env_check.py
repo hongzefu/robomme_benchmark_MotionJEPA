@@ -23,13 +23,13 @@ for extra in (REPO_ROOT, REPO_ROOT / "src"):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-from scripts.injection.env_check import (  # noqa: E402
+from scripts.injection.rollout.reset_check import (  # noqa: E402
     EnvCheckPlan,
     classify_reset_outcome,
     render_verdict_line,
     run_env_check,
 )
-from scripts.injection.run import (  # noqa: E402
+from scripts.injection.rollout.run import (  # noqa: E402
     OUTCOME_BINDING,
     OUTCOME_COLLISION,
     OUTCOME_NOT_RUN,
@@ -263,7 +263,7 @@ def test_env_check模块顶层不import_gymnasium或torch():
     """spawn 子进程会重跑被引用模块的顶层；仿真依赖一旦泄到顶层，_pool_init 的绑卡就晚了。"""
     code = (
         "import importlib, sys\n"
-        "importlib.import_module('scripts.injection.env_check')\n"
+        "importlib.import_module('scripts.injection.rollout.reset_check')\n"
         "脏 = sorted({'gymnasium', 'torch', 'sapien', 'mani_skill'} & set(sys.modules))\n"
         "print('DIRTY=' + ','.join(脏))\n"
     )

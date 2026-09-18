@@ -18,16 +18,16 @@ for extra in (REPO_ROOT, REPO_ROOT / "src"):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-from scripts.injection import contract as contract_mod  # noqa: E402
-from scripts.injection.contract import Contract, ContractError, audit_overrides, derive_all, load_contract, resolve_path  # noqa: E402
-from scripts.injection.contract_build import BINFILL_HELDOUT_OVERRIDES, build_v1, build_v2  # noqa: E402
-from scripts.injection.specs import CUBE_HALF_SIZE, GROUPS, MAX_CANDIDATES, build_group, canonical_json  # noqa: E402
+from scripts.injection.candidates import contract as contract_mod  # noqa: E402
+from scripts.injection.candidates.contract import Contract, ContractError, audit_overrides, derive_all, load_contract, resolve_path  # noqa: E402
+from tests._shared.contract_builder_fixture import BINFILL_HELDOUT_OVERRIDES, build_v1, build_v2  # noqa: E402
+from scripts.injection.candidates.specs import CUBE_HALF_SIZE, GROUPS, MAX_CANDIDATES, build_group, canonical_json  # noqa: E402
 
 CONFIG_DIR = REPO_ROOT / "scripts" / "configs" / "newtask-v2"
 SAMPLING_PATH = CONFIG_DIR / "native_sampling.json"
 SAMPLING = json.loads(SAMPLING_PATH.read_text(encoding="utf-8"))
-V1 = load_contract(CONFIG_DIR / "injection_contract_v1.json")
-V2 = load_contract(CONFIG_DIR / "injection_contract_v2.json")
+V1 = load_contract(REPO_ROOT / "tests/fixtures/injection_legacy/injection_contract_v1.json")
+V2 = load_contract(REPO_ROOT / "tests/fixtures/injection_legacy/injection_contract_v2.json")
 FROZEN_04 = REPO_ROOT / "artifacts" / "injection" / "20260910-new-values-04" / "specs"
 SEED = 20260909
 
@@ -196,14 +196,8 @@ def test_未登记的偏离与陈旧override都判问题():
 
 # ── 事件表两列取自契约 ──────────────────────────────────────────────────────
 def _event_tables():
-    import importlib.util
-
-    path = REPO_ROOT / "scripts" / "injection-before-2d" / "event_tables.py"
-    spec = importlib.util.spec_from_file_location("event_tables", path)
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module
+    from scripts.injection.candidates import report
+    return report
 
 
 @pytest.mark.skipif(not FROZEN_04.is_dir(), reason="04 运行的冻结规格不在工作区")

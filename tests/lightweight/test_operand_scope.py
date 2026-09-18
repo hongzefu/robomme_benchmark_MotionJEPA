@@ -22,7 +22,10 @@ for extra in (REPO_ROOT, REPO_ROOT / "src"):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-from scripts.injection import campaign, contract_build, specs  # noqa: E402
+from scripts.injection.candidates import specs, screen
+from tests._shared import contract_builder_fixture as contract_build
+from tests._shared.frozen_injection import load as frozen_load
+campaign = frozen_load("campaign")  # noqa: E402
 
 pytestmark = pytest.mark.lightweight
 
@@ -85,7 +88,7 @@ def test_发起者循环校验对05旧规格恒成立(task, difficulty):
     positions = SAMPLING["positions"][task]
     config = parameters["configs"][difficulty]
     for record in doc["episodes"]:
-        problems = campaign._static_problems(task, difficulty, f"{task}/{difficulty}/ep{record['episode']}", record, config, parameters, positions)
+        problems = screen._static_problems(task, difficulty, f"{task}/{difficulty}/ep{record['episode']}", record, config, parameters, positions)
         assert problems == [], problems
 
 
@@ -97,16 +100,16 @@ def test_发起者不按循环基取用时被静态检查抓住():
     record = copy.deepcopy(json.loads(doc_path.read_text(encoding="utf-8"))["episodes"][0])
     parameters = SAMPLING["parameters"][task]
     record["objects"]["swap_initiators"] = list(reversed(record["objects"]["swap_initiators"]))
-    problems = campaign._static_problems(task, difficulty, "tag", record, parameters["configs"][difficulty], parameters, SAMPLING["positions"][task])
+    problems = screen._static_problems(task, difficulty, "tag", record, parameters["configs"][difficulty], parameters, SAMPLING["positions"][task])
     assert any("swap_initiators[" in p for p in problems)
 
 
 # ── 契约 v3 与实跑按组过滤（阶段 3）──────────────────────────────────────────
-from scripts.injection.contract import load_contract  # noqa: E402
-from scripts.injection.contract_build import build_v3  # noqa: E402
+from scripts.injection.candidates.contract import load_contract  # noqa: E402
+from tests._shared.contract_builder_fixture import build_v3  # noqa: E402
 
 CONFIG_DIR = REPO_ROOT / "scripts" / "configs" / "newtask-v2"
-V2_PATH = CONFIG_DIR / "injection_contract_v2.json"
+V2_PATH = REPO_ROOT / "tests/fixtures/injection_legacy/injection_contract_v2.json"
 V3_PATH = CONFIG_DIR / "injection_contract_v3.json"
 
 

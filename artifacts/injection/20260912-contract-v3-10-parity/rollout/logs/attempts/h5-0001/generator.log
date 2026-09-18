@@ -1,0 +1,1353 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[1/210] VideoUnmaskSwap/episode_0 succeeded with seed 5000 (attempt 0, 44.769s)
+[2/210] RouteStick/episode_1 succeeded with seed 16100 (attempt 0, 45.276s)
+[3/210] VideoUnmaskSwap/episode_0 succeeded with seed 5000 (attempt 0, 50.405s)
+[4/210] RouteStick/episode_0 succeeded with seed 16000 (attempt 0, 56.315s)
+[5/210] BinFill/episode_1 succeeded with seed 4100 (attempt 0, 56.221s)
+[6/210] RouteStick/episode_0 succeeded with seed 16000 (attempt 0, 69.919s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[7/210] BinFill/episode_0 succeeded with seed 4000 (attempt 0, 78.011s)
+[8/210] RouteStick/episode_0 succeeded with seed 16000 (attempt 0, 82.633s)
+[9/210] RouteStick/episode_1 succeeded with seed 16100 (attempt 0, 82.133s)
+[10/210] VideoRepick/episode_0 succeeded with seed 9000 (attempt 0, 89.951s)
+[11/210] VideoUnmaskSwap/episode_1 succeeded with seed 5100 (attempt 0, 47.173s)
+[12/210] RouteStick/episode_1 succeeded with seed 16100 (attempt 0, 93.637s)
+[13/210] VideoUnmaskSwap/episode_0 succeeded with seed 5000 (attempt 0, 96.585s)
+[14/210] VideoUnmaskSwap/episode_0 succeeded with seed 5000 (attempt 0, 97.216s)
+[15/210] BinFill/episode_0 succeeded with seed 4000 (attempt 0, 98.182s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[16/210] VideoUnmaskSwap/episode_1 succeeded with seed 5100 (attempt 0, 58.052s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[17/210] BinFill/episode_1 succeeded with seed 4100 (attempt 0, 101.88s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[18/210] VideoRepick/episode_0 succeeded with seed 9000 (attempt 0, 114.736s)
+[19/210] BinFill/episode_0 succeeded with seed 4000 (attempt 0, 123.44s)
+[20/210] VideoUnmaskSwap/episode_1 succeeded with seed 5100 (attempt 0, 80.362s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[21/210] RouteStick/episode_2 succeeded with seed 16200 (attempt 0, 42.052s)
+[22/210] RouteStick/episode_0 succeeded with seed 16000 (attempt 0, 139.306s)
+[23/210] VideoRepick/episode_1 succeeded with seed 9100 (attempt 0, 86.729s)
+[24/210] VideoRepick/episode_1 succeeded with seed 9100 (attempt 0, 91.245s)
+[25/210] BinFill/episode_1 succeeded with seed 4100 (attempt 0, 147.535s)
+[26/210] VideoUnmaskSwap/episode_2 succeeded with seed 5200 (attempt 0, 55.117s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[27/210] VideoUnmaskSwap/episode_2 succeeded with seed 5200 (attempt 0, 64.931s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[28/210] RouteStick/episode_2 succeeded with seed 16200 (attempt 0, 77.073s)
+screw plan failed
+screw plan failed
+screw plan failed
+[29/210] RouteStick/episode_1 succeeded with seed 16100 (attempt 0, 107.011s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[30/210] VideoRepick/episode_1 succeeded with seed 9100 (attempt 0, 98.926s)
+[31/210] BinFill/episode_2 succeeded with seed 4200 (attempt 0, 100.172s)
+[32/210] RouteStick/episode_2 succeeded with seed 16200 (attempt 0, 88.309s)
+[33/210] BinFill/episode_3 succeeded with seed 4300 (attempt 0, 47.045s)
+[34/210] VideoUnmaskSwap/episode_1 succeeded with seed 5100 (attempt 0, 121.166s)
+[35/210] VideoRepick/episode_2 succeeded with seed 9200 (attempt 0, 87.591s)
+[36/210] VideoUnmaskSwap/episode_2 succeeded with seed 5200 (attempt 0, 101.263s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[37/210] BinFill/episode_2 succeeded with seed 4200 (attempt 0, 113.295s)
+[38/210] RouteStick/episode_3 succeeded with seed 16300 (attempt 0, 53.387s)
+[39/210] BinFill/episode_2 succeeded with seed 4200 (attempt 0, 120.278s)
+[40/210] VideoUnmaskSwap/episode_2 succeeded with seed 5200 (attempt 0, 80.18s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[41/210] VideoRepick/episode_2 succeeded with seed 9200 (attempt 0, 102.54s)
+[42/210] RouteStick/episode_3 succeeded with seed 16300 (attempt 0, 64.133s)
+[43/210] VideoUnmaskSwap/episode_3 succeeded with seed 5300 (attempt 0, 55.266s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[44/210] BinFill/episode_3 succeeded with seed 4300 (attempt 0, 92.353s)
+[45/210] VideoUnmaskSwap/episode_3 succeeded with seed 5300 (attempt 0, 64.551s)
+[46/210] RouteStick/episode_3 succeeded with seed 16300 (attempt 0, 77.815s)
+[47/210] RouteStick/episode_2 succeeded with seed 16200 (attempt 0, 123.198s)
+[48/210] VideoRepick/episode_2 succeeded with seed 9200 (attempt 0, 114.931s)
+[49/210] BinFill/episode_4 succeeded with seed 4400 (attempt 0, 52.375s)
+[50/210] VideoUnmaskSwap/episode_3 succeeded with seed 5300 (attempt 0, 75.495s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[51/210] RouteStick/episode_4 succeeded with seed 16400 (attempt 0, 50.523s)
+[52/210] BinFill/episode_3 succeeded with seed 4300 (attempt 0, 117.353s)
+[53/210] VideoUnmaskSwap/episode_4 succeeded with seed 5400 (attempt 0, 38.906s)
+[54/210] VideoRepick/episode_3 succeeded with seed 9300 (attempt 0, 90.076s)
+[55/210] BinFill/episode_4 succeeded with seed 4400 (attempt 0, 76.563s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[56/210] VideoRepick/episode_3 succeeded with seed 9300 (attempt 0, 99.761s)
+[57/210] VideoUnmaskSwap/episode_4 succeeded with seed 5400 (attempt 0, 44.769s)
+[58/210] VideoRepick/episode_3 succeeded with seed 9300 (attempt 0, 87.074s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[59/210] RouteStick/episode_4 succeeded with seed 16400 (attempt 0, 68.43s)
+[60/210] VideoUnmaskSwap/episode_3 succeeded with seed 5300 (attempt 0, 97.522s)
+[61/210] RouteStick/episode_4 succeeded with seed 16400 (attempt 0, 75.129s)
+    BinFill/episode_4 用尽 1 次 attempt，放弃
+[62/210] RouteStick/episode_3 succeeded with seed 16300 (attempt 0, 110.627s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[63/210] VideoUnmaskSwap/episode_4 succeeded with seed 5400 (attempt 0, 69.916s)
+[64/210] VideoRepick/episode_4 succeeded with seed 9400 (attempt 0, 75.527s)
+[65/210] VideoRepick/episode_4 succeeded with seed 9400 (attempt 0, 75.483s)
+[66/210] RouteStick/episode_5 succeeded with seed 16500 (attempt 0, 53.019s)
+[67/210] VideoUnmaskSwap/episode_5 succeeded with seed 5500 (attempt 0, 47.377s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[68/210] VideoUnmaskSwap/episode_4 succeeded with seed 5400 (attempt 0, 86.502s)
+[69/210] RouteStick/episode_5 succeeded with seed 16500 (attempt 0, 63.405s)
+[70/210] RouteStick/episode_5 succeeded with seed 16500 (attempt 0, 64.618s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[71/210] VideoUnmaskSwap/episode_5 succeeded with seed 5500 (attempt 0, 62.815s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[72/210] BinFill/episode_5 succeeded with seed 4500 (attempt 0, 92.067s)
+[73/210] RouteStick/episode_4 succeeded with seed 16400 (attempt 0, 109.613s)
+[74/210] BinFill/episode_5 succeeded with seed 4500 (attempt 0, 104.475s)
+[75/210] VideoUnmaskSwap/episode_5 succeeded with seed 5500 (attempt 0, 81.367s)
+[76/210] VideoRepick/episode_5 succeeded with seed 9500 (attempt 0, 78.588s)
+[77/210] BinFill/episode_5 succeeded with seed 4500 (attempt 0, 110.685s)
+[78/210] RouteStick/episode_6 succeeded with seed 16600 (attempt 0, 42.828s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[79/210] VideoUnmaskSwap/episode_6 succeeded with seed 5600 (attempt 0, 37.65s)
+[80/210] VideoRepick/episode_4 succeeded with seed 9400 (attempt 0, 129.355s)
+[81/210] BinFill/episode_6 succeeded with seed 4600 (attempt 0, 64.952s)
+[82/210] VideoRepick/episode_5 succeeded with seed 9500 (attempt 0, 91.187s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[83/210] BinFill/episode_6 succeeded with seed 4600 (attempt 0, 67.739s)
+[84/210] VideoUnmaskSwap/episode_6 succeeded with seed 5600 (attempt 0, 48.247s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[85/210] VideoUnmaskSwap/episode_6 succeeded with seed 5600 (attempt 0, 57.097s)
+    VideoRepick/episode_5 用尽 1 次 attempt，放弃
+[86/210] RouteStick/episode_6 succeeded with seed 16600 (attempt 0, 76.261s)
+[87/210] BinFill/episode_6 succeeded with seed 4600 (attempt 0, 87.821s)
+[88/210] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 61.193s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[89/210] RouteStick/episode_7 succeeded with seed 16700 (attempt 0, 40.703s)
+[90/210] RouteStick/episode_5 succeeded with seed 16500 (attempt 0, 133.143s)
+[91/210] BinFill/episode_7 succeeded with seed 4700 (attempt 0, 63.964s)
+[92/210] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 71.361s)
+[93/210] RouteStick/episode_6 succeeded with seed 16600 (attempt 0, 100.895s)
+[94/210] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 53.07s)
+[95/210] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 37.79s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[96/210] RouteStick/episode_7 succeeded with seed 16700 (attempt 0, 62.722s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[97/210] VideoUnmaskSwap/episode_5 succeeded with seed 5500 (attempt 0, 157.611s)
+[98/210] BinFill/episode_7 succeeded with seed 4700 (attempt 0, 92.124s)
+[99/210] VideoRepick/episode_6 succeeded with seed 9600 (attempt 0, 108.65s)
+[100/210] RouteStick/episode_8 succeeded with seed 16800 (attempt 0, 40.401s)
+[101/210] VideoUnmaskSwap/episode_7 succeeded with seed 5700 (attempt 0, 76.576s)
+[102/210] RouteStick/episode_7 succeeded with seed 16700 (attempt 0, 98.093s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[103/210] VideoUnmaskSwap/episode_6 succeeded with seed 5600 (attempt 0, 126.681s)
+screw plan failed
+screw plan failed
+screw plan failed
+[104/210] RouteStick/episode_6 succeeded with seed 16600 (attempt 0, 132.71s)
+[105/210] VideoRepick/episode_7 succeeded with seed 9700 (attempt 0, 90.039s)
+[106/210] BinFill/episode_8 succeeded with seed 4800 (attempt 0, 64.492s)
+[107/210] RouteStick/episode_8 succeeded with seed 16800 (attempt 0, 60.595s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[108/210] VideoRepick/episode_7 succeeded with seed 9700 (attempt 0, 97.711s)
+[109/210] VideoUnmaskSwap/episode_8 succeeded with seed 5800 (attempt 0, 54.518s)
+[110/210] VideoUnmaskSwap/episode_8 succeeded with seed 5800 (attempt 0, 45.402s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[111/210] VideoRepick/episode_7 succeeded with seed 9700 (attempt 0, 88.855s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[112/210] BinFill/episode_7 succeeded with seed 4700 (attempt 0, 143.267s)
+[113/210] RouteStick/episode_7 succeeded with seed 16700 (attempt 0, 117.339s)
+[114/210] RouteStick/episode_8 succeeded with seed 16800 (attempt 0, 86.09s)
+[115/210] VideoUnmaskSwap/episode_8 succeeded with seed 5800 (attempt 0, 57.462s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[116/210] BinFill/episode_8 succeeded with seed 4800 (attempt 0, 113.011s)
+[117/210] VideoUnmaskSwap/episode_9 succeeded with seed 5900 (attempt 0, 29.612s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[118/210] VideoRepick/episode_8 succeeded with seed 9800 (attempt 0, 76.055s)
+[119/210] VideoUnmaskSwap/episode_9 succeeded with seed 5900 (attempt 0, 43.052s)
+[120/210] RouteStick/episode_9 succeeded with seed 16900 (attempt 0, 55.312s)
+[121/210] BinFill/episode_9 succeeded with seed 4900 (attempt 0, 67.365s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[122/210] VideoRepick/episode_8 succeeded with seed 9800 (attempt 0, 89.735s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[123/210] BinFill/episode_8 succeeded with seed 4800 (attempt 0, 136.651s)
+    VideoRepick/episode_0 seed 9000 单条墙钟超过 600 秒被终止（实测 615 秒）
+    VideoRepick/episode_0 用尽 1 次 attempt，放弃
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[124/210] VideoRepick/episode_8 succeeded with seed 9800 (attempt 0, 87.221s)
+screw plan failed
+screw plan failed
+screw plan failed
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[125/210] RouteStick/episode_9 succeeded with seed 16900 (attempt 0, 77.9s)
+[126/210] RouteStick/episode_9 succeeded with seed 16900 (attempt 0, 76.012s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[127/210] VideoUnmaskSwap/episode_8 succeeded with seed 5800 (attempt 0, 104.833s)
+[128/210] BinFill/episode_9 succeeded with seed 4900 (attempt 0, 98.922s)
+[129/210] VideoUnmaskSwap/episode_9 succeeded with seed 5900 (attempt 0, 77.7s)
+[130/210] RouteStick/episode_8 succeeded with seed 16800 (attempt 0, 127.24s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[131/210] VideoRepick/episode_9 succeeded with seed 9900 (attempt 0, 84.043s)
+[132/210] VideoUnmaskSwap/episode_10 succeeded with seed 6000 (attempt 0, 35.194s)
+[133/210] RouteStick/episode_10 succeeded with seed 17000 (attempt 0, 47.699s)
+[134/210] BinFill/episode_9 succeeded with seed 4900 (attempt 0, 115.642s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[135/210] VideoUnmaskSwap/episode_10 succeeded with seed 6000 (attempt 0, 40.836s)
+[136/210] VideoRepick/episode_9 succeeded with seed 9900 (attempt 0, 92.071s)
+    BinFill/episode_10 用尽 1 次 attempt，放弃
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[137/210] VideoUnmaskSwap/episode_9 succeeded with seed 5900 (attempt 0, 95.767s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[138/210] RouteStick/episode_10 succeeded with seed 17000 (attempt 0, 77.827s)
+[139/210] BinFill/episode_10 succeeded with seed 5000 (attempt 0, 91.098s)
+[140/210] VideoRepick/episode_10 succeeded with seed 10000 (attempt 0, 63.886s)
+[141/210] RouteStick/episode_9 succeeded with seed 16900 (attempt 0, 113.808s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[142/210] BinFill/episode_11 succeeded with seed 5100 (attempt 0, 47.51s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[143/210] VideoUnmaskSwap/episode_10 succeeded with seed 6000 (attempt 0, 74.55s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[144/210] VideoRepick/episode_9 succeeded with seed 9900 (attempt 0, 117.518s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[145/210] VideoRepick/episode_10 succeeded with seed 10000 (attempt 0, 82.533s)
+[146/210] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 36.959s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[147/210] RouteStick/episode_10 succeeded with seed 17000 (attempt 0, 104.307s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[148/210] RouteStick/episode_11 succeeded with seed 17100 (attempt 0, 55.723s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[149/210] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 42.221s)
+[150/210] VideoUnmaskSwap/episode_10 succeeded with seed 6000 (attempt 0, 91.757s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[151/210] RouteStick/episode_11 succeeded with seed 17100 (attempt 0, 71.42s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[152/210] RouteStick/episode_11 succeeded with seed 17100 (attempt 0, 82.648s)
+[153/210] BinFill/episode_11 succeeded with seed 5100 (attempt 0, 87.285s)
+[154/210] BinFill/episode_10 succeeded with seed 5000 (attempt 0, 143.123s)
+[155/210] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 68.473s)
+[156/210] VideoRepick/episode_11 succeeded with seed 10100 (attempt 0, 64.379s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[157/210] BinFill/episode_12 succeeded with seed 5200 (attempt 0, 48.625s)
+[158/210] VideoRepick/episode_10 succeeded with seed 10000 (attempt 0, 118.762s)
+[159/210] RouteStick/episode_12 succeeded with seed 17200 (attempt 0, 47.492s)
+[160/210] RouteStick/episode_10 succeeded with seed 17000 (attempt 0, 130.049s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[161/210] BinFill/episode_11 succeeded with seed 5100 (attempt 0, 112.645s)
+[162/210] VideoUnmaskSwap/episode_12 succeeded with seed 6200 (attempt 0, 34.899s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[163/210] VideoUnmaskSwap/episode_12 succeeded with seed 6200 (attempt 0, 42.418s)
+[164/210] BinFill/episode_12 succeeded with seed 5200 (attempt 0, 64.023s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[165/210] VideoRepick/episode_11 succeeded with seed 10100 (attempt 0, 88.578s)
+[166/210] VideoUnmaskSwap/episode_11 succeeded with seed 6100 (attempt 0, 98.203s)
+[167/210] VideoRepick/episode_11 succeeded with seed 10100 (attempt 0, 103.023s)
+[168/210] RouteStick/episode_12 succeeded with seed 17200 (attempt 0, 79.656s)
+[169/210] RouteStick/episode_12 succeeded with seed 17200 (attempt 0, 69.68s)
+[170/210] VideoUnmaskSwap/episode_12 succeeded with seed 6200 (attempt 0, 70.596s)
+[171/210] RouteStick/episode_11 succeeded with seed 17100 (attempt 0, 121.015s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[172/210] RouteStick/episode_13 succeeded with seed 17300 (attempt 0, 53.637s)
+[173/210] VideoRepick/episode_12 succeeded with seed 10200 (attempt 0, 79.339s)
+[174/210] VideoRepick/episode_12 succeeded with seed 10200 (attempt 0, 94.17s)
+[175/210] BinFill/episode_12 succeeded with seed 5200 (attempt 0, 123.761s)
+[176/210] BinFill/episode_13 succeeded with seed 5300 (attempt 0, 77.194s)
+[177/210] VideoUnmaskSwap/episode_13 succeeded with seed 6300 (attempt 0, 44.368s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[178/210] RouteStick/episode_13 succeeded with seed 17300 (attempt 0, 76.463s)
+[179/210] VideoUnmaskSwap/episode_13 succeeded with seed 6300 (attempt 0, 59.958s)
+[180/210] VideoUnmaskSwap/episode_13 succeeded with seed 6300 (attempt 0, 62.322s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[181/210] BinFill/episode_13 succeeded with seed 5300 (attempt 0, 90.475s)
+[182/210] VideoRepick/episode_12 succeeded with seed 10200 (attempt 0, 97.786s)
+[183/210] VideoRepick/episode_13 succeeded with seed 10300 (attempt 0, 71.5s)
+[184/210] BinFill/episode_13 succeeded with seed 5300 (attempt 0, 110.751s)
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[185/210] VideoRepick/episode_13 succeeded with seed 10300 (attempt 0, 77.038s)
+[186/210] RouteStick/episode_13 succeeded with seed 17300 (attempt 0, 99.471s)
+screw plan failed
+screw plan failed
+screw plan failed
+[187/210] RouteStick/episode_12 succeeded with seed 17200 (attempt 0, 136.141s)
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[188/210] VideoUnmaskSwap/episode_12 succeeded with seed 6200 (attempt 0, 131.646s)
+[189/210] VideoUnmaskSwap/episode_14 succeeded with seed 6400 (attempt 0, 31.719s)
+[190/210] RouteStick/episode_14 succeeded with seed 17400 (attempt 0, 52.638s)
+[191/210] BinFill/episode_14 succeeded with seed 5400 (attempt 0, 62.871s)
+[192/210] VideoUnmaskSwap/episode_13 succeeded with seed 6300 (attempt 0, 84.832s)
+[193/210] RouteStick/episode_14 succeeded with seed 17400 (attempt 0, 66.407s)
+[194/210] VideoUnmaskSwap/episode_14 succeeded with seed 6400 (attempt 0, 57.453s)
+[195/210] RouteStick/episode_14 succeeded with seed 17400 (attempt 0, 62.816s)
+[196/210] VideoUnmaskSwap/episode_14 succeeded with seed 6400 (attempt 0, 72.204s)
+[197/210] VideoRepick/episode_13 succeeded with seed 10300 (attempt 0, 107.679s)
+[198/210] VideoUnmaskSwap/episode_14 succeeded with seed 6400 (attempt 0, 66.288s)
+[199/210] VideoRepick/episode_14 succeeded with seed 10400 (attempt 0, 83.6s)
+[200/210] RouteStick/episode_13 succeeded with seed 17300 (attempt 0, 138.037s)
+[201/210] BinFill/episode_14 succeeded with seed 5400 (attempt 0, 111.652s)
+[202/210] BinFill/episode_14 succeeded with seed 5400 (attempt 0, 119.384s)
+[203/210] VideoRepick/episode_14 succeeded with seed 10400 (attempt 0, 95.957s)
+[204/210] VideoRepick/episode_14 succeeded with seed 10400 (attempt 0, 95.131s)
+[205/210] RouteStick/episode_14 succeeded with seed 17400 (attempt 0, 106.538s)
+    VideoUnmaskSwap/episode_7 seed 5700 单条墙钟超过 600 秒被终止（实测 601 秒）
+    VideoUnmaskSwap/episode_7 用尽 1 次 attempt，放弃
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/spawn.py", line 132, in _main
+    self = reduction.pickle.load(from_parent)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/synchronize.py", line 115, in __setstate__
+    self._semlock = _multiprocessing.SemLock._rebuild(*state)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory
+H5_EXECUTION=PASS requested=210 succeeded=205 failed=5

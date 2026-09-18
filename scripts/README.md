@@ -79,20 +79,19 @@ schema 2 配置须用 `--extract-config` 重新导出为 schema 3；新增字段
 ### 1.5 注入规格的取值域与分配：约定 JSON
 
 新值注入专项（第四节）里「每个字段能取什么、怎么铺满 100 条」不再散落在生成器、补零类别表与事件表文案里，
-而是一份版本化的契约 [`configs/newtask-v2/injection_contract_v1.json`](configs/newtask-v2/injection_contract_v1.json)
-（= 现状口径，数值域由 `native_sampling.json` 派生）与
-[`injection_contract_v2.json`](configs/newtask-v2/injection_contract_v2.json)（= v1 + BinFill 对齐 heldout 三处）。
+而是一份版本化的契约 [`injection_contract_v3.json`](configs/newtask-v2/injection_contract_v3.json)，
+覆盖当前 14 组。v1/v2 原字节仅保留在 `tests/fixtures/injection_legacy/` 作历史差分夹具。
 谁定义什么：
 
 | 文件 | 定义什么 | 谁消费 |
 |---|---|---|
-| `injection_contract_v*.json` | 11 组 × 每字段的事件名、取值域（`domain`／`domain_text`）、分配办法（`allocation`／`allocation_text`）、对原值的 `overrides` | `scripts/injection/specs.py::build_group`（候选分布的派生依据）、`categories.py::legal_categories`（补零）、`injection-before-2d/event_tables.py`（表格两列） |
+| `injection_contract_v3.json` | 14 组 × 每字段的事件名、取值域（`domain`／`domain_text`）、分配办法（`allocation`／`allocation_text`）、对原值的 `overrides` | `scripts/injection/candidates/specs.py::build_group`（候选分布的派生依据）、`categories.py::legal_categories`（补零）、`injection/candidates/report.py`（表格两列） |
 | `native_sampling.json` | 几何常量（按钮盒尺寸、孔板边长、锚点坐标、避让间距、`region_half_size`）与结构性输入（节点表、邻接顺序），以及仿真运行时的原值 | 生成器的几何部分、`_static_problems` 的独立复核、`generate_dataset_newseed.py --sampling-config` |
 
 契约里由几何算出的数值是**派生结果**，带 `derivation`（recipe + 依赖键），`check` 的 `CONTRACT_DERIVED`
 每次拿 `native_sampling.json` 回算；想改这类数字要改 `native_sampling.json`，或登记 override。
 **契约只作用于外部规格生成器（`scripts/injection/`），生产入口 `generate_dataset_newseed.py` 不读它。**
-变化与用户决策见 [NEW_VALUE_CONTRACT_CHANGELOG.md](NEW_VALUE_CONTRACT_CHANGELOG.md)。
+变化与用户决策见 [INJECTION.md](INJECTION.md)。
 
 ### 1.6 **没有**开放为可配的东西
 
@@ -397,7 +396,7 @@ uv run --no-sync python scripts/generate_dataset_newseed.py --merge-only \
 ### 3.4 新值注入（`--episode-specs`）
 
 把「每条 episode 取什么值」从环境内部的随机采样搬到外部的固定规格，用于
-[NEW_VALUE_INJECTION_TEST_PLAN.md](../NEW_VALUE_INJECTION_TEST_PLAN.md) 的专项。
+[INJECTION.md](INJECTION.md) 的专项。
 **不传这个参数时链路与改动前逐字相同**：`gym.make` 不多这个 kwarg，四个任务模块的每个
 消费点都退回原随机路径——`DEFAULT_PARITY` 验的就是这条。
 
@@ -439,87 +438,6 @@ uv run --no-sync python scripts/generate_dataset_newseed.py --merge-only \
 视频判定失败**不改变**任务结果，也不删已落盘的 HDF5，但 `VIDEO_INDEX`／`VIDEO_DECODE`
 必须如实记失败。
 
-## 四、新值注入专项的编排入口
+## 四、新值注入的现行入口
 
-工具在 `scripts/injection/`（包入口 `scripts.injection.campaign`，须在仓库根目录以 `python -m` 运行；不依赖 `tests/`），**生产入口 `generate_dataset_newseed.py` 不导入它**。
-五个子命令，按执行顺序：
-
-```bash
-command -v uv
-INJECTION_RUN_ID=20260911-contract-v2-05
-
-# 步骤 0：冻结 11 组 × 100 条规格（运行编号不可复用，目录已存在直接拒绝；--contract 必填）
-uv run --no-sync python -m scripts.injection.campaign plan --run-id "$INJECTION_RUN_ID" \
-  --contract scripts/configs/newtask-v2/injection_contract_v2.json
-
-# 步骤 0：从冻结规格独立重算全部计数与几何
-uv run --no-sync python -m scripts.injection.campaign check --run-id "$INJECTION_RUN_ID"
-
-# 步骤 0 / 6：跑前、跑后各一套三类图
-uv run --no-sync python -m scripts.injection.campaign plot --run-id "$INJECTION_RUN_ID" --phase before
-
-# 步骤 3 + 4：串行参考两遍，再把每卡 worker 一路往上探到 OOM／超时
-uv run --no-sync python -m scripts.injection.campaign run --run-id "$INJECTION_RUN_ID" --phase calibration
-
-# 步骤 5：用校准选出的档跑 330 条
-uv run --no-sync python -m scripts.injection.campaign run --run-id "$INJECTION_RUN_ID" --phase feasibility
-
-# 步骤 6：汇总各阶段判定与计数，写轻量包到 docs/validation/newtask-v2/<运行编号>/
-uv run --no-sync python -m scripts.injection.campaign report --run-id "$INJECTION_RUN_ID"
-```
-
-机器被别人占用、吞吐测不准时，改走这条：
-
-```bash
-# 只做串行参考，并行三项记 NOT_RUN
-uv run --no-sync python -m scripts.injection.campaign run \
-  --run-id "$INJECTION_RUN_ID" --phase calibration --skip-ladder
-# 用显式指定的档直接实跑（结果里标 tier_measured=false）
-uv run --no-sync python -m scripts.injection.campaign run \
-  --run-id "$INJECTION_RUN_ID" --phase feasibility --tier 12
-```
-
-`compare` 单独做两个运行目录的完整 HDF5 逐位对拍，复用
-`scripts/injection/h5_compare.py::compare_h5`（显式遍历全部 group、dataset 及
-各层 attribute，检查类型、形状与内容）：
-
-```bash
-uv run --no-sync python -m scripts.injection.campaign compare \
-  --left  artifacts/injection/$INJECTION_RUN_ID/parity/baseline \
-  --right artifacts/injection/$INJECTION_RUN_ID/parity/current \
-  --label DEFAULT_PARITY
-```
-
-`--subset-only` 只判交集（负载阶梯拿 120 条清单里的 16 条固定样本比串行参考时用）；
-该开关只放宽「一侧多出」，交集内的任何差异照样是 FAIL。
-
-`--skip-ladder` 让 `calibration` 只做串行参考、跳过档位阶梯，并行三项如实记 `NOT_RUN`；
-`--episodes <N>`（2026-09-12 加，默认 30）让 `feasibility` 每组只实跑 episode 0～N-1（08 RouteStick 四档各 5 条用 5），清单文件名随总条数变（`manifests/feasibility20.json`），`summarize` 的分母也按该清单各组 `episodes` 求和。配套的 `--tier <n>` 让 `feasibility` 在没有校准结果时也能跑，但结果里打
-`tier_measured=false`，报告不得把它说成「校准选出的档」。机器被别人重度占用、
-吞吐测量必然失真时走这条路径，比测一组没有意义的数字诚实。
-
-**档位选择的口径**：不设 RSS／`free`／swap 三条软守卫，每卡 worker 从 12 一路加到 32
-（`--tiers` 可改），**实测到 OOM／池崩溃／超时为止**，用最后一个可用且吞吐最高的档做全量。
-吞吐的分子只数「成功且视频完整」的条数，同时另报失败数——否则一档跑得快只是因为大量
-样本快速失败，会被误当成加速。任务性失败（规划失败、碰撞拒绝）不算该档不可用，
-那是样本本身的问题，与并发规模无关。
-
-⚠ 超过五分钟的阶段按 [AGENTS.md](../AGENTS.md) 强制规则第 4 条用 detached tmux 起：
-
-```bash
-mkdir -p artifacts/logs
-tmux new-session -d -s "$INJECTION_RUN_ID-calibration" \
-  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.injection.campaign run \
-     --run-id $INJECTION_RUN_ID --phase calibration 2>&1 \
-     | tee artifacts/logs/$INJECTION_RUN_ID-calibration.log; \
-   echo \"EXIT_CODE=\$?\" >> artifacts/logs/$INJECTION_RUN_ID-calibration.log"
-tmux has-session -t "$INJECTION_RUN_ID-calibration"   # 判死活
-tmux attach -t "$INJECTION_RUN_ID-calibration"        # 围观，Ctrl-b d 脱开
-```
-
-⚠ **依据散列的口径**：规格里冻结的 `sampling_config_sha256` 是
-`native_sampling.json` 里 `parameters` + `positions` 的规范化散列（`operand_sha256`），
-**不是整个文件的字节散列**。该文件还带 `sources.sha256`（四个任务模块的源码指纹），
-接入新值后每改一次源码就得 `--extract-config` 刷新一次；拿文件散列当验收依据，会在一次
-纯源码改动之后把已冻结的规格全部误判成「依据漂移」。文件散列另存为
-`sampling_config_file_sha256`，变了只提示、不拦。
+候选冻结与实跑分别使用 `scripts.injection.candidates` 和 `scripts.injection.rollout`，环境数据唯一入口为纳入 Git 的 `candidates.jsonl`。完整命令、输入契约、恢复规则、结果角色、图表和发布边界见 [INJECTION.md](INJECTION.md)。旧平铺编排入口已移除，历史比较记录不作为当前命令使用。

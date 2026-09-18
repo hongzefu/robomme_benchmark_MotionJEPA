@@ -4,7 +4,9 @@ import tempfile
 from pathlib import Path
 
 from scripts.injection.candidates.io import load_candidates
-from scripts.injection.env_check import run_env_check as old_run, EnvCheckPlan as OldPlan
+from tests._shared.frozen_injection import load as frozen_load
+old_run = frozen_load("env_check").run_env_check
+OldPlan = frozen_load("env_check").EnvCheckPlan
 from scripts.injection.rollout.reset_check import run_env_check, EnvCheckPlan
 from scripts.injection.rollout.state import ROOT
 

@@ -1,15 +1,7 @@
-"""BinFill / medium 单条 episode 的精简数轴图，两张，图面文案全英文（只读同目录 ``windows_timeline.json``）。
+"""可选的 BinFill/medium 单条数轴工具，保留原英文图面。
 
-从 ``plot_sampling_windows.py`` 的整版数轴里裁出单条 episode，出两张：
-
-* ``single_subgoal_delta8.png`` —— 两条轴线：subgoal 分段 + 帧路 N=8；
-* ``single_subgoal_delta8_windows.png`` —— 在上图基础上加第三条轴线 motion 窗口
-  （每段自段起点铺 [f, f+32]、stride 16、按 ``i % 3`` 堆三行防粘连）。
-
-图面文字（标题／轴标／段标／图例）一律英文，subgoal 短标走本文件的 ``_EN_RULES`` 英文规则表，
-与 ``window_timeline.short_label`` 的中文规则表一一对应。不画 N=32 帧路与 swap 竖带；
-demo/exec 只留淡底色与分界虚线做背景参照（BinFill 的 demo 为同一条重复两遍，不画分界
-会让前后两轮 subgoal 看着像 16 段独立段）。产物放 ``figures/BinFill/medium/``（已 gitignore）。
+读取运行十 rollout/logs/windows_timeline.json，默认输出到 rollout/logs/single_binfill。
+绘制子目标与 N=8 帧路，第二张再加 33 帧、步长 16 的窗口；不进入主流程。
 """
 
 from __future__ import annotations

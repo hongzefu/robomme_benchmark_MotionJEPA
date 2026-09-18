@@ -16,6 +16,7 @@ import pytest
 
 from scripts import generate_dataset_newseed as gen
 from scripts.injection.candidates.io import load_candidates, write_candidates
+from tests._shared.frozen_injection import legacy_path
 
 ROOT = Path(__file__).resolve().parents[2]
 RUN = ROOT / "artifacts/injection/20260912-contract-v3-10"
@@ -73,8 +74,8 @@ def test_all_3400_loader_and_kwargs_equal_before_and_after_role_rewrite(old, tmp
     after = Path(gen.__file__).read_text()
     old_kwargs, new_kwargs = kwargs_reader(before), kwargs_reader(after)
     legacy = {}
-    for item in json.loads((RUN / "manifest.json").read_text())["groups"]:
-        group = old.load_episode_specs(RUN / item["path"], ROOT, tmp_path / "old")[0]
+    for item in json.loads(legacy_path("manifest.json").read_text())["groups"]:
+        group = old.load_episode_specs(legacy_path(item["path"]), ROOT, tmp_path / "old")[0]
         for ep, record in group.records.items():
             job = old.EpisodeJob(group.task, ep, 0, old.get_layout("train").seed(group.task, ep, 0),
                                  group.difficulty, str(tmp_path), str(ROOT), legacy_configs[group.task], record)
@@ -119,7 +120,7 @@ def test_generation_uses_snapshot_and_explicit_digest_flag(old, tmp_path, monkey
     gen.generate_dataset_newseed(tmp_path / "jsonl", env="RouteStick", episodes=2, difficulty_ratio="100",
                                  workers=1, max_attempts=1, episode_specs=CANDIDATES)
     old.generate_dataset_newseed(tmp_path / "legacy", env="RouteStick", episodes=2, difficulty_ratio="100",
-                                 workers=1, max_attempts=1, episode_specs=RUN / "specs/RouteStick/easy.json",
+                                 workers=1, max_attempts=1, episode_specs=legacy_path("specs/RouteStick/easy.json"),
                                  sampling_config=SAMPLING)
     assert len(new_jobs) == len(old_jobs) == 2
     left, right = kwargs_reader(old.frozen_source), kwargs_reader(Path(gen.__file__).read_text())
@@ -136,7 +137,7 @@ def test_legacy_job_path_unchanged(old, tmp_path, monkeypatch, kind):
     expected = capture_jobs(monkeypatch, old)
     options = dict(env="RouteStick", episodes=2, workers=1, difficulty_ratio="100", max_attempts=1)
     if kind == "json":
-        options.update(episode_specs=RUN / "specs/RouteStick/easy.json", sampling_config=SAMPLING)
+        options.update(episode_specs=legacy_path("specs/RouteStick/easy.json"), sampling_config=SAMPLING)
     gen.generate_dataset_newseed(tmp_path / "new", **options)
     old.generate_dataset_newseed(tmp_path / "old", **options)
     for left, right in zip(expected, actual):

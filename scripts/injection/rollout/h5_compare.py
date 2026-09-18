@@ -1,6 +1,6 @@
 """HDF5 全字段逐位比较核（新值注入链路的对拍判据）。
 
-从 ``tests/_shared/native_sampling_parity.py`` 抽出，供 ``scripts/injection/campaign.py``
+从 ``tests/_shared/native_sampling_parity.py`` 抽出，供 ``scripts/injection/rollout/parity.py``
 的 ``compare`` 子命令使用；``tests/_shared/native_sampling_parity.py`` 反向 import 本模块并
 re-export，parity 线的调用方与归档命令零改动。本模块不依赖 ``tests/``。
 

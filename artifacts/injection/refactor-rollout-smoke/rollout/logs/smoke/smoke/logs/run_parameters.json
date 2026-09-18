@@ -1,0 +1,17 @@
+{
+  "run_id": "refactor-rollout-smoke",
+  "candidates": "artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl",
+  "purpose": "smoke",
+  "groups": [
+    "RouteStick/easy"
+  ],
+  "episodes": 1,
+  "episode_range": null,
+  "skip_done": false,
+  "wall_limit_h": 0,
+  "tier": 1,
+  "gpus": "0",
+  "reset_limit": 1,
+  "label": "smoke",
+  "no_figures": true
+}

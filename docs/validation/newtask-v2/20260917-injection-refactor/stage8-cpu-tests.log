@@ -1,0 +1,236 @@
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+........F.......F....................................................... [ 13%]
+............FF.......................................................... [ 27%]
+.....................................................ssss............... [ 41%]
+.ssss......s............................................................ [ 55%]
+............ssssss...................s.................................. [ 69%]
+.................................................ssssss................. [ 83%]
+............................F..F........................................ [ 97%]
+............                                                             [100%]
+=================================== FAILURES ===================================
+_______________ test_unknown_env_returns_single_goal_when_equal ________________
+
+    def test_unknown_env_returns_single_goal_when_equal():
+        """Unknown env_id goes to the default empty-string branch; when two goals are equal it returns a single-element list."""
+        s = _make_self()
+        result = _call("UnknownEnv", s)
+>       assert result == [""]
+E       AssertionError: assert [] == ['']
+E         
+E         Right contains one more item: ''
+E         Use -v to get more diff
+
+tests/lightweight/test_TaskGoal.py:65: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+__________________________ test_swingxtimes_multiple ___________________________
+
+    def test_swingxtimes_multiple():
+        """Branch behavior test case."""
+        s = _make_self(unwrapped_attrs=dict(num_repeats=5, target_color_name="red"))
+        result = _call("SwingXtimes", s)
+>       assert "repeating this back and forth motion five times" in result[0]
+E       AssertionError: assert 'repeating this back and forth motion five times' in 'pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop'
+
+tests/lightweight/test_TaskGoal.py:159: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+[SwingXtimes] goal1: pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop
+[SwingXtimes] goal2: pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion five times, then put down the cube and press the button to stop
+____________ test_generation_uses_snapshot_and_explicit_digest_flag ____________
+
+old = <module 'stage2_legacy_generator' from '/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/generate_dataset_newseed.py'>
+tmp_path = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-75c_iew2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78c9d8897ad0>
+
+    def test_generation_uses_snapshot_and_explicit_digest_flag(old, tmp_path, monkeypatch):
+        new_jobs = capture_jobs(monkeypatch, gen)
+        old_jobs = capture_jobs(monkeypatch, old)
+        gen.generate_dataset_newseed(tmp_path / "jsonl", env="RouteStick", episodes=2, difficulty_ratio="100",
+                                     workers=1, max_attempts=1, episode_specs=CANDIDATES)
+>       old.generate_dataset_newseed(tmp_path / "legacy", env="RouteStick", episodes=2, difficulty_ratio="100",
+                                     workers=1, max_attempts=1, episode_specs=RUN / "specs/RouteStick/easy.json",
+                                     sampling_config=SAMPLING)
+
+tests/lightweight/test_candidate_loader.py:122: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/generate_dataset_newseed.py:2587: in generate_dataset_newseed
+    VIDEO_STATUS_MISSING: 0,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/specs/RouteStick/easy.json')
+repo_root = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask')
+output = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-75c_iew2/legacy')
+
+    
+        task: str
+        difficulty: str
+        spec_path: str
+        output_root: str
+        episodes: tuple[int, ...]
+        records: Mapping[int, Mapping[str, Any]]
+    
+    
+    def load_episode_specs(
+        value: str | Path,
+        repo_root: Path,
+        output: Path,
+        *,
+        task: str | None = None,
+        difficulty: str | None = None,
+        episodes: Sequence[int] | None = None,
+        candidate_header: dict[str, Any] | None = None,
+        candidate_split: str | None = None,
+        candidate_tasks: Sequence[str] | None = None,
+    ) -> list[SpecGroup]:
+>       """解析 ``--episode-specs``：既接受单份规格文件，也接受多组清单。
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    
+        * **单组**：文件顶层带 ``spec_schema_version``，配合 ``--env/--difficulty`` 与
+          ``--episodes/--episode-start`` 使用，产物落 ``--output-dir`` 本身。
+        * **清单**：文件顶层带 ``manifest_version``，一次调用把多个任务／难度的 job 混进
+          同一套进程池；每组自带难度与独立输出根 ``<output>/<任务>/<难度>``。
+          同任务不同难度的 seed 与 HDF5 文件名相同，因此**必须**分目录。
+        """
+E       stage2_legacy_generator.EpisodeSpecError: 找不到 --episode-specs 指向的文件：/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/specs/RouteStick/easy.json
+
+scripts/generate_dataset_newseed.py:1457: EpisodeSpecError
+_____________________ test_legacy_job_path_unchanged[json] _____________________
+
+old = <module 'stage2_legacy_generator' from '/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/generate_dataset_newseed.py'>
+tmp_path = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-x3de1816')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78c9f0497d50>
+kind = 'json'
+
+    @pytest.mark.parametrize("kind", ["json", "none"])
+    def test_legacy_job_path_unchanged(old, tmp_path, monkeypatch, kind):
+        actual = capture_jobs(monkeypatch, gen)
+        expected = capture_jobs(monkeypatch, old)
+        options = dict(env="RouteStick", episodes=2, workers=1, difficulty_ratio="100", max_attempts=1)
+        if kind == "json":
+            options.update(episode_specs=RUN / "specs/RouteStick/easy.json", sampling_config=SAMPLING)
+>       gen.generate_dataset_newseed(tmp_path / "new", **options)
+
+tests/lightweight/test_candidate_loader.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/generate_dataset_newseed.py:2664: in generate_dataset_newseed
+    spec_groups = load_episode_specs(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/specs/RouteStick/easy.json')
+repo_root = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask')
+output = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-x3de1816/new')
+
+    def load_episode_specs(
+        value: str | Path,
+        repo_root: Path,
+        output: Path,
+        *,
+        task: str | None = None,
+        difficulty: str | None = None,
+        episodes: Sequence[int] | None = None,
+        candidate_header: dict[str, Any] | None = None,
+        candidate_split: str | None = None,
+        candidate_tasks: Sequence[str] | None = None,
+    ) -> list[SpecGroup]:
+        """解析 ``--episode-specs``：既接受单份规格文件，也接受多组清单。
+    
+        * **单组**：文件顶层带 ``spec_schema_version``，配合 ``--env/--difficulty`` 与
+          ``--episodes/--episode-start`` 使用，产物落 ``--output-dir`` 本身。
+        * **清单**：文件顶层带 ``manifest_version``，一次调用把多个任务／难度的 job 混进
+          同一套进程池；每组自带难度与独立输出根 ``<output>/<任务>/<难度>``。
+          同任务不同难度的 seed 与 HDF5 文件名相同，因此**必须**分目录。
+        """
+        path = Path(value).expanduser()
+        if not path.is_absolute():
+            path = (repo_root / path).resolve()
+        if not path.is_file():
+>           raise EpisodeSpecError(f"找不到 --episode-specs 指向的文件：{path}")
+E           scripts.generate_dataset_newseed.EpisodeSpecError: 找不到 --episode-specs 指向的文件：/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/specs/RouteStick/easy.json
+
+scripts/generate_dataset_newseed.py:1469: EpisodeSpecError
+_____________________ test_step_error_returns_status_error _____________________
+
+    def test_step_error_returns_status_error() -> None:
+        """
+        Construct a minimal Mock environment to make super().step() inside _step_batch() throw an exception,
+        verifying that DemonstrationWrapper.step() does not propagate upwards, but returns "error" via info["status"].
+        """
+        source = _load_step_source()
+        tree = ast.parse(source, filename=str(_demo_wrapper_path()))
+    
+        # Find step() method, verify try/except structure exists
+        step_method = None
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name == "DemonstrationWrapper":
+                for item in node.body:
+                    if isinstance(item, ast.FunctionDef) and item.name == "step":
+                        step_method = item
+                        break
+                break
+    
+        assert step_method is not None, "DemonstrationWrapper.step method not found"
+    
+        # Verify that the step method body contains try/except
+        has_try = any(isinstance(n, ast.Try) for n in ast.walk(step_method))
+>       assert has_try, "DemonstrationWrapper.step() should contain a try/except block"
+E       AssertionError: DemonstrationWrapper.step() should contain a try/except block
+E       assert False
+
+tests/lightweight/test_step_error_handling.py:76: AssertionError
+______________ test_scripts_use_status_check_not_bare_try_except _______________
+
+    def test_scripts_use_status_check_not_bare_try_except() -> None:
+        """
+        Parse run_example.py and dataset_replay.py, verify:
+        1. There is an info.get("status") or status == "error" check in the script
+        2. env.step(action) calls are no longer directly wrapped by try/except Exception
+        """
+        scripts = ["run_example.py", "dataset_replay.py"]
+    
+        for script_name in scripts:
+            script_path = _script_path(script_name)
+            source = script_path.read_text(encoding="utf-8")
+            tree = ast.parse(source, filename=str(script_path))
+    
+            # ---- Check 1: Contains status related checks ----
+            has_status_check = (
+                'info.get("status")' in source
+                or "status == \"error\"" in source
+                or "status==" in source.replace(" ", "")
+            )
+>           assert has_status_check, (
+                f"{script_name}: Should have info.get('status') or status==\"error\" check"
+            )
+E           AssertionError: dataset_replay.py: Should have info.get('status') or status=="error" check
+E           assert False
+
+tests/lightweight/test_step_error_handling.py:231: AssertionError
+----------------------------- Captured stdout call -----------------------------
+  ✓ run_example.py: Use status check, no bare try/except wrapping env.step
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [4] tests/lightweight/test_episode_specs.py:261: 该运行编号的冻结规格不在工作区
+SKIPPED [2] tests/lightweight/test_injection_blocks.py:58: 09 运行的冻结规格不在工作区
+SKIPPED [2] tests/lightweight/test_injection_blocks.py:67: 09 运行的冻结规格不在工作区
+SKIPPED [1] tests/lightweight/test_injection_blocks.py:143: 09 运行的冻结规格不在工作区
+SKIPPED [6] tests/lightweight/test_injection_contract.py:60: 04 运行的冻结规格不在工作区
+SKIPPED [1] tests/lightweight/test_injection_contract.py:203: 04 运行的冻结规格不在工作区
+SKIPPED [5] tests/lightweight/test_operand_scope.py:83: 05 运行的冻结规格不在工作区
+SKIPPED [1] tests/lightweight/test_operand_scope.py:99: 05 运行的冻结规格不在工作区
+FAILED tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal
+FAILED tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple - Assert...
+FAILED tests/lightweight/test_candidate_loader.py::test_generation_uses_snapshot_and_explicit_digest_flag
+FAILED tests/lightweight/test_candidate_loader.py::test_legacy_job_path_unchanged[json]
+FAILED tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error
+FAILED tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except
+6 failed, 488 passed, 22 skipped, 74 deselected, 2 warnings in 146.05s (0:02:26)

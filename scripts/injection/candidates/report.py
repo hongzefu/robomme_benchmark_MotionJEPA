@@ -3,7 +3,7 @@
 * 只读 ``artifacts/injection/<run-id>/specs/<任务>/<难度>.json``、``scripts/configs/newtask-v2/native_sampling.json``
   与该运行 ``manifest.json`` 记录的契约 ``scripts/configs/newtask-v2/injection_contract_v*.json``；
   「取值域」「分配」两列**直接取契约的 ``domain_text`` / ``allocation_text``**，本文件只算「结果分布」列。
-  只依赖标准库与 ``scripts.injection.contract``（纯标准库），不 import matplotlib，不依赖 ``tests/``
+  只依赖标准库与 ``scripts.injection.candidates.contract``（纯标准库），不 import matplotlib，不依赖 ``tests/``
   （视频任务反算偏移量需要的 ``rotate`` 在本文件自写，刻意不从出图脚本 import，免得把 matplotlib 拖进校验路径）。
 * ``--write``：把 11 张表写进 ``NEW_VALUE_DISTRIBUTION_BEFORE.md`` 的
   ``<!-- AUTO:EVENT_TABLES BEGIN -->`` / ``<!-- AUTO:EVENT_TABLES END -->`` 标记区间（标记行本身保留）。
@@ -47,7 +47,7 @@ from ..rollout.windows import GROUPS  # noqa: E402  # 14 组的唯一真源（�
 COARSE_BINS = 10
 MAX_KEYS = 12  # 频数键超过这个数只列前几个，避免把表撑爆
 
-# 颜色定义（与 scripts/injection/specs.py 一致，照抄不 import）；几何常量已随取值域文案移入契约，本文件不再需要
+# 颜色定义（与 scripts/injection/candidates/specs.py 一致，照抄不 import）；几何常量已随取值域文案移入契约，本文件不再需要
 SPAWN_COLOR_ORDER = ("red", "blue", "green")
 INITIALIZE_COLOR_DEFS = ("blue", "red", "green")
 UNMASK_COLOR_ORDER = ("red", "green", "blue")

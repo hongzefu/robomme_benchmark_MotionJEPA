@@ -64,9 +64,8 @@ DELIVERY_CONFIG = REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "delivery_4
 
 
 def _real_delivery():
-    if not (RUN_ROOT / "delivery_manifest.json").is_file():
-        pytest.skip(f"本机没有运行 {DEFAULT_RUN_ID} 的交付清单")
-    return load_delivery(RUN_ROOT)
+    from tests._shared.frozen_injection import legacy_path
+    return json.loads(legacy_path("delivery_manifest.json").read_text(encoding="utf-8"))
 
 
 def _mini_delivery() -> dict:

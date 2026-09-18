@@ -211,49 +211,27 @@ __marimo__/
 .cursor/
 .agents/
 
-# 数据生成产物（h5 与视频体量巨大，不入 git）
-# ⚠ 必须写成 /artifacts/* 而不是 /artifacts/——目录级排除无法从内部反选
+# 注入运行：候选、结果、报告、日志与迁移证据进入 Git。
 /artifacts/*
 !/artifacts/injection/
 /artifacts/injection/*
 !/artifacts/injection/*/
 /artifacts/injection/*/*
-# 唯一环境数据入口必须可跟踪；阶段八再统一放行其余轻量产物。
 !/artifacts/injection/*/candidates/
-/artifacts/injection/*/candidates/*
-!/artifacts/injection/*/candidates/candidates.jsonl
-# 关键小产物入库（2026-09-11 用户决定「关键小产物都加入 git」）：冻结规格与三份判定 JSON；
-# feasibility/、calibration/、plots*/、videos/ 等重产物继续忽略
-!/artifacts/injection/*/specs/
-!/artifacts/injection/*/manifest.json
-!/artifacts/injection/*/plan_stats.json
-!/artifacts/injection/*/check_result.json
-# 2026-09-12 用户决定「最新真实 HDF5 所需的候选分布文件和其他小产物尽可能都加进去」：
-# 判定 JSON、清单、日志、每档运行参数/汇总/逐条结果/各组 metadata 入库；h5 与 mp4 继续忽略
-!/artifacts/injection/*/feasibility_result.json
-!/artifacts/injection/*/feasibility_results.json
-!/artifacts/injection/*/manifests/
-!/artifacts/injection/*/logs/
-!/artifacts/injection/*/logs/*.log
-!/artifacts/injection/*/feasibility/
-# 2026-09-12 每 env 400 条交付：env-check 结果、严格交付清单、每档一份的实跑判定 JSON 入库
-!/artifacts/injection/*/env_check/
-!/artifacts/injection/*/env_check_result.json
-!/artifacts/injection/*/env_check_result_*.json
-!/artifacts/injection/*/delivery_manifest.json
-!/artifacts/injection/*/feasibility_result_*.json
-# 2026-09-12 HF 发布留档：MANIFEST/SHA256SUMS/README/tarxz_h5.py 副本入库
+!/artifacts/injection/*/rollout/
 !/artifacts/injection/*/hf_release/
-/artifacts/injection/*/feasibility/*/*/*/hdf5_files/
-/artifacts/injection/*/feasibility/*/*/*/videos/
-/artifacts/injection/*/feasibility/**/*.h5
-/artifacts/injection/*/feasibility/**/*.mp4
-# 01～03 是 04 之前的开发迭代产物（格式与散列口径不同，不作交付），整目录继续忽略
+!/artifacts/injection/*/candidates/**/*.log
+!/artifacts/injection/*/rollout/**/*.log
+/artifacts/injection/**/*.lock
+# 所有嵌套层级都忽略重媒体，包括日志内的 smoke 与对拍归档。
+/artifacts/injection/**/*.h5
+/artifacts/injection/**/*.hdf5
+/artifacts/injection/**/*.mp4
+/artifacts/injection/**/*.png
+/artifacts/injection/**/*.jpg
+/artifacts/injection/**/*.jpeg
+/artifacts/injection/**/*.svg
+!/artifacts/injection/*/rollout/figures/windows_overview.png
 /artifacts/injection/20260910-new-values-01/
 /artifacts/injection/20260910-new-values-02/
 /artifacts/injection/20260910-new-values-03/
-
-# 跑前分布 2D 图产物（约 50 MB，本地生成、不入库；文档链接指向本地文件）
-# 出图目录整体不入库，只反选总览图一张（目录级排除无法从内部反选，须写成 figures/*）
-scripts/injection-before-2d/figures/*
-!scripts/injection-before-2d/figures/windows_overview.png

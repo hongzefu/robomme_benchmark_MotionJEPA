@@ -1,0 +1,96 @@
+{
+  "env_id": "VideoRepick",
+  "record_count": 15,
+  "records": [
+    {
+      "task": "VideoRepick",
+      "episode": 0,
+      "seed": 9000,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 1,
+      "seed": 9100,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 2,
+      "seed": 9200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 3,
+      "seed": 9300,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 4,
+      "seed": 9400,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 5,
+      "seed": 9500,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 6,
+      "seed": 9600,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 7,
+      "seed": 9700,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 8,
+      "seed": 9800,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 9,
+      "seed": 9900,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 10,
+      "seed": 10000,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 11,
+      "seed": 10100,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 12,
+      "seed": 10200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 13,
+      "seed": 10300,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 14,
+      "seed": 10400,
+      "difficulty": "medium"
+    }
+  ]
+}

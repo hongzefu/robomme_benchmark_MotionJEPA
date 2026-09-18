@@ -343,3 +343,22 @@ uv run --no-sync python -m scripts.injection._migrate_run10 move
 迁移前后实际读取所有 3820 个文件计算 SHA-256，`H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0`、`ARTIFACTS_INTACT=PASS count=3820 missing=0 extra=0 sha_mismatch=0`、`ACTIVE_PATHS=PASS missing=0 old_prefix=0`、`MIGRATION_METADATA=PASS unexpected_field_changes=0`，退出 0。仅按冻结映射 rename，HDF5/视频不删除、不改写；活动结果、timeline、表与范围仅更新允许路径，原始旧日志不重写。
 
 完整证据在运行十 `rollout/logs/migration/` 的 `inventory.json`、`journal.jsonl`、`active_files.json`、`verification.json`，并保留活动小文件 backups/versions。迁移状态 complete；中断后用同入口 `resume` 续跑，同目标存在或散列变化直接拒绝。5 项恢复反例通过，0.89 秒。
+
+## 阶段 8：清理、Git 边界与回归
+
+已按计划清理 62 个旧跟踪文件（旧生产模块、图表目录、六份文档及六个轻量包），旧图目录剩余 42 个生成文件/缓存一并清理。运行十媒体不删。v1/v2 契约经 cmp 确认字节不变后迁入 tests/fixtures/injection_legacy；测试用纯构建器没有写文件或 CLI。旧校准数学断言与独立采样基线从固定提交 e53173d 加载，仅限测试；新范围、唯一键、角色、报告、reset 和数轴均断言新实现。
+
+`audit_final.py` 核验 25 模块导入闭包、26 个 Git 忽略探针、4 份候选输入及 4 个消费代码文件跟踪、正式 3400 条角色和 114 个文档链接。环境源码与 hf_release.py 相对 2bcd9cc 无差异。代码拓扑的 AST 测试继续禁止生产 import tests。
+
+验证命令：
+
+```bash
+command -v uv
+uv run --no-sync python -m pytest tests/lightweight/ tests/dataset/ --collect-only -q
+timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q -ra
+uv run --no-sync python docs/validation/newtask-v2/20260917-injection-refactor/audit_final.py
+```
+
+623 项收集成功，0 导入错误。最终核心回归见 stage8-final-tests.log：490 passed、4 failed、22 skipped、74 deselected，146.83 秒。4 失败为 TaskGoal 两项与 step_error_handling 两项，独立复现见 existing-failures.log；相关测试与实现相对重构前均无改动，未擅改冻结源码。22 跳过全部来自原已缺失的 04/05/09 规格，无新增 skip/xfail。原全量含 GPU 的轻量运行 280 秒退出 124，见 stage8-tests.log，不把未完成部分写成通过。
+
+首轮核心回归另有 2 个旧夹具仍引用迁前路径的失败（stage8-cpu-tests.log），已按冻结映射修复；加载器补测 11 passed，10.41 秒。窗口报告补齐图链接与图例后，37 项图表/数轴测试通过，5.43 秒；对应表与图片算法未变。数据集对拍离线缺参守卫 1 passed，0.01 秒。

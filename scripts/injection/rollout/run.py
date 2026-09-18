@@ -143,15 +143,16 @@ def choose_groups(header, filters=None):
 def invoke_generator(store, *, groups=None, episodes=None, gpus="0", tier=1, wall_limit_h=0, episode_range=None):
     header, candidates, results = store.load()
     selected = choose_groups(header, groups)
+    limits = {group: sum((r["task"], r["difficulty"]) == group for r in candidates) for group in selected}
     existing = {candidate_key(r) for r in results if r["kind"] == "h5"}
     eligible = {candidate_key(r): r for r in candidates if r["split"] == "train" and (r["task"], r["difficulty"]) in selected}
     if episodes is not None:
-        if episodes < 1:
-            raise StateError("episodes 必须为正")
+        if episodes < 1 or any(episodes > size for size in limits.values()):
+            raise StateError("--episodes 必须为正且不能超过每组冻结候选数")
         eligible = {k: v for k, v in eligible.items() if k[2] < episodes}
     if episode_range:
         start, end = map(int, episode_range.split(":"))
-        if start < 0 or end <= start:
+        if start < 0 or end <= start or any(end > size for size in limits.values()):
             raise StateError("episode-range 应为起止递增的半开区间")
         eligible = {k: v for k, v in eligible.items() if start <= k[2] < end}
     if not eligible:

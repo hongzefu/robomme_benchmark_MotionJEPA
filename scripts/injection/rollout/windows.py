@@ -1,22 +1,8 @@
-"""采样窗口数轴的数据层（只读实跑 HDF5 与 ``episode_results.jsonl``，不 import matplotlib，不 import ``tests._shared``）。
+"""采样窗口数据层：从唯一结果表的实际 HDF5 路径抽取分段、交换与慢条记录。
 
-两个子命令：
-
-* ``extract``：从 ``artifacts/injection/<run-id>/feasibility/<档>/`` 逐条读成功 episode 的
-  总帧数 T、demo 段长度（``info/is_video_demo`` 为 True 的前缀）与 subgoal 分段
-  （``info/is_subgoal_boundary`` 为 True 的帧切开，标签取 ``info/simple_subgoal``），
-  写成本目录 ``windows_timeline.json``（小文件，入库；clone 后不必重开 h5 就能核对）。
-  **BinFill 的 demo 是「同一条重复两遍」**：前一遍记 demo、后一遍记 exec
-  （2026-09-11 用户要求「binfill任务改为加入模拟的demo 即为把一个任务重复两遍」）。
-  07 起生成器直出就是重复两遍的 h5（``demo == total/2``），本脚本只校验不再翻倍（``demo_source="recorded"``）；
-  05/06 的旧数据没有 demo 前缀，仍在这一步用 ``simulate_binfill_demo`` 补出来（``demo_source="simulated"``）。
-  另外 extract 末尾会做**慢条剔除**（见 ``apply_slow_exclusion``）：单段过长或 T 远超组中位的 episode 移出统计。
-* ``tables``：按窗口公式算每条的窗口数与帧路步长，生成 ``SAMPLING_WINDOWS.md`` 的自动表
-  （``--write`` 写入标记区间，``--check`` 只比对，供 ``check_doc_links.py`` 调用）。
-
-窗口公式与上一会话的 artifact「采样窗口与 eval 成功率」逐字一致：窗口 ``[f, f+32]``（33 帧）、stride 16、
-**不跨 demo／exec 段**（各自从段起点铺），每段窗口数 ``len(range(0, max(0, L-32), 16))``；
-帧路 ``round(linspace(0, T-1, N))``，N=32 与 N=8 是帧预算，Δ = ``(T-1)/(N-1)``。
+输出 rollout/logs/windows_timeline.json、窗口表、数轴图及 WINDOWS.md。
+已有 BinFill demo 只校验、不再次翻倍；历史无 demo 的数据保留原模拟规则。
+窗口 [f,f+32] 共 33 帧、步长 16，不跨 demo/执行阶段；帧路 N=32 或 N=8。
 """
 
 from __future__ import annotations
@@ -40,7 +26,7 @@ BEGIN = "<!-- AUTO:WINDOW_TABLES BEGIN -->"
 END = "<!-- AUTO:WINDOW_TABLES END -->"
 
 # 14 组：本目录三个脚本的唯一组列表（event_tables／plot_injection_before_2d 从这里 import），
-# 与 scripts/injection/specs.py::GROUPS_V3 逐项相同（tests/lightweight/test_window_timeline.py 断言）。
+# 与 scripts/injection/candidates/specs.py::GROUPS_V3 逐项相同（tests/lightweight/test_window_timeline.py 断言）。
 # 2026-09-11 加 xhard 三组；旧 11 组的轨迹来自 05 实跑，xhard 来自 06（--rollout-run-id 可给多个运行，后者覆盖前者）。
 GROUPS: list[tuple[str, str]] = [
     ("BinFill", "easy"), ("BinFill", "medium"), ("BinFill", "hard"),
@@ -622,6 +608,27 @@ def check(json_path: Path | None = None, doc_path: Path | None = None) -> tuple[
 
 
 # ── 入口 ────────────────────────────────────────────────────────────────────
+def write_report(store, data):
+    """从已验收的数据层写表与读图说明，避免只补文案时重复扫描 HDF5。"""
+    from .state import atomic_text
+    text, count = render_tables(data)
+    atomic_text(store.logs / "window_tables.md", text)
+    introduction = ("# 采样窗口与数轴\n\n窗口长度 33 帧、步长 16 帧；分别在 demo 与执行段内取窗，"
+                    "跨阶段不拼窗。N=32/N=8 的帧路与组中位慢条判据沿用旧算法。\n\n"
+                    "单段超过 400 帧或有效总长超过组中位两倍者仅从统计剔除，HDF5 与交付角色保持。\n\n"
+                    "## 数轴图读法\n\n横轴为 timestep；淡蓝底是 demo，淡绿底是执行段。"
+                    "窗口覆盖 [f,f+32]，每隔 16 帧起一个；短于 33 帧的阶段用虚线表示无窗口。"
+                    "子目标块内是中文短标；竖线表示 N=32 帧路，圆点表示 N=8 帧路。"
+                    "灰化及斜纹条是慢条剔除，保留图像和下方完整原因。"
+                    "BinFill 的 demo 为同一轨迹重复两遍，已有 demo 时不再次翻倍。\n\n"
+                    "![采样窗口总览](figures/windows_overview.png)\n\n"
+                    "| 组 | 逐条数轴 |\n|---|---|\n")
+    for key in data["groups"]:
+        introduction += f"| {key} | [数轴图](figures/{key}/4_windows.png) |\n"
+    atomic_text(store.state / "WINDOWS.md", introduction + "\n" + BEGIN + text + END + "\n")
+    return count
+
+
 def generate_windows(store):
     """数据层、数轴图和报告同一来源，读取失败不能被图表成功掩盖。"""
     from .state import write_json, atomic_text, StateError
@@ -633,12 +640,7 @@ def generate_windows(store):
         raise StateError("数轴保留与剔除不守恒")
     target = store.logs / "windows_timeline.json"
     write_json(target, data)
-    text, count = render_tables(data)
-    atomic_text(store.logs / "window_tables.md", text)
-    introduction = ("# 采样窗口与数轴\n\n窗口长度 33 帧、步长 16 帧；分别在 demo 与执行段内取窗，"
-                    "跨阶段不拼窗。N=32/N=8 的帧路与组中位慢条判据沿用旧算法。\n\n"
-                    "单段超过 400 帧或有效总长超过组中位两倍者仅从统计剔除，HDF5 与交付角色保持。\n\n")
-    atomic_text(store.state / "WINDOWS.md", introduction + BEGIN + text + END + "\n")
+    count = write_report(store, data)
     window_figures.generate(data, store.state / "figures")
     print(f"WINDOWS=PASS before={data['episodes_before_exclusion']} kept={count} excluded={len(data['excluded_slow'])} skipped=0", flush=True)
     return data

@@ -39,7 +39,7 @@ import numpy as np
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
-from scripts.injection.h5_compare import (  # noqa: E402
+from scripts.injection.rollout.h5_compare import (  # noqa: E402
     ParityError,
     _dataset_signature,
     _first_element_difference,

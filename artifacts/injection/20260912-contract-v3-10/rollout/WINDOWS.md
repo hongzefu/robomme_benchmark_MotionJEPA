@@ -4,6 +4,29 @@
 
 单段超过 400 帧或有效总长超过组中位两倍者仅从统计剔除，HDF5 与交付角色保持。
 
+## 数轴图读法
+
+横轴为 timestep；淡蓝底是 demo，淡绿底是执行段。窗口覆盖 [f,f+32]，每隔 16 帧起一个；短于 33 帧的阶段用虚线表示无窗口。子目标块内是中文短标；竖线表示 N=32 帧路，圆点表示 N=8 帧路。灰化及斜纹条是慢条剔除，保留图像和下方完整原因。BinFill 的 demo 为同一轨迹重复两遍，已有 demo 时不再次翻倍。
+
+![采样窗口总览](figures/windows_overview.png)
+
+| 组 | 逐条数轴 |
+|---|---|
+| BinFill/easy | [数轴图](figures/BinFill/easy/4_windows.png) |
+| BinFill/medium | [数轴图](figures/BinFill/medium/4_windows.png) |
+| BinFill/hard | [数轴图](figures/BinFill/hard/4_windows.png) |
+| RouteStick/easy | [数轴图](figures/RouteStick/easy/4_windows.png) |
+| RouteStick/medium | [数轴图](figures/RouteStick/medium/4_windows.png) |
+| RouteStick/hard | [数轴图](figures/RouteStick/hard/4_windows.png) |
+| RouteStick/xhard | [数轴图](figures/RouteStick/xhard/4_windows.png) |
+| VideoUnmaskSwap/easy | [数轴图](figures/VideoUnmaskSwap/easy/4_windows.png) |
+| VideoUnmaskSwap/medium | [数轴图](figures/VideoUnmaskSwap/medium/4_windows.png) |
+| VideoUnmaskSwap/hard | [数轴图](figures/VideoUnmaskSwap/hard/4_windows.png) |
+| VideoUnmaskSwap/xhard | [数轴图](figures/VideoUnmaskSwap/xhard/4_windows.png) |
+| VideoRepick/easy | [数轴图](figures/VideoRepick/easy/4_windows.png) |
+| VideoRepick/medium | [数轴图](figures/VideoRepick/medium/4_windows.png) |
+| VideoRepick/xhard | [数轴图](figures/VideoRepick/xhard/4_windows.png) |
+
 <!-- AUTO:WINDOW_TABLES BEGIN -->
 ### 汇总（每组：条数、T、demo 长度、motion token 数）
 

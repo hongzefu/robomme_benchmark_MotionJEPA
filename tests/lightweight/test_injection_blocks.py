@@ -27,10 +27,10 @@ for extra in (REPO_ROOT, REPO_ROOT / "src", REPO_ROOT / "scripts"):
 
 import generate_dataset_newseed as generator  # noqa: E402
 
-from scripts.injection import campaign, specs  # noqa: E402
-from scripts.injection.categories import legal_categories, observed_values  # noqa: E402
-from scripts.injection.contract import load_contract  # noqa: E402
-from scripts.injection.sampling import COARSE_BINS, GROUP_SIZE  # noqa: E402
+from scripts.injection.candidates import screen as campaign, specs  # noqa: E402
+from scripts.injection.candidates.categories import legal_categories, observed_values  # noqa: E402
+from scripts.injection.candidates.contract import load_contract  # noqa: E402
+from scripts.injection.candidates.sampling import COARSE_BINS, GROUP_SIZE  # noqa: E402
 
 pytestmark = pytest.mark.lightweight
 

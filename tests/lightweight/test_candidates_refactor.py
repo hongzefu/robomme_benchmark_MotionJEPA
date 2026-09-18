@@ -17,8 +17,9 @@ from scripts.injection.candidates.io import (
 )
 from scripts.injection.candidates.screen import ObservationCollector
 from scripts.injection.candidates.specs import build_group
-from scripts.injection.specs import build_group as legacy_build_group
-from scripts.injection.contract import load_contract as legacy_load_contract
+from tests._shared.frozen_injection import load as frozen_load
+legacy_build_group = frozen_load("specs").build_group
+legacy_load_contract = frozen_load("contract").load_contract
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = ROOT / "scripts/configs/newtask-v2"

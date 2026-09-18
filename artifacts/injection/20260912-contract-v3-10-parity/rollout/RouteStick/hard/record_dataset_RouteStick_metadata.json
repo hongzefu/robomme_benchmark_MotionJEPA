@@ -1,0 +1,96 @@
+{
+  "env_id": "RouteStick",
+  "record_count": 15,
+  "records": [
+    {
+      "task": "RouteStick",
+      "episode": 0,
+      "seed": 16000,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 1,
+      "seed": 16100,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 2,
+      "seed": 16200,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 3,
+      "seed": 16300,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 4,
+      "seed": 16400,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 5,
+      "seed": 16500,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 6,
+      "seed": 16600,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 7,
+      "seed": 16700,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 8,
+      "seed": 16800,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 9,
+      "seed": 16900,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 10,
+      "seed": 17000,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 11,
+      "seed": 17100,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 12,
+      "seed": 17200,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 13,
+      "seed": 17300,
+      "difficulty": "hard"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 14,
+      "seed": 17400,
+      "difficulty": "hard"
+    }
+  ]
+}

@@ -19,9 +19,11 @@ for extra in (REPO_ROOT, REPO_ROOT / "src"):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-from scripts.injection import campaign  # noqa: E402
-from scripts.injection.categories import legal_categories, observed_values  # noqa: E402
-from scripts.injection.sampling import (  # noqa: E402
+from scripts.injection.candidates import screen
+from tests._shared.frozen_injection import load as frozen_load
+campaign = frozen_load("campaign")  # noqa: E402
+from scripts.injection.candidates.categories import legal_categories, observed_values  # noqa: E402
+from scripts.injection.candidates.sampling import (  # noqa: E402
     COARSE_BINS,
     GROUP_SIZE,
     derive_rng,
@@ -29,13 +31,13 @@ from scripts.injection.sampling import (  # noqa: E402
     quota_series,
     stratify,
 )
-from scripts.injection.specs import GROUPS, seal  # noqa: E402
+from scripts.injection.candidates.specs import GROUPS, seal  # noqa: E402
 
-from scripts.injection.contract import load_contract  # noqa: E402
+from scripts.injection.candidates.contract import load_contract  # noqa: E402
 
 SAMPLING = json.loads((REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "native_sampling.json").read_text())
 #: 合法类别表从契约展开；v1 与 native_sampling.json 派生结果一致，这里用 v1。
-CONTRACT_V1 = load_contract(REPO_ROOT / "scripts" / "configs" / "newtask-v2" / "injection_contract_v1.json")
+CONTRACT_V1 = load_contract(REPO_ROOT / "tests/fixtures/injection_legacy/injection_contract_v1.json")
 
 
 # ── 配额 ────────────────────────────────────────────────────────────────────
@@ -136,8 +138,8 @@ def _dynamic_spread(dynamic_values: list[bool]) -> tuple[int, dict]:
     ⚠ 假文档里别的字段都是固定值，它们的计数差自然是 100，所以这里不能拿整体
     ``COVERAGE_QUOTA`` 的 PASS/FAIL 做断言——只看 dynamic 这一项。
     """
-    verdicts = campaign.Verdicts()
-    report = campaign._check_quota(
+    verdicts = screen.Verdicts()
+    report = screen._check_quota(
         {("BinFill", "hard"): _fake_binfill_document(dynamic_values)}, CONTRACT_V1, verdicts
     )
     entry = report["BinFill/hard"]["independent"]["dynamic"]
@@ -150,8 +152,8 @@ def test_全部为同一个值时配额判据必须失败():
     assert len(counts) == 2, "合法类别只补出一个，说明没按约定表补零"
     assert spread == GROUP_SIZE, "100 条全为 True 却算出计数差 0，补零漏了"
 
-    verdicts = campaign.Verdicts()
-    campaign._check_quota({("BinFill", "hard"): _fake_binfill_document([True] * GROUP_SIZE)}, CONTRACT_V1, verdicts)
+    verdicts = screen.Verdicts()
+    screen._check_quota({("BinFill", "hard"): _fake_binfill_document([True] * GROUP_SIZE)}, CONTRACT_V1, verdicts)
     record = verdicts.records[-1]
     assert record["name"] == "COVERAGE_QUOTA" and record["status"] == "FAIL"
     assert any("dynamic" in item for item in record["detail"])
@@ -190,7 +192,7 @@ def test_排除组不在本轮的十一组里():
 
 # ── 判定行 ──────────────────────────────────────────────────────────────────
 def test_判定行渲染成可解析的键值形式():
-    verdicts = campaign.Verdicts()
+    verdicts = screen.Verdicts()
     verdicts.add("DEMO", True, a=1, b="x")
     verdicts.add("DEMO2", False)
     verdicts.add("DEMO3", None)
@@ -201,7 +203,7 @@ def test_判定行渲染成可解析的键值形式():
 
 
 def test_任一项非_pass_则整体不通过():
-    verdicts = campaign.Verdicts()
+    verdicts = screen.Verdicts()
     verdicts.add("A", True)
     assert verdicts.passed is True
     verdicts.add("B", None)
@@ -210,19 +212,17 @@ def test_任一项非_pass_则整体不通过():
 
 def test_运行编号不合法直接拒绝():
     for bad in ("", "../逃逸", "a/b", ".hidden"):
-        with pytest.raises(campaign.CampaignError):
-            campaign.run_root(bad)
+        from scripts.injection.rollout.state import StateError, run_root
+        with pytest.raises(StateError):
+            run_root(bad)
 
 
 # ── 并发窗口与档位判据（步骤 4）────────────────────────────────────────────
-from scripts.injection.run import (  # noqa: E402
-    OUTCOME_PASS,
-    classify_outcome,
-    execution_state,
-    overlap_report,
-    tier_is_unusable,
-    tier_throughput,
-)
+from scripts.injection.rollout.run import OUTCOME_PASS, classify_outcome, execution_state
+# 已移除的校准功能仅保留固定旧实现的历史断言；新执行路径另验唯一结果与范围。
+overlap_report = frozen_load("run").overlap_report
+tier_is_unusable = frozen_load("run").tier_is_unusable
+tier_throughput = frozen_load("run").tier_throughput
 
 
 def _window(pid, gpu, begin, end):
@@ -375,114 +375,109 @@ def test_普通运行时错误不算资源失败():
     assert tier_is_unusable(_tier_result(rows))[0] is False
 
 
-# ── 同任务不同难度不得互相覆盖 ──────────────────────────────────────────────
-from scripts.injection.run import read_result_rows  # noqa: E402
+# ── 唯一结果与范围守卫 ──────────────────────────────────────────────────────
+from types import SimpleNamespace
+from scripts.injection.rollout.state import unique_rows, StateError
+from scripts.injection.rollout import run as current_run
 
 
-def _jsonl(tmp_path, records):
-    path = tmp_path / "episode_results.jsonl"
-    path.write_text("\n".join(json.dumps(item, ensure_ascii=False) for item in records), encoding="utf-8")
-    return tmp_path
+def _records(groups, episodes):
+    return [{"kind": "h5", "task": task, "difficulty": diff, "episode": ep}
+            for task, diff in groups for ep in range(episodes)]
 
 
-def test_同任务不同难度的结果行不互相覆盖(tmp_path):
-    """⚠ seed 只由任务与 episode 决定，所以 BinFill/easy/ep0 与 BinFill/hard/ep0 的
-    (task, episode) 完全相同。只用两元组做 key，330 行会塌成 4 任务 × 30 = 120 行。"""
-    root = _jsonl(tmp_path, [
-        {"task": "BinFill", "difficulty": d, "episode": 0, "seed": 4000, "attempt": 0, "ok": True}
-        for d in ("easy", "medium", "hard")
-    ])
-    rows = read_result_rows(root)
-    assert len(rows) == 3
-    assert sorted(row["difficulty"] for row in rows) == ["easy", "hard", "medium"]
+def test_同任务不同难度的结果行不互相覆盖():
+    rows = _records([("BinFill", d) for d in ("easy", "medium", "hard")], 1)
+    assert len(unique_rows(rows)) == 3
 
 
-def test_同一条的重试只保留最后一次(tmp_path):
-    root = _jsonl(tmp_path, [
-        {"task": "BinFill", "difficulty": "hard", "episode": 0, "seed": 4000, "attempt": 0, "ok": False,
-         "failure_class": "task", "error_type": "ScrewPlanFailure"},
-        {"task": "BinFill", "difficulty": "hard", "episode": 0, "seed": 4001, "attempt": 1, "ok": True},
-    ])
-    rows = read_result_rows(root)
-    assert len(rows) == 1
-    assert rows[0]["attempt"] == 1 and rows[0]["outcome"] == "通过"
+def test_同一条重复终态必须拒绝而非最后一次覆盖():
+    row = _records([("BinFill", "hard")], 1)[0]
+    with pytest.raises(StateError, match="重复键"):
+        unique_rows([row, dict(row, ok=True)])
 
 
-def test_十一组三十条各自独立共三百三十行(tmp_path):
-    groups = [("BinFill", d) for d in ("easy", "medium", "hard")]
-    groups += [("RouteStick", d) for d in ("easy", "medium", "hard")]
-    groups += [("VideoUnmaskSwap", d) for d in ("easy", "medium", "hard")]
-    groups += [("VideoRepick", d) for d in ("easy", "medium")]
-    records = [
-        {"task": task, "difficulty": diff, "episode": ep, "seed": 1, "attempt": 0, "ok": True}
-        for task, diff in groups for ep in range(30)
-    ]
-    rows = read_result_rows(_jsonl(tmp_path, records))
-    assert len(rows) == 330
+def test_十一组三十条各自独立共三百三十行():
+    assert len(unique_rows(_records(GROUPS, 30))) == 330
 
 
 def test_h5_索引按任务难度_episode_三元组(tmp_path):
-    """同名 HDF5 分处不同难度目录，索引必须分得开。"""
-    for diff in ("easy", "hard"):
-        target = tmp_path / "BinFill" / diff / "hdf5_files"
-        target.mkdir(parents=True)
-        (target / "BinFill_ep0_seed4000.h5").write_bytes(b"x")
-    index = campaign._index_h5(tmp_path)
-    assert len(index) == 2
-    assert ("BinFill", "easy", 0) in index and ("BinFill", "hard", 0) in index
+    rows = _records([("BinFill", "easy"), ("BinFill", "hard")], 1)
+    for row in rows:
+        path = tmp_path / row["difficulty"] / "same.h5"
+        path.parent.mkdir()
+        path.write_bytes(b"x")
+        row["h5_path"] = str(path)
+    index = unique_rows(rows)
+    assert len(index) == 2 and len({r["h5_path"] for r in index.values()}) == 2
 
 
-# ── 每组实跑条数可配（2026-09-12，08 RouteStick 四档各 5 条） ──────────────────
-def test_实跑清单条数由_episodes_参数决定且默认仍是三十(tmp_path):
-    """``write_manifest`` 只按传入的 episodes 写；``--episodes 5`` 时每组恰 0～4，默认走 30。"""
-    from scripts.injection.run import FEASIBILITY_EPISODES, write_manifest
-
-    groups = [("RouteStick", d) for d in ("easy", "medium", "hard", "xhard")]
-    specs_root = tmp_path / "specs"
-    five = write_manifest(tmp_path / "manifests" / "feasibility20.json", groups, tuple(range(5)), specs_root, "n")
-    doc = json.loads(five.read_text(encoding="utf-8"))
-    assert [item["episodes"] for item in doc["groups"]] == [[0, 1, 2, 3, 4]] * 4
-    assert sum(len(item["episodes"]) for item in doc["groups"]) == 20
-    assert FEASIBILITY_EPISODES == tuple(range(30))
+def _scope_store(tmp_path, count=200):
+    groups = [{"task": "RouteStick", "difficulty": d} for d in ("easy", "hard")]
+    header = {"identity_sha256": "fixture", "delivery_config_snapshot": {"groups": groups},
+              "group_provenance": {f"RouteStick/{d}": {} for d in ("easy", "hard")}}
+    rows = _records([("RouteStick", d) for d in ("easy", "hard")], count)
+    for row in rows:
+        row["split"] = "train" if row["episode"] < 115 else "test"
+    return SimpleNamespace(state=tmp_path, logs=tmp_path / "logs", candidates=tmp_path / "candidates.jsonl",
+                           load=lambda: (header, rows, []))
 
 
-def test_episodes_越界被拒(tmp_path, monkeypatch):
-    """0 或超过每组规格数（100）的条数直接拒绝，不静默截断。"""
-    import scripts.injection.campaign as mod
-
-    monkeypatch.setattr(mod, "load_group_documents", lambda run_id: (tmp_path, {"groups": [{"task": "RouteStick", "difficulty": "easy"}]}, {}))
-    for bad in (0, GROUP_SIZE + 1):
-        with pytest.raises(campaign.CampaignError, match="--episodes"):
-            campaign.cmd_run("x", "feasibility", tmp_path / "s.json", tier_override=1, episodes_per_group=bad)
-
-
-def test_summarize_分母取自实跑清单而非计划清单乘三十(tmp_path):
-    """06 只跑 3 组、08 每组 5 条都不满足「计划清单全部组 × 30」；分母必须从
-    ``run_parameters.json`` 指向的实跑清单按各组 episodes 求和。"""
-    from scripts.injection.run import write_manifest
-
-    plan_manifest = {"groups": [{"task": t, "difficulty": d} for t in ("BinFill", "RouteStick") for d in ("easy", "hard")]}
-    output_dir = tmp_path / "feasibility" / "P01x10"
-    output_dir.mkdir(parents=True)
-    manifest = write_manifest(
-        tmp_path / "manifests" / "feasibility10.json",
-        [("RouteStick", "easy"), ("RouteStick", "hard")], tuple(range(5)), tmp_path / "specs", "n",
-    )
-    (output_dir / "run_parameters.json").write_text(json.dumps({"episode_specs": str(manifest)}), encoding="utf-8")
-    groups, expected = campaign._feasibility_manifest_scope(output_dir, plan_manifest)
-    assert groups == [("RouteStick", "easy"), ("RouteStick", "hard")]
-    assert expected == 10
-    # 没有 run_parameters.json（05 之前的旧产物）时退回 计划全部组 × 30
-    legacy = tmp_path / "feasibility" / "P0x12"
-    legacy.mkdir()
-    groups, expected = campaign._feasibility_manifest_scope(legacy, plan_manifest)
-    assert len(groups) == 4 and expected == 120
+def test_实跑清单条数由_episodes_参数决定(tmp_path, monkeypatch):
+    store = _scope_store(tmp_path)
+    captured = []
+    class Reached(Exception):
+        pass
+    def capture(store, kind, keys, options):
+        captured.extend(keys)
+        raise Reached()
+    monkeypatch.setattr(current_run, "new_call", capture)
+    with pytest.raises(Reached):
+        current_run.invoke_generator(store, episodes=5)
+    assert len(captured) == 10 and {key[2] for key in captured} == set(range(5))
+    assert {key[1] for key in captured} == {"easy", "hard"}
 
 
+def test_episodes_越界被拒(tmp_path):
+    store = _scope_store(tmp_path, 100)
+    for bad in (0, 101):
+        with pytest.raises(StateError, match="--episodes"):
+            current_run.invoke_generator(store, episodes=bad)
+
+
+def test_分母来自实跑范围而非全部候选(tmp_path):
+    store = _scope_store(tmp_path)
+    keys = [("RouteStick", "easy", ep) for ep in range(5)]
+    path = current_run.new_call(store, "h5", keys, {"tier": 1})
+    scope = json.loads((path / "scope.json").read_text())
+    assert len(scope["keys"]) == 5 and scope["identity_sha256"] == "fixture"
+    assert scope["candidates"] == str(store.candidates)
+    assert current_run.choose_groups(store.load()[0], ["RouteStick/easy"]) == [("RouteStick", "easy")]
+    with pytest.raises(StateError, match="不在候选"):
+        current_run.choose_groups(store.load()[0], ["BinFill/easy"])
+
+
+def test_实跑清单上限随冻结条数放大(tmp_path, monkeypatch):
+    store = _scope_store(tmp_path, 200)
+    class Reached(Exception):
+        pass
+    def capture(store, kind, keys, options):
+        assert len(keys) == 230  # 150 与每组 115 条 train 取交集，test 不起 planner。
+        raise Reached()
+    monkeypatch.setattr(current_run, "new_call", capture)
+    with pytest.raises(Reached):
+        current_run.invoke_generator(store, episodes=150)
+    with pytest.raises(StateError, match="--episodes"):
+        current_run.invoke_generator(store, episodes=201)
+    with pytest.raises(StateError, match="episode-range"):
+        current_run.invoke_generator(store, episode_range="0:201")
+
+
+# 已移除的旧汇总判据仅作固定历史断言，不作为新流水线验收。
 def test_作用域无视频任务组时碰撞运行时判定不算失败(tmp_path):
     """08 只跑 RouteStick 四组：没有任何视频任务结果行是「不适用」，不是「漏检」；
     作用域含视频任务组却零行时仍必须 FAIL。"""
-    verdicts = campaign.Verdicts()
+    verdicts = screen.Verdicts()
     base = {"outcome": "通过", "video_status": "complete", "video_reason": "", "runtime_checks_total": 0,
             "runtime_rejections": [], "injection_bound": True, "video_frames": 10, "video_frames_expected": 10, "error_type": None, "execution_state": "completed",
             "task": "RouteStick", "difficulty": "easy", "episode": 0, "wall_s": 1.0, "attempt": 0, "seed": 1,
@@ -493,30 +488,10 @@ def test_作用域无视频任务组时碰撞运行时判定不算失败(tmp_pat
     )
     record = next(item for item in verdicts.records if item["name"] == "COLLISION_RUNTIME")
     assert record["status"] == "PASS" and record["unique"] == 0 and record["scope"] == "0_video_groups"
-    verdicts = campaign.Verdicts()
+    verdicts = screen.Verdicts()
     campaign._summarize_feasibility(
         tmp_path, rows, [("RouteStick", "easy"), ("VideoRepick", "easy")], verdicts, 1, "P0x1", ["0"], {},
         expected_rows=2,
     )
     record = next(item for item in verdicts.records if item["name"] == "COLLISION_RUNTIME")
     assert record["status"] == "FAIL" and record["scope"] == "1_video_groups"
-
-
-def test_实跑清单上限随冻结条数放大(tmp_path, monkeypatch):
-    """每组冻结 200 条后，``--episodes 150`` 不再越界；上限按清单里各组的 ``episodes`` 算，
-    超过（201 > 200）仍要拒绝、不静默截断。"""
-    import scripts.injection.campaign as mod
-    import scripts.injection.run as run_mod
-
-    manifest_doc = {"groups": [{"task": "RouteStick", "difficulty": "easy", "episodes": 200}]}
-    monkeypatch.setattr(mod, "load_group_documents", lambda run_id: (tmp_path, manifest_doc, {}))
-
-    class _Reached(RuntimeError):
-        """越界检查已放行、走到写清单这一步的哨兵（再往后就要真跑生成器了）。"""
-
-    monkeypatch.setattr(run_mod, "write_manifest", lambda *a, **k: (_ for _ in ()).throw(_Reached()))
-
-    with pytest.raises(_Reached):
-        campaign.cmd_run("x", "feasibility", tmp_path / "s.json", tier_override=1, episodes_per_group=150)
-    with pytest.raises(campaign.CampaignError, match="--episodes"):
-        campaign.cmd_run("x", "feasibility", tmp_path / "s.json", tier_override=1, episodes_per_group=201)
