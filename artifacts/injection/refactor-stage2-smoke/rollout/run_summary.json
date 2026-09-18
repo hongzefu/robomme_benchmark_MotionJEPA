@@ -1,0 +1,62 @@
+{
+  "parameters": {
+    "output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/refactor-stage2-smoke/rollout",
+    "env": "RouteStick",
+    "tasks": [
+      "RouteStick"
+    ],
+    "episodes": 1,
+    "episode_start": 0,
+    "workers": 1,
+    "gpus": [
+      "0"
+    ],
+    "seed_layout": "train",
+    "difficulty_ratio": "100",
+    "difficulty_cycle": [
+      "easy"
+    ],
+    "max_attempts": 1,
+    "limit_threads": true,
+    "max_tasks_per_child": 8,
+    "affinity": "per-gpu",
+    "episode_timeout_s": 180.0,
+    "binfill_demo": true,
+    "save_video_for_recording": true,
+    "sampling_config": null,
+    "sampling_config_tasks": [
+      "BinFill",
+      "RouteStick",
+      "VideoRepick",
+      "VideoUnmaskSwap"
+    ],
+    "episode_specs": "artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl",
+    "episode_spec_groups": [
+      {
+        "task": "RouteStick",
+        "difficulty": "easy",
+        "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl",
+        "output_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/refactor-stage2-smoke/rollout/RouteStick/easy",
+        "episodes": [
+          0
+        ]
+      }
+    ],
+    "requested_jobs": 1
+  },
+  "requested_count": 1,
+  "success_count": 1,
+  "exhausted_count": 0,
+  "elapsed_s": 18.2,
+  "throughput_ep_per_min": 3.3,
+  "peak_rss_mb": 2774.5,
+  "video_status_counts": {
+    "complete": 1,
+    "frame_mismatch": 0,
+    "missing": 0,
+    "no_close": 0,
+    "unrecorded": 0
+  },
+  "timeout_count": 0,
+  "binfill_demo_converted": 0
+}

@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "baseline_commit": "c336390",
+  "task": "RouteStick",
+  "difficulty": "easy",
+  "episode": 0,
+  "seed": 16000,
+  "compared": 1,
+  "sha_mismatch": 0,
+  "h5_sha256": "27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b",
+  "h5_bytes": 200071952,
+  "baseline_path": "artifacts/injection/20260912-contract-v3-10/feasibility/P0x1/RouteStick/easy/hdf5_files/RouteStick_ep0_seed16000.h5",
+  "new_path": "artifacts/injection/refactor-stage2-smoke/rollout/RouteStick/easy/hdf5_files/RouteStick_ep0_seed16000.h5",
+  "timestep_count": 300,
+  "digest_s": 0.121,
+  "worker_s": 14.034,
+  "video_status": "complete",
+  "candidate_file_sha256": "f578ca6e7d0c475d577943e08473874631515a835983eedc98ee7d345469ba02"
+}

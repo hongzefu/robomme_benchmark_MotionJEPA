@@ -16,7 +16,7 @@ sha256sum -c docs/validation/newtask-v2/20260917-injection-refactor/baseline.sha
 
 本阶段实测退出 0。`command -v uv` 返回 `/home/hongzefu/.local/bin/uv`。本阶段只新增留档并更新账本，无生产代码改动，因此没有启动仿真或运行代码测试。未推送远端。
 
-阶段 1 结束时再次复验上述 221 个文件通过。随后按计划在 `INJECTION_REFACTOR_PLAN.md` 的实施步骤表后追加实测记录，原计划文件因此成为唯一登记的文档差异；冻结清单不重写。当前复验其余 220 个旧代码与输入文件使用：
+阶段 1 结束时再次复验上述 221 个文件通过。随后按计划在 `INJECTION_REFACTOR_PLAN.md` 的实施步骤表后追加实测记录，原计划文件因此成为阶段 1 唯一登记的文档差异；冻结清单不重写。阶段 1 提交时复验其余 220 个旧代码与输入文件使用下列命令；阶段 2 已按授权修改生成器，当前允许差异见本文末尾阶段 2 的复验命令：
 
 ```bash
 rg -v '  INJECTION_REFACTOR_PLAN.md$' docs/validation/newtask-v2/20260917-injection-refactor/baseline.sha256 | sha256sum -c --quiet
@@ -133,3 +133,115 @@ PY
 ```
 
 阶段 0～1 已完成。阶段 2～9 尚未实施，按原计划的逐阶段批准规则保留停点；本轮没有改生成器或环境源码，没有移动、删除、重跑既有 HDF5/视频，也没有推送远端。
+
+## 阶段 2：生成器接入与单条成品对拍
+
+用户对上一轮明确提问「是否批准阶段 2：接入生成器、完成加载器对拍及单条 HDF5 冒烟？」答复原话「同意」。实施从 `c336390`（11.10）开始，工作区干净；只改计划 R2 的五处生成器锚点，未改候选包和环境源码，未执行阶段 3～9。
+
+### 实现与输入约束
+
+[`scripts/generate_dataset_newseed.py`](../../../../scripts/generate_dataset_newseed.py) 的 `load_sampling_config` 提取 `validate_sampling_config`，使旧文件与 header 完整采样对象经过同一套结构、动作参数和来源指纹校验。旧文件异常口径及返回的独立任务配置副本不变。
+
+`load_episode_specs` 对 `.jsonl` 文件使用 `candidates.io::load_candidates/project_spec`，先验证整个候选文件，再选择任务、难度和 episode 范围。默认读取可覆盖全部 3400 条；实际生成入口指定 `candidate_split="train"`，只启动 train 与范围的交集。没有匹配条目直接报错，不能退回无规格随机生成。输出按 `<输出根>/<任务>/<难度>` 分组，即使只选一组也如此。
+
+`generate_dataset_newseed` 通过独立 header 输出参数显式辨认 JSONL 来源，不根据投影后相同的 spec 猜来源。JSONL 的配置只取内嵌快照；若另外传 `--sampling-config`，完整对象必须相同。布局和固定 kwargs 必须与 header 一致，所有 seed 须等于现行 train 公式；要求 `--max-attempts 1`，防止冻结候选被换 seed 重试。旧 JSON 和无规格路径不受这些新增限制，原重试调度代码没有修改。原 worker 按 episode 派生的恢复参数也保持原样，已纳入全量参数对拍。
+
+`EpisodeJob.emit_h5_digest` 默认 False，仅 JSONL 入口设置 True。`_worker` 在 `close()`、可选 BinFill 转换及最终 `_raw_summary` 之后以 8 MiB 分块只读散列，增加 `h5_sha256/h5_bytes` 和 `phases.h5_digest_s`。读文件失败或读取期间大小改变则记录代码失败，不交付成功；旧路径不增加散列字段和文件读取。录像器没有修改或覆盖。
+
+### 加载器与短测试
+
+```bash
+command -v uv
+mkdir -p artifacts/test-tmp
+timeout 240s uv run --no-sync python -m pytest \
+  tests/lightweight/test_candidate_loader.py \
+  tests/lightweight/test_episode_specs.py \
+  tests/lightweight/test_native_sampling_config.py \
+  tests/lightweight/test_episode_timeout.py \
+  tests/lightweight/test_binfill_demo_duplicate.py \
+  -q -s --basetemp artifacts/test-tmp/refactor-stage2-01
+```
+
+实测退出 0，73 passed / 4 skipped，19.46 秒。4 项是 `test_episode_specs.py` 对已缺失历史规格的既有跳过，未增加 skip。[`test_candidate_loader.py`](../../../../tests/lightweight/test_candidate_loader.py) 从 `git show c336390:scripts/generate_dataset_newseed.py` 加载旧入口；完整 kwargs 由新旧 `_worker` 的实际 AST 语句执行得到，包含恢复参数，不另手抄一张期望参数表。3400 条、角色改写后再次读取均完全一致：
+
+```text
+LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0
+```
+
+同时覆盖实际生成函数的 job 构造与显式散列开关、旧 JSON/无规格回归、快照冲突、错误 seed/layout、换 seed 重试、误选 test 条目时建池前拒绝，以及最终字节散列和文件读取失败。
+
+收尾复核发现默认 pytest 的临时目录在仓库外，会与真实生成器的输出守卫冲突。仅修改本测试文件的夹具，使它无论是否传 `--basetemp` 都使用仓库内 `artifacts/test-tmp/candidate-loader-*`，生产代码未再变。随后实际执行默认临时目录调用：
+
+```bash
+command -v uv
+set -o pipefail
+timeout 120s uv run --no-sync python -m pytest tests/lightweight/test_candidate_loader.py -q -s \
+  2>&1 | tee artifacts/injection/refactor-stage2-smoke/rollout/logs/loader-test.log
+```
+
+退出 0，11 passed，10.28 秒，完整日志已入库。源码、配置和源候选均未被测试改写，角色改写只作用于测试副本。
+
+### 单任务、单 episode、单 worker 实跑
+
+实际命令如下。复验时改成新的仓库内输出目录，不复用已经留档的路径。本次不传外部 `--sampling-config`，证明环境配置来自候选 header；180 秒单条超时是冒烟保护上限，原参考运行的上限为 600 秒，两次都未触发。其余 worker/GPU/亲和性/进程回收参数沿用旧单条 smoke；`--binfill-demo` 沿用旧调用，但 RouteStick 不进入 BinFill 转换。
+
+```bash
+command -v uv
+mkdir -p artifacts/injection/refactor-stage2-smoke/rollout/logs
+set -o pipefail
+PYTHONUNBUFFERED=1 timeout 240s uv run --no-sync python scripts/generate_dataset_newseed.py \
+  --episode-specs artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl \
+  --env RouteStick --difficulty 100 --episodes 1 --episode-start 0 \
+  --workers 1 --gpus 0 --layout train --max-attempts 1 \
+  --max-tasks-per-child 8 --affinity per-gpu --episode-timeout 180 --binfill-demo \
+  --output-dir artifacts/injection/refactor-stage2-smoke/rollout \
+  2>&1 | tee artifacts/injection/refactor-stage2-smoke/rollout/logs/smoke.log
+smoke_status=$?
+echo "EXIT_CODE=$smoke_status" >> artifacts/injection/refactor-stage2-smoke/rollout/logs/smoke.log
+exit "$smoke_status"
+```
+
+实测退出 0，成功 1、失败 0，整体 18.2 秒，worker 14.034 秒，散列读取 0.121 秒。结果文件为 [`episode_results.jsonl`](../../../../artifacts/injection/refactor-stage2-smoke/rollout/episode_results.jsonl)。新旧 HDF5 均为 300 帧、200071952 字节，SHA-256 为 `27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b`。
+
+基线核实：旧 `delivery_manifest.json::groups.RouteStick/easy.primary[0]` 指向 `feasibility/P0x1` 的 smoke 文件，实测它与 `feasibility/P01x20` 的同条文件散列相同。因此本条基线不存在内容歧义；不据此推断其他组或其他 episode 的重复文件也相同。
+
+```bash
+command -v uv
+uv run --no-sync python - <<'PY'
+import hashlib
+import json
+from pathlib import Path
+root = Path.cwd()
+source = root / 'artifacts/injection/20260912-contract-v3-10'
+out = root / 'artifacts/injection/refactor-stage2-smoke/rollout'
+rows = [json.loads(line) for line in (out / 'episode_results.jsonl').read_text().splitlines()]
+assert len(rows) == 1 and rows[0]['ok'] is True
+row = rows[0]
+assert (row['task'], row['difficulty'], row['episode'], row['seed']) == ('RouteStick', 'easy', 0, 16000)
+old = json.loads((source / 'delivery_manifest.json').read_text())['groups']['RouteStick/easy']['primary'][0]
+def digest(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+left, right = root / old['h5_path'], Path(row['h5_path'])
+assert digest(left) == old['sha256'] == digest(right) == row['h5_sha256']
+assert left.stat().st_size == right.stat().st_size == old['bytes'] == row['h5_bytes']
+assert row['timestep_count'] == old['timestep_count'] == 300
+print('SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0')
+PY
+```
+
+实测 `SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`，详情见 [`smoke_parity.json`](../../../../artifacts/injection/refactor-stage2-smoke/rollout/logs/smoke_parity.json)。视频状态 complete 只表示本次完整性，不宣称跨次视频内容相同。本阶段只实跑 RouteStick/easy/ep0；BinFill 等其余任务的真实 HDF5 对拍仍属阶段 5。
+
+### 阶段 2 留档与当前停点
+
+本次启动的基础 HEAD 为 `c336390`，实测工作区生成器、依赖锁、源候选和录像器的字节指纹保存在 [`source.sha256`](../../../../artifacts/injection/refactor-stage2-smoke/rollout/logs/source.sha256)，实跑后复验一致。源候选散列仍为 `f578ca6e7d0c475d577943e08473874631515a835983eedc98ee7d345469ba02`。
+
+```bash
+sha256sum -c artifacts/injection/refactor-stage2-smoke/rollout/logs/source.sha256 --quiet
+rg -v '  (INJECTION_REFACTOR_PLAN.md|scripts/generate_dataset_newseed.py)$' docs/validation/newtask-v2/20260917-injection-refactor/baseline.sha256 | sha256sum -c --quiet
+git diff --quiet c336390 -- src/robomme
+```
+
+当前阶段 0 原清单的登记差异只有计划追加记录和生成器这两项；其余 219 个旧文件保持原字节。九个轻量产物（参数、摘要、实际使用的配置、逐条结果、metadata、指纹、测试日志、冒烟日志和对拍结果）逐个入库，HDF5/mp4 留在本地、不入库。未改忽略规则，未修改或覆盖任何 `src/robomme/` 行为，未推送。
+
+阶段 2 已完成；阶段 3 待单独批准，将使用旧工具冻结运行 10 的图表和数轴完整基线。没有提前执行 210 条 HDF5 对拍、838 条 reset 补查或现有目录迁移。

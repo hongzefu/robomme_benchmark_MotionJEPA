@@ -197,7 +197,8 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| 注入重构实施阶段 0～1（2026-09-17） | 完成，阶段 2 待单独批准 | 阶段 0 `41f5fa2`（11.09）；阶段 1 全量 3400 条完整规格零差异、11 项判定全 PASS，1986.59 秒，EXIT_CODE=0；11514 条拒绝事件；短测 60 passed / 9 skipped，补测 14 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 2 接入生成器、3400 条加载器与 kwargs 对拍、RouteStick/easy/ep0 单 worker 冒烟；按计划单独批准后开始 |
+| 注入重构实施阶段 2（2026-09-17） | 完成，阶段 3 待单独批准 | `LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`；RouteStick/easy/ep0 的 `SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`，300 帧、200071952 字节，生成 18.2 秒、散列 0.121 秒；短测 73 passed / 4 skipped，夹具修订补测 11 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 3 用旧图表工具对运行 10 冻结完整图表与数轴基线；获批后开始 |
+| 注入重构实施阶段 0～1（2026-09-17） | 完成 | 阶段 0 `41f5fa2`（11.09）；阶段 1 全量 3400 条完整规格零差异、11 项判定全 PASS，1986.59 秒，EXIT_CODE=0；11514 条拒绝事件；短测 60 passed / 9 skipped，补测 14 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 2 已获批并完成，见上行 |
 | 注入重构计划对抗审查（2026-09-17） | 审查完成；计划未通过 | 确认九项缺陷；原记录加候选元数据后散列校验拒绝；沿用停点规则补查 unused 只执行 600、剩 238；数轴反例最长段 828 > 400；定向测试 65 passed / 9 skipped，5.24 秒；[审查报告与复现命令](docs/validation/newtask-v2/20260917-injection-refactor-audit.md) | 先修订各项契约与验收；本轮不实施重构，原计划、生产代码、数据保持原状 |
 | 每 env 400 条严格交付 + 每档 50 条纯候选 `20260912-contract-v3-10`（`10.72`～`10.76`） | 完成 | 候选按 100 条 block 扩容（14 组 3400 条，`PLAN=OK elapsed_s=675.3`、`CHECK=PASS elapsed_s=1338.5`、对 07/09 `BLOCK0_EQUIVALENCE=PASS compared=1400 differences=0`）；实跑 1842 条双卡 40 worker 墙钟 6685 秒通过 1796（97.5%）`RUN=PASS`；env-check 14 组各 50 条 reset 全通过 `ENV_CHECK=PASS delivered=700`；`DELIVERY_400=PASS` ×4、`DELIVERY_TOTAL=PASS delivered=1600 spare=196 h5_missing=0`；`REPORT=OK`，[README](docs/validation/newtask-v2/20260912-contract-v3-10/README.md)；候选/结果/清单/十份阶段日志约 30 MB 入库 | 正式数据见 `delivery_manifest.json` 的 primary；`BinFillDemoError`（ffmpeg Broken pipe ×3）根因待查；数轴/跑前分布仍基于 07 |
 | RouteStick 白球尾迹减半专项重出 `20260912-contract-v3-08`（四档各 5 条）+ 07 小产物入库（`10.70`） | 完成 | `RouteStick.step` 白球存活 40→20（规则 11 获批）、快照重导出 `--check-config` 一致；08 `PLAN=OK specs=1400 elapsed_s=335.3`、`CHECK=PASS elapsed_s=659.7`、与 07 `OLD_GROUPS_EQUIVALENCE=PASS compared=1400 differences=0`；`campaign run --episodes 5 --tier 10 --gpus 0,1` 墙钟 97.5 秒 `RUN=PASS`，20/20 通过、逐条 `timestep_count` 与 07 同 episode 相同；四档 ep0 `TRAIL_HALVED=PASS median_diff=20.0`（[trail_check.py](docs/validation/newtask-v2/20260912-contract-v3-08/trail_check.py)）；07 目录新增 22 个小文件入库（两份 feasibility 判定、清单、日志、P01x20 运行参数/汇总/逐条结果/14 组 metadata，约 2.3 MB）；lightweight 467 passed / 4 failed（4 条在 HEAD `1f7cbd8` 同样失败，既有） | 其余 10 组仍以 07 为准；若要全量按新尾迹重出，走同一 runbook 去掉 `--groups`/`--episodes` |
@@ -1570,3 +1571,18 @@
 - 发布 `artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl`，共 3401 行。落盘复验 `CANDIDATE_FILE=PASS candidates=3400 train=1842 test=1558 pending=3400 reconstructed=3400`；对内存副本改写全部角色，`ROLE_REWRITE_IDENTITY=PASS rows=3400 changed_specs=0 changed_identity=0`，正式文件没有回写假角色。
 - 旧基线 221 文件、全部实测候选实现的指纹均复验通过。随后按计划在实施步骤表后追加本轮实测记录，因此原计划文件是冻结清单中唯一登记的后续文档差异；其余 220 个旧文件不变。
 - 短测结果与意外见前述日志及实施留档。当前图表/报告、生成器适配、旧角色迁移、210 条 HDF5 对拍、838 条 reset 补查和目录迁移均未执行；阶段 2 待单独批准。旧生成器、环境源码、HDF5/视频和旧小产物未改，未推送。
+
+### 2026-09-17 America/Detroit — 注入重构阶段 2：获批开始
+
+- 用户指令原话：「同意」，对应上一轮的明确提问「是否批准阶段 2：接入生成器、完成加载器对拍及单条 HDF5 冒烟？」。
+- 起点 `c336390`（11.10），工作区干净。按计划 R2，只改 `load_episode_specs`、采样对象校验 helper、`generate_dataset_newseed` 的 JSONL 分支、`EpisodeJob.emit_h5_digest` 与 `_worker` 成品散列观测；不改 src、不覆盖环境行为、不修改采样、planner、step、重试与录像实现。
+- 计划：先实现输入适配并定向回归，再对 3400 条完整 kwargs（含原有按 episode 派生的恢复参数）对拍，最后在独立仓库内目录运行 RouteStick/easy/ep0 单 worker、单次尝试并比 HDF5 文件 SHA-256；原候选和旧产物只读。阶段 3 及之后未授权。
+
+### 2026-09-17 America/Detroit — 注入重构阶段 2：加载器与单条 HDF5 验收完成
+
+- 实施限于计划 R2 五处：文件/内嵌对象共用采样校验；JSONL 经统一 io 校验并投影旧 spec；生成分支只选择 train 与指定范围交集，用 header 快照并断言外部配置相同；默认 False 的 `emit_h5_digest` 仅新入口开启；worker 在 close、可选 BinFill 转换和最终成品验证后只读计算散列。JSONL 强制单次尝试，避免换 seed 后脱离冻结候选；旧重试调度实现不改。
+- 3400 条旧 JSON 与新 JSONL 加载对拍通过，参数直接从新旧 `_worker` 的实际 kwargs 构造语句提取执行，包含按 episode 派生的恢复参数；角色回写后再次全量读取仍零差异。`LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`。
+- 测试：`test_candidate_loader.py`、`test_episode_specs.py`、`test_native_sampling_config.py`、`test_episode_timeout.py`、`test_binfill_demo_duplicate.py`，73 passed / 4 skipped，19.46 秒。测试夹具随后固定为仓库内目录，默认 pytest 命令补测 11 passed，10.28 秒。4 项跳过来自已缺失的历史规格，没有新增跳过。
+- 实跑输出 `artifacts/injection/refactor-stage2-smoke/rollout/`；RouteStick/easy/ep0、seed=16000、GPU 0、单 worker、单次尝试，整体 18.2 秒、worker 14.034 秒、散列读取 0.121 秒，退出 0。新旧 HDF5 均 300 帧、200071952 字节、SHA-256 `27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b`，`SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`；视频 complete，不宣称跨次内容一致。
+- 意外与核实：旧交付清单把此条 primary 指向 `P0x1`，实测该文件与 `P01x20` 的同条文件大小/散列相同，故基线无歧义。短测最初显式指定仓库内 basetemp；复核发现默认 pytest 的临时路径会与生成器输出守卫冲突，改成测试局部的仓库内夹具后补测通过。
+- 当前：源候选散列 `f578ca6e7d0c475d577943e08473874631515a835983eedc98ee7d345469ba02` 未变，环境源码与录像器未改；只留单条生成证据，不启动 210 条对拍、reset 补查或迁移。阶段 3 待单独批准，未推送。详细命令和九个轻量留档文件见实施 README。

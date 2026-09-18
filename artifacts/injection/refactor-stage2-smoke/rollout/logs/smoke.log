@@ -1,0 +1,24 @@
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[1/1] RouteStick/episode_0 succeeded with seed 16000 (attempt 0, 14.034s)
+{"parameters": {"output_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/refactor-stage2-smoke/rollout", "env": "RouteStick", "tasks": ["RouteStick"], "episodes": 1, "episode_start": 0, "workers": 1, "gpus": ["0"], "seed_layout": "train", "difficulty_ratio": "100", "difficulty_cycle": ["easy"], "max_attempts": 1, "limit_threads": true, "max_tasks_per_child": 8, "affinity": "per-gpu", "episode_timeout_s": 180.0, "binfill_demo": true, "save_video_for_recording": true, "sampling_config": null, "sampling_config_tasks": ["BinFill", "RouteStick", "VideoRepick", "VideoUnmaskSwap"], "episode_specs": "artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl", "episode_spec_groups": [{"task": "RouteStick", "difficulty": "easy", "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl", "output_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/refactor-stage2-smoke/rollout/RouteStick/easy", "episodes": [0]}], "requested_jobs": 1}, "requested_count": 1, "success_count": 1, "exhausted_count": 0, "elapsed_s": 18.2, "throughput_ep_per_min": 3.3, "peak_rss_mb": 2774.5, "video_status_counts": {"complete": 1, "frame_mismatch": 0, "missing": 0, "no_close": 0, "unrecorded": 0}, "timeout_count": 0, "binfill_demo_converted": 0}
+EXIT_CODE=0

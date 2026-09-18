@@ -393,6 +393,15 @@ L2 不把 1796 当成剔除后条数：旧 `apply_slow_exclusion` 会剔除最�
 - 验证：定向测试 60 passed / 9 skipped，93.41 秒；筛查字段补测 14 passed / 4 deselected，3.16 秒。全量任务使用 tmux，1986.59 秒、`EXIT_CODE=0`、11 项判定全 PASS；落盘后 3400 条角色改写的内存核验保持旧规格与身份不变，旧输入和实测实现文件指纹复验通过。
 - 当前边界：阶段 2～9 未执行，图表和报告尚未接入新入口；生成器、`src/robomme/`、已有 HDF5/视频没有改动。复现命令、测试意外、代码指纹说明及证据见[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md)。
 
+### 10.2 阶段 2 实施记录（2026-09-17）
+
+用户对阶段 2 的明确报批答复原话「同意」。实施起点 `c336390`（11.10），修改限定在第二部分 R2 的五处锚点，旧 JSON 与无规格路径保留原行为；源候选、环境源码、录像器和旧 HDF5/视频不改。
+
+- 新 JSONL 入口验证封套、旧散列、seed 与完整采样快照，生成只选 train 与请求范围交集；外部配置仅做一致性断言。JSONL 要求 `max_attempts=1`，保持冻结 seed；旧重试调度代码未改。
+- `LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`：旧入口取自固定提交，新旧完整环境参数直接执行各自 worker 的实际构造语句，包含恢复参数；全部角色在内存副本回写后再读，仍零差异。
+- `SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`：RouteStick/easy/ep0，seed 16000，单卡、单 worker；新旧 HDF5 均 300 帧、200071952 字节，SHA-256 为 `27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b`。生成 18.2 秒，新增散列读取 0.121 秒，退出 0。
+- 定向回归 73 passed / 4 skipped，19.46 秒；仓库内测试夹具修订后补测 11 passed，10.28 秒。未进行跨次视频内容对拍，未实跑其他任务；阶段 3～9 待后续批准。完整命令、基线歧义核实及轻量产物见[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md)。
+
 ---
 
 # 第二部分（技术细节，供 agent 追踪）

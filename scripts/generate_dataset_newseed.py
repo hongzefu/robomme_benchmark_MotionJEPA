@@ -1060,6 +1060,13 @@ def load_sampling_config(path: str | Path, repo_root: Path) -> dict[str, dict[st
         payload = json.loads(config_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         raise SamplingConfigError(f"{config_path}: JSON 无法解析：{exc}") from exc
+    return validate_sampling_config(payload, repo_root, config_path)
+
+
+def validate_sampling_config(
+    payload: Any, repo_root: Path, config_path: str | Path = "候选 header 内嵌采样配置"
+) -> dict[str, dict[str, Any]]:
+    """文件与候选快照共用对象校验；只读原对象，返回各任务的独立副本。"""
     if not isinstance(payload, dict):
         raise SamplingConfigError(f"{config_path}: 顶层必须是对象")
     if payload.get("schema_version") != SAMPLING_SCHEMA_VERSION:
@@ -1293,6 +1300,8 @@ class EpisodeJob:
     # BinFill 交付版转换开关：close() 之后把 h5/mp4 整条复制一遍接在自己前面当 demo。
     # 默认关，只由 campaign 的 feasibility 分支打开；不开时链路与改动前逐字相同。
     binfill_demo: bool = False
+    # 仅候选 JSONL 入口启用；旧 JSON 和无规格路径不增加散列字段或文件读取。
+    emit_h5_digest: bool = False
 
     @property
     def recovery_mode(self) -> str | None:
@@ -1441,6 +1450,9 @@ def load_episode_specs(
     task: str | None = None,
     difficulty: str | None = None,
     episodes: Sequence[int] | None = None,
+    candidate_header: dict[str, Any] | None = None,
+    candidate_split: str | None = None,
+    candidate_tasks: Sequence[str] | None = None,
 ) -> list[SpecGroup]:
     """解析 ``--episode-specs``：既接受单份规格文件，也接受多组清单。
 
@@ -1455,6 +1467,51 @@ def load_episode_specs(
         path = (repo_root / path).resolve()
     if not path.is_file():
         raise EpisodeSpecError(f"找不到 --episode-specs 指向的文件：{path}")
+    if path.suffix.lower() == ".jsonl":
+        # SCRIPT_DIR 已在 sys.path，直接脚本、模块和 spawn 调用均可导入同一纯标准库读取器。
+        from injection.candidates.io import load_candidates, project_spec
+
+        try:
+            header, rows = load_candidates(path, repo_root=repo_root)
+        except (ValueError, OSError, KeyError, TypeError) as exc:
+            raise EpisodeSpecError(f"{path}: 候选封套校验失败：{exc}") from exc
+        if candidate_split not in (None, "train", "test"):
+            raise EpisodeSpecError(f"候选 split 非法：{candidate_split}")
+        wanted = list(episodes) if episodes is not None else None
+        if wanted is not None and (len(wanted) != len(set(wanted)) or any(type(e) is not int or e < 0 for e in wanted)):
+            raise EpisodeSpecError("候选 episode 范围包含重复或非法编号")
+        selected_tasks = set(candidate_tasks) if candidate_tasks is not None else None
+        if selected_tasks is not None and not selected_tasks <= {r["task"] for r in rows}:
+            raise EpisodeSpecError("CLI 请求的任务不在候选文件内")
+        records_by_group: dict[tuple[str, str], dict[int, dict[str, Any]]] = {}
+        eligible: dict[tuple[str, str], set[int]] = {}
+        frozen_layout = get_layout(header["runtime"]["layout"])
+        for row in rows:
+            if row["seed"] != frozen_layout.seed(row["task"], row["episode"], 0):
+                raise EpisodeSpecError("候选 seed 与现行布局公式不符")
+            if (task is not None and row["task"] != task) or (selected_tasks is not None and row["task"] not in selected_tasks):
+                continue
+            if difficulty is not None and row["difficulty"] != difficulty:
+                continue
+            key = (row["task"], row["difficulty"])
+            record = project_spec(row)
+            validate_episode_spec(record, *key, f"{path}/{key}/ep{row['episode']}")
+            records_by_group.setdefault(key, {})[row["episode"]] = record
+            if candidate_split is None or row["split"] == candidate_split:
+                eligible.setdefault(key, set()).add(row["episode"])
+        groups = []
+        for (group_task, group_difficulty), records in records_by_group.items():
+            if wanted is not None and set(wanted) - records.keys():
+                raise EpisodeSpecError(f"{path}: 请求的 episode 不在 {group_task}/{group_difficulty} 规格内")
+            numbers = sorted(eligible.get((group_task, group_difficulty), set()) & (set(wanted) if wanted is not None else records.keys()))
+            if numbers:
+                groups.append(SpecGroup(group_task, group_difficulty, str(path),
+                                        str(output / group_task / group_difficulty), tuple(numbers), records))
+        if not groups:
+            raise EpisodeSpecError("候选选择范围为空，拒绝退回无规格随机生成")
+        if candidate_header is not None:
+            candidate_header.update(copy.deepcopy(header))
+        return groups
     try:
         head = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
@@ -2190,6 +2247,25 @@ def _worker(job: EpisodeJob) -> dict[str, Any]:
                 "video": _video_summary(output_root, job, timestep_count=None, close_error=close_error),
             }
         phases["binfill_demo_s"] = time.monotonic() - mark
+    if job.emit_h5_digest:
+        # close 和可选 BinFill 转换均已完成，_raw_summary 已验证最终成品；只读计数并散列。
+        mark = time.monotonic()
+        try:
+            digest = hashlib.sha256()
+            h5_bytes = 0
+            with raw_path.open("rb") as stream:
+                while chunk := stream.read(8 * 1024 * 1024):
+                    digest.update(chunk)
+                    h5_bytes += len(chunk)
+            if h5_bytes != raw_path.stat().st_size:
+                raise DatasetGenerationError("HDF5 散列过程中大小发生变化")
+            summary.update(h5_sha256=digest.hexdigest(), h5_bytes=h5_bytes)
+        except Exception as exc:
+            phases["h5_digest_s"] = time.monotonic() - mark
+            return {**base(), "ok": False, "failure_class": "code", "error_type": type(exc).__name__,
+                    "error": str(exc), "traceback": traceback.format_exc(), "binfill_demo": binfill_demo,
+                    "video": _video_summary(output_root, job, timestep_count=summary.get("timestep_count"), close_error=close_error)}
+        phases["h5_digest_s"] = time.monotonic() - mark
     # ⚠ 视频核验放在 ok 判定**之后**且不参与它：视频缺失或帧数不符只让 VIDEO_* 判定失败，
     # 不改变任务结果，也不删已经落盘的 HDF5。
     return {
@@ -2580,6 +2656,7 @@ def generate_dataset_newseed(
     # 新值注入：父进程只读一次规格，校验、索引；建池之前就拒绝错误输入，绝不带进 worker。
     # 不传 --episode-specs 时 spec_groups 为空，下面所有分支都退回原路径。
     spec_groups: list[SpecGroup] = []
+    candidate_header: dict[str, Any] = {}
     if episode_specs is not None:
         single_difficulty = None
         if len(set(cycle)) == 1:
@@ -2591,7 +2668,24 @@ def generate_dataset_newseed(
             task=tasks[0] if len(tasks) == 1 else None,
             difficulty=single_difficulty,
             episodes=list(range(episode_start, episode_start + episodes)),
+            candidate_header=candidate_header,
+            candidate_split="train",
+            candidate_tasks=None if env.strip().lower() == "all" else tasks,
         )
+        if candidate_header:
+            expected_kwargs = {"obs_mode": "rgb+depth+segmentation", "control_mode": "pd_joint_pos",
+                               "render_mode": "rgb_array", "reward_mode": "dense"}
+            if candidate_header["runtime"] != {"layout": layout_name, "kwargs": expected_kwargs}:
+                raise EpisodeSpecError("CLI seed 布局或固定环境参数与候选快照不一致")
+            if max_attempts != 1:
+                raise EpisodeSpecError("冻结候选仅允许 --max-attempts 1，不能换 seed 重试")
+            snapshot = candidate_header["sampling_config"]
+            if sampling_config is not None:
+                external = json.loads(Path(sampling_config).expanduser().read_text(encoding="utf-8"))
+                if _spec_canonical_json(external) != _spec_canonical_json(snapshot):
+                    raise SamplingConfigError("外部采样配置与候选快照不一致，不允许覆盖")
+            task_configs = validate_sampling_config(snapshot, REPO_ROOT)
+            tasks = sorted({group.task for group in spec_groups})
         if len(spec_groups) > 1:
             # 清单模式：任务、难度、输出根全部由清单决定，--env/--difficulty 不再参与
             tasks = sorted({group.task for group in spec_groups})
@@ -2642,6 +2736,7 @@ def generate_dataset_newseed(
                         # 每个 job 一份独立深拷贝：worker 之间、同一 worker 的前后两局之间不共享可变缓存
                         episode_spec=copy.deepcopy(dict(group.records[episode])),
                         binfill_demo=binfill_demo,
+                        emit_h5_digest=bool(candidate_header),
                     )
                 )
         for group in spec_groups:
