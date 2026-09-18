@@ -1,10 +1,12 @@
 # 新值注入链路重构计划：两阶段、两个 jsonl、其余进 logs
 
-> **权威性**：本文是新值注入链路（候选分布 → 真实 HDF5）重构的唯一计划，提交在 `newtask-v2` 分支。代码锚点一律以 `92e8152`（10.84）为准；工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。commit 编号沿用「主序号.流水号」体例，从 **11.01** 起。
+> **权威性**：本文是新值注入链路（候选分布 → 真实 HDF5）重构的唯一计划，当前位于 `newtask-v2.1refractor` 分支。生产代码锚点为 `92e8152`（10.84），对抗审查锚点为 `956703e`（11.06）；工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。commit 编号沿用「主序号.流水号」体例，接续当前 `git log`。
 > **分支**：本计划与全部实施都在 **`newtask-v2.1refractor`** 上（用户 2026-09-17 原话「这个md计划 要从newtask-v2.1refractor开始」），该分支自 `newtask-v2` 的 `bf2c9ac`（11.04）切出；11.01 到 11.04 四条计划提交已在 `newtask-v2` 上，随切分支带入。
 > **授权边界**：本文只规划不实施。第一部分第十节的每个阶段都须用户单独批准后才动手；「未来可做」不等于本轮授权。
 > **口径来源**：现行 h5 生成流程 = `20260912-contract-v3-10`（每 env 400 条严格交付），其机制细节见 [scripts/NEW_VALUE_INJECTION_PIPELINE.md](scripts/NEW_VALUE_INJECTION_PIPELINE.md)；重构后该文档被 `scripts/INJECTION.md` 取代。
 > **决策史**：契约 v1→v3、xhard、BinFill demo 直出等历史决策本轮**不整理、不搬运**（用户 2026-09-17 原话「决策史先不管」），全部留在 git 历史与 `newtask-v2` 分支。
+> **本轮修订**：用户原话「有哪些需要用户注意 其他的你来决策修改md计划」「需要注意的 现在就让我决策」。依据 [九项对抗审查](docs/validation/newtask-v2/20260917-injection-refactor-audit.md) 修订设计与验收，不代表代码已经实现或实跑已经通过。
+> **本轮范围再次确认**：用户原话「不要执行 只改计划md！」。本轮只修改本文；下列新文件、测试、命令、候选重算、reset 和迁移均为未来计划，不在本轮创建或执行，也不更新其他文档。
 
 ---
 
@@ -23,10 +25,14 @@
 5. 「正式 / 备用的区分并入结果行」——`results.jsonl` 每行带 `role ∈ {primary, spare, failed}`，不再单独出 `delivery_manifest.json`（第四节 4.2、第七节）。
 6. 「对应的script也分为这两个阶段单独建文件夹」——`scripts/injection/candidates/` 与 `scripts/injection/rollout/`（第三节 3.3）。
 7. 「决策史先不管 这次重构需要从新branch开始」「我说的是修改开始后！你需要和用户确定分支名称」「这个md计划 要从newtask-v2.1refractor开始」——分支定为 `newtask-v2.1refractor`，计划与实施都在其上；历史文档删而不搬（引言块）。
-8. 现有 run 10 的 844 GB 产物**不重跑**，目录原地按新拓扑移动，h5 逐文件 SHA-256 核对（第十节阶段 7）。
+8. 现有 run 10 的产物**不覆盖、不重跑本体**，目录原地按新拓扑移动；现有 h5、mp4、元数据逐文件清单与 SHA-256 核对，并改写活跃路径（第十节阶段 7）。
 9. 「需要加入修改前后的对拍」「使用B 每组前 15」——候选、图表数据层、reset 核验三层全量对拍；h5 / mp4 对拍取**方案 B，每组 block 0 前 15 条共 210 条**（第九节 9.4）。
 10. 「有一部分json配置是只处理不生成h5的是怎么回事 也要保留 在rollout/ 中要做reset验证」——`delivery_400.json` 的 `extra_candidates=50` 那 700 条只做 `make + reset + close` 的候选**保留**，核验代码放 `scripts/injection/rollout/reset_check.py`，结果作为 `kind="reset"` 的行并入 `rollout/results.jsonl`（第四节 4.3）。
 11. 「需要作为test episode回写入candidates.jsonl 写入成功与否」「candidates.jsonl要作为启动环境的唯一入口」「unused不消灭」「run 10 迁移时……838 条也 reset 一遍 要做」「test 的 primary 仍是每组前 50 条通过者 不变」——每行候选带 `split ∈ {train, test}` 与 `role ∈ {pending, primary, spare, failed, unused}`，rollout 结束后回写 `role`；新 run 保留 `unused`，run 10 迁移时例外地把 838 条 unused 全部 reset（第五节）。
+12. 「补入重算证据并标明来源（推荐）」——run 10 在 L1 重算 3400 条时采集逐条拒绝明细，标记 `reconstructed`；不能冒充 2026-09-12 当时保存的原始证据（第四节 4.1）。
+13. 「只把 h5 一致作为硬条件，视频内容差异单列、不阻塞」——L3 的视频对拍单列诊断，不参与 `H5_PARITY`；有差异不得写成视频一致。该决定不取消迁移时保留既有视频的完整性要求（第九节 9.2）。
+
+**用户需要知道的边界**：方案 B 只证明 210 条抽样的生成结果，剩余 1632 条不推断一致；838 条 unused 全部尝试后可能有失败，“全部检查过”不等于“全部通过”。慢条仍按原规则从数轴统计中剔除，不删除对应 h5、不改变正式交付角色。视频诊断与重算证据的解释按口径 12、13 执行；其余九项问题的技术处置由本计划定死，无待选实现方案。
 
 ## 二、现状：机制与产物
 
@@ -104,65 +110,75 @@ artifacts/injection/<run-id>/
 scripts/injection/
 ├── candidates/                    第一阶段
 │   ├── __main__.py                python -m scripts.injection.candidates --run-id … 一次出全部
-│   ├── contract.py  sampling.py  specs.py  categories.py     自 scripts/injection/ 原样搬入
+│   ├── contract.py  sampling.py  specs.py  categories.py     搬迁；specs 另加只读过程采集
+│   ├── io.py                     候选封套读取、旧 spec 校验和身份校验；只用标准库
 │   ├── screen.py                  几何 / 碰撞 / 配额 / 可复现筛查，逐行写回 screening，组级进 logs
 │   ├── figures.py                 三类跑前图，自 injection-before-2d/plot_injection_before_2d.py 搬入
 │   └── report.py                  DISTRIBUTION.md，自 injection-before-2d/event_tables.py 搬入
 └── rollout/                       第二阶段
     ├── __main__.py                python -m scripts.injection.rollout --run-id … 一次出全部：run → role → reset_check → windows → report
-    ├── run.py                     进程池编排、清单、续跑、role 判定；自 scripts/injection/run.py + delivery.py 合并
+    ├── run.py                     进程池编排、清单、续跑、唯一结果表与 role；自 run.py + delivery.py 合并
     ├── reset_check.py             实跑区间之后的候选只 make + reset + close，每组攒够 50 条通过即停；自 scripts/injection/env_check.py 搬入
     ├── windows.py                 从 h5 抽 timeline 并出数轴图；自 window_timeline.py + plot_sampling_windows.py 合并
     ├── single_binfill.py          可选工具，不在主流程；自 plot_binfill_medium_single.py 搬入
     └── report.py                  ROLLOUT.md 与 WINDOWS.md
 ```
 
-`scripts/generate_dataset_newseed.py` 留在原位，唯一改动是 `load_episode_specs` 学会从 `candidates.jsonl` 按 (task, difficulty, episode) 取行。`scripts/INJECTION.md` 是唯一流程文档。
+`scripts/generate_dataset_newseed.py` 留在原位，改动限定在候选输入适配、采样快照解析和 `close()` 后 h5 散列核验；具体函数范围见第二部分 R2。`scripts/INJECTION.md` 是唯一流程文档。
 
 ## 四、两个 jsonl 的行结构
 
 ### 4.1 `candidates.jsonl`
 
-首行是 header 记录，承接现在每组 JSON 顶层的溯源字段：
+首行是 header 记录。候选封套格式 `candidate_schema_version=1` 与旧规格 `spec_schema_version=1`、采样配置 `schema_version=3` 是三个不同版本，不能混写。header 承接每组旧文档溯源信息，另保存启动环境所需的完整采样快照和交付配置快照；下面是字段示意，省略的完整快照仍须实际写入：
 
 ```json
-{"record": "header", "run_id": "…", "spec_schema_version": 3, "generator_seed": 20260909,
+{"record": "header", "run_id": "…", "candidate_schema_version": 1, "spec_schema_version": 1, "generator_seed": 20260909,
  "generator_version": "…", "contract": "scripts/configs/newtask-v2/injection_contract_v3.json",
  "contract_sha256": "…", "sampling_config_sha256": "…", "delivery_config": "…/delivery_400.json",
  "groups": 14, "candidates": 3400}
 ```
 
-之后每行一条候选，字段 = 现在 `specs/<task>/<diff>.json` 的 `episodes[i]` 原样，再加 `split / role`（第五节）与下面两块：
+完整 header 还含 `group_provenance`（逐组原 `derived_seed / generator_version / blocks / sampling_config_sha256`）、`sampling_config`（原采样 JSON 的完整对象）、`delivery_config_snapshot`、`runtime`（`layout="train"` 与现有 `gym.make` 固定参数）、`identity_sha256`。后者覆盖这些不可变快照和按主键排序的候选身份/旧规格，排除 `run_id / role / error_type / roles / screening` 及派生运行的来源说明；回写角色不得改变它。旧 `sampling_config_sha256` 仍是 `operand_sha256` 的取值域口径，另用 `sampling_file_sha256` 记录原文件字节散列，不能偷换两者。
+
+之后每行一条候选：**旧 `episodes[i]` 完整放进 `spec`，管理字段放在外层**。示意：
 
 ```json
 {"record": "candidate", "task": "VideoRepick", "difficulty": "easy", "episode": 0, "block": 0,
  "seed": 9000, "spec_sha256": "…", "split": "train", "role": "pending", "error_type": null,
- "layout": {…}, "objects": {…}, "actions": {…}, "sampling_cells": {…},
+ "spec": {"episode": 0, "task": "VideoRepick", "difficulty": "easy",
+          "layout": {…}, "objects": {…}, "actions": {…}, "sampling_cells": {…},
+          "collision": {…}, "spec_sha256": "…"},
  "screening": {"geometry": "PASS",
                "collision_initial": "PASS", "collision_sweeps": ["PASS", "PASS"], "min_g_m": 0.0134,
-               "candidates_tried": 3,
+               "evidence_origin": "reconstructed", "count_unit": "episode_proposal", "candidates_tried": 3,
                "rejected_before_accept": {"geometry": 2, "contact": 0, "numerical_boundary": 0, "uncertified": 0}}}
 ```
 
-- `spec_sha256` 的作用域不变，仍只对 `layout / objects / actions` 算，所以新链路产的 3400 行必须与 run 10 的 `specs/` 逐条同散列，这是阶段 1 的判据。
-- 被拒绝的候选本身不进这个文件，只在 `screening.candidates_tried` 与 `rejected_before_accept` 记「通过前试了几个、各因什么拒」；拒绝明细逐条落 `candidates/logs/rejections.jsonl`。原因：BinFill/medium 一组试了 5281 个候选，全写会让文件膨胀三倍且没人看。
-- BinFill 没有碰撞扫掠，`collision_initial / collision_sweeps / min_g_m` 写 `null`；`geometry` 对四任务都写。
+- `spec_sha256` 沿用 `specs.py::record_sha256` 与生成器 `spec_record_sha256` 的真实算法：只排除旧记录里的 `spec_sha256 / collision`，其余键全部参与，包括 `task / difficulty / episode / sampling_cells`。只对 `candidate["spec"]` 验旧散列，绝不把管理字段传进去；外层主键与 `spec` 必须一致，两处散列必须一致。L1 对 3400 条重算散列并比较完整旧记录，不能只比自报散列。
+- `spec` 的有无键也原样保留：BinFill、RouteStick 没有旧 `collision` 时不补键。图表从 `spec` 读原字段，加载器只把深拷贝后的 `spec` 传给环境。这样 `role` 回写不会改变旧规格的规范化序列化字节或环境输入。
+- 拒绝过程必须在生成循环中采集，不能从 `plan_stats` 总数反推。`specs.py::_place_binfill_cubes`、两个视频任务的候选循环、`_count_rejection` 增加独立观测输出；不额外采样、不改分支、循环次数和随机数消费。记录 `(task, difficulty, episode, object_id, trial, reason, proposal)`；方块摆放用 `count_unit="object_proposal"`，视频整体摆放用 `episode_proposal`，RouteStick 无拒绝重试则用 `not_applicable` 与 `null`。
+- BinFill/medium 的旧 `5281` 是 300 个 episode 内的方块摆放尝试总数，其中几何拒绝 3184 次，不是 5281 条 episode。新候选每行聚合本 episode 的实际观测增量；全部拒绝事件写 `candidates/logs/rejections.jsonl`，不沿用旧的前 64 条截断。核对 `tried = accepted + rejected`，再按组/块汇总与旧统计对齐。
+- 用户已选重算补证：run 10 的 L1 重算成功且逐条旧规格一致后，填 `evidence_origin="reconstructed"`，同时记录重算 commit、配置散列、时间与旧运行编号；新运行实时采集填 `generated`。旧日志原封保留；不能把重算值称为当时的观测。原资料缺失且重算未完成时留 `null / unavailable`，不能填零冒充证据。
+- 不适用碰撞扫掠的任务填 `collision_initial / collision_sweeps / min_g_m = null`，不伪造 PASS；`geometry` 对四任务都按实际检查填写。
 - 组级汇总（每组拒绝总数、配额覆盖、可复现对拍）不重复进每行，落 `candidates/logs/quota_report.json` 与 `check_result.json`。
 
 ### 4.2 `results.jsonl`
 
 两种行共用一个文件，用 `kind` 区分；两种行都带 `split`（train / test）与 `role`，取值与回写到 `candidates.jsonl` 的完全一致（第五节 5.3）。
 
-**`kind="h5"` 行**（每条实跑一行）= 现在 `episode_results.jsonl` 的一行原样（`task / episode / attempt / seed / difficulty / ok / h5_path / timestep_count / binfill_demo / video / wall_s / phases / injection_evidence / runtime_checks / bound / …`，失败行另有 `failure_class / error_type`），再加四个字段：
+**`kind="h5"` 行**保留现在 `episode_results.jsonl` 的执行字段（`task / episode / attempt / seed / difficulty / ok / h5_path / timestep_count / binfill_demo / video / wall_s / phases / injection_evidence / runtime_checks / bound / …`，失败行另有 `failure_class / error_type`），增加外层 `spec_sha256 / split` 以及下列字段。`kind / split / role` 由编排层归并原始日志时写入，避免扩大生成器 worker 的职责：
 
 | 字段 | 值 | 写入时机 |
 |---|---|---|
-| `kind` | `"h5"` | 生成器写行时 |
+| `kind` | `"h5"` | 编排层读取生成器结果时 |
 | `h5_sha256` | 成品 h5 的 SHA-256；失败行 `null` | 生成器在 `close()` 后核验阶段顺手算，与现在算视频散列同处 |
 | `h5_bytes` | 字节数；失败行 `null` | 同上 |
 | `role` | `primary`：该组按 episode 升序前 `target_h5` 条通过；`spare`：其余通过；`failed`：未通过 | 实跑结束后 `rollout/run.py` 的收尾步原子重写整个文件 |
 
-**`kind="reset"` 行**（每条 reset 核验一行）= 现在 `env_check/<task>/<diff>.jsonl` 的一行原样（`task / difficulty / episode / seed / spec_sha256 / outcome / error_type / error / wall_s / phases{make_s, reset_s, close_s} / bound / injection_bound / counted`），再加 `kind="reset"`、`ok`（`outcome` 是否通过）、`h5_path: null`、`role`（`primary`：该组按 episode 升序前 `extra_candidates=50` 条通过；`spare`：其余通过；`failed`：未通过）。原 `delivered` 字段由 `role == "primary"` 取代。
+**`kind="reset"` 行**保留原 `env_check` 的 `task / difficulty / episode / seed / spec_sha256 / outcome / error_type / error / wall_s / phases / bound / injection_bound / counted`，增加 `kind="reset" / split="test" / h5_path=null / role`。`ok` 必须与 `outcome == "通过"` 一致，矛盾即拒绝迁移；不把 `outcome` 的中文分类误写进异常类名 `error_type`。正常运行中，按 episode 升序前 50 条通过者为 primary，其余通过者 spare，失败者 failed；run 10 的 unused 补查不改原 primary。
+
+`results.jsonl` 是**每个键只有一个终态的当前结果表**，唯一键为 `(kind, task, difficulty, episode)`。生成器原始追加行进入 `rollout/logs/attempts/`，保留调用编号、执行范围和完成序；收尾归并唯一结果，再原子替换当前表。不能对当前表盲目追加，也不能先转字典掩盖输入重复。默认续跑复用成功和失败终态，强制复验用新 run；相同 run 的重复终态输入须逐字段一致，否则报冲突，不按 `attempt` 大小猜测新旧。
 
 「只用 jsonl 和 h5 判断成功」的判法：`kind="h5"` 行要 `ok == true` 且 `h5_path` 存在且 `h5_sha256` 相符；`kind="reset"` 行本就无 h5，只看 `ok`。两种行的 `role` 各自决定是否计入交付（400 条 h5、700 条 reset 候选）。
 
@@ -175,7 +191,7 @@ scripts/injection/
 - 语义边界：只证明「该候选能产生环境」，不证明能出 h5（不覆盖 step 期绑定错误、规划可解性、录像器步数保护、任务成功判定）。
 - 这 700 条已随 HF 发布进了 `meta/env_check/`，是交付物的一部分，所以保留。
 
-重构后它是 `rollout/` 的一步：`run.py` 实跑完、算完 `role` 之后，`reset_check.py` 对每组 `run_episodes` 之后的候选按序核验，结果作为 `kind="reset"` 行追加进同一份 `results.jsonl`，组级判定写 `logs/reset_check_result.json`，判定行 `RESET_CHECK=PASS groups=14 checked=… passed=… delivered=700 shortfall=0`。
+重构后它是 `rollout/` 的一步：`reset_check.py` 对每组 `run_episodes` 之后的候选按序核验，结果按唯一键归并到 `results.jsonl`。恢复时先读已有终态，按相同批次顺序重建计数后再派缺失任务，重复执行不会重跑旧条或重复写行。组级判定写 `logs/reset_check_result.json`，正式全量判据为 `RESET_CHECK=PASS groups=14 checked=… passed=… delivered=700 shortfall=0`。
 
 ## 五、`candidates.jsonl` 的划分与回写：启动环境的唯一入口
 
@@ -196,7 +212,7 @@ scripts/injection/
 |---|---|---|---:|
 | train | primary | 出了 h5 且按 episode 升序进该组前 `target_h5` 条 | 1600 |
 | train | spare | 出了 h5 但超出 `target_h5` 的余量，h5 保留 | 196 |
-| train | failed | 实跑失败，无 h5 | 46 |
+| train | failed | 未形成合格交付 h5；失败不能因存在残留文件改判成功 | 46 |
 | test | primary | reset 通过且按 episode 升序进该组前 `extra_candidates=50` 条 | 700 |
 | test | spare | reset 通过但超出 50 条 | 20 |
 | test | failed | reset 失败 | 0 |
@@ -206,25 +222,29 @@ scripts/injection/
 
 ### 5.2 `unused` 不消灭
 
-新 run 沿用「每组攒够 50 条 reset 通过即停」的规则，停点之后的 test 候选保持 `role="unused"`，不为消灭它们而把全部 test 候选 reset 一遍。**run 10 是唯一例外**：迁移时把它的 838 条 `unused` 也 reset 一遍（约 838 × 20 秒 ÷ 40 worker ≈ 7 分钟），结果按同一规则回写为 `spare` 或 `failed`；700 条 `primary` 不变，h5 与已发布的 HF 内容不动。
+新 run 沿用「每组攒够 50 条 reset 通过即停」的规则，停点之后未执行的 test 候选成为 `unused`。未选入局部执行范围或因中断而尚未执行的候选仍是 `pending`，不能冒充 failed；train 永不标 unused。组配额尚未满足时，未执行的 test 也保持 pending。
+
+**run 10 是唯一例外**：`--only-unused` 首次调用先把当时 838 个 unused 键冻结到 `logs/unused_scope.json`，逐一核验全部键，完全绕开“通过 50 条即停”；续跑始终复用该范围和已完成终态，不能每次重新筛剩余角色导致分母缩小。通过者变 spare，失败者变 failed；原 700 个 primary 键及其结果不变。判据 `UNUSED_RESET=PASS checked=838 passed=… failed=… unused_left=0 primary_changed=0` 只表示全部尝试完，另须 `passed + failed = 838`，不要求失败数为零。约 7 分钟只是无失败超时情况下的粗估。
 
 ### 5.3 回写规则
 
-- `rollout` 收尾步只改 `candidates.jsonl` 每行的 `role` 与 `error_type`（失败时记 `error_type`，否则 `null`）两个字段，其余字段与 `spec_sha256` 逐字不动；写临时文件后 `os.replace` 原子覆盖。header 行追加 `roles` 计数（按 split × role）。
-- 同一结果在 `results.jsonl` 也有一行：train 行 `kind="h5"`、test 行 `kind="reset"`，都带 `split` 与同值的 `role`。两文件靠 (task, difficulty, episode) 互指；`unused` 在 `results.jsonl` 里没有对应行。
-- 判据：`ROLES_CONSISTENT=PASS rows=3400 mismatch=0`——`candidates.jsonl` 每条非 `unused` 行的 `role` 与 `results.jsonl` 对应行一致，`unused` 行在 `results.jsonl` 无对应。
+- `rollout` 收尾只改候选外层 `role / error_type` 和 header 的派生 `roles` 计数，`spec`、身份与筛查来源不动。唯一结果表是执行状态依据，候选角色由它派生。
+- 每个 run 只允许一个写入者；先保存唯一结果表，再回写候选，各自使用临时文件加 `os.replace`。两次替换不是跨文件原子事务；恢复时先按调用编号与完成序归并 `logs/attempts/` 中已落盘但未归并的完整终态，核验同键重复/冲突，再从唯一结果表重建候选角色，最后才调度缺失项。日志尾部半行不算终态，保留并标记中断位置，不能伪造成功或失败；不能因为当前表尚未更新而重跑已完成项。
+- `primary / spare / failed` 候选必须各有且仅有一条对应结果，主键、`spec_sha256 / split / role / error_type` 相同；`pending / unused` 必须没有结果。`ROLES_CONSISTENT=PASS rows=3400 mismatch=0 duplicates=0 pending=… unused=…` 只证明互指正确；正式交付另验每组配额和 1600/700 总数，不能把局部对拍当成全量交付。
+- 方案 B 使用临时 run 的**独立候选副本**：`--candidates` 跨 run 时只读导入，重置角色为 pending、清空 error，保留旧规格与筛查来源，记录 `parent_run_id / parent_candidates_sha256`；任何后续回写只针对副本。正常完成 210 条 h5 与 720 条 reset 后，该副本有 930 条结果、1632 条 pending、838 条 unused。导入前后检查源候选字节散列，判定 `PARITY_SOURCE_INTACT=PASS`。
+- `--label smoke` 使用 `rollout/logs/smoke/<label>/` 下的独立候选副本和结果表，不回写正式候选、不自动跑全量 reset；显式选 1 条 test reset 作为最小验证即可。
 
 ### 5.4 唯一入口
 
-起环境的三处都只读 `candidates.jsonl`，每行自带 `task / difficulty / episode / seed / layout / objects / actions`，不依赖别的文件：
+起环境的三处以 `candidates.jsonl` 为唯一数据入口：行里的 `spec` 提供旧规格，header 提供完整 `sampling_config / runtime`；仍依赖仓库环境源码与资产。冻结后不再从可变的外部配置取值，若 CLI 同时给配置，只能校验与内嵌快照一致，不能覆盖。统一读取器在启动前核验封套版本、完整键集合、外层与 spec 身份一致、旧散列和采样快照源码指纹。
 
 | 谁 | 读哪些行 | 怎么起 |
 |---|---|---|
-| `generate_dataset_newseed.py` 出 h5 | `split="train"` | `gym.make(task, episode_spec=行)` + `RobommeRecordWrapper` + planner |
-| `rollout/reset_check.py` | `split="test"`，按 episode 序直到攒够 50 条通过 | `gym.make(task, episode_spec=行)` → `reset()` → `close()` |
+| `generate_dataset_newseed.py` 出 h5 | `split="train"` 与清单选定范围的交集 | `gym.make(task, episode_spec=行["spec"], sampling_config=header中该任务配置, ...)` + `RobommeRecordWrapper` + planner |
+| `rollout/reset_check.py` | `split="test"`；普通模式按配额停止，only-unused 模式遍历冻结集合 | 使用相同 seed、difficulty、sampling_config、固定 kwargs 与 `spec` → `reset()` → `close()` |
 | 策略侧日后起 test 环境 | `split="test"` 且 `role="primary"` | 同上，本仓库不实现 |
 
-`seed` 字段是 `SeedLayout("train").seed(task, episode, 0)` 的值，test 行与 train 行用同一 layout（run 10 的 env-check 就是这么起的），只是 episode 号在实跑区间之后。
+`seed` 必须等于 `SeedLayout("train").seed(task, episode, 0)`，不相等在建池前报错。test 行与 train 行用同一 layout，只是 episode 号在实跑区间之后；这里的 test 是自定义候选划分，不是官方 test seed 区间。`LOADER_PARITY` 覆盖全部 3400 条记录、角色回写后的再次读取、header 配置解析及完整环境 kwargs，不只验一条 smoke。
 
 ## 六、出图与报告：各出哪些、删哪些
 
@@ -250,11 +270,11 @@ scripts/injection/
 
 ## 七、追溯性：守住三条，处理两处
 
-设计合理且比现在更易追溯，前提是：
+追溯性成立需要以下约束通过实际验收：
 
 1. **`logs/` 照常进 git**。放的不只是文本日志，还有判定 JSON、运行参数、实跑清单这些机器可读文件。「用户不看」不等于「不存」。
-2. **两个 jsonl 靠主键互指**。候选行与结果行都带 `(task, difficulty, episode)` 与 `spec_sha256`（结果行在 `injection_evidence.spec_sha256`），结果行再带 `h5_path / h5_sha256`。任一 h5 都能反查到候选、候选的筛查证据、当时的运行参数。
-3. **候选行内嵌筛查证据**。现在只有视频任务候选带 `collision`，BinFill 只有 `sampling_cells`；合并后四任务统一带 `screening`，比现在只在 `plan_stats.json` 记组级总数更细。
+2. **两个 jsonl 靠主键互指**。候选与两类结果均有外层 `(task, difficulty, episode) / spec_sha256`；h5 结果若有 `injection_evidence.spec_sha256`，还须与外层相同。失败行也能回指候选，不能因为环境未启动就丢掉身份。结果另有 `h5_path / h5_sha256`，路径须在迁移后实际可达。
+3. **候选行内嵌筛查证据并区分来源**。旧 `collision` 完整保留在 spec；新观测放在 screening。run 10 的详细尝试历史来自重新运行采样器，明确标 reconstructed，并以旧规格逐条一致为补证前提。
 
 会变化的两处及处置：
 
@@ -265,11 +285,12 @@ scripts/injection/
 
 - **代码**：`scripts/injection/replay.py`、`contract_build.py`、`plots.py`、`campaign.py`（其 plan / check / run / env-check / delivery 逻辑迁入两个新包后整文件删）、`scripts/injection-before-2d/` 整个目录（含 `check_doc_links.py`、`windows_timeline.json`、`figures/`）。**不删**的两个：`h5_compare.py` 搬为 `scripts/injection/rollout/h5_compare.py`，只在对拍 SHA-256 不一致时用来定位差异（第九节 9.2）；`env_check.py` 搬为 `scripts/injection/rollout/reset_check.py`（第四节 4.3）。
 - **删除时机**：旧的出图、事件表、timeline 脚本要先对 run 10 跑一遍留下基线（第十节阶段 3），之后才能删。
-- **配置**：`injection_contract_v1.json`、`injection_contract_v2.json`。
+- **配置**：从生产配置目录删除 `injection_contract_v1.json / injection_contract_v2.json`；为保留差分断言，将原字节作为测试夹具移至 `tests/fixtures/injection_legacy/`，不进入生产流程。`contract_build.py` 仅保留构建器纯函数到测试辅助模块，删除 CLI，详见第二部分测试迁移表。
 - **文档**：第六节表中标「删」与「重写」的六份；`scripts/README.md` 第四节改为指向 `scripts/INJECTION.md`。
 - **轻量包**：`docs/validation/newtask-v2/` 下 `20260910-new-values-04`、`20260911-contract-v3-06`、`20260911-contract-v3-07`、`20260912-contract-v3-08`、`20260912-contract-v3-09`、`20260912-contract-v3-10` 六个目录。其余非 injection 轮次目录不动。
 - **run 10 目录内**：不删只移（第十节阶段 7）。`env_check/*.jsonl` 的 720 行转成 `kind="reset"` 行并入 `rollout/results.jsonl`，原文件与 `env_check_result*.json`、`feasibility/P0x1/`、`manifests/`、四份 `feasibility_result*.json`、`delivery_manifest.json`、`manifest.json`、`plan_stats.json`、`check_result.json`、`logs/*` 全部进对应阶段的 `logs/`。
-- **`.gitignore`**：`artifacts/injection` 段与 `scripts/injection-before-2d/figures` 段整体替换（第二部分三）。
+- **`.gitignore`**：`artifacts/injection` 段与 `scripts/injection-before-2d/figures` 段整体替换（第二部分二），必须验证嵌套 smoke 的大文件忽略与日志反选。
+- **依赖条件**：阶段 1～7 所谓“搬迁”均先复制新实现、保留旧可执行模块；不能提前移走旧模块导致阶段 3 无法留基线。新实现不得转发调用旧实现来凑对拍通过。阶段 8 才删除旧路径，并同步调整测试和保留工具的导入；历史审查、账本和本计划中的旧符号说明不要求清零。
 
 ## 九、修改前后的对拍
 
@@ -282,29 +303,39 @@ scripts/injection/
 | 实跑 | 1842 条，通过 1796 | 6684.4 秒（1 小时 51 分），16.12 条/分 | `feasibility/P01x20/run_summary.json` `elapsed_s` |
 | 成功条单条 | 1796 条 | 中位 126 秒、最大 241 秒；串行总和 63 小时 | `episode_results.jsonl` `wall_s` |
 | 超时条单条 | 21 条 | 600 秒被终止（最长实测 626 秒） | 同上 |
-| 产物体积 | h5 1796 个 | 880 GB，中位 424 MB | `delivery_manifest.json` `h5_bytes` |
+| 产物体积 | h5 1796 个 | 880 GB，中位 424 MB | 旧 `delivery_manifest.json` 的 `bytes`（新结果表改名为 `h5_bytes`） |
 
-磁盘：`/data` 总 14 TB，已用 12 TB，**余 1.9 TB**（2026-09-17 `df`）；全量重跑一份 880 GB 放得下，但跑完必须删一份。GPU 0 / 1 当前空闲（利用率 0%）。
+历史记录中的磁盘余量为 1.9 TB、GPU 0/1 空闲；这些不是开跑时保证。每次启动前重新检查 `df -h /data` 与 `nvidia-smi`，方案 B 预计新增约 90 GB，额外预留图、诊断和临时文件空间。这里只保留资源检查要求，不授权扩大到方案 A。
 
-### 9.2 关键前提：h5 与 mp4 都是逐字节确定的，对拍只比 SHA-256
+### 9.2 逐字节判据、视频诊断与确定性的证据边界
 
 run 10 里 RouteStick/easy ep0 被生成过两次：smoke 档 `P0x1`（单卡 1 worker，13:06）与正式档 `P01x20`（双卡 40 worker，13:29）。两次的成品：
 
 | 文件 | 字节数 | SHA-256 前 16 位 | 结论 |
 |---|---:|---|---|
-| `RouteStick_ep0_seed16000.h5` | 200,071,952 | `27d7e1c62583025e` 两次相同 | h5 逐字节确定 |
-| `RouteStick_ep0_seed16000_easy_watch….mp4` | 6,648,548 | `468cf3b5c00344e3` 两次相同 | 录像器直出的 mp4 逐字节确定 |
+| `RouteStick_ep0_seed16000.h5` | 200,071,952 | `27d7e1c62583025e` 两次相同 | 此样本两次 h5 逐字节相同 |
+| `RouteStick_ep0_seed16000_easy_watch….mp4` | 6,648,548 | `468cf3b5c00344e3` 两次相同 | 此样本两次 mp4 逐字节相同 |
 
-因此**对拍不需要逐 dataset 遍历**：新链路生成时在 `close()` 后算的 `h5_sha256` 直接与 `delivery_manifest.json` 里 run 10 的 1796 个散列比即可，旧文件零额外读取。`h5_compare.py` 只在散列不一致时用来定位是哪个 dataset 变了。两个例外：BinFill 的 mp4 经 `imageio` 二次 libx264 编码，逐字节是否确定未验证，**只比帧数**，其 h5 照比；21 条超时与 25 条规划失败比 `failure_class / error_type`（10 轮已证明超时 seed 三轮复现，是确定性的）。
+这只支持一个输入的重复结果，不能证明所有任务、所有 block 或新加载器都确定。L3 的硬条件是：固定 210 个键、seed、旧规格及环境配置；205 条预期成功 h5 的实际散列与 run 10 留存散列相等；5 条预期失败的 `ok / failure_class / error_type` 相同。任何成功变失败、失败变成功或失败类型变化都记失败，不换 seed、不补样本、不豁免。
 
-### 9.3 三层对拍
+h5 散列不等时调用 `h5_compare.py` 定位字段、结构、属性、dtype 与数值差异；如果只发现容器写入差异，也只报告“内容相同、字节判据未通过”，不得擅自改成容差验收。散列与内容一致分别报告。已有失败的可重复性不作为新运行必然重复的假设。
+
+用户已决定**视频内容差异单列、不阻塞 L3**。全部样本视频先核文件存在、解码状态和散列；散列相同记字节一致，不同则比较完整解码后的帧数、尺寸、帧率、顺序与逐帧像素，并保留首个差异帧及原因。诊断写 `VIDEO_DIAGNOSTIC=PASS / DIFFERENT / NOT_RUN` 和计数，后两种不得显示成视频一致；不设置自动像素容差，也不参与 `H5_PARITY` 成败。BinFill 中 ep1/ep16 同为 1388 帧的已知反例必须被错配诊断识别。视频解码失败或预算不足如实列出未完成项，可在 h5 验收通过时保留视频差异/未验证结论。
+
+以上宽松口径只适用于**重新生成视频的内容对拍**。阶段 7 只是移动既有文件，仍必须保持全部已有 mp4 字节不变、数量不减；不能用“视频不阻塞”作为丢失旧视频的豁免。
+
+### 9.3 四层对拍
 
 | 层 | 比什么 | 怎么比 | 规模与耗时 | 判定行 |
 |---|---|---|---|---|
-| L1 候选（**全量必做**） | 新 `candidates` 包对 run 10 的契约与配置重算 3400 行 | 逐行 `spec_sha256` 与 `specs/<task>/<diff>.json` 比；`screening` 里的碰撞结论与旧 `collision` 字段比 | plan 11 分钟 + screen 22 分钟 ≈ 35 分钟，零磁盘 | `CANDIDATES_EQUIVALENCE=PASS compared=3400 differences=0` |
-| L2 图与报告数据层（**全量必做**） | 旧脚本与新脚本对**同一份 run 10** 各出一套 | 删旧脚本前先用 `plot_injection_before_2d.py`、`event_tables.py`、`window_timeline.py extract` 对 run 10 跑出基线（三者此前只对 07 跑过）；新 `figures.py / report.py / windows.py` 出的 98 + 15 张 PNG 逐字节比、事件表逐行比、`windows_timeline.json` 逐键比 | 旧 extract 要打开 1796 个 h5 读 T 与分段，**未实测**，估 10 到 30 分钟；出图数分钟；零额外磁盘 | `FIGURES_EQUIVALENCE=PASS png=113 differences=0`、`TABLES_EQUIVALENCE=PASS rows=… drift=0`、`TIMELINE_EQUIVALENCE=PASS episodes=1796 differences=0` |
-| L3 h5 / mp4（**方案 B，用户已选**） | 新 `rollout` 包按 `candidates.jsonl` 重新生成每组 block 0 前 15 条 | 成功条比 `h5_sha256`（BinFill 另比 mp4 帧数，其余任务 mp4 也比 SHA-256）；失败条比 `failure_class / error_type` | 210 条，见 9.4 | `H5_PARITY=PASS compared=210 sha_mismatch=0 mp4_mismatch=0 failure_mismatch=0` |
-| L4 reset 核验（**全量必做**） | 新 `reset_check.py` 对 run 10 的 14 组从各自 `run_episodes` 起重新核验到攒够 50 条通过 | 与 `env_check/<task>/<diff>.jsonl` 按 (task, difficulty, episode) 配对，比 `outcome / error_type / injection_bound` 与「攒够 50 条时停在哪一条」；`phases` 耗时不比 | 720 条，run 10 实测 492.7 秒，零磁盘 | `RESET_PARITY=PASS compared=720 outcome_mismatch=0 stop_episode_mismatch=0` |
+| L1 候选（**全量必做**） | 相同契约与配置重算 3400 个固定键 | 检查完整键集合，按旧算法重算 spec 散列并比完整旧记录含 collision；单独核验新增观测计数与来源 | 原 plan+check 约 35 分钟，新增过程采集耗时待测；新增轻量日志 | `CANDIDATES_EQUIVALENCE=PASS compared=3400 differences=0`、`SCREENING_EVIDENCE=PASS rows=3400 count_mismatch=0 origin_missing=0` |
+| L2 图、表、数轴（**全量必做**） | 旧、新实现读同一批 1796 个成功 h5 | 113 张 PNG 比字节、事件表逐行比；timeline 比保留行及 excluded_slow 全记录，路径只按预先冻结映射归一化 | 旧 extract 未全量实测，估 10～30 分钟，另加出图；会生成两套图与轻量数据 | `FIGURES_EQUIVALENCE=PASS png=113 differences=0`、`TABLES_EQUIVALENCE=PASS drift=0`、`TIMELINE_EQUIVALENCE=PASS before=1796 kept=K excluded=E skipped=0 differences=0`，且 `K+E=1796` |
+| L3 h5（**方案 B**），视频另作诊断 | 每组 block 0 的 ep0～14，14 组共 210 个固定键 | 205 成功比实际 h5 散列；5 失败比结果类型；视频按 9.2 单列，不参与此层硬条件 | 生成约 15～20 分钟，额外 h5 散列/视频解码耗时待测；约 90 GB | `H5_PARITY=PASS compared=210 success=205 failures=5 sha_mismatch=0 failure_mismatch=0`；另报 `VIDEO_DIAGNOSTIC` |
+| L4 reset（**全量必做**） | 临时 run 使用旧组顺序、双卡各 20 worker，只执行一次正常配额核验 | 与旧 720 个键逐一比较 `ok / outcome / error_type / injection_bound / counted / role` 及每组停止 episode；耗时、PID 不比 | 旧运行 492.7 秒；不产 h5/mp4，会保存核验日志 | `RESET_PARITY=PASS compared=720 outcome_mismatch=0 stop_episode_mismatch=0 role_mismatch=0` |
+
+每层先检查**预期键集合**、重复键、缺失键、额外键，记 `PARITY_KEYS=PASS layer=L1/L2/L3/L4 missing=0 extra=0 duplicates=0`，然后再比值；不能对两侧交集报 PASS。L3 左侧按方案 B 固定选择 210 键，右侧禁止多跑；L4 左侧用补查 unused 之前的 720 键快照，不把后续 838 条掺入比较。
+
+L2 不把 1796 当成剔除后条数：旧 `apply_slow_exclusion` 会剔除最长段超过 400 帧或总长超过组中位两倍者。已实测 run 10 的 VideoUnmaskSwap/xhard/ep5 总长 1312、最长段 828，会被剔除；`K / E` 以阶段 3 全量旧基线为准，必须逐条核对剔除原因，不能为凑总数取消剔除。
 
 ### 9.4 L3 的四个方案（用户 2026-09-17 选定 B：「使用B 每组前 15」）
 
@@ -312,31 +343,31 @@ run 10 里 RouteStick/easy ep0 被生成过两次：smoke 档 `P0x1`（单卡 1 
 
 | 方案 | 条数 | 预计墙钟 | 临时磁盘 | 覆盖到的结果类型 | 能证明什么 |
 |---|---:|---|---:|---|---|
-| A 全量 | 1842 | ≈ 1 小时 51 分（与 run 10 相同） | 880 GB，余 1.9 TB 可容 | 1796 成功 + 21 超时 + 25 规划失败 | 新链路**逐条**复现已交付数据集；PASS 后新旧两份逐字节相同，删一份即可 |
+| A 全量（未选） | 1842 | 生成约 1 小时 51 分，另加核验 | 约 880 GB，启动前查余量 | 1796 成功；21 环境报告失败、21 超时、3 BinFillDemoError、1 BinCollisionError | 可以逐条核验全量 h5；视频结论仍须独立列出 |
 | **B 每组前 15（已选定）** | 210 | ≈ 15 到 20 分钟（理论下限 11.5 分钟） | ≈ 90 GB | 205 成功 + 3 规划失败 + 2 超时 | 四任务四档全覆盖、三类结果都有样本 |
 | C 每组前 5 | 70 | ≈ 10 到 12 分钟（下限 4 分钟，被 626 秒超时封底） | ≈ 30 GB | 68 成功 + 1 规划失败 + 1 超时 | 四任务四档全覆盖 |
 | D 每组前 1 | 14 | ≈ 10 分钟（被 626 秒超时封底） | ≈ 6 GB | 13 成功 + 1 超时 | 只证明链路能通 |
 
-本会话原推荐 A（只有全量能宣称与已发布数据集逐字节一致），用户选定 B。B 的结论边界写明：210 条抽样一致 + 生成确定性（9.2 的两次同散列证据）⇒ 推断其余 1632 条一致；不是逐条实证。
+用户已选 B，不扩大样本范围。其结论只能是“固定 210 条的 h5/结果类型对拍通过”；其余 1632 条仍未做生成对拍，不能靠一个样本的确定性外推一致。这里的各方案时间只估生成，不含静态筛查、完整视频诊断、迁移散列和所有报告时间；没有全流程耗时承诺。
 
 ## 十、实施步骤
 
-每阶段单独获批、单独 commit（11.01 起），判据不过不进下一阶段。
+每阶段单独获批、单独 commit；下面均为未来实施，不因本轮修订而获得执行授权。硬判据不过不进下一阶段；视频诊断按用户决定单列，不混入硬判据。
 
 | 阶段 | 内容 | 判据 |
 |---|---|---|
-| 0 | 本计划写入 `newtask-v2` | 本文入库；`git status -sb` 无遗留 |
-| 1 | 在 `newtask-v2.1refractor` 上建 `scripts/injection/candidates/`：搬四个核心模块，写 `screen.py` 与 `__main__.py`，产 `candidates.jsonl`；对 run 10 重算（L1 对拍） | `CANDIDATES_EQUIVALENCE=PASS compared=3400 differences=0`；`SCREENING_FILLED=PASS rows=3400 null_geometry=0` |
-| 2 | 生成器 `load_episode_specs` 读 jsonl，`close()` 后加 `h5_sha256 / h5_bytes`；跑 1 条 smoke（RouteStick/easy ep0） | `LOADER_PARITY=PASS`（同一条从 jsonl 与从旧 json 加载的 dict 相等）；`SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`（与 run 10 的 `27d7e1c6…` 相同） |
-| 3 | 删旧脚本前用旧 `plot_injection_before_2d.py`、`event_tables.py`、`window_timeline.py extract` 对 run 10 出一套基线到 `candidates/logs/baseline/` 与 `rollout/logs/baseline/` | `BASELINE_CAPTURED=PASS png=113 tables=14 timeline_episodes=1796` |
-| 4 | 建 `scripts/injection/rollout/`：合并 run + delivery，搬 env_check 为 `reset_check.py`，写 `kind / split / role / h5_sha256 / h5_bytes` 并回写 `candidates.jsonl` 的 `role`；用 run 10 的 `episode_results.jsonl + delivery_manifest.json + env_check/*.jsonl` 迁移出 `results.jsonl`，同时回写 run 10 的 `candidates.jsonl` | `RESULTS_EQUIVALENCE=PASS h5_rows=1842 primary=1600 spare=196 failed=46 reset_rows=720 reset_primary=700`；`ROLES_CONSISTENT=PASS rows=3400 mismatch=0 unused=838` |
-| 5 | L3 + L4 对拍：新 `rollout` 包按方案 B 重新生成每组前 15 条到临时 run-id，与 run 10 比散列与失败类型；新 `reset_check.py` 对 run 10 已核验的 720 条重新核验并与旧结果比；PASS 后删临时产物。**随后**对 run 10 的 838 条 `unused` 做一次 reset（约 7 分钟），结果追加进 run 10 的 `results.jsonl` 并回写 `candidates.jsonl` | `H5_PARITY=PASS compared=210 sha_mismatch=0 mp4_mismatch=0 failure_mismatch=0`；`RESET_PARITY=PASS compared=720 outcome_mismatch=0 stop_episode_mismatch=0`；`UNUSED_RESET=PASS checked=838 unused_left=0`，之后 `ROLES_CONSISTENT` 复判 `unused=0` |
-| 6 | 新 `windows.py / figures.py / report.py` 对 run 10 出图与报告，与阶段 3 基线比（L2 对拍） | `FIGURES_EQUIVALENCE=PASS png=113 differences=0`、`TABLES_EQUIVALENCE=PASS drift=0`、`TIMELINE_EQUIVALENCE=PASS episodes=1796 differences=0` |
-| 7 | run 10 目录原地迁移：`feasibility/P01x20/<task>/<diff>` → `rollout/<task>/<diff>`，其余进 `logs/` | `H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0` |
-| 8 | 删旧代码、旧配置、旧文档、轻量包；改 `.gitignore`；写 `scripts/INJECTION.md`；改 `scripts/README.md` 第四节 | `DOC_LINKS=PASS broken=0`；`git ls-files artifacts/injection/20260912-contract-v3-10 \| wc -l` 与阶段 7 清单一致；`grep -rn "injection-before-2d\|campaign\b" scripts docs *.md` 零命中 |
-| 9 | 新链路端到端冒烟：新 run-id 出 1 组 1 block 候选、实跑 1 条 | `plan + run` 总耗时 < 5 分钟；两个 jsonl、h5、图、报告齐全 |
+| 0 | 计划在指定分支完成修订，冻结代码、配置、依赖锁和运行 10 的旧清单 | 文档核验通过；各实施阶段仍未启动 |
+| 1 | 复制四个核心模块到 candidates 包，保留旧入口；新增只读观测、io、screen 与入口；L1 重算 run 10 并补入 reconstructed 证据 | `CANDIDATES_EQUIVALENCE`、`SCREENING_EVIDENCE`、L1 `PARITY_KEYS` 全 PASS；元数据变动不影响旧规格 |
+| 2 | 生成器接封套与 header 快照，close 后加 h5 散列；全部候选加载等价，再跑单任务/单 episode/单 worker 的 RouteStick/easy/ep0 | `LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`；`SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`；旧 JSON 与无规格路径定向回归通过 |
+| 3 | 用保留的旧 plot、event_tables、window_timeline extract 及 plot_sampling_windows 对 run 10 留完整基线；仅调整输入/输出路径，不改算法 | `BASELINE_CAPTURED=PASS png=113 tables=14 before=1796 kept=K excluded=E skipped=0`，`K+E=1796`；输出清单散列冻结 |
+| 4 | 建 rollout 包和幂等状态归并；用旧结果、交付清单、env_check 迁出新结果表；保留当前有效旧路径，冻结迁移映射及 L4 原 720 键 | `RESULTS_EQUIVALENCE=PASS h5_rows=1842 primary=1600 spare=196 failed=46 reset_rows=720 reset_primary=700`；`ROLES_CONSISTENT=PASS rows=3400 mismatch=0 duplicates=0 pending=0 unused=838` |
+| 5 | 临时 run 独立副本跑 B 的 210 条，并由同一次主命令执行 L4；核对源候选未变；留档后处理临时大产物。随后另对正式 run10 的 838 个冻结 unused 键全部尝试 | L3/L4 `PARITY_KEYS`、`H5_PARITY`、`RESET_PARITY`、`PARITY_SOURCE_INTACT` 全 PASS；`VIDEO_DIAGNOSTIC` 单列；`UNUSED_RESET checked=838 unused_left=0 primary_changed=0`；正式结果 3400 个唯一键，角色复核 pending=0、unused=0 |
+| 6 | 新图表读取 results 中当前仍有效的旧路径，对运行 10 出图与报告，完成 L2；不提前硬拼尚未存在的 rollout 组目录 | `FIGURES_EQUIVALENCE`、`TABLES_EQUIVALENCE`、`TIMELINE_EQUIVALENCE` 与 L2 `PARITY_KEYS` 全 PASS |
+| 7 | 按冻结映射迁移全部现有产物；改写结果、timeline、活跃清单和报告路径；保留 journal、恢复副本与旧日志 | `H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0`；`ARTIFACTS_INTACT`、`ACTIVE_PATHS`、`MIGRATION_METADATA`、`MIGRATION_RECOVERY` 全 PASS（第二部分一） |
+| 8 | 删除旧生产路径，保留测试夹具并适配具名测试/共享工具；改忽略规则与流程文档；审查报告、账本留存 | `IMPORT_CLOSURE=PASS missing=0`、`TEST_COLLECTION=PASS errors=0`、`TEST_SCOPE=PASS new_unexplained_skips=0`、`IGNORE_RULES=PASS logs_visible=1 media_ignored=1`；活跃文档链接 PASS；跟踪文件集合与批准清单一致 |
+| 9 | 独立 smoke run：RouteStick/easy 组2个 block（200 候选）、1 条 train h5、1 条 test reset，全部单 worker；再调用同一 reset 验幂等 | 总耗时 <5 分钟；两个 jsonl、h5、图、报告齐全；`RESET_IDEMPOTENT=PASS rerun=0 duplicates=0`，主 run 角色不变。选2个 block 是因为正式 split 边界 run_episodes=115，单 block 没有 test 行；不增加仿真实跑条数 |
 
-实施完成后实测结果以子节追加在本表之后，不改写原计划。
+实施完成后实测结果以子节追加在本表之后，不把上述预期判定行改写为已测结果。每次代码改动后另执行 5 分钟内的相关测试；本表中 35 分钟的候选验证、仿真对拍等属于获批后的独立长任务，必须 tmux 启动，不拿它们代替短测试。
 
 ---
 
@@ -345,34 +376,65 @@ run 10 里 RouteStick/easy ep0 被生成过两次：smoke 档 `P0x1`（单卡 1 
 ## 〇、前置声明与红线
 
 - R1 `src/robomme/` 不动（AGENTS.md 强制规则第 11 条，录像器冻结）。
-- R2 `scripts/generate_dataset_newseed.py` 只改 `load_episode_specs`（jsonl 读法）与 `close()` 后核验段（加 `h5_sha256 / h5_bytes`）；不传 `--episode-specs` 时链路逐字不变。
+- R2 生成器允许的改动锚点仅为：`load_episode_specs` 的封套读取与旧 spec 投影；从 `load_sampling_config` 提取复用的对象校验 helper（旧文件调用语义不变）；`generate_dataset_newseed` 的 JSONL 输入分支注入 header 配置并核验 seed/固定 kwargs；`EpisodeJob` 新增默认 False 的 `emit_h5_digest` 标志，仅新 JSONL 分支置 True；`_worker` 在该标志开启时于 close 后新增 `h5_sha256 / h5_bytes`。不能从投影后相同的 spec 猜测来源。不改采样、planner、step、重试和录像逻辑；旧 JSON 与无规格路径保持原行为。
 - R3 run 10 的 h5 / mp4 只 `mv` 不重跑、不删；迁移前后逐文件 SHA-256 核对。
-- R4 `spec_sha256` 的算法与作用域不改，否则阶段 1 判据失去意义。
+- R4 `spec_sha256` 只对嵌入的旧 spec 使用原算法，旧字节与键集合不变。封套身份、管理状态、观测结果分别校验，不能靠重封旧散列、丢弃未知字段或伪造筛查值让测试通过。
 - R5 不 `git push --force`；分支 `newtask-v2.1refractor` 首次推送前先问用户是否 `git push -u origin newtask-v2.1refractor`，之后每次 commit 后照常 `git push`。
 - R6 `hf_release/` 与 `scripts/hf_release.py` 本轮不动。
-- R7 删除只在阶段 8 做，且在阶段 1 到 7 全部 PASS 之后；旧出图 / 事件表 / timeline 脚本在阶段 3 留下基线之前不得删。
-- R8 L3 对拍写到独立的临时 run-id（如 `<run10>-parity`），绝不写进 run 10 目录；PASS 后临时产物整目录删除，磁盘回到对拍前水位。
+- R7 旧模块和配置在阶段 1～7 保持可执行，供旧基线使用；阶段 8 获批且前置硬闸全部通过后才删除。测试夹具、审查账本属于保留边界，不在历史生产入口的删除范围。
+- R8 L3/L4 仿真只写独立临时 run，源候选只读。硬闸完成后先把结果表、范围、散列、诊断及失败证据留到正式 run 的 `rollout/logs/parity/`；没有诊断需求且清单核对后才清理临时大文件。存在视频差异时保留差异证据及对应视频对，不自动销毁定位材料；不能笼统 `rm -rf` 尚未留档的整个 run。
+- R9 `results.jsonl` 按键唯一、日志追加、单写者；两个 jsonl 的更新不是跨文件原子事务。先恢复一致状态再继续运行；未完成的目录迁移同样禁止被普通入口消费。
 
 ## 一、逐文件改动清单
 
 | 新文件 | 来源 | 改什么 |
 |---|---|---|
-| `scripts/injection/candidates/contract.py` `sampling.py` `specs.py` `categories.py` | `scripts/injection/` 同名文件 | 只改 import 路径 |
-| `scripts/injection/candidates/screen.py` | `campaign.py` 的 `cmd_check` 六项判定 + `plan_stats` 采集 | 判定按组算完后把每条的几何 / 碰撞 / 试用候选数写回该行 `screening`；组级写 `logs/quota_report.json`、`logs/check_result.json`；拒绝明细写 `logs/rejections.jsonl` |
-| `scripts/injection/candidates/figures.py` | `injection-before-2d/plot_injection_before_2d.py` | 输入改读 `candidates.jsonl`；输出根改 `candidates/figures/` |
+| `scripts/injection/candidates/contract.py` `sampling.py` `categories.py` | 原同名文件 | 先复制、只改包内 import；阶段8才删除旧路径 |
+| `scripts/injection/candidates/specs.py` | 原 `specs.py` | 原规格生成逻辑不变；在 `_place_binfill_cubes`、视频候选循环、`_count_rejection` 增加独立观测通道，采集 trial、物体键、拒绝原因及提案；按 4.1 区分计数单位；不把诊断写入旧 spec，不再截断新日志 |
+| `scripts/injection/candidates/io.py` | 新写，纯标准库 | `load_candidates / project_spec` 统一核验封套、主键、外内身份、旧 spec 散列及快照身份；header 与旧规格分离返回；禁止静默丢键；可复用原散列函数等价实现，由定向测试锁住 |
+| `scripts/injection/candidates/screen.py` | `campaign.py::cmd_check` 六项判定 | 四任务几何、碰撞和配额结果合入封套；消费生成时的逐条观测，不从聚合表反推；组级进 logs；run10 标 reconstructed，并在 L1 成功后才发布补证结果 |
+| `scripts/injection/candidates/figures.py` | 原 2D 出图脚本 | 通过 io 读取旧 spec；重定位 REPO_ROOT 与输出根，旧裸模块导入改包导入；前30条逐条图及全量分布口径不变 |
 | `scripts/injection/candidates/report.py` | `injection-before-2d/event_tables.py` + `NEW_VALUE_DISTRIBUTION_BEFORE.md` 二、三节模板 | 输出 `candidates/DISTRIBUTION.md`；保留 `--check` 零漂移模式 |
-| `scripts/injection/candidates/__main__.py` | `campaign.py` 的 `cmd_plan` | 顺序：派生 → screen → 写 jsonl → figures → report；`--run-id` 已存在则拒绝 |
-| `scripts/injection/rollout/run.py` | `scripts/injection/run.py` + `delivery.py::build_delivery_manifest` | 清单写 `rollout/logs/manifest.json`，`spec_path` 指向 `candidates.jsonl`；实跑结束后按 `delivery_400.json` 算 `role` 并原子重写 `results.jsonl`；保留 `--skip-done`、`--episode-range`、`--wall-limit-h`、`--label smoke`（smoke 产物落 `rollout/logs/smoke/`） |
-| `scripts/injection/rollout/windows.py` | `window_timeline.py` + `plot_sampling_windows.py` | 输入改读 `results.jsonl` 与 `rollout/<task>/<diff>/hdf5_files/`；timeline 写 `rollout/logs/windows_timeline.json`；图写 `rollout/figures/` |
+| `scripts/injection/candidates/__main__.py` | `campaign.py::cmd_plan` | 派生→采集→screen→写封套/快照→图→报告；同名候选或运行状态已存在即拒绝覆盖，预建空 logs 不算已冻结运行；`--purpose smoke` 允许候选规模小于正式交付需求，但保持原 split 边界和分层机制 |
+| `scripts/injection/rollout/run.py` | 原 `run.py + delivery.py` | 原始尝试日志与唯一结果表分离；副本归属、单写者、恢复、scope、角色与幂等合并按 4.2/5.3；保留范围/续跑/墙钟限制；`--purpose delivery/parity/smoke` 显式决定是否验完整交付；`invoke_generator` 用 REPO_ROOT 拼生成器绝对路径 |
+| `scripts/injection/rollout/windows.py` | `window_timeline.py + plot_sampling_windows.py` | 按 results 的有效 h5_path 读取，不假设迁移已完成；保留慢条规则，输出 before/kept/excluded 和 skipped；timeline 与图落新目录；重定位 REPO_ROOT、默认路径及所有裸导入 |
 | `scripts/injection/rollout/report.py` | `campaign.py::cmd_report` 的结果表部分 + `window_timeline.py tables` | 输出 `ROLLOUT.md`（通过表、失败清单、视频状态）与 `WINDOWS.md`（公式、汇总表、剔除表） |
-| `scripts/injection/rollout/single_binfill.py` | `plot_binfill_medium_single.py` | 只改输入路径；不被 `__main__` 调用 |
-| `scripts/injection/rollout/h5_compare.py` | `scripts/injection/h5_compare.py` | 原样搬入；只在 `H5_PARITY` 散列不一致时手动调用定位差异 |
-| `scripts/injection/rollout/reset_check.py` | `scripts/injection/env_check.py`（`check_one` / `run_env_check` / `EnvCheckPlan`） | 输入改读 `candidates.jsonl` 的 `split="test"` 行；输出改为向 `results.jsonl` 追加 `kind="reset"` 行（`ok / split / role` 替代 `outcome / delivered`）并回写 `candidates.jsonl` 的 `role`，组级判定写 `logs/reset_check_result.json`；加 `--only-unused`（只跑 `role="unused"` 的行，不改停点规则，供 run 10 例外用）；`gym.make` kwargs 与 `_worker` 逐字一致、单条 120 秒超时、pebble 池复用 `_pool_init` 与 `_cpu_plan` 三点不动 |
-| `scripts/injection/rollout/parity.py` | 新写 | 读两个 run 的 `results.jsonl`（旧 run 用迁移后的），按 (kind, task, difficulty, episode) 配对：h5 行比 `h5_sha256`、mp4 SHA-256 或帧数、`failure_class / error_type`，打 `H5_PARITY`；reset 行比 `ok / error_type / injection_bound` 与每组停止 episode，打 `RESET_PARITY` |
-| `scripts/injection/rollout/__main__.py` | `campaign.py` 的 `cmd_run` feasibility 分支 | 顺序：run → role → reset_check → windows → report |
-| `scripts/generate_dataset_newseed.py` | 现有 | `load_episode_specs`：清单 `spec_path` 以 `.jsonl` 结尾时按 `(task, difficulty)` 过滤行、跳过 header；`_worker` 的 `close()` 后核验段加 `h5_sha256 / h5_bytes` |
+| `scripts/injection/rollout/single_binfill.py` | `plot_binfill_medium_single.py` | 改输入路径及旧 window_timeline/plot_sampling_windows 的包导入；不被主入口调用，但其导入及 `--help` 必须纳入 IMPORT_CLOSURE |
+| `scripts/injection/rollout/h5_compare.py` | 原同名文件 | 原算法迁入，保留原共享工具所需导出符号；h5 散列不同时定位差异，不自动放宽硬闸 |
+| `scripts/injection/rollout/reset_check.py` | 原 `env_check.py::check_one / run_env_check / EnvCheckPlan` | 输入只读所属 run 的候选副本及 header 配置；普通模式复用终态并按旧组序/批序完成配额；only-unused 模式遍历冻结集合，不按50停止；结果走 run.py 统一合并；固定 kwargs、120秒单条超时、池初始化及 CPU/GPU 绑定不变；修正新目录 REPO_ROOT |
+| `scripts/injection/rollout/parity.py` | 新写 | 从冻结 scope 取预期键，先检查重复/缺失/额外，再执行 L3/L4；h5 SHA/失败类型为硬闸，视频诊断单列；`--scheme B` 固定14组各ep0～14；返回码只取硬闸；核验源候选前后字节不变 |
+| `scripts/injection/rollout/__main__.py` | 原 feasibility 编排 | 导入独立候选副本→恢复状态→run→role→reset_check一次→windows→report；`--no-figures` 只跳图；smoke 用 `--reset-limit 1`、不验完整交付；作用域在执行前冻结到 logs |
+| `scripts/generate_dataset_newseed.py` | 现有 | 只改 R2 所列五个锚点；JSONL 候选经 io 返回旧 spec，header 采样对象走与旧文件同一校验函数；显式标志控制散列结果字段；外部配置只能做一致性断言；不在 worker 里写候选管理状态 |
 | `scripts/INJECTION.md` | 新写 | 现行口径、两阶段命令、两个 jsonl 字段表、追溯链、「再次 HF 发布须改 hf_release.py」 |
-| 一次性迁移脚本 `scripts/injection/_migrate_run10.py` | 新写，阶段 7 用完即删 | `specs/*.json + plan_stats + check_result` → `candidates.jsonl`；`episode_results.jsonl + delivery_manifest.json` → `kind="h5"` 行、`env_check/*.jsonl` → `kind="reset"` 行，合并为 `results.jsonl`；目录 `mv`；SHA-256 核对 |
+| `scripts/injection/_migrate_run10.py` | 新写，保留到迁移及恢复演练通过 | 分 `prepare / move / verify / resume`；prepare 用旧 specs 加 L1 重算诊断写候选、按旧主键和清单写结果；move 基于清单逐项移动并改写有效路径；禁止覆盖；verify 守恒和可达性；resume 按 journal 继续；工具与报告至少保留到阶段8审查后 |
+
+### 测试与保留工具的逐项适配
+
+以下都是未来实施清单，本轮不改这些文件。每阶段的新接口测试与当阶段代码一起加入，阶段8才完成旧路径删除后的整体收集检查；不能用删测试、增加 skip 代替迁移。
+
+| 文件 | 保留断言与改动 |
+|---|---|
+| `tests/lightweight/test_episode_specs.py` | 导入新 specs；旧 JSON 校验不变；补3400条封套投影、角色回写、身份/快照篡改拒绝与完整 kwargs 等价 |
+| `tests/lightweight/test_injection_contract.py`、`test_operand_scope.py` | 改导入新核心与纯测试构建器；保留 v1/v2/v3 的取值域差分、override、作用域散列与14组约束 |
+| `tests/lightweight/test_injection_campaign.py`、`test_injection_blocks.py` | 分别迁到 screen/run 接口；保留配额、block 独立性、范围守卫、失败分类、结果去重；新增观测开关不改规格或随机流的对拍 |
+| `tests/lightweight/test_injection_delivery.py` | 适配 results/role；验证完整交付与 partial scope 分离，失败和 spare 不丢；覆盖两个文件更新中断后恢复 |
+| `tests/lightweight/test_env_check.py`、`test_episode_timeout.py` | 导入 rollout；保留池初始化、失败、超时；覆盖普通停点与 only-unused 不同终止条件、幂等、pending/unused 与 primary 冻结 |
+| `tests/lightweight/test_window_timeline.py` | 改为新 windows/figures；保留分段、swap、慢条和 BinFill demo 断言，核 before=kept+excluded，错配/遗漏必须失败 |
+| `tests/lightweight/test_scripts_do_not_import_tests.py` | 旧平铺文件集合改成两包拓扑；保留生产代码不得导入 tests 的 AST 检查 |
+| `tests/_shared/native_sampling_parity.py` | 从新 h5_compare 导入同名比较符号，原值对拍调用方式与断言不变；对应 dataset 测试至少能正常收集 |
+| `tests/lightweight/test_hf_release.py` | 真实历史清单改从迁移后 logs 读取；测试侧按映射提供有效路径，发布脚本不改；不因旧目录消失把当前用例改为 skip |
+| `tests/fixtures/injection_legacy/` 与 `tests/_shared/contract_builder_fixture.py` | v1/v2 原 JSON 逐字保留为测试夹具；仅保留 build_v1/v2/v3 的纯函数及依赖常量，去掉写文件/CLI；测试保留逐字重建与版本差分；生产不得依赖这些夹具 |
+
+源码导入用 AST/实际模块收集查，不按文档字符串做零命中。旧历史产物确实缺失的既有 skip 单列；新增 skip 必须有原因，不能掩盖本次搬迁失败。通过 `uv run --no-sync python -m pytest tests/lightweight/ --collect-only -q`，再在5分钟预算内执行全部受影响定向测试；如现有4条全量失败仍出现，先同基线确认，不能改成跳过或报全量通过。
+
+### 阶段4、6、7的路径和恢复协议
+
+1. 阶段4先生成结果与 `rollout/logs/migration/path_map.json`，每个源文件/小文件引用与目标一一对应，路径必须在当前 run 内；当前结果仍用真实存在的旧绝对路径。清单覆盖正式、失败残留视频、附加视频、metadata、smoke 和小文件，不只由1796条成功行推导。
+2. 阶段6按当前结果路径读取，原、新 timeline 对拍只对已列明的 `source / h5_path` 做映射归一化，其他字段不豁免；数字、分段、剔除记录和图片照比。
+3. 阶段7取得该 run 独占锁，写 `migration_state=in_progress`；普通消费入口遇到该状态拒绝运行。先备份将改写的小文件并生成新版本，再逐项移动目录、更新 journal，最后替换结果/timeline/报告/活跃清单；所有闸门通过后置 complete。多次 `os.replace` 不称作整体原子。
+4. 恢复只接受“源有目标无”继续移动，或“源无目标有且大小/散列匹配”继续后续步骤；两边都有、都没有、散列不匹配立即停下，不覆盖不删除。小文件替换失败用 journal 中备份与预生成版本恢复；恢复完成前保持消费阻断。
+5. 活跃引用包括 `h5_path / video.path / video.no_object_paths / binfill_demo.video_path`、timeline、报告链接和续跑清单；全部按映射改写。原始 logs、归档交付清单、discarded 里的历史已删路径保留原文，不要求存在，但不得拿它们当新运行入口。
+6. 最终查 `H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0`（只统计正式档1600 primary+196 spare，smoke及任何失败残留另入完整清单）；`ARTIFACTS_INTACT=PASS missing=0 extra=0 sha_mismatch=0` 检查冻结的旧产物集合经路径映射后的守恒，含全部旧视频和metadata，阶段5/6新增图表、诊断等另有允许清单，不能把它们误判为 extra；`ACTIVE_PATHS=PASS missing=0 old_prefix=0`；`MIGRATION_METADATA=PASS unexpected_field_changes=0`（只允许登记路径改写，不改角色/帧数/失败信息）；`MIGRATION_RECOVERY=PASS duplicate_moves=0 overwritten=0`。恢复中断用小夹具演练，不故意破坏真实 run10。
 
 ## 二、`.gitignore` 替换段
 
@@ -384,9 +446,21 @@ run 10 里 RouteStick/easy ep0 被生成过两次：smoke 档 `P0x1`（单卡 1 
 /artifacts/injection/*/*
 !/artifacts/injection/*/candidates/
 /artifacts/injection/*/candidates/figures/
+!/artifacts/injection/*/candidates/logs/**/*.log
+/artifacts/injection/*/candidates/**/*.png
+/artifacts/injection/*/candidates/**/*.jpg
+/artifacts/injection/*/candidates/**/*.jpeg
+/artifacts/injection/*/candidates/**/*.svg
 !/artifacts/injection/*/rollout/
-/artifacts/injection/*/rollout/*/*/hdf5_files/
-/artifacts/injection/*/rollout/*/*/videos/
+!/artifacts/injection/*/rollout/logs/**/*.log
+/artifacts/injection/*/rollout/**/hdf5_files/
+/artifacts/injection/*/rollout/**/videos/
+/artifacts/injection/*/rollout/**/*.h5
+/artifacts/injection/*/rollout/**/*.mp4
+/artifacts/injection/*/rollout/**/*.png
+/artifacts/injection/*/rollout/**/*.jpg
+/artifacts/injection/*/rollout/**/*.jpeg
+/artifacts/injection/*/rollout/**/*.svg
 /artifacts/injection/*/rollout/figures/*
 !/artifacts/injection/*/rollout/figures/windows_overview.png
 !/artifacts/injection/*/hf_release/
@@ -394,36 +468,75 @@ run 10 里 RouteStick/easy ep0 被生成过两次：smoke 档 `P0x1`（单卡 1 
 
 删除 `scripts/injection-before-2d/figures/*` 两行。
 
+基线图和差异帧保留在磁盘，但同样不误入 git；原始图片/视频诊断路径、散列、说明进轻量日志。实施时使用 `git check-ignore --no-index -v` 检查以下代表路径；另外检查已跟踪文件清单，防止已有跟踪绕过忽略规则：
+
+| 应入库 | 应忽略 |
+|---|---|
+| `candidates/candidates.jsonl`、`candidates/logs/plan.log` | `candidates/figures/.../*.png`、`candidates/logs/baseline/*.png` |
+| `rollout/results.jsonl`、`rollout/logs/parity/check.log` | `rollout/<task>/<diff>/hdf5_files/*.h5`、`videos/*.mp4` |
+| `rollout/<task>/<diff>/record_dataset_<task>_metadata.json` | `rollout/logs/smoke/smoke/<task>/<diff>/hdf5_files/*.h5`、同级 `videos/*.mp4` |
+| `rollout/figures/windows_overview.png` | `rollout/figures/<task>/<diff>/4_windows.png` |
+
 ## 三、runbook（阶段 5 对拍与阶段 9 冒烟的新链路命令）
 
-阶段 5（方案 B：每组 block 0 前 15 条；reset 核验全量）：
+**以下均为未来 CLI 契约与命令模板；本轮不执行。** 参数及模块须在相应阶段实现并通过短测后才能使用。阶段5使用原运行配置、依赖锁和 GPU 型号；新进程不要继承未记录的运行时覆盖。
+
+阶段 5（方案 B：每组 block 0 前 15 条；reset 只由主命令执行一次）：
 
 ```bash
-RID=20260912-contract-v3-10; PID=$RID-parity; CFG=scripts/configs/newtask-v2/delivery_400.json
-# 用 run 10 的 candidates.jsonl 重跑每组前 15 条（约 15 到 20 分钟，tmux 起，日志落 artifacts/injection/$PID/rollout/logs/）
-uv run --no-sync python -m scripts.injection.rollout --run-id $PID --candidates artifacts/injection/$RID/candidates/candidates.jsonl \
-  --delivery-config $CFG --tier 20 --gpus 0,1 --episodes 15 --no-figures
-# reset 核验全量重做（约 8 分钟，同一临时 run-id）
-uv run --no-sync python -m scripts.injection.rollout.reset_check --run-id $PID --candidates artifacts/injection/$RID/candidates/candidates.jsonl \
-  --delivery-config $CFG --tier 20 --gpus 0,1
-uv run --no-sync python -m scripts.injection.rollout.parity --left $RID --right $PID   # H5_PARITY=PASS compared=210 … / RESET_PARITY=PASS compared=720 …
-rm -rf artifacts/injection/$PID   # PASS 后
-# run 10 例外：把 838 条 unused 全部 reset 一遍，结果写回 run 10 本体（约 7 分钟）
-uv run --no-sync python -m scripts.injection.rollout.reset_check --run-id $RID --only-unused --tier 20 --gpus 0,1   # UNUSED_RESET=PASS checked=838 unused_left=0
+command -v uv
+RID=20260912-contract-v3-10
+PARITY_RUN=20260912-contract-v3-10-parity
+mkdir -p "artifacts/injection/$PARITY_RUN/rollout/logs"
+# --candidates 只读导入到临时 run，重置副本执行状态；主命令包含唯一一次 L4。
+tmux new-session -d -s injection-parity -c "$PWD" \
+  "set -o pipefail; export PYTHONUNBUFFERED=1; { \
+uv run --no-sync python -m scripts.injection.rollout --run-id '$PARITY_RUN' \
+  --candidates 'artifacts/injection/$RID/candidates/candidates.jsonl' \
+  --purpose parity --tier 20 --gpus 0,1 --episodes 15 --no-figures && \
+uv run --no-sync python -m scripts.injection.rollout.parity \
+  --left '$RID' --right '$PARITY_RUN' --scheme B; \
+} 2>&1 | tee 'artifacts/injection/$PARITY_RUN/rollout/logs/parity.log'; \
+echo \"EXIT_CODE=\$?\" >> 'artifacts/injection/$PARITY_RUN/rollout/logs/parity.log'"
+# 围观：tmux attach -t injection-parity；只在硬闸和源文件完整性确认后开始下一步。
 ```
 
-阶段 9：
+`parity` 在全部硬闸通过时退出0，即使 `VIDEO_DIAGNOSTIC=DIFFERENT/NOT_RUN`；报告必须同时显示视频状态。先留档轻量证据及有差异的视频对，再按 R8 清理临时大文件。不要把已退出的 tmux 会话或出现了日志当成通过，必须检查 `EXIT_CODE=0` 和各具名硬判定。
+
+随后对原 run10 进行已授权范围内的 unused 补查（阶段5获批后才可执行）：
 
 ```bash
-RID=<新编号>; CFG=scripts/configs/newtask-v2/delivery_400.json
-# 第一阶段：候选 + 图 + 报告（约 35 分钟，tmux 起）
-uv run --no-sync python -m scripts.injection.candidates --run-id $RID \
-  --contract scripts/configs/newtask-v2/injection_contract_v3.json --delivery-config $CFG
-# 第二阶段：h5 + mp4 + results.jsonl + 数轴图 + 报告（约 2 小时，tmux 起）
-uv run --no-sync python -m scripts.injection.rollout --run-id $RID --delivery-config $CFG --tier 20 --gpus 0,1
+command -v uv
+tmux new-session -d -s injection-unused -c "$PWD" \
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.injection.rollout.reset_check \
+  --run-id 20260912-contract-v3-10 --only-unused --tier 20 --gpus 0,1 \
+  2>&1 | tee artifacts/injection/20260912-contract-v3-10/rollout/logs/unused.log; \
+echo \"EXIT_CODE=\$?\" >> artifacts/injection/20260912-contract-v3-10/rollout/logs/unused.log"
 ```
 
-冒烟用 `--groups RouteStick/easy --blocks 1` 与 `--groups RouteStick/easy --episodes 1 --label smoke`。
+`--only-unused` 冻结并遍历全部838键，复用终态；核对 checked=passed+failed=838、unused_left=0、primary_changed=0。不能因为已有700条 primary 就直接停工。
+
+阶段 9（不足5分钟的独立 smoke；此处不附全量运行命令）：
+
+```bash
+command -v uv
+timeout 280s bash <<'SMOKE'
+set -euo pipefail
+SMOKE_RUN=refactor-final-smoke
+uv run --no-sync python -m scripts.injection.candidates --run-id "$SMOKE_RUN" \
+  --contract scripts/configs/newtask-v2/injection_contract_v3.json \
+  --delivery-config scripts/configs/newtask-v2/delivery_400.json \
+  --purpose smoke --groups RouteStick/easy --blocks 2
+uv run --no-sync python -m scripts.injection.rollout --run-id "$SMOKE_RUN" \
+  --purpose smoke --groups RouteStick/easy --episodes 1 --reset-limit 1 \
+  --tier 1 --gpus 0 --label smoke
+# 同一 smoke 状态重复调用，不再启动已完成的 reset。
+uv run --no-sync python -m scripts.injection.rollout.reset_check --run-id "$SMOKE_RUN" \
+  --purpose smoke --groups RouteStick/easy --limit 1 --tier 1 --gpus 0 --label smoke
+SMOKE
+```
+
+两条执行入口的 `--label smoke` 必须解析到相同的 `rollout/logs/smoke/smoke/` 状态目录，里面保存该次候选副本、唯一结果表、图和报告，不能回写正式候选。只查1条test，不执行每组50条配额。超时或首条失败直接停止，不扩大到全量；重复试跑换独立 run-id，保留失败证据。
 
 ## 四、风险登记
 
@@ -431,21 +544,26 @@ uv run --no-sync python -m scripts.injection.rollout --run-id $RID --delivery-co
 |---|---|
 | run 10 的 `feasibility/P0x1/` smoke 档与 `P01x20` 都有 RouteStick/easy ep0，`delivery_manifest.json` 去重时取的是哪一份未查 | 阶段 4 迁移时按 `delivery_manifest.json` 记录的 `h5_path` 选取，另一份进 `logs/smoke/` |
 | `record_dataset_<task>_metadata.json` 由录像器落在组目录，位置不受控 | 保持原位随组目录一起 `mv`，`.gitignore` 反选其入库 |
-| `results.jsonl` 由生成器追加写、收尾步整文件重写，中断在重写期间会损坏 | 写临时文件后 `os.replace` |
-| BinFill h5 单条 900 MB，算 `h5_sha256` 在 `close()` 后串行做会拖慢 worker | 与现在 `delivery --hash full --workers 8` 同量级，10 轮实测可接受；若拖慢改为收尾步并行算 |
+| 两个 jsonl 之间中断或被并发写入 | run 级独占写锁，唯一结果表为依据，恢复先重建候选角色；单文件原子替换不冒充整体事务 |
+| 跨 run 对拍误改正式状态，重复 reset | 首次只读导入独立副本、记录源散列；主命令只含一次 reset，复用终态；PARITY_KEYS 检查重复而非覆盖 |
+| 多目录移动中断或有效路径仍指旧位置 | 显式映射、journal、备份与消费阻断，按状态恢复；ACTIVE_PATHS 与文件清单共同验收 |
+| BinFill 大 h5 的散列核验拖慢 worker | 先测量新增开销；必要时由收尾步并行读文件计算，但文件关闭/成品检查必须先完成，散列完成前不交付 |
+| 视频不阻塞被误写成视频通过 | VIDEO_DIAGNOSTIC 单列差异/未执行计数，h5 PASS 文案不包含视频等价；迁移视频完整性仍必验 |
+| 生成循环增加诊断改变采样 | 观测只读已得到的值，不调用 RNG；3400条 spec 和 block 独立性对拍；reconstructed 不冒充原始证据 |
 | `hf_release.py` 仍读 `delivery_manifest.json` | R6 不改，`INJECTION.md` 记明 |
 
 ## 五、盲区诚实清单
 
 - 「逐字节确定」的证据只有 RouteStick/easy ep0 一条（h5 与 mp4 各一次两两相同），BinFill demo 直出的 h5 与 VideoRepick / VideoUnmaskSwap 的 h5 尚无跨次对照；阶段 5 若出现散列不一致，先用 `h5_compare.py` 判断是内容差异还是写入层非确定，不能直接判新链路有 bug。
-- BinFill 的 mp4 经 `imageio` 二次编码，逐字节是否确定未验证，L3 只比帧数。
-- 3 条 `BinFillDemoError`（ffmpeg `Broken pipe`）根因未查，属偶发，重跑时可能变成成功；L3 的 `failure_mismatch` 对这 3 条只记不判。
+- BinFill 的 mp4 经 `imageio` 二次编码，跨次确定性未证明；视频按用户决定只诊断，不阻塞 h5 对拍，但不能只凭帧数相同报内容相同。
+- 3 条 `BinFillDemoError` 根因未查，不能预判必然复现；它们不在方案 B 的210键内。若今后另批全量对拍，成功/失败类型变化必须如实判差异，没有“只记不判”的失败豁免。
 - L2 的旧 `window_timeline.py extract` 从未对 run 10 跑过，耗时未实测。
-- 阶段 6 重出的图与报告基于 run 10 的 1796 条，与 07 版本不可逐图对照。
-- 方案 B 只实证 210 条，其余 1632 条的一致性是由确定性推断的；若日后要宣称「逐条一致」须补跑 A。
-- reset 核验的 `outcome` 现在是中文字符串「通过」，迁移为 `ok` 布尔值时按 `outcome == "通过"` 判，其余七类归 `error_type`；VideoRepick/xhard 与 VideoUnmaskSwap/xhard 各查了 54 条而非 51 条，说明有在飞批次 `counted=false` 的行，迁移时原样保留 `counted`。
+- 阶段6从运行10的1796条成功结果读入，剔除后条数待阶段3确定；与07不可逐图对照，须与新捕获的同输入旧实现基线比较。
+- 方案 B 只实证210条，其余1632条未验证，不能推断一致；block≥1及部分执行恢复由静态全量/定向测试补覆盖，不冒充生成对拍。
+- reset 原 `outcome / ok / error_type` 分别是结果分类、布尔成功和异常类型，迁移保留并校验相容性；720条中的20条在飞余量仍保留 counted=false，不被丢弃。
+- run10 拒绝明细将来自未来 L1 重算，记录届时环境与 commit；不能恢复历史上未保存的观测时间或基础设施状态。
 - 删除轻量包后 08 / 09 的尾迹核验脚本随之消失，只在 git 历史可查。
 
 ## 六、留档与 commit 纪律
 
-每阶段一个 commit，subject 体例 `11.0N <一句话>`，body 按 `~/.claude/CLAUDE.md` 的六项写；只 `git add` 本阶段明确路径。11.01 到 11.04 在 `newtask-v2` 上提交并已推送；11.05 起全部在 `newtask-v2.1refractor` 上提交，首次推送前先问用户是否 `git push -u`，获准后每次 commit 后照常 `git push`。
+每阶段一个 commit，subject 接续最新版本号，body 按仓库 `AGENTS.md` 规则7记录用户原话、计划、过程、意外、验证和当前状态；只 `git add` 本阶段明确路径。11.01～11.04 的计划提交在 `newtask-v2`，11.05起在 `newtask-v2.1refractor`；首次推送仍遵守 R5。本轮仅提交本文，不改审查报告和账本，不执行本文任何实施步骤，不推送。
