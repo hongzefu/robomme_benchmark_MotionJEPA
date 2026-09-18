@@ -197,7 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| 注入重构实施阶段 0～1（2026-09-17） | 进行中 | 用户指令「开始实现」；分支 `newtask-v2.1refractor`，起点 `2bcd9cc`，工作区干净；依据修订后的 `INJECTION_REFACTOR_PLAN.md` | 冻结阶段 0 基线，然后实施候选包和阶段 1 全量对拍；后续阶段单独推进 |
+| 注入重构实施阶段 0～1（2026-09-17） | 完成，阶段 2 待单独批准 | 阶段 0 `41f5fa2`（11.09）；阶段 1 全量 3400 条完整规格零差异、11 项判定全 PASS，1986.59 秒，EXIT_CODE=0；11514 条拒绝事件；短测 60 passed / 9 skipped，补测 14 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 2 接入生成器、3400 条加载器与 kwargs 对拍、RouteStick/easy/ep0 单 worker 冒烟；按计划单独批准后开始 |
 | 注入重构计划对抗审查（2026-09-17） | 审查完成；计划未通过 | 确认九项缺陷；原记录加候选元数据后散列校验拒绝；沿用停点规则补查 unused 只执行 600、剩 238；数轴反例最长段 828 > 400；定向测试 65 passed / 9 skipped，5.24 秒；[审查报告与复现命令](docs/validation/newtask-v2/20260917-injection-refactor-audit.md) | 先修订各项契约与验收；本轮不实施重构，原计划、生产代码、数据保持原状 |
 | 每 env 400 条严格交付 + 每档 50 条纯候选 `20260912-contract-v3-10`（`10.72`～`10.76`） | 完成 | 候选按 100 条 block 扩容（14 组 3400 条，`PLAN=OK elapsed_s=675.3`、`CHECK=PASS elapsed_s=1338.5`、对 07/09 `BLOCK0_EQUIVALENCE=PASS compared=1400 differences=0`）；实跑 1842 条双卡 40 worker 墙钟 6685 秒通过 1796（97.5%）`RUN=PASS`；env-check 14 组各 50 条 reset 全通过 `ENV_CHECK=PASS delivered=700`；`DELIVERY_400=PASS` ×4、`DELIVERY_TOTAL=PASS delivered=1600 spare=196 h5_missing=0`；`REPORT=OK`，[README](docs/validation/newtask-v2/20260912-contract-v3-10/README.md)；候选/结果/清单/十份阶段日志约 30 MB 入库 | 正式数据见 `delivery_manifest.json` 的 primary；`BinFillDemoError`（ffmpeg Broken pipe ×3）根因待查；数轴/跑前分布仍基于 07 |
 | RouteStick 白球尾迹减半专项重出 `20260912-contract-v3-08`（四档各 5 条）+ 07 小产物入库（`10.70`） | 完成 | `RouteStick.step` 白球存活 40→20（规则 11 获批）、快照重导出 `--check-config` 一致；08 `PLAN=OK specs=1400 elapsed_s=335.3`、`CHECK=PASS elapsed_s=659.7`、与 07 `OLD_GROUPS_EQUIVALENCE=PASS compared=1400 differences=0`；`campaign run --episodes 5 --tier 10 --gpus 0,1` 墙钟 97.5 秒 `RUN=PASS`，20/20 通过、逐条 `timestep_count` 与 07 同 episode 相同；四档 ep0 `TRAIL_HALVED=PASS median_diff=20.0`（[trail_check.py](docs/validation/newtask-v2/20260912-contract-v3-08/trail_check.py)）；07 目录新增 22 个小文件入库（两份 feasibility 判定、清单、日志、P01x20 运行参数/汇总/逐条结果/14 组 metadata，约 2.3 MB）；lightweight 467 passed / 4 failed（4 条在 HEAD `1f7cbd8` 同样失败，既有） | 其余 10 组仍以 07 为准；若要全量按新尾迹重出，走同一 runbook 去掉 `--groups`/`--episodes` |
@@ -1539,3 +1539,34 @@
 - 计划与实施：先固定旧代码、配置、依赖锁和运行 10 清单，再建立候选包、过程观测与封套校验，阶段 1 以 3400 条旧规格完整对拍为硬闸；其余阶段按原计划边界推进。
 - 证据：`docs/validation/newtask-v2/20260917-injection-refactor/baseline.sha256` 冻结 221 个文件；`sha256sum -c docs/validation/newtask-v2/20260917-injection-refactor/baseline.sha256 --quiet` 退出 0。范围及复验命令见同目录 README。
 - 本阶段无代码改动，没有运行仿真；不改现有数据、不触碰环境源码、不推送。大型产物的全文件散列核验留到阶段 7 迁移前。
+
+### 2026-09-17 America/Detroit — 注入重构阶段 1：候选包实施开始
+
+- 实施：复制 `contract/sampling/categories/specs` 到 `scripts/injection/candidates/`；旧模块原样保留。新规格模块用上下文隔离的只读回调采集提案和拒绝，不改变旧统计或随机流。新增纯标准库封套读取、筛查与入口；生成后经全部检查才发布候选。
+- 验证进行中：四任务 easy 各 100 条的新旧生成器完整记录和旧统计对拍通过。第一次短测因仓库内 `artifacts/test-tmp` 父目录不存在产生 12 个夹具错误，已补建父目录，未改用仓库外临时目录。静态检查另发现搬迁筛查模块漏导入 `canonical_json` 和 `Sequence`，已补齐。
+- 边界：本阶段不接生成器、不起仿真、不移动现有产物；图表在阶段 6 接入，当前候选入口尚不是最终包含图和报告的完整流程。阶段 1 全量判据尚未执行，不宣称完成。
+
+### 2026-09-17 America/Detroit — 注入重构阶段 1：短测通过，全量对拍启动
+
+- 定向测试退出 0：60 passed / 9 skipped，93.41 秒；筛查结构加强后补测 14 passed / 4 deselected，3.16 秒。没有新增跳过；完整命令见 `docs/validation/newtask-v2/20260917-injection-refactor/README.md`。
+- 全量命令：`uv run --no-sync python -m scripts.injection.candidates --run-id 20260912-contract-v3-10 --reconstruct-run 20260912-contract-v3-10`，运行于 detached tmux `injection-refactor-l1`，采用 `pipefail + PYTHONUNBUFFERED + tee + EXIT_CODE`。日志为 `artifacts/injection/20260912-contract-v3-10/candidates/logs/plan.log`。
+- 本阶段先采集真实拒绝并核对全部旧文档/统计，再独立几何、碰撞、配额和逆组序再生检查，最后才发布封套；重算证据明确标记 reconstructed。全量尚在运行，不预写 PASS。
+
+### 2026-09-17 America/Detroit — 注入重构阶段 1：3400 条重算完成
+
+- 14 组、3400 条的完整旧文档与旧统计逐组比较通过；`SPEC_SCOPE`、`CONTRACT_DERIVED`、`COVERAGE_QUOTA`、`STATIC_GEOMETRY`、`COLLISION_GEOMETRY` 已输出 PASS。契约的 6 个差异均在原有 2 项 override 覆盖内，`problems=0`。
+- 拒绝明细实际 11514 行、3078047 字节；`jq -s 'length' candidates/logs/rejections.jsonl` 与旧 `plan_stats.json` 的四类拒绝计数总和均为 11514。没有沿用旧日志截断。
+- 独立投影检查：3400 条角色改写前后旧规格规范化字节相同，seed 与 `get_layout('train').seed` 全部相同，`PROJECTION_EQUIVALENCE=PASS`。该检查不替代阶段 2 的完整 kwargs 验证。
+- 当前仍在连续碰撞复核，之后还需逆组序独立再生与最终发布；尚未标记阶段 1 完成。
+
+### 2026-09-17 America/Detroit — 注入重构阶段 1：连续碰撞复核通过
+
+- `COLLISION_SWEEP=PASS specs=1700 rejected=0 uncertified=0 min_g_m=1.4025e-05`。这里只统计两个视频任务的连续碰撞候选，不能称为 3400 条全部进行扫掠；BinFill 和 RouteStick 的相关扫掠字段按计划不适用。
+- 任务继续执行逆组序独立再生，比较完整旧记录并重算两侧散列；最终 `SPEC_REPRODUCIBLE`、L1 主键、来源完整性和候选封套发布仍待完成。
+
+### 2026-09-17 America/Detroit — 注入重构阶段 1：全量验收与发布完成
+
+- 全量任务退出 0，耗时 1986.59 秒，11 项判定全 PASS。`SPEC_REPRODUCIBLE` 与 `CANDIDATES_EQUIVALENCE` 均为 compared=3400、differences=0；L1 `PARITY_KEYS` 为 expected=actual=3400、missing=extra=duplicates=0；`SOURCE_INTACT files=16`。
+- 发布 `artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl`，共 3401 行。落盘复验 `CANDIDATE_FILE=PASS candidates=3400 train=1842 test=1558 pending=3400 reconstructed=3400`；对内存副本改写全部角色，`ROLE_REWRITE_IDENTITY=PASS rows=3400 changed_specs=0 changed_identity=0`，正式文件没有回写假角色。
+- 旧基线 221 文件、全部实测候选实现的指纹均复验通过。随后按计划在实施步骤表后追加本轮实测记录，因此原计划文件是冻结清单中唯一登记的后续文档差异；其余 220 个旧文件不变。
+- 短测结果与意外见前述日志及实施留档。当前图表/报告、生成器适配、旧角色迁移、210 条 HDF5 对拍、838 条 reset 补查和目录迁移均未执行；阶段 2 待单独批准。旧生成器、环境源码、HDF5/视频和旧小产物未改，未推送。

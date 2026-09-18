@@ -1,0 +1,86 @@
+{
+  "passed": true,
+  "verdicts": [
+    {
+      "name": "SPEC_SCOPE",
+      "status": "PASS",
+      "groups": 14,
+      "specs": 3400,
+      "blocks": "2/3",
+      "excluded": "VideoRepick-hard",
+      "problems": 0
+    },
+    {
+      "name": "CONTRACT_DERIVED",
+      "status": "PASS",
+      "fields": 200,
+      "mismatches": 6,
+      "overrides": 2,
+      "version": "v3",
+      "problems": 0
+    },
+    {
+      "name": "COVERAGE_QUOTA",
+      "status": "PASS",
+      "groups": 14,
+      "batches": 10,
+      "blocks": "2/3",
+      "quota_gaps": 0
+    },
+    {
+      "name": "STATIC_GEOMETRY",
+      "status": "PASS",
+      "checked": 3400,
+      "rejected": 0
+    },
+    {
+      "name": "COLLISION_GEOMETRY",
+      "status": "PASS",
+      "bin_shapes": 6,
+      "cube_shapes": 1,
+      "four_object_pairs": 6,
+      "note": "真实-actor-对照在步骤2冒烟"
+    },
+    {
+      "name": "COLLISION_SWEEP",
+      "status": "PASS",
+      "specs": 1700,
+      "rejected": 0,
+      "uncertified": 0,
+      "min_g_m": 1.4025e-05
+    },
+    {
+      "name": "SPEC_REPRODUCIBLE",
+      "status": "PASS",
+      "compared": 3400,
+      "differences": 0
+    },
+    {
+      "name": "SCREENING_EVIDENCE",
+      "status": "PASS",
+      "rows": 3400,
+      "groups": 14
+    },
+    {
+      "name": "PARITY_KEYS",
+      "status": "PASS",
+      "layer": "L1",
+      "expected": 3400,
+      "actual": 3400,
+      "missing": 0,
+      "extra": 0,
+      "duplicates": 0
+    },
+    {
+      "name": "CANDIDATES_EQUIVALENCE",
+      "status": "PASS",
+      "compared": 3400,
+      "differences": 0
+    },
+    {
+      "name": "SOURCE_INTACT",
+      "status": "PASS",
+      "files": 16
+    }
+  ]
+}

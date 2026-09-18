@@ -1,0 +1,31 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+候选完成 BinFill/easy rows=300
+候选完成 BinFill/medium rows=300
+候选完成 BinFill/hard rows=300
+候选完成 RouteStick/easy rows=200
+候选完成 RouteStick/medium rows=200
+候选完成 RouteStick/hard rows=200
+候选完成 VideoUnmaskSwap/easy rows=200
+候选完成 VideoUnmaskSwap/medium rows=200
+候选完成 VideoUnmaskSwap/hard rows=200
+候选完成 VideoRepick/easy rows=300
+候选完成 VideoRepick/medium rows=300
+候选完成 RouteStick/xhard rows=200
+候选完成 VideoUnmaskSwap/xhard rows=200
+候选完成 VideoRepick/xhard rows=300
+SPEC_SCOPE=PASS groups=14 specs=3400 blocks=2/3 excluded=VideoRepick-hard problems=0
+CONTRACT_DERIVED=PASS fields=200 mismatches=6 overrides=2 version=v3 problems=0
+COVERAGE_QUOTA=PASS groups=14 batches=10 blocks=2/3 quota_gaps=0
+STATIC_GEOMETRY=PASS checked=3400 rejected=0
+COLLISION_GEOMETRY=PASS bin_shapes=6 cube_shapes=1 four_object_pairs=6 note=真实-actor-对照在步骤2冒烟
+COLLISION_SWEEP=PASS specs=1700 rejected=0 uncertified=0 min_g_m=1.4025e-05
+SPEC_REPRODUCIBLE=PASS compared=3400 differences=0
+SCREENING_EVIDENCE=PASS rows=3400 groups=14
+PARITY_KEYS=PASS layer=L1 expected=3400 actual=3400 missing=0 extra=0 duplicates=0
+CANDIDATES_EQUIVALENCE=PASS compared=3400 differences=0
+SOURCE_INTACT=PASS files=16
+CANDIDATES=PASS rows=3400 elapsed_s=1986.59
+EXIT_CODE=0
