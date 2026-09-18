@@ -86,6 +86,8 @@ def run_root(run_id):
 
 
 def assert_not_migrating(root):
+    if (root / "rollout/logs/archive.json").exists():
+        raise StateError("该诊断运行已归档，不能复用已清理的成品；复验请使用新编号")
     status = root / "rollout/logs/migration/state.json"
     if status.exists() and json.loads(status.read_text())["state"] != "complete":
         raise StateError("产物迁移未完成，须先恢复迁移，禁止启动普通消费入口")

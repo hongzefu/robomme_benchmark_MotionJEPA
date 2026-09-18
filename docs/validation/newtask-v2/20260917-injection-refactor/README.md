@@ -292,3 +292,39 @@ uv run --no-sync python -m scripts.injection.rollout \
 第一次 `RUN=PASS ... h5_executed=1 reset_executed=1`，第二次 `RESET_IDEMPOTENT=PASS rerun=0 duplicates=0`、`RUN=PASS ... h5_executed=0 reset_executed=0`。源候选前后字节不变；影子状态目录为 `rollout/logs/smoke/smoke/`，结果恰为 2 条，HDF5 与旧 RouteStick/easy/ep0 同散列。核对摘要见运行十 `rollout/logs/migration/stage4_checks.json`。
 
 归并后源候选的角色和错误字段确实改变，因此阶段二的角色改写测试同时清空测试副本的 error_type，仍然验证完整 spec 和身份不变；不放宽生产校验。阶段零/一/二的字节散列记录是各自时间点的历史证据，不能用管理状态合法更新后的候选去冒充当时字节。旧环境源码、规格、HDF5 和视频没有改动。
+
+## 阶段 5：方案 B、reset 全量对拍和 unused 补查
+
+独立主调用使用 `20260912-contract-v3-10-parity`，候选副本重置管理状态，完整旧规格与身份保持不变。14 组各 ep0～14 共 210 条；同一主调用随后执行一次正常 reset 配额，恰为原 720 个键。`tmux injection-parity` 的主调用与 `injection-parity-check` 的比较均退出 0。
+
+```bash
+command -v uv
+uv run --no-sync python -m scripts.injection.rollout \
+  --run-id 20260912-contract-v3-10-parity \
+  --candidates artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl \
+  --purpose parity --tier 20 --gpus 0,1 --episodes 15 --no-figures
+uv run --no-sync python -m scripts.injection.rollout.parity \
+  --left 20260912-contract-v3-10 --right 20260912-contract-v3-10-parity --scheme B --video-budget-s 120
+```
+
+本次已完成并归档，以上是实跑参数，复验须使用新运行编号。具名硬判定：
+
+```text
+H5_PARITY=PASS compared=210 success=205 failures=5 sha_mismatch=0 failure_mismatch=0
+RESET_PARITY=PASS compared=720 outcome_mismatch=0 stop_episode_mismatch=0 role_mismatch=0
+PARITY_SOURCE_INTACT=PASS
+```
+
+L3/L4 两侧完整键的 missing/extra/duplicates 均为 0。实际读取两侧 HDF5 散列，没有把只比较记录里的散列冒充文件核验。视频诊断 221 对通过，2 条超时样本没有可比较视频，整体 `VIDEO_DIAGNOSTIC=NOT_RUN`，不伪称全视频一致。真实 BinFill/medium ep1 与 ep16 都为 1388 帧，完整解码后识别 DIFFERENT；首差帧及两份视频原件保留。诊断反例短测 2 passed；连同归并守卫回归 7 passed，20.36 秒。
+
+对拍硬闸完成后执行 `parity --left … --right … --archive`：先逐文件复制和核对证据，再核对临时媒体清单及散列，最后逐项清理。38 份证据保存在正式运行 [`rollout/logs/parity/20260912-contract-v3-10-parity/`](../../../../artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/)，其中 `logs/parity/result.json` 是完整比较结果，`archive_index.json` 和 `cleanup_manifest.json` 记录留存/清理边界；反例视频与差异帧留在本地，不入库。清理临时媒体 426 个、101712029329 字节，原运行媒体零删除。临时运行已标记 archived，普通入口拒绝复用其已清理成品。
+
+随后在 `tmux injection-unused` 中对原运行执行：
+
+```bash
+command -v uv
+uv run --no-sync python -m scripts.injection.rollout.reset_check \
+  --run-id 20260912-contract-v3-10 --only-unused --tier 20 --gpus 0,1
+```
+
+退出 0，`UNUSED_RESET=PASS checked=838 passed=838 failed=0 unused_left=0 primary_changed=0`。原 700 个 test primary 与全部 train 角色不变；现在 test spare=858、test failed=0、test unused=0，唯一结果总数 3400。完整范围与原 primary 在 `unused_scope.json` 冻结，重复调用不缩小分母。该例外仅对原运行十开放，普通新运行仍在每组足额 50 条后停下并保留 unused。

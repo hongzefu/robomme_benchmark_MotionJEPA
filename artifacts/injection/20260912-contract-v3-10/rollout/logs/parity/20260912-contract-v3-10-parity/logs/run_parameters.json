@@ -1,0 +1,15 @@
+{
+  "run_id": "20260912-contract-v3-10-parity",
+  "candidates": "artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl",
+  "purpose": "parity",
+  "groups": null,
+  "episodes": 15,
+  "episode_range": null,
+  "skip_done": false,
+  "wall_limit_h": 0,
+  "tier": 20,
+  "gpus": "0,1",
+  "reset_limit": null,
+  "label": null,
+  "no_figures": true
+}

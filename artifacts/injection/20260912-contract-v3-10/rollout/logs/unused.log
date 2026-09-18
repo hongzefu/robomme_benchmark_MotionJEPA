@@ -1,0 +1,1321 @@
+PARITY_ARCHIVE=PASS evidence_files=38 removed_media=426 source_media_removed=0
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+reset 完成 VideoUnmaskSwap/easy/ep166 ok=True
+reset 完成 BinFill/easy/ep206 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep166 ok=True
+reset 完成 BinFill/hard/ep204 ok=True
+reset 完成 BinFill/medium/ep204 ok=True
+reset 完成 VideoRepick/xhard/ep207 ok=True
+reset 完成 VideoRepick/medium/ep204 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep169 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep166 ok=True
+reset 完成 BinFill/hard/ep205 ok=True
+reset 完成 BinFill/medium/ep205 ok=True
+reset 完成 BinFill/easy/ep207 ok=True
+reset 完成 VideoRepick/easy/ep206 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep167 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep167 ok=True
+reset 完成 VideoRepick/medium/ep205 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep167 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep170 ok=True
+reset 完成 RouteStick/medium/ep166 ok=True
+reset 完成 BinFill/easy/ep208 ok=True
+reset 完成 VideoRepick/xhard/ep208 ok=True
+reset 完成 VideoRepick/easy/ep207 ok=True
+reset 完成 BinFill/hard/ep206 ok=True
+reset 完成 BinFill/medium/ep206 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep168 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep168 ok=True
+reset 完成 VideoRepick/medium/ep206 ok=True
+reset 完成 VideoRepick/easy/ep208 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep168 ok=True
+reset 完成 RouteStick/easy/ep166 ok=True
+reset 完成 RouteStick/hard/ep166 ok=True
+reset 完成 RouteStick/medium/ep167 ok=True
+reset 完成 RouteStick/hard/ep167 ok=True
+reset 完成 RouteStick/xhard/ep166 ok=True
+reset 完成 RouteStick/easy/ep167 ok=True
+reset 完成 RouteStick/medium/ep168 ok=True
+reset 完成 RouteStick/xhard/ep167 ok=True
+reset 完成 RouteStick/xhard/ep168 ok=True
+reset 完成 RouteStick/easy/ep168 ok=True
+reset 完成 RouteStick/hard/ep168 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep170 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep171 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep172 ok=True
+reset 完成 BinFill/easy/ep209 ok=True
+reset 完成 VideoRepick/medium/ep207 ok=True
+reset 完成 VideoRepick/medium/ep208 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep169 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep170 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep169 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep171 ok=True
+reset 完成 BinFill/medium/ep207 ok=True
+reset 完成 BinFill/easy/ep211 ok=True
+reset 完成 BinFill/hard/ep207 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep171 ok=True
+reset 完成 VideoRepick/medium/ep209 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep170 ok=True
+reset 完成 BinFill/hard/ep208 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep169 ok=True
+reset 完成 BinFill/easy/ep210 ok=True
+reset 完成 VideoRepick/easy/ep210 ok=True
+reset 完成 VideoRepick/xhard/ep210 ok=True
+reset 完成 BinFill/hard/ep209 ok=True
+reset 完成 VideoRepick/easy/ep211 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep171 ok=True
+reset 完成 VideoRepick/easy/ep209 ok=True
+reset 完成 BinFill/medium/ep209 ok=True
+reset 完成 VideoRepick/xhard/ep209 ok=True
+reset 完成 BinFill/medium/ep208 ok=True
+reset 完成 RouteStick/medium/ep171 ok=True
+reset 完成 RouteStick/medium/ep170 ok=True
+reset 完成 RouteStick/medium/ep169 ok=True
+reset 完成 RouteStick/easy/ep170 ok=True
+reset 完成 RouteStick/hard/ep170 ok=True
+reset 完成 RouteStick/xhard/ep171 ok=True
+reset 完成 RouteStick/hard/ep171 ok=True
+reset 完成 RouteStick/easy/ep171 ok=True
+reset 完成 RouteStick/xhard/ep169 ok=True
+reset 完成 RouteStick/hard/ep169 ok=True
+reset 完成 RouteStick/xhard/ep170 ok=True
+reset 完成 RouteStick/easy/ep169 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep173 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep173 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep174 ok=True
+reset 完成 VideoRepick/medium/ep210 ok=True
+reset 完成 BinFill/easy/ep213 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep172 ok=True
+reset 完成 BinFill/easy/ep212 ok=True
+reset 完成 VideoRepick/medium/ep212 ok=True
+reset 完成 VideoRepick/easy/ep213 ok=True
+reset 完成 BinFill/hard/ep210 ok=True
+reset 完成 BinFill/hard/ep211 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep172 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep174 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep173 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep173 ok=True
+reset 完成 VideoRepick/xhard/ep211 ok=True
+reset 完成 BinFill/medium/ep212 ok=True
+reset 完成 BinFill/hard/ep212 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep174 ok=True
+reset 完成 BinFill/easy/ep214 ok=True
+reset 完成 VideoRepick/easy/ep212 ok=True
+reset 完成 VideoRepick/medium/ep211 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep174 ok=True
+reset 完成 VideoRepick/easy/ep214 ok=True
+reset 完成 BinFill/medium/ep210 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep172 ok=True
+reset 完成 BinFill/medium/ep211 ok=True
+reset 完成 VideoRepick/xhard/ep212 ok=True
+reset 完成 RouteStick/medium/ep172 ok=True
+reset 完成 RouteStick/xhard/ep173 ok=True
+reset 完成 RouteStick/medium/ep173 ok=True
+reset 完成 RouteStick/easy/ep173 ok=True
+reset 完成 RouteStick/easy/ep172 ok=True
+reset 完成 RouteStick/medium/ep174 ok=True
+reset 完成 RouteStick/hard/ep174 ok=True
+reset 完成 RouteStick/xhard/ep172 ok=True
+reset 完成 RouteStick/hard/ep173 ok=True
+reset 完成 RouteStick/xhard/ep174 ok=True
+reset 完成 RouteStick/hard/ep172 ok=True
+reset 完成 RouteStick/easy/ep174 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep175 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep175 ok=True
+reset 完成 VideoRepick/medium/ep214 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep176 ok=True
+reset 完成 BinFill/easy/ep215 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep176 ok=True
+reset 完成 BinFill/easy/ep216 ok=True
+reset 完成 BinFill/hard/ep214 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep177 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep175 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep176 ok=True
+reset 完成 BinFill/hard/ep213 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep176 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep177 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep175 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep177 ok=True
+reset 完成 VideoRepick/medium/ep213 ok=True
+reset 完成 VideoRepick/easy/ep217 ok=True
+reset 完成 BinFill/hard/ep215 ok=True
+reset 完成 BinFill/easy/ep217 ok=True
+reset 完成 BinFill/medium/ep213 ok=True
+reset 完成 VideoRepick/medium/ep215 ok=True
+reset 完成 BinFill/medium/ep215 ok=True
+reset 完成 VideoRepick/xhard/ep214 ok=True
+reset 完成 VideoRepick/easy/ep216 ok=True
+reset 完成 BinFill/medium/ep214 ok=True
+reset 完成 VideoRepick/xhard/ep213 ok=True
+reset 完成 VideoRepick/easy/ep215 ok=True
+reset 完成 RouteStick/medium/ep175 ok=True
+reset 完成 RouteStick/medium/ep176 ok=True
+reset 完成 RouteStick/xhard/ep176 ok=True
+reset 完成 RouteStick/medium/ep177 ok=True
+reset 完成 RouteStick/hard/ep177 ok=True
+reset 完成 RouteStick/xhard/ep177 ok=True
+reset 完成 RouteStick/xhard/ep175 ok=True
+reset 完成 RouteStick/hard/ep176 ok=True
+reset 完成 RouteStick/hard/ep175 ok=True
+reset 完成 RouteStick/easy/ep175 ok=True
+reset 完成 RouteStick/easy/ep177 ok=True
+reset 完成 RouteStick/easy/ep176 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep180 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep178 ok=True
+reset 完成 BinFill/hard/ep218 ok=True
+reset 完成 BinFill/hard/ep217 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep179 ok=True
+reset 完成 VideoRepick/medium/ep216 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep179 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep177 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep178 ok=True
+reset 完成 VideoRepick/easy/ep218 ok=True
+reset 完成 BinFill/easy/ep218 ok=True
+reset 完成 BinFill/medium/ep217 ok=True
+reset 完成 VideoRepick/medium/ep217 ok=True
+reset 完成 BinFill/hard/ep216 ok=True
+reset 完成 BinFill/easy/ep219 ok=True
+reset 完成 BinFill/medium/ep216 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep178 ok=True
+reset 完成 VideoRepick/medium/ep218 ok=True
+reset 完成 VideoRepick/easy/ep219 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep178 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep180 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep180 ok=True
+reset 完成 BinFill/easy/ep220 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep179 ok=True
+reset 完成 VideoRepick/xhard/ep215 ok=True
+reset 完成 VideoRepick/xhard/ep216 ok=True
+reset 完成 VideoRepick/easy/ep220 ok=True
+reset 完成 BinFill/medium/ep218 ok=True
+reset 完成 RouteStick/medium/ep180 ok=True
+reset 完成 RouteStick/medium/ep179 ok=True
+reset 完成 RouteStick/medium/ep178 ok=True
+reset 完成 RouteStick/hard/ep178 ok=True
+reset 完成 RouteStick/xhard/ep179 ok=True
+reset 完成 RouteStick/easy/ep179 ok=True
+reset 完成 RouteStick/easy/ep178 ok=True
+reset 完成 RouteStick/easy/ep180 ok=True
+reset 完成 RouteStick/xhard/ep180 ok=True
+reset 完成 RouteStick/hard/ep179 ok=True
+reset 完成 RouteStick/hard/ep180 ok=True
+reset 完成 RouteStick/xhard/ep178 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep182 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep180 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep181 ok=True
+reset 完成 VideoRepick/medium/ep219 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep183 ok=True
+reset 完成 BinFill/easy/ep222 ok=True
+reset 完成 BinFill/easy/ep221 ok=True
+reset 完成 BinFill/hard/ep219 ok=True
+reset 完成 BinFill/hard/ep221 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep182 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep179 ok=True
+reset 完成 VideoRepick/easy/ep222 ok=True
+reset 完成 BinFill/hard/ep220 ok=True
+reset 完成 VideoRepick/medium/ep220 ok=True
+reset 完成 BinFill/medium/ep219 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep181 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep183 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep181 ok=True
+reset 完成 BinFill/easy/ep223 ok=True
+reset 完成 VideoRepick/xhard/ep217 ok=True
+reset 完成 VideoRepick/medium/ep221 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep183 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep182 ok=True
+reset 完成 VideoRepick/easy/ep223 ok=True
+reset 完成 VideoRepick/xhard/ep218 ok=True
+reset 完成 BinFill/medium/ep220 ok=True
+reset 完成 VideoRepick/easy/ep221 ok=True
+reset 完成 BinFill/medium/ep221 ok=True
+reset 完成 RouteStick/medium/ep181 ok=True
+reset 完成 RouteStick/medium/ep183 ok=True
+reset 完成 RouteStick/hard/ep183 ok=True
+reset 完成 RouteStick/medium/ep182 ok=True
+reset 完成 RouteStick/easy/ep182 ok=True
+reset 完成 RouteStick/easy/ep181 ok=True
+reset 完成 RouteStick/hard/ep182 ok=True
+reset 完成 RouteStick/hard/ep181 ok=True
+reset 完成 RouteStick/easy/ep183 ok=True
+reset 完成 RouteStick/xhard/ep183 ok=True
+reset 完成 RouteStick/xhard/ep182 ok=True
+reset 完成 RouteStick/xhard/ep181 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep185 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep184 ok=True
+reset 完成 VideoRepick/medium/ep223 ok=True
+reset 完成 BinFill/easy/ep224 ok=True
+reset 完成 VideoRepick/medium/ep222 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep184 ok=True
+reset 完成 BinFill/hard/ep223 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep185 ok=True
+reset 完成 BinFill/medium/ep223 ok=True
+reset 完成 BinFill/easy/ep225 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep184 ok=True
+reset 完成 BinFill/hard/ep224 ok=True
+reset 完成 VideoRepick/easy/ep226 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep182 ok=True
+reset 完成 BinFill/easy/ep226 ok=True
+reset 完成 BinFill/hard/ep222 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep185 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep181 ok=True
+reset 完成 VideoRepick/easy/ep224 ok=True
+reset 完成 VideoRepick/medium/ep224 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep186 ok=True
+reset 完成 BinFill/medium/ep224 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep186 ok=True
+reset 完成 BinFill/medium/ep222 ok=True
+reset 完成 VideoRepick/easy/ep225 ok=True
+reset 完成 VideoRepick/xhard/ep220 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep186 ok=True
+reset 完成 VideoRepick/xhard/ep219 ok=True
+reset 完成 RouteStick/easy/ep186 ok=True
+reset 完成 RouteStick/medium/ep185 ok=True
+reset 完成 RouteStick/easy/ep184 ok=True
+reset 完成 RouteStick/medium/ep184 ok=True
+reset 完成 RouteStick/hard/ep186 ok=True
+reset 完成 RouteStick/hard/ep184 ok=True
+reset 完成 RouteStick/xhard/ep185 ok=True
+reset 完成 RouteStick/medium/ep186 ok=True
+reset 完成 RouteStick/easy/ep185 ok=True
+reset 完成 RouteStick/hard/ep185 ok=True
+reset 完成 RouteStick/xhard/ep186 ok=True
+reset 完成 RouteStick/xhard/ep184 ok=True
+reset 完成 VideoRepick/medium/ep227 ok=True
+reset 完成 BinFill/easy/ep229 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep183 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep187 ok=True
+reset 完成 BinFill/hard/ep226 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep189 ok=True
+reset 完成 BinFill/easy/ep228 ok=True
+reset 完成 VideoRepick/easy/ep227 ok=True
+reset 完成 BinFill/hard/ep225 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep188 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep187 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep188 ok=True
+reset 完成 VideoRepick/medium/ep226 ok=True
+reset 完成 BinFill/hard/ep227 ok=True
+reset 完成 BinFill/easy/ep227 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep188 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep189 ok=True
+reset 完成 BinFill/medium/ep226 ok=True
+reset 完成 VideoRepick/medium/ep225 ok=True
+reset 完成 BinFill/medium/ep225 ok=True
+reset 完成 BinFill/medium/ep227 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep184 ok=True
+reset 完成 VideoRepick/xhard/ep222 ok=True
+reset 完成 VideoRepick/easy/ep229 ok=True
+reset 完成 VideoRepick/xhard/ep221 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep189 ok=True
+reset 完成 VideoRepick/easy/ep228 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep187 ok=True
+reset 完成 RouteStick/medium/ep189 ok=True
+reset 完成 RouteStick/medium/ep188 ok=True
+reset 完成 RouteStick/xhard/ep187 ok=True
+reset 完成 RouteStick/easy/ep187 ok=True
+reset 完成 RouteStick/medium/ep187 ok=True
+reset 完成 RouteStick/easy/ep188 ok=True
+reset 完成 RouteStick/hard/ep187 ok=True
+reset 完成 RouteStick/hard/ep188 ok=True
+reset 完成 RouteStick/hard/ep189 ok=True
+reset 完成 RouteStick/xhard/ep188 ok=True
+reset 完成 RouteStick/easy/ep189 ok=True
+reset 完成 RouteStick/xhard/ep189 ok=True
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+reset 完成 VideoUnmaskSwap/easy/ep190 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep190 ok=True
+reset 完成 VideoRepick/medium/ep228 ok=True
+reset 完成 BinFill/hard/ep228 ok=True
+reset 完成 BinFill/easy/ep231 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep185 ok=True
+reset 完成 BinFill/hard/ep229 ok=True
+reset 完成 BinFill/easy/ep230 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep191 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep186 ok=True
+reset 完成 VideoRepick/medium/ep229 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep191 ok=True
+reset 完成 BinFill/easy/ep232 ok=True
+reset 完成 BinFill/hard/ep230 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep190 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep192 ok=True
+reset 完成 BinFill/medium/ep228 ok=True
+reset 完成 VideoRepick/easy/ep230 ok=True
+reset 完成 VideoRepick/xhard/ep223 ok=True
+reset 完成 BinFill/medium/ep229 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep191 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep192 ok=True
+reset 完成 RouteStick/medium/ep190 ok=True
+reset 完成 VideoRepick/xhard/ep224 ok=True
+reset 完成 BinFill/medium/ep230 ok=True
+reset 完成 VideoRepick/easy/ep231 ok=True
+reset 完成 VideoRepick/medium/ep230 ok=True
+reset 完成 RouteStick/medium/ep191 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep192 ok=True
+reset 完成 VideoRepick/easy/ep232 ok=True
+reset 完成 RouteStick/medium/ep192 ok=True
+reset 完成 RouteStick/hard/ep190 ok=True
+reset 完成 RouteStick/easy/ep190 ok=True
+reset 完成 RouteStick/xhard/ep190 ok=True
+reset 完成 RouteStick/easy/ep191 ok=True
+reset 完成 RouteStick/xhard/ep191 ok=True
+reset 完成 RouteStick/hard/ep191 ok=True
+reset 完成 RouteStick/easy/ep192 ok=True
+reset 完成 RouteStick/hard/ep192 ok=True
+reset 完成 RouteStick/xhard/ep192 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep193 ok=True
+reset 完成 BinFill/easy/ep235 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep195 ok=True
+reset 完成 BinFill/easy/ep233 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep188 ok=True
+reset 完成 BinFill/hard/ep232 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep194 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep193 ok=True
+reset 完成 BinFill/hard/ep231 ok=True
+reset 完成 VideoRepick/medium/ep231 ok=True
+reset 完成 BinFill/easy/ep234 ok=True
+reset 完成 VideoRepick/medium/ep232 ok=True
+reset 完成 BinFill/hard/ep233 ok=True
+reset 完成 VideoRepick/xhard/ep225 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep194 ok=True
+reset 完成 BinFill/medium/ep231 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep187 ok=True
+reset 完成 VideoRepick/easy/ep235 ok=True
+reset 完成 VideoRepick/easy/ep234 ok=True
+reset 完成 VideoRepick/easy/ep233 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep195 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep195 ok=True
+reset 完成 VideoRepick/xhard/ep226 ok=True
+reset 完成 VideoRepick/medium/ep233 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep193 ok=True
+reset 完成 BinFill/medium/ep232 ok=True
+reset 完成 BinFill/medium/ep233 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep194 ok=True
+reset 完成 RouteStick/medium/ep193 ok=True
+reset 完成 RouteStick/xhard/ep195 ok=True
+reset 完成 RouteStick/easy/ep194 ok=True
+reset 完成 RouteStick/medium/ep195 ok=True
+reset 完成 RouteStick/xhard/ep194 ok=True
+reset 完成 RouteStick/easy/ep195 ok=True
+reset 完成 RouteStick/xhard/ep193 ok=True
+reset 完成 RouteStick/hard/ep194 ok=True
+reset 完成 RouteStick/hard/ep193 ok=True
+reset 完成 RouteStick/medium/ep194 ok=True
+reset 完成 RouteStick/easy/ep193 ok=True
+reset 完成 RouteStick/hard/ep195 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep196 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep197 ok=True
+reset 完成 BinFill/hard/ep234 ok=True
+reset 完成 BinFill/easy/ep237 ok=True
+reset 完成 BinFill/easy/ep236 ok=True
+reset 完成 BinFill/hard/ep236 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep189 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep196 ok=True
+reset 完成 VideoRepick/easy/ep238 ok=True
+reset 完成 VideoRepick/medium/ep235 ok=True
+reset 完成 BinFill/hard/ep235 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep196 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep197 ok=True
+reset 完成 VideoRepick/medium/ep234 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep198 ok=True
+reset 完成 VideoRepick/easy/ep237 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep198 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep198 ok=True
+reset 完成 VideoRepick/xhard/ep228 ok=True
+reset 完成 BinFill/easy/ep238 ok=True
+reset 完成 VideoRepick/easy/ep236 ok=True
+reset 完成 BinFill/medium/ep234 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep190 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep197 ok=True
+reset 完成 VideoRepick/medium/ep236 ok=True
+reset 完成 VideoRepick/xhard/ep227 ok=True
+reset 完成 BinFill/medium/ep236 ok=True
+reset 完成 BinFill/medium/ep235 ok=True
+reset 完成 RouteStick/medium/ep197 ok=True
+reset 完成 RouteStick/medium/ep196 ok=True
+reset 完成 RouteStick/easy/ep196 ok=True
+reset 完成 RouteStick/medium/ep198 ok=True
+reset 完成 RouteStick/xhard/ep197 ok=True
+reset 完成 RouteStick/hard/ep196 ok=True
+reset 完成 RouteStick/easy/ep198 ok=True
+reset 完成 RouteStick/hard/ep197 ok=True
+reset 完成 RouteStick/xhard/ep196 ok=True
+reset 完成 RouteStick/xhard/ep198 ok=True
+reset 完成 RouteStick/hard/ep198 ok=True
+reset 完成 RouteStick/easy/ep197 ok=True
+reset 完成 VideoRepick/medium/ep240 ok=True
+reset 完成 VideoUnmaskSwap/hard/ep199 ok=True
+reset 完成 BinFill/easy/ep240 ok=True
+reset 完成 BinFill/easy/ep239 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep191 ok=True
+reset 完成 VideoUnmaskSwap/easy/ep199 ok=True
+reset 完成 BinFill/hard/ep238 ok=True
+reset 完成 BinFill/hard/ep237 ok=True
+reset 完成 VideoRepick/medium/ep237 ok=True
+reset 完成 BinFill/hard/ep240 ok=True
+reset 完成 VideoRepick/easy/ep239 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep193 ok=True
+reset 完成 BinFill/easy/ep242 ok=True
+reset 完成 VideoRepick/easy/ep241 ok=True
+reset 完成 VideoRepick/xhard/ep230 ok=True
+reset 完成 VideoRepick/easy/ep243 ok=True
+reset 完成 VideoRepick/medium/ep238 ok=True
+reset 完成 BinFill/medium/ep239 ok=True
+reset 完成 VideoRepick/easy/ep240 ok=True
+reset 完成 VideoRepick/xhard/ep229 ok=True
+reset 完成 VideoRepick/xhard/ep231 ok=True
+reset 完成 VideoRepick/easy/ep242 ok=True
+reset 完成 BinFill/medium/ep237 ok=True
+reset 完成 VideoRepick/xhard/ep232 ok=True
+reset 完成 BinFill/medium/ep241 ok=True
+reset 完成 BinFill/hard/ep239 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep192 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep194 ok=True
+reset 完成 VideoRepick/medium/ep239 ok=True
+reset 完成 BinFill/medium/ep240 ok=True
+reset 完成 BinFill/easy/ep241 ok=True
+reset 完成 VideoRepick/medium/ep241 ok=True
+reset 完成 BinFill/medium/ep238 ok=True
+reset 完成 BinFill/easy/ep243 ok=True
+reset 完成 BinFill/hard/ep241 ok=True
+reset 完成 VideoUnmaskSwap/medium/ep199 ok=True
+reset 完成 RouteStick/medium/ep199 ok=True
+reset 完成 RouteStick/easy/ep199 ok=True
+reset 完成 RouteStick/hard/ep199 ok=True
+reset 完成 RouteStick/xhard/ep199 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep196 ok=True
+reset 完成 VideoRepick/medium/ep244 ok=True
+reset 完成 BinFill/easy/ep244 ok=True
+reset 完成 BinFill/hard/ep244 ok=True
+reset 完成 VideoRepick/medium/ep246 ok=True
+reset 完成 BinFill/medium/ep245 ok=True
+reset 完成 VideoRepick/xhard/ep235 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep198 ok=True
+reset 完成 BinFill/easy/ep248 ok=True
+reset 完成 VideoRepick/xhard/ep237 ok=True
+reset 完成 BinFill/hard/ep242 ok=True
+reset 完成 VideoRepick/easy/ep245 ok=True
+reset 完成 BinFill/medium/ep247 ok=True
+reset 完成 BinFill/hard/ep246 ok=True
+reset 完成 VideoRepick/xhard/ep233 ok=True
+reset 完成 VideoRepick/easy/ep247 ok=True
+reset 完成 BinFill/easy/ep246 ok=True
+reset 完成 BinFill/medium/ep243 ok=True
+reset 完成 VideoRepick/easy/ep249 ok=True
+reset 完成 VideoRepick/medium/ep242 ok=True
+reset 完成 VideoRepick/medium/ep245 ok=True
+reset 完成 VideoRepick/xhard/ep234 ok=True
+reset 完成 BinFill/hard/ep243 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep197 ok=True
+reset 完成 VideoRepick/medium/ep243 ok=True
+reset 完成 BinFill/easy/ep245 ok=True
+reset 完成 BinFill/hard/ep247 ok=True
+reset 完成 VideoRepick/easy/ep246 ok=True
+reset 完成 VideoRepick/medium/ep247 ok=True
+reset 完成 VideoRepick/xhard/ep236 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep199 ok=True
+reset 完成 BinFill/medium/ep246 ok=True
+reset 完成 VideoRepick/easy/ep248 ok=True
+reset 完成 BinFill/easy/ep247 ok=True
+reset 完成 BinFill/medium/ep244 ok=True
+reset 完成 VideoRepick/easy/ep244 ok=True
+reset 完成 BinFill/easy/ep249 ok=True
+reset 完成 BinFill/hard/ep245 ok=True
+reset 完成 BinFill/medium/ep242 ok=True
+reset 完成 VideoUnmaskSwap/xhard/ep195 ok=True
+reset 完成 BinFill/easy/ep253 ok=True
+reset 完成 BinFill/easy/ep256 ok=True
+reset 完成 BinFill/easy/ep252 ok=True
+reset 完成 BinFill/hard/ep251 ok=True
+reset 完成 BinFill/hard/ep253 ok=True
+reset 完成 BinFill/hard/ep254 ok=True
+reset 完成 VideoRepick/medium/ep249 ok=True
+reset 完成 BinFill/easy/ep250 ok=True
+reset 完成 BinFill/hard/ep248 ok=True
+reset 完成 VideoRepick/medium/ep250 ok=True
+reset 完成 VideoRepick/medium/ep251 ok=True
+reset 完成 VideoRepick/easy/ep253 ok=True
+reset 完成 BinFill/easy/ep254 ok=True
+reset 完成 VideoRepick/xhard/ep238 ok=True
+reset 完成 BinFill/easy/ep251 ok=True
+reset 完成 BinFill/easy/ep255 ok=True
+reset 完成 BinFill/hard/ep249 ok=True
+reset 完成 VideoRepick/medium/ep253 ok=True
+reset 完成 VideoRepick/medium/ep248 ok=True
+reset 完成 BinFill/medium/ep250 ok=True
+reset 完成 BinFill/medium/ep253 ok=True
+reset 完成 VideoRepick/xhard/ep240 ok=True
+reset 完成 VideoRepick/medium/ep252 ok=True
+reset 完成 VideoRepick/easy/ep250 ok=True
+reset 完成 VideoRepick/easy/ep254 ok=True
+reset 完成 BinFill/hard/ep250 ok=True
+reset 完成 BinFill/hard/ep252 ok=True
+reset 完成 BinFill/medium/ep248 ok=True
+reset 完成 VideoRepick/xhard/ep243 ok=True
+reset 完成 VideoRepick/easy/ep255 ok=True
+reset 完成 VideoRepick/xhard/ep239 ok=True
+reset 完成 VideoRepick/xhard/ep241 ok=True
+reset 完成 VideoRepick/xhard/ep242 ok=True
+reset 完成 BinFill/medium/ep249 ok=True
+reset 完成 BinFill/medium/ep254 ok=True
+reset 完成 VideoRepick/easy/ep256 ok=True
+reset 完成 BinFill/medium/ep252 ok=True
+reset 完成 VideoRepick/easy/ep251 ok=True
+reset 完成 VideoRepick/easy/ep252 ok=True
+reset 完成 BinFill/medium/ep251 ok=True
+reset 完成 BinFill/hard/ep255 ok=True
+reset 完成 BinFill/easy/ep261 ok=True
+reset 完成 VideoRepick/medium/ep256 ok=True
+reset 完成 VideoRepick/medium/ep257 ok=True
+reset 完成 VideoRepick/medium/ep255 ok=True
+reset 完成 BinFill/easy/ep259 ok=True
+reset 完成 BinFill/hard/ep256 ok=True
+reset 完成 BinFill/easy/ep260 ok=True
+reset 完成 BinFill/easy/ep257 ok=True
+reset 完成 BinFill/easy/ep263 ok=True
+reset 完成 VideoRepick/medium/ep254 ok=True
+reset 完成 BinFill/hard/ep261 ok=True
+reset 完成 VideoRepick/medium/ep258 ok=True
+reset 完成 BinFill/easy/ep262 ok=True
+reset 完成 BinFill/hard/ep260 ok=True
+reset 完成 VideoRepick/medium/ep259 ok=True
+reset 完成 VideoRepick/xhard/ep248 ok=True
+reset 完成 BinFill/hard/ep258 ok=True
+reset 完成 BinFill/medium/ep259 ok=True
+reset 完成 VideoRepick/xhard/ep247 ok=True
+reset 完成 VideoRepick/easy/ep261 ok=True
+reset 完成 VideoRepick/easy/ep259 ok=True
+reset 完成 VideoRepick/easy/ep263 ok=True
+reset 完成 VideoRepick/easy/ep260 ok=True
+reset 完成 VideoRepick/xhard/ep246 ok=True
+reset 完成 BinFill/hard/ep259 ok=True
+reset 完成 VideoRepick/xhard/ep244 ok=True
+reset 完成 VideoRepick/xhard/ep245 ok=True
+reset 完成 BinFill/easy/ep258 ok=True
+reset 完成 BinFill/hard/ep257 ok=True
+reset 完成 BinFill/medium/ep261 ok=True
+reset 完成 VideoRepick/xhard/ep249 ok=True
+reset 完成 BinFill/medium/ep256 ok=True
+reset 完成 BinFill/medium/ep257 ok=True
+reset 完成 BinFill/medium/ep255 ok=True
+reset 完成 VideoRepick/easy/ep262 ok=True
+reset 完成 BinFill/medium/ep260 ok=True
+reset 完成 BinFill/medium/ep258 ok=True
+reset 完成 VideoRepick/easy/ep257 ok=True
+reset 完成 VideoRepick/easy/ep258 ok=True
+reset 完成 VideoRepick/medium/ep262 ok=True
+reset 完成 BinFill/easy/ep266 ok=True
+reset 完成 BinFill/easy/ep267 ok=True
+reset 完成 VideoRepick/medium/ep263 ok=True
+reset 完成 VideoRepick/medium/ep264 ok=True
+reset 完成 BinFill/hard/ep268 ok=True
+reset 完成 BinFill/easy/ep269 ok=True
+reset 完成 VideoRepick/xhard/ep253 ok=True
+reset 完成 VideoRepick/medium/ep260 ok=True
+reset 完成 BinFill/hard/ep262 ok=True
+reset 完成 BinFill/hard/ep265 ok=True
+reset 完成 BinFill/easy/ep268 ok=True
+reset 完成 BinFill/easy/ep270 ok=True
+reset 完成 VideoRepick/medium/ep261 ok=True
+reset 完成 BinFill/hard/ep263 ok=True
+reset 完成 BinFill/medium/ep266 ok=True
+reset 完成 BinFill/hard/ep266 ok=True
+reset 完成 VideoRepick/easy/ep270 ok=True
+reset 完成 BinFill/medium/ep262 ok=True
+reset 完成 VideoRepick/medium/ep265 ok=True
+reset 完成 VideoRepick/xhard/ep250 ok=True
+reset 完成 VideoRepick/easy/ep268 ok=True
+reset 完成 BinFill/medium/ep264 ok=True
+reset 完成 VideoRepick/easy/ep265 ok=True
+reset 完成 VideoRepick/xhard/ep251 ok=True
+reset 完成 VideoRepick/easy/ep264 ok=True
+reset 完成 BinFill/hard/ep264 ok=True
+reset 完成 BinFill/medium/ep263 ok=True
+reset 完成 BinFill/easy/ep264 ok=True
+reset 完成 BinFill/easy/ep265 ok=True
+reset 完成 VideoRepick/easy/ep267 ok=True
+reset 完成 VideoRepick/xhard/ep255 ok=True
+reset 完成 VideoRepick/xhard/ep254 ok=True
+reset 完成 BinFill/medium/ep265 ok=True
+reset 完成 BinFill/hard/ep267 ok=True
+reset 完成 VideoRepick/xhard/ep252 ok=True
+reset 完成 BinFill/medium/ep267 ok=True
+reset 完成 BinFill/medium/ep268 ok=True
+reset 完成 VideoRepick/easy/ep269 ok=True
+reset 完成 VideoRepick/easy/ep266 ok=True
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+reset 完成 BinFill/hard/ep269 ok=True
+reset 完成 BinFill/hard/ep270 ok=True
+reset 完成 BinFill/easy/ep273 ok=True
+reset 完成 VideoRepick/medium/ep266 ok=True
+reset 完成 BinFill/easy/ep271 ok=True
+reset 完成 BinFill/hard/ep271 ok=True
+reset 完成 VideoRepick/medium/ep267 ok=True
+reset 完成 VideoRepick/medium/ep268 ok=True
+reset 完成 VideoRepick/easy/ep271 ok=True
+reset 完成 BinFill/easy/ep272 ok=True
+reset 完成 BinFill/easy/ep274 ok=True
+reset 完成 BinFill/medium/ep269 ok=True
+reset 完成 BinFill/hard/ep272 ok=True
+reset 完成 VideoRepick/easy/ep272 ok=True
+reset 完成 VideoRepick/xhard/ep256 ok=True
+reset 完成 BinFill/medium/ep270 ok=True
+reset 完成 VideoRepick/xhard/ep257 ok=True
+reset 完成 VideoRepick/medium/ep269 ok=True
+reset 完成 BinFill/medium/ep271 ok=True
+reset 完成 BinFill/easy/ep275 ok=True
+reset 完成 BinFill/hard/ep273 ok=True
+reset 完成 BinFill/easy/ep276 ok=True
+reset 完成 BinFill/hard/ep274 ok=True
+reset 完成 VideoRepick/medium/ep270 ok=True
+reset 完成 VideoRepick/medium/ep271 ok=True
+reset 完成 VideoRepick/easy/ep273 ok=True
+reset 完成 BinFill/medium/ep272 ok=True
+reset 完成 BinFill/easy/ep277 ok=True
+reset 完成 VideoRepick/xhard/ep258 ok=True
+reset 完成 VideoRepick/easy/ep274 ok=True
+reset 完成 VideoRepick/xhard/ep259 ok=True
+reset 完成 VideoRepick/easy/ep275 ok=True
+reset 完成 BinFill/medium/ep274 ok=True
+reset 完成 VideoRepick/xhard/ep261 ok=True
+reset 完成 VideoRepick/xhard/ep260 ok=True
+reset 完成 BinFill/medium/ep273 ok=True
+reset 完成 BinFill/hard/ep275 ok=True
+reset 完成 VideoRepick/easy/ep276 ok=True
+reset 完成 BinFill/medium/ep275 ok=True
+reset 完成 VideoRepick/easy/ep277 ok=True
+reset 完成 VideoRepick/medium/ep276 ok=True
+reset 完成 VideoRepick/medium/ep275 ok=True
+reset 完成 VideoRepick/medium/ep274 ok=True
+reset 完成 BinFill/hard/ep280 ok=True
+reset 完成 BinFill/hard/ep281 ok=True
+reset 完成 VideoRepick/medium/ep277 ok=True
+reset 完成 BinFill/easy/ep284 ok=True
+reset 完成 BinFill/easy/ep281 ok=True
+reset 完成 BinFill/easy/ep282 ok=True
+reset 完成 BinFill/hard/ep279 ok=True
+reset 完成 BinFill/easy/ep280 ok=True
+reset 完成 BinFill/hard/ep277 ok=True
+reset 完成 BinFill/easy/ep278 ok=True
+reset 完成 BinFill/easy/ep279 ok=True
+reset 完成 BinFill/hard/ep282 ok=True
+reset 完成 BinFill/hard/ep278 ok=True
+reset 完成 VideoRepick/easy/ep280 ok=True
+reset 完成 VideoRepick/medium/ep273 ok=True
+reset 完成 BinFill/medium/ep279 ok=True
+reset 完成 VideoRepick/medium/ep272 ok=True
+reset 完成 BinFill/easy/ep283 ok=True
+reset 完成 VideoRepick/xhard/ep266 ok=True
+reset 完成 VideoRepick/xhard/ep263 ok=True
+reset 完成 BinFill/hard/ep276 ok=True
+reset 完成 BinFill/medium/ep276 ok=True
+reset 完成 VideoRepick/xhard/ep267 ok=True
+reset 完成 VideoRepick/easy/ep279 ok=True
+reset 完成 VideoRepick/easy/ep284 ok=True
+reset 完成 BinFill/medium/ep281 ok=True
+reset 完成 VideoRepick/easy/ep281 ok=True
+reset 完成 VideoRepick/easy/ep283 ok=True
+reset 完成 VideoRepick/xhard/ep265 ok=True
+reset 完成 VideoRepick/xhard/ep264 ok=True
+reset 完成 VideoRepick/easy/ep278 ok=True
+reset 完成 BinFill/medium/ep282 ok=True
+reset 完成 BinFill/medium/ep278 ok=True
+reset 完成 BinFill/medium/ep280 ok=True
+reset 完成 BinFill/medium/ep277 ok=True
+reset 完成 VideoRepick/easy/ep282 ok=True
+reset 完成 VideoRepick/xhard/ep262 ok=True
+reset 完成 VideoRepick/medium/ep278 ok=True
+reset 完成 BinFill/easy/ep287 ok=True
+reset 完成 BinFill/easy/ep288 ok=True
+reset 完成 BinFill/easy/ep289 ok=True
+reset 完成 VideoRepick/medium/ep281 ok=True
+reset 完成 BinFill/hard/ep283 ok=True
+reset 完成 BinFill/hard/ep288 ok=True
+reset 完成 VideoRepick/medium/ep279 ok=True
+reset 完成 BinFill/hard/ep284 ok=True
+reset 完成 BinFill/easy/ep291 ok=True
+reset 完成 VideoRepick/easy/ep291 ok=True
+reset 完成 VideoRepick/easy/ep285 ok=True
+reset 完成 BinFill/easy/ep285 ok=True
+reset 完成 BinFill/easy/ep290 ok=True
+reset 完成 BinFill/medium/ep286 ok=True
+reset 完成 VideoRepick/medium/ep282 ok=True
+reset 完成 BinFill/medium/ep283 ok=True
+reset 完成 VideoRepick/xhard/ep268 ok=True
+reset 完成 VideoRepick/xhard/ep273 ok=True
+reset 完成 VideoRepick/xhard/ep269 ok=True
+reset 完成 BinFill/hard/ep286 ok=True
+reset 完成 VideoRepick/medium/ep280 ok=True
+reset 完成 VideoRepick/xhard/ep270 ok=True
+reset 完成 BinFill/hard/ep287 ok=True
+reset 完成 BinFill/easy/ep286 ok=True
+reset 完成 BinFill/medium/ep287 ok=True
+reset 完成 BinFill/hard/ep289 ok=True
+reset 完成 BinFill/hard/ep285 ok=True
+reset 完成 VideoRepick/medium/ep283 ok=True
+reset 完成 VideoRepick/easy/ep288 ok=True
+reset 完成 BinFill/medium/ep288 ok=True
+reset 完成 VideoRepick/xhard/ep271 ok=True
+reset 完成 VideoRepick/easy/ep287 ok=True
+reset 完成 BinFill/medium/ep289 ok=True
+reset 完成 BinFill/medium/ep284 ok=True
+reset 完成 VideoRepick/easy/ep286 ok=True
+reset 完成 VideoRepick/easy/ep289 ok=True
+reset 完成 BinFill/medium/ep285 ok=True
+reset 完成 VideoRepick/xhard/ep272 ok=True
+reset 完成 VideoRepick/easy/ep290 ok=True
+reset 完成 VideoRepick/medium/ep288 ok=True
+reset 完成 BinFill/hard/ep296 ok=True
+reset 完成 VideoRepick/medium/ep285 ok=True
+reset 完成 BinFill/easy/ep292 ok=True
+reset 完成 BinFill/hard/ep294 ok=True
+reset 完成 BinFill/easy/ep293 ok=True
+reset 完成 BinFill/hard/ep290 ok=True
+reset 完成 BinFill/easy/ep295 ok=True
+reset 完成 BinFill/hard/ep292 ok=True
+reset 完成 VideoRepick/medium/ep287 ok=True
+reset 完成 VideoRepick/xhard/ep276 ok=True
+reset 完成 BinFill/hard/ep293 ok=True
+reset 完成 VideoRepick/medium/ep286 ok=True
+reset 完成 VideoRepick/easy/ep292 ok=True
+reset 完成 BinFill/hard/ep295 ok=True
+reset 完成 VideoRepick/xhard/ep277 ok=True
+reset 完成 BinFill/easy/ep296 ok=True
+reset 完成 VideoRepick/easy/ep294 ok=True
+reset 完成 BinFill/easy/ep297 ok=True
+reset 完成 BinFill/hard/ep291 ok=True
+reset 完成 VideoRepick/easy/ep295 ok=True
+reset 完成 BinFill/medium/ep290 ok=True
+reset 完成 BinFill/easy/ep298 ok=True
+reset 完成 VideoRepick/easy/ep296 ok=True
+reset 完成 VideoRepick/medium/ep284 ok=True
+reset 完成 BinFill/medium/ep294 ok=True
+reset 完成 VideoRepick/xhard/ep274 ok=True
+reset 完成 VideoRepick/xhard/ep275 ok=True
+reset 完成 VideoRepick/easy/ep293 ok=True
+reset 完成 VideoRepick/medium/ep289 ok=True
+reset 完成 VideoRepick/easy/ep297 ok=True
+reset 完成 BinFill/easy/ep294 ok=True
+reset 完成 VideoRepick/xhard/ep278 ok=True
+reset 完成 VideoRepick/easy/ep298 ok=True
+reset 完成 VideoRepick/xhard/ep279 ok=True
+reset 完成 BinFill/medium/ep295 ok=True
+reset 完成 BinFill/medium/ep293 ok=True
+reset 完成 BinFill/medium/ep291 ok=True
+reset 完成 BinFill/medium/ep296 ok=True
+reset 完成 BinFill/medium/ep292 ok=True
+reset 完成 VideoRepick/medium/ep294 ok=True
+reset 完成 VideoRepick/medium/ep296 ok=True
+reset 完成 VideoRepick/medium/ep292 ok=True
+reset 完成 VideoRepick/medium/ep293 ok=True
+reset 完成 VideoRepick/easy/ep299 ok=True
+reset 完成 VideoRepick/medium/ep290 ok=True
+reset 完成 VideoRepick/medium/ep295 ok=True
+reset 完成 VideoRepick/medium/ep299 ok=True
+reset 完成 BinFill/medium/ep298 ok=True
+reset 完成 VideoRepick/medium/ep298 ok=True
+reset 完成 VideoRepick/xhard/ep286 ok=True
+reset 完成 VideoRepick/xhard/ep283 ok=True
+reset 完成 VideoRepick/xhard/ep284 ok=True
+reset 完成 VideoRepick/xhard/ep291 ok=True
+reset 完成 BinFill/medium/ep297 ok=True
+reset 完成 VideoRepick/medium/ep291 ok=True
+reset 完成 VideoRepick/xhard/ep299 ok=True
+reset 完成 VideoRepick/xhard/ep290 ok=True
+reset 完成 VideoRepick/xhard/ep282 ok=True
+reset 完成 VideoRepick/xhard/ep288 ok=True
+reset 完成 BinFill/hard/ep299 ok=True
+reset 完成 VideoRepick/medium/ep297 ok=True
+reset 完成 BinFill/medium/ep299 ok=True
+reset 完成 BinFill/easy/ep299 ok=True
+reset 完成 VideoRepick/xhard/ep296 ok=True
+reset 完成 VideoRepick/xhard/ep297 ok=True
+reset 完成 VideoRepick/xhard/ep287 ok=True
+reset 完成 VideoRepick/xhard/ep280 ok=True
+reset 完成 BinFill/hard/ep297 ok=True
+reset 完成 VideoRepick/xhard/ep289 ok=True
+reset 完成 VideoRepick/xhard/ep295 ok=True
+reset 完成 VideoRepick/xhard/ep292 ok=True
+reset 完成 VideoRepick/xhard/ep281 ok=True
+reset 完成 VideoRepick/xhard/ep293 ok=True
+reset 完成 VideoRepick/xhard/ep294 ok=True
+reset 完成 BinFill/hard/ep298 ok=True
+reset 完成 VideoRepick/xhard/ep298 ok=True
+reset 完成 VideoRepick/xhard/ep285 ok=True
+UNUSED_RESET=PASS checked=838 passed=838 failed=0 unused_left=0 primary_changed=0
+EXIT_CODE=0

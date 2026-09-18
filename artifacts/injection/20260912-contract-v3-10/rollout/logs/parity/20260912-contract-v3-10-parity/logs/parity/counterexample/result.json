@@ -1,0 +1,23 @@
+{
+  "left": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P01x20/BinFill/medium/videos/BinFill_ep1_seed4100_FailRecoverZ_medium_put_two_blue_cubes_and_one_green_cube_into_the_bin_then_press_the_button_to_stop__ALT__put_two_blue_cubes_and_one_green_cube_into_the_bin_and_press_the_button_to_stop.mp4",
+  "right": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P01x20/BinFill/medium/videos/BinFill_ep16_seed5600_medium_put_three_blue_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_three_blue_cubes_into_the_bin_and_press_the_button_to_stop.mp4",
+  "left_sha256": "1454cb7ed125faf97fc8f0654c088a3f08a20116eb7b621f0710d1fe8611ceba",
+  "right_sha256": "fe38f2b95fe6629817c40356c3a12ce96fce40725a48681d9538b841c46f469e",
+  "bytes_equal": false,
+  "status": "DIFFERENT",
+  "frames": [
+    1388,
+    1388
+  ],
+  "fps": [
+    30.0,
+    30.0
+  ],
+  "different_frames": 1388,
+  "first_difference": 0,
+  "complete_decode": true,
+  "decode_ok": true,
+  "method": "完整解码逐帧像素",
+  "left_copy": "artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity/counterexample/left.mp4",
+  "right_copy": "artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity/counterexample/right.mp4"
+}

@@ -1,0 +1,9 @@
+PARITY_KEYS=PASS layer=L3-left expected=210 actual=210 missing=0 extra=0 duplicates=0
+PARITY_KEYS=PASS layer=L3 expected=210 actual=210 missing=0 extra=0 duplicates=0
+PARITY_KEYS=PASS layer=L4-left expected=720 actual=720 missing=0 extra=0 duplicates=0
+PARITY_KEYS=PASS layer=L4 expected=720 actual=720 missing=0 extra=0 duplicates=0
+H5_PARITY=PASS compared=210 success=205 failures=5 sha_mismatch=0 failure_mismatch=0
+RESET_PARITY=PASS compared=720 outcome_mismatch=0 stop_episode_mismatch=0 role_mismatch=0
+PARITY_SOURCE_INTACT=PASS
+VIDEO_DIAGNOSTIC=NOT_RUN counts={'PASS': 221, 'NOT_RUN': 2}
+EXIT_CODE=0

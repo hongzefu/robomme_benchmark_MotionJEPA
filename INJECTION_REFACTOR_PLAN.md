@@ -411,6 +411,12 @@ L2 不把 1796 当成剔除后条数：旧 `apply_slow_exclusion` 会剔除最�
 
 `RESULTS_EQUIVALENCE=PASS h5_rows=1842 primary=1600 spare=196 failed=46 reset_rows=720 reset_primary=700`；`ROLES_CONSISTENT=PASS rows=3400 mismatch=0 duplicates=0 pending=0 unused=838`。3820 个文件的迁移映射、L4 原 720 键与停止位置已冻结，尚未移动数据；候选身份不变。独立新入口完成 1 条 HDF5 与 1 条 reset，重复执行零重跑；HDF5 与原 RouteStick/easy/ep0 同散列。17 项短测通过（31.18 秒），新旧 reset 模拟批次 720 键一致，含失败的 unused 测试仍完整覆盖 838 条。进入阶段五，不再重复报批。
 
+### 10.5 阶段 5 实施记录（2026-09-18）
+
+L3/L4 与源完整性全通过：210 条 HDF5 尝试中 205 成功、5 失败，实际散列与失败类型零差异；720 条 reset 的结果、停止位置和角色零差异，完整键无缺失/额外/重复。视频 221 对通过，2 条超时没有可比视频，整体记 NOT_RUN；同为 1388 帧的真实 BinFill/medium ep1/ep16 错配已完整解码识别并留存证据。
+
+硬闸后先逐文件归档 38 份证据，再按核验清单清理临时 426 个媒体文件（101712029329 字节），原运行大文件未删。随后 `UNUSED_RESET=PASS checked=838 passed=838 failed=0 unused_left=0 primary_changed=0`。正式唯一结果现在共 3400 条，train 角色不变，test 700 primary、858 spare，失败和 unused 都为 0；普通新运行的 unused 停点机制仍保留。
+
 ---
 
 # 第二部分（技术细节，供 agent 追踪）

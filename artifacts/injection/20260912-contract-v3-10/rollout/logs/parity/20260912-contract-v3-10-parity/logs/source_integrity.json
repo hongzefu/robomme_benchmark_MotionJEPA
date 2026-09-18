@@ -1,0 +1,6 @@
+{
+  "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl",
+  "before": "e67f500adb49b5e069e4b89668cdf11b8ebcee1c33ac2926cdfe75661553e16a",
+  "after": "e67f500adb49b5e069e4b89668cdf11b8ebcee1c33ac2926cdfe75661553e16a",
+  "passed": true
+}

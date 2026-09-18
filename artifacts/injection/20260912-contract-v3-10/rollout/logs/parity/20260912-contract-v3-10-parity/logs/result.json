@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "purpose": "parity",
+  "roles": {
+    "test/primary": 700,
+    "test/spare": 20,
+    "test/unused": 838,
+    "train/failed": 5,
+    "train/pending": 1632,
+    "train/primary": 205
+  },
+  "video_status_counts": {
+    "complete": 208,
+    "no_close": 2
+  },
+  "quota_gaps": [
+    "BinFill/easy",
+    "BinFill/medium",
+    "BinFill/hard",
+    "RouteStick/easy",
+    "RouteStick/medium",
+    "RouteStick/hard",
+    "VideoUnmaskSwap/easy",
+    "VideoUnmaskSwap/medium",
+    "VideoUnmaskSwap/hard",
+    "VideoRepick/easy",
+    "VideoRepick/medium",
+    "RouteStick/xhard",
+    "VideoUnmaskSwap/xhard",
+    "VideoRepick/xhard"
+  ],
+  "audit": {
+    "rows": 3400,
+    "results": 930,
+    "mismatch": 0,
+    "duplicates": 0,
+    "pending": 1632,
+    "unused": 838,
+    "roles": {
+      "test/primary": 700,
+      "test/spare": 20,
+      "test/unused": 838,
+      "train/failed": 5,
+      "train/pending": 1632,
+      "train/primary": 205
+    }
+  }
+}

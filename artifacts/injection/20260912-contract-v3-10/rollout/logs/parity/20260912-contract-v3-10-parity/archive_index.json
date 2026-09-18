@@ -1,0 +1,192 @@
+[
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/candidates/candidates.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/candidates.jsonl",
+    "sha256": "a37bb680616f66dec9b3052c4447970622a8a2cfff13d7f20dd526d164738712"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/results.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/results.jsonl",
+    "sha256": "845852a3a81cc396d94800bb82fd910e4f85565a2e7a21c14904ee0bdd6c0c2f"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/result.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/result.json",
+    "sha256": "1caf2c700c399bb6f466cea1f6c80159593afce2425462f103c9b43877839175"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity-check.log",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/parity-check.log",
+    "sha256": "94e9bc0e677899a156fea10d07b210bb7a5f6a604da1518e9a55802d7779a86e"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/source_integrity.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/source_integrity.json",
+    "sha256": "d0557043e0c86abcb319cb46eed7efff0e92e5a4ad9e8f0303851faa5475c794"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/reset_completed.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/reset_completed.json",
+    "sha256": "dd0f5146d1ac0c156416fd70730b55f2387cf7ae95bdda367129fca1e582e5b8"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity-run.log",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/parity-run.log",
+    "sha256": "359eacee6c8a6115ed05b75be7e0ae9d4f6891db0053ae22fed6a214d8874ba1"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/reset_check_result.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/reset_check_result.json",
+    "sha256": "c5c8a3e3cc2a1a2fab0d512d0611cabf15cb8faba843a312e574312dcafdf491"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/run_parameters.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/run_parameters.json",
+    "sha256": "019692733d54c3916bfe4674270aca25e1da233e28dc8fd7649a178549c3d658"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity/result.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/parity/result.json",
+    "sha256": "b248c91f011a1ce7f4aa86edb6fee1bf4dce4f2b451a41b7b2339c77ba1fd2d0"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity/counterexample/result.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/parity/counterexample/result.json",
+    "sha256": "920d5982497d58affef3f26fd3e4d190789339faf2dea512c178204ec7484013"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity/counterexample/right.mp4",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/parity/counterexample/right.mp4",
+    "sha256": "fe38f2b95fe6629817c40356c3a12ce96fce40725a48681d9538b841c46f469e"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity/counterexample/left_first_difference.png",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/parity/counterexample/left_first_difference.png",
+    "sha256": "0c7f3b94c374c76b890b6364bab32bfaea7282d3642d007476552de23f6f74ab"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity/counterexample/right_first_difference.png",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/parity/counterexample/right_first_difference.png",
+    "sha256": "461fbd8647cbaebc90c8afd80ed7cb0a162fe14ec4e8d282a0f7c71f9b897a09"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/parity/counterexample/left.mp4",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/parity/counterexample/left.mp4",
+    "sha256": "1454cb7ed125faf97fc8f0654c088a3f08a20116eb7b621f0710d1fe8611ceba"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/h5-0001/scope.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/h5-0001/scope.json",
+    "sha256": "2a241323874923d586eef46f9fa341f75a6107d5d2753642b0265be3d253008a"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/h5-0001/summary.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/h5-0001/summary.json",
+    "sha256": "aff6c2b1fbe20dd986003cdede0343622bf2c053ca469fdf8329edf08f88ccf7"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/h5-0001/invocation.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/h5-0001/invocation.json",
+    "sha256": "5b2765cd37686fcfa887c0c60ea2e38cd13e3eaef037442b8800ae02228a9fd7"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/h5-0001/episode_results.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/h5-0001/episode_results.jsonl",
+    "sha256": "31bc0a21ff5d6bfedf9b7b9b571e3b4d2da6fa19d51e1f557bd0f8ea07d69243"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/h5-0001/command.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/h5-0001/command.json",
+    "sha256": "7900918bb21f0155e16aa924ca792be29523e10900ec1503907b715ad3cfa946"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/h5-0001/generator.log",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/h5-0001/generator.log",
+    "sha256": "e86b99b951727c05b5fca5a78e89ff7e91bcd5f14fc7044141095820db03f1f6"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/scope.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/scope.json",
+    "sha256": "0e558a1e877bc920d8029b8dee7d74bdb6b591050c3a9dc66dc9d681813514c1"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/summary.json",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/summary.json",
+    "sha256": "c5c8a3e3cc2a1a2fab0d512d0611cabf15cb8faba843a312e574312dcafdf491"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/episode_results.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/episode_results.jsonl",
+    "sha256": "c07d083595dead99ea5b18fa102e48cd89e0d7632fb4284a19220a50526add8e"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/VideoUnmaskSwap/medium.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/VideoUnmaskSwap/medium.jsonl",
+    "sha256": "c6885048d919fe59e2db1596f112408b330c9a2522d7853bc6a24d74a1ddaaff"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/VideoUnmaskSwap/hard.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/VideoUnmaskSwap/hard.jsonl",
+    "sha256": "5ebc828fddc55a9a3d21864f7ed314b3c5f3b1f8d57fab8f16d501cd1de9bc86"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/VideoUnmaskSwap/xhard.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/VideoUnmaskSwap/xhard.jsonl",
+    "sha256": "f251e956109f32ad87f0f3f430b7356525effac8e813c1f55d2c19dc07a8facc"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/VideoUnmaskSwap/easy.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/VideoUnmaskSwap/easy.jsonl",
+    "sha256": "2ad9a6b4c9e9c40ef29ef1d8034d8fba7378cf51c9e1285497a8b1cafe47f0ec"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/VideoRepick/medium.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/VideoRepick/medium.jsonl",
+    "sha256": "a4663e15a05d9c367935c12f957d09882b1f54be00535725846d829af655fc90"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/VideoRepick/xhard.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/VideoRepick/xhard.jsonl",
+    "sha256": "3d7375eb7e09f974c4139c54aaab9d5d65bc4a59382475a681b9ecd5ad0523ed"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/VideoRepick/easy.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/VideoRepick/easy.jsonl",
+    "sha256": "c56fb862d9a2dd3d24e712f39a52392a201df40e4acfcad7bbd08572df6db049"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/RouteStick/medium.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/RouteStick/medium.jsonl",
+    "sha256": "c8580fc30756479a3576e7747234543b99c3b10e8332bd01bdcc2cd52eec46a4"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/RouteStick/hard.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/RouteStick/hard.jsonl",
+    "sha256": "2e938adde968b2342b1c1a77908f94ce2da8797f8319262b64aae0926f1678aa"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/RouteStick/xhard.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/RouteStick/xhard.jsonl",
+    "sha256": "92fe1b13166ba69b6cc30f7d5f8fe0813afea1332942bccc1828d2c92423b5e7"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/RouteStick/easy.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/RouteStick/easy.jsonl",
+    "sha256": "3fc9c653cf519ad6d3242ea9e5561bd853b179de900e7002ec42f6fdcf4975c5"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/BinFill/medium.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/BinFill/medium.jsonl",
+    "sha256": "b11130e356a6c488c566139879d419a479fce3f03c18679b409fbe97604646fd"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/BinFill/hard.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/BinFill/hard.jsonl",
+    "sha256": "48f491ae92601b1acd95573eb69b22daa0c8abf8e11de5fd3188850d2fbf2482"
+  },
+  {
+    "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10-parity/rollout/logs/attempts/reset-0002/batches/BinFill/easy.jsonl",
+    "archive": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/logs/parity/20260912-contract-v3-10-parity/logs/attempts/reset-0002/batches/BinFill/easy.jsonl",
+    "sha256": "745eb20426ee712000985f2d75f809eaac3e9bd0b85ca7bd5e8331f973fbfe4b"
+  }
+]

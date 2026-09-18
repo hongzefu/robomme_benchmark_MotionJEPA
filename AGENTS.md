@@ -197,7 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| 注入重构阶段 3～9 连续实施（2026-09-18） | 阶段 3、4 完成；进入阶段 5 | 旧基线 113 图、1795 保留/1 剔除；`RESULTS_EQUIVALENCE=PASS h5_rows=1842 reset_rows=720`，原角色完全保持；3820 文件路径映射与 L4 720 键冻结；新入口真实单条冒烟和重复调用通过；17 项短测通过 | 启动独立方案 B 的 210 条及一次正常 reset，硬闸通过后对原运行 838 条 unused 全量补查；继续 L2、迁移与最终收尾 |
+| 注入重构阶段 3～9 连续实施（2026-09-18） | 阶段 3～5 完成；进入阶段 6 | H5 210 条（205 成功/5 失败）散列及失败类型零差异；reset 720 条结果/停点/角色零差异；838 条 unused 全部通过、primary 未变；正式唯一结果 3400 条，test spare=858；原视频对 221 PASS/2 无视频 NOT_RUN | 全量 L2 图表对拍、3820 文件迁移及恢复验证、旧入口清理、最终冒烟；后续全部已授权 |
 | 注入重构实施阶段 2（2026-09-17） | 完成，阶段 3 待单独批准 | `LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`；RouteStick/easy/ep0 的 `SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`，300 帧、200071952 字节，生成 18.2 秒、散列 0.121 秒；短测 73 passed / 4 skipped，夹具修订补测 11 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 3 用旧图表工具对运行 10 冻结完整图表与数轴基线；获批后开始 |
 | 注入重构实施阶段 0～1（2026-09-17） | 完成 | 阶段 0 `41f5fa2`（11.09）；阶段 1 全量 3400 条完整规格零差异、11 项判定全 PASS，1986.59 秒，EXIT_CODE=0；11514 条拒绝事件；短测 60 passed / 9 skipped，补测 14 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 2 已获批并完成，见上行 |
 | 注入重构计划对抗审查（2026-09-17） | 审查完成；计划未通过 | 确认九项缺陷；原记录加候选元数据后散列校验拒绝；沿用停点规则补查 unused 只执行 600、剩 238；数轴反例最长段 828 > 400；定向测试 65 passed / 9 skipped，5.24 秒；[审查报告与复现命令](docs/validation/newtask-v2/20260917-injection-refactor-audit.md) | 先修订各项契约与验收；本轮不实施重构，原计划、生产代码、数据保持原状 |
@@ -1608,3 +1608,22 @@
 - 短测 17 passed，31.18 秒，含 3400 条加载器回归；纯 reset 新旧批次 720 键相同，缓存恢复零重跑，混合失败情况下 unused 仍检查 838 条。旧 reset 回归与状态测试另有 18 passed，20.15 秒。
 - 新入口独立冒烟 `refactor-rollout-smoke`：RouteStick/easy/ep0 HDF5 与基线同 SHA-256，另执行 ep115 reset 一次，`RUN=PASS ... h5_executed=1 reset_executed=1`；重复同命令 `RESET_IDEMPOTENT=PASS rerun=0 duplicates=0`、`RUN=PASS ... h5_executed=0 reset_executed=0`。源候选字节前后不变。
 - 阶段二回写测试在真实角色迁入后同步清空测试副本的 error_type，避免制造 primary 携带失败异常的非法状态；生产约束没有放宽。候选配置解析已独立迁入新包，不再依赖旧 delivery。后续无需再问，进入阶段五真实对拍。
+
+### 2026-09-18 America/Detroit — 阶段 5 方案 B 与正常 reset 实跑启动
+
+- 阶段 4 提交 `82a30e2`（11.13）。独立运行 `20260912-contract-v3-10-parity` 在 detached tmux `injection-parity` 中启动；命令为 `uv run --no-sync python -m scripts.injection.rollout --run-id 20260912-contract-v3-10-parity --candidates artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl --purpose parity --tier 20 --gpus 0,1 --episodes 15 --no-figures`。
+- 先跑 210 个固定 h5 键，随后由同一主调用做唯一一次正常 reset 配额核验；只改独立候选副本。退出码、原始尝试和范围进入该运行的 rollout/logs。原运行的 838 条 unused 暂不动，等 L3/L4/源完整性硬闸通过后再补查。
+
+### 2026-09-18 America/Detroit — 阶段 5 实跑完成，进入正式对拍
+
+- 独立主调用退出 0：210 个 h5 终态（205 成功、5 失败），720 个 reset 终态全部成功；`RUN=PASS purpose=parity h5_executed=210 reset_executed=720`，`PARITY_SOURCE_INTACT=PASS`。临时副本结果 930 条、pending 1632、unused 838；没有对原运行补查。
+- 正式比较在 tmux `injection-parity-check` 运行，先查 L3/L4 完整键，再读实际 HDF5 散列、比失败类型及 reset 状态/停点/角色；视频诊断另列、解码预算 120 秒。真实 BinFill/medium ep1 与 ep16 都是 1388 帧，完整解码错配诊断已识别 DIFFERENT，并保存首差帧和两份视频；另有两项诊断反例测试通过。
+- 等待期间仅准备独立新图表模块，旧算法/原数据未改；新图表短测 36 passed，7.37 秒，含 PNG 字节比较与小 HDF5→数轴→图→报告完整路径。尚未执行 L2 全量或迁移。
+
+### 2026-09-18 America/Detroit — 阶段 5 全部硬闸与 unused 补查完成
+
+- `H5_PARITY=PASS compared=210 success=205 failures=5 sha_mismatch=0 failure_mismatch=0`；`RESET_PARITY=PASS compared=720 outcome_mismatch=0 stop_episode_mismatch=0 role_mismatch=0`；L3/L4 两侧完整键 missing/extra/duplicates 均 0；`PARITY_SOURCE_INTACT=PASS`。
+- 视频诊断 221 对 PASS，2 条超时样本没有可比视频，整体如实记 `VIDEO_DIAGNOSTIC=NOT_RUN`。真实 BinFill/medium ep1/ep16 的 1388 帧错配完整解码识别 DIFFERENT，首差帧及原视频对已保留。没有把视频未验证状态写成通过，也没有影响独立 HDF5 硬闸。
+- 先将 38 份范围、原始终态、结果、散列与诊断证据逐文件复制核验至正式运行 `rollout/logs/parity/20260912-contract-v3-10-parity/`；再按已验证清单清理临时 426 个媒体文件、101712029329 字节。原运行大文件零删除，反例视频对和诊断材料保留。临时运行标记 archived，普通入口拒绝把已清理成品复用为交付；无宽泛目录删除。
+- `UNUSED_RESET=PASS checked=838 passed=838 failed=0 unused_left=0 primary_changed=0`、退出 0。原候选全部 3400 条已有唯一终态：train 1600 primary/196 spare/46 failed；test 700 primary/858 spare/0 failed/0 unused。该例外只对运行十执行，普通新运行仍保留 unused 语义。
+- 归档守卫及对拍短测 7 passed，20.36 秒。阶段五代码与轻量证据提交后继续 L2 全量，不再询问。
