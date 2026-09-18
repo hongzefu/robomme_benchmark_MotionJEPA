@@ -1,8 +1,8 @@
 # 新值注入链路重构计划：两阶段、两个 jsonl、其余进 logs
 
 > **权威性**：本文是新值注入链路（候选分布 → 真实 HDF5）重构的唯一计划，提交在 `newtask-v2` 分支。代码锚点一律以 `92e8152`（10.84）为准；工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。commit 编号沿用「主序号.流水号」体例，从 **11.01** 起。
-> **分支**：实施（第一部分第八节阶段 1）开始时从 `newtask-v2` 另开新分支，**分支名由用户在批准阶段 1 时指定**，本文不预设；计划文档本身留在 `newtask-v2`。
-> **授权边界**：本文只规划不实施。第一部分第八节的每个阶段都须用户单独批准后才动手；「未来可做」不等于本轮授权。
+> **分支**：实施（第一部分第九节阶段 1）开始时从 `newtask-v2` 另开新分支，**分支名由用户在批准阶段 1 时指定**，本文不预设；计划文档本身留在 `newtask-v2`。
+> **授权边界**：本文只规划不实施。第一部分第九节的每个阶段都须用户单独批准后才动手；「未来可做」不等于本轮授权。
 > **口径来源**：现行 h5 生成流程 = `20260912-contract-v3-10`（每 env 400 条严格交付），其机制细节见 [scripts/NEW_VALUE_INJECTION_PIPELINE.md](scripts/NEW_VALUE_INJECTION_PIPELINE.md)；重构后该文档被 `scripts/INJECTION.md` 取代。
 > **决策史**：契约 v1→v3、xhard、BinFill demo 直出等历史决策本轮**不整理、不搬运**（用户 2026-09-17 原话「决策史先不管」），全部留在 git 历史与 `newtask-v2` 分支。
 
@@ -23,7 +23,8 @@
 5. 「正式 / 备用的区分并入结果行」——`results.jsonl` 每行带 `role ∈ {primary, spare, failed}`，不再单独出 `delivery_manifest.json`（第四节 4.2、第六节）。
 6. 「对应的script也分为这两个阶段单独建文件夹」——`scripts/injection/candidates/` 与 `scripts/injection/rollout/`（第三节 3.3）。
 7. 「决策史先不管 这次重构需要从新branch开始」「我说的是修改开始后！你需要和用户确定分支名称」——实施开始时另开分支、分支名届时由用户指定，计划文档留在 `newtask-v2`；历史文档删而不搬（引言块）。
-8. 现有 run 10 的 844 GB 产物**不重跑**，目录原地按新拓扑移动，h5 逐文件 SHA-256 核对（第八节阶段 5）。
+8. 现有 run 10 的 844 GB 产物**不重跑**，目录原地按新拓扑移动，h5 逐文件 SHA-256 核对（第九节阶段 7）。
+9. 「需要加入修改前后的对拍」——候选、图表数据层两层对拍全量必做；h5 / mp4 对拍全量或抽样**待用户在第八节四个方案里选定**，选定后再批阶段 5。
 
 ## 二、现状：机制与产物
 
@@ -193,27 +194,77 @@ scripts/injection/
 
 ## 七、删除清单
 
-- **代码**：`scripts/injection/env_check.py`、`replay.py`、`h5_compare.py`、`contract_build.py`、`plots.py`、`campaign.py`（其 plan / check / run / delivery 逻辑迁入两个新包后整文件删）、`scripts/injection-before-2d/` 整个目录（含 `check_doc_links.py`、`windows_timeline.json`、`figures/`）。
+- **代码**：`scripts/injection/env_check.py`、`replay.py`、`contract_build.py`、`plots.py`、`campaign.py`（其 plan / check / run / delivery 逻辑迁入两个新包后整文件删）、`scripts/injection-before-2d/` 整个目录（含 `check_doc_links.py`、`windows_timeline.json`、`figures/`）。`h5_compare.py` **不删**，搬为 `scripts/injection/rollout/h5_compare.py`，只在对拍 SHA-256 不一致时用来定位差异（第八节 8.2）。
+- **删除时机**：旧的出图、事件表、timeline 脚本要先对 run 10 跑一遍留下基线（第九节阶段 3），之后才能删。
 - **配置**：`injection_contract_v1.json`、`injection_contract_v2.json`。
 - **文档**：第五节表中标「删」与「重写」的六份；`scripts/README.md` 第四节改为指向 `scripts/INJECTION.md`。
 - **轻量包**：`docs/validation/newtask-v2/` 下 `20260910-new-values-04`、`20260911-contract-v3-06`、`20260911-contract-v3-07`、`20260912-contract-v3-08`、`20260912-contract-v3-09`、`20260912-contract-v3-10` 六个目录。其余非 injection 轮次目录不动。
-- **run 10 目录内**：不删只移（第八节阶段 5）。`env_check/`、`env_check_result*.json`、`feasibility/P0x1/`、`manifests/`、四份 `feasibility_result*.json`、`delivery_manifest.json`、`manifest.json`、`plan_stats.json`、`check_result.json`、`logs/*` 全部进对应阶段的 `logs/`。
+- **run 10 目录内**：不删只移（第九节阶段 7）。`env_check/`、`env_check_result*.json`、`feasibility/P0x1/`、`manifests/`、四份 `feasibility_result*.json`、`delivery_manifest.json`、`manifest.json`、`plan_stats.json`、`check_result.json`、`logs/*` 全部进对应阶段的 `logs/`。
 - **`.gitignore`**：`artifacts/injection` 段与 `scripts/injection-before-2d/figures` 段整体替换（第二部分三）。
 
-## 八、实施步骤
+## 八、修改前后的对拍
+
+### 8.1 修改前的生成花了多久（run 10 实测，2026-09-12，双卡各 20 worker）
+
+| 阶段 | 规模 | 墙钟 | 出处 |
+|---|---|---|---|
+| `plan` 冻结候选 | 14 组 3400 条 | 675.3 秒（11 分钟） | `logs/plan.log` `elapsed_s=675.3` |
+| `check` 静态与碰撞筛查 | 3400 条，碰撞扫掠 1700 条 | 1338.5 秒（22 分钟） | `logs/check.log` `elapsed_s=1338.5` |
+| 实跑 | 1842 条，通过 1796 | 6684.4 秒（1 小时 51 分），16.12 条/分 | `feasibility/P01x20/run_summary.json` `elapsed_s` |
+| 成功条单条 | 1796 条 | 中位 126 秒、最大 241 秒；串行总和 63 小时 | `episode_results.jsonl` `wall_s` |
+| 超时条单条 | 21 条 | 600 秒被终止（最长实测 626 秒） | 同上 |
+| 产物体积 | h5 1796 个 | 880 GB，中位 424 MB | `delivery_manifest.json` `h5_bytes` |
+
+磁盘：`/data` 总 14 TB，已用 12 TB，**余 1.9 TB**（2026-09-17 `df`）；全量重跑一份 880 GB 放得下，但跑完必须删一份。GPU 0 / 1 当前空闲（利用率 0%）。
+
+### 8.2 关键前提：h5 与 mp4 都是逐字节确定的，对拍只比 SHA-256
+
+run 10 里 RouteStick/easy ep0 被生成过两次：smoke 档 `P0x1`（单卡 1 worker，13:06）与正式档 `P01x20`（双卡 40 worker，13:29）。两次的成品：
+
+| 文件 | 字节数 | SHA-256 前 16 位 | 结论 |
+|---|---:|---|---|
+| `RouteStick_ep0_seed16000.h5` | 200,071,952 | `27d7e1c62583025e` 两次相同 | h5 逐字节确定 |
+| `RouteStick_ep0_seed16000_easy_watch….mp4` | 6,648,548 | `468cf3b5c00344e3` 两次相同 | 录像器直出的 mp4 逐字节确定 |
+
+因此**对拍不需要逐 dataset 遍历**：新链路生成时在 `close()` 后算的 `h5_sha256` 直接与 `delivery_manifest.json` 里 run 10 的 1796 个散列比即可，旧文件零额外读取。`h5_compare.py` 只在散列不一致时用来定位是哪个 dataset 变了。两个例外：BinFill 的 mp4 经 `imageio` 二次 libx264 编码，逐字节是否确定未验证，**只比帧数**，其 h5 照比；21 条超时与 25 条规划失败比 `failure_class / error_type`（10 轮已证明超时 seed 三轮复现，是确定性的）。
+
+### 8.3 三层对拍
+
+| 层 | 比什么 | 怎么比 | 规模与耗时 | 判定行 |
+|---|---|---|---|---|
+| L1 候选（**全量必做**） | 新 `candidates` 包对 run 10 的契约与配置重算 3400 行 | 逐行 `spec_sha256` 与 `specs/<task>/<diff>.json` 比；`screening` 里的碰撞结论与旧 `collision` 字段比 | plan 11 分钟 + screen 22 分钟 ≈ 35 分钟，零磁盘 | `CANDIDATES_EQUIVALENCE=PASS compared=3400 differences=0` |
+| L2 图与报告数据层（**全量必做**） | 旧脚本与新脚本对**同一份 run 10** 各出一套 | 删旧脚本前先用 `plot_injection_before_2d.py`、`event_tables.py`、`window_timeline.py extract` 对 run 10 跑出基线（三者此前只对 07 跑过）；新 `figures.py / report.py / windows.py` 出的 98 + 15 张 PNG 逐字节比、事件表逐行比、`windows_timeline.json` 逐键比 | 旧 extract 要打开 1796 个 h5 读 T 与分段，**未实测**，估 10 到 30 分钟；出图数分钟；零额外磁盘 | `FIGURES_EQUIVALENCE=PASS png=113 differences=0`、`TABLES_EQUIVALENCE=PASS rows=… drift=0`、`TIMELINE_EQUIVALENCE=PASS episodes=1796 differences=0` |
+| L3 h5 / mp4（**全量或抽样，待用户选**） | 新 `rollout` 包按 `candidates.jsonl` 重新生成 | 成功条比 `h5_sha256`（BinFill 另比 mp4 帧数，其余任务 mp4 也比 SHA-256）；失败条比 `failure_class / error_type` | 见 8.4 | `H5_PARITY=PASS compared=N sha_mismatch=0 mp4_mismatch=0 failure_mismatch=0` |
+
+### 8.4 L3 的四个方案（待用户确认）
+
+条数按「每组 block 0 的前 N 条」取，覆盖 14 组；耗时按双卡 40 worker、机器空闲估，含超时条封底（每组前 1 条里就有 VideoRepick/easy ep0 这条 626 秒超时）。
+
+| 方案 | 条数 | 预计墙钟 | 临时磁盘 | 覆盖到的结果类型 | 能证明什么 |
+|---|---:|---|---:|---|---|
+| **A 全量（推荐）** | 1842 | ≈ 1 小时 51 分（与 run 10 相同） | 880 GB，余 1.9 TB 可容 | 1796 成功 + 21 超时 + 25 规划失败 | 新链路**逐条**复现已交付数据集；PASS 后新旧两份逐字节相同，删一份即可 |
+| B 每组前 15 | 210 | ≈ 15 到 20 分钟（理论下限 11.5 分钟） | ≈ 90 GB | 205 成功 + 3 规划失败 + 2 超时 | 四任务四档全覆盖、三类结果都有样本 |
+| C 每组前 5 | 70 | ≈ 10 到 12 分钟（下限 4 分钟，被 626 秒超时封底） | ≈ 30 GB | 68 成功 + 1 规划失败 + 1 超时 | 四任务四档全覆盖 |
+| D 每组前 1 | 14 | ≈ 10 分钟（被 626 秒超时封底） | ≈ 6 GB | 13 成功 + 1 超时 | 只证明链路能通 |
+
+推荐 A 的理由：生成是确定性的，任何一条散列不同都是真 bug；两小时 GPU 与 880 GB 临时盘都付得起；只有全量能宣称「重构后的链路产出与已发布到 HF 的数据集逐字节一致」。B 到 D 都只能证明「抽到的条一致」，剩余条的等价性靠确定性推断。
+
+## 九、实施步骤
 
 每阶段单独获批、单独 commit（11.01 起），判据不过不进下一阶段。
 
 | 阶段 | 内容 | 判据 |
 |---|---|---|
 | 0 | 本计划写入 `newtask-v2` | 本文入库；`git status -sb` 无遗留 |
-| 1 | 先与用户确定分支名并从 `newtask-v2` 切出；建 `scripts/injection/candidates/`：搬四个核心模块，写 `screen.py` 与 `__main__.py`，产 `candidates.jsonl`；对 run 10 的 `specs/` 重算 | `CANDIDATES_EQUIVALENCE=PASS compared=3400 differences=0`（逐行 `spec_sha256` 与 run 10 相同）；`SCREENING_FILLED=PASS rows=3400 null_geometry=0` |
-| 2 | 生成器 `load_episode_specs` 读 jsonl；跑 1 条 smoke（RouteStick/easy ep0，`P0x1`） | `LOADER_PARITY=PASS`（同一条从 jsonl 与从旧 json 加载的 dict 相等）；`SMOKE_H5_PARITY=PASS compared=1 differences=0`（与 run 10 同 episode h5 逐位一致） |
-| 3 | 建 `scripts/injection/rollout/`：合并 run + delivery，写 `role / h5_sha256 / h5_bytes`；用 run 10 的 `episode_results.jsonl + delivery_manifest.json` 迁移出 `results.jsonl` | `RESULTS_EQUIVALENCE=PASS rows=1842 primary=1600 spare=196 failed=46`（与 `delivery_manifest.json` 逐条一致） |
-| 4 | `windows.py` 与 `figures.py / report.py` 按 run 10 重出图与报告 | `FIGURES=PASS before=98 windows=15`；`DISTRIBUTION.md` 与 `WINDOWS.md` 的自动表 `--check` 零漂移 |
-| 5 | run 10 目录原地迁移：`feasibility/P01x20/<task>/<diff>` → `rollout/<task>/<diff>`，其余进 `logs/` | `H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0`（对 `results.jsonl` 每条 `h5_sha256` 逐文件核对） |
-| 6 | 删旧代码、旧配置、旧文档、轻量包；改 `.gitignore`；写 `scripts/INJECTION.md`；改 `scripts/README.md` 第四节 | `DOC_LINKS=PASS broken=0`；`git ls-files artifacts/injection/20260912-contract-v3-10 \| wc -l` 与阶段 5 清单一致；`grep -rn "injection-before-2d\|campaign\b" scripts docs *.md` 零命中 |
-| 7 | 新链路端到端冒烟：新 run-id 出 1 组 1 block 候选、实跑 1 条 | `plan + run` 总耗时 < 5 分钟；两个 jsonl、h5、图、报告齐全 |
+| 1 | 先与用户确定分支名并从 `newtask-v2` 切出；建 `scripts/injection/candidates/`：搬四个核心模块，写 `screen.py` 与 `__main__.py`，产 `candidates.jsonl`；对 run 10 重算（L1 对拍） | `CANDIDATES_EQUIVALENCE=PASS compared=3400 differences=0`；`SCREENING_FILLED=PASS rows=3400 null_geometry=0` |
+| 2 | 生成器 `load_episode_specs` 读 jsonl，`close()` 后加 `h5_sha256 / h5_bytes`；跑 1 条 smoke（RouteStick/easy ep0） | `LOADER_PARITY=PASS`（同一条从 jsonl 与从旧 json 加载的 dict 相等）；`SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`（与 run 10 的 `27d7e1c6…` 相同） |
+| 3 | 删旧脚本前用旧 `plot_injection_before_2d.py`、`event_tables.py`、`window_timeline.py extract` 对 run 10 出一套基线到 `candidates/logs/baseline/` 与 `rollout/logs/baseline/` | `BASELINE_CAPTURED=PASS png=113 tables=14 timeline_episodes=1796` |
+| 4 | 建 `scripts/injection/rollout/`：合并 run + delivery，写 `role / h5_sha256 / h5_bytes`；用 run 10 的 `episode_results.jsonl + delivery_manifest.json` 迁移出 `results.jsonl` | `RESULTS_EQUIVALENCE=PASS rows=1842 primary=1600 spare=196 failed=46` |
+| 5 | L3 对拍：按用户选定的方案用新 `rollout` 包重新生成到临时 run-id，与 run 10 比散列与失败类型；PASS 后删临时产物 | `H5_PARITY=PASS compared=N sha_mismatch=0 mp4_mismatch=0 failure_mismatch=0` |
+| 6 | 新 `windows.py / figures.py / report.py` 对 run 10 出图与报告，与阶段 3 基线比（L2 对拍） | `FIGURES_EQUIVALENCE=PASS png=113 differences=0`、`TABLES_EQUIVALENCE=PASS drift=0`、`TIMELINE_EQUIVALENCE=PASS episodes=1796 differences=0` |
+| 7 | run 10 目录原地迁移：`feasibility/P01x20/<task>/<diff>` → `rollout/<task>/<diff>`，其余进 `logs/` | `H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0` |
+| 8 | 删旧代码、旧配置、旧文档、轻量包；改 `.gitignore`；写 `scripts/INJECTION.md`；改 `scripts/README.md` 第四节 | `DOC_LINKS=PASS broken=0`；`git ls-files artifacts/injection/20260912-contract-v3-10 \| wc -l` 与阶段 7 清单一致；`grep -rn "injection-before-2d\|campaign\b" scripts docs *.md` 零命中 |
+| 9 | 新链路端到端冒烟：新 run-id 出 1 组 1 block 候选、实跑 1 条 | `plan + run` 总耗时 < 5 分钟；两个 jsonl、h5、图、报告齐全 |
 
 实施完成后实测结果以子节追加在本表之后，不改写原计划。
 
@@ -229,7 +280,8 @@ scripts/injection/
 - R4 `spec_sha256` 的算法与作用域不改，否则阶段 1 判据失去意义。
 - R5 不 `git push --force`；实施分支的名称先问用户，首次推送前再问是否 `git push -u origin <分支名>`。
 - R6 `hf_release/` 与 `scripts/hf_release.py` 本轮不动。
-- R7 删除只在阶段 6 做，且在阶段 1 到 5 全部 PASS 之后。
+- R7 删除只在阶段 8 做，且在阶段 1 到 7 全部 PASS 之后；旧出图 / 事件表 / timeline 脚本在阶段 3 留下基线之前不得删。
+- R8 L3 对拍写到独立的临时 run-id（如 `<run10>-parity`），绝不写进 run 10 目录；PASS 后临时产物整目录删除，磁盘回到对拍前水位。
 
 ## 一、逐文件改动清单
 
@@ -244,10 +296,12 @@ scripts/injection/
 | `scripts/injection/rollout/windows.py` | `window_timeline.py` + `plot_sampling_windows.py` | 输入改读 `results.jsonl` 与 `rollout/<task>/<diff>/hdf5_files/`；timeline 写 `rollout/logs/windows_timeline.json`；图写 `rollout/figures/` |
 | `scripts/injection/rollout/report.py` | `campaign.py::cmd_report` 的结果表部分 + `window_timeline.py tables` | 输出 `ROLLOUT.md`（通过表、失败清单、视频状态）与 `WINDOWS.md`（公式、汇总表、剔除表） |
 | `scripts/injection/rollout/single_binfill.py` | `plot_binfill_medium_single.py` | 只改输入路径；不被 `__main__` 调用 |
+| `scripts/injection/rollout/h5_compare.py` | `scripts/injection/h5_compare.py` | 原样搬入；只在 `H5_PARITY` 散列不一致时手动调用定位差异 |
+| `scripts/injection/rollout/parity.py` | 新写 | 读两个 run 的 `results.jsonl`（旧 run 用迁移后的），按 (task, difficulty, episode) 配对，比 `h5_sha256`、mp4 SHA-256 或帧数、`failure_class / error_type`，打 `H5_PARITY` 判定行 |
 | `scripts/injection/rollout/__main__.py` | `campaign.py` 的 `cmd_run` feasibility 分支 | 顺序：run → role → windows → report |
 | `scripts/generate_dataset_newseed.py` | 现有 | `load_episode_specs`：清单 `spec_path` 以 `.jsonl` 结尾时按 `(task, difficulty)` 过滤行、跳过 header；`_worker` 的 `close()` 后核验段加 `h5_sha256 / h5_bytes` |
 | `scripts/INJECTION.md` | 新写 | 现行口径、两阶段命令、两个 jsonl 字段表、追溯链、「再次 HF 发布须改 hf_release.py」 |
-| 一次性迁移脚本 `scripts/injection/_migrate_run10.py` | 新写，阶段 5 用完即删 | `specs/*.json + plan_stats + check_result` → `candidates.jsonl`；`episode_results.jsonl + delivery_manifest.json` → `results.jsonl`；目录 `mv`；SHA-256 核对 |
+| 一次性迁移脚本 `scripts/injection/_migrate_run10.py` | 新写，阶段 7 用完即删 | `specs/*.json + plan_stats + check_result` → `candidates.jsonl`；`episode_results.jsonl + delivery_manifest.json` → `results.jsonl`；目录 `mv`；SHA-256 核对 |
 
 ## 二、`.gitignore` 替换段
 
@@ -269,7 +323,20 @@ scripts/injection/
 
 删除 `scripts/injection-before-2d/figures/*` 两行。
 
-## 三、runbook（阶段 7 的新链路命令）
+## 三、runbook（阶段 5 对拍与阶段 9 冒烟的新链路命令）
+
+阶段 5（以方案 A 为例；B 到 D 加 `--episodes N` 只跑每组前 N 条）：
+
+```bash
+RID=20260912-contract-v3-10; PID=$RID-parity; CFG=scripts/configs/newtask-v2/delivery_400.json
+# 用 run 10 的 candidates.jsonl 原样重跑（约 1 小时 51 分，tmux 起，日志落 artifacts/injection/$PID/rollout/logs/）
+uv run --no-sync python -m scripts.injection.rollout --run-id $PID --candidates artifacts/injection/$RID/candidates/candidates.jsonl \
+  --delivery-config $CFG --tier 20 --gpus 0,1 --no-figures
+uv run --no-sync python -m scripts.injection.rollout.parity --left $RID --right $PID   # H5_PARITY=PASS compared=1842 …
+rm -rf artifacts/injection/$PID   # PASS 后
+```
+
+阶段 9：
 
 ```bash
 RID=<新编号>; CFG=scripts/configs/newtask-v2/delivery_400.json
@@ -286,7 +353,7 @@ uv run --no-sync python -m scripts.injection.rollout --run-id $RID --delivery-co
 
 | 风险 | 处置 |
 |---|---|
-| run 10 的 `feasibility/P0x1/` smoke 档与 `P01x20` 都有 RouteStick/easy ep0，`delivery_manifest.json` 去重时取的是哪一份未查 | 阶段 3 迁移时按 `delivery_manifest.json` 记录的 `h5_path` 选取，另一份进 `logs/smoke/` |
+| run 10 的 `feasibility/P0x1/` smoke 档与 `P01x20` 都有 RouteStick/easy ep0，`delivery_manifest.json` 去重时取的是哪一份未查 | 阶段 4 迁移时按 `delivery_manifest.json` 记录的 `h5_path` 选取，另一份进 `logs/smoke/` |
 | `record_dataset_<task>_metadata.json` 由录像器落在组目录，位置不受控 | 保持原位随组目录一起 `mv`，`.gitignore` 反选其入库 |
 | `results.jsonl` 由生成器追加写、收尾步整文件重写，中断在重写期间会损坏 | 写临时文件后 `os.replace` |
 | BinFill h5 单条 900 MB，算 `h5_sha256` 在 `close()` 后串行做会拖慢 worker | 与现在 `delivery --hash full --workers 8` 同量级，10 轮实测可接受；若拖慢改为收尾步并行算 |
@@ -294,8 +361,11 @@ uv run --no-sync python -m scripts.injection.rollout --run-id $RID --delivery-co
 
 ## 五、盲区诚实清单
 
-- 阶段 2 的 `SMOKE_H5_PARITY` 只对 RouteStick 一条逐位，BinFill 的 demo 直出与视频二次编码不在逐位范围。
-- 阶段 4 重出的图与报告基于 run 10 的 1796 条，与 07 版本不可逐图对照。
+- 「逐字节确定」的证据只有 RouteStick/easy ep0 一条（h5 与 mp4 各一次两两相同），BinFill demo 直出的 h5 与 VideoRepick / VideoUnmaskSwap 的 h5 尚无跨次对照；阶段 5 若出现散列不一致，先用 `h5_compare.py` 判断是内容差异还是写入层非确定，不能直接判新链路有 bug。
+- BinFill 的 mp4 经 `imageio` 二次编码，逐字节是否确定未验证，L3 只比帧数。
+- 3 条 `BinFillDemoError`（ffmpeg `Broken pipe`）根因未查，属偶发，重跑时可能变成成功；L3 的 `failure_mismatch` 对这 3 条只记不判。
+- L2 的旧 `window_timeline.py extract` 从未对 run 10 跑过，耗时未实测。
+- 阶段 6 重出的图与报告基于 run 10 的 1796 条，与 07 版本不可逐图对照。
 - 删除轻量包后 08 / 09 的尾迹核验脚本随之消失，只在 git 历史可查。
 
 ## 六、留档与 commit 纪律
