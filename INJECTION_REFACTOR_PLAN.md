@@ -1,7 +1,7 @@
 # 新值注入链路重构计划：两阶段、两个 jsonl、其余进 logs
 
 > **权威性**：本文是新值注入链路（候选分布 → 真实 HDF5）重构的唯一计划，提交在 `newtask-v2` 分支。代码锚点一律以 `92e8152`（10.84）为准；工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。commit 编号沿用「主序号.流水号」体例，从 **11.01** 起。
-> **分支**：实施（第一部分第十节阶段 1）开始时从 `newtask-v2` 另开新分支，**分支名由用户在批准阶段 1 时指定**，本文不预设；计划文档本身留在 `newtask-v2`。
+> **分支**：本计划与全部实施都在 **`newtask-v2.1refractor`** 上（用户 2026-09-17 原话「这个md计划 要从newtask-v2.1refractor开始」），该分支自 `newtask-v2` 的 `bf2c9ac`（11.04）切出；11.01 到 11.04 四条计划提交已在 `newtask-v2` 上，随切分支带入。
 > **授权边界**：本文只规划不实施。第一部分第十节的每个阶段都须用户单独批准后才动手；「未来可做」不等于本轮授权。
 > **口径来源**：现行 h5 生成流程 = `20260912-contract-v3-10`（每 env 400 条严格交付），其机制细节见 [scripts/NEW_VALUE_INJECTION_PIPELINE.md](scripts/NEW_VALUE_INJECTION_PIPELINE.md)；重构后该文档被 `scripts/INJECTION.md` 取代。
 > **决策史**：契约 v1→v3、xhard、BinFill demo 直出等历史决策本轮**不整理、不搬运**（用户 2026-09-17 原话「决策史先不管」），全部留在 git 历史与 `newtask-v2` 分支。
@@ -22,7 +22,7 @@
 4. 「第二阶段rollout保留h5 mp4 回放 和一个jsonl记录结果 成功/失败的都要记录 剩下的放入log 用户都不看 只用jsonl和h5判断成功」——定为 `results.jsonl`，成功与失败同表；运行参数、清单、生成器日志、timeline JSON 进 `rollout/logs/`（第四节 4.2）。
 5. 「正式 / 备用的区分并入结果行」——`results.jsonl` 每行带 `role ∈ {primary, spare, failed}`，不再单独出 `delivery_manifest.json`（第四节 4.2、第七节）。
 6. 「对应的script也分为这两个阶段单独建文件夹」——`scripts/injection/candidates/` 与 `scripts/injection/rollout/`（第三节 3.3）。
-7. 「决策史先不管 这次重构需要从新branch开始」「我说的是修改开始后！你需要和用户确定分支名称」——实施开始时另开分支、分支名届时由用户指定，计划文档留在 `newtask-v2`；历史文档删而不搬（引言块）。
+7. 「决策史先不管 这次重构需要从新branch开始」「我说的是修改开始后！你需要和用户确定分支名称」「这个md计划 要从newtask-v2.1refractor开始」——分支定为 `newtask-v2.1refractor`，计划与实施都在其上；历史文档删而不搬（引言块）。
 8. 现有 run 10 的 844 GB 产物**不重跑**，目录原地按新拓扑移动，h5 逐文件 SHA-256 核对（第十节阶段 7）。
 9. 「需要加入修改前后的对拍」「使用B 每组前 15」——候选、图表数据层、reset 核验三层全量对拍；h5 / mp4 对拍取**方案 B，每组 block 0 前 15 条共 210 条**（第九节 9.4）。
 10. 「有一部分json配置是只处理不生成h5的是怎么回事 也要保留 在rollout/ 中要做reset验证」——`delivery_400.json` 的 `extra_candidates=50` 那 700 条只做 `make + reset + close` 的候选**保留**，核验代码放 `scripts/injection/rollout/reset_check.py`，结果作为 `kind="reset"` 的行并入 `rollout/results.jsonl`（第四节 4.3）。
@@ -326,7 +326,7 @@ run 10 里 RouteStick/easy ep0 被生成过两次：smoke 档 `P0x1`（单卡 1 
 | 阶段 | 内容 | 判据 |
 |---|---|---|
 | 0 | 本计划写入 `newtask-v2` | 本文入库；`git status -sb` 无遗留 |
-| 1 | 先与用户确定分支名并从 `newtask-v2` 切出；建 `scripts/injection/candidates/`：搬四个核心模块，写 `screen.py` 与 `__main__.py`，产 `candidates.jsonl`；对 run 10 重算（L1 对拍） | `CANDIDATES_EQUIVALENCE=PASS compared=3400 differences=0`；`SCREENING_FILLED=PASS rows=3400 null_geometry=0` |
+| 1 | 在 `newtask-v2.1refractor` 上建 `scripts/injection/candidates/`：搬四个核心模块，写 `screen.py` 与 `__main__.py`，产 `candidates.jsonl`；对 run 10 重算（L1 对拍） | `CANDIDATES_EQUIVALENCE=PASS compared=3400 differences=0`；`SCREENING_FILLED=PASS rows=3400 null_geometry=0` |
 | 2 | 生成器 `load_episode_specs` 读 jsonl，`close()` 后加 `h5_sha256 / h5_bytes`；跑 1 条 smoke（RouteStick/easy ep0） | `LOADER_PARITY=PASS`（同一条从 jsonl 与从旧 json 加载的 dict 相等）；`SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`（与 run 10 的 `27d7e1c6…` 相同） |
 | 3 | 删旧脚本前用旧 `plot_injection_before_2d.py`、`event_tables.py`、`window_timeline.py extract` 对 run 10 出一套基线到 `candidates/logs/baseline/` 与 `rollout/logs/baseline/` | `BASELINE_CAPTURED=PASS png=113 tables=14 timeline_episodes=1796` |
 | 4 | 建 `scripts/injection/rollout/`：合并 run + delivery，搬 env_check 为 `reset_check.py`，写 `kind / split / role / h5_sha256 / h5_bytes` 并回写 `candidates.jsonl` 的 `role`；用 run 10 的 `episode_results.jsonl + delivery_manifest.json + env_check/*.jsonl` 迁移出 `results.jsonl`，同时回写 run 10 的 `candidates.jsonl` | `RESULTS_EQUIVALENCE=PASS h5_rows=1842 primary=1600 spare=196 failed=46 reset_rows=720 reset_primary=700`；`ROLES_CONSISTENT=PASS rows=3400 mismatch=0 unused=838` |
@@ -348,7 +348,7 @@ run 10 里 RouteStick/easy ep0 被生成过两次：smoke 档 `P0x1`（单卡 1 
 - R2 `scripts/generate_dataset_newseed.py` 只改 `load_episode_specs`（jsonl 读法）与 `close()` 后核验段（加 `h5_sha256 / h5_bytes`）；不传 `--episode-specs` 时链路逐字不变。
 - R3 run 10 的 h5 / mp4 只 `mv` 不重跑、不删；迁移前后逐文件 SHA-256 核对。
 - R4 `spec_sha256` 的算法与作用域不改，否则阶段 1 判据失去意义。
-- R5 不 `git push --force`；实施分支的名称先问用户，首次推送前再问是否 `git push -u origin <分支名>`。
+- R5 不 `git push --force`；分支 `newtask-v2.1refractor` 首次推送前先问用户是否 `git push -u origin newtask-v2.1refractor`，之后每次 commit 后照常 `git push`。
 - R6 `hf_release/` 与 `scripts/hf_release.py` 本轮不动。
 - R7 删除只在阶段 8 做，且在阶段 1 到 7 全部 PASS 之后；旧出图 / 事件表 / timeline 脚本在阶段 3 留下基线之前不得删。
 - R8 L3 对拍写到独立的临时 run-id（如 `<run10>-parity`），绝不写进 run 10 目录；PASS 后临时产物整目录删除，磁盘回到对拍前水位。
@@ -448,4 +448,4 @@ uv run --no-sync python -m scripts.injection.rollout --run-id $RID --delivery-co
 
 ## 六、留档与 commit 纪律
 
-每阶段一个 commit，subject 体例 `11.0N <一句话>`，body 按 `~/.claude/CLAUDE.md` 的六项写；只 `git add` 本阶段明确路径。阶段 0 在 `newtask-v2` 上提交并照常 `git push`；阶段 1 起在用户指定的新分支上提交，首次推送前先问用户是否 `git push -u`，获准后每次 commit 后照常 `git push`。
+每阶段一个 commit，subject 体例 `11.0N <一句话>`，body 按 `~/.claude/CLAUDE.md` 的六项写；只 `git add` 本阶段明确路径。11.01 到 11.04 在 `newtask-v2` 上提交并已推送；11.05 起全部在 `newtask-v2.1refractor` 上提交，首次推送前先问用户是否 `git push -u`，获准后每次 commit 后照常 `git push`。
