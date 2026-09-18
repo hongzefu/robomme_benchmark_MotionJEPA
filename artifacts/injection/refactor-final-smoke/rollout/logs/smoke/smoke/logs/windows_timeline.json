@@ -1,0 +1,84 @@
+{
+  "rollout_run_id": "refactor-final-smoke-smoke",
+  "rollout_run_ids": [
+    "refactor-final-smoke-smoke"
+  ],
+  "source": "artifacts/injection/refactor-final-smoke/rollout/logs/smoke/smoke",
+  "group_sources": {
+    "RouteStick/easy": "refactor-final-smoke-smoke"
+  },
+  "window": 33,
+  "stride": 16,
+  "budgets": [
+    32,
+    8
+  ],
+  "binfill_simulated_demo": true,
+  "binfill_demo_source": {},
+  "episodes": 1,
+  "episodes_before_exclusion": 1,
+  "groups": {
+    "RouteStick/easy": [
+      {
+        "episode": 0,
+        "seed": 16000,
+        "recovery_mode": "z",
+        "run_id": "refactor-final-smoke-smoke",
+        "h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/refactor-final-smoke/rollout/logs/smoke/smoke/RouteStick/easy/hdf5_files/RouteStick_ep0_seed16000.h5",
+        "total": 300,
+        "demo": 150,
+        "segs": [
+          [
+            0,
+            50,
+            "move to the nearest left target by circling around the stick counterclockwise"
+          ],
+          [
+            50,
+            50,
+            "move to the nearest right target by circling around the stick clockwise"
+          ],
+          [
+            100,
+            50,
+            "move to the nearest right target by circling around the stick clockwise"
+          ],
+          [
+            150,
+            50,
+            "move to the nearest left target by circling around the stick counterclockwise"
+          ],
+          [
+            200,
+            50,
+            "move to the nearest right target by circling around the stick clockwise"
+          ],
+          [
+            250,
+            43,
+            "move to the nearest right target by circling around the stick clockwise"
+          ],
+          [
+            293,
+            7,
+            "All tasks completed"
+          ]
+        ]
+      }
+    ]
+  },
+  "skipped": [],
+  "failed_rows": [],
+  "unknown_labels": {},
+  "swap_summary": {
+    "episodes": 0,
+    "fail": 0,
+    "warn": 0
+  },
+  "excluded_slow": [],
+  "exclusion_rule": {
+    "max_segment_frames": 400,
+    "t_median_factor": 2.0,
+    "median_basis": "剔除前按组"
+  }
+}

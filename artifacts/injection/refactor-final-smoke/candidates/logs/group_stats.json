@@ -1,0 +1,29 @@
+{
+  "RouteStick/easy": {
+    "candidates_tried": 0,
+    "rejected_geometry": 0,
+    "rejected_contact": 0,
+    "rejected_numerical_boundary": 0,
+    "rejected_uncertified": 0,
+    "max_candidates_used": 0,
+    "rejections": [],
+    "per_block": [
+      {
+        "candidates_tried": 0,
+        "rejected_geometry": 0,
+        "rejected_contact": 0,
+        "rejected_numerical_boundary": 0,
+        "rejected_uncertified": 0,
+        "max_candidates_used": 0
+      },
+      {
+        "candidates_tried": 0,
+        "rejected_geometry": 0,
+        "rejected_contact": 0,
+        "rejected_numerical_boundary": 0,
+        "rejected_uncertified": 0,
+        "max_candidates_used": 0
+      }
+    ]
+  }
+}

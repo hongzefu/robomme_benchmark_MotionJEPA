@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/home/hongzefu/.local/bin/uv",
+    "run",
+    "--no-sync",
+    "python",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/injection/rollout/run.py",
+    "--execute-scope",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/refactor-final-smoke/rollout/logs/smoke/smoke/logs/attempts/h5-0001/scope.json"
+  ],
+  "generator": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/generate_dataset_newseed.py"
+}

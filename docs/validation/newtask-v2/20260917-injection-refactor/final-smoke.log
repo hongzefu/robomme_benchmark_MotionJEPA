@@ -1,0 +1,58 @@
+/home/hongzefu/.local/bin/uv
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+候选完成 RouteStick/easy rows=200
+SPEC_SCOPE=PASS groups=1 specs=200 blocks=2 excluded=VideoRepick-hard problems=0
+CONTRACT_DERIVED=PASS fields=200 mismatches=6 overrides=2 version=v3 problems=0
+COVERAGE_QUOTA=PASS groups=1 batches=10 blocks=2 quota_gaps=0
+STATIC_GEOMETRY=PASS checked=200 rejected=0
+COLLISION_GEOMETRY=PASS bin_shapes=6 cube_shapes=1 four_object_pairs=6 note=真实-actor-对照在步骤2冒烟
+COLLISION_SWEEP=PASS specs=0 rejected=0 uncertified=0 min_g_m=None
+SPEC_REPRODUCIBLE=PASS compared=200 differences=0
+SCREENING_EVIDENCE=PASS rows=200 groups=1
+  出图 RouteStick/easy：7 张
+PLOT2D_BEFORE=PASS groups=1 files=7 episodes=30 min_long_edge_px=2420 font=Noto Sans CJK JP
+DISTRIBUTION=PASS groups=1 rows=7
+CANDIDATES=PASS rows=200 elapsed_s=4.61
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[1/1] RouteStick/episode_0 succeeded with seed 16000 (attempt 0, 37.082s)
+H5_EXECUTION=PASS requested=1 succeeded=1 failed=0
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+reset 完成 RouteStick/easy/ep115 ok=True
+  出图 RouteStick/easy：1 行
+WINDOWS_PLOT=PASS groups=1 files=2 min_long_edge_px=2860 font=Noto Sans CJK JP
+WINDOWS=PASS before=1 kept=1 excluded=0 skipped=0
+REPORT=PASS purpose=smoke rows=2 pending=198 unused=0
+RUN=PASS purpose=smoke h5_executed=1 reset_executed=1
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+RESET_IDEMPOTENT=PASS rerun=0 duplicates=0
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+FINAL_SMOKE=PASS candidates=200 h5=1 reset=1 figures=9 reports=3 source_unchanged=1
+FINAL_SMOKE_TIME=PASS elapsed_s=60 limit_s=280
+EXIT_CODE=0

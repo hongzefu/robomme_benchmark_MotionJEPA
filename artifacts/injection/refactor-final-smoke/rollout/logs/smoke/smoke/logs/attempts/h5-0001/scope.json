@@ -1,0 +1,20 @@
+{
+  "kind": "h5",
+  "keys": [
+    [
+      "RouteStick",
+      "easy",
+      0
+    ]
+  ],
+  "options": {
+    "gpus": "0",
+    "tier": 1,
+    "episode_timeout": 600,
+    "wall_limit_h": 0
+  },
+  "identity_sha256": "63cbc9d0138879319672223b7422b69b4fdc443b8015270b33ef7d9e5a570749",
+  "candidates": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/refactor-final-smoke/rollout/logs/smoke/smoke/candidates.jsonl",
+  "output_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/refactor-final-smoke/rollout/logs/smoke/smoke",
+  "started_at": 1789712003.189902
+}

@@ -1,0 +1,21 @@
+{
+  "rollout_run_id": "refactor-final-smoke-smoke",
+  "episodes": 1,
+  "excluded_slow": 0,
+  "font": "Noto Sans CJK JP",
+  "dpi": 110,
+  "files": [
+    "RouteStick/easy/4_windows.png",
+    "windows_overview.png"
+  ],
+  "sizes": {
+    "RouteStick/easy/4_windows.png": [
+      2860,
+      387
+    ],
+    "windows_overview.png": [
+      2860,
+      591
+    ]
+  }
+}

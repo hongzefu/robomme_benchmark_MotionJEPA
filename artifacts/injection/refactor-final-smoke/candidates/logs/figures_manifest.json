@@ -1,0 +1,58 @@
+{
+  "run_id": "refactor-final-smoke",
+  "phase": "before",
+  "episodes": 30,
+  "font": "Noto Sans CJK JP",
+  "dpi": 110,
+  "groups": [
+    {
+      "task": "RouteStick",
+      "difficulty": "easy",
+      "directory": "RouteStick/easy",
+      "files": [
+        "1_positions.png",
+        "2_events.png",
+        "3_episodes_p1.png",
+        "3_episodes_p2.png",
+        "3_episodes_p3.png",
+        "3_episodes_p4.png",
+        "3_episodes_p5.png"
+      ],
+      "spec_sha256_head": [
+        "137749dc7d713e027f0602b7cd113fb1a849eddd473de78ca1bc400171eb4f1c",
+        "987624cf3605feb1407efd5169435bc932a1af463a4a1d0627bb643f4313e0fa",
+        "30ec78d43ea8f87edff8425e598aa3305173b7cd2341b00a36c601fe04213016"
+      ]
+    }
+  ],
+  "sizes": {
+    "RouteStick/easy/1_positions.png": [
+      2420,
+      1375
+    ],
+    "RouteStick/easy/2_events.png": [
+      3630,
+      2750
+    ],
+    "RouteStick/easy/3_episodes_p1.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/easy/3_episodes_p2.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/easy/3_episodes_p3.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/easy/3_episodes_p4.png": [
+      3630,
+      3190
+    ],
+    "RouteStick/easy/3_episodes_p5.png": [
+      3630,
+      3190
+    ]
+  }
+}

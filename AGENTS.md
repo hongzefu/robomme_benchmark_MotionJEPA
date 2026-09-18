@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 注入重构计划阶段 0～9（2026-09-18） | 已全部实施与验收留档 | L1 3400 条规格相同；L2 113 PNG/表/完整数轴相同；L3 210 条 HDF5 尝试、L4 720 reset 对拍通过；838 unused 补查完成；3820 旧文件迁移字节守恒；最终冒烟 60 秒通过（200 候选、1 HDF5、1 reset、9 图、3 报告、重复 reset 零重跑）；候选输入与代码进 Git；[现行说明](scripts/INJECTION.md)、[完整证据](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 本轮无剩余实施步骤；保留 4 项既有测试失败、22 项历史规格缺失跳过及视频诊断 NOT_RUN 边界；未推送 |
 | 注入重构阶段 8（2026-09-18） | 完成 | 两包生产导入 25 模块无旧依赖；623 项测试收集无错误；核心回归 490 passed、4 项既有失败、22 项既有跳过、74 项按预算未选，146.83 秒；Git/媒体边界与 114 个现行链接通过 | 最终独立 200 候选、1 HDF5、1 reset 单 worker 冒烟及幂等复核 |
 | 注入重构阶段 7（2026-09-18） | 完成 | `H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0`；`ARTIFACTS_INTACT=PASS count=3820 missing=0 extra=0 sha_mismatch=0`；活动路径零失效、旧前缀零残留、元数据仅允许字段变化；迁移退出 0，恢复反例 5 passed | 清理已替换旧入口、迁移测试与现行说明，再运行最终冒烟 |
 | 注入重构阶段 6（2026-09-18） | 完成 | 113 张 PNG 字节相同、14 组事件表零漂移；数轴 1796 条中保留 1795、剔除 1，完整记录零差异；1796 个 HDF5 实际散列通过；37 项短测通过，5.30 秒；候选快照放行 Git 跟踪 | 连续执行已授权阶段 7～9，先按冻结映射移动并核验 3820 个文件 |
@@ -1668,3 +1669,10 @@
 - 最终核心回归 490 passed、4 failed、22 skipped、74 deselected，146.83 秒；4 个失败与重构前未改源码的独立复现一致，新增失败为 0。`TEST_SCOPE=PASS new_unexplained_skips=0`，未删除测试逃避断言，旧多次重试覆盖语义改成新唯一键拒绝语义；退役的历史校准断言单独保留固定 Git 实现。
 - 全量 GPU 轻量测试按 280 秒上限中止；不宣称全套测试通过。最终选择排除已有 gpu/slow 标记的核心子集，真实生成由最终单任务冒烟验收。所有原失败日志保留，现行脚本说明、候选/结果轻量日志与快照已纳入明确暂存清单。
 - 下一步严格执行 `final_smoke.sh`，外层 timeout 280 秒；独立新编号、RouteStick/easy 两块共 200 候选，只出 1 条 HDF5、reset 1 条，单 worker、GPU 0；完整图表报告及再次 reset 零重跑，核对原运行候选字节不变。
+
+### 2026-09-18 America/Detroit — 阶段 9 与整项重构完成
+
+- `timeout 280s bash docs/validation/newtask-v2/20260917-injection-refactor/final_smoke.sh`：60 秒、退出 0。`FINAL_SMOKE=PASS candidates=200 h5=1 reset=1 figures=9 reports=3 source_unchanged=1`；单 worker、GPU 0，HDF5 为 RouteStick/easy/ep0（seed 16000），reset 为 ep115，均成功。候选冻结 4.61 秒、HDF5 worker 37.082 秒、reset 3.418 秒。
+- HDF5 300 帧，SHA-256 `27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b` 与阶段二及原成品相同；视频 complete，300 帧。再次 reset 输出 `RESET_IDEMPOTENT=PASS rerun=0 duplicates=0`。影子结果恰 2 条，其余 198 pending 符合局部 smoke 口径，不宣称完整交付。
+- 迁移和旧入口清理后再复核 L2，113 张 PNG、事件表、1796 条含完整剔除的数轴仍零差异。新增最终候选原件及影子快照都纳入 Git，重媒体未跟踪；原运行候选字节不变，正式角色仍为 train 1600/196/46、test 700/858/0，pending/unused 均 0。
+- 阶段 0～9 全部完成，现行入口和复现命令见 scripts/INJECTION.md。环境源码、录像器、发布脚本未修改；策略侧第三处只定义消费契约，本仓库未新增策略实现。全量 GPU 测试的预算中止、4 项既有失败、22 项历史缺失跳过与两条无可比视频的诊断边界保留，不写成全套通过。测试原始输出中的尾部空白按证据原样保留，源码/文档 diff 检查通过。所有变更逐阶段提交，未推送。

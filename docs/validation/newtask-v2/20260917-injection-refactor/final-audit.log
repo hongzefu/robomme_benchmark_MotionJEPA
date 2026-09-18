@@ -1,0 +1,11 @@
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+IMPORT_CLOSURE=PASS modules=25 missing_old_imports=0
+IGNORE_RULES=PASS checked=26 candidates_visible=1 logs_visible=1 media_ignored=1
+FROZEN_SOURCE=PASS src_unchanged=1 hf_release_unchanged=1
+GIT_INPUTS=PASS snapshots=6 consumer_files=4 heavy_tracked=0
+ROLES_CONSISTENT=PASS rows=3400 primary_h5=1600 primary_reset=700 pending=0 unused=0
+DOC_LINKS=PASS checked=114 missing=0

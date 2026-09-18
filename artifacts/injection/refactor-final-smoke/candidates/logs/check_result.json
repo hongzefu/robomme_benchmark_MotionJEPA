@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "verdicts": [
+    {
+      "name": "SPEC_SCOPE",
+      "status": "PASS",
+      "groups": 1,
+      "specs": 200,
+      "blocks": "2",
+      "excluded": "VideoRepick-hard",
+      "problems": 0
+    },
+    {
+      "name": "CONTRACT_DERIVED",
+      "status": "PASS",
+      "fields": 200,
+      "mismatches": 6,
+      "overrides": 2,
+      "version": "v3",
+      "problems": 0
+    },
+    {
+      "name": "COVERAGE_QUOTA",
+      "status": "PASS",
+      "groups": 1,
+      "batches": 10,
+      "blocks": "2",
+      "quota_gaps": 0
+    },
+    {
+      "name": "STATIC_GEOMETRY",
+      "status": "PASS",
+      "checked": 200,
+      "rejected": 0
+    },
+    {
+      "name": "COLLISION_GEOMETRY",
+      "status": "PASS",
+      "bin_shapes": 6,
+      "cube_shapes": 1,
+      "four_object_pairs": 6,
+      "note": "真实-actor-对照在步骤2冒烟"
+    },
+    {
+      "name": "COLLISION_SWEEP",
+      "status": "PASS",
+      "specs": 0,
+      "rejected": 0,
+      "uncertified": 0,
+      "min_g_m": null
+    },
+    {
+      "name": "SPEC_REPRODUCIBLE",
+      "status": "PASS",
+      "compared": 200,
+      "differences": 0
+    },
+    {
+      "name": "SCREENING_EVIDENCE",
+      "status": "PASS",
+      "rows": 200,
+      "groups": 1
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "purpose": "smoke",
+  "roles": {
+    "test/pending": 84,
+    "test/primary": 1,
+    "train/pending": 114,
+    "train/primary": 1
+  },
+  "video_status_counts": {
+    "complete": 1
+  },
+  "quota_gaps": [
+    "RouteStick/easy"
+  ],
+  "audit": {
+    "rows": 200,
+    "results": 2,
+    "mismatch": 0,
+    "duplicates": 0,
+    "pending": 198,
+    "unused": 0,
+    "roles": {
+      "test/pending": 84,
+      "test/primary": 1,
+      "train/pending": 114,
+      "train/primary": 1
+    }
+  }
+}

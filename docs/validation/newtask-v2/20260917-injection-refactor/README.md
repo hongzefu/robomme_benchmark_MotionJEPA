@@ -362,3 +362,19 @@ uv run --no-sync python docs/validation/newtask-v2/20260917-injection-refactor/a
 623 项收集成功，0 导入错误。最终核心回归见 stage8-final-tests.log：490 passed、4 failed、22 skipped、74 deselected，146.83 秒。4 失败为 TaskGoal 两项与 step_error_handling 两项，独立复现见 existing-failures.log；相关测试与实现相对重构前均无改动，未擅改冻结源码。22 跳过全部来自原已缺失的 04/05/09 规格，无新增 skip/xfail。原全量含 GPU 的轻量运行 280 秒退出 124，见 stage8-tests.log，不把未完成部分写成通过。
 
 首轮核心回归另有 2 个旧夹具仍引用迁前路径的失败（stage8-cpu-tests.log），已按冻结映射修复；加载器补测 11 passed，10.41 秒。窗口报告补齐图链接与图例后，37 项图表/数轴测试通过，5.43 秒；对应表与图片算法未变。数据集对拍离线缺参守卫 1 passed，0.01 秒。
+
+## 阶段 9：最终独立端到端冒烟
+
+`timeout 280s bash docs/validation/newtask-v2/20260917-injection-refactor/final_smoke.sh` 退出 0，总耗时 60 秒。完整 stdout/stderr 在 [final-smoke.log](final-smoke.log)，可复制脚本为 [final_smoke.sh](final_smoke.sh)；再次完整执行须换未使用的运行编号。
+
+```text
+FINAL_SMOKE=PASS candidates=200 h5=1 reset=1 figures=9 reports=3 source_unchanged=1
+FINAL_SMOKE_TIME=PASS elapsed_s=60 limit_s=280
+RESET_IDEMPOTENT=PASS rerun=0 duplicates=0
+```
+
+运行编号 refactor-final-smoke。候选生成 4.61 秒；GPU 0、单 worker，RouteStick/easy/ep0 的 HDF5 worker 37.082 秒，test ep115 reset 3.418 秒。HDF5 300 帧、200071952 字节，SHA-256 `27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b` 与原成品相同；视频 complete、300 帧。影子状态在该运行 rollout/logs/smoke/smoke，两条唯一结果均成功，剩余 198 pending 是局部运行的预期状态，不作为完整交付。原运行候选字节不变。
+
+清理后再次执行 `uv run --no-sync python -m scripts.injection.rollout.figure_parity --run-id 20260912-contract-v3-10`：113 PNG 字节、事件表、1796 条数轴（1795 保留、1 完整剔除）仍零差异。最终只读核验见 [final-audit.log](final-audit.log)：6 份候选原件/影子快照和 4 个读取/执行文件全部 Git 跟踪，25 个模块导入成功，26 个忽略边界探针及 114 个现行文档链接通过，正式 3400 条角色相符，环境与发布源码未改。
+
+阶段 0～9 已全部实施。保留既有测试失败和预算未跑范围，不把视频缺失诊断写成通过；原始测试日志含 pytest 输出尾部空白，按证据原样保存。所有实现与轻量证据已逐阶段提交，未推送。

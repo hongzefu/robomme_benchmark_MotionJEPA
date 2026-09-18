@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "checked": 1,
+  "files": [
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/refactor-final-smoke/rollout/logs/smoke/smoke/RouteStick/easy/hdf5_files/RouteStick_ep0_seed16000.h5",
+      "sha256": "27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b",
+      "bytes": 200071952
+    }
+  ]
+}
