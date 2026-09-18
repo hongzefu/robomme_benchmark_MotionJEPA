@@ -1,0 +1,41 @@
+  出图 BinFill/easy：7 张
+  出图 BinFill/medium：7 张
+  出图 BinFill/hard：7 张
+  出图 RouteStick/easy：7 张
+  出图 RouteStick/medium：7 张
+  出图 RouteStick/hard：7 张
+  出图 RouteStick/xhard：7 张
+  出图 VideoUnmaskSwap/easy：7 张
+  出图 VideoUnmaskSwap/medium：7 张
+  出图 VideoUnmaskSwap/hard：7 张
+  出图 VideoUnmaskSwap/xhard：7 张
+  出图 VideoRepick/easy：7 张
+  出图 VideoRepick/medium：7 张
+  出图 VideoRepick/xhard：7 张
+PLOT2D_BEFORE=PASS groups=14 files=98 episodes=30 min_long_edge_px=2420 font=Noto Sans CJK JP
+DISTRIBUTION=PASS groups=14 rows=156
+  出图 BinFill/easy：150 行
+  出图 BinFill/medium：149 行
+  出图 BinFill/hard：139 行
+  出图 RouteStick/easy：115 行
+  出图 RouteStick/medium：115 行
+  出图 RouteStick/hard：115 行
+  出图 RouteStick/xhard：115 行
+  出图 VideoUnmaskSwap/easy：115 行
+  出图 VideoUnmaskSwap/medium：115 行
+  出图 VideoUnmaskSwap/hard：115 行
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/injection/rollout/window_figures.py:170: UserWarning: Glyph 10005 (\N{MULTIPLICATION X}) missing from font(s) Noto Sans CJK JP.
+  fig.savefig(out, dpi=DPI)
+  出图 VideoUnmaskSwap/xhard：112 行（另有剔除 1 行灰化）
+  出图 VideoRepick/easy：150 行
+  出图 VideoRepick/medium：146 行
+  出图 VideoRepick/xhard：144 行
+WINDOWS_PLOT=PASS groups=14 files=15 min_long_edge_px=4138 font=Noto Sans CJK JP
+WINDOWS=PASS before=1796 kept=1795 excluded=1 skipped=0
+PARITY_KEYS=PASS layer=L2-old missing=0 extra=0 duplicates=0
+PARITY_KEYS=PASS layer=L2-new missing=0 extra=0 duplicates=0
+FIGURES_EQUIVALENCE=PASS png=113 differences=0
+TABLES_EQUIVALENCE=PASS drift=0
+TIMELINE_EQUIVALENCE=PASS before=1796 kept=1795 excluded=1 skipped=0 differences=0
+REPORT=PASS purpose=delivery rows=3400 pending=0 unused=0
+EXIT_CODE=0

@@ -1,13 +1,23 @@
 """从唯一结果表生成实跑报告，正式交付配额与局部诊断分别判断。"""
 from collections import Counter
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 
-from .state import StateError, atomic_text, write_json
+from .state import StateError, atomic_text, write_json, file_sha
 
 
 def report(store, purpose="delivery"):
     audit = store.audit()
     header, candidates, rows = store.load()
+    successful = [row for row in rows if row["kind"] == "h5" and row["ok"]]
+    def verify(row):
+        path = Path(row["h5_path"])
+        if not path.is_file() or path.stat().st_size != row["h5_bytes"] or file_sha(path) != row["h5_sha256"]:
+            raise StateError(f"成功结果的 HDF5 缺失或散列不符：{path}")
+        return {"path": str(path), "sha256": row["h5_sha256"], "bytes": row["h5_bytes"]}
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        checked = list(pool.map(verify, successful))
+    write_json(store.logs / "h5_integrity.json", {"passed": True, "checked": len(checked), "files": checked})
     counts = Counter((r["kind"], r["task"], r["difficulty"], r["role"]) for r in rows)
     lines = ["# 实跑结果", "", f"运行：`{header['run_id']}`；用途：`{purpose}`。", "",
              "结果按唯一键保存；reset 通过只表示能建环境，不表示可以完成任务。", "",
@@ -37,3 +47,20 @@ def report(store, purpose="delivery"):
         raise StateError(f"正式交付配额不足：{gaps}")
     print(f"REPORT=PASS purpose={purpose} rows={len(rows)} pending={audit['pending']} unused={audit['unused']}", flush=True)
     return result
+
+
+def main():
+    import argparse
+    from .state import RunStore, run_root
+    parser = argparse.ArgumentParser(description="核验成品散列并生成实跑报告")
+    parser.add_argument("--run-id", required=True)
+    parser.add_argument("--purpose", choices=("delivery", "parity", "smoke"), default="delivery")
+    parser.add_argument("--label")
+    args = parser.parse_args()
+    store = RunStore(run_root(args.run_id), args.label)
+    with store.locked():
+        report(store, args.purpose)
+
+
+if __name__ == "__main__":
+    main()

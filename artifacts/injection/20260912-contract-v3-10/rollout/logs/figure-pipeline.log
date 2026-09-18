@@ -1,0 +1,33 @@
+  出图 BinFill/easy：7 张
+  出图 BinFill/medium：7 张
+  出图 BinFill/hard：7 张
+  出图 RouteStick/easy：7 张
+  出图 RouteStick/medium：7 张
+  出图 RouteStick/hard：7 张
+  出图 RouteStick/xhard：7 张
+  出图 VideoUnmaskSwap/easy：7 张
+  出图 VideoUnmaskSwap/medium：7 张
+  出图 VideoUnmaskSwap/hard：7 张
+  出图 VideoUnmaskSwap/xhard：7 张
+  出图 VideoRepick/easy：7 张
+  出图 VideoRepick/medium：7 张
+  出图 VideoRepick/xhard：7 张
+PLOT2D_BEFORE=PASS groups=14 files=98 episodes=30 min_long_edge_px=2420 font=Noto Sans CJK JP
+DISTRIBUTION=PASS groups=14 rows=156
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/injection/rollout/windows.py", line 650, in <module>
+    main()
+  File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/injection/rollout/windows.py", line 646, in main
+    generate_windows(store)
+  File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/injection/rollout/windows.py", line 620, in generate_windows
+    data = extract_results(store)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/injection/rollout/windows.py", line 435, in extract_results
+    annotate_swaps(task, entry, projected[(task, difficulty, episode)], h5_path)
+  File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/injection/rollout/windows.py", line 276, in annotate_swaps
+    n, pairs = spec["n_swaps"], spec["pairs"]
+               ~~~~^^^^^^^^^^^
+KeyError: 'n_swaps'
+EXIT_CODE=1

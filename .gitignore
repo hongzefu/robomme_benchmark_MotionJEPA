@@ -218,6 +218,10 @@ __marimo__/
 /artifacts/injection/*
 !/artifacts/injection/*/
 /artifacts/injection/*/*
+# 唯一环境数据入口必须可跟踪；阶段八再统一放行其余轻量产物。
+!/artifacts/injection/*/candidates/
+/artifacts/injection/*/candidates/*
+!/artifacts/injection/*/candidates/candidates.jsonl
 # 关键小产物入库（2026-09-11 用户决定「关键小产物都加入 git」）：冻结规格与三份判定 JSON；
 # feasibility/、calibration/、plots*/、videos/ 等重产物继续忽略
 !/artifacts/injection/*/specs/

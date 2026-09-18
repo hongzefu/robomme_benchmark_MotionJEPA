@@ -253,6 +253,8 @@ scripts/injection/
 
 起环境的三处以 `candidates.jsonl` 为唯一数据入口：行里的 `spec` 提供旧规格，header 提供完整 `sampling_config / runtime`；仍依赖仓库环境源码与资产。冻结后不再从可变的外部配置取值，若 CLI 同时给配置，只能校验与内嵌快照一致，不能覆盖。统一读取器在启动前核验封套版本、完整键集合、外层与 spec 身份一致、旧散列和采样快照源码指纹。
 
+用户补充要求：「起环境的三处以 `candidates.jsonl` 为唯一数据入口 需要进入git追踪」。候选快照及本仓库实现的统一读取器、生成与 reset 入口均须进入 Git；忽略规则必须放行新运行的 `candidates/candidates.jsonl`，不能只靠强制添加一份既有文件满足要求。第三处策略侧入口仍是接口约定，本仓库不实现。
+
 | 谁 | 读哪些行 | 怎么起 |
 |---|---|---|
 | `generate_dataset_newseed.py` 出 h5 | `split="train"` 与清单选定范围的交集 | `gym.make(task, episode_spec=行["spec"], sampling_config=header中该任务配置, ...)` + `RobommeRecordWrapper` + planner |
@@ -418,6 +420,10 @@ L3/L4 与源完整性全通过：210 条 HDF5 尝试中 205 成功、5 失败，
 硬闸后先逐文件归档 38 份证据，再按核验清单清理临时 426 个媒体文件（101712029329 字节），原运行大文件未删。随后 `UNUSED_RESET=PASS checked=838 passed=838 failed=0 unused_left=0 primary_changed=0`。正式唯一结果现在共 3400 条，train 角色不变，test 700 primary、858 spare，失败和 unused 都为 0；普通新运行的 unused 停点机制仍保留。
 
 ---
+
+### 10.6 阶段 6 实施记录（2026-09-18）
+
+新图表与旧冻结基线全量对拍通过：`FIGURES_EQUIVALENCE=PASS png=113 differences=0`、`TABLES_EQUIVALENCE=PASS drift=0`、`TIMELINE_EQUIVALENCE=PASS before=1796 kept=1795 excluded=1 skipped=0 differences=0`。正式报告实际读取 1796 个 HDF5 核对大小与 SHA-256，`REPORT=PASS purpose=delivery rows=3400 pending=0 unused=0`，流水线退出 0。首轮发现规范序列化改变展示字典顺序及交换规格漏投影，均按旧展示算法修复，失败日志保留；定向回归 37 项通过。候选快照及本仓库两个环境启动入口纳入 Git；第三处策略侧仍仅定义契约。
 
 # 第二部分（技术细节，供 agent 追踪）
 

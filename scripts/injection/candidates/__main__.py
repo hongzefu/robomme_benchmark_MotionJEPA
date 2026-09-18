@@ -173,6 +173,10 @@ def generate(args, root, stage, logs):
     validate_candidates(header, rows, repo_root=REPO_ROOT)
     write_candidates(stage / "candidates.jsonl", header, rows)
     load_candidates(stage / "candidates.jsonl", repo_root=REPO_ROOT)
+    if not getattr(args, "no_figures", False):
+        from . import figures, report
+        figures.generate(root)
+        report.generate(root)
     meta.update(state="complete", elapsed_s=round(time.monotonic() - started, 2), candidates=len(rows))
     write_json(logs / "plan_meta.json", meta)
     print(f"CANDIDATES=PASS rows={len(rows)} elapsed_s={meta['elapsed_s']}", flush=True)
@@ -191,6 +195,7 @@ def main():
     parser.add_argument("--groups", nargs="+")
     parser.add_argument("--blocks", type=int)
     parser.add_argument("--reconstruct-run", help="只读旧运行，完整规格和统计相同后才发布重算证据")
+    parser.add_argument("--no-figures", action="store_true", help="仅用于诊断，跳过图表和分布报告")
     return execute(parser.parse_args())
 
 

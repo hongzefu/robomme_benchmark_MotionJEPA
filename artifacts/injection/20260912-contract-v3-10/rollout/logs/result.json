@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "purpose": "delivery",
+  "roles": {
+    "test/primary": 700,
+    "test/spare": 858,
+    "train/failed": 46,
+    "train/primary": 1600,
+    "train/spare": 196
+  },
+  "video_status_counts": {
+    "complete": 1818,
+    "frame_mismatch": 3,
+    "no_close": 21
+  },
+  "quota_gaps": [],
+  "audit": {
+    "rows": 3400,
+    "results": 3400,
+    "mismatch": 0,
+    "duplicates": 0,
+    "pending": 0,
+    "unused": 0,
+    "roles": {
+      "test/primary": 700,
+      "test/spare": 858,
+      "train/failed": 46,
+      "train/primary": 1600,
+      "train/spare": 196
+    }
+  }
+}

@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 注入重构阶段 6（2026-09-18） | 完成 | 113 张 PNG 字节相同、14 组事件表零漂移；数轴 1796 条中保留 1795、剔除 1，完整记录零差异；1796 个 HDF5 实际散列通过；37 项短测通过，5.30 秒；候选快照放行 Git 跟踪 | 连续执行已授权阶段 7～9，先按冻结映射移动并核验 3820 个文件 |
 | 注入重构阶段 3～9 连续实施（2026-09-18） | 阶段 3～5 完成；进入阶段 6 | H5 210 条（205 成功/5 失败）散列及失败类型零差异；reset 720 条结果/停点/角色零差异；838 条 unused 全部通过、primary 未变；正式唯一结果 3400 条，test spare=858；原视频对 221 PASS/2 无视频 NOT_RUN | 全量 L2 图表对拍、3820 文件迁移及恢复验证、旧入口清理、最终冒烟；后续全部已授权 |
 | 注入重构实施阶段 2（2026-09-17） | 完成，阶段 3 待单独批准 | `LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`；RouteStick/easy/ep0 的 `SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`，300 帧、200071952 字节，生成 18.2 秒、散列 0.121 秒；短测 73 passed / 4 skipped，夹具修订补测 11 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 3 用旧图表工具对运行 10 冻结完整图表与数轴基线；获批后开始 |
 | 注入重构实施阶段 0～1（2026-09-17） | 完成 | 阶段 0 `41f5fa2`（11.09）；阶段 1 全量 3400 条完整规格零差异、11 项判定全 PASS，1986.59 秒，EXIT_CODE=0；11514 条拒绝事件；短测 60 passed / 9 skipped，补测 14 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 2 已获批并完成，见上行 |
@@ -1627,3 +1628,21 @@
 - 先将 38 份范围、原始终态、结果、散列与诊断证据逐文件复制核验至正式运行 `rollout/logs/parity/20260912-contract-v3-10-parity/`；再按已验证清单清理临时 426 个媒体文件、101712029329 字节。原运行大文件零删除，反例视频对和诊断材料保留。临时运行标记 archived，普通入口拒绝把已清理成品复用为交付；无宽泛目录删除。
 - `UNUSED_RESET=PASS checked=838 passed=838 failed=0 unused_left=0 primary_changed=0`、退出 0。原候选全部 3400 条已有唯一终态：train 1600 primary/196 spare/46 failed；test 700 primary/858 spare/0 failed/0 unused。该例外只对运行十执行，普通新运行仍保留 unused 语义。
 - 归档守卫及对拍短测 7 passed，20.36 秒。阶段五代码与轻量证据提交后继续 L2 全量，不再询问。
+
+### 2026-09-18 America/Detroit — 用户明确唯一候选入口必须进入 Git
+
+- 用户原话：「起环境的三处以 `candidates.jsonl` 为唯一数据入口 需要进入git追踪」。已用 `git ls-files --error-unmatch` 核对正式候选、统一 io、生成器及 reset 入口均已跟踪。
+- 发现旧忽略规则仍屏蔽新运行的 candidates 目录，立即增加只放行 `candidates/candidates.jsonl` 的精确例外，图片与其他未统一迁移的产物继续按原规则处理；阶段八再整体替换忽略段。正式运行和独立运行的候选快照均纳入明确文件清单，不依赖本机未跟踪数据启动。
+
+### 2026-09-18 America/Detroit — 阶段 6 图表适配问题定位与重试
+
+- 新入口全量首轮在 `windows::annotate_swaps` 报 `KeyError: n_swaps`：原 `load_specs` 会先投影成 `n_swaps/pairs`，迁入时漏了这一步。补回同一投影及长度一致性校验，不改区间推导算法。
+- 跑前 PNG 字节初核发现 30 张逐条图不同，根因为候选封套的规范序列化排序字典键，改变 BinFill 计数字典及 VideoUnmaskSwap 藏物字典的展示顺序。只在 `card_lines` 的临时展示对象中，按规格显式 `colors_present/color_order` 还原旧顺序；不修改 spec 或数值。
+- 新增 420 条图中文字与全部视频规格投影回归，连同旧数轴测试 37 passed，5.22 秒。原失败日志 `figure-pipeline.log` 保留；在 tmux `injection-figures-retry` 重跑，日志单独落 `figure-pipeline-retry.log`。尚未宣称 L2 通过，也未移动旧文件。
+- 迁移小夹具已验证中断后恢复、两边都存在拒绝覆盖、目标散列变化拒绝恢复，以及迁移中普通候选读取被阻断；`MIGRATION_RECOVERY=PASS duplicate_moves=0 overwritten=0`，5 passed，0.89 秒。初次收集因测试字节字面量含中文报语法错，改为显式 UTF-8 编码后通过；真实数据未受影响。
+
+### 2026-09-18 America/Detroit — 阶段 6 验收完成，阶段 7 开始
+
+- 重试流水线退出 0；113 张 PNG 字节零差异，事件表零漂移，完整数轴 1796 条含 1 条剔除记录零差异。报告实际核对 1796 个 HDF5 文件大小与 SHA-256 后通过，3400 条结果无 pending、无 unused。
+- `uv run --no-sync python -m pytest tests/lightweight/test_refactor_figures.py tests/lightweight/test_window_timeline.py -q`：37 passed，5.30 秒。新增候选快照随读取代码进入 Git，策略侧启动仍仅保留计划中的接口契约。
+- 接下来按冻结清单对 3820 个旧文件先读散列、逐项移动、再读散列；同步更新活动路径，保留恢复日志。阶段八旧入口删除须等待实际守恒验收通过。
