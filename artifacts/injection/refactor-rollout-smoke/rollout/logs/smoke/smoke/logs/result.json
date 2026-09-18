@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "purpose": "smoke",
+  "roles": {
+    "test/pending": 1557,
+    "test/primary": 1,
+    "train/pending": 1841,
+    "train/primary": 1
+  },
+  "video_status_counts": {
+    "complete": 1
+  },
+  "quota_gaps": [
+    "BinFill/easy",
+    "BinFill/medium",
+    "BinFill/hard",
+    "RouteStick/easy",
+    "RouteStick/medium",
+    "RouteStick/hard",
+    "VideoUnmaskSwap/easy",
+    "VideoUnmaskSwap/medium",
+    "VideoUnmaskSwap/hard",
+    "VideoRepick/easy",
+    "VideoRepick/medium",
+    "RouteStick/xhard",
+    "VideoUnmaskSwap/xhard",
+    "VideoRepick/xhard"
+  ],
+  "audit": {
+    "rows": 3400,
+    "results": 2,
+    "mismatch": 0,
+    "duplicates": 0,
+    "pending": 3398,
+    "unused": 0,
+    "roles": {
+      "test/pending": 1557,
+      "test/primary": 1,
+      "train/pending": 1841,
+      "train/primary": 1
+    }
+  }
+}

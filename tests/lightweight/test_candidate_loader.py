@@ -86,6 +86,7 @@ def test_all_3400_loader_and_kwargs_equal_before_and_after_role_rewrite(old, tmp
             rows = copy.deepcopy(rows)
             for row in rows:
                 row["role"] = "primary" if row["split"] == "train" else "spare"
+                row["error_type"] = None
             path = tmp_path / "rewritten.jsonl"
             write_candidates(path, header, rows)
         read_header = {}

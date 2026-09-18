@@ -62,8 +62,7 @@ def generate(args, root, stage, logs):
     sampling = json.loads(sampling_path.read_text())
     contract = load_contract(contract_path)
     delivery = json.loads(delivery_path.read_text())
-    # 暂沿用旧配置加载器；阶段八删除旧模块时将纯配置解析迁入。
-    from scripts.injection.delivery import load_delivery_config
+    from .config import load_delivery_config
     parsed_delivery = load_delivery_config(delivery_path, contract)
     _, problems = audit_overrides(contract, sampling)
     if problems:

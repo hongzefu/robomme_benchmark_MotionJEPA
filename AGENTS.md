@@ -197,7 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| 注入重构阶段 3～9 连续实施（2026-09-18） | 阶段 3 完成；阶段 4 开始；后续全部已获批 | 用户原话「一口气全做完 不要再来问我了」；`BASELINE_CAPTURED=PASS png=113 tables=14 before=1796 kept=1795 excluded=1 skipped=0`，977.79 秒；数轴短测 34 passed；恢复逻辑预备短测 5 passed | 连续完成归并、L3/L4 与 unused、L2、完整迁移、旧入口清理、最终冒烟；不再逐阶段询问，不跳硬闸 |
+| 注入重构阶段 3～9 连续实施（2026-09-18） | 阶段 3、4 完成；进入阶段 5 | 旧基线 113 图、1795 保留/1 剔除；`RESULTS_EQUIVALENCE=PASS h5_rows=1842 reset_rows=720`，原角色完全保持；3820 文件路径映射与 L4 720 键冻结；新入口真实单条冒烟和重复调用通过；17 项短测通过 | 启动独立方案 B 的 210 条及一次正常 reset，硬闸通过后对原运行 838 条 unused 全量补查；继续 L2、迁移与最终收尾 |
 | 注入重构实施阶段 2（2026-09-17） | 完成，阶段 3 待单独批准 | `LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`；RouteStick/easy/ep0 的 `SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`，300 帧、200071952 字节，生成 18.2 秒、散列 0.121 秒；短测 73 passed / 4 skipped，夹具修订补测 11 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 3 用旧图表工具对运行 10 冻结完整图表与数轴基线；获批后开始 |
 | 注入重构实施阶段 0～1（2026-09-17） | 完成 | 阶段 0 `41f5fa2`（11.09）；阶段 1 全量 3400 条完整规格零差异、11 项判定全 PASS，1986.59 秒，EXIT_CODE=0；11514 条拒绝事件；短测 60 passed / 9 skipped，补测 14 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 2 已获批并完成，见上行 |
 | 注入重构计划对抗审查（2026-09-17） | 审查完成；计划未通过 | 确认九项缺陷；原记录加候选元数据后散列校验拒绝；沿用停点规则补查 unused 只执行 600、剩 238；数轴反例最长段 828 > 400；定向测试 65 passed / 9 skipped，5.24 秒；[审查报告与复现命令](docs/validation/newtask-v2/20260917-injection-refactor-audit.md) | 先修订各项契约与验收；本轮不实施重构，原计划、生产代码、数据保持原状 |
@@ -1599,3 +1599,12 @@
 - 定向旧数轴测试 34 passed，2.79 秒；新结果状态模块的预备测试 5 passed，20.28 秒，尚未用它改写运行十。数据读取期间仅准备独立新模块，没有改变旧模块或输入，基线通过后才执行阶段 4 的实际归并。
 - 新发现：`hf_release.py` 实际导入 `scripts.injection.delivery::render_verdict_line`。遵守发布脚本冻结，阶段 8 保留该唯一公共格式化函数，删除旧 delivery 的配置/交付流程，其余逻辑迁入新包；不靠修改发布脚本绕过依赖闭包。
 - 下一步：迁入 1842 条实跑与 720 条 reset 结果，冻结 L4 范围及逐文件路径映射，核对原角色 1600/196/46 与 700/20/838。后续不再逐阶段询问。
+
+### 2026-09-18 America/Detroit — 阶段 4 归并与可恢复执行入口完成
+
+- `RESULTS_EQUIVALENCE=PASS h5_rows=1842 primary=1600 spare=196 failed=46 reset_rows=720 reset_primary=700`；`ROLES_CONSISTENT=PASS rows=3400 mismatch=0 duplicates=0 pending=0 unused=838`。候选只回写角色、错误类型和派生计数，身份散列与阶段一相同。源文件未移动，当前路径仍真实有效。
+- 冻结 `rollout/logs/migration/path_map.json` 的 3820 文件一对一映射、L4 原 720 键与终止 episode、完整原结果对照。RouteStick/easy/ep0 两份 HDF5 经实际散列一致核验后冻结 L2 路径别名；迁移时正式选择清单点名文件，另一份保留进 smoke 日志目录。
+- 新执行入口从唯一候选快照构造作业；完整终态立即落独立调用日志，半行只记中断位置；先恢复日志再派缺失项，成功和失败都复用。两个 JSONL 分别原子发布，以结果表恢复候选角色；同键冲突直接报错。reset 保留旧组序、整批收齐后排序规则，unused 用完整冻结集合绕开 50 条停点。
+- 短测 17 passed，31.18 秒，含 3400 条加载器回归；纯 reset 新旧批次 720 键相同，缓存恢复零重跑，混合失败情况下 unused 仍检查 838 条。旧 reset 回归与状态测试另有 18 passed，20.15 秒。
+- 新入口独立冒烟 `refactor-rollout-smoke`：RouteStick/easy/ep0 HDF5 与基线同 SHA-256，另执行 ep115 reset 一次，`RUN=PASS ... h5_executed=1 reset_executed=1`；重复同命令 `RESET_IDEMPOTENT=PASS rerun=0 duplicates=0`、`RUN=PASS ... h5_executed=0 reset_executed=0`。源候选字节前后不变。
+- 阶段二回写测试在真实角色迁入后同步清空测试副本的 error_type，避免制造 primary 携带失败异常的非法状态；生产约束没有放宽。候选配置解析已独立迁入新包，不再依赖旧 delivery。后续无需再问，进入阶段五真实对拍。

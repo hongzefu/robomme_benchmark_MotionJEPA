@@ -263,3 +263,32 @@ tmux new-session -d -s injection-baseline -c "$PWD" \
 短测 34 passed，2.79 秒。采集退出 0，977.79 秒：`BASELINE_CAPTURED=PASS png=113 tables=14 before=1796 kept=1795 excluded=1 skipped=0`。98 张跑前图、15 张数轴图、14 组 156 行事件表已冻结；旧规则只剔除 1 条慢条。全部输入与输出散列记入 `manifest.json`，旧 timeline 和窗口表原样保留。复验采集须在旧源码仍在的基线提交上使用新的输出目录，不覆盖现有基线；阶段 8 删除旧入口后，本采集脚本属于历史复现材料。
 
 实施调整：发现冻结的 `hf_release.py` 仍导入旧 delivery 的判定行格式化函数，故最终仅保留该公共纯函数；旧配置加载、交付清单生成与 CLI 流程仍按计划删除或迁入新包。这样保持发布脚本不变且模块导入闭包成立。
+
+## 阶段 4：唯一结果、角色归并与恢复
+
+`scripts/injection/_migrate_run10.py prepare` 把旧 1842 条实跑和 720 条 reset 归并成唯一结果表，保存原始对照和 L4 范围到 `rollout/logs/migration/`。原正式/备用/失败与 unused 数均保持不变，候选身份散列不变，只回写管理状态。`path_map.json` 冻结 3820 个文件的一对一迁移目标及经实际散列验证的同条 HDF5 别名；只冻结映射，数据尚未移动。
+
+```bash
+command -v uv
+uv run --no-sync python -m scripts.injection._migrate_run10 prepare
+uv run --no-sync python -m pytest tests/lightweight/test_rollout_state.py tests/lightweight/test_reset_pipeline.py tests/lightweight/test_candidate_loader.py -q -s
+```
+
+归并命令退出 0，重复执行只核验，不覆盖。`RESULTS_EQUIVALENCE=PASS h5_rows=1842 primary=1600 spare=196 failed=46 reset_rows=720 reset_primary=700`；`ROLES_CONSISTENT=PASS rows=3400 mismatch=0 duplicates=0 pending=0 unused=838`。短测 17 passed，31.18 秒；`RESET_BATCH_PARITY=PASS keys=720 resume_rerun=0 unused_checked=838`，混合失败不能让 unused 提前停在 50 条。
+
+新包 `rollout/state.py` 实现运行级独占锁、严格唯一键和两文件恢复；`run.py` 保存调用范围，复用生成器的真实 `_run_jobs`，只把范围/配置从候选快照转成作业，不反投影成旧规格文件启动环境；生成器实际文件须匹配仓库绝对路径。`reset_check.py` 复制旧调度与环境核验，改为 header 配置对象，新增缓存终态、完整 unused 范围和 CLI。完整终态即刻落日志，半行保留并标中断；恢复后才派缺失项，不重复运行已经成功或失败的条目。`report.py` 区分完整交付与局部用途，局部结果不冒充 1600/700 配额完成。
+
+真实新入口冒烟与幂等核验（相同命令执行两次，第二次复用终态）：
+
+```bash
+command -v uv
+uv run --no-sync python -m scripts.injection.rollout \
+  --run-id refactor-rollout-smoke \
+  --candidates artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl \
+  --purpose smoke --groups RouteStick/easy --episodes 1 --reset-limit 1 \
+  --tier 1 --gpus 0 --no-figures --label smoke
+```
+
+第一次 `RUN=PASS ... h5_executed=1 reset_executed=1`，第二次 `RESET_IDEMPOTENT=PASS rerun=0 duplicates=0`、`RUN=PASS ... h5_executed=0 reset_executed=0`。源候选前后字节不变；影子状态目录为 `rollout/logs/smoke/smoke/`，结果恰为 2 条，HDF5 与旧 RouteStick/easy/ep0 同散列。核对摘要见运行十 `rollout/logs/migration/stage4_checks.json`。
+
+归并后源候选的角色和错误字段确实改变，因此阶段二的角色改写测试同时清空测试副本的 error_type，仍然验证完整 spec 和身份不变；不放宽生产校验。阶段零/一/二的字节散列记录是各自时间点的历史证据，不能用管理状态合法更新后的候选去冒充当时字节。旧环境源码、规格、HDF5 和视频没有改动。

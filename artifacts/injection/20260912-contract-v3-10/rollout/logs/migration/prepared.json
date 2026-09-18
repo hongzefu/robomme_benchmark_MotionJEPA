@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "roles": {
+    "test/primary": 700,
+    "test/spare": 20,
+    "test/unused": 838,
+    "train/failed": 46,
+    "train/primary": 1600,
+    "train/spare": 196
+  },
+  "path_entries": 3820,
+  "rows": 3400,
+  "results": 2562,
+  "mismatch": 0,
+  "duplicates": 0,
+  "pending": 0,
+  "unused": 838
+}

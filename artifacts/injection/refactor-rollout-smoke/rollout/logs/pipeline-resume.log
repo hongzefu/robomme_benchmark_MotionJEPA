@@ -1,0 +1,5 @@
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+RESET_IDEMPOTENT=PASS rerun=0 duplicates=0
+REPORT=PASS purpose=smoke rows=2 pending=3398 unused=0
+PARITY_SOURCE_INTACT=PASS
+RUN=PASS purpose=smoke h5_executed=0 reset_executed=0

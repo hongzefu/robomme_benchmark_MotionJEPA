@@ -407,6 +407,10 @@ L2 不把 1796 当成剔除后条数：旧 `apply_slow_exclusion` 会剔除最�
 
 用户已一次授权剩余阶段。旧工具源码不改，通过独立采集入口只指定运行编号和输出路径：98 张跑前图、15 张数轴图、14 组事件表（156 行）均已冻结。`BASELINE_CAPTURED=PASS png=113 tables=14 before=1796 kept=1795 excluded=1 skipped=0`，977.79 秒、退出 0。旧数轴定向测试 34 passed，2.79 秒。完整清单、逐文件散列、原始 timeline 与表见运行 10 的 `rollout/logs/baseline/`；图片留在本地，散列和轻量数据入库。后续 L2 须严格比较这 1795 条保留记录及 1 条完整剔除记录。
 
+### 10.4 阶段 4 实施记录（2026-09-18）
+
+`RESULTS_EQUIVALENCE=PASS h5_rows=1842 primary=1600 spare=196 failed=46 reset_rows=720 reset_primary=700`；`ROLES_CONSISTENT=PASS rows=3400 mismatch=0 duplicates=0 pending=0 unused=838`。3820 个文件的迁移映射、L4 原 720 键与停止位置已冻结，尚未移动数据；候选身份不变。独立新入口完成 1 条 HDF5 与 1 条 reset，重复执行零重跑；HDF5 与原 RouteStick/easy/ep0 同散列。17 项短测通过（31.18 秒），新旧 reset 模拟批次 720 键一致，含失败的 unused 测试仍完整覆盖 838 条。进入阶段五，不再重复报批。
+
 ---
 
 # 第二部分（技术细节，供 agent 追踪）
