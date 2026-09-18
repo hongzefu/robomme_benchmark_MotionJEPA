@@ -328,3 +328,18 @@ uv run --no-sync python -m scripts.injection.rollout.reset_check \
 ```
 
 退出 0，`UNUSED_RESET=PASS checked=838 passed=838 failed=0 unused_left=0 primary_changed=0`。原 700 个 test primary 与全部 train 角色不变；现在 test spare=858、test failed=0、test unused=0，唯一结果总数 3400。完整范围与原 primary 在 `unused_scope.json` 冻结，重复调用不缩小分母。该例外仅对原运行十开放，普通新运行仍在每组足额 50 条后停下并保留 unused。
+
+## 阶段 6～7：图表等价与实际迁移
+
+阶段六流水线 `figure-pipeline-retry.log` 退出 0：113 张 PNG 字节相同、14 组事件表零漂移；1796 条数轴含 1795 条保留、1 条完整剔除记录全部相同。正式报告核对 1796 个 HDF5 实际散列后通过。首轮展示字典顺序与交换规格投影问题已修复，原失败日志保留；37 项短测通过，5.30 秒。候选输入快照已进入 Git，并放行新运行的同名输入。
+
+阶段七在 detached tmux `injection-migration` 执行：
+
+```bash
+command -v uv
+uv run --no-sync python -m scripts.injection._migrate_run10 move
+```
+
+迁移前后实际读取所有 3820 个文件计算 SHA-256，`H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0`、`ARTIFACTS_INTACT=PASS count=3820 missing=0 extra=0 sha_mismatch=0`、`ACTIVE_PATHS=PASS missing=0 old_prefix=0`、`MIGRATION_METADATA=PASS unexpected_field_changes=0`，退出 0。仅按冻结映射 rename，HDF5/视频不删除、不改写；活动结果、timeline、表与范围仅更新允许路径，原始旧日志不重写。
+
+完整证据在运行十 `rollout/logs/migration/` 的 `inventory.json`、`journal.jsonl`、`active_files.json`、`verification.json`，并保留活动小文件 backups/versions。迁移状态 complete；中断后用同入口 `resume` 续跑，同目标存在或散列变化直接拒绝。5 项恢复反例通过，0.89 秒。

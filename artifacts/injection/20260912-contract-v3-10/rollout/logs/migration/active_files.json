@@ -1,0 +1,32 @@
+[
+  {
+    "path": "rollout/results.jsonl",
+    "before": "4807e7e3f20cfe3ef54fe77f2dfa1c8f879276a3aa6d69b5b64a3ed2aafee69d",
+    "after": "720b60ee2139fea1f70c28830aaf0714624ef410ffd36d5819fc700187767eb4"
+  },
+  {
+    "path": "rollout/logs/windows_timeline.json",
+    "before": "659b7192def7a195bf1d3f9e0b45b04d093d83664213113d1c7e171f13781a1a",
+    "after": "4c1c1b10dd245c22ee05525426843e91c6188287bc43073cccec8936622cc6a6"
+  },
+  {
+    "path": "rollout/logs/window_tables.md",
+    "before": "1a9e9609e9047cb09fdfb434b96c9bf8802b8f01708528684bb60b14018bdd0c",
+    "after": "4abf86ccdaaff28617bcfa014d180eb8a9faa7897a163f6af5a13916ffebc019"
+  },
+  {
+    "path": "rollout/WINDOWS.md",
+    "before": "946d7966e71f715b6822c0c357117cfc43456945c44a7f383f111c4705c1c212",
+    "after": "f5d7afd8ef0d14801214466d4556ed1b539dcd532f8fe21b773b8722b7b3a8fe"
+  },
+  {
+    "path": "rollout/ROLLOUT.md",
+    "before": "deffc09f9fba656cc64446407c67f83b926d7456308971b90d63f691b0110f51",
+    "after": "deffc09f9fba656cc64446407c67f83b926d7456308971b90d63f691b0110f51"
+  },
+  {
+    "path": "rollout/logs/attempts/reset-0001/scope.json",
+    "before": "eaf886c6ef6f4d5f991568b85602f1c8aeee1665c7ca6f4aa04e3452b7af1f06",
+    "after": "eaf886c6ef6f4d5f991568b85602f1c8aeee1665c7ca6f4aa04e3452b7af1f06"
+  }
+]

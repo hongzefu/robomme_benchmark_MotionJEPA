@@ -174,8 +174,15 @@ def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return result
 
 
-def load_candidates(path: str | Path, *, repo_root: Path | None = None) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def load_candidates(path: str | Path, *, repo_root: Path | None = None, allow_migrating: bool = False) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     path = Path(path)
+    if not allow_migrating:
+        for parent in path.resolve().parents:
+            state = parent / "rollout/logs/migration/state.json"
+            if state.is_file() and json.loads(state.read_text())["state"] != "complete":
+                raise CandidateError("所属运行正在迁移，须恢复完成后才能读取候选启动环境")
+            if repo_root is not None and parent == repo_root.resolve():
+                break
     with path.open(encoding="utf-8") as stream:
         records = [json.loads(line, object_pairs_hook=_unique_object) for line in stream]
     if not records:

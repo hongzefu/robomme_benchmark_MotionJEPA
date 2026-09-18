@@ -1893,5 +1893,5 @@
 
 | 组 | ep | seed | T | 组中位 T | 最长段（标签 帧数） | 命中原因 | h5 |
 |---|---|---|---|---|---|---|---|
-| VideoUnmaskSwap/xhard | 5 | 5500 | 1312 | 560 | 抓红容 828 | 单段 828 帧 > 400；T=1312 > 2×组中位 560 | /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/VideoUnmaskSwap/xhard/hdf5_files/VideoUnmaskSwap_ep5_seed5500.h5 |
+| VideoUnmaskSwap/xhard | 5 | 5500 | 1312 | 560 | 抓红容 828 | 单段 828 帧 > 400；T=1312 > 2×组中位 560 | /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P01x20/VideoUnmaskSwap/xhard/hdf5_files/VideoUnmaskSwap_ep5_seed5500.h5 |
 <!-- AUTO:WINDOW_TABLES END -->

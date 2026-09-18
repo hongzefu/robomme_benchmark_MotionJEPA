@@ -1,0 +1,43 @@
+迁移散列 source 200/3820
+迁移散列 source 400/3820
+迁移散列 source 600/3820
+迁移散列 source 800/3820
+迁移散列 source 1000/3820
+迁移散列 source 1200/3820
+迁移散列 source 1400/3820
+迁移散列 source 1600/3820
+迁移散列 source 1800/3820
+迁移散列 source 2000/3820
+迁移散列 source 2200/3820
+迁移散列 source 2400/3820
+迁移散列 source 2600/3820
+迁移散列 source 2800/3820
+迁移散列 source 3000/3820
+迁移散列 source 3200/3820
+迁移散列 source 3400/3820
+迁移散列 source 3600/3820
+迁移散列 source 3800/3820
+迁移散列 target 200/3820
+迁移散列 target 400/3820
+迁移散列 target 600/3820
+迁移散列 target 800/3820
+迁移散列 target 1000/3820
+迁移散列 target 1200/3820
+迁移散列 target 1400/3820
+迁移散列 target 1600/3820
+迁移散列 target 1800/3820
+迁移散列 target 2000/3820
+迁移散列 target 2200/3820
+迁移散列 target 2400/3820
+迁移散列 target 2600/3820
+迁移散列 target 2800/3820
+迁移散列 target 3000/3820
+迁移散列 target 3200/3820
+迁移散列 target 3400/3820
+迁移散列 target 3600/3820
+迁移散列 target 3800/3820
+H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0
+ARTIFACTS_INTACT=PASS count=3820 missing=0 extra=0 sha_mismatch=0
+ACTIVE_PATHS=PASS missing=0 old_prefix=0
+MIGRATION_METADATA=PASS unexpected_field_changes=0
+EXIT_CODE=0

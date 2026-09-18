@@ -1,10 +1,4 @@
-# 采样窗口与数轴
 
-窗口长度 33 帧、步长 16 帧；分别在 demo 与执行段内取窗，跨阶段不拼窗。N=32/N=8 的帧路与组中位慢条判据沿用旧算法。
-
-单段超过 400 帧或有效总长超过组中位两倍者仅从统计剔除，HDF5 与交付角色保持。
-
-<!-- AUTO:WINDOW_TABLES BEGIN -->
 ### 汇总（每组：条数、T、demo 长度、motion token 数）
 
 | 组 | 条数 | T 最短 / 中位 / 最长 | demo 最短 / 中位 / 最长 | 窗口 最少 / 中位 / 最多 | 铺不出窗口 | 跳过／失败 | 慢条剔除 |
@@ -1893,5 +1887,4 @@
 
 | 组 | ep | seed | T | 组中位 T | 最长段（标签 帧数） | 命中原因 | h5 |
 |---|---|---|---|---|---|---|---|
-| VideoUnmaskSwap/xhard | 5 | 5500 | 1312 | 560 | 抓红容 828 | 单段 828 帧 > 400；T=1312 > 2×组中位 560 | /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/rollout/VideoUnmaskSwap/xhard/hdf5_files/VideoUnmaskSwap_ep5_seed5500.h5 |
-<!-- AUTO:WINDOW_TABLES END -->
+| VideoUnmaskSwap/xhard | 5 | 5500 | 1312 | 560 | 抓红容 828 | 单段 828 帧 > 400；T=1312 > 2×组中位 560 | /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/feasibility/P01x20/VideoUnmaskSwap/xhard/hdf5_files/VideoUnmaskSwap_ep5_seed5500.h5 |

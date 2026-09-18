@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 注入重构阶段 7（2026-09-18） | 完成 | `H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0`；`ARTIFACTS_INTACT=PASS count=3820 missing=0 extra=0 sha_mismatch=0`；活动路径零失效、旧前缀零残留、元数据仅允许字段变化；迁移退出 0，恢复反例 5 passed | 清理已替换旧入口、迁移测试与现行说明，再运行最终冒烟 |
 | 注入重构阶段 6（2026-09-18） | 完成 | 113 张 PNG 字节相同、14 组事件表零漂移；数轴 1796 条中保留 1795、剔除 1，完整记录零差异；1796 个 HDF5 实际散列通过；37 项短测通过，5.30 秒；候选快照放行 Git 跟踪 | 连续执行已授权阶段 7～9，先按冻结映射移动并核验 3820 个文件 |
 | 注入重构阶段 3～9 连续实施（2026-09-18） | 阶段 3～5 完成；进入阶段 6 | H5 210 条（205 成功/5 失败）散列及失败类型零差异；reset 720 条结果/停点/角色零差异；838 条 unused 全部通过、primary 未变；正式唯一结果 3400 条，test spare=858；原视频对 221 PASS/2 无视频 NOT_RUN | 全量 L2 图表对拍、3820 文件迁移及恢复验证、旧入口清理、最终冒烟；后续全部已授权 |
 | 注入重构实施阶段 2（2026-09-17） | 完成，阶段 3 待单独批准 | `LOADER_PARITY=PASS compared=3400 kwargs_mismatch=0 role_rewrite_mismatch=0`；RouteStick/easy/ep0 的 `SMOKE_H5_PARITY=PASS compared=1 sha_mismatch=0`，300 帧、200071952 字节，生成 18.2 秒、散列 0.121 秒；短测 73 passed / 4 skipped，夹具修订补测 11 passed；[实施留档](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 阶段 3 用旧图表工具对运行 10 冻结完整图表与数轴基线；获批后开始 |
@@ -1646,3 +1647,9 @@
 - 重试流水线退出 0；113 张 PNG 字节零差异，事件表零漂移，完整数轴 1796 条含 1 条剔除记录零差异。报告实际核对 1796 个 HDF5 文件大小与 SHA-256 后通过，3400 条结果无 pending、无 unused。
 - `uv run --no-sync python -m pytest tests/lightweight/test_refactor_figures.py tests/lightweight/test_window_timeline.py -q`：37 passed，5.30 秒。新增候选快照随读取代码进入 Git，策略侧启动仍仅保留计划中的接口契约。
 - 接下来按冻结清单对 3820 个旧文件先读散列、逐项移动、再读散列；同步更新活动路径，保留恢复日志。阶段八旧入口删除须等待实际守恒验收通过。
+
+### 2026-09-18 America/Detroit — 阶段 7 实际迁移与双向散列核验完成
+
+- tmux `injection-migration` 执行 `uv run --no-sync python -m scripts.injection._migrate_run10 move`，退出 0。迁前与迁后均实际读取 3820 个文件计算 SHA-256，文件集合零缺失、零额外、零散列差异；其中 1796 个成功成品与唯一结果的散列、大小相同，另一份 RouteStick 冒烟重复成品保留在日志目录。
+- `ACTIVE_PATHS=PASS missing=0 old_prefix=0`、`MIGRATION_METADATA=PASS unexpected_field_changes=0`；状态置 complete 后恢复普通读取。results、timeline、窗口表及活动范围只改路径，原始旧日志不重写。源文件仅按清单 rename，没有删除旧媒体。
+- `inventory.json`、逐项 fsync 的 `journal.jsonl`、活动小文件旧版/新版及核验结果留在 `rollout/logs/migration/`。同目标存在拒绝覆盖，恢复时验证已移动目标字节；5 项恢复反例 0.89 秒通过。阶段八预备回归 116 passed，4.52 秒；契约/作用域 30 passed、13 项既有历史规格缺失跳过，4.09 秒。

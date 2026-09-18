@@ -425,6 +425,10 @@ L3/L4 与源完整性全通过：210 条 HDF5 尝试中 205 成功、5 失败，
 
 新图表与旧冻结基线全量对拍通过：`FIGURES_EQUIVALENCE=PASS png=113 differences=0`、`TABLES_EQUIVALENCE=PASS drift=0`、`TIMELINE_EQUIVALENCE=PASS before=1796 kept=1795 excluded=1 skipped=0 differences=0`。正式报告实际读取 1796 个 HDF5 核对大小与 SHA-256，`REPORT=PASS purpose=delivery rows=3400 pending=0 unused=0`，流水线退出 0。首轮发现规范序列化改变展示字典顺序及交换规格漏投影，均按旧展示算法修复，失败日志保留；定向回归 37 项通过。候选快照及本仓库两个环境启动入口纳入 Git；第三处策略侧仍仅定义契约。
 
+### 10.7 阶段 7 实施记录（2026-09-18）
+
+迁移退出 0：3820 个文件迁前、迁后实际散列全相同，集合零缺失、零额外；1796 个成功 HDF5 与结果中的大小和 SHA-256 一致。活动路径全部可达、旧前缀零残留，活动元数据只改冻结允许字段；迁移状态已置 complete。5 项中断恢复、拒绝覆盖和读取守卫反例通过，0.89 秒。逐文件清单、恢复日志、小文件原版/新版及验证 JSON 均保留并纳入 Git。
+
 # 第二部分（技术细节，供 agent 追踪）
 
 ## 〇、前置声明与红线
