@@ -238,6 +238,18 @@ episode_spec  layout / objects / actions / initializations
 
 **拿什么跟基线比**：B 是新分支恢复后的默认路径，C 是 B 加显式原值 `sampling_config`，D 是 C 导出的 `episode_spec` 原值回注。`A1↔A2` 先证明基线自身可重复；`A1↔B` 证明恢复到了官方行为（会抓出继承的旧改动，如 `RouteStick.py::step` 尾迹 10 步对官方 40 步）；`B↔C↔D` 与 `A1↔D` 证明接口拆分和回注没有改数。
 
+**HDF5 对拍（用户最关心的对拍）**：所有判据里最核心的一条，单列出来。比的是每条身份落盘的 `hdf5_files/<task>_ep<episode>_seed<seed>.h5`，文件内 `episode_<n>/setup/*` 与 `episode_<n>/timestep_<k>/{action,obs,info}/*`，实测一条 BinFill 约 5.2 万个对象（`joint_action` float64 (8,)、`front_rgb` uint8 (256,256,3)、`front_depth` int16 等，全清单见第二部分「十一」）。做法固定为两层：先算整文件 SHA-256，相同即字节相同；不同则用 h5py 递归遍历两边全部 group／dataset／attribute，逐个比路径集合、dtype、shape 与原始字节，浮点按位模式不设容差，把第一处及全部不同的 `路径／dtype／shape／首个不同元素索引` 写进差异清单。五对比较各出一行判定：
+
+| 比较对 | 证明什么 | 判定行 |
+|---|---|---|
+| A1↔A2 | 官方基线自身可重复 | `H5_PARITY pair=A1A2 compared=N sha_equal=k field_mismatch=0` |
+| A1↔B | 新分支默认路径已恢复官方行为 | `H5_PARITY pair=A1B compared=N sha_equal=k field_mismatch=0` |
+| B↔C | 显式传原值配置不改数 | `H5_PARITY pair=BC compared=N sha_equal=k field_mismatch=0` |
+| C↔D | 原值规格回注不改数 | `H5_PARITY pair=CD compared=N sha_equal=k field_mismatch=0` |
+| A1↔D | 端到端：注入版与官方版逐位相同 | `H5_PARITY pair=A1D compared=N sha_equal=k field_mismatch=0` |
+
+`compared` 是实际比的文件对数，`sha_equal` 是其中整文件散列已相同的对数，`field_mismatch` 必须为 0。判据表里的 P1、P2、P4 的 HDF5 部分即由这五行承担，图像、视频与随机流另比。它和 R1 是两回事：R1 用官方 `compare_joint_actions.py::compare_joint_actions` 只比 `action/joint_action` 且阈值 `max_abs_diff=1e-8`，是对官方发布集的历史口径；这里是五路之间的全字段零容差。任何一对出现 `field_mismatch>0` 就停下交用户，不放宽、不排除字段。
+
 **在哪跑、怎么并行**：全部在 greatlakes `spgpu` 分区（A40）上跑，本机不跑。用户拍板 4 个占位 job、每 job 4 worker、共 16 worker。理由：greatlakes 规约实测 A40（sm_86）与本机 RTX 6000 Ada（sm_89）不逐位一致，所以五路必须同在 A40 上；官方 `dataset-gen` 的 `_parse_gpus` 只接受 `"0"`，Slurm job 内 `CUDA_VISIBLE_DEVICES=0` 正好满足；worker 默认单线程（`limit_threads=true`），集群实测每 worker 每局 RSS 峰值 3.0～5.6 GB、显存 0.6 GB，所以 job 形状定为 **1 GPU / 4 CPU / 32G / 48h**。分片按 task 切：16 个环境分 4 组、每 job 4 个环境 × 每环境 9 条 = 36 条身份，五路 180 次生成都在本 job 内完成，A1／A2 用官方脚本 `--workers 4`，B／C／D 用新入口 `--workers 4`；同一身份内 C→D 串行，身份之间并行。放开条件 P0：同一身份的 A1 在 4 个 job（可能落在不同节点）各跑一次，逐位相同；不同则四个 job 只能串成一路。占位 job 到期或被回收时重新申请，任何时刻不超过 4 个。集群实测数字、job 脚本与分片表见第二部分「十」。
 
 **抽样规模**：用户拍板「不用全部验证 每个task每个难度验证3条左右即可」。每个task每个难度按固定官方metadata顺序取该难度前3条，共16×3×3＝144条。已实读十六环境：easy均为episode `[0,1,4]`，medium为 `[2,6,10]`，hard为 `[3,7,11]`；每环境z3条、xy2条、关闭4条，合计z48、xy32、关闭64。三模式已经齐全，不再设隐式换样分支；冻结manifest与此规则不符直接报错。每环境episode 5未纳入，不能宣称全部96条恢复覆盖；全集1600条仍为可选后续步7。
@@ -254,10 +266,10 @@ episode_spec  layout / objects / actions / initializations
 | G3 | 字段归属完整 | 3 | 第二节 101 行每项落到 `decision` 或 `native` 及其本局输入／运行观测；原值阶段两块均原值；最近邻／补集／时间表不独立抽签 | `FIELD_OWNERSHIP=PASS tasks=16 unmapped=0 native_rule_overrides=0` | 分钟级／CPU |
 | G4 | 规格真正被消费 | 4 | 逐局比对象ID、布局、目标、动作、恢复与初始化编号；恢复含xy符号、派生偏移及实际抓取位置绑定；保留原重抽却绕过规格赋值的反例必须被抓到 | `SPEC_BINDING=PASS missing=0 unused=0 mismatch=0` | 单条秒级／集群 A40 |
 | G5 | 比较器支持原稀疏身份 | 1b、5e | 新适配器保留原字段及数值比较核心，仅替换范围与预期集合；连续范围对原函数结果相同，稀疏／重复／缺失／额外身份反例全覆盖，详见9.6 | `COMPARATOR_SCOPE=PASS contiguous_mismatch=0 sparse_mismatch=0 invalid_accepts=0` | 秒级／CPU夹具，不启动仿真 |
-| P1 | 原版自身重复 | 1b | A1↔A2 的 HDF5、图像、状态与事件逐位相同；不可重复的身份单列 `BASELINE_NONDETERMINISTIC`，不设新种子 | `BASELINE_REPEAT=PASS compared=N different=0` | 集群实测 1 worker 约 42 s/条、8 worker 3.5 条/分（第二部分「十」）／A40 |
-| P2 | 原始行为已恢复 | 2 | A1↔B 全字段相同；不能排除 RouteStick 尾迹、演示标志或恢复事件来求通过 | `TRAIN_RESTORE=PASS compared=N mismatch=0` | 同 P1／A40 |
+| P1 | 原版自身重复 | 1b | A1↔A2 的 HDF5（`H5_PARITY pair=A1A2`）、图像、状态与事件逐位相同；不可重复的身份单列 `BASELINE_NONDETERMINISTIC`，不设新种子 | `BASELINE_REPEAT=PASS compared=N different=0` | 集群实测 1 worker 约 42 s/条、8 worker 3.5 条/分（第二部分「十」）／A40 |
+| P2 | 原始行为已恢复 | 2 | A1↔B 全字段相同（HDF5 部分即 `H5_PARITY pair=A1B`）；不能排除 RouteStick 尾迹、演示标志或恢复事件来求通过 | `TRAIN_RESTORE=PASS compared=N mismatch=0` | 同 P1／A40 |
 | P3 | 随机流不漂移 | 4 | B／C／D 比调用序号、源身份、签名、结果、拒绝记录与前后状态 | `RNG_PARITY=PASS compared=N calls_mismatch=0 state_mismatch=0` | 同 P1／A40 |
-| P4 | 原值注入等价 | 4 | B↔C、C↔D、A1↔D 逐元素比 dtype、shape、位模式与全部 group／dataset／attribute；SHA 相同即字节相同，不同则继续逐字段比 | `INJECTION_PARITY=PASS compared=N mismatch=0` | 同 P1／A40 |
+| P4 | 原值注入等价 | 4 | B↔C、C↔D、A1↔D 的 HDF5 即 `H5_PARITY pair=BC/CD/A1D`，逐元素比 dtype、shape、位模式与全部 group／dataset／attribute；SHA 相同即字节相同，不同则继续逐字段比 | `INJECTION_PARITY=PASS compared=N mismatch=0` | 同 P1／A40 |
 | P5 | 图像与录像事件 | 5a | 落盘 RGB、演示／执行标志、真实帧索引相同；MP4 比完整解码帧数与像素，编码容器散列单列 | `VIDEO_PARITY=PASS compared=N frames_mismatch=0 pixels_mismatch=0` | 同 P1／A40 |
 | P6 | 连续 worker 不污染 | 5b | 每环境选不同原身份，甲→乙→甲在同一 PID 运行，各自与独立进程相同；配置、规格输入散列不变 | `WORKER_ISOLATION=PASS tasks=16 mismatch=0 input_mutation=0` | 48 条生成／A40 |
 | P7 | fail recover 原样 | 5a、5d | 对选定144条逐条比恢复开关、模式、实际失败动作索引、xy方向／偏移、触发与结果；实际无恢复事件记null，不新增事件 | `RECOVERY_PARITY=PASS compared=144 configured=80 z=48 xy=32 off=64 mode_mismatch=0 event_mismatch=0` | 冒烟仅报实际条数；完整计数随5d产出 |
@@ -307,6 +319,8 @@ episode_spec  layout / objects / actions / initializations
 文档核验退出0：`FIELD_SPLIT=PASS environments=16 tables=32 field_groups=101 user_groups=46 random_groups=35 derived_groups=20`、`DOC_CHECK=PASS matching_rows=101 local_links=20 baseline_section_unchanged=1 code_line_refs=0`。只改方案与账本；本次没有生成配置、候选或数据，没有运行代码测试或真实仿真，文档核验不代表未来对拍已经通过。
 
 本次四列单表调整（11.24）保留全部101行，将十六环境改为16张表；当前值逐行与上一版核对一致（仅展开字段简写），旧键映射移至4.3，共用约束移至4.4。静态核验退出0：`SINGLE_TABLE=PASS environments=16 tables=16 columns=4 rows=101`、`CONTENT_CHECK=PASS current_values_unchanged=101 baseline_unchanged=1 local_links=20`；只读复核确认未来数值和待定事项保留，未修改任何生效配置或代码。
+
+本次 HDF5 对拍独立成节（11.32）按用户原话「h5 对拍独立出来 作为用户最关心的对拍」：第四节新增「HDF5 对拍」块与五对比较判定行 `H5_PARITY pair=…`，P1／P2／P4 的 HDF5 部分改为引用它；第二部分新增「十一、HDF5 对拍实现」，含实读的文件结构、两层比较算法、与官方 `compare_joint_actions` 的区别。
 
 本次算力改为集群（11.29）按用户原话「改为使用这4个spgpu来跑不要在本机 如果没了再申请 不要超过4个」「本地被占用了 先申请一个多cpu但是单个gpu job测试一下」「还是用sleep先占用48小时 这个1gpu8cpu」「我的目标同时启动20个worker 给出job分片方案 写入md」「改为4*4 16worker」：仓库克隆到 NFS 并 uv sync 成功；在占位 job 61665377 内实测 1 worker 与 8 worker 的 CPU／RSS／显存／吞吐（第二部分「十」）；据此定 job 形状 1 GPU / 4 CPU / 32G / 48h × 4、按 task 分 4 片各 36 条；P0 由两卡等价改为跨 job 等价 `NODE_PARITY`；本机不再跑仿真。
 
@@ -744,3 +758,40 @@ srun --jobid=<占位JOBID> --account=chaijy2 --partition=spgpu --gpu_cmode=share
 | 4 | ALL_TASKS[12:16] | 36 | 180 |
 
 规则：每 job 只处理自己的分片，产物目录按 shard 隔离；P0 用同一身份在 4 个 job 各跑 A1；job 被回收后重申请同形状 job，从缺失身份续跑，不重跑已完成身份；`compare` 在登录节点只读汇总，不占 GPU。当前在跑的 61665377 是 1 GPU / 8 CPU / 48G 的探针 job，正式分片前换成 4 个 4 CPU job。
+
+## 十一、HDF5 对拍实现
+
+**文件与结构**（实读 `artifacts/injection/20260912-contract-v3-10/rollout/BinFill/hard/hdf5_files/BinFill_ep84_seed12400.h5`，共 51808 个对象，根无 attribute）：
+
+```text
+episode_<n>/setup/{available_multi_choices,difficulty,task_goal}      object 标量／(2,)
+episode_<n>/setup/{seed}                                              int64 标量
+episode_<n>/setup/{front_camera_intrinsic,wrist_camera_intrinsic}     float32 (3,3)
+episode_<n>/timestep_<k>/action/{joint_action}                        float64 (8,)
+episode_<n>/timestep_<k>/action/{eef_action}                          float64 (7,)
+episode_<n>/timestep_<k>/action/{waypoint_action}                     float32 (7,)
+episode_<n>/timestep_<k>/action/{choice_action}                       object 标量
+episode_<n>/timestep_<k>/obs/{front_rgb,wrist_rgb}                    uint8 (256,256,3)
+episode_<n>/timestep_<k>/obs/{front_depth,wrist_depth}                int16 (256,256,1)
+episode_<n>/timestep_<k>/obs/{joint_state}                            float32 (7,)
+episode_<n>/timestep_<k>/obs/{eef_state}                              float32 (6,)
+episode_<n>/timestep_<k>/obs/{gripper_state}                          float32 (2,)
+episode_<n>/timestep_<k>/obs/{front_camera_extrinsic,wrist_camera_extrinsic}  float32 (3,4)
+episode_<n>/timestep_<k>/obs/{is_gripper_close}                       bool 标量
+episode_<n>/timestep_<k>/info/{is_completed,is_subgoal_boundary,is_video_demo}  bool 标量
+episode_<n>/timestep_<k>/info/{grounded_subgoal,grounded_subgoal_online,simple_subgoal,simple_subgoal_online}  object 标量
+```
+
+**比较算法**（拟实现于 `scripts/train_split_parity.py` 的 `compare` 子命令，函数拟名 `compare_h5_pair(left, right) -> H5PairResult`）：
+
+1. 对两个文件分别算 SHA-256；相同则记 `sha_equal=1`、`field_mismatch=0`，直接返回，不再打开文件。
+2. 不同则以 `h5py.File(path, "r")` 打开，`visititems` 收集两边完整对象路径集合；一边多出或缺少的路径全部记入 `missing_left/missing_right`，每条算一个 mismatch。
+3. 共有路径逐个比：group 比 attribute 键集合与每个 attribute 的值字节；dataset 比 `dtype`、`shape`、attribute，再比数据字节。数值 dataset 用 `np.asarray(ds[()]).tobytes()` 比原始字节，浮点因此按位模式比较、NaN 也按位比；`object` dtype（字符串）先解码为 `bytes` 再比。时间步数不同时先记 `timestep_count` 差异，再只比共有时间步，不截断掩盖。
+4. 每个 mismatch 记录 `路径 / 左右 dtype / 左右 shape / 首个不同元素的展平索引 / 左右值`；结果落 `compare/h5_pairs.jsonl`，每对一行，汇总行即第一部分第四节的 `H5_PARITY pair=<..> compared=N sha_equal=k field_mismatch=m`。
+5. 不做的事：不设容差，不跳过任何字段（包括 `info/*_online` 与 `is_video_demo`），不因 `frame_mismatch` 之类的录像状态跳过 HDF5 比较，不用四舍五入后的文本比较。
+
+**为什么能逐位**：五路在同一 A40 节点类型、同一依赖锁、同一 seed 与同一 fail recover 下运行；若求解器回退（RRTStar）导致 A1↔A2 本身不逐位一致，该身份记 `BASELINE_NONDETERMINISTIC` 并从 `compared` 分母移入单列，不给下游放宽。P0 先证跨 job 逐位相同，分片后的比较才有意义。
+
+**与官方比较器的关系**：R1 复跑官方 `scripts/data-generation/compare_joint_actions.py::compare_joint_actions(max_abs_diff=1e-8)` 与 `validate_generated_dataset_contract.py::validate_generated_dataset_contract`，前者只比 `action/joint_action`（要求 (8,) float64、有限值），并记录 `max_abs_diff` 与位置；它比的是 A 路对官方发布集，结果既有失败照记。本节的 `compare_h5_pair` 是五路之间的全字段比较，两者结论分开报，不互相替代。
+
+**运行方式**：`compare` 在 greatlakes 登录节点或本机对 NFS 上的产物只读运行，不占 GPU；单对文件按 5 万对象量级估秒级，720 次生成对应 5×144 = 720 个文件、5 对 × 144 = 720 对比较。
