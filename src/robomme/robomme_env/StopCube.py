@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -29,6 +30,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import *
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from ..logging_utils import logger
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
@@ -44,6 +46,73 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
+
+
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.4）────────
+# decision：方块运动速度的候选档位、第几次经过目标时停止。
+# native：目标与按钮位置、方块颜色、路线整体旋转、往返段数与时间公式，以及那次
+#        「抽了又被覆盖」的 interval 采样（方案要求保留原随机消费，不得删）。
+NATIVE_SAMPLING = {
+    "parameters": {
+        "interval_sample": {
+            "sampler": "torch.randint",
+            "low": 27,
+            "high_exclusive": 33,
+            "shape": [1],
+            "overridden_to": 30,
+            "note": "原代码抽完立刻被常量 30 覆盖；保留这次抽样以免随机流平移（红线 R8）",
+        },
+        "route_rotation_deg": {
+            "sampler": "torch.FloatTensor(1).uniform_",
+            "low": -30,
+            "high": 30,
+        },
+        "motion_segments": 5,
+        "steps_press_expression": "move_interval * stop_time - move_interval / 2",
+        "stop_window_expression": "[move_interval * (stop_time - 1), move_interval * stop_time]",
+        "press_lead_steps": "self.interval",
+        "route_endpoints": {"start": [0, -0.3], "end": [0, 0.3]},
+        "recovery": "StopCube 原本就没有失败抓取注入，只接收入口给定的恢复模式",
+    },
+    "positions": {
+        "button": {"center_xy": [-0.2, 0], "scale": 1.5, "randomize": True},
+        "target": {
+            "xy_sampler": "torch.FloatTensor(1).uniform_",
+            "low": -0.1,
+            "high": 0.1,
+            "z": 0.01,
+            "euler_deg": [0.0, 90.0, 0.0],
+            "radius_factor": 1.8,
+            "thickness": 0.01,
+        },
+        "cube_color": {"sampler": "torch.rand", "shape": [3], "alpha": 1.0},
+        "cube_initial_position": [-0.3, -0.3],
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节 2.4 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        # 速度候选档位：原值三档；第二节的「只留 [60]」本轮不启用。
+        "move_interval_choices": [60, 80, 120],
+        # 第几次经过目标时停止：原 randint(2, 6) 即闭区间 [2, 5]。
+        "stop_time_range": {"low": 2, "high_exclusive": 6},
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
 
 
 @register_env("StopCube")
@@ -65,7 +134,10 @@ class StopCube(BaseEnv):
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -147,33 +219,36 @@ class StopCube(BaseEnv):
 
 
 
+        button_cfg = self._sampling["positions"]["button"]
         button_obb = build_button(
             self,
-            center_xy=(-0.2, 0),
-            scale=1.5,
+            center_xy=tuple(button_cfg["center_xy"]),
+            scale=button_cfg["scale"],
             generator=generator,
-            randomize=True,
+            randomize=button_cfg["randomize"],
         )
         #avoid = [button_obb]
 
-        angles = torch.deg2rad(torch.tensor([0.0, 90.0, 0.0], dtype=torch.float32))
+        target_cfg = self._sampling["positions"]["target"]
+        angles = torch.deg2rad(torch.tensor(target_cfg["euler_deg"], dtype=torch.float32))
         rotate = matrix_to_quaternion(
                     euler_angles_to_matrix(angles, convention="XYZ")
                 )
         
-        target_x = torch.FloatTensor(1).uniform_(-0.1, 0.1, generator=generator).item()
-        target_y = torch.FloatTensor(1).uniform_(-0.1, 0.1, generator=generator).item()
+        target_x = torch.FloatTensor(1).uniform_(target_cfg["low"], target_cfg["high"], generator=generator).item()
+        target_y = torch.FloatTensor(1).uniform_(target_cfg["low"], target_cfg["high"], generator=generator).item()
         self.target = build_purple_white_target(
                 scene=self.scene,
-                radius=self.cube_half_size*1.8,
-                thickness=0.01,
+                radius=self.cube_half_size*target_cfg["radius_factor"],
+                thickness=target_cfg["thickness"],
                 name="target",
                 body_type="kinematic",
                 add_collision=False,
-                initial_pose=sapien.Pose(p=[target_x, target_y, 0.01], q=rotate),
+                initial_pose=sapien.Pose(p=[target_x, target_y, target_cfg["z"]], q=rotate),
             )
-        cube_color_rgb = torch.rand(3, generator=generator).tolist()
-        cube_color = (cube_color_rgb[0], cube_color_rgb[1], cube_color_rgb[2], 1.0)
+        color_cfg = self._sampling["positions"]["cube_color"]
+        cube_color_rgb = torch.rand(*color_cfg["shape"], generator=generator).tolist()
+        cube_color = (cube_color_rgb[0], cube_color_rgb[1], cube_color_rgb[2], color_cfg["alpha"])
         self.cube= spawn_fixed_cube(
                 self,
                 position=[-0.3, -0.3,self.cube_half_size/2],
@@ -200,17 +275,19 @@ class StopCube(BaseEnv):
             # Use generator to generate interval value, floating 5 around 20 (range 15-25)
             generator = torch.Generator()
             generator.manual_seed(self.seed)
-            interval = torch.randint(27, 33, (1,), generator=generator).item()
-            interval = 30
+            interval_cfg = self._sampling["parameters"]["interval_sample"]
+            # 这次抽样的结果原本就立刻被覆盖，保留它只为不平移随机流（红线 R8）
+            interval = torch.randint(interval_cfg["low"], interval_cfg["high_exclusive"], tuple(interval_cfg["shape"]), generator=generator).item()
+            interval = interval_cfg["overridden_to"]
             self.interval = interval
 
 
-            move_interval_list = [60,80,120]   
-            #move_interval_list=[120]  
+            move_interval_list = list(self._sampling["decision"]["move_interval_choices"])
             idx = torch.randint(0, len(move_interval_list), (1,), generator=generator).item()
             self.move_interval = move_interval_list[idx]
 
-            stop_time=torch.randint(2, 6, (1,), generator=generator).item()
+            stop_cfg = self._sampling["decision"]["stop_time_range"]
+            stop_time=torch.randint(stop_cfg["low"], stop_cfg["high_exclusive"], (1,), generator=generator).item()
 
             self.steps_press=self.move_interval*(stop_time)-self.move_interval/2
             self.stop_time_range = (
@@ -229,7 +306,8 @@ class StopCube(BaseEnv):
             target_center = np.array([target_x, target_y])
 
             # Generate random rotation angle (-30 to +30 degrees)
-            rotation_angle = torch.FloatTensor(1).uniform_(-30, 30, generator=generator).item()
+            rotation_cfg = self._sampling["parameters"]["route_rotation_deg"]
+            rotation_angle = torch.FloatTensor(1).uniform_(rotation_cfg["low"], rotation_cfg["high"], generator=generator).item()
             rotation_rad = np.deg2rad(rotation_angle)
 
             # Define original start and end coordinates (around origin (0,0))

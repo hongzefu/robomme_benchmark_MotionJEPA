@@ -4,14 +4,14 @@
   "tasks_total": 16,
   "tasks_ready": [
     "BinFill",
+    "PickXtimes",
     "RouteStick",
+    "StopCube",
+    "SwingXtimes",
     "VideoRepick",
     "VideoUnmaskSwap"
   ],
   "tasks_pending": [
-    "PickXtimes",
-    "StopCube",
-    "SwingXtimes",
     "VideoUnmask",
     "ButtonUnmaskSwap",
     "ButtonUnmask",
@@ -23,6 +23,307 @@
     "PatternLock"
   ],
   "tasks": {
+    "PickXtimes": {
+      "decision": {
+        "color": {
+          "hard": 3,
+          "easy": 1,
+          "medium": 3
+        },
+        "number_range": {
+          "hard": [
+            4,
+            5
+          ],
+          "easy": [
+            1,
+            3
+          ],
+          "medium": [
+            1,
+            3
+          ]
+        },
+        "target_cube_position_policy": {
+          "region_center": [
+            -0.1,
+            0
+          ],
+          "region_half_size": 0.2
+        },
+        "goal_position_policy": {
+          "region_center": [
+            -0.1,
+            0
+          ],
+          "region_half_size": 0.2
+        },
+        "distractor": null
+      },
+      "native": {
+        "parameters": {
+          "cubes_per_color": 1,
+          "color_pool": [
+            {
+              "rgba": [
+                1,
+                0,
+                0,
+                1
+              ],
+              "name": "red"
+            },
+            {
+              "rgba": [
+                0,
+                0,
+                1,
+                1
+              ],
+              "name": "blue"
+            },
+            {
+              "rgba": [
+                0,
+                1,
+                0,
+                1
+              ],
+              "name": "green"
+            }
+          ],
+          "color_and_target_selection": {
+            "shuffle": "torch.randperm(len(color_groups))",
+            "target_color_idx": "torch.randint(0, len(color_groups), (1,))",
+            "target_cube_idx": "torch.randint(0, len(all_cubes), (1,))",
+            "note": "前置颜色抽样被后面的目标方块选择覆盖，保留原抽样次数与顺序"
+          },
+          "recovery": "沿用入口给定的 fail recover 模式与 inject_fail_grasp 原抽法",
+          "task_expansion": "反复抓同一 target_cube 放到 target，末尾按按钮；非目标取候选补集"
+        },
+        "positions": {
+          "button": {
+            "center_xy": [
+              -0.2,
+              0
+            ],
+            "scale": 1.5,
+            "randomize_range_note": "原调用点未传 randomize_range，保持 build_button 形参默认值"
+          },
+          "cube_pose": {
+            "half_size": "self.cube_half_size",
+            "min_gap": "self.cube_half_size",
+            "random_yaw": true,
+            "include_existing": false,
+            "include_goal": false
+          },
+          "target_pose": {
+            "radius_factor": 2,
+            "thickness": 0.005,
+            "min_gap_factor": 2,
+            "include_existing": false,
+            "include_goal": false
+          }
+        }
+      }
+    },
+    "StopCube": {
+      "decision": {
+        "move_interval_choices": [
+          60,
+          80,
+          120
+        ],
+        "stop_time_range": {
+          "low": 2,
+          "high_exclusive": 6
+        }
+      },
+      "native": {
+        "parameters": {
+          "interval_sample": {
+            "sampler": "torch.randint",
+            "low": 27,
+            "high_exclusive": 33,
+            "shape": [
+              1
+            ],
+            "overridden_to": 30,
+            "note": "原代码抽完立刻被常量 30 覆盖；保留这次抽样以免随机流平移（红线 R8）"
+          },
+          "route_rotation_deg": {
+            "sampler": "torch.FloatTensor(1).uniform_",
+            "low": -30,
+            "high": 30
+          },
+          "motion_segments": 5,
+          "steps_press_expression": "move_interval * stop_time - move_interval / 2",
+          "stop_window_expression": "[move_interval * (stop_time - 1), move_interval * stop_time]",
+          "press_lead_steps": "self.interval",
+          "route_endpoints": {
+            "start": [
+              0,
+              -0.3
+            ],
+            "end": [
+              0,
+              0.3
+            ]
+          },
+          "recovery": "StopCube 原本就没有失败抓取注入，只接收入口给定的恢复模式"
+        },
+        "positions": {
+          "button": {
+            "center_xy": [
+              -0.2,
+              0
+            ],
+            "scale": 1.5,
+            "randomize": true
+          },
+          "target": {
+            "xy_sampler": "torch.FloatTensor(1).uniform_",
+            "low": -0.1,
+            "high": 0.1,
+            "z": 0.01,
+            "euler_deg": [
+              0.0,
+              90.0,
+              0.0
+            ],
+            "radius_factor": 1.8,
+            "thickness": 0.01
+          },
+          "cube_color": {
+            "sampler": "torch.rand",
+            "shape": [
+              3
+            ],
+            "alpha": 1.0
+          },
+          "cube_initial_position": [
+            -0.3,
+            -0.3
+          ]
+        }
+      }
+    },
+    "SwingXtimes": {
+      "decision": {
+        "number_range": {
+          "hard": [
+            3,
+            3
+          ],
+          "easy": [
+            1,
+            3
+          ],
+          "medium": [
+            1,
+            2
+          ]
+        },
+        "color": {
+          "hard": 3,
+          "easy": 1,
+          "medium": 3
+        },
+        "distractor": null
+      },
+      "native": {
+        "parameters": {
+          "cubes_per_color": 1,
+          "color_pool": [
+            {
+              "rgba": [
+                1,
+                0,
+                0,
+                1
+              ],
+              "name": "red"
+            },
+            {
+              "rgba": [
+                0,
+                0,
+                1,
+                1
+              ],
+              "name": "blue"
+            },
+            {
+              "rgba": [
+                0,
+                1,
+                0,
+                1
+              ],
+              "name": "green"
+            }
+          ],
+          "color_and_target_selection": {
+            "shuffle": "torch.randperm(len(color_groups))",
+            "target_color_idx": "torch.randint(0, len(color_groups), (1,))",
+            "target_cube_idx": "torch.randint(0, len(all_cubes), (1,))"
+          },
+          "side_order": {
+            "first": "right",
+            "second": "left",
+            "max_swings": "2 * num_repeats"
+          },
+          "swing_thresholds": {
+            "distance": 0.03,
+            "z": 0.12,
+            "height": 0.1
+          },
+          "recovery": "沿用入口给定的 fail recover 模式与原 generator"
+        },
+        "positions": {
+          "button": {
+            "center_xy": [
+              -0.2,
+              0
+            ],
+            "scale": 1.5
+          },
+          "cubes": {
+            "region_center": [
+              -0.1,
+              0
+            ],
+            "region_half_size": 0.25,
+            "random_yaw": true,
+            "min_gap": "self.cube_half_size"
+          },
+          "targets": [
+            {
+              "region_center": [
+                -0.1,
+                -0.2
+              ],
+              "region_half_size": 0.1,
+              "name": "temp_target_0"
+            },
+            {
+              "region_center": [
+                -0.1,
+                0.2
+              ],
+              "region_half_size": 0.1,
+              "name": "temp_target_1"
+            }
+          ],
+          "target_geometry": {
+            "radius_factor": 2,
+            "thickness": 0.005,
+            "min_gap_factor": 1,
+            "style": "gray"
+          }
+        }
+      }
+    },
     "BinFill": {
       "decision": {
         "layout_mode": "native_dynamic",

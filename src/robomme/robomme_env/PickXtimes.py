@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -28,6 +29,7 @@ from .utils import *
 from .utils.subgoal_evaluate_func import static_check
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 
@@ -46,6 +48,81 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
+
+
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.2）────────
+# decision：颜色数、重复抓放次数范围、目标方块与放置圆盘各自的位置采样区域、额外干扰物。
+# native：颜色排列与目标选择、按钮位置、方块／圆盘的几何与拒绝条件、恢复与动作展开规则。
+# 数值全部取自改动前写在调用点的字面量，原值阶段两块都等于原值（红线 R7）。
+NATIVE_SAMPLING = {
+    "parameters": {
+        "cubes_per_color": 1,
+        "color_pool": [
+            {"rgba": [1, 0, 0, 1], "name": "red"},
+            {"rgba": [0, 0, 1, 1], "name": "blue"},
+            {"rgba": [0, 1, 0, 1], "name": "green"},
+        ],
+        "color_and_target_selection": {
+            "shuffle": "torch.randperm(len(color_groups))",
+            "target_color_idx": "torch.randint(0, len(color_groups), (1,))",
+            "target_cube_idx": "torch.randint(0, len(all_cubes), (1,))",
+            "note": "前置颜色抽样被后面的目标方块选择覆盖，保留原抽样次数与顺序",
+        },
+        "recovery": "沿用入口给定的 fail recover 模式与 inject_fail_grasp 原抽法",
+        "task_expansion": "反复抓同一 target_cube 放到 target，末尾按按钮；非目标取候选补集",
+    },
+    "positions": {
+        "button": {
+            "center_xy": [-0.2, 0],
+            "scale": 1.5,
+            "randomize_range_note": "原调用点未传 randomize_range，保持 build_button 形参默认值",
+        },
+        "cube_pose": {
+            "half_size": "self.cube_half_size",
+            "min_gap": "self.cube_half_size",
+            "random_yaw": True,
+            "include_existing": False,
+            "include_goal": False,
+        },
+        "target_pose": {
+            "radius_factor": 2,
+            "thickness": 0.005,
+            "min_gap_factor": 2,
+            "include_existing": False,
+            "include_goal": False,
+        },
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节 2.2 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        "color": {difficulty: cfg["color"] for difficulty, cfg in cls.configs.items()},
+        "number_range": {
+            difficulty: [cfg["number_min"], cfg["number_max"]]
+            for difficulty, cfg in cls.configs.items()
+        },
+        # 目标方块与放置圆盘各自的位置采样区域；原值即两者同区域。
+        "target_cube_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2},
+        "goal_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2},
+        # 第二节的「增加其他颜色 distractor」本轮不启用。
+        "distractor": None,
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
 
 
 @register_env("PickXtimes")
@@ -90,7 +167,10 @@ class PickXtimes(BaseEnv):
     }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前：这里多抽或少抽一次会平移其后全部取值
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -137,7 +217,8 @@ class PickXtimes(BaseEnv):
         # Use seed to randomly determine number of repetitions (1-5)
         generator = torch.Generator()
         generator.manual_seed(seed)
-        self.num_repeats = torch.randint(self.configs[self.difficulty]['number_min'], self.configs[self.difficulty]['number_max']+1, (1,), generator=generator).item()
+        number_range = self._sampling["decision"]["number_range"][self.difficulty]
+        self.num_repeats = torch.randint(number_range[0], number_range[1]+1, (1,), generator=generator).item()
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
 
         super().__init__(*args, robot_uids=robot_uids, **kwargs)
@@ -178,10 +259,11 @@ class PickXtimes(BaseEnv):
 
 
 
+        button_cfg = self._sampling["positions"]["button"]
         button_obb = build_button(
             self,
-            center_xy=(-0.2, 0),
-            scale=1.5,
+            center_xy=tuple(button_cfg["center_xy"]),
+            scale=button_cfg["scale"],
             generator=generator,
         )
         avoid = [button_obb]
@@ -198,7 +280,12 @@ class PickXtimes(BaseEnv):
         self.green_cubes = []
         self.green_cube_names = []
 
-        cubes_per_color = 1
+        decision_cfg = self._sampling["decision"]
+        cube_region = decision_cfg["target_cube_position_policy"]
+        goal_region = decision_cfg["goal_position_policy"]
+        cube_pose_cfg = self._sampling["positions"]["cube_pose"]
+        target_pose_cfg = self._sampling["positions"]["target_pose"]
+        cubes_per_color = self._sampling["parameters"]["cubes_per_color"]
         color_groups = [
             {"color": (1, 0, 0, 1), "name": "red", "list": self.red_cubes, "name_list": self.red_cube_names},
             {"color": (0, 0, 1, 1), "name": "blue", "list": self.blue_cubes, "name_list": self.blue_cube_names},
@@ -214,7 +301,7 @@ class PickXtimes(BaseEnv):
 
         # Generate 5 cubes for each color group
         for idx, group in enumerate(color_groups):
-            if idx < self.configs[self.difficulty]['color']:
+            if idx < decision_cfg["color"][self.difficulty]:
                 for idx in range(cubes_per_color):
                     try:
                         cube = spawn_random_cube(
@@ -223,11 +310,11 @@ class PickXtimes(BaseEnv):
                             avoid=avoid,
                             include_existing=False,
                             include_goal=False,
-                            region_center=[-0.1, 0],
-                            region_half_size=0.2,
+                            region_center=list(cube_region["region_center"]),
+                            region_half_size=cube_region["region_half_size"],
                             half_size=self.cube_half_size,
                             min_gap=self.cube_half_size,
-                            random_yaw=True,
+                            random_yaw=cube_pose_cfg["random_yaw"],
                             name_prefix=f"cube_{group['name']}_{idx}",
                             generator=generator,
                         )
@@ -252,11 +339,11 @@ class PickXtimes(BaseEnv):
                 avoid=avoid,  # Use current avoidance list, containing all spawned cubes
                 include_existing=False,  # Manually maintain list
                 include_goal=False,  # Manually maintain list
-                region_center=[-0.1, 0],
-                region_half_size=0.2,
-                radius=self.cube_half_size*2,  # Use radius instead of half_size
-                thickness=0.005,  # target thickness
-                min_gap=self.cube_half_size*2,  # Gap requirement same as cube
+                region_center=list(goal_region["region_center"]),
+                region_half_size=goal_region["region_half_size"],
+                radius=self.cube_half_size*target_pose_cfg["radius_factor"],  # Use radius instead of half_size
+                thickness=target_pose_cfg["thickness"],  # target thickness
+                min_gap=self.cube_half_size*target_pose_cfg["min_gap_factor"],  # Gap requirement same as cube
                 name_prefix=f"target",
                 generator=generator
             )

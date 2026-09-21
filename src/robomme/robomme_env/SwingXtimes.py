@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -30,6 +31,7 @@ from .utils.subgoal_evaluate_func import static_check, too_many_swings
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 
 from ..logging_utils import logger
 
@@ -47,6 +49,70 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
+
+
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.3）────────
+# decision：摆动轮数范围、颜色数、额外其他颜色干扰物（本轮不启用）。
+# native：颜色排列与目标选择、方块／两个圆盘／按钮的区域与几何、左右顺序与成功阈值、恢复规则。
+NATIVE_SAMPLING = {
+    "parameters": {
+        "cubes_per_color": 1,
+        "color_pool": [
+            {"rgba": [1, 0, 0, 1], "name": "red"},
+            {"rgba": [0, 0, 1, 1], "name": "blue"},
+            {"rgba": [0, 1, 0, 1], "name": "green"},
+        ],
+        "color_and_target_selection": {
+            "shuffle": "torch.randperm(len(color_groups))",
+            "target_color_idx": "torch.randint(0, len(color_groups), (1,))",
+            "target_cube_idx": "torch.randint(0, len(all_cubes), (1,))",
+        },
+        "side_order": {"first": "right", "second": "left", "max_swings": "2 * num_repeats"},
+        "swing_thresholds": {"distance": 0.03, "z": 0.12, "height": 0.1},
+        "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+    },
+    "positions": {
+        "button": {"center_xy": [-0.2, 0], "scale": 1.5},
+        "cubes": {
+            "region_center": [-0.1, 0],
+            "region_half_size": 0.25,
+            "random_yaw": True,
+            "min_gap": "self.cube_half_size",
+        },
+        "targets": [
+            {"region_center": [-0.1, -0.2], "region_half_size": 0.1, "name": "temp_target_0"},
+            {"region_center": [-0.1, 0.2], "region_half_size": 0.1, "name": "temp_target_1"},
+        ],
+        "target_geometry": {"radius_factor": 2, "thickness": 0.005, "min_gap_factor": 1, "style": "gray"},
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节 2.3 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        # 一轮＝右、左各一次；原值取自类属性的 number_min/number_max。
+        "number_range": {
+            difficulty: [cfg["number_min"], cfg["number_max"]]
+            for difficulty, cfg in cls.configs.items()
+        },
+        "color": {difficulty: cfg["color"] for difficulty, cfg in cls.configs.items()},
+        "distractor": None,
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
 
 
 @register_env("SwingXtimes")
@@ -92,7 +158,10 @@ class SwingXtimes(BaseEnv):
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -139,7 +208,8 @@ class SwingXtimes(BaseEnv):
                # Use seed to randomly determine number of repetitions (1-5)
         generator = torch.Generator()
         generator.manual_seed(seed)
-        self.num_repeats = torch.randint(self.configs[self.difficulty]['number_min'], self.configs[self.difficulty]['number_max']+1, (1,), generator=generator).item()
+        number_range = self._sampling["decision"]["number_range"][self.difficulty]
+        self.num_repeats = torch.randint(number_range[0], number_range[1]+1, (1,), generator=generator).item()
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
 
 
@@ -177,10 +247,14 @@ class SwingXtimes(BaseEnv):
             )
             self.table_scene.build()
 
+            button_cfg = self._sampling["positions"]["button"]
+            cubes_cfg = self._sampling["positions"]["cubes"]
+            targets_cfg = self._sampling["positions"]["targets"]
+            target_geom = self._sampling["positions"]["target_geometry"]
             button_obb = build_button(
                 self,
-                center_xy=(-0.2, 0),
-                scale=1.5,
+                center_xy=tuple(button_cfg["center_xy"]),
+                scale=button_cfg["scale"],
                 generator=generator,
             )
             avoid = [button_obb]
@@ -220,11 +294,11 @@ class SwingXtimes(BaseEnv):
                                 avoid=avoid,
                                 include_existing=False,
                                 include_goal=False,
-                                region_center=[-0.1, 0],
-                                region_half_size=0.25,
+                                region_center=list(cubes_cfg["region_center"]),
+                                region_half_size=cubes_cfg["region_half_size"],
                                 half_size=self.cube_half_size,
                                 min_gap=self.cube_half_size,
-                                random_yaw=True,
+                                random_yaw=cubes_cfg["random_yaw"],
                                 name_prefix=f"cube_{group['name']}_{cube_idx}",
                                 generator=generator,
                             )
@@ -251,11 +325,11 @@ class SwingXtimes(BaseEnv):
                     avoid=avoid,  # Use current avoidance list, containing all spawned cubes
                     include_existing=False,  # Manually maintain list
                     include_goal=False,  # Manually maintain list
-                    region_center=[-0.1, -0.2],
-                    region_half_size=0.1,
-                    radius=self.cube_half_size*2,  # Use radius instead of half_size
-                    thickness=0.005,  # target thickness
-                    min_gap=self.cube_half_size*1,  # Gap requirement same as cube
+                    region_center=list(targets_cfg[0]["region_center"]),
+                    region_half_size=targets_cfg[0]["region_half_size"],
+                    radius=self.cube_half_size*target_geom["radius_factor"],  # Use radius instead of half_size
+                    thickness=target_geom["thickness"],  # target thickness
+                    min_gap=self.cube_half_size*target_geom["min_gap_factor"],  # Gap requirement same as cube
                     name_prefix=f"temp_target_0",
                     generator=generator,
                     target_style="gray"
@@ -272,11 +346,11 @@ class SwingXtimes(BaseEnv):
                     avoid=avoid,  # Use current avoidance list, containing all spawned cubes and first target
                     include_existing=False,  # Manually maintain list
                     include_goal=False,  # Manually maintain list
-                    region_center=[-0.1, 0.2],
-                    region_half_size=0.1,
-                    radius=self.cube_half_size*2,  # Use radius instead of half_size
-                    thickness=0.005,  # target thickness
-                    min_gap=self.cube_half_size*1,  # Gap requirement same as cube
+                    region_center=list(targets_cfg[1]["region_center"]),
+                    region_half_size=targets_cfg[1]["region_half_size"],
+                    radius=self.cube_half_size*target_geom["radius_factor"],  # Use radius instead of half_size
+                    thickness=target_geom["thickness"],  # target thickness
+                    min_gap=self.cube_half_size*target_geom["min_gap_factor"],  # Gap requirement same as cube
                     name_prefix=f"temp_target_1",
                     generator=generator,
                     target_style="gray"

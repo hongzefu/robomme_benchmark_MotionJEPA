@@ -30,7 +30,16 @@ for extra in (REPO_ROOT / "src", REPO_ROOT / "scripts"):
         sys.path.insert(0, str(extra))
 
 SNAPSHOT = REPO_ROOT / "scripts" / "configs" / "newtask-v3" / "native_sampling.json"
-READY_TASKS = ("BinFill", "RouteStick", "VideoRepick", "VideoUnmaskSwap")
+
+
+def _ready_tasks() -> tuple[str, ...]:
+    """已接口化的环境取自快照，随步 3 逐环境推进自动扩展。"""
+    if not SNAPSHOT.exists():
+        return ()
+    return tuple(json.loads(SNAPSHOT.read_text(encoding="utf-8"))["tasks_ready"])
+
+
+READY_TASKS = _ready_tasks()
 
 
 def _module(task: str):
@@ -76,7 +85,7 @@ def test_snapshot_matches_source() -> None:
     assert result.returncode == 0, result.stdout + result.stderr
     document = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
     assert document["tasks_ready"] == sorted(READY_TASKS)
-    assert len(document["tasks_pending"]) == 16 - len(READY_TASKS)
+    assert len(document["tasks_ready"]) + len(document["tasks_pending"]) == 16
     for task in READY_TASKS:
         block = document["tasks"][task]
         assert set(block) == {"decision", "native"}
