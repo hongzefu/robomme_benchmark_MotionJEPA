@@ -99,6 +99,21 @@ NATIVE_SAMPLING = {
             "high_exclusive": 5,
             "note": "generate_dynamic_walk 未传 start_idx 时抽取，是路线随机流的第一次抽取",
         },
+        # ── 高亮渲染的原值（newtaskRelease-v3 步 2）──────────────────────────────
+        # 白球尾迹会被渲进 front/wrist 的 rgb 与 depth，所以它是会影响对拍的观测输入，
+        # 不是纯视觉装饰。官方 dataset-gen 的存活期为 40 步；2026-09-12 曾两次减半到
+        # 10 步，A↔B 实测正是因此在 200 帧里有 184 帧的四路相机观测不同（动作与状态全同）。
+        # 这里恢复官方原值 40，减半方案改为通过 sampling_config 显式覆盖。
+        "tcp_trail": {
+            "end_offset_steps": 40,
+            "disk_radius": 0.005,
+            "native_note": "官方 dataset-gen d53f21a 的 highlight_position 尾迹存活 40 步",
+        },
+        "button_highlight": {
+            "end_offset_steps": 40,
+            "disk_radius_scale": 1.002,
+            "native_note": "官方与现行一致，未改动",
+        },
     },
 }
 
@@ -774,13 +789,18 @@ class RouteStick(BaseEnv):
         obs, reward, terminated, truncated, info = super().step(action)
 
         cur_step = int(self.elapsed_steps[0].item())
+        trail_cfg = self._sampling["positions"].get(
+            "tcp_trail", {"end_offset_steps": 40, "disk_radius": 0.005}
+        )
         highlight_position(
             self,
             self.agent.tcp.pose.p,
             start_step=cur_step,
-            end_step=cur_step + 10,  # 2026-09-12 用户决定白球尾迹两次减半：存活 40 步→20 步→10 步（规则 11 逐条获批）
+            # 原值 40（官方 dataset-gen）；2026-09-12 的 10 步方案改为传 sampling_config 覆盖，
+            # 不再写死在源码里——尾迹进相机观测，写死会让 A↔B 永远不可能逐位相同。
+            end_step=cur_step + int(trail_cfg["end_offset_steps"]),
             cur_step=cur_step,
-            disk_radius=0.005,
+            disk_radius=float(trail_cfg["disk_radius"]),
         )
 
 
