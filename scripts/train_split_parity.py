@@ -6,6 +6,9 @@
 * ``freeze-identities``（步 0）：从官方 ``dataset-gen`` 固定提交逐字读取十六份 train
   metadata，冻结 1600 条来源身份与 144 条运行子集，输出 G1 的两行判定
   ``TRAIN_IDENTITY`` 与 ``TRAIN_SUBSET``。只读、不启动仿真。
+* ``freeze-history``（步 1a）：冻结官方历史生成报告原文与散列，按 144 条子集投影 R1a 的
+  可比字段（身份／恢复模式／成功／帧数），并把历史动作逐局数值（R1c）与历史 HDF5 成品
+  （R2）登记为 ``NOT_RUN``。
 * ``run``（步 1b 起实现）：按 A1／A2／B／C／D 五路运行选定身份。
 * ``compare``（步 1b 起实现）：只读比较五路产物。
 
@@ -40,6 +43,22 @@ DEFAULT_SOURCE_REPO = "https://github.com/RoboMME/robomme_benchmark.git"
 
 # 官方 train metadata 在该提交里的路径模板。
 METADATA_TEMPLATE = "src/robomme/env_metadata/train/record_dataset_{task}_metadata.json"
+
+# 官方 dataset-gen 历史生成报告在该提交里的路径（步 1a 冻结对象）。
+HISTORY_REPORT_PATHS = (
+    "scripts/data-generation/reports/generation_report.json",
+    "scripts/data-generation/reports/generation_report.md",
+)
+
+# 方案 9.5 与「六、盲区诚实清单」登记的历史成品探测点；缺失即记 NOT_RUN，不冒称通过。
+HISTORY_ARTIFACT_PROBES = (
+    "data/robomme_data_h5",
+    "artifacts/native-baseline",
+    "/data/hongzefu/robomme_benchmark-restore-DataGen",
+)
+
+# R1a 允许投影的历史字段；历史动作数值不在其中（R1c 记 NOT_RUN）。
+HISTORY_PROJECTED_FIELDS = ("identity", "recovery_mode", "success", "timestep_count")
 
 # 冻结产物的默认落点：git 跟踪，供本机与 NFS 副本共同消费。
 DEFAULT_FROZEN_DIR = REPO_ROOT / "scripts" / "configs" / "newtask-v3"
@@ -472,6 +491,205 @@ def _write_or_verify(planned: dict[Path, bytes], verify_only: bool) -> list[Path
 
 
 # --------------------------------------------------------------------------
+# freeze-history（步 1a）
+# --------------------------------------------------------------------------
+
+
+def _audit_episode_index(audits: list[dict]) -> dict[tuple[str, int], dict]:
+    """把报告里按 task 分组的逐 episode 审计摊平成 (task, episode) → 条目。"""
+    index: dict[tuple[str, int], dict] = {}
+    for audit in audits:
+        task = audit["task"]
+        for entry in audit.get("episodes", []):
+            index[(task, int(entry["episode"]))] = entry
+    return index
+
+
+def cmd_freeze_history(args: argparse.Namespace) -> int:
+    """冻结官方历史生成报告，并按 144 条子集投影 R1a 可比字段。
+
+    只做投影与缺证登记：历史动作逐局数值不存在（R1c）、历史 HDF5 成品缺失（R2），
+    两项都记 NOT_RUN，不得用本次新结果补造。
+    """
+    source_ref = ensure_source_ref(args.source_ref, args.source_repo)
+    frozen_dir = Path(args.frozen_dir)
+    subset_path = frozen_dir / "subset_manifest.json"
+    subset = _load_subset_manifest(subset_path)
+    if subset.get("kind") != "subset":
+        raise IdentityFreezeError(f"{subset_path} 不是子集 manifest")
+
+    frozen: dict[Path, bytes] = {}
+    report_files: list[dict[str, object]] = []
+    report_payload: dict | None = None
+    for path in HISTORY_REPORT_PATHS:
+        raw = _git("show", f"{source_ref}:{path}")
+        blob = _git("rev-parse", f"{source_ref}:{path}").decode().strip()
+        name = Path(path).name
+        frozen[frozen_dir / "history" / name] = raw
+        report_files.append(
+            {
+                "source_path": path,
+                "frozen_name": name,
+                "git_blob": blob,
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "bytes": len(raw),
+            }
+        )
+        if name.endswith(".json"):
+            report_payload = json.loads(raw.decode("utf-8"))
+    if report_payload is None:
+        raise IdentityFreezeError("未取到历史报告 JSON")
+
+    results = report_payload["generation"]["results"]
+    if len(results) != subset.get("rows_total", 0) and len(results) != 1600:
+        raise IdentityFreezeError(f"历史报告 results 条数异常：{len(results)}")
+    result_index = {(row["task"], int(row["episode"])): row for row in results}
+    generated_index = _audit_episode_index(report_payload["validation"]["generated"]["audits"])
+    official_index = _audit_episode_index(report_payload["validation"]["official"]["audits"])
+
+    # 历史报告的身份必须与本轮冻结的官方身份一致，否则投影无意义。
+    full = json.loads((frozen_dir / "train_manifest.json").read_text(encoding="utf-8"))
+    identity_mismatch = 0
+    for row in full["rows"]:
+        key = (row["task"], int(row["episode"]))
+        hit = result_index.get(key)
+        if hit is None:
+            identity_mismatch += 1
+            continue
+        if (
+            int(hit["seed"]) != int(row["seed"])
+            or hit["difficulty"] != row["difficulty"]
+            or hit.get("recovery_mode") != row["recovery_mode"]
+        ):
+            identity_mismatch += 1
+
+    comparison = report_payload["validation"]["joint_action_comparison"]
+    subset_keys = {(row["task"], int(row["episode"])) for row in subset["rows"]}
+    timestep_errors = [str(item) for item in comparison.get("errors", [])]
+    errors_in_subset = []
+    for message in timestep_errors:
+        head = message.split(":", 1)[0]
+        task, _, episode_text = head.partition("/episode_")
+        if episode_text.isdigit() and (task, int(episode_text)) in subset_keys:
+            errors_in_subset.append(message)
+
+    projection_rows: list[dict[str, object]] = []
+    missing = 0
+    for row in subset["rows"]:
+        key = (row["task"], int(row["episode"]))
+        hit = result_index.get(key)
+        generated = generated_index.get(key)
+        official = official_index.get(key)
+        if hit is None or generated is None or official is None:
+            missing += 1
+        projection_rows.append(
+            {
+                "task": row["task"],
+                "episode": row["episode"],
+                "seed": row["seed"],
+                "difficulty": row["difficulty"],
+                "recovery_mode": row["recovery_mode"],
+                "history": {
+                    "ok": None if hit is None else bool(hit["ok"]),
+                    "attempt_count": None if hit is None else int(hit["attempt_count"]),
+                    "timestep_count": None if hit is None else int(hit["timestep_count"]),
+                    "generated_final_is_completed": (
+                        None if generated is None else bool(generated["final_is_completed"])
+                    ),
+                    "generated_timestep_count": (
+                        None if generated is None else int(generated["timestep_count"])
+                    ),
+                    "reference_final_is_completed": (
+                        None if official is None else bool(official["final_is_completed"])
+                    ),
+                    "reference_timestep_count": (
+                        None if official is None else int(official["timestep_count"])
+                    ),
+                },
+            }
+        )
+
+    projection = {
+        "schema": "train-parity-history-projection/1",
+        "source_ref": source_ref,
+        "report_declared_head": report_payload.get("current_head"),
+        "report_generated_at_utc": report_payload.get("generated_at_utc"),
+        "report_status": report_payload.get("status"),
+        "projected_fields": list(HISTORY_PROJECTED_FIELDS),
+        "rows_total": len(projection_rows),
+        "missing_rows": missing,
+        "identity_mismatch": identity_mismatch,
+        "report_files": report_files,
+        "full_set_action_comparison": {
+            "note": "全集统计，无逐局数值摘要；不能投影到 144 条（R1c）",
+            "joint_vector_count": comparison.get("joint_vector_count"),
+            "joint_element_count": comparison.get("joint_element_count"),
+            "different_element_count": comparison.get("different_element_count"),
+            "different_element_count_definition": "delta != 0.0 的元素数，不是超过 1e-8 的元素数",
+            "max_abs_diff": comparison.get("max_abs_diff"),
+            "max_abs_diff_location": comparison.get("max_abs_diff_location"),
+            "max_allowed_abs_diff": comparison.get("max_allowed_abs_diff"),
+            "passed": comparison.get("passed"),
+        },
+        "timestep_errors_full_set": timestep_errors,
+        "timestep_errors_in_subset": errors_in_subset,
+        "reference_revision": report_payload["validation"]["artifact_manifest"].get(
+            "reference_revision"
+        ),
+        "rows": projection_rows,
+        "artifact_probes": {
+            probe: (Path(probe) if probe.startswith("/") else REPO_ROOT / probe).exists()
+            for probe in HISTORY_ARTIFACT_PROBES
+        },
+        "not_run": {
+            "HISTORICAL_ACTION_PARITY": "historical_per_episode_evidence_missing",
+            "HISTORICAL_ARTIFACT_PARITY": "historical_files_missing",
+        },
+    }
+    frozen[frozen_dir / "history" / "history_projection.json"] = _json_bytes(projection)
+    changed = _write_or_verify(frozen, verify_only=args.verify)
+
+    output_dir = Path(args.output)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "history_freeze_report.json").write_bytes(
+        _json_bytes(
+            {
+                "schema": "train-parity-history-report/1",
+                "frozen_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+                "argv": sys.argv[1:],
+                "identity_mismatch": identity_mismatch,
+                "missing_rows": missing,
+                "changed_files": [str(path.relative_to(REPO_ROOT)) for path in changed],
+                "frozen_files": {
+                    str(path.relative_to(REPO_ROOT)): hashlib.sha256(data).hexdigest()
+                    for path, data in sorted(frozen.items())
+                },
+            }
+        )
+    )
+
+    ok = identity_mismatch == 0 and missing == 0
+    print(
+        f"HISTORY_FREEZE={'PASS' if ok else 'FAIL'} rows={len(full['rows'])} "
+        f"subset={len(projection_rows)} identity_mismatch={identity_mismatch} missing={missing}"
+    )
+    print("HISTORICAL_ACTION_PARITY=NOT_RUN reason=historical_per_episode_evidence_missing blocking=0")
+    print("HISTORICAL_ARTIFACT_PARITY=NOT_RUN reason=historical_files_missing")
+    absent = [probe for probe, exists in projection["artifact_probes"].items() if not exists]
+    print(f"# 历史成品探测点缺失：{', '.join(absent) if absent else '无'}")
+    print(
+        f"# 全集动作比较原始结果：different_element_count="
+        f"{comparison.get('different_element_count')} max_abs_diff={comparison.get('max_abs_diff')} "
+        f"passed={comparison.get('passed')}（阈值 {comparison.get('max_allowed_abs_diff')}）"
+    )
+    print(
+        f"# 全集 10 条帧数不符中落入 144 条子集的：{len(errors_in_subset)} 条"
+        + ("：" + "；".join(errors_in_subset) if errors_in_subset else "")
+    )
+    return 0 if ok else 1
+
+
+# --------------------------------------------------------------------------
 # run / compare：步 1b 起实现，本步只做参数校验
 # --------------------------------------------------------------------------
 
@@ -581,6 +799,16 @@ def build_parser() -> argparse.ArgumentParser:
     freeze.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR), help="运行留档目录")
     freeze.add_argument("--verify", action="store_true", help="只校验既有冻结文件字节，不写盘")
     freeze.set_defaults(func=cmd_freeze_identities)
+
+    history = sub.add_parser(
+        "freeze-history", help="冻结官方历史生成报告并按子集投影 R1a 可比字段（步 1a）"
+    )
+    history.add_argument("--source-repo", default=DEFAULT_SOURCE_REPO)
+    history.add_argument("--source-ref", default=DEFAULT_SOURCE_REF)
+    history.add_argument("--frozen-dir", default=str(DEFAULT_FROZEN_DIR))
+    history.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR))
+    history.add_argument("--verify", action="store_true", help="只校验既有冻结文件字节，不写盘")
+    history.set_defaults(func=cmd_freeze_history)
 
     run = sub.add_parser("run", help="按五路运行选定身份（步 1b 起实现）")
     run.add_argument("--manifest", default=str(DEFAULT_FROZEN_DIR / "subset_manifest.json"))

@@ -182,3 +182,67 @@ def test_run_rejects_episode_outside_subset(tmp_path: Path) -> None:
     )
     with pytest.raises(SystemExit):
         parity.cmd_run(args_ok)
+
+
+# --------------------------------------------------------------------------
+# 步 1a：历史证据冻结与 R1a 投影
+# --------------------------------------------------------------------------
+
+
+def _load_history() -> dict:
+    path = FROZEN_DIR / "history" / "history_projection.json"
+    if not path.exists():
+        pytest.skip(f"历史投影缺失：{path}；先运行 freeze-history")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def test_history_projection_covers_subset_only_with_comparable_fields() -> None:
+    projection = _load_history()
+    assert projection["rows_total"] == 144
+    assert projection["missing_rows"] == 0
+    assert projection["identity_mismatch"] == 0
+    # R1a 明确不含历史动作数值。
+    assert projection["projected_fields"] == list(parity.HISTORY_PROJECTED_FIELDS)
+    assert "action" not in " ".join(projection["projected_fields"])
+    subset = _load("subset_manifest.json")
+    keys = {(row["task"], row["episode"]) for row in subset["rows"]}
+    rows = projection["rows"]
+    assert len(rows) == 144
+    assert {(row["task"], row["episode"]) for row in rows} == keys
+    for row in rows:
+        # 逐条都要有历史帧数与成功标志，缺一条就不能称 R1a 可投影。
+        assert row["history"]["timestep_count"] is not None
+        assert row["history"]["ok"] is True
+        assert row["history"]["generated_final_is_completed"] is True
+        assert row["history"]["reference_timestep_count"] is not None
+
+
+def test_history_full_set_numbers_are_kept_as_failed() -> None:
+    """历史全集动作比较是 failed，原始数值必须原样保留，不得改写成 PASS。"""
+    projection = _load_history()
+    full = projection["full_set_action_comparison"]
+    assert full["passed"] is False
+    assert full["different_element_count"] == 217242
+    assert full["max_abs_diff"] == pytest.approx(0.007857919612339614)
+    assert full["max_allowed_abs_diff"] == 1e-8
+    # different_element_count 的定义必须写明是 delta!=0，不能混称「超过 1e-8 的元素数」。
+    assert "1e-8" in full["different_element_count_definition"] or "delta" in full["different_element_count_definition"]
+    assert projection["report_status"] == "failed"
+
+
+def test_history_subset_timestep_errors_are_the_two_known_rows() -> None:
+    projection = _load_history()
+    assert len(projection["timestep_errors_full_set"]) == 10
+    hits = projection["timestep_errors_in_subset"]
+    assert len(hits) == 2
+    assert any(item.startswith("BinFill/episode_11") for item in hits)
+    assert any(item.startswith("PickHighlight/episode_3") for item in hits)
+    # 最大差位置 BinFill/99 不在子集内，不能用全集最大差代表子集。
+    assert projection["full_set_action_comparison"]["max_abs_diff_location"]["episode"] == 99
+
+
+def test_history_artifacts_are_registered_missing() -> None:
+    projection = _load_history()
+    assert projection["not_run"]["HISTORICAL_ACTION_PARITY"] == "historical_per_episode_evidence_missing"
+    assert projection["not_run"]["HISTORICAL_ARTIFACT_PARITY"] == "historical_files_missing"
+    assert all(exists is False for exists in projection["artifact_probes"].values())

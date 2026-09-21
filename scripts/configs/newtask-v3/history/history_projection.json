@@ -1,0 +1,2382 @@
+{
+  "schema": "train-parity-history-projection/1",
+  "source_ref": "d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa",
+  "report_declared_head": "9430e20bfcf59116d525778b60663520b22f63e6",
+  "report_generated_at_utc": "2026-07-15T04:14:21.522575+00:00",
+  "report_status": "failed",
+  "projected_fields": [
+    "identity",
+    "recovery_mode",
+    "success",
+    "timestep_count"
+  ],
+  "rows_total": 144,
+  "missing_rows": 0,
+  "identity_mismatch": 0,
+  "report_files": [
+    {
+      "source_path": "scripts/data-generation/reports/generation_report.json",
+      "frozen_name": "generation_report.json",
+      "git_blob": "c2befd1164a315887d4c15c9bc5b17fb2b72b07c",
+      "sha256": "c0d1fddd39d5f7bf8265e2d7d1e4494654b6d86b3e88ebfcd9ecd1b888ed6931",
+      "bytes": 1544554
+    },
+    {
+      "source_path": "scripts/data-generation/reports/generation_report.md",
+      "frozen_name": "generation_report.md",
+      "git_blob": "c572c0e512f188f4fd30318960545b3817153dd9",
+      "sha256": "c753ed36af613e03dda8e537699915e176309052b885f92c5fb4dffaf8738aeb",
+      "bytes": 13461
+    }
+  ],
+  "full_set_action_comparison": {
+    "note": "全集统计，无逐局数值摘要；不能投影到 144 条（R1c）",
+    "joint_vector_count": 761885,
+    "joint_element_count": 6095080,
+    "different_element_count": 217242,
+    "different_element_count_definition": "delta != 0.0 的元素数，不是超过 1e-8 的元素数",
+    "max_abs_diff": 0.007857919612339614,
+    "max_abs_diff_location": {
+      "task": "BinFill",
+      "episode": 99,
+      "timestep": 625,
+      "element_index": 5,
+      "reference_value": 2.8383087099151,
+      "generated_value": 2.8461666295274397
+    },
+    "max_allowed_abs_diff": 1e-08,
+    "passed": false
+  },
+  "timestep_errors_full_set": [
+    "BinFill/episode_11: timestep sets do not match",
+    "BinFill/episode_94: timestep sets do not match",
+    "VideoRepick/episode_39: timestep sets do not match",
+    "VideoRepick/episode_59: timestep sets do not match",
+    "VideoPlaceButton/episode_58: timestep sets do not match",
+    "VideoPlaceButton/episode_83: timestep sets do not match",
+    "VideoPlaceOrder/episode_46: timestep sets do not match",
+    "VideoPlaceOrder/episode_50: timestep sets do not match",
+    "PickHighlight/episode_3: timestep sets do not match",
+    "PickHighlight/episode_38: timestep sets do not match"
+  ],
+  "timestep_errors_in_subset": [
+    "BinFill/episode_11: timestep sets do not match",
+    "PickHighlight/episode_3: timestep sets do not match"
+  ],
+  "reference_revision": "a5e4e25ffe8af34f64944f9533d06455ce5f8337",
+  "rows": [
+    {
+      "task": "PickXtimes",
+      "episode": 0,
+      "seed": 1000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 529,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 529,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 529
+      }
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 1,
+      "seed": 1101,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 628,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 628,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 628
+      }
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 4,
+      "seed": 1400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 645,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 645,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 645
+      }
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 2,
+      "seed": 1200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 478,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 478,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 478
+      }
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 6,
+      "seed": 1600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 470,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 470,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 470
+      }
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 10,
+      "seed": 2000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 447,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 447,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 447
+      }
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 3,
+      "seed": 1300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 814,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 814,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 814
+      }
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 7,
+      "seed": 1700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 897,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 897,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 897
+      }
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 11,
+      "seed": 2100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 822,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 822,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 822
+      }
+    },
+    {
+      "task": "StopCube",
+      "episode": 0,
+      "seed": 2000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 459,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 459,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 459
+      }
+    },
+    {
+      "task": "StopCube",
+      "episode": 1,
+      "seed": 2100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 186,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 186,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 186
+      }
+    },
+    {
+      "task": "StopCube",
+      "episode": 4,
+      "seed": 2400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 211,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 211,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 211
+      }
+    },
+    {
+      "task": "StopCube",
+      "episode": 2,
+      "seed": 2200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 243,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 243,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 243
+      }
+    },
+    {
+      "task": "StopCube",
+      "episode": 6,
+      "seed": 2600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 247,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 247,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 247
+      }
+    },
+    {
+      "task": "StopCube",
+      "episode": 10,
+      "seed": 3001,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 234,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 234,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 234
+      }
+    },
+    {
+      "task": "StopCube",
+      "episode": 3,
+      "seed": 2300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 453,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 453,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 453
+      }
+    },
+    {
+      "task": "StopCube",
+      "episode": 7,
+      "seed": 2700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 406,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 406,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 406
+      }
+    },
+    {
+      "task": "StopCube",
+      "episode": 11,
+      "seed": 3100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 331,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 331,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 331
+      }
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 0,
+      "seed": 3000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 482,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 482,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 482
+      }
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 1,
+      "seed": 3100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 608,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 608,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 608
+      }
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 4,
+      "seed": 3400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 488,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 488,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 488
+      }
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 2,
+      "seed": 3200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 396,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 396,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 396
+      }
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 6,
+      "seed": 3600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 392,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 392,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 392
+      }
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 10,
+      "seed": 4000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 380,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 380,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 380
+      }
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 3,
+      "seed": 3301,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 535,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 535,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 535
+      }
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 7,
+      "seed": 3700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 504,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 504,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 504
+      }
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 11,
+      "seed": 4101,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 486,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 486,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 486
+      }
+    },
+    {
+      "task": "BinFill",
+      "episode": 0,
+      "seed": 4000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 550,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 550,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 550
+      }
+    },
+    {
+      "task": "BinFill",
+      "episode": 1,
+      "seed": 4100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 366,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 366,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 366
+      }
+    },
+    {
+      "task": "BinFill",
+      "episode": 4,
+      "seed": 4401,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 625,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 625,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 625
+      }
+    },
+    {
+      "task": "BinFill",
+      "episode": 2,
+      "seed": 4200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 883,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 883,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 883
+      }
+    },
+    {
+      "task": "BinFill",
+      "episode": 6,
+      "seed": 4600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 622,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 622,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 622
+      }
+    },
+    {
+      "task": "BinFill",
+      "episode": 10,
+      "seed": 5000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 635,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 635,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 635
+      }
+    },
+    {
+      "task": "BinFill",
+      "episode": 3,
+      "seed": 4301,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 940,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 940,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 940
+      }
+    },
+    {
+      "task": "BinFill",
+      "episode": 7,
+      "seed": 4701,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 785,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 785,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 785
+      }
+    },
+    {
+      "task": "BinFill",
+      "episode": 11,
+      "seed": 5100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 576,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 576,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 584
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 0,
+      "seed": 5000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 326,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 326,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 326
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 1,
+      "seed": 5100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 326,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 326,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 326
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 4,
+      "seed": 5400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 365,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 365,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 365
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 2,
+      "seed": 5200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 272,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 272,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 272
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 6,
+      "seed": 5600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 278,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 278,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 278
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 10,
+      "seed": 6000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 219,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 219,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 219
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 3,
+      "seed": 5300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 586,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 586,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 586
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 7,
+      "seed": 5700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 421,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 421,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 421
+      }
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 11,
+      "seed": 6100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 410,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 410,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 410
+      }
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 0,
+      "seed": 6000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 239,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 239,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 239
+      }
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 1,
+      "seed": 6100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 225,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 225,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 225
+      }
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 4,
+      "seed": 6400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 263,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 263,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 263
+      }
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 2,
+      "seed": 6200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 228,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 228,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 228
+      }
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 6,
+      "seed": 6600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 173,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 173,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 173
+      }
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 10,
+      "seed": 7001,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 168,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 168,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 168
+      }
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 3,
+      "seed": 6300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 399,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 399,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 399
+      }
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 7,
+      "seed": 6700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 338,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 338,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 338
+      }
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 11,
+      "seed": 7100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 313,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 313,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 313
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 0,
+      "seed": 7000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 514,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 514,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 514
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 1,
+      "seed": 7100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 519,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 519,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 519
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 4,
+      "seed": 7400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 532,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 532,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 532
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 2,
+      "seed": 7200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 361,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 361,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 361
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 6,
+      "seed": 7600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 303,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 303,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 303
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 10,
+      "seed": 8000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 321,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 321,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 321
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 3,
+      "seed": 7300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 555,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 555,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 555
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 7,
+      "seed": 7700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 451,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 451,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 451
+      }
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 11,
+      "seed": 8100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 454,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 454,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 454
+      }
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 0,
+      "seed": 8000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 291,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 291,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 291
+      }
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 1,
+      "seed": 8100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 294,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 294,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 294
+      }
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 4,
+      "seed": 8400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 323,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 323,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 323
+      }
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 2,
+      "seed": 8200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 267,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 267,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 267
+      }
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 6,
+      "seed": 8600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 220,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 220,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 220
+      }
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 10,
+      "seed": 9000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 227,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 227,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 227
+      }
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 3,
+      "seed": 8300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 452,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 452,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 452
+      }
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 7,
+      "seed": 8700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 377,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 377,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 377
+      }
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 11,
+      "seed": 9100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 398,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 398,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 398
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 0,
+      "seed": 9000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 756,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 756,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 756
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 1,
+      "seed": 9100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 933,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 933,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 933
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 4,
+      "seed": 9400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 607,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 607,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 607
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 2,
+      "seed": 9200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 762,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 762,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 762
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 6,
+      "seed": 9600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 581,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 581,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 581
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 10,
+      "seed": 10000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 887,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 887,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 887
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 3,
+      "seed": 9301,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1027,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1027,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1027
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 7,
+      "seed": 9700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 657,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 657,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 657
+      }
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 11,
+      "seed": 10102,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 434,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 434,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 434
+      }
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 0,
+      "seed": 10000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1048,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1048,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1048
+      }
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 1,
+      "seed": 10101,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1002,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1002,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1002
+      }
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 4,
+      "seed": 10402,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1089,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1089,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1089
+      }
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 2,
+      "seed": 10202,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1001,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1001,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1001
+      }
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 6,
+      "seed": 10600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 921,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 921,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 921
+      }
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 10,
+      "seed": 11000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 980,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 980,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 980
+      }
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 3,
+      "seed": 10301,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1041,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1041,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1041
+      }
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 7,
+      "seed": 10701,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 958,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 958,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 958
+      }
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 11,
+      "seed": 11100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 946,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 946,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 946
+      }
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 0,
+      "seed": 11003,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1200,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1200,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1200
+      }
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 1,
+      "seed": 11103,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1367,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1367,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1367
+      }
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 4,
+      "seed": 11401,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1411,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1411,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1411
+      }
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 2,
+      "seed": 11206,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1222,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1222,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1222
+      }
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 6,
+      "seed": 11603,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 917,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 917,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 917
+      }
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 10,
+      "seed": 12002,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1342,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1342,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1342
+      }
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 3,
+      "seed": 11305,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1408,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1408,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1408
+      }
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 7,
+      "seed": 11705,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1131,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1131,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1131
+      }
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 11,
+      "seed": 12100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 1311,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 1311,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 1311
+      }
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 0,
+      "seed": 12000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 308,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 308,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 308
+      }
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 1,
+      "seed": 12100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 276,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 276,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 276
+      }
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 4,
+      "seed": 12400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 320,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 320,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 320
+      }
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 2,
+      "seed": 12200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 435,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 435,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 435
+      }
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 6,
+      "seed": 12600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 387,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 387,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 387
+      }
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 10,
+      "seed": 13000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 415,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 415,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 415
+      }
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 3,
+      "seed": 12300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 648,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 648,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 652
+      }
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 7,
+      "seed": 12700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 530,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 530,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 530
+      }
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 11,
+      "seed": 13100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 583,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 583,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 583
+      }
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 0,
+      "seed": 13000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 475,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 475,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 475
+      }
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 1,
+      "seed": 13101,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 568,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 568,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 568
+      }
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 4,
+      "seed": 13403,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 482,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 482,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 482
+      }
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 2,
+      "seed": 13201,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 478,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 478,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 478
+      }
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 6,
+      "seed": 13602,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 514,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 514,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 514
+      }
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 10,
+      "seed": 14001,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 454,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 454,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 454
+      }
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 3,
+      "seed": 13300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 434,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 434,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 434
+      }
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 7,
+      "seed": 13700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 486,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 486,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 486
+      }
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 11,
+      "seed": 14100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 494,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 494,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 494
+      }
+    },
+    {
+      "task": "MoveCube",
+      "episode": 0,
+      "seed": 14000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 425,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 425,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 425
+      }
+    },
+    {
+      "task": "MoveCube",
+      "episode": 1,
+      "seed": 14100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 441,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 441,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 441
+      }
+    },
+    {
+      "task": "MoveCube",
+      "episode": 4,
+      "seed": 14400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 440,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 440,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 440
+      }
+    },
+    {
+      "task": "MoveCube",
+      "episode": 2,
+      "seed": 14200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 478,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 478,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 478
+      }
+    },
+    {
+      "task": "MoveCube",
+      "episode": 6,
+      "seed": 14602,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 443,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 443,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 443
+      }
+    },
+    {
+      "task": "MoveCube",
+      "episode": 10,
+      "seed": 15000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 482,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 482,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 482
+      }
+    },
+    {
+      "task": "MoveCube",
+      "episode": 3,
+      "seed": 14300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 266,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 266,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 266
+      }
+    },
+    {
+      "task": "MoveCube",
+      "episode": 7,
+      "seed": 14700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 512,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 512,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 512
+      }
+    },
+    {
+      "task": "MoveCube",
+      "episode": 11,
+      "seed": 15100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 257,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 257,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 257
+      }
+    },
+    {
+      "task": "PatternLock",
+      "episode": 0,
+      "seed": 15001,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 96,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 96,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 96
+      }
+    },
+    {
+      "task": "PatternLock",
+      "episode": 1,
+      "seed": 15100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 126,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 126,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 126
+      }
+    },
+    {
+      "task": "PatternLock",
+      "episode": 4,
+      "seed": 15400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 66,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 66,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 66
+      }
+    },
+    {
+      "task": "PatternLock",
+      "episode": 2,
+      "seed": 15200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 260,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 260,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 260
+      }
+    },
+    {
+      "task": "PatternLock",
+      "episode": 6,
+      "seed": 15600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 164,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 164,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 164
+      }
+    },
+    {
+      "task": "PatternLock",
+      "episode": 10,
+      "seed": 16000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 216,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 216,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 216
+      }
+    },
+    {
+      "task": "PatternLock",
+      "episode": 3,
+      "seed": 15300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 306,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 306,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 306
+      }
+    },
+    {
+      "task": "PatternLock",
+      "episode": 7,
+      "seed": 15700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 358,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 358,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 358
+      }
+    },
+    {
+      "task": "PatternLock",
+      "episode": 11,
+      "seed": 16100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 274,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 274,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 274
+      }
+    },
+    {
+      "task": "RouteStick",
+      "episode": 0,
+      "seed": 16000,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 200,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 200,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 200
+      }
+    },
+    {
+      "task": "RouteStick",
+      "episode": 1,
+      "seed": 16100,
+      "difficulty": "easy",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 200,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 200,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 200
+      }
+    },
+    {
+      "task": "RouteStick",
+      "episode": 4,
+      "seed": 16400,
+      "difficulty": "easy",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 300,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 300,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 300
+      }
+    },
+    {
+      "task": "RouteStick",
+      "episode": 2,
+      "seed": 16200,
+      "difficulty": "medium",
+      "recovery_mode": "z",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 500,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 500,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 500
+      }
+    },
+    {
+      "task": "RouteStick",
+      "episode": 6,
+      "seed": 16600,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 400,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 400,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 400
+      }
+    },
+    {
+      "task": "RouteStick",
+      "episode": 10,
+      "seed": 17000,
+      "difficulty": "medium",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 400,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 400,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 400
+      }
+    },
+    {
+      "task": "RouteStick",
+      "episode": 3,
+      "seed": 16300,
+      "difficulty": "hard",
+      "recovery_mode": "xy",
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 500,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 500,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 500
+      }
+    },
+    {
+      "task": "RouteStick",
+      "episode": 7,
+      "seed": 16700,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 500,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 500,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 500
+      }
+    },
+    {
+      "task": "RouteStick",
+      "episode": 11,
+      "seed": 17100,
+      "difficulty": "hard",
+      "recovery_mode": null,
+      "history": {
+        "ok": true,
+        "attempt_count": 1,
+        "timestep_count": 400,
+        "generated_final_is_completed": true,
+        "generated_timestep_count": 400,
+        "reference_final_is_completed": true,
+        "reference_timestep_count": 400
+      }
+    }
+  ],
+  "artifact_probes": {
+    "data/robomme_data_h5": false,
+    "artifacts/native-baseline": false,
+    "/data/hongzefu/robomme_benchmark-restore-DataGen": false
+  },
+  "not_run": {
+    "HISTORICAL_ACTION_PARITY": "historical_per_episode_evidence_missing",
+    "HISTORICAL_ARTIFACT_PARITY": "historical_files_missing"
+  }
+}
