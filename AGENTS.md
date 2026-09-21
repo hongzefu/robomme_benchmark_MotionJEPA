@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 全环境方案拆分“固定哪些”与“现在的值”（2026-09-21） | 文档重排完成（11.21） | 十六环境各64条固定内容与64条现行值按编号一一对应，旧三列表全部拆除；16段未来需求、23本地链接及第二节以外正文保留，静态核验退出0 | 仅文档表达修订；仍未开始实施，不切分支、不改配置或代码 |
 | `newtaskRelease-v3` 全环境配置与原值注入方案（2026-09-21） | 文档完成，静态核验通过（11.20） | [根目录方案](NEWTASK_RELEASE_V3_PLAN.md) 覆盖十六环境、64 组固定项、23 本地链接；最终基线为官方 `dataset-gen@d53f21a` 的 train 16×100，保留 z48／xy48／关闭1504 的 fail recover；原报告1600生成成功但动作对发布集比较未通过的边界已写清 | 本轮仅方案与必要账本，代码及配置零改动；后续实施先切 `newtaskRelease-v3`，`src` 各项仍须批准 |
 | 注入重构计划阶段 0～9（2026-09-18） | 已全部实施与验收留档 | L1 3400 条规格相同；L2 113 PNG/表/完整数轴相同；L3 210 条 HDF5 尝试、L4 720 reset 对拍通过；838 unused 补查完成；3820 旧文件迁移字节守恒；最终冒烟 60 秒通过（200 候选、1 HDF5、1 reset、9 图、3 报告、重复 reset 零重跑）；候选输入与代码进 Git；[现行说明](scripts/INJECTION.md)、[完整证据](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 本轮无剩余实施步骤；保留 4 项既有测试失败、22 项历史规格缺失跳过及视频诊断 NOT_RUN 边界；未推送 |
 | 注入重构阶段 8（2026-09-18） | 完成 | 两包生产导入 25 模块无旧依赖；623 项测试收集无错误；核心回归 490 passed、4 项既有失败、22 项既有跳过、74 项按预算未选，146.83 秒；Git/媒体边界与 114 个现行链接通过 | 最终独立 200 候选、1 HDF5、1 reset 单 worker 冒烟及幂等复核 |
@@ -1704,3 +1705,15 @@
 - `command -v uv` 后运行 `PYTHONDONTWRITEBYTECODE=1 uv run --no-sync python` 标准库静态核验，退出0：`PLAN_STRUCTURE=PASS environments=16 fixed_rows=64 local_links=23 code_line_refs=0`、`PLAN_BASELINE=PASS ref=d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa train=1600 recovery_z=48 recovery_xy=48 recovery_off=1504`；检查了16节结构、原值/未来值分离、实际链接、官方metadata全集及最终恢复口径。
 - `git diff --check` 通过；`git diff --quiet a4a6e9fab630e9399ca538ab2cc9d008e9638713 -- src scripts pyproject.toml uv.lock` 退出0。三路只读复核结束，新增代码/配置/数据为0，未创建新分支、未运行仿真、未推送。纯文档不启动端到端生成，不把文档核验写成对拍已通过。
 - 本轮逐路径提交 `NEWTASK_RELEASE_V3_PLAN.md` 与 `AGENTS.md`。后续实施从包含方案的提交切 `newtaskRelease-v3`，先对齐官方dataset-gen原始1600条及fail recover，再做完整原值回注；所列布局和难度新值留待后续启用。
+
+### 2026-09-21 America/Detroit — 方案逐环境说明按阅读顺序拆分
+
+- 用户指向 `NEWTASK_RELEASE_V3_PLAN.md` 并要求：「没看懂 先说固定哪些 在说现在的值」，以 VideoUnmaskSwap 的原三列表为例。
+- 本轮只调整第二节从「逐环境」至「所有未来布局接口共同遵守的规则」之前的十六环境说明：先编号1～4用白话讲固定对象和每局结果，再用相同编号列现行数值／规则，最后列原有未来需求；第三节之后的基线、fail recover、对拍与实施方案不改。
+- 当前仍是方案修订，不开始实施，不切分支；只修改方案及必要账本。验证重点是16组前后编号一一对应、原64项内容与所有未来需求无遗漏、后续章节未改，随后逐路径提交。
+
+### 2026-09-21 America/Detroit — 方案阅读顺序重排完成（11.21）
+
+- 十六环境统一改成「先说固定哪些」编号1～4、「再说现在的值」同编号1～4、原有未来接口与值。先用白话解释对象、规则和每局要记录的结果，再列具体数值；原混合三列表全部移除。VideoUnmaskSwap等难度档不再仅写省略的数字组，补齐容器／交换／拾取单位；两种VideoPlace的表外布局值归入对应现行值项。
+- 已检查原文数字集合与未来段逐节保留，补回 `target_cube/target` 和 `peg_0` 等对象名；独立只读复核确认随机消费、两次初始化、布局参数与未来需求没有实质遗漏。官方dataset-gen 1600条及fail recover、对拍验收、实施步骤均未改。
+- `command -v uv` 后运行标准库文档核验，退出0：`READING_ORDER=PASS environments=16 fixed_items=64 value_items=64 matching_labels=64 mixed_tables=0`、`CONTENT_PRESERVED=PASS future_sections=16 numeric_values_missing=0 local_links=23 outside_section_2_unchanged=1`；`git diff --check`通过。纯文档未运行仿真或代码测试，当前分支保持 `newtask-v2.1refractor`，只提交方案及必要账本。
