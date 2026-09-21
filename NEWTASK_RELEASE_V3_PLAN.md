@@ -1,8 +1,8 @@
 # 全环境配置拆分与原始 train 对拍方案
 
-> 本方案以用户本轮要求为准，只规划，不实施。工作副本为 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，核验代码为 `a4a6e9fab630e9399ca538ab2cc9d008e9638713`，当前分支为 `newtask-v2.1refractor`，commit 编号沿用仓库现行 `<大版本>.<小版本> <中文描述>` 体例。方案于 `11.20` 首次落地，后续仅修订本文件及必要账本；`11.24` 将逐环境字段合并为四列单表；本次 `11.25` 按 [AGENTS.md](AGENTS.md) 强制规则第 10 条把全文重排为「第一部分（给人看）／第二部分（技术细节，供 agent 追踪）」，第二节字段表原样保留，运行代码未变，不创建分支。**方案之后开始实施时，先从包含本方案的提交切出用户指定的 `newtaskRelease-v3`，再改代码；每一步都须单独获批。**
+> 本方案以用户本轮要求为准，只规划，不实施。工作副本为 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，核验代码为 `a4a6e9fab630e9399ca538ab2cc9d008e9638713`，当前分支为 `newtask-v2.1refractor`，commit 编号沿用仓库现行 `<大版本>.<小版本> <中文描述>` 体例。方案于 `11.20` 首次落地，后续仅修订本文件及必要账本；`11.24` 将逐环境字段合并为四列单表；本次 `11.25` 按 [AGENTS.md](AGENTS.md) 强制规则第 10 条把全文重排为「第一部分（给人看）／第二部分（技术细节，供 agent 追踪）」，第二节字段表原样保留，运行代码未变，不创建分支。**方案之后开始实施时，先从包含本方案的提交切出用户指定的 `newtaskRelease-v3`，再改代码。**实施于 `12.0` 开始；用户 2026-09-21 原话「对src robomme的可以先改 不用用户批准 但是结束后生成md报告」，`src/robomme/` 的改动自此**免逐项事前批准**，改完在 `docs/validation/newtask-v3/` 出 md 报告列明文件／锚点／改什么／为什么／怎么验；录像器仍冻结。
 >
-> 新分支的第一轮目标是：**十六个环境都能显式传入 `sampling_config` 与 `episode_spec`，从官方原始 train 的 16×100＝1600 条实际身份中按每个 task 每个难度约 3 条抽 144 条重放，与官方 `dataset-gen` 分支的生成及测试结果对拍，保留其中的 fail recover，证明注入前后保持一致。** 权威来源固定为 [RoboMME/robomme_benchmark 的 dataset-gen 分支](https://github.com/RoboMME/robomme_benchmark/tree/d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa)，本轮核验提交 `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa`；既有测试报告另记录其实际运行提交，见第四节及第二部分 9.5。外部依赖锚点为当前 `uv.lock`／`pyproject.toml` 指纹与官方对应指纹，见第二部分 9.5 末段。本文列出的更难布局、更多物体、更多动作及视频时长要求，只决定接口要留出什么能力，第一轮全部不启用。`src/robomme/` 的每一项源文件改动和运行时覆盖仍须按 [AGENTS.md](AGENTS.md) 强制规则第 11 条逐项批准，录像器保持冻结。
+> 新分支的第一轮目标是：**十六个环境都能显式传入 `sampling_config` 与 `episode_spec`，从官方原始 train 的 16×100＝1600 条实际身份中按每个 task 每个难度约 3 条抽 144 条重放，与官方 `dataset-gen` 分支的生成及测试结果对拍，保留其中的 fail recover，证明注入前后保持一致。** 权威来源固定为 [RoboMME/robomme_benchmark 的 dataset-gen 分支](https://github.com/RoboMME/robomme_benchmark/tree/d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa)，本轮核验提交 `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa`；既有测试报告另记录其实际运行提交，见第四节及第二部分 9.5。外部依赖锚点为当前 `uv.lock`／`pyproject.toml` 指纹与官方对应指纹，见第二部分 9.5 末段。本文列出的更难布局、更多物体、更多动作及视频时长要求，只决定接口要留出什么能力，第一轮全部不启用。`src/robomme/` 的源文件改动自 2026-09-21 起免逐项事前批准，改完出 md 报告（见题注）；录像器保持冻结。
 
 # 第一部分（给人看）
 
@@ -19,8 +19,8 @@
 5. 两个接口的分工：`sampling_config.tasks[env]` 分 `decision`／`native` 两块，`episode_spec` 带版本记录 `identity/layout/objects/actions/initializations/sampling_trace/provenance`；原值对拍模式下 `decision` 也不可改。依据第三节，细节见第二部分 8.1。
 6. 第一轮只做原值导出／消费，第二节「拟修改」列的值全部不启用；外部记录来源固定为 C 路只读导出，不用新 seed 重抽。依据第二节与第三节，细节见第二部分 8.2。
 7. 既有 `dataset-gen` 报告 `status=failed`（217242 个元素非零差异、10 条帧数不符、阈值 `1e-8`）原样保留，不为得到 PASS 改阈值、关恢复或换样本。依据第四节，细节见第二部分 9.5。
-8. `RouteStick.py::step` 白球尾迹现为 10 步、官方为 40 步，恢复原值须单列审批，不把 10 步冒充原始行为。依据第四节，细节见第二部分 9.2。
-9. 录像器 `RecordWrapper.py` 全程冻结；`src/robomme/` 每处改动逐项批准，计划中的改动清单不等于批准。依据第二部分〇。
+8. `RouteStick.py::step` 白球尾迹现为 10 步、官方为 40 步，恢复原值须在步 2 报告中单列，不把 10 步冒充原始行为。依据第四节，细节见第二部分 9.2。
+9. 录像器 `RecordWrapper.py` 全程冻结；`src/robomme/` 的改动自 2026-09-21 起免逐项事前批准，改完出 md 报告。依据第二部分〇。
 10. 实施开始前先切 `newtaskRelease-v3`，本轮不切分支、不生成配置或数据、不跑仿真。依据第五节步 0、第六节。
 11. 用户对审查后的验收选择原话：「允许完成：本次144条严格对拍通过，缺失的历史核对明确写“未验证”（推荐）」。本次严格对拍及历史可投影字段仍须通过；历史动作数值缺证单列 `NOT_RUN`，不计为通过，也不阻塞完成。依据第四节R1a～R1c与第二部分9.5。
 
@@ -250,7 +250,7 @@ episode_spec  layout / objects / actions / initializations
 
 `compared` 是实际比的文件对数，`sha_equal` 是其中整文件散列已相同的对数，`field_mismatch` 必须为 0。判据表里的 P1、P2、P4 的 HDF5 部分即由这五行承担，图像、视频与随机流另比。它和 R1 是两回事：R1 用官方 `compare_joint_actions.py::compare_joint_actions` 只比 `action/joint_action` 且阈值 `max_abs_diff=1e-8`，是对官方发布集的历史口径；这里是五路之间的全字段零容差。任何一对出现 `field_mismatch>0` 就停下交用户，不放宽、不排除字段。
 
-**在哪跑、怎么并行**：全部在 greatlakes `spgpu` 分区（A40）上跑，本机不跑。用户拍板 4 个占位 job、每 job 4 worker、共 16 worker。理由：greatlakes 规约实测 A40（sm_86）与本机 RTX 6000 Ada（sm_89）不逐位一致，所以五路必须同在 A40 上；官方 `dataset-gen` 的 `_parse_gpus` 只接受 `"0"`，Slurm job 内 `CUDA_VISIBLE_DEVICES=0` 正好满足；worker 默认单线程（`limit_threads=true`），集群实测每 worker 每局 RSS 峰值 3.0～5.6 GB、显存 0.6 GB，所以 job 形状定为 **1 GPU / 4 CPU / 32G / 48h**。分片按 task 切：16 个环境分 4 组、每 job 4 个环境 × 每环境 9 条 = 36 条身份，五路 180 次生成都在本 job 内完成，A1／A2 用官方脚本 `--workers 4`，B／C／D 用新入口 `--workers 4`；同一身份内 C→D 串行，身份之间并行。放开条件 P0：同一身份的 A1 在 4 个 job（可能落在不同节点）各跑一次，逐位相同；不同则四个 job 只能串成一路。占位 job 到期或被回收时重新申请，任何时刻不超过 4 个。集群实测数字、job 脚本与分片表见第二部分「十」。
+**在哪跑、怎么并行**：进入判据的五路生成全部在 greatlakes `spgpu` 分区（A40）上跑。用户拍板 4 个占位 job、每 job 4 worker、共 16 worker；2026-09-21 实施开始时只有 3 个 job RUNNING，第 4 个（61673586）因 chaijy2 账户 80 CPU 配额用满卡在 `AssocGrpCpuLimit`，按用户决策「不等，先用 3 个 RUNNING 的 job 跑」，P0 先出 `jobs=3` 版判定行，第 4 个 job 起来后补跑第 4 份 A1 再改写为 `jobs=4`。本机（2×RTX 6000 Ada）2026-09-21 起已空闲，用户明确「本机已经空闲 也可以用 但是主力在greatlakes上做」：本机承担离线核验、脚本开发与调试跑，但 sm_89 与 A40 的 sm_86 不逐位一致，本机结果不进任何判据。理由：greatlakes 规约实测 A40（sm_86）与本机 RTX 6000 Ada（sm_89）不逐位一致，所以五路必须同在 A40 上；官方 `dataset-gen` 的 `_parse_gpus` 只接受 `"0"`，Slurm job 内 `CUDA_VISIBLE_DEVICES=0` 正好满足；worker 默认单线程（`limit_threads=true`），集群实测每 worker 每局 RSS 峰值 3.0～5.6 GB、显存 0.6 GB，所以 job 形状定为 **1 GPU / 4 CPU / 32G / 48h**。分片按 task 切：16 个环境分 4 组、每 job 4 个环境 × 每环境 9 条 = 36 条身份，五路 180 次生成都在本 job 内完成，A1／A2 用官方脚本 `--workers 4`，B／C／D 用新入口 `--workers 4`；同一身份内 C→D 串行，身份之间并行。放开条件 P0：同一身份的 A1 在 4 个 job（可能落在不同节点）各跑一次，逐位相同；不同则四个 job 只能串成一路。占位 job 到期或被回收时重新申请，任何时刻不超过 4 个。集群实测数字、job 脚本与分片表见第二部分「十」。
 
 **抽样规模**：用户拍板「不用全部验证 每个task每个难度验证3条左右即可」。每个task每个难度按固定官方metadata顺序取该难度前3条，共16×3×3＝144条。已实读十六环境：easy均为episode `[0,1,4]`，medium为 `[2,6,10]`，hard为 `[3,7,11]`；每环境z3条、xy2条、关闭4条，合计z48、xy32、关闭64。三模式已经齐全，不再设隐式换样分支；冻结manifest与此规则不符直接报错。每环境episode 5未纳入，不能宣称全部96条恢复覆盖；全集1600条仍为可选后续步7。
 
@@ -261,7 +261,7 @@ episode_spec  layout / objects / actions / initializations
 | # | 验证 | 步骤 | 证明什么 | 判据行 | 耗时／资源 |
 |---|---|---|---|---|---|
 | G1 | 原身份完整 | 0 | 全量 manifest 与官方固定 metadata 逐条双向相等；无重复、漏项、额外项，170 条非公式 seed 未被公式替代；再从中按每 task 每难度 3 条抽出 144 条子集，子集每条都能回指全量行 | `TRAIN_IDENTITY=PASS tasks=16 rows=1600 mismatch=0` ＋ `TRAIN_SUBSET=PASS tasks=16 per_cell=3 rows=144` | 秒级／CPU，不启动仿真 |
-| P0 | 跨 job／跨节点等价 | 1b | 同一身份 A1 在 4 个占位 job 各跑一次，HDF5、图像、状态与事件逐位相同；不同则不能分片，只能单 job 串行 | `NODE_PARITY=PASS identities=N jobs=4 mismatch=0` | 4 条生成／4 job |
+| P0 | 跨 job／跨节点等价 | 1b | 同一身份 A1 在每个 RUNNING 的占位 job 各跑一次，HDF5、图像、状态与事件逐位相同；不同则不能分片，只能单 job 串行 | `NODE_PARITY=PASS identities=N jobs=<实际 job 数> mismatch=0`（当前先出 `jobs=3`，第 4 个 job 到位后补跑改写为 `jobs=4`） | 每 job 1 条生成 |
 | G2 | 配置外提完整 | 3 | 十六环境 `decision`／`native` 每个键映射到源码消费点；原运算元、dtype、区间边界及有效／死字段逐一核对 | `SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0` | 分钟级／CPU |
 | G3 | 字段归属完整 | 3 | 第二节 101 行每项落到 `decision` 或 `native` 及其本局输入／运行观测；原值阶段两块均原值；最近邻／补集／时间表不独立抽签 | `FIELD_OWNERSHIP=PASS tasks=16 unmapped=0 native_rule_overrides=0` | 分钟级／CPU |
 | G4 | 规格真正被消费 | 4 | 逐局比对象ID、布局、目标、动作、恢复与初始化编号；恢复含xy符号、派生偏移及实际抓取位置绑定；保留原重抽却绕过规格赋值的反例必须被抓到 | `SPEC_BINDING=PASS missing=0 unused=0 mismatch=0` | 单条秒级／集群 A40 |
@@ -283,14 +283,14 @@ episode_spec  layout / objects / actions / initializations
 
 ## 五、实施顺序（十三步，全文以本表为准）
 
-主副本上顺序执行；每步 commit 后按仓库规则 push。算力：greatlakes 4 个占位 job（1 GPU / 4 CPU / 32G / 48h），代码副本在 NFS `robomme_benchmark-newtask-gl`，所有生成用 `srun --jobid=<占位> --overlap` 塞进 job，本机不跑仿真；步 1b 先在一个 job 单 worker 定基线并在 4 个 job 跑 P0，P0 通过后按第二部分「十」分片。「闸门」列引用第四节判据表编号；任一 FAIL 停下交用户，不放大范围。涉及 `src/robomme/` 的步骤须先按第二部分「一」逐项获批。会话名、命令与失败分流见第二部分「四」。
+主副本上顺序执行；每步 commit 后按仓库规则 push。算力：greatlakes 占位 job（1 GPU / 4 CPU / 32G / 48h，目标 4 个、当前 3 个 RUNNING），代码副本在 NFS `robomme_benchmark-newtask-gl`，进入判据的生成一律用 `srun --jobid=<占位> --overlap` 塞进 job，本机只做离线核验与调试跑；步 1b 先在一个 job 单 worker 定基线并在全部 RUNNING 的 job 跑 P0，P0 通过后按第二部分「十」分片。「闸门」列引用第四节判据表编号；任一 FAIL 停下交用户，不放大范围。涉及 `src/robomme/` 的步骤按第二部分「一」的范围直接改，改完出 md 报告。会话名、命令与失败分流见第二部分「四」。
 
 | # | 步骤 | 做什么 | 闸门 | 失败处置 |
 |---|---|---|---|---|
 | 0 | 切分支与冻结 | 从含本方案的提交切 `newtaskRelease-v3`；冻结父提交、官方源码、1600 条 metadata、锁文件、设备与用例清单；核验输出路径与存储 | G1、来源散列齐全 | 分支或散列不对即停，不改代码 |
 | 1a | 冻结历史证据 | 冻结 `dataset-gen` 原报告与逐文件散列；明确历史可投影字段和数值缺证；定位历史成品与官方参考数据 | 缺证时R1c、R2记 `NOT_RUN` | 缺证不冒称通过；按用户决定不阻塞当前严格对拍 |
 | 1b | A 路单条试跑与跨 job 核验 | 在 `scripts/` 新增严格manifest、144条抽样与五路编排；比较器范围适配先过离线反例G5；`BinFill/easy/episode_0` 单任务、单episode、单worker在 job 1 跑A1、A2，保留z恢复；同一条在其余 3 个 job 各跑一次A1 | G5、P0、P1、R1a（单条帧数／成功／恢复） | 不以公式替换seed，不重编号episode；不一致先定位 |
-| 2 | 恢复原值默认路径 | 按逐项批准恢复历史原值（含 RouteStick 尾迹 40 步），只做 A↔B | P2 在指定样本通过 | 未解决项不隐藏；数值 FAIL 只 revert 该项 |
+| 2 | 恢复原值默认路径 | 恢复历史原值（含 RouteStick 尾迹 40 步）并在报告中列明，只做 A↔B | P2 在指定样本通过 | 未解决项不隐藏；数值 FAIL 只 revert 该项 |
 | 3 | 逐环境切出 `sampling_config` | 十六环境逐个拆 `decision`／`native`，按第二节字段表与第二部分「二」映射；每环境先 B↔C 再进下一环境 | G2、G3；该环境 B↔C 过 P4 | 一环境未过不进下一环境 |
 | 4 | 逐环境切出 `episode_spec` | 同顺序实现原位抽样记录与原值回注，含两次初始化、动态事件、执行时xy恢复独立流及符号实际消费；公共工具按清单单列审批；每环境B↔C↔D | G4、P3、P4 | 现有「注入后跳过抽样」分支不得沿用为D；重抽相同但不消费规格必须被G4拒绝 |
 | 5a | 16 环境冒烟 | 每环境各一条原 episode 走五路，比全部字段、图像与恢复 | P5、P7 | 单条失败先定位 |
@@ -330,13 +330,21 @@ episode_spec  layout / objects / actions / initializations
 
 本次两部分重排（11.25）不改第二节的 16 张表与 101 行；原「三、原始 train 的身份与代码基线」与「五、怎样对拍」合并为第四节「原始对拍这么比」，原「四、两个接口」去掉字段映射后成为第三节，三、四两节按用户要求只留高层结论，完整展开下沉为第二部分「八」「九」，原 4.3 字段映射、6.2 改动清单、6.3 命令与留档移入第二部分，并新增前置红线、对拍闸门总表、风险登记与盲区清单，内容均取自原文，未新增事实。静态核验退出0：`TWO_PART=PASS environments=16 tables=16 rows=101 local_links_missing=0 code_line_refs=0`，`git diff --check` 通过；本次同样没有生成配置、候选或数据，没有运行仿真。
 
+## 七、实施记录
+
+### 12.0 步 0：切分支与身份冻结（2026-09-21）
+
+用户原话「开始实现」「第四个 job 61673586 卡在 `AssocGrpCpuLimit`……有问题现在立刻问用户」；两项决策为「不等，先用 3 个 RUNNING 的 job 跑」与「切分支并 push 到 origin」。随后用户追加「对src robomme的可以先改 不用用户批准 但是结束后生成md报告」「本机已经空闲 也可以用 但是主力在greatlakes上做」，已落到题注、口径 9、红线 R1、第四节与第十节。
+
+本步从 `ce72b04` 切出 `newtaskRelease-v3`，新增 [scripts/train_split_parity.py](scripts/train_split_parity.py)（`freeze-identities` 已实现，`run`／`compare` 只有 `--help` 与参数校验）与 [tests/lightweight/test_train_split_parity.py](tests/lightweight/test_train_split_parity.py)，冻结产物落 `scripts/configs/newtask-v3/`。G1 实测：`TRAIN_IDENTITY=PASS tasks=16 rows=1600 mismatch=0`、`TRAIN_SUBSET=PASS tasks=16 per_cell=3 rows=144`，非公式 seed 170 条、串接散列命中 `a57655d6…`、全量恢复配置 z=48／xy=48／off=1504、子集 z=48／xy=32／off=64、各环境子集 episode 均为 `[0,1,2,3,4,6,7,10,11]`，全部与方案实读口径一致。完整留档见 [docs/validation/newtask-v3/20260921-step0-freeze-identities.md](docs/validation/newtask-v3/20260921-step0-freeze-identities.md)。本步未改 `src/robomme/`，未启动仿真。
+
 # 第二部分（技术细节，供 agent 追踪）
 
 ## 〇、前置声明与红线
 
 以下编号可被正文引用；与 [AGENTS.md](AGENTS.md) 强制规则冲突时以后者为准。
 
-- **R1 只规划不实施**：本文件任何改动清单都不等于批准；`src/robomme/` 每处源文件改动与运行时覆盖须按 AGENTS.md 第 11 条逐项提交「文件／锚点／改什么／为什么」并获准后才动。
+- **R1 改动须留证**：`src/robomme/` 的源文件改动自 2026-09-21 起免逐项事前批准（用户原话见题注），但每步收尾必须在 `docs/validation/newtask-v3/` 出 md 报告，逐条写「文件／锚点／改什么／为什么／怎么验的」；本文件的改动清单是待实施范围，不是已完成记录。
 - **R2 录像器冻结**：`src/robomme/env_record_wrapper/RecordWrapper.py` 不改、不覆盖；不补 reset 帧，不录制 `NO RECORD` 帧，不改命名与落盘位置。验证命令 `git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py`。旧 `tests/_shared/parity_observer.py` 覆盖录像器方法，不得作为生产对拍观察器。
 - **R3 身份不重算**：严格读取官方 `(task, episode, seed, difficulty)`，不用 `SeedLayout.base_seed` 公式替换 170 条不一致 seed；失败不调用 `EpisodeJob.bump`、不换 seed、不补样本。
 - **R4 A 路必须是原链路**：A1／A2 用独立进程加载固定 `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa` 源码，执行原 `_worker`、原求解与原 fail recover；不能给 A 和 D 同时打补丁制造一致。
@@ -424,12 +432,12 @@ episode_spec  layout / objects / actions / initializations
 | # | 判定行 | 步号 | 前置条件 |
 |---|---|---|---|
 | G1 | `TRAIN_IDENTITY`、`TRAIN_SUBSET` | 0 | `freeze-identities` 完成，不启动仿真 |
-| P0 | `NODE_PARITY` | 1b | job 1 上 A1 已过 P1；4 个占位 job 均 RUNNING |
+| P0 | `NODE_PARITY` | 1b | job 1 上 A1 已过 P1；判定行里的 `jobs=` 与当次实际 RUNNING 的占位 job 数一致 |
 | G2、G3 | `SAMPLING_ORIGINAL`、`FIELD_OWNERSHIP` | 3 | 该环境 `decision`／`native` 已按第二部分「二」映射提取 |
 | G4 | `SPEC_BINDING` | 4 | 该环境 C 路完整规格已导出并封存 |
 | G5 | `COMPARATOR_SCOPE` | 1b、5e | 官方两个比较器源码冻结；连续与稀疏夹具、缺失／额外／重复身份反例就绪 |
 | P1 | `BASELINE_REPEAT` | 1b | 官方源码隔离目录与 manifest 就绪 |
-| P2 | `TRAIN_RESTORE` | 2 | RouteStick 尾迹等恢复项逐项获批 |
+| P2 | `TRAIN_RESTORE` | 2 | RouteStick 尾迹等恢复项已改并在报告中列明 |
 | P3、P4 | `RNG_PARITY`、`INJECTION_PARITY` | 4 | G4 通过 |
 | P5、P7 | `VIDEO_PARITY`、`RECOVERY_PARITY` | 5a | 16 环境各一条五路完成 |
 | P6 | `WORKER_ISOLATION` | 5b | 48 格子集完成 |
@@ -757,7 +765,7 @@ srun --jobid=<占位JOBID> --account=chaijy2 --partition=spgpu --gpu_cmode=share
 | 3 | ALL_TASKS[8:12] | 36 | 180 |
 | 4 | ALL_TASKS[12:16] | 36 | 180 |
 
-规则：每 job 只处理自己的分片，产物目录按 shard 隔离；P0 用同一身份在 4 个 job 各跑 A1；job 被回收后重申请同形状 job，从缺失身份续跑，不重跑已完成身份；`compare` 在登录节点只读汇总，不占 GPU。探针 job 61665377（1 GPU / 8 CPU / 48G）已于 2026-09-21 取消；现役占位 job 为 61673583、61673584、61673585、61673586（各 1 GPU / 4 CPU / 32G / 48h，`hold-4cpu-1..4`，日志 `slurm-holds/logs/hold-4cpu-<jobid>.log`），到期或被回收后按同形状重申请并更新此处编号。
+规则：每 job 只处理自己的分片，产物目录按 shard 隔离；P0 用同一身份在 4 个 job 各跑 A1；job 被回收后重申请同形状 job，从缺失身份续跑，不重跑已完成身份；`compare` 在登录节点只读汇总，不占 GPU。探针 job 61665377（1 GPU / 8 CPU / 48G）已于 2026-09-21 取消；现役占位 job 为 61673583、61673584、61673585（RUNNING）与 61673586（2026-09-21 实施开始时仍 `AssocGrpCpuLimit` 排队，账户 80 CPU 配额被占满），各 1 GPU / 4 CPU / 32G / 48h，`hold-4cpu-1..4`，日志 `slurm-holds/logs/hold-4cpu-<jobid>.log`；到期或被回收后按同形状重申请并更新此处编号。第 4 个 job 入队前分片按 3 组跑或只跑前 3 片，起来后补齐第 4 片，不重跑已完成身份。
 
 ## 十一、HDF5 对拍实现
 

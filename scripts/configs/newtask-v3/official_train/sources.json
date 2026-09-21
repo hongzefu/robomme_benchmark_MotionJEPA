@@ -1,0 +1,136 @@
+{
+  "schema": "train-parity-sources/1",
+  "source_repo": "https://github.com/RoboMME/robomme_benchmark.git",
+  "source_ref": "d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa",
+  "records_sha256": "a57655d601c7e974c688b2b5c3602e7eb8606e2bd312dcc4ba00a1abb29d73bf",
+  "files": [
+    {
+      "task": "PickXtimes",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_PickXtimes_metadata.json",
+      "frozen_name": "record_dataset_PickXtimes_metadata.json",
+      "git_blob": "10d4f7d326e17cd32a352ba215227cbb511e8445",
+      "sha256": "8e74205d7b2a6e44405e491f397a5b8976bafe141e0521eb6a081ab301ef7500",
+      "bytes": 11020
+    },
+    {
+      "task": "StopCube",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_StopCube_metadata.json",
+      "frozen_name": "record_dataset_StopCube_metadata.json",
+      "git_blob": "89af82eae1197698515fccc781ad0e50ee626a76",
+      "sha256": "a25b595c7db754fe35c6c6c24ba48c6ba297f1bf4c444cde2e279e1496619f02",
+      "bytes": 10828
+    },
+    {
+      "task": "SwingXtimes",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_SwingXtimes_metadata.json",
+      "frozen_name": "record_dataset_SwingXtimes_metadata.json",
+      "git_blob": "4bf38b58b015c13e572121b8c842afa242130873",
+      "sha256": "800fe030a9602a8e97591a459b38ac778a35347ff992dad1d128bd77ff944a45",
+      "bytes": 11141
+    },
+    {
+      "task": "BinFill",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_BinFill_metadata.json",
+      "frozen_name": "record_dataset_BinFill_metadata.json",
+      "git_blob": "363b9718e1c9a4849d3d3669979a06e64375737b",
+      "sha256": "9f8d193a7792cbc8ff8e3cf2059b3b2450fbb9657cae19cf5b73c7f79691d908",
+      "bytes": 10747
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_VideoUnmaskSwap_metadata.json",
+      "frozen_name": "record_dataset_VideoUnmaskSwap_metadata.json",
+      "git_blob": "61c4a6d6d90fc08cf039570de98130b32c626c5d",
+      "sha256": "4bc3157f2df0d1366fcd41b751a31fd2424df3edb0a884f6a61b5a73a5b8620d",
+      "bytes": 11565
+    },
+    {
+      "task": "VideoUnmask",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_VideoUnmask_metadata.json",
+      "frozen_name": "record_dataset_VideoUnmask_metadata.json",
+      "git_blob": "bd74fb0eb58aa877670af526f94f7bd3b349b9d7",
+      "sha256": "e2b220cd931df41181863756a7dc27d71d77e2f9b879b7b72a1f80c4c3614c8c",
+      "bytes": 11171
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_ButtonUnmaskSwap_metadata.json",
+      "frozen_name": "record_dataset_ButtonUnmaskSwap_metadata.json",
+      "git_blob": "3194c886496f9a7bffbc8aed606be4988e2157ec",
+      "sha256": "ab83b540638d43147262927698980a17446d60677e621715f3cfeb10b0211cc7",
+      "bytes": 11686
+    },
+    {
+      "task": "ButtonUnmask",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_ButtonUnmask_metadata.json",
+      "frozen_name": "record_dataset_ButtonUnmask_metadata.json",
+      "git_blob": "ed832369f6fced348bf57e71d2288c5563f410e8",
+      "sha256": "1dce0d86fc611bd76c4cf30652a7cd3395bfc1dedcc63afbb1ca5d4429ed7ac7",
+      "bytes": 11292
+    },
+    {
+      "task": "VideoRepick",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_VideoRepick_metadata.json",
+      "frozen_name": "record_dataset_VideoRepick_metadata.json",
+      "git_blob": "c4f0a052c4bf03dc865d090f5333b9f445ab1dda",
+      "sha256": "bf4e30c0f858fb6c2b4252bccc4537b3b5af5ae3128c7970ba361169fde76077",
+      "bytes": 11201
+    },
+    {
+      "task": "VideoPlaceButton",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_VideoPlaceButton_metadata.json",
+      "frozen_name": "record_dataset_VideoPlaceButton_metadata.json",
+      "git_blob": "d8430a6939254311742e626ffc69b5428c7e74b6",
+      "sha256": "2f86ccd55df940ef0a0bf55096ee6915ee737569385634699d1aa19b2258644a",
+      "bytes": 11716
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_VideoPlaceOrder_metadata.json",
+      "frozen_name": "record_dataset_VideoPlaceOrder_metadata.json",
+      "git_blob": "a1038a66d21aa339f6498b4f22d00184da3660ac",
+      "sha256": "26f4ec3db11dc029e71665da839b883facd6e339efb5905510ac2702e5df2b7c",
+      "bytes": 11615
+    },
+    {
+      "task": "PickHighlight",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_PickHighlight_metadata.json",
+      "frozen_name": "record_dataset_PickHighlight_metadata.json",
+      "git_blob": "65c657351f712302c9e56729eec3f21ffd41f01d",
+      "sha256": "4ecfe6d79ec86bb183a5d7b0c85e3f963f8e617a9e654c052e4c2e61aeff8a00",
+      "bytes": 11413
+    },
+    {
+      "task": "InsertPeg",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_InsertPeg_metadata.json",
+      "frozen_name": "record_dataset_InsertPeg_metadata.json",
+      "git_blob": "c45da812a304ceeb5f86357383f0d13b99bb6538",
+      "sha256": "bb7b9e16fbcd3b317c6d2bc8fae4e25e2f85258a6bacd9fe2d5742fa2353afbb",
+      "bytes": 11009
+    },
+    {
+      "task": "MoveCube",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_MoveCube_metadata.json",
+      "frozen_name": "record_dataset_MoveCube_metadata.json",
+      "git_blob": "8086d2037abb4d75cf898278e5f3d8d6d096aa22",
+      "sha256": "ffdd7404b3aa10ea76fdf83f37b9020984b8eef530bfa7cd74db9db3f11c7dfd",
+      "bytes": 10908
+    },
+    {
+      "task": "PatternLock",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_PatternLock_metadata.json",
+      "frozen_name": "record_dataset_PatternLock_metadata.json",
+      "git_blob": "d6dfe1ced459dff75d87fdd9ed1f17d80738bd56",
+      "sha256": "636431f1fa2375ddb42d2687a6ee1e91940fb7c75d0a9134efe069eb65a6f4ef",
+      "bytes": 11211
+    },
+    {
+      "task": "RouteStick",
+      "source_path": "src/robomme/env_metadata/train/record_dataset_RouteStick_metadata.json",
+      "frozen_name": "record_dataset_RouteStick_metadata.json",
+      "git_blob": "4ebccde5133e71c7241516c63af9466c6845db10",
+      "sha256": "758fed27d275d167fe98ccdf1c3c64f9aa9f8518bf3e002d605fc36c2fdeb42a",
+      "bytes": 11110
+    }
+  ]
+}
