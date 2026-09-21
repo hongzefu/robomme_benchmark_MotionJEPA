@@ -27,6 +27,7 @@ from mani_skill.utils.geometry.rotation_conversions import (
 from .utils import *
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.subgoal_evaluate_func import static_check
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
@@ -140,9 +141,11 @@ class InsertPeg(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._spec = SpecRecorder(native_episode_spec, "InsertPeg", {"seed": seed})
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -238,7 +241,9 @@ class InsertPeg(BaseEnv):
         native_pos = self._sampling["positions"]
         offsets = list(decision_cfg["peg_offsets"])  # X-axis differences for the 3 pegs
         # Sample a single pair of colors so all pegs share the same appearance per seed.
-        peg_head_color = torch.rand(3, generator=self._hb_generator).tolist()
+        peg_head_color = self._spec.value(
+            "objects.head_rgb", torch.rand(3, generator=self._hb_generator).tolist()
+        )
         # Use complementary tail color so head/tail are contrasting.
         peg_tail_color = [1.0 - c for c in peg_head_color]
 
@@ -273,7 +278,11 @@ class InsertPeg(BaseEnv):
 
         # Randomly select one peg from the 3 pegs
         target_cfg = self._sampling["parameters"]["target_peg"]
-        random_peg_idx = int(torch.randint(0, decision_cfg["peg_count"], (1,), generator=self._hb_generator).item())
+        # 这次抽样的结果原本就被 0 覆盖；记进 sampling_trace 以证明它照常发生（红线 R8）
+        random_peg_idx = self._spec.value(
+            "objects.sampling_trace.random_peg_idx",
+            int(torch.randint(0, decision_cfg["peg_count"], (1,), generator=self._hb_generator).item()),
+        )
         random_peg_idx=target_cfg["overridden_to"]
         self.peg = self.pegs[random_peg_idx]
 
@@ -289,6 +298,8 @@ class InsertPeg(BaseEnv):
    
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
+        # 每次初始化各自记一份规格，不复用上一次的结果
+        self._native_init_index = getattr(self, "_native_init_index", -1) + 1
         with torch.device(self.device):
             self.end_steps=None
             self.table_scene.initialize(env_idx)
@@ -306,8 +317,12 @@ class InsertPeg(BaseEnv):
             y_jitter_2 = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * box_cfg["jitter_span"]
             # x_jitter_2=0
             # y_jitter_2=0
+            x_jitter_2, y_jitter_2 = self._spec.value(
+                f"initializations.{self._native_init_index}.box_jitter", [x_jitter_2, y_jitter_2]
+            )
             box_translation = [base_translation[0] + x_jitter_2, base_translation[1] + y_jitter_2, self.radius * box_cfg["z_factor"]]
             box_yaw = np.pi / 2 + (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(box_cfg["yaw_half_span_deg"])
+            box_yaw = self._spec.value(f"initializations.{self._native_init_index}.box_yaw", box_yaw)
             box_angles = torch.tensor([[0.0, 0.0, box_yaw]], dtype=torch.float32)
             box_matrix = euler_angles_to_matrix(box_angles, convention="XYZ")
             box_quat = matrix_to_quaternion(box_matrix)[0].detach().cpu().numpy().tolist()
@@ -339,6 +354,12 @@ class InsertPeg(BaseEnv):
 
                 yaw_value = (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(self._sampling["decision"]["peg_yaw_range"]["half_span_deg"])
 
+                # 拒绝采样的失败尝试照常发生；这里冻结被接受的位姿
+                candidate_xy_list, yaw_value = self._spec.value(
+                    f"initializations.{self._native_init_index}.pegs.{i}",
+                    [[float(candidate_xy[0]), float(candidate_xy[1])], yaw_value],
+                )
+                candidate_xy = np.array(candidate_xy_list, dtype=np.float32)
                 yaw_angles = torch.tensor([[0.0, 0.0, yaw_value]], dtype=torch.float32)
                 yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
                 yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -367,10 +388,17 @@ class InsertPeg(BaseEnv):
 
 
                     # Define task list, each task contains a dictionary with function, name, demonstration flag, and optional failure_func
-            obj_sample = torch.randint(0, 2, (1,), generator=self._hb_generator)
-            dir_sample = torch.randint(0, 2, (1,), generator=self._hb_generator)
-            self.obj_flag = -1 if obj_sample.item() == 0 else 1
-            self.direction = -1 if dir_sample.item() == 0 else 1
+            obj_sample = self._spec.value(
+                f"initializations.{self._native_init_index}.obj_sample",
+                int(torch.randint(0, 2, (1,), generator=self._hb_generator).item()),
+            )
+            dir_sample = self._spec.value(
+                f"initializations.{self._native_init_index}.dir_sample",
+                int(torch.randint(0, 2, (1,), generator=self._hb_generator).item()),
+            )
+            # 两个采样值现在是规格里的整数（原为张量），映射语义不变
+            self.obj_flag = -1 if obj_sample == 0 else 1
+            self.direction = -1 if dir_sample == 0 else 1
             
             # if self.seed<30:
             #     self.obj_flag=-1

@@ -30,6 +30,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from ..logging_utils import logger
 
@@ -171,9 +172,11 @@ class ButtonUnmaskSwap(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._spec = SpecRecorder(native_episode_spec, "ButtonUnmaskSwap", {"seed": seed})
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -220,12 +223,18 @@ class ButtonUnmaskSwap(BaseEnv):
         generator = torch.Generator()
         generator.manual_seed(seed)
         swap_range = self._sampling["decision"]["swap_count_range"][self.difficulty]
-        self.swap_times = torch.randint(swap_range[0], swap_range[1]+1, (1,), generator=generator).item()
+        self.swap_times = self._spec.value(
+            "objects.n_swaps",
+            torch.randint(swap_range[0], swap_range[1]+1, (1,), generator=generator).item(),
+        )
         logger.debug(f"Task will swap {self.swap_times} times")
 
 
         pick_range = self._sampling["decision"]["pick_count_range"][self.difficulty]
-        self.pick_times = torch.randint(pick_range[0], pick_range[1]+1, (1,), generator=generator).item()
+        self.pick_times = self._spec.value(
+            "objects.n_picks",
+            torch.randint(pick_range[0], pick_range[1]+1, (1,), generator=generator).item(),
+        )
         logger.debug(f"Task will pick {self.pick_times} times")
 
         super().__init__(*args, robot_uids=robot_uids, **kwargs)
@@ -345,7 +354,9 @@ class ButtonUnmaskSwap(BaseEnv):
                       [line[2][0] + x_offset_line_3, line[2][1]]]
 
         # Use generator to randomly select region3_tri or region3_line
-        region3_choice = torch.randint(0, 2, (1,), generator=generator).item()
+        region3_choice = self._spec.value(
+            "layout.type_choice", torch.randint(0, 2, (1,), generator=generator).item()
+        )
         region3 = region3_tri if region3_choice == 0 else region3_line
 
         if self._sampling["parameters"]["bin_count"][self.difficulty]==4:
@@ -369,7 +380,9 @@ class ButtonUnmaskSwap(BaseEnv):
                     min_gap=self.cube_half_size*bins_cfg["min_gap_factor"],  # bins need larger gap, increased to 6x to avoid collision
                     name_prefix=f"bin_{i}",
                     max_trials=bins_cfg["max_trials"],
-                    generator=generator
+                    generator=generator,
+                    recorder=self._spec,
+                    spec_path=f"layout.bins.{i}"
                 )
             except RuntimeError as e:
                 break
@@ -392,7 +405,10 @@ class ButtonUnmaskSwap(BaseEnv):
 
         # Use seed to randomly shuffle color order
 
-        shuffle_indices = torch.randperm(len(cube_colors), generator=generator).tolist()
+        self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
+        shuffle_indices = self._spec.value(
+            "objects.color_order", torch.randperm(len(cube_colors), generator=generator).tolist()
+        )
         cube_colors = [cube_colors[i] for i in shuffle_indices]
         color_names = [color_names[i] for i in shuffle_indices]
 
@@ -401,7 +417,10 @@ class ButtonUnmaskSwap(BaseEnv):
 
         # Randomly select 3 bins from all bins to spawn cube
         num_bins_to_select = min(3, len(self.spawned_bins))
-        selected_bin_indices = torch.randperm(3, generator=generator)[:num_bins_to_select].tolist()
+        selected_bin_indices = self._spec.value(
+            "objects.selected",
+            torch.randperm(3, generator=generator)[:num_bins_to_select].tolist(),
+        )
         selected_bins = [self.spawned_bins[idx] for idx in selected_bin_indices]
         self.selected_bin_indices = selected_bin_indices
         self.selected_bins = selected_bins  # Save selected bins, corresponding to color_names order
@@ -448,13 +467,13 @@ class ButtonUnmaskSwap(BaseEnv):
         self.other_cubes = []
 
         if self.cube_bin_pairs:
-            target_choice = int(
+            target_choice = self._spec.value("objects.target_choice", int(
                 torch.randint(
                     len(self.cube_bin_pairs),
                     (1,),
                     generator=generator,
                 ).item()
-            )
+            ))
             target_cube_actor, target_bin_actor = self.cube_bin_pairs[target_choice]
             self.target_cube = target_cube_actor
             self.target_bin = target_bin_actor
@@ -482,7 +501,11 @@ class ButtonUnmaskSwap(BaseEnv):
 
        # Randomly select 2 unique bins as target_bin_1 and target_bin_2
         # target_indices is index to selected_bin_indices (0, 1, 2)
-        target_indices = torch.randperm(len(selected_bin_indices), generator=generator)[:2]
+        # 规格存整数列表，下游仍按张量用（.item()/.tolist()/torch.cat），所以包回张量
+        target_indices = torch.tensor(self._spec.value(
+            "objects.swap_initiator_indices",
+            torch.randperm(len(selected_bin_indices), generator=generator)[:2].tolist(),
+        ))
         # Use selected_bins to get correct bin (corresponding to color_names order)
         self.target_bin_1=self.selected_bins[target_indices[0]]
         self.target_bin_2=self.selected_bins[target_indices[1]]
@@ -492,7 +515,10 @@ class ButtonUnmaskSwap(BaseEnv):
         # swap_indices must include target_indices, then select 1 from remaining indices
         remaining_indices = [i for i in range(len(self.spawned_bins)) if i not in target_indices.tolist()]
         if remaining_indices:
-            third_idx = remaining_indices[torch.randint(0, len(remaining_indices), (1,), generator=generator).item()]
+            third_idx = self._spec.value(
+                "objects.swap_initiator_third",
+                remaining_indices[torch.randint(0, len(remaining_indices), (1,), generator=generator).item()],
+            )
             swap_indices = torch.cat([target_indices, torch.tensor([third_idx])])
         else:
             swap_indices = target_indices

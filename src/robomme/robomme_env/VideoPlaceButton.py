@@ -31,6 +31,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 
 from ..logging_utils import logger
@@ -154,9 +155,11 @@ class VideoPlaceButton(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._spec = SpecRecorder(native_episode_spec, "VideoPlaceButton", {"seed": seed})
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -256,6 +259,8 @@ class VideoPlaceButton(BaseEnv):
                     thickness=0.005,  # target thickness
                     min_gap=self.cube_half_size * 1,  # Gap requirement same as cube
                     name_prefix=f"goal_site",
+                    recorder=self._spec,
+                    spec_path="layout.goal_xy",
                     generator=generator,
                 )
             except RuntimeError as exc:
@@ -271,7 +276,9 @@ class VideoPlaceButton(BaseEnv):
                 center_xy=tuple(button_cfg["center_xy"]),
                 scale=button_cfg["scale"],
                 generator=generator,
-                randomize_range=tuple(button_cfg["randomize_range"])
+                randomize_range=tuple(button_cfg["randomize_range"]),
+                recorder=self._spec,
+                spec_path="layout.button_xy",
             )
             avoid.append(button_obb)
 
@@ -291,7 +298,10 @@ class VideoPlaceButton(BaseEnv):
                 {"color": (0, 0, 1, 1), "name": "blue", "list": self.blue_cubes, "name_list": self.blue_cube_names},
                 {"color": (0, 1, 0, 1), "name": "green", "list": self.green_cubes, "name_list": self.green_cube_names},
             ]
-            shuffle_indices = torch.randperm(len(color_groups), generator=generator).tolist()
+            self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
+            shuffle_indices = self._spec.value(
+                "objects.color_order", torch.randperm(len(color_groups), generator=generator).tolist()
+            )
             color_groups = [color_groups[i] for i in shuffle_indices]
 
             self.target_color_name = color_groups[0]["name"]
@@ -315,6 +325,8 @@ class VideoPlaceButton(BaseEnv):
                                 random_yaw=cubes_cfg["random_yaw"],
                                 name_prefix=f"cube_{group['name']}_{cube_idx}",
                                 generator=generator,
+                                recorder=self._spec,
+                                spec_path=f"layout.cubes.{group['name']}_{cube_idx}",
                             )
                         except RuntimeError as exc:
                             raise SceneGenerationError(
@@ -350,6 +362,8 @@ class VideoPlaceButton(BaseEnv):
                             min_gap=self.cube_half_size * targets_cfg["min_gap_factor"],  # Gap requirement same as cube
                             name_prefix=f"target_{i}",
                             generator=generator,
+                            recorder=self._spec,
+                            spec_path=f"layout.targets.{i}",
                         )
                     except RuntimeError as exc:
                         raise SceneGenerationError(f"Target {i + 1} sampling failed: {exc}") from exc
@@ -359,7 +373,10 @@ class VideoPlaceButton(BaseEnv):
                     avoid.append(target)
 
             if len(self.all_cubes) > 0:
-                target_cube_idx = torch.randint(0, len(self.all_cubes), (1,), generator=generator).item()
+                target_cube_idx = self._spec.value(
+                    "objects.target_cube_idx",
+                    torch.randint(0, len(self.all_cubes), (1,), generator=generator).item(),
+                )
                 self.target_cube = self.all_cubes[target_cube_idx]
 
                 if self.target_cube in self.red_cubes:
@@ -700,6 +717,8 @@ class VideoPlaceButton(BaseEnv):
 
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
+        # 每次初始化各自记一份规格，不复用上一次的结果
+        self._native_init_index = getattr(self, "_native_init_index", -1) + 1
         with torch.device(self.device):
             b = len(env_idx)
             self.table_scene.initialize(env_idx)

@@ -32,6 +32,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils.bin_collision import (
     BinCollisionError,
@@ -245,10 +246,12 @@ class VideoRepick(BaseEnv):
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
                      episode_spec=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用（含 np.random.seed）与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self._episode_spec = _resolve_episode_spec(episode_spec, "VideoRepick")
+        self._spec = SpecRecorder(native_episode_spec, "VideoRepick", {"seed": seed})
         self._injection_evidence = {}
         self._runtime_checks = []
         self.use_demonstrationwrapper=False
@@ -307,7 +310,10 @@ class VideoRepick(BaseEnv):
 
         difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
         if self._episode_spec is None:
-            self.swap_times = torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=self.generator).item()
+            self.swap_times = self._spec.value(
+                "objects.n_swaps",
+                torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=self.generator).item(),
+            )
         else:
             self.swap_times = int(self._episode_spec["objects"]["n_swaps"])
         logger.debug(f"Task will swap {self.swap_times} times")
@@ -377,7 +383,10 @@ class VideoRepick(BaseEnv):
 
                 hard_cfg = self._sampling["positions"]["hard_cubes"]
                 for idx in range(self._sampling["parameters"]["hard_spawn_rounds"]):
-                    shuffle_indices = torch.randperm(len(options), generator=self.generator).tolist()
+                    shuffle_indices = self._spec.value(
+                        f"objects.hard_round_order.{idx}",
+                        torch.randperm(len(options), generator=self.generator).tolist(),
+                    )
                     new_options = [options[i] for i in shuffle_indices]
                     for group in new_options:
                         try:
@@ -407,13 +416,19 @@ class VideoRepick(BaseEnv):
                     raise SceneGenerationError("Failed to generate any cube")
 
                 selection_cfg = self._sampling["parameters"]["object_selection"]
-                target_idx = torch.randint(selection_cfg["hard_target_low"], len(self.spawned_cubes), (1,), generator=self.generator).item()
+                target_idx = self._spec.value(
+                    "objects.target",
+                    torch.randint(selection_cfg["hard_target_low"], len(self.spawned_cubes), (1,), generator=self.generator).item(),
+                )
                 logger.debug("target index: %s", target_idx)
                 self.target_cube_1 = self.spawned_cubes[target_idx]
 
             else:
                 if spec is None:
-                    idx = torch.randint(0, len(options), (1,), generator=self.generator).item()
+                    idx = self._spec.value(
+                        "objects.color_idx",
+                        torch.randint(0, len(options), (1,), generator=self.generator).item(),
+                    )
                 else:
                     # 三块同色，颜色由规格定死（原定义表顺序是 red / blue / green）
                     idx = [item["name"] for item in options].index(spec["objects"]["color"])
@@ -421,7 +436,10 @@ class VideoRepick(BaseEnv):
 
                 cube_colors = [chosen_color] * 4
                 if spec is None:
-                    shuffle_indices = torch.randperm(len(cube_colors), generator=self.generator).tolist()
+                    shuffle_indices = self._spec.value(
+                        "objects.color_order",
+                        torch.randperm(len(cube_colors), generator=self.generator).tolist(),
+                    )
                     cube_colors = [cube_colors[i] for i in shuffle_indices]
                 # 四个元素全是同一个颜色，打乱与否结果相同；注入路径省掉这次抽样
 
@@ -499,7 +517,10 @@ class VideoRepick(BaseEnv):
                         raise SceneGenerationError("Not enough cubes for swapping")
 
                     if spec is None:
-                        selected_remaining = torch.randperm(len(remaining_indices), generator=self.generator)[:selection_cfg["swap_remaining_count"]].tolist()
+                        selected_remaining = self._spec.value(
+                            "objects.swap_initiators_remaining",
+                            torch.randperm(len(remaining_indices), generator=self.generator)[:selection_cfg["swap_remaining_count"]].tolist(),
+                        )
                         selected_indices = [remaining_indices[i] for i in selected_remaining]
                     else:
                         # ⚠ 源码无条件赋值 swap_pair{1,2,3}_idx1，所以规格存的是完整的 3 个发起者：
@@ -822,12 +843,21 @@ class VideoRepick(BaseEnv):
         if generator is None:
             generator = self.generator
 
+        # 交换搭档是「事件发生时才知道」的量：按事件序号分开冻结（方案 8.2）
+        event_index = getattr(self, "_native_swap_event_index", -1) + 1
+        self._native_swap_event_index = event_index
         first_idx = valid_indices[
-            int(torch.randint(0, len(valid_indices), (1,), generator=generator).item())
+            self._spec.value(
+                f"actions.swap_pairs.{event_index}.first_choice",
+                int(torch.randint(0, len(valid_indices), (1,), generator=generator).item()),
+            )
         ]
         candidates = candidate_map[first_idx]
         second_idx = candidates[
-            int(torch.randint(0, len(candidates), (1,), generator=generator).item())
+            self._spec.value(
+                f"actions.swap_pairs.{event_index}.second_choice",
+                int(torch.randint(0, len(candidates), (1,), generator=generator).item()),
+            )
         ]
 
         distance = float(

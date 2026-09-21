@@ -502,15 +502,21 @@ class SwingXtimes(BaseEnv):
         self.recovery_pickup_indices, self.recovery_pickup_tasks = task4recovery(self.task_list)
         if self.robomme_failure_recovery:
             # Only inject an intentional failed grasp when recovery mode is enabled
-            self.fail_grasp_task_index = inject_fail_grasp(
+            # 恢复动作的选择是一次真实抽样：原位置照常抽，回注模式下用冻结的索引
+            self.fail_grasp_task_index = self._spec.value(
+                f"initializations.{self._native_init_index}.recovery_action_index",
+                inject_fail_grasp(
                 self.task_list,
                 generator=generator,
                 mode=self.robomme_failure_recovery_mode,
+            ),
             )
         else:
             self.fail_grasp_task_index = None
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
+        # 每次初始化各自记一份规格，不复用上一次的结果
+        self._native_init_index = getattr(self, "_native_init_index", -1) + 1
         with torch.device(self.device):
             b = len(env_idx)
             self.table_scene.initialize(env_idx)

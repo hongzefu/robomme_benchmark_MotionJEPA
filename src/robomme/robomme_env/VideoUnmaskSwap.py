@@ -31,6 +31,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils.bin_collision import (
     BinCollisionError,
@@ -221,10 +222,12 @@ class VideoUnmaskSwap(BaseEnv):
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
                      episode_spec=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self._episode_spec = _resolve_episode_spec(episode_spec, "VideoUnmaskSwap")
+        self._spec = SpecRecorder(native_episode_spec, "VideoUnmaskSwap", {"seed": seed})
         self._injection_evidence = {}
         # 运行时碰撞与最近邻核验的记录；只有传了规格才写，关闭态恒为空
         self._runtime_checks = []
@@ -275,8 +278,14 @@ class VideoUnmaskSwap(BaseEnv):
         generator.manual_seed(seed)
         difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
         if self._episode_spec is None:
-            self.swap_times = torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=generator).item()
-            self.pick_times = torch.randint(difficulty_cfg['pick_min'], difficulty_cfg['pick_max']+1, (1,), generator=generator).item()
+            self.swap_times = self._spec.value(
+                "objects.n_swaps",
+                torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=generator).item(),
+            )
+            self.pick_times = self._spec.value(
+                "objects.n_picks",
+                torch.randint(difficulty_cfg['pick_min'], difficulty_cfg['pick_max']+1, (1,), generator=generator).item(),
+            )
         else:
             self.swap_times = int(self._episode_spec["objects"]["n_swaps"])
             self.pick_times = int(self._episode_spec["objects"]["n_picks"])
@@ -334,7 +343,10 @@ class VideoUnmaskSwap(BaseEnv):
         if spec is None:
             # Use generator to randomly select region3_tri or region3_line
             choice_cfg = containers_cfg["region3_choice"]
-            region3_choice = torch.randint(choice_cfg["low"], choice_cfg["high_exclusive"], (1,), generator=generator).item()
+            region3_choice = self._spec.value(
+                "layout.type_choice",
+                torch.randint(choice_cfg["low"], choice_cfg["high_exclusive"], (1,), generator=generator).item(),
+            )
             region3 = region3_tri if region3_choice == 0 else region3_line
 
             if difficulty_cfg['bin']==4:
@@ -373,6 +385,8 @@ class VideoUnmaskSwap(BaseEnv):
                         name_prefix=f"bin_{i}",
                         max_trials=256,
                         generator=generator,
+                        recorder=self._spec,
+                        spec_path=f"layout.bins.{i}",
                         yaw_scale_deg=containers_cfg["yaw_scale_deg"]
                     )
                 except RuntimeError as e:
@@ -397,7 +411,9 @@ class VideoUnmaskSwap(BaseEnv):
         # Use seed to randomly shuffle color order
 
         if spec is None:
-            shuffle_indices = torch.randperm(len(cube_colors), generator=generator).tolist()
+            shuffle_indices = self._spec.value(
+                "objects.color_order", torch.randperm(len(cube_colors), generator=generator).tolist()
+            )
         else:
             # 规格的 color_order 是打乱后的名字序列，这里反解回原定义表 (red, green, blue) 的下标
             shuffle_indices = [color_names.index(name) for name in spec["objects"]["color_order"]]
@@ -411,7 +427,10 @@ class VideoUnmaskSwap(BaseEnv):
         selection_cfg = self._sampling["parameters"]["object_selection"]
         num_bins_to_select = min(selection_cfg["hidden_bin_count_max"], len(self.spawned_bins))
         if spec is None:
-            selected_bin_indices = torch.randperm(selection_cfg["hidden_bin_permutation_size"], generator=generator)[:num_bins_to_select].tolist()
+            selected_bin_indices = self._spec.value(
+                "objects.selected",
+                torch.randperm(selection_cfg["hidden_bin_permutation_size"], generator=generator)[:num_bins_to_select].tolist(),
+            )
         else:
             selected_bin_indices = [int(v) for v in spec["objects"]["selected"]][:num_bins_to_select]
         selected_bins = [self.spawned_bins[idx] for idx in selected_bin_indices]
@@ -460,12 +479,15 @@ class VideoUnmaskSwap(BaseEnv):
         self.other_cubes = []
 
         if self.cube_bin_pairs:
-            target_choice = int(
-                torch.randint(
-                    len(self.cube_bin_pairs),
-                    (1,),
-                    generator=generator,
-                ).item()
+            target_choice = self._spec.value(
+                "objects.target_choice",
+                int(
+                    torch.randint(
+                        len(self.cube_bin_pairs),
+                        (1,),
+                        generator=generator,
+                    ).item()
+                ),
             )
             target_cube_actor, target_bin_actor = self.cube_bin_pairs[target_choice]
             self.target_cube = target_cube_actor
@@ -495,7 +517,11 @@ class VideoUnmaskSwap(BaseEnv):
        # Randomly select 2 unique bins as target_bin_1 and target_bin_2
         # target_indices are indices into selected_bin_indices (0, 1, 2)
         if spec is None:
-            target_indices = torch.randperm(len(selected_bin_indices), generator=generator)[:selection_cfg["swap_seed_target_count"]]
+            # 规格存的是整数列表；下游仍按张量用（.item()/.tolist()/torch.cat），所以包回张量
+            target_indices = torch.tensor(self._spec.value(
+                "objects.swap_initiator_indices",
+                torch.randperm(len(selected_bin_indices), generator=generator)[:selection_cfg["swap_seed_target_count"]].tolist(),
+            ))
         else:
             # ⚠ 原代码把「藏物排序里的局部位置」直接当生成序号用（U5 的索引混用），这里按原行为
             # 保留：规格的 swap_initiators 存的就是这些数，前两个当 target_indices，第三个当 third。
@@ -514,7 +540,10 @@ class VideoUnmaskSwap(BaseEnv):
         # generate_dataset_newseed._assignment_value 抽「第一个同名赋值」来对拍历史表达式，
         # 把注入分支写在前面会让它抽到引用 spec_initiators 的那条，测试直接 NameError。
         if spec is None and remaining_indices:
-            third_idx = remaining_indices[torch.randint(0, len(remaining_indices), (1,), generator=generator).item()]
+            third_idx = self._spec.value(
+                "objects.swap_initiator_third",
+                remaining_indices[torch.randint(0, len(remaining_indices), (1,), generator=generator).item()],
+            )
             swap_indices = torch.cat([target_indices, torch.tensor([third_idx])])
         elif spec is not None:
             third_idx = spec_initiators[selection_cfg["swap_seed_target_count"]]

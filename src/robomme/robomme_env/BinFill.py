@@ -616,6 +616,9 @@ class BinFill(BaseEnv):
 
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
+        # 每次初始化各自记一份规格：颜色排列、恢复动作索引等都按序号分开存，
+        # 绝不复用上一次的结果（方案 8.2 对 BinFill 两次初始化的明确要求）。
+        self._native_init_index = getattr(self, "_native_init_index", -1) + 1
         with torch.device(self.device):
             b = len(env_idx)
             self.table_scene.initialize(env_idx)
@@ -633,10 +636,8 @@ class BinFill(BaseEnv):
                 ("green", self.green_cubes, self.green_cubes_target_number),
             ]
             if self._episode_spec is None:
-                init_index = getattr(self, "_native_init_index", 0)
-                self._native_init_index = init_index + 1
                 color_order = self._spec.value(
-                    f"initializations.{init_index}.color_order",
+                    f"initializations.{self._native_init_index}.color_order",
                     torch.randperm(len(color_task_definitions), generator=self.generator).tolist(),
                 )
             else:
@@ -690,10 +691,14 @@ class BinFill(BaseEnv):
             self.recovery_pickup_indices, self.recovery_pickup_tasks = task4recovery(self.task_list)
             if self.robomme_failure_recovery:
                 # Only inject an intentional failed grasp when recovery mode is enabled
-                self.fail_grasp_task_index = inject_fail_grasp(
+                # 恢复动作的选择是一次真实抽样：原位置照常抽，回注模式下用冻结的索引
+                self.fail_grasp_task_index = self._spec.value(
+                    f"initializations.{self._native_init_index}.recovery_action_index",
+                    inject_fail_grasp(
                     self.task_list,
                     generator=self.generator,
                     mode=self.robomme_failure_recovery_mode,
+                ),
                 )
             else:
                 self.fail_grasp_task_index = None

@@ -9,6 +9,7 @@ import mani_skill.envs.utils.randomization as randomization
 from mani_skill.agents.robots import SO100, Fetch, Panda
 from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.envs.tasks.tabletop.pick_cube_cfgs import PICK_CUBE_CONFIGS
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from mani_skill.sensors.camera import CameraConfig
 from mani_skill.utils import sapien_utils
@@ -146,9 +147,11 @@ class VideoUnmask(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._spec = SpecRecorder(native_episode_spec, "VideoUnmask", {"seed": seed})
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -245,7 +248,9 @@ class VideoUnmask(BaseEnv):
                     min_gap=self.cube_half_size*bins_cfg["min_gap_factor"],  # bins need larger gap, increased to 6x to avoid collision
                     name_prefix=f"bin_{i}",
                     max_trials=bins_cfg["max_trials"],
-                    generator=generator
+                    generator=generator,
+                    recorder=self._spec,
+                    spec_path=f"layout.bins.{i}",
                 )
                 logger.debug(f"Spawned bin_{i} at position {bin_actor.pose.p}")
             except RuntimeError as e:
@@ -265,7 +270,10 @@ class VideoUnmask(BaseEnv):
 
         # Use seed to randomly shuffle color order
 
-        shuffle_indices = torch.randperm(len(cube_colors), generator=generator).tolist()
+        self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
+        shuffle_indices = self._spec.value(
+            "objects.color_order", torch.randperm(len(cube_colors), generator=generator).tolist()
+        )
         cube_colors = [cube_colors[i] for i in shuffle_indices]
         color_names = [color_names[i] for i in shuffle_indices]
 
@@ -355,15 +363,21 @@ class VideoUnmask(BaseEnv):
         self.recovery_pickup_indices, self.recovery_pickup_tasks = task4recovery(self.task_list)
         if self.robomme_failure_recovery:
             # Only inject an intentional failed grasp when recovery mode is enabled
-            self.fail_grasp_task_index = inject_fail_grasp(
+            # 恢复动作的选择是一次真实抽样：原位置照常抽，回注模式下用冻结的索引
+            self.fail_grasp_task_index = self._spec.value(
+                f"initializations.{self._native_init_index}.recovery_action_index",
+                inject_fail_grasp(
                 self.task_list,
                 generator=generator,
                 mode=self.robomme_failure_recovery_mode,
+            ),
             )
         else:
             self.fail_grasp_task_index = None
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
+        # 每次初始化各自记一份规格，不复用上一次的结果
+        self._native_init_index = getattr(self, "_native_init_index", -1) + 1
         with torch.device(self.device):
             b = len(env_idx)
             self.table_scene.initialize(env_idx)

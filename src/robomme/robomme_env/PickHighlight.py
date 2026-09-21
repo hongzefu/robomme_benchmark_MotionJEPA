@@ -29,6 +29,7 @@ from .utils import *
 from .utils.subgoal_evaluate_func import static_check
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
@@ -147,9 +148,11 @@ class PickHighlight(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._spec = SpecRecorder(native_episode_spec, "PickHighlight", {"seed": seed})
         self.robot_init_qpos_noise = robot_init_qpos_noise
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
@@ -232,11 +235,14 @@ class PickHighlight(BaseEnv):
         cubes_cfg = self._sampling["positions"]["cubes"]
         decision_cfg = self._sampling["decision"]
         cube_region = decision_cfg["cube_region"]
+        self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
         button_obb = build_button(
             self,
             center_xy=tuple(button_cfg["center_xy"]),
             scale=button_cfg["scale"],
             generator=self.generator,
+            recorder=self._spec,
+            spec_path="layout.button_xy",
         )
         avoid = [button_obb]
 
@@ -257,7 +263,10 @@ class PickHighlight(BaseEnv):
         # Spawn specified number of cubes, each with random color
         for cube_idx in range(num_cubes_to_spawn):
             # Randomly select a color
-            color_choice_idx = torch.randint(0, len(available_colors), (1,), generator=self.generator).item()
+            color_choice_idx = self._spec.value(
+                f"objects.color_choice.{cube_idx}",
+                torch.randint(0, len(available_colors), (1,), generator=self.generator).item(),
+            )
             chosen_color = available_colors[color_choice_idx]
 
             try:
@@ -274,6 +283,8 @@ class PickHighlight(BaseEnv):
                     random_yaw=cubes_cfg["random_yaw"],
                     name_prefix=f"cube_{chosen_color['name']}_{cube_idx}",
                     generator=self.generator,
+                    recorder=self._spec,
+                    spec_path=f"layout.cubes.{cube_idx}",
                 )
 
                 cube_name = f"cube_{chosen_color['name']}_{cube_idx}"
@@ -294,7 +305,10 @@ class PickHighlight(BaseEnv):
 
 
          # Randomly select one cube from all available cubes as the target
-        target_cube_indices = torch.randperm(len(self.all_cubes), generator=self.generator)[:decision_cfg["highlight_count"][self.difficulty]]
+        target_cube_indices = self._spec.value(
+            "objects.highlight_ids",
+            torch.randperm(len(self.all_cubes), generator=self.generator)[:decision_cfg["highlight_count"][self.difficulty]].tolist(),
+        )
 
         self.target_cubes = [self.all_cubes[idx] for idx in target_cube_indices]
         self.target_cube_names = [self.all_cube_names[idx] for idx in target_cube_indices]
@@ -383,6 +397,8 @@ class PickHighlight(BaseEnv):
             self.fail_grasp_task_index = None
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
+        # 每次初始化各自记一份规格，不复用上一次的结果
+        self._native_init_index = getattr(self, "_native_init_index", -1) + 1
         with torch.device(self.device):
             b = len(env_idx)
             self.table_scene.initialize(env_idx)

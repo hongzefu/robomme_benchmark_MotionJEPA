@@ -31,6 +31,7 @@ from .utils.subgoal_evaluate_func import *
 from .utils.object_generation import *
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from ..logging_utils import logger
 
@@ -138,9 +139,11 @@ class PatternLock(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_stick", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._spec = SpecRecorder(native_episode_spec, "PatternLock", {"seed": seed})
         self.achieved_list=[]
         self.match=False
         self.after_demo=False
@@ -318,7 +321,9 @@ class PatternLock(BaseEnv):
         num_targets = len(self.targets_grid)
         max_attempts = self._sampling["parameters"]["path_selection"]["max_attempts"]  # Safety limit
 
+        self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
         for attempt in range(max_attempts):
+            # 每次尝试都照常抽；被接受的那一次由规格定死（失败尝试仍消费随机数）
             node_choices = torch.randperm(num_targets, generator=generator)[:2]
             start_node, end_node = node_choices.tolist()
             
@@ -338,6 +343,9 @@ class PatternLock(BaseEnv):
             # If we couldn't find a path < 5 after max_attempts, use the last one
             logger.debug(f"Warning: Could not find path after {max_attempts} attempts")
 
+        # 搜索循环里每次尝试都照常抽随机数；这里只冻结最终被采用的那条路径
+        path_nodes = self._spec.value("actions.path_nodes", list(path_nodes))
+        self._spec.record("actions.path_attempts", attempt + 1)
         self.selected_buttons = [self.buttons_grid[i] for i in path_nodes]
         current_target=self.selected_buttons[0]
         tasks.append({

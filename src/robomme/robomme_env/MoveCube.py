@@ -26,6 +26,7 @@ import copy
 from .utils import *
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.subgoal_evaluate_func import static_check
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
@@ -127,9 +128,11 @@ class MoveCube(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._spec = SpecRecorder(native_episode_spec, "MoveCube", {"seed": seed})
         self.reset_in_proecess=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
         if robot_uids in PICK_CUBE_CONFIGS:
@@ -230,11 +233,16 @@ class MoveCube(BaseEnv):
         y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
 
         # Apply offset
+        base_y, x_jitter, y_jitter = self._spec.value(
+            "layout.demo.peg_offsets", [base_y, x_jitter, y_jitter]
+        )
+        peg_spawn_translation[1] = base_y
         peg_spawn_translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
         self.peg1_basex=peg_spawn_translation[0]
         self.peg1_basey=peg_spawn_translation[1]
 
         initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (peg_yaw_range["span_rad"]) - (peg_yaw_range["offset_rad"])
+        initial_yaw = self._spec.value("layout.demo.peg_yaw", initial_yaw)
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -272,9 +280,14 @@ class MoveCube(BaseEnv):
         peg_spawn_translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
         x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
         y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
+        base_y, x_jitter, y_jitter = self._spec.value(
+            "layout.execution.peg_offsets", [base_y, x_jitter, y_jitter]
+        )
+        peg_spawn_translation[1] = base_y
         peg_spawn_translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
 
         initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (peg_yaw_range["span_rad"]) - (peg_yaw_range["offset_rad"])
+        initial_yaw = self._spec.value("layout.execution.peg_yaw", initial_yaw)
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -290,9 +303,16 @@ class MoveCube(BaseEnv):
         self.finish_return_flag=False
 
                 # Define task list, each task contains a dictionary with function, name, demonstration flag, and optional failure_func
-        obj_sample = torch.randint(0, 2, (1,), generator=self._hb_generator)
-        self.obj_flag = -1 if obj_sample.item() == 0 else 1
-        dir_sample = torch.randint(0, 2, (1,), generator=self._hb_generator)
+        obj_sample = self._spec.value(
+            "objects.obj_sample",
+            int(torch.randint(0, 2, (1,), generator=self._hb_generator).item()),
+        )
+        self.obj_flag = -1 if obj_sample == 0 else 1
+        # 这次抽样原本就没被消费；记进 sampling_trace 以证明它照常发生（红线 R8）
+        dir_sample = self._spec.value(
+            "objects.sampling_trace.dir_sample",
+            int(torch.randint(0, 2, (1,), generator=self._hb_generator).item()),
+        )
         #self.direction = -1 if dir_sample.item() == 0 else 1
 
 
@@ -307,6 +327,8 @@ class MoveCube(BaseEnv):
                         thickness=0.005,  # target thickness
                         min_gap=self.cube_half_size*1,  # Gap requirement same as cube
                         name_prefix=f"goal_site",
+                        recorder=self._spec,
+                        spec_path="layout.demo.goal_xy",
                         generator=self._hb_generator
                         )
         self.goal_site_2 = spawn_random_target(
@@ -320,6 +342,8 @@ class MoveCube(BaseEnv):
                 thickness=0.005,  # target thickness
                 min_gap=self.cube_half_size*1,  # Gap requirement same as cube
                 name_prefix=f"goal_site_2",
+                recorder=self._spec,
+                spec_path="layout.execution.goal_xy",
                 generator=self._hb_generator
                 )
         
@@ -352,6 +376,8 @@ class MoveCube(BaseEnv):
                             region_center=[cube_x, cube_y],
                             color=(1, 0, 0, 1),
                             name_prefix="fixed_cube",
+                            recorder=self._spec,
+                            spec_path="layout.demo.cube_pose",
                             region_half_size=demo_layout["cube_position_policy"]["region_half_size"],
                             generator=self._hb_generator,
                             half_size=self.cube_half_size,
@@ -384,6 +410,8 @@ class MoveCube(BaseEnv):
                             region_center=[cube_x, cube_y],
                             color=(1, 0, 0, 1),
                             name_prefix="fixed_cube_2",
+                            recorder=self._spec,
+                            spec_path="layout.execution.cube_pose",
                             region_half_size=exec_layout["cube_position_policy"]["region_half_size"],
                             generator=self._hb_generator,
                             half_size=self.cube_half_size,
@@ -407,6 +435,8 @@ class MoveCube(BaseEnv):
 
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
+        # 每次初始化各自记一份规格，不复用上一次的结果
+        self._native_init_index = getattr(self, "_native_init_index", -1) + 1
         with torch.device(self.device):
             self.table_scene.initialize(env_idx)
 
@@ -430,7 +460,10 @@ class MoveCube(BaseEnv):
             dtype=np.float32,
             )
             self.ways=["peg_push","gripper_push","grasp_putdown"]
-            way_idx = torch.randint(len(self.ways), (1,), generator=self._hb_generator).item()
+            way_idx = self._spec.value(
+                f"initializations.{getattr(self, '_native_init_index', 0)}.way_idx",
+                torch.randint(len(self.ways), (1,), generator=self._hb_generator).item(),
+            )
             self.way = self.ways[way_idx]
             #self.way="gripper_push"
 

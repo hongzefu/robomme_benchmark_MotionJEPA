@@ -35,6 +35,7 @@ from .utils import reset_panda
 from .utils.route import *
 from .utils.subgoal_planner_func import *
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 
 from ..logging_utils import logger
@@ -218,10 +219,12 @@ class RouteStick(BaseEnv):
     def __init__(self, *args, robot_uids="panda_stick", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
                      episode_spec=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self._episode_spec = _resolve_episode_spec(episode_spec, "RouteStick")
+        self._spec = SpecRecorder(native_episode_spec, "RouteStick", {"seed": seed})
         self._injection_evidence = {}
         self.achieved_list=[]
         self.use_demonstrationwrapper=False
@@ -340,9 +343,10 @@ class RouteStick(BaseEnv):
         spec = self._episode_spec
         yaw_cfg = layout_cfg["yaw_deg"]
         if spec is None:
-            theta = math.radians(
-            (torch.rand(1, generator=generator).item() * yaw_cfg["scale"]) - yaw_cfg["subtract"]
-                )
+            theta = math.radians(self._spec.value(
+                "layout.rotation_deg",
+                (torch.rand(1, generator=generator).item() * yaw_cfg["scale"]) - yaw_cfg["subtract"],
+            ))
         else:
             # 整排绕世界原点的旋转角由规格定死；节点位置仍由下面同一段公式推出，
             # 不是创建后再整体挪物体
@@ -421,7 +425,10 @@ class RouteStick(BaseEnv):
 
             cylinder_material = sapien.render.RenderMaterial()
             if spec is None:
-                random_rgb = torch.rand(3, generator=generator).tolist()
+                random_rgb = self._spec.value(
+                    f"layout.obstacle_rgb.{obstacle_order}",
+                    torch.rand(3, generator=generator).tolist(),
+                )
             else:
                 random_rgb = [float(v) for v in spec["layout"]["obstacle_rgb"][obstacle_order]]
             cylinder_material.set_base_color((*random_rgb, 1))
@@ -481,8 +488,15 @@ class RouteStick(BaseEnv):
         length_min, length_max = cfg.get("length")
         allow_backtracking = bool(cfg.get("backtrack", True))
         if spec is None:
-            steps = int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item())
-            traj=generate_dynamic_walk(button_indices,steps=steps,allow_backtracking=allow_backtracking,generator=generator,walk_config=walk_cfg)
+            steps = self._spec.value(
+                "objects.L",
+                int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item()),
+            )
+            # 游走函数内部的抽样照常发生；这里只冻结最终节点序列
+            traj = self._spec.value(
+                "actions.nodes",
+                list(generate_dynamic_walk(button_indices, steps=steps, allow_backtracking=allow_backtracking, generator=generator, walk_config=walk_cfg)),
+            )
         else:
             # 规格定死路线：先按 generate_dynamic_walk 的线性邻接语义校验拓扑，
             # 再直接使用给定路线，不再抽随机数。
@@ -532,8 +546,11 @@ class RouteStick(BaseEnv):
         direction_cfg = walk_cfg["direction"]
         legal_directions = (direction_cfg["less_than"], direction_cfg["otherwise"])
         if spec is None:
-            for _ in self.selected_buttons[1:]:
-                dir_flag = direction_cfg["less_than"] if torch.rand(*direction_cfg["shape"], generator=generator).item() < direction_cfg["threshold"] else direction_cfg["otherwise"]
+            for order, _ in enumerate(self.selected_buttons[1:]):
+                dir_flag = self._spec.value(
+                    f"actions.directions.{order}",
+                    direction_cfg["less_than"] if torch.rand(*direction_cfg["shape"], generator=generator).item() < direction_cfg["threshold"] else direction_cfg["otherwise"],
+                )
                 self.swing_directions.append(dir_flag)
         else:
             # 逐段绕行方向由规格定死；演示与执行两轮任务都读同一份列表，绑定天然一致
