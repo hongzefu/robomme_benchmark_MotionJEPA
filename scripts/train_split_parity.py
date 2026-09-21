@@ -23,8 +23,10 @@ import argparse
 import datetime as _dt
 import hashlib
 import json
+import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 from seed_layout import (
@@ -726,44 +728,615 @@ def _parse_shard(value: str | None) -> tuple[int, int] | None:
     return index, total
 
 
+def materialize_official_source(source_ref: str, dest: Path) -> dict[str, str]:
+    """把官方固定提交的整棵树导出到隔离目录，供 A 路独立进程加载（方案 R4）。"""
+    tree = _git("rev-parse", f"{source_ref}^{{tree}}").decode().strip()
+    marker = dest / ".official_tree"
+    if dest.exists() and marker.exists() and marker.read_text().strip() == tree:
+        return {"tree": tree, "reused": "1"}
+    if dest.exists():
+        raise IdentityFreezeError(f"{dest} 已存在且不是 {tree}；换目录或先自行清理")
+    dest.mkdir(parents=True)
+    archive = subprocess.Popen(
+        ["git", "-C", str(REPO_ROOT), "archive", "--format=tar", source_ref],
+        stdout=subprocess.PIPE,
+    )
+    untar = subprocess.run(["tar", "-x", "-C", str(dest)], stdin=archive.stdout, check=False)
+    archive.wait()
+    if archive.returncode != 0 or untar.returncode != 0:
+        raise IdentityFreezeError(f"导出官方源码失败：{source_ref} → {dest}")
+    marker.write_text(tree + "\n")
+    return {"tree": tree, "reused": "0"}
+
+
+def _environment_fingerprint() -> dict[str, object]:
+    """记录本次运行的实际设备与环境（方案 9.5 要求各路都留指纹）。"""
+    import platform
+
+    def _probe(cmd: list[str]) -> str | None:
+        try:
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        except (OSError, subprocess.SubprocessError):
+            return None
+        return proc.stdout.strip() if proc.returncode == 0 else None
+
+    return {
+        "hostname": platform.node(),
+        "platform": platform.platform(),
+        "python": sys.version.split()[0],
+        "nvidia_smi": _probe(
+            ["nvidia-smi", "--query-gpu=index,name,driver_version", "--format=csv,noheader"]
+        ),
+        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
+        "slurm_nodelist": os.environ.get("SLURM_NODELIST"),
+        "uv_lock_sha256": hashlib.sha256((REPO_ROOT / "uv.lock").read_bytes()).hexdigest(),
+        "pyproject_sha256": hashlib.sha256((REPO_ROOT / "pyproject.toml").read_bytes()).hexdigest(),
+    }
+
+
+def select_rows(
+    manifest: dict[str, object],
+    env: str | None,
+    episode: int | None,
+    shard: tuple[int, int] | None,
+) -> list[dict[str, object]]:
+    """从子集 manifest 里挑本次要跑的身份：单条、按 task 分片或全子集。"""
+    rows = list(manifest["rows"])  # type: ignore[arg-type]
+    if env is not None:
+        rows = [row for row in rows if row["task"] == env]
+        if episode is not None:
+            rows = [row for row in rows if int(row["episode"]) == episode]
+        if not rows:
+            raise IdentityFreezeError(
+                f"{env}/episode {episode} 不在子集 manifest 内；"
+                "不得由 --episodes N 推导连续编号，也不得换样本"
+            )
+    if shard is not None:
+        index, total = shard
+        # 按 ALL_TASKS 顺序切成连续块，与方案第二部分「十」的分片表一致（4 片即 [0:4]、[4:8]…）。
+        size = (len(ALL_TASKS) + total - 1) // total
+        group = list(ALL_TASKS[(index - 1) * size : index * size])
+        rows = [row for row in rows if row["task"] in group]
+        if not rows:
+            raise IdentityFreezeError(f"分片 {index}/{total} 没有命中任何身份")
+    return rows
+
+
+def run_path(
+    path_name: str,
+    rows: list[dict[str, object]],
+    output: Path,
+    official_root: Path,
+    workers: int,
+    gpu: str,
+) -> dict[str, object]:
+    """跑一路。当前只实现 A1／A2（官方隔离源码）；B／C／D 待步 2～4。"""
+    if path_name not in ("A1", "A2"):
+        raise IdentityFreezeError(
+            f"{path_name} 路待步 2／3／4 实现：B 为恢复原值后的默认路径，"
+            "C 加显式原值 sampling_config，D 回注 episode_spec"
+        )
+    path_dir = output / path_name
+    jobs: list[dict[str, object]] = []
+    skipped: list[str] = []
+    for row in rows:
+        worker_dir = path_dir / f"{row['task']}_episode_{row['episode']}"
+        if worker_dir.exists():
+            # job 被回收后续跑：已产出 HDF5 的身份直接跳过，不重跑（方案第二部分「十」）。
+            existing = sorted((worker_dir / "hdf5_files").glob("*.h5"))
+            if existing:
+                skipped.append(worker_dir.name)
+                continue
+            raise IdentityFreezeError(
+                f"{worker_dir} 已存在但没有 HDF5：官方 _worker 要求目录不存在，"
+                "请换输出目录或自行清理该身份目录后重跑"
+            )
+        jobs.append(
+            {
+                "task": row["task"],
+                "episode": int(row["episode"]),
+                "seed": int(row["seed"]),
+                "difficulty": row["difficulty"],
+                "worker_dir": str(worker_dir),
+            }
+        )
+    if skipped:
+        print(f"# {path_name} 路跳过已完成身份 {len(skipped)} 条：{', '.join(skipped[:6])}")
+    if not jobs:
+        return {
+            "path": path_name,
+            "identities": 0,
+            "skipped": skipped,
+            "exit_code": 0,
+            "elapsed_seconds": 0.0,
+            "ok_count": 0,
+            "failed_count": 0,
+        }
+    jobs_path = output / "jobs" / f"{path_name}.json"
+    jobs_path.parent.mkdir(parents=True, exist_ok=True)
+    jobs_path.write_bytes(_json_bytes(jobs))
+    results_path = output / "results" / f"{path_name}.json"
+    log_path = output / "logs" / f"{path_name}.log"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    command = [
+        sys.executable,
+        str(REPO_ROOT / "scripts" / "train_split_runner.py"),
+        "--official-root", str(official_root),
+        "--jobs-json", str(jobs_path),
+        "--results-json", str(results_path),
+        "--workers", str(workers),
+        "--gpu", gpu,
+    ]
+    env = dict(os.environ)
+    env["PYTHONUNBUFFERED"] = "1"
+    env.pop("PYTHONPATH", None)
+    started = time.time()
+    with log_path.open("wb") as log_file:
+        proc = subprocess.run(command, stdout=log_file, stderr=subprocess.STDOUT, env=env)
+    elapsed = round(time.time() - started, 3)
+    summary = {
+        "path": path_name,
+        "identities": len(jobs),
+        "skipped": skipped,
+        "exit_code": proc.returncode,
+        "elapsed_seconds": elapsed,
+        "results_json": str(results_path.relative_to(output)),
+        "log": str(log_path.relative_to(output)),
+    }
+    if results_path.exists():
+        payload = json.loads(results_path.read_text(encoding="utf-8"))
+        results = payload["results"]
+        summary["ok_count"] = sum(1 for item in results if item.get("ok"))
+        summary["failed_count"] = sum(1 for item in results if not item.get("ok"))
+        summary["robomme_module"] = payload.get("robomme_module")
+    return summary
+
+
 def cmd_run(args: argparse.Namespace) -> int:
-    manifest = _load_subset_manifest(Path(args.manifest))
+    manifest_path = Path(args.manifest)
+    manifest = _load_subset_manifest(manifest_path)
     paths = _parse_paths(args.paths)
     shard = _parse_shard(args.shard)
-    rows = manifest["rows"]  # type: ignore[index]
-    if args.env is not None:
-        if args.env not in ALL_TASKS:
-            raise IdentityFreezeError(f"未知环境名：{args.env}")
-        if args.episode is not None:
-            hit = [
-                row
-                for row in rows  # type: ignore[union-attr]
-                if row["task"] == args.env and int(row["episode"]) == args.episode
-            ]
-            if not hit:
-                raise IdentityFreezeError(
-                    f"{args.env}/episode {args.episode} 不在子集 manifest 内；"
-                    "不得由 --episodes N 推导连续编号，也不得换样本"
-                )
-    elif args.episode is not None:
+    if args.env is not None and args.env not in ALL_TASKS:
+        raise IdentityFreezeError(f"未知环境名：{args.env}")
+    if args.env is None and args.episode is not None:
         raise IdentityFreezeError("--episode 必须与 --env 一起给出")
     if args.workers < 1:
         raise IdentityFreezeError("--workers 必须 ≥ 1")
     if args.gpus != "0":
         raise IdentityFreezeError("官方 _parse_gpus 只接受 \"0\"；集群 job 内 CUDA_VISIBLE_DEVICES=0")
+
+    rows = select_rows(manifest, args.env, args.episode, shard)
+    output = Path(args.output)
+    output.mkdir(parents=True, exist_ok=True)
+    source_ref = ensure_source_ref(args.source_ref, args.source_repo)
+    official_root = Path(args.official_root) if args.official_root else output / "official-src"
+    official = materialize_official_source(source_ref, official_root)
+
+    config = {
+        "schema": "train-parity-run-config/1",
+        "started_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "argv": sys.argv[1:],
+        "manifest": str(manifest_path),
+        "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+        "source_ref": source_ref,
+        "official_tree": official["tree"],
+        "official_root": str(official_root),
+        "paths": paths,
+        "workers": args.workers,
+        "gpus": args.gpus,
+        "shard": args.shard,
+        "identities": [
+            {
+                "task": row["task"],
+                "episode": row["episode"],
+                "seed": row["seed"],
+                "difficulty": row["difficulty"],
+                "recovery_mode": row["recovery_mode"],
+            }
+            for row in rows
+        ],
+        "environment": _environment_fingerprint(),
+    }
+    (output / "run_config.json").write_bytes(_json_bytes(config))
     print(
-        f"# 参数校验通过：paths={','.join(paths)} workers={args.workers} "
-        f"shard={args.shard or '-'} rows={len(rows)}"  # type: ignore[arg-type]
+        f"# 身份 {len(rows)} 条，路径 {','.join(paths)}，worker {args.workers}，"
+        f"官方源码树 {official['tree'][:12]}（{'复用' if official['reused'] == '1' else '新导出'}）"
     )
-    raise SystemExit("run 子命令待步 1b 实现；本步只提供 --help 与参数校验")
+
+    summaries = []
+    failed = 0
+    for path_name in paths:
+        summary = run_path(path_name, rows, output, official_root, args.workers, args.gpus)
+        summaries.append(summary)
+        failed += int(summary.get("failed_count", 0) or 0) + (1 if summary["exit_code"] else 0)
+        print(
+            f"RUN_PATH path={path_name} identities={summary['identities']} "
+            f"ok={summary.get('ok_count', 0)} failed={summary.get('failed_count', 0)} "
+            f"exit={summary['exit_code']} elapsed_s={summary['elapsed_seconds']}"
+        )
+    (output / "run_summary.json").write_bytes(
+        _json_bytes({"schema": "train-parity-run-summary/1", "paths": summaries, "config": config})
+    )
+    print(f"RUN_DONE paths={len(paths)} identities={len(rows)} failed={failed}")
+    return 0 if failed == 0 else 1
+
+
+# --------------------------------------------------------------------------
+# compare：HDF5 全字段逐位对拍（方案第二部分「十一」）
+# --------------------------------------------------------------------------
+
+DEFAULT_PAIRS = ("A1:A2", "A1:B", "B:C", "C:D", "A1:D")
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _attr_bytes(value: object) -> bytes:
+    import numpy as np
+
+    array = np.asarray(value)
+    if array.dtype == object:
+        return repr(array.tolist()).encode("utf-8")
+    return array.tobytes()
+
+
+def _dataset_bytes(dataset) -> bytes:
+    import numpy as np
+
+    value = dataset[()]
+    array = np.asarray(value)
+    if array.dtype == object:
+        # 字符串／变长对象：逐元素规范成 bytes 再比，不做四舍五入或文本化数值比较。
+        flat = [
+            item.encode("utf-8") if isinstance(item, str) else bytes(item)
+            for item in array.reshape(-1).tolist()
+        ]
+        return b"\x00".join(flat)
+    return array.tobytes()
+
+
+def _first_diff_index(left, right) -> int | None:
+    import numpy as np
+
+    try:
+        left_array = np.asarray(left[()])
+        right_array = np.asarray(right[()])
+    except Exception:  # noqa: BLE001 读不出就不给索引
+        return None
+    if left_array.shape != right_array.shape or left_array.dtype != right_array.dtype:
+        return None
+    if left_array.dtype == object:
+        for index, (a, b) in enumerate(
+            zip(left_array.reshape(-1).tolist(), right_array.reshape(-1).tolist())
+        ):
+            if a != b:
+                return index
+        return None
+    # 按位比较：浮点不设容差，NaN 也按位模式比。
+    left_view = left_array.reshape(-1).view(np.uint8)
+    right_view = right_array.reshape(-1).view(np.uint8)
+    diff = np.flatnonzero(left_view != right_view)
+    if diff.size == 0:
+        return None
+    itemsize = max(left_array.dtype.itemsize, 1)
+    return int(diff[0] // itemsize)
+
+
+def compare_h5_pair(left: Path, right: Path) -> dict[str, object]:
+    """两层比较：先整文件 SHA-256，不同再用 h5py 递归逐字段比原始字节。"""
+    import h5py
+
+    result: dict[str, object] = {
+        "left": str(left),
+        "right": str(right),
+        "sha_equal": 0,
+        "field_mismatch": 0,
+        "missing_left": [],
+        "missing_right": [],
+        "mismatches": [],
+        "timestep_count": {},
+    }
+    left_sha, right_sha = sha256_file(left), sha256_file(right)
+    result["left_sha256"], result["right_sha256"] = left_sha, right_sha
+    if left_sha == right_sha:
+        result["sha_equal"] = 1
+        return result
+
+    with h5py.File(left, "r") as lf, h5py.File(right, "r") as rf:
+        left_paths: dict[str, str] = {}
+        right_paths: dict[str, str] = {}
+
+        def collect(store: dict[str, str]):
+            def visitor(name, obj):
+                store[name] = "group" if isinstance(obj, h5py.Group) else "dataset"
+            return visitor
+
+        lf.visititems(collect(left_paths))
+        rf.visititems(collect(right_paths))
+        result["missing_right"] = sorted(set(left_paths) - set(right_paths))
+        result["missing_left"] = sorted(set(right_paths) - set(left_paths))
+        result["field_mismatch"] = len(result["missing_left"]) + len(result["missing_right"])
+
+        # 时间步数不同时先记差异，再只比共有时间步，不截断掩盖。
+        def timesteps(store: dict[str, str]) -> int:
+            return sum(1 for name in store if name.count("/") == 1 and "timestep_" in name)
+
+        left_steps, right_steps = timesteps(left_paths), timesteps(right_paths)
+        result["timestep_count"] = {"left": left_steps, "right": right_steps}
+        if left_steps != right_steps:
+            result["field_mismatch"] = int(result["field_mismatch"]) + 1
+
+        mismatches: list[dict[str, object]] = []
+        for name in sorted(set(left_paths) & set(right_paths)):
+            left_obj, right_obj = lf[name], rf[name]
+            left_attrs = dict(left_obj.attrs)
+            right_attrs = dict(right_obj.attrs)
+            if set(left_attrs) != set(right_attrs):
+                mismatches.append({"path": name, "kind": "attr_keys"})
+                continue
+            for key in sorted(left_attrs):
+                if _attr_bytes(left_attrs[key]) != _attr_bytes(right_attrs[key]):
+                    mismatches.append({"path": f"{name}@{key}", "kind": "attr_value"})
+            if left_paths[name] == "dataset":
+                if left_obj.dtype != right_obj.dtype or left_obj.shape != right_obj.shape:
+                    mismatches.append(
+                        {
+                            "path": name,
+                            "kind": "dtype_or_shape",
+                            "left_dtype": str(left_obj.dtype),
+                            "right_dtype": str(right_obj.dtype),
+                            "left_shape": list(left_obj.shape),
+                            "right_shape": list(right_obj.shape),
+                        }
+                    )
+                    continue
+                if _dataset_bytes(left_obj) != _dataset_bytes(right_obj):
+                    mismatches.append(
+                        {
+                            "path": name,
+                            "kind": "value",
+                            "dtype": str(left_obj.dtype),
+                            "shape": list(left_obj.shape),
+                            "first_diff_index": _first_diff_index(left_obj, right_obj),
+                        }
+                    )
+        result["mismatches"] = mismatches
+        result["field_mismatch"] = int(result["field_mismatch"]) + len(mismatches)
+    return result
+
+
+def _identity_dirs(path_dir: Path) -> dict[str, Path]:
+    """<路径目录>/<task>_episode_<n> → 身份键。"""
+    out: dict[str, Path] = {}
+    if not path_dir.is_dir():
+        return out
+    for child in sorted(path_dir.iterdir()):
+        if child.is_dir() and "_episode_" in child.name:
+            out[child.name] = child
+    return out
+
+
+def _h5_of(identity_dir: Path) -> Path | None:
+    files = sorted((identity_dir / "hdf5_files").glob("*.h5")) if identity_dir.exists() else []
+    return files[0] if len(files) == 1 else None
+
+
+def _sidecars(identity_dir: Path) -> dict[str, str]:
+    """身份目录下除 HDF5 外的落盘文件散列（视频、图像、json 等）。"""
+    out: dict[str, str] = {}
+    for item in sorted(identity_dir.rglob("*")):
+        if not item.is_file() or item.suffix == ".h5":
+            continue
+        out[str(item.relative_to(identity_dir))] = sha256_file(item)
+    return out
+
+
+def _resolve_side(spec: str, runs: dict[str, Path]) -> tuple[str, Path]:
+    if "/" in spec:
+        label, _, path_name = spec.partition("/")
+    else:
+        label, path_name = next(iter(runs)), spec
+    if label not in runs:
+        raise IdentityFreezeError(f"未知运行标签 {label!r}；可用 {sorted(runs)}")
+    if path_name not in PATH_NAMES:
+        raise IdentityFreezeError(f"未知路径名 {path_name!r}")
+    return f"{label}/{path_name}", runs[label] / path_name
 
 
 def cmd_compare(args: argparse.Namespace) -> int:
-    run_dir = Path(args.run)
-    if not run_dir.exists():
-        raise IdentityFreezeError(f"运行目录不存在：{run_dir}")
-    print(f"# 参数校验通过：run={run_dir}")
-    raise SystemExit("compare 子命令待步 1b 实现；本步只提供 --help 与参数校验")
+    runs: dict[str, Path] = {}
+    for item in args.run:
+        label, _, path_text = item.partition("=")
+        if not path_text:
+            label, path_text = Path(item).name, item
+        run_dir = Path(path_text)
+        if not run_dir.exists():
+            raise IdentityFreezeError(f"运行目录不存在：{run_dir}")
+        if label in runs:
+            raise IdentityFreezeError(f"运行标签重复：{label}")
+        runs[label] = run_dir
+
+    pair_specs = args.pair or list(DEFAULT_PAIRS)
+    output = Path(args.output) if args.output else next(iter(runs.values())) / "compare"
+    output.mkdir(parents=True, exist_ok=True)
+    jsonl = (output / "h5_pairs.jsonl").open("w", encoding="utf-8")
+    summary_rows: list[dict[str, object]] = []
+    overall_fail = 0
+
+    for spec in pair_specs:
+        left_spec, _, right_spec = spec.partition(":")
+        if not right_spec:
+            raise IdentityFreezeError(f"--pair 必须形如 LEFT:RIGHT，当前为 {spec!r}")
+        left_label, left_dir = _resolve_side(left_spec, runs)
+        right_label, right_dir = _resolve_side(right_spec, runs)
+        left_ids, right_ids = _identity_dirs(left_dir), _identity_dirs(right_dir)
+        shared = sorted(set(left_ids) & set(right_ids))
+        only_left = sorted(set(left_ids) - set(right_ids))
+        only_right = sorted(set(right_ids) - set(left_ids))
+        if not shared and args.pair is None:
+            continue  # 默认对里尚未产出的路径直接跳过，不冒充比过
+        compared = sha_equal = field_mismatch = 0
+        sidecar_mismatch = 0
+        for identity in shared:
+            left_h5, right_h5 = _h5_of(left_ids[identity]), _h5_of(right_ids[identity])
+            if left_h5 is None or right_h5 is None:
+                field_mismatch += 1
+                jsonl.write(
+                    json.dumps(
+                        {
+                            "pair": f"{left_label}|{right_label}",
+                            "identity": identity,
+                            "error": "hdf5 缺失或不唯一",
+                            "left_dir": str(left_ids[identity]),
+                            "right_dir": str(right_ids[identity]),
+                        },
+                        ensure_ascii=False,
+                    )
+                    + "\n"
+                )
+                continue
+            record = compare_h5_pair(left_h5, right_h5)
+            record["pair"] = f"{left_label}|{right_label}"
+            record["identity"] = identity
+            left_side, right_side = _sidecars(left_ids[identity]), _sidecars(right_ids[identity])
+            sidecar_diff = sorted(
+                name
+                for name in set(left_side) | set(right_side)
+                if left_side.get(name) != right_side.get(name)
+            )
+            record["sidecar_mismatch"] = sidecar_diff
+            sidecar_mismatch += len(sidecar_diff)
+            compared += 1
+            sha_equal += int(record["sha_equal"])
+            field_mismatch += int(record["field_mismatch"])
+            jsonl.write(json.dumps(record, ensure_ascii=False) + "\n")
+        pair_tag = f"{left_label}|{right_label}".replace("/", ".")
+        print(
+            f"H5_PARITY pair={pair_tag} compared={compared} sha_equal={sha_equal} "
+            f"field_mismatch={field_mismatch}"
+        )
+        if only_left or only_right:
+            print(f"# 仅一侧存在的身份：left_only={only_left} right_only={only_right}")
+        if sidecar_mismatch:
+            print(f"# 伴生文件（视频／图像／json）散列不同：{sidecar_mismatch} 项")
+        summary_rows.append(
+            {
+                "pair": pair_tag,
+                "left": left_label,
+                "right": right_label,
+                "compared": compared,
+                "sha_equal": sha_equal,
+                "field_mismatch": field_mismatch,
+                "sidecar_mismatch": sidecar_mismatch,
+                "only_left": only_left,
+                "only_right": only_right,
+            }
+        )
+        overall_fail += field_mismatch + len(only_left) + len(only_right)
+    jsonl.close()
+
+    if args.history:
+        projection = json.loads(Path(args.history).read_text(encoding="utf-8"))
+        history_index = {
+            (row["task"], int(row["episode"])): row for row in projection["rows"]
+        }
+        compared = outcome_mismatch = detail_mismatch = 0
+        details: list[dict[str, object]] = []
+        for label, run_dir in runs.items():
+            results_path = run_dir / "results" / f"{args.history_path}.json"
+            if not results_path.exists():
+                continue
+            for item in json.loads(results_path.read_text(encoding="utf-8"))["results"]:
+                key = (item["task"], int(item["episode"]))
+                history = history_index.get(key)
+                if history is None:
+                    outcome_mismatch += 1
+                    details.append({"run": label, "identity": key, "error": "历史投影缺少该身份"})
+                    continue
+                compared += 1
+                row_errors: list[str] = []
+                # 身份与恢复模式：不符即 outcome_mismatch。
+                if int(history["seed"]) != int(item["seed"]) or history["difficulty"] != item["difficulty"]:
+                    row_errors.append("identity")
+                if history["recovery_mode"] != item.get("recovery_mode"):
+                    row_errors.append("recovery_mode")
+                if bool(history["history"]["ok"]) != bool(item.get("ok")):
+                    row_errors.append("success")
+                if row_errors:
+                    outcome_mismatch += 1
+                # 帧数属于 detail：历史生成侧帧数与本次 A 路帧数逐条比。
+                if item.get("ok") and history["history"]["timestep_count"] != item.get("timestep_count"):
+                    detail_mismatch += 1
+                    row_errors.append("timestep_count")
+                if row_errors:
+                    details.append(
+                        {
+                            "run": label,
+                            "identity": f"{key[0]}/episode_{key[1]}",
+                            "fields": row_errors,
+                            "history_timestep_count": history["history"]["timestep_count"],
+                            "run_timestep_count": item.get("timestep_count"),
+                        }
+                    )
+        status = "PASS" if compared and outcome_mismatch == 0 and detail_mismatch == 0 else "FAIL"
+        print(
+            f"DATASET_GEN_REPORT_PARITY={status} compared={compared} "
+            f"fields=identity,recovery_mode,success,timestep_count "
+            f"outcome_mismatch={outcome_mismatch} detail_mismatch={detail_mismatch}"
+        )
+        for item in details:
+            print(f"# 历史投影差异 {item}")
+        (output / "history_parity.json").write_bytes(
+            _json_bytes(
+                {
+                    "schema": "train-parity-history-check/1",
+                    "path": args.history_path,
+                    "compared": compared,
+                    "outcome_mismatch": outcome_mismatch,
+                    "detail_mismatch": detail_mismatch,
+                    "details": details,
+                }
+            )
+        )
+        overall_fail += outcome_mismatch + detail_mismatch
+
+    if args.gate:
+        total_compared = sum(int(row["compared"]) for row in summary_rows)
+        total_mismatch = sum(int(row["field_mismatch"]) for row in summary_rows)
+        if args.gate == "BASELINE_REPEAT":
+            print(
+                f"BASELINE_REPEAT={'PASS' if total_mismatch == 0 and total_compared else 'FAIL'} "
+                f"compared={total_compared} different={total_mismatch}"
+            )
+        elif args.gate == "NODE_PARITY":
+            identities = max((int(row["compared"]) for row in summary_rows), default=0)
+            print(
+                f"NODE_PARITY={'PASS' if total_mismatch == 0 and total_compared else 'FAIL'} "
+                f"identities={identities} jobs={len(runs)} mismatch={total_mismatch}"
+            )
+        else:
+            raise IdentityFreezeError(f"未知闸门名：{args.gate}")
+
+    (output / "summary.json").write_bytes(
+        _json_bytes(
+            {
+                "schema": "train-parity-compare-summary/1",
+                "compared_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+                "runs": {label: str(path) for label, path in runs.items()},
+                "pairs": summary_rows,
+            }
+        )
+    )
+    print(f"# 逐对明细 {output}/h5_pairs.jsonl；汇总 {output}/summary.json")
+    return 0 if overall_fail == 0 else 1
 
 
 # --------------------------------------------------------------------------
@@ -818,11 +1391,28 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--workers", type=int, default=1)
     run.add_argument("--gpus", default="0")
     run.add_argument("--shard", default=None, help="分片 k/N，按 task 切")
+    run.add_argument("--source-repo", default=DEFAULT_SOURCE_REPO)
+    run.add_argument("--source-ref", default=DEFAULT_SOURCE_REF)
+    run.add_argument("--official-root", default=None, help="官方隔离源码目录，默认 <output>/official-src")
     run.add_argument("--output", required=True)
     run.set_defaults(func=cmd_run)
 
-    compare = sub.add_parser("compare", help="只读比较五路产物（步 1b 起实现）")
-    compare.add_argument("--run", required=True, help="运行目录")
+    compare = sub.add_parser("compare", help="只读比较五路产物：HDF5 全字段逐位对拍")
+    compare.add_argument(
+        "--run", required=True, action="append",
+        help="运行目录，可重复；写成 <标签>=<目录> 可自定义标签（跨 job 比较用）",
+    )
+    compare.add_argument(
+        "--pair", action="append", default=None,
+        help="比较对 LEFT:RIGHT，可重复；跨运行写 <标签>/<路径>。默认 A1:A2,A1:B,B:C,C:D,A1:D",
+    )
+    compare.add_argument(
+        "--history", default=None,
+        help="历史投影 JSON（步 1a 产物），给出后按 R1a 可比字段比对并输出 DATASET_GEN_REPORT_PARITY",
+    )
+    compare.add_argument("--history-path", default="A1", help="与历史投影比对的路径名，默认 A1")
+    compare.add_argument("--gate", default=None, help="额外输出闸门判定行：BASELINE_REPEAT 或 NODE_PARITY")
+    compare.add_argument("--output", default=None, help="比较结果目录，默认 <第一个运行目录>/compare")
     compare.set_defaults(func=cmd_compare)
     return parser
 
