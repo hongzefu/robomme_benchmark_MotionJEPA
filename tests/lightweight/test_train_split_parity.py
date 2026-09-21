@@ -175,13 +175,14 @@ def test_run_rejects_episode_outside_subset(tmp_path: Path) -> None:
     )
     with pytest.raises(parity.IdentityFreezeError):
         parity.cmd_run(args)
-    # 子集内的 episode 0 应通过校验，再落到「待步 1b 实现」。
-    args_ok = parser.parse_args(
-        ["run", "--manifest", str(path), "--env", "BinFill", "--episode", "0",
-         "--paths", "A1,A2", "--output", str(tmp_path / "out")]
-    )
-    with pytest.raises(SystemExit):
-        parity.cmd_run(args_ok)
+    # 子集内的 episode 0 必须能选出唯一一条身份（这里只做选择，不真的起仿真）。
+    picked = parity.select_rows(manifest, "BinFill", 0, None)
+    assert len(picked) == 1
+    assert picked[0]["seed"] == 4000 and picked[0]["recovery_mode"] == "z"
+    # 分片选择与方案第二部分「十」的分片表一致：4 片按 ALL_TASKS 顺序连续切。
+    shard1 = parity.select_rows(manifest, None, None, (1, 4))
+    assert {row["task"] for row in shard1} == set(parity.ALL_TASKS[0:4])
+    assert len(shard1) == 36
 
 
 # --------------------------------------------------------------------------

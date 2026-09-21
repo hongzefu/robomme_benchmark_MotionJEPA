@@ -26,13 +26,13 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 
-def _strip_working_copy_src(official_root: Path) -> list[str]:
-    """把本仓库的 ``src``（editable 安装的 .pth 注入）移出 sys.path。
+def _strip_working_copy_src(src_root: Path) -> list[str]:
+    """把除 ``src_root`` 以外的 ``robomme`` 源码路径（editable 安装的 .pth 注入）移出 sys.path。
 
-    spawn 子进程会继承父进程的 ``sys.path``，所以这里去掉一次即可保证官方源码不被遮蔽。
+    spawn 子进程会继承父进程的 ``sys.path``，所以这里去掉一次即可保证目标源码不被遮蔽。
     返回被移除的条目，供留档。
     """
-    official_src = str((official_root / "src").resolve())
+    official_src = str((src_root / "src").resolve())
     removed: list[str] = []
     for entry in list(sys.path):
         try:
@@ -47,11 +47,11 @@ def _strip_working_copy_src(official_root: Path) -> list[str]:
     return removed
 
 
-def _probe_robomme(official_root: Path) -> str:
-    """在干净子进程里确认 ``import robomme`` 解析到官方源码而非工作副本。"""
+def _probe_robomme(src_root: Path) -> str:
+    """在干净子进程里确认 ``import robomme`` 解析到指定源码树而非别处。"""
     code = (
         "import sys, json;"
-        f"sys.path.insert(0, {str(official_root / 'src')!r});"
+        f"sys.path.insert(0, {str(src_root / 'src')!r});"
         "import robomme;print(robomme.__file__)"
     )
     env = dict(os.environ)
@@ -60,15 +60,20 @@ def _probe_robomme(official_root: Path) -> str:
     if proc.returncode != 0:
         raise RuntimeError("robomme 探针失败：\n" + proc.stderr)
     resolved = proc.stdout.strip().splitlines()[-1]
-    expected = str((official_root / "src" / "robomme").resolve())
+    expected = str((src_root / "src" / "robomme").resolve())
     if not resolved.startswith(expected):
-        raise RuntimeError(f"robomme 解析到 {resolved}，不在官方源码 {expected} 下")
+        raise RuntimeError(f"robomme 解析到 {resolved}，不在目标源码 {expected} 下")
     return resolved
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="A 路隔离运行器（官方 _worker）")
-    parser.add_argument("--official-root", required=True, help="官方固定源码根目录")
+    parser.add_argument("--official-root", required=True, help="官方固定源码根目录（提供 _worker 等编排代码）")
+    parser.add_argument(
+        "--src-root", default=None,
+        help="环境源码树根目录，默认与 --official-root 相同（A 路）；"
+             "B 路传本工作副本根目录，官方 _worker 会从这里加载 robomme",
+    )
     parser.add_argument("--jobs-json", required=True, help="身份列表 JSON（task/episode/seed/difficulty/worker_dir）")
     parser.add_argument("--results-json", required=True, help="逐条结果输出")
     parser.add_argument("--workers", type=int, default=1)
@@ -76,12 +81,13 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     official_root = Path(args.official_root).resolve()
+    src_root = Path(args.src_root).resolve() if args.src_root else official_root
     script_dir = official_root / "scripts" / "data-generation"
     if not (script_dir / "generate_dataset.py").exists():
         raise SystemExit(f"官方生成脚本不存在：{script_dir / 'generate_dataset.py'}")
 
-    removed = _strip_working_copy_src(official_root)
-    probe = _probe_robomme(official_root)
+    removed = _strip_working_copy_src(src_root)
+    probe = _probe_robomme(src_root)
     if str(script_dir) not in sys.path:
         sys.path.insert(0, str(script_dir))
     import generate_dataset as official  # noqa: E402  官方固定源码
@@ -110,7 +116,9 @@ def main(argv: list[str] | None = None) -> int:
                 difficulty=str(item["difficulty"]),
                 worker_dir=str(item["worker_dir"]),
                 gpu=str(args.gpu),
-                repo_root=str(official_root),
+                # 官方 _worker 只用 repo_root 定位 src：A 路指官方源码，B 路指本工作副本，
+                # 编排代码始终是官方那一份，因此两路差异只可能来自环境源码本身。
+                repo_root=str(src_root),
             )
         )
 
@@ -146,6 +154,7 @@ def main(argv: list[str] | None = None) -> int:
     payload = {
         "schema": "train-parity-runner-results/1",
         "official_root": str(official_root),
+        "src_root": str(src_root),
         "official_module": str(Path(official.__file__).resolve()),
         "robomme_module": probe,
         "removed_sys_path_entries": removed,

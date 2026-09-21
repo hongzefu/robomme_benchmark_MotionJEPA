@@ -338,6 +338,14 @@ episode_spec  layout / objects / actions / initializations
 
 本步从 `ce72b04` 切出 `newtaskRelease-v3`，新增 [scripts/train_split_parity.py](scripts/train_split_parity.py)（`freeze-identities` 已实现，`run`／`compare` 只有 `--help` 与参数校验）与 [tests/lightweight/test_train_split_parity.py](tests/lightweight/test_train_split_parity.py)，冻结产物落 `scripts/configs/newtask-v3/`。G1 实测：`TRAIN_IDENTITY=PASS tasks=16 rows=1600 mismatch=0`、`TRAIN_SUBSET=PASS tasks=16 per_cell=3 rows=144`，非公式 seed 170 条、串接散列命中 `a57655d6…`、全量恢复配置 z=48／xy=48／off=1504、子集 z=48／xy=32／off=64、各环境子集 episode 均为 `[0,1,2,3,4,6,7,10,11]`，全部与方案实读口径一致。完整留档见 [docs/validation/newtask-v3/20260921-step0-freeze-identities.md](docs/validation/newtask-v3/20260921-step0-freeze-identities.md)。本步未改 `src/robomme/`，未启动仿真。
 
+### 12.1～12.3 步 1a／1b：历史冻结、五路编排与 A40 上的 P0／P1（2026-09-21）
+
+步 1a 冻结官方历史报告并按 144 条投影 R1a 可比字段：`HISTORY_FREEZE=PASS rows=1600 subset=144 identity_mismatch=0 missing=0`，R1c／R2 记 `NOT_RUN`（三处历史成品探测点实测均不存在），全集 10 条帧数不符里落入子集的恰为 BinFill/11 与 PickHighlight/3。留档见 [20260921-step1a-freeze-history.md](docs/validation/newtask-v3/20260921-step1a-freeze-history.md)。
+
+步 1b 新增 A 路隔离运行器、HDF5 全字段逐位对拍器与官方比较器的稀疏范围适配，G5 实测 `COMPARATOR_SCOPE=PASS contiguous_mismatch=0 sparse_mismatch=0 invalid_accepts=0`；留档见 [20260921-step1b-a-path-and-comparators.md](docs/validation/newtask-v3/20260921-step1b-a-path-and-comparators.md)。A 路只调官方 `_worker`（官方 `generate_dataset()` 的 `_ensure_layout` 依赖缺失的发布集，而 `_worker` 不依赖，且方案比较的正是 `hdf5_files/*.h5` 原始产物）。
+
+集群侧：开工时第 4 个占位 job 61673586 已调度上，4 个 job 全部 RUNNING，故 P0 直接按 `jobs=4` 完成，未使用 3 job 回退。A40 实测 `BASELINE_REPEAT=PASS compared=1 different=0`、`NODE_PARITY=PASS identities=1 jobs=4 mismatch=0`、`DATASET_GEN_REPORT_PARITY=PASS compared=4 … outcome_mismatch=0 detail_mismatch=0`，**允许按 task 分片**。同一身份本机（sm_89）与 A40（sm_86）散列不同，证实本机结果不能进判据。实测口径：单条单 worker 约 50 s、单次生成产物约 283 MB（HDF5 270 MB + 视频 13 MB），720 次生成估约 200 GB 起，Turbo 余量 5.5T。留档见 [20260921-step1b-cluster-p0-p1.md](docs/validation/newtask-v3/20260921-step1b-cluster-p0-p1.md)。
+
 # 第二部分（技术细节，供 agent 追踪）
 
 ## 〇、前置声明与红线

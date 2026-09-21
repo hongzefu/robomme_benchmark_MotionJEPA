@@ -811,11 +811,15 @@ def run_path(
     workers: int,
     gpu: str,
 ) -> dict[str, object]:
-    """跑一路。当前只实现 A1／A2（官方隔离源码）；B／C／D 待步 2～4。"""
-    if path_name not in ("A1", "A2"):
+    """跑一路。
+
+    A1／A2 用官方隔离源码；B 用同一份官方编排代码加载**本工作副本**的 `src`，
+    因此 A↔B 的差异只可能来自环境源码本身（步 2 要找的正是这些继承改动）。
+    C／D 需要额外传 `sampling_config`／`episode_spec`，待步 3／4 实现。
+    """
+    if path_name in ("C", "D"):
         raise IdentityFreezeError(
-            f"{path_name} 路待步 2／3／4 实现：B 为恢复原值后的默认路径，"
-            "C 加显式原值 sampling_config，D 回注 episode_spec"
+            f"{path_name} 路待步 3／4 实现：C 加显式原值 sampling_config，D 回注 episode_spec"
         )
     path_dir = output / path_name
     jobs: list[dict[str, object]] = []
@@ -864,6 +868,7 @@ def run_path(
         sys.executable,
         str(REPO_ROOT / "scripts" / "train_split_runner.py"),
         "--official-root", str(official_root),
+        *(["--src-root", str(REPO_ROOT)] if path_name == "B" else []),
         "--jobs-json", str(jobs_path),
         "--results-json", str(results_path),
         "--workers", str(workers),
@@ -891,6 +896,7 @@ def run_path(
         summary["ok_count"] = sum(1 for item in results if item.get("ok"))
         summary["failed_count"] = sum(1 for item in results if not item.get("ok"))
         summary["robomme_module"] = payload.get("robomme_module")
+        summary["src_root"] = payload.get("src_root")
     return summary
 
 
