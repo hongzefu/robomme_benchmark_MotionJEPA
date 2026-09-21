@@ -2,7 +2,7 @@
 
 > 本方案以用户本轮要求为准，只规划，不实施。工作副本为 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，核验代码为 `a4a6e9fab630e9399ca538ab2cc9d008e9638713`，当前分支为 `newtask-v2.1refractor`，commit 编号沿用仓库现行 `<大版本>.<小版本> <中文描述>` 体例。方案于 `11.20` 首次落地，后续仅修订本文件及必要账本；`11.24` 将逐环境字段合并为四列单表；本次 `11.25` 按 [AGENTS.md](AGENTS.md) 强制规则第 10 条把全文重排为「第一部分（给人看）／第二部分（技术细节，供 agent 追踪）」，第二节字段表原样保留，运行代码未变，不创建分支。**方案之后开始实施时，先从包含本方案的提交切出用户指定的 `newtaskRelease-v3`，再改代码；每一步都须单独获批。**
 >
-> 新分支的第一轮目标是：**十六个环境都能显式传入 `sampling_config` 与 `episode_spec`，按官方原始 train 的 16×100＝1600 条实际身份重放，与官方 `dataset-gen` 分支的生成及测试结果对拍，保留其中的 fail recover，证明注入前后保持一致。** 权威来源固定为 [RoboMME/robomme_benchmark 的 dataset-gen 分支](https://github.com/RoboMME/robomme_benchmark/tree/d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa)，本轮核验提交 `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa`；既有测试报告另记录其实际运行提交，见第四节及第二部分 9.5。外部依赖锚点为当前 `uv.lock`／`pyproject.toml` 指纹与官方对应指纹，见第二部分 9.5 末段。本文列出的更难布局、更多物体、更多动作及视频时长要求，只决定接口要留出什么能力，第一轮全部不启用。`src/robomme/` 的每一项源文件改动和运行时覆盖仍须按 [AGENTS.md](AGENTS.md) 强制规则第 11 条逐项批准，录像器保持冻结。
+> 新分支的第一轮目标是：**十六个环境都能显式传入 `sampling_config` 与 `episode_spec`，从官方原始 train 的 16×100＝1600 条实际身份中按每个 task 每个难度约 3 条抽 144 条重放，与官方 `dataset-gen` 分支的生成及测试结果对拍，保留其中的 fail recover，证明注入前后保持一致。** 权威来源固定为 [RoboMME/robomme_benchmark 的 dataset-gen 分支](https://github.com/RoboMME/robomme_benchmark/tree/d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa)，本轮核验提交 `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa`；既有测试报告另记录其实际运行提交，见第四节及第二部分 9.5。外部依赖锚点为当前 `uv.lock`／`pyproject.toml` 指纹与官方对应指纹，见第二部分 9.5 末段。本文列出的更难布局、更多物体、更多动作及视频时长要求，只决定接口要留出什么能力，第一轮全部不启用。`src/robomme/` 的每一项源文件改动和运行时覆盖仍须按 [AGENTS.md](AGENTS.md) 强制规则第 11 条逐项批准，录像器保持冻结。
 
 # 第一部分（给人看）
 
@@ -13,9 +13,9 @@
 **已定死口径**（每条注明依据所在小节；用户原话逐字保留）：
 
 1. 身份与生成行为以官方 `dataset-gen` 提交 `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa` 为准。用户原话：「我说的是原始的[https://github.com/RoboMME/robomme_benchmark](https://github.com/RoboMME/robomme_benchmark) train16*100」「[https://github.com/RoboMME/robomme_benchmark/tree/dataset-gen](https://github.com/RoboMME/robomme_benchmark/tree/dataset-gen)和这个branch的测试结果对拍」「这个里面也有fail recover」。依据第四节，细节见第二部分 9.1。
-2. 1600 条身份逐条读官方 metadata 的 `(task, episode, seed, difficulty)`，170 条 seed 不等于公式值也照原记录用，每条只跑该 seed 一次、失败不换 seed。依据第四节，细节见第二部分 9.1。
+2. 身份逐条读官方 metadata 的 `(task, episode, seed, difficulty)`，170 条 seed 不等于公式值也照原记录用，每条只跑该 seed 一次、失败不换 seed。依据第四节，细节见第二部分 9.1。
 3. fail recover 保持原样：每环境 episode 0～2 为 z、3～5 为 xy，共 96 条配置恢复；对拍不得关掉恢复。依据第四节，细节见第二部分 9.1、9.4。
-4. 五路对拍 A1／A2／B／C／D，验收分母固定 1600 条、共 8000 次生成；`A↔B` 证恢复原行为，`B↔C↔D` 证接口拆分与回注不改数。依据第四节，细节见第二部分 9.2、9.3。
+4. 五路对拍 A1／A2／B／C／D，验收分母按用户 11.28 拍板「不用全部验证 每个task每个难度验证3条左右即可」固定为 16×3×3＝144 条、共 720 次生成，全集 1600 条改为可选后续；两张卡可并行，前提见第四节 P0；`A↔B` 证恢复原行为，`B↔C↔D` 证接口拆分与回注不改数。依据第四节，细节见第二部分 9.2、9.3。
 5. 两个接口的分工：`sampling_config.tasks[env]` 分 `decision`／`native` 两块，`episode_spec` 带版本记录 `identity/layout/objects/actions/initializations/sampling_trace/provenance`；原值对拍模式下 `decision` 也不可改。依据第三节，细节见第二部分 8.1。
 6. 第一轮只做原值导出／消费，第二节「拟修改」列的值全部不启用；外部记录来源固定为 C 路只读导出，不用新 seed 重抽。依据第二节与第三节，细节见第二部分 8.2。
 7. 既有 `dataset-gen` 报告 `status=failed`（217242 个元素非零差异、10 条帧数不符、阈值 `1e-8`）原样保留，不为得到 PASS 改阈值、关恢复或换样本。依据第四节，细节见第二部分 9.5。
@@ -28,7 +28,7 @@
 
 表中的 `sampling_config` 是传给当前环境的配置，即总文件 `tasks[env]` 下的内容；`episode_spec` 是这一局的具体输入。`decision` 保存后续可改参数，`native` 保存原规则。箭头后的字段是配置产生的本局结果；成组字段沿用斜线或花括号表示，未给出的具体范围仍标待定。这些是拟定字段，本轮不改代码或生效值。
 
-第一轮仍按官方 `dataset-gen` 的1600条身份和原fail recover对拍。表中写“拟修改”的值都留到后续启用；原随机规则、派生计算和实际运行观测的技术边界见第三节，字段到源码的映射见第二部分「二」。
+第一轮仍按官方 `dataset-gen` 的身份（每 task 每难度约 3 条，共 144 条）和原fail recover对拍。表中写“拟修改”的值都留到后续启用；原随机规则、派生计算和实际运行观测的技术边界见第三节，字段到源码的映射见第二部分「二」。
 
 ## 二、各环境字段表
 
@@ -237,13 +237,16 @@ episode_spec  layout / objects / actions / initializations
 
 **拿什么跟基线比**：B 是新分支恢复后的默认路径，C 是 B 加显式原值 `sampling_config`，D 是 C 导出的 `episode_spec` 原值回注。`A1↔A2` 先证明基线自身可重复；`A1↔B` 证明恢复到了官方行为（会抓出继承的旧改动，如 `RouteStick.py::step` 尾迹 10 步对官方 40 步）；`B↔C↔D` 与 `A1↔D` 证明接口拆分和回注没有改数。
 
-**能否并行对拍**：能，但分两步放开。每条身份的五路各自是独立进程、独立输出目录，身份之间也互不依赖，所以全集可以按批次并行，用 detached tmux 分批跑。前提是第五节步 1b～5b 先单 worker、固定物理 GPU 0 把基线定死，再经步 5c 核验官方历史用的 20 worker 配置与单 worker 一致并过 P6，才把全集放到多 worker 上跑。并行不改 seed 规则与 fail recover；D 路依赖 C 路导出的规格，所以同一身份内 C→D 串行、不同身份间并行。
+**能否并行对拍**：能，两张卡都能用。本机有两张同型号 RTX 6000 Ada（GPU 0、GPU 1，各 46 GB）。官方 `dataset-gen` 的 `_parse_gpus` 只接受字符串 `"0"`，`_worker` 再把它写进 `CUDA_VISIBLE_DEVICES`，历史全量就是 GPU 0 上 20 个 worker；现行 `generate_dataset_newseed.py::_parse_gpus` 已放开为多卡、每卡一个进程池。所以并行有两层：同一张卡上多 worker（官方历史就是 20 个），以及两张卡各跑一部分身份。放开条件只有一条 P0：同一身份在 GPU 0 与 GPU 1 上各跑一次 A1，逐位相同，证明同型号卡不引入数值差；P0 过了以后，A 路仍按官方脚本钉 GPU 0，B／C／D 可用 GPU 1，同卡 worker 数按官方 20 起步并过 P6。并行不改 seed 规则与 fail recover；D 路依赖 C 路导出的规格，所以同一身份内 C→D 串行、不同身份间并行。
+
+**抽样规模**：用户拍板「不用全部验证 每个task每个难度验证3条左右即可」。每个 task 每个难度按官方 metadata 顺序取该难度前 3 条，共 16×3×3＝144 条；若某环境这 9 条没有覆盖 z、xy、关闭三种恢复状态，用该难度下一条替换第 3 条补齐，替换记录写入 manifest。144 条身份来自官方，不另造；全集 1600 条改为可选后续步 7。
 
 **判据表**：判据行全部摘进运行目录的 `compare` 输出；任一 FAIL 即停、把原文交用户处置，不放宽判据。`N` 出结果时替换为实测条数。「步骤」列对应第五节的步号，定义与「为什么能逐位」的完整展开见第二部分 9.4。
 
 | # | 验证 | 步骤 | 证明什么 | 判据行 | 耗时／资源 |
 |---|---|---|---|---|---|
-| G1 | 原身份完整 | 0 | manifest 与官方固定 metadata 逐条双向相等；无重复、漏项、额外项，170 条非公式 seed 未被公式替代 | `TRAIN_IDENTITY=PASS tasks=16 rows=1600 mismatch=0` | 秒级／CPU，不启动仿真 |
+| G1 | 原身份完整 | 0 | 全量 manifest 与官方固定 metadata 逐条双向相等；无重复、漏项、额外项，170 条非公式 seed 未被公式替代；再从中按每 task 每难度 3 条抽出 144 条子集，子集每条都能回指全量行 | `TRAIN_IDENTITY=PASS tasks=16 rows=1600 mismatch=0` ＋ `TRAIN_SUBSET=PASS tasks=16 per_cell=3 rows=144` | 秒级／CPU，不启动仿真 |
+| P0 | 两卡数值等价 | 1b | 同一身份 A1 在 GPU 0 与 GPU 1 各跑一次，HDF5、图像、状态与事件逐位相同；不同则 B／C／D 也只能钉 GPU 0 | `GPU_PARITY=PASS identities=N mismatch=0` | 2 条生成／GPU 0＋1 |
 | G2 | 配置外提完整 | 3 | 十六环境 `decision`／`native` 每个键映射到源码消费点；原运算元、dtype、区间边界及有效／死字段逐一核对 | `SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0` | 分钟级／CPU |
 | G3 | 字段归属完整 | 3 | 第二节 101 行每项落到 `decision` 或 `native` 及其本局输入／运行观测；原值阶段两块均原值；最近邻／补集／时间表不独立抽签 | `FIELD_OWNERSHIP=PASS tasks=16 unmapped=0 native_rule_overrides=0` | 分钟级／CPU |
 | G4 | 规格真正被消费 | 4 | 逐局比对象 ID、布局、目标、动作、恢复与初始化编号；记录最终赋值／对象绑定，只读取不算消费；绕开规格赋值的反例必须被抓到 | `SPEC_BINDING=PASS missing=0 unused=0 mismatch=0` | 单条秒级／GPU 0 |
@@ -254,30 +257,31 @@ episode_spec  layout / objects / actions / initializations
 | P5 | 图像与录像事件 | 5a | 落盘 RGB、演示／执行标志、真实帧索引相同；MP4 比完整解码帧数与像素，编码容器散列单列 | `VIDEO_PARITY=PASS compared=N frames_mismatch=0 pixels_mismatch=0` | 同 P1／GPU 0 |
 | P6 | 连续 worker 不污染 | 5b | 每环境选不同原身份，甲→乙→甲在同一 PID 运行，各自与独立进程相同；配置、规格输入散列不变 | `WORKER_ISOLATION=PASS tasks=16 mismatch=0 input_mutation=0` | 48 条生成／GPU 0 |
 | P7 | fail recover 原样 | 5a | 原分支与各新路径逐条比恢复开关、z／xy、实际失败动作索引、恢复任务与结果，不只比模式名 | `RECOVERY_PARITY=PASS configured=96 mode_mismatch=0 event_mismatch=0` | 随 5a／5d 产出 |
-| R1 | 原测试结果对拍 | 1b、5e | A 的身份、恢复、成功与帧数逐条对原报告；取得发布集后复跑 `validate_generated_dataset_contract.py` 与 `compare_joint_actions.py`，保留既有失败与 `1e-8` | `DATASET_GEN_REPORT_PARITY=PASS compared=1600 outcome_mismatch=0 detail_mismatch=0` | 1b 秒级；5e 需先恢复 `data/robomme_data_h5/` |
+| R1 | 原测试结果对拍 | 1b、5e | A 的身份、恢复、成功与帧数逐条对原报告；取得发布集后复跑 `validate_generated_dataset_contract.py` 与 `compare_joint_actions.py`，保留既有失败与 `1e-8` | `DATASET_GEN_REPORT_PARITY=PASS compared=144 outcome_mismatch=0 detail_mismatch=0` | 1b 秒级；5e 需先恢复 `data/robomme_data_h5/` |
 | R2 | 历史成品额外比较 | 1a | 历史原 HDF5 当前缺失；找回且散列核验通过后才实跑 | `HISTORICAL_ARTIFACT_PARITY=NOT_RUN reason=historical_files_missing` | 无 |
-| C1 | 失败与全集覆盖 | 5d | 1600 条全部有终态；missing、timeout、error、不可重复、不可比、成功分别计数并留退出码与阶段 | `TRAIN_COVERAGE=PASS expected=1600 terminal=1600 missing=0` | 8000 次生成／分批 tmux |
+| C1 | 失败与子集覆盖 | 5d | 144 条全部有终态；missing、timeout、error、不可重复、不可比、成功分别计数并留退出码与阶段 | `TRAIN_COVERAGE=PASS expected=144 terminal=144 missing=0` | 720 次生成／分批 tmux，两卡并行 |
 
-**四组目的**：G1～G4 验身份与两个接口的静态完整；P1～P4 验基线可重复、原行为恢复与回注逐位等价；P5～P7 验录像、worker 隔离与恢复事件；R1／R2／C1 分别负责对历史报告、历史成品与全集执行完整性。C1 只说明执行完整，不说明全部一致；总体完成还要求每条身份有完整适用的对拍结论。既有报告对发布 HDF5 的 `1e-8` 失败（217242 个元素非零差异、10 条帧数不符）原样保留，不改阈值、不关恢复、不换样本。
+**四组目的**：G1～G4 验身份与两个接口的静态完整；P0～P4 验两卡等价、 验基线可重复、原行为恢复与回注逐位等价；P5～P7 验录像、worker 隔离与恢复事件；R1／R2／C1 分别负责对历史报告、历史成品与全集执行完整性。C1 只说明 144 条执行完整，不说明全部一致；总体完成还要求每条身份有完整适用的对拍结论，且只能宣称 144 条子集，不能外推到 1600 条。既有报告对发布 HDF5 的 `1e-8` 失败（217242 个元素非零差异、10 条帧数不符）原样保留，不改阈值、不关恢复、不换样本。
 
-## 五、实施顺序（十二步，全文以本表为准）
+## 五、实施顺序（十三步，全文以本表为准）
 
-主副本上顺序执行；每步 commit 后按仓库规则 push；所有仿真钉物理 GPU 0，步 1b～5b 单 worker，5c 起才用 20 worker。「闸门」列引用第四节判据表编号；任一 FAIL 停下交用户，不放大范围。涉及 `src/robomme/` 的步骤须先按第二部分「一」逐项获批。会话名、命令与失败分流见第二部分「四」。
+主副本上顺序执行；每步 commit 后按仓库规则 push。GPU 用法：步 1b 先在 GPU 0 单 worker 定基线并跑 P0；P0 通过后 A 路钉 GPU 0（官方脚本限定）、B／C／D 用 GPU 1，同卡 worker 数按官方 20 起步；P0 不过则全部钉 GPU 0。「闸门」列引用第四节判据表编号；任一 FAIL 停下交用户，不放大范围。涉及 `src/robomme/` 的步骤须先按第二部分「一」逐项获批。会话名、命令与失败分流见第二部分「四」。
 
 | # | 步骤 | 做什么 | 闸门 | 失败处置 |
 |---|---|---|---|---|
 | 0 | 切分支与冻结 | 从含本方案的提交切 `newtaskRelease-v3`；冻结父提交、官方源码、1600 条 metadata、锁文件、设备与用例清单；核验输出路径与存储 | G1、来源散列齐全 | 分支或散列不对即停，不改代码 |
 | 1a | 冻结历史证据 | 冻结 `dataset-gen` 原报告与逐文件散列；定位历史成品与官方参考数据，如实登记缺失 | R2 记 `NOT_RUN` | 缺失只登记，不冒称 |
-| 1b | A 路单条试跑 | 在 `scripts/` 新增严格 manifest 与五路编排；`BinFill/easy/episode_0` 单任务、单 episode、单 worker 跑 A1、A2，保留 z 恢复 | P1、R1（帧数／成功／恢复对报告） | 不以公式替换 seed；不一致先定位 |
+| 1b | A 路单条试跑与两卡核验 | 在 `scripts/` 新增严格 manifest、144 条抽样与五路编排；`BinFill/easy/episode_0` 单任务、单 episode、单 worker 跑 A1、A2，保留 z 恢复；同一条在 GPU 1 再跑一次 A1 | P0、P1、R1（帧数／成功／恢复对报告） | 不以公式替换 seed；不一致先定位 |
 | 2 | 恢复原值默认路径 | 按逐项批准恢复历史原值（含 RouteStick 尾迹 40 步），只做 A↔B | P2 在指定样本通过 | 未解决项不隐藏；数值 FAIL 只 revert 该项 |
 | 3 | 逐环境切出 `sampling_config` | 十六环境逐个拆 `decision`／`native`，按第二节字段表与第二部分「二」映射；每环境先 B↔C 再进下一环境 | G2、G3；该环境 B↔C 过 P4 | 一环境未过不进下一环境 |
 | 4 | 逐环境切出 `episode_spec` | 同顺序实现原位抽样记录与原值回注，含两次初始化与动态事件；每环境 B↔C↔D | G4、P3、P4 | 现有「注入后跳过抽样」分支不得沿用为 D |
 | 5a | 16 环境冒烟 | 每环境各一条原 episode 走五路，比全部字段、图像与恢复 | P5、P7 | 单条失败先定位 |
-| 5b | 48 格与恢复分支 | 覆盖 48 个 task／difficulty 格、`BinFill` 两种 dynamic、`VideoRepick/hard`、单双拾取、零／非零交换、延迟搭档，每环境 episode 0～5 全部纳入；连续 worker 甲→乙→甲 | P6 及 P1～P5、P7 在子集通过 | 未出现的分支列覆盖缺口，不另造用例 |
-| 5c | 20 worker 核验 | 用官方历史的 20 worker 配置重跑 5b 子集，与单 worker 结果比 | P4、P6 在子集通过 | 不一致回单 worker，不改 seed 与恢复 |
-| 5d | 全集五路 | 分批 tmux 跑 1600×5，每批独立目录；`compare` 只读汇总 | C1 及 P1～P7 全集 | 任一未完成留在分母，不宣布 1600 条一致 |
+| 5b | 48 格与恢复分支 | 用 144 条子集覆盖 48 个 task／difficulty 格、`BinFill` 两种 dynamic、`VideoRepick/hard`、单双拾取、零／非零交换、延迟搭档与 z／xy／关闭三种恢复；连续 worker 甲→乙→甲 | P6 及 P1～P5、P7 在子集通过 | 未出现的分支列覆盖缺口，不另造用例 |
+| 5c | 多 worker 与两卡核验 | 用官方历史的 20 worker 配置在 GPU 0 重跑 5b 子集，与单 worker 结果比；B／C／D 在 GPU 1 重跑同一子集 | P4、P6 在子集通过 | 不一致回单 worker，不改 seed 与恢复 |
+| 5d | 144 条五路 | 分批 tmux 跑 144×5＝720 次，A 路 GPU 0、B／C／D GPU 1，每批独立目录；`compare` 只读汇总 | C1 及 P1～P7 在 144 条 | 任一未完成留在分母，不宣布 144 条一致 |
 | 5e | 复跑原比较器 | 恢复发布集到 `data/robomme_data_h5/` 后跑原合同与动作比较器，对照报告已存字段 | R1 完整 | 既有 `1e-8` 失败照记，不改阈值 |
 | 6 | 留档提交 | 保存逐条身份、配置／规格、差异、命令、退出码、原始结果与图像索引；更新使用说明；提交并 push | 源文件与原产物未覆盖；状态与证据一一对应 | 存储不足先汇报占用，不清理旧产物 |
+| 7（可选） | 全集 1600 条 | 用户另行要求时才把 5d 放大到 1600×5＝8000 次，规则与判据不变 | C1 换 `expected=1600` | 未做之前一切结论只限 144 条 |
 | 后续 | 新值模式 | 用户另行启动布局／难度改动后，才在 `decision` 启用第二节拟修改值与新算法 | 单独定义新值验收 | 不复用原 train 相等结论 |
 
 每次代码提交前的测试预算不超过 5 分钟：先跑相关定向测试和核心路径；完整五路矩阵属于独立的长时实验，按批次用 detached tmux 管理，日志采用 `PYTHONUNBUFFERED=1`、`set -o pipefail`、`tee` 与 `EXIT_CODE=`。第一次实测后再估算耗时和磁盘，不能用历史四任务的耗时线性外推作保证。
@@ -295,6 +299,8 @@ episode_spec  layout / objects / actions / initializations
 文档核验退出0：`FIELD_SPLIT=PASS environments=16 tables=32 field_groups=101 user_groups=46 random_groups=35 derived_groups=20`、`DOC_CHECK=PASS matching_rows=101 local_links=20 baseline_section_unchanged=1 code_line_refs=0`。只改方案与账本；本次没有生成配置、候选或数据，没有运行代码测试或真实仿真，文档核验不代表未来对拍已经通过。
 
 本次四列单表调整（11.24）保留全部101行，将十六环境改为16张表；当前值逐行与上一版核对一致（仅展开字段简写），旧键映射移至4.3，共用约束移至4.4。静态核验退出0：`SINGLE_TABLE=PASS environments=16 tables=16 columns=4 rows=101`、`CONTENT_CHECK=PASS current_values_unchanged=101 baseline_unchanged=1 local_links=20`；只读复核确认未来数值和待定事项保留，未修改任何生效配置或代码。
+
+本次规模与并行调整（11.28）按用户原话「你预计都只能用gpu0吗 是否可以并行？ 不用全部验证 每个task每个难度验证3条左右即可」：验收分母由 1600 条改为每 task 每难度 3 条共 144 条（全集改可选步 7）；查实本机两张同型号 RTX 6000 Ada、官方 `_parse_gpus` 仅限定字符串 `"0"`、现行入口已支持多卡，新增 P0 `GPU_PARITY` 两卡逐位核验，通过后 A 路钉 GPU 0、B／C／D 用 GPU 1，同卡 worker 按官方 20 起步。
 
 本次格式对齐（11.27）参照 `robomme_policy_learning_MotionJEPA@v2-motionmem` 的 `0920-32frame-8x8-modul-2048-plan.md`：第四节改为带编号（G1～G4、P1～P7、R1～R2、C1）的六列判据表并保留基线／比什么／能否并行三段结论，第五节改为十二步编号步骤表（0、1a、1b、2、3、4、5a～5e、6、后续），第二部分「三」改为闸门前置条件表，所有阶段引用改为步号。内容仍取自原文，未新增事实。
 
@@ -317,7 +323,7 @@ episode_spec  layout / objects / actions / initializations
 - **R9 旧产物不覆盖**：旧快照、旧候选（含运行十）、当前工作树、旧运行产物与官方数据保持原版本原字节；`validate_candidates` 按版本分流校验。
 - **R10 测试预算**：每次代码提交前测试不超过 5 分钟；完整五路矩阵按批次用 detached tmux 起，日志用 `PYTHONUNBUFFERED=1`、`set -o pipefail`、`tee`、`EXIT_CODE=`；单条冒烟失败不得放大全集。
 - **R11 文档禁硬编码行号**：引用代码只用函数／类／配置键等稳定锚点。
-- **R12 状态如实**：子集通过只能报告子集；未完成、不可比、异常条目留在 1600 分母；历史成品缺失记 `HISTORICAL_ARTIFACT_PARITY=NOT_RUN`，不冒称完成。
+- **R12 状态如实**：子集通过只能报告子集；未完成、不可比、异常条目留在 144 条分母（可选步 7 时为 1600）；历史成品缺失记 `HISTORICAL_ARTIFACT_PARITY=NOT_RUN`，不冒称完成。
 
 ## 一、按文件的逐项改动清单
 
@@ -391,7 +397,8 @@ episode_spec  layout / objects / actions / initializations
 
 | # | 判定行 | 步号 | 前置条件 |
 |---|---|---|---|
-| G1 | `TRAIN_IDENTITY` | 0 | `freeze-identities` 完成，不启动仿真 |
+| G1 | `TRAIN_IDENTITY`、`TRAIN_SUBSET` | 0 | `freeze-identities` 完成，不启动仿真 |
+| P0 | `GPU_PARITY` | 1b | GPU 0 上 A1 已过 P1 |
 | G2、G3 | `SAMPLING_ORIGINAL`、`FIELD_OWNERSHIP` | 3 | 该环境 `decision`／`native` 已按第二部分「二」映射提取 |
 | G4 | `SPEC_BINDING` | 4 | 该环境 C 路完整规格已导出并封存 |
 | P1 | `BASELINE_REPEAT` | 1b | 官方源码隔离目录与 manifest 就绪 |
@@ -447,7 +454,7 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 | 历史报告标称 HEAD `9430e20bfcf59116d525778b60663520b22f63e6` 不是完整运行源码 | 校验器至 d53 才改为 100 条；父编排改过 worker 与 GPU 限制 | 固定 d53 为可重跑源码，历史报告单独冻结原文、参数与标称 HEAD，登记来源不完整边界 |
 | 继承下来的旧改动被误当原始行为 | 如 `RouteStick.py::step` 尾迹 10 步 vs 官方 40 步 | 只比新代码默认路径与注入路径会漏掉，故必须先做 A↔B；此类项单列审批恢复 |
 | 现有「注入后跳过一部分抽样」分支被直接当 D 路 | 现行注入代码 | 不得沿用；D 路必须原位消费冻结值并同序跑兼容核验（R8） |
-| 20 worker 与单 worker 结果差异 | 原分支历史全量为 20 worker、限定物理 GPU 0 | 第一轮单 worker GPU 0 对拍，之后另核验 20 worker，不改 seed 规则与 fail recover |
+| 20 worker 与单 worker、GPU 0 与 GPU 1 结果差异 | 原分支历史全量为 20 worker、`_parse_gpus` 限定 `"0"`；本机两卡同型号但未实测等价 | 步 1b 先单 worker GPU 0，P0 证两卡逐位等价、步 5c 证 20 worker 等价后才放开；不一致则全部钉 GPU 0 单 worker，不改 seed 规则与 fail recover |
 | 耗时与磁盘无法预估 | 历史四环境 15 格 60 次生成 2479.7 秒只能估成本 | 第一次实测后再估算，不线性外推；存储不足时先汇报占用与范围，不清理旧产物 |
 | 旧封套规则误校验新记录 | `io.py::validate_candidates` 写死公式 seed、100 条 block、配额、碰撞必须 PASS | 新版 `identity_source=train_metadata` 按版本分流校验（R9） |
 | 工具文件被顺手改动 | `object_generation.py`、`route.py`、`task4recovery.py`、求解器 | 环境文件获批不推导出工具文件获批；确需改动另列函数与理由 |
@@ -550,7 +557,7 @@ episode_spec
 
 ## 九、原始对拍细节
 
-第一部分第四节的完整展开；小节编号 9.x 与原 4.x 一一对应，闸门判定行以 9.4 为准。
+第一部分第四节的完整展开；小节编号 9.x 与原 4.x 一一对应，闸门判定行以 9.4 为准。本节保留的「1600 条、8000 次、同一物理 GPU、单 worker」是 11.20 首版口径；11.28 起验收分母改为 144 条子集、允许两卡并行，以第一部分第四节判据表与第五节步骤表为准。
 
 ### 9.1 逐条采用 metadata，不能只指定 `--layout train`
 
