@@ -1489,6 +1489,32 @@ def cmd_compare(args: argparse.Namespace) -> int:
                 f"off={counts['off']} mode_mismatch={mode_mismatch} event_mismatch={event_mismatch}"
             )
             overall_fail += mode_mismatch + event_mismatch
+        elif gate_name == "WORKER_ISOLATION":
+            # P6／5c：单 worker 与多 worker（或独立进程与同一 PID 连续跑）的产物必须逐位相同，
+            # 且两侧消费的配置／规格输入散列不得被改动（input_mutation）。
+            mismatch = sum(int(row["field_mismatch"]) + int(row["sidecar_mismatch"]) for row in summary_rows)
+            mismatch += sum(len(row["only_left"]) + len(row["only_right"]) for row in summary_rows)
+            tasks = set()
+            digests: dict[str, set] = {}
+            for label, run_dir in runs.items():
+                for path_name in PATH_NAMES:
+                    results_path = run_dir / "results" / f"{path_name}.json"
+                    if not results_path.exists():
+                        continue
+                    for item in json.loads(results_path.read_text(encoding="utf-8"))["results"]:
+                        tasks.add(item["task"])
+                        key = f"{item['task']}/{item['episode']}/{path_name}"
+                        inputs = item.get("inputs") or {}
+                        digests.setdefault(key, set()).add(
+                            (inputs.get("sampling_config_sha256"), inputs.get("episode_spec_sha256"))
+                        )
+            input_mutation = sum(1 for values in digests.values() if len(values) > 1)
+            status = "PASS" if summary_rows and mismatch == 0 and input_mutation == 0 else "FAIL"
+            print(
+                f"WORKER_ISOLATION={status} tasks={len(tasks)} mismatch={mismatch} "
+                f"input_mutation={input_mutation}"
+            )
+            overall_fail += mismatch + input_mutation
         elif gate_name == "SPEC_BINDING":
             # G4：C 路是否为每条身份导出了规格，D 路是否真的消费了它
             missing = unused = mismatch = 0
@@ -1606,7 +1632,7 @@ def build_parser() -> argparse.ArgumentParser:
     compare.add_argument("--history-path", default="A1", help="与历史投影比对的路径名，默认 A1")
     compare.add_argument(
         "--gate", action="append", default=None,
-        help="额外输出闸门判定行：BASELINE_REPEAT / NODE_PARITY / SPEC_BINDING / VIDEO_PARITY / RECOVERY_PARITY",
+        help="额外输出闸门判定行：BASELINE_REPEAT / NODE_PARITY / SPEC_BINDING / VIDEO_PARITY / RECOVERY_PARITY / WORKER_ISOLATION",
     )
     compare.add_argument("--output", default=None, help="比较结果目录，默认 <第一个运行目录>/compare")
     compare.set_defaults(func=cmd_compare)
