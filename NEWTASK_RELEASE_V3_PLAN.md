@@ -757,7 +757,7 @@ srun --jobid=<占位JOBID> --account=chaijy2 --partition=spgpu --gpu_cmode=share
 | 3 | ALL_TASKS[8:12] | 36 | 180 |
 | 4 | ALL_TASKS[12:16] | 36 | 180 |
 
-规则：每 job 只处理自己的分片，产物目录按 shard 隔离；P0 用同一身份在 4 个 job 各跑 A1；job 被回收后重申请同形状 job，从缺失身份续跑，不重跑已完成身份；`compare` 在登录节点只读汇总，不占 GPU。当前在跑的 61665377 是 1 GPU / 8 CPU / 48G 的探针 job，正式分片前换成 4 个 4 CPU job。
+规则：每 job 只处理自己的分片，产物目录按 shard 隔离；P0 用同一身份在 4 个 job 各跑 A1；job 被回收后重申请同形状 job，从缺失身份续跑，不重跑已完成身份；`compare` 在登录节点只读汇总，不占 GPU。探针 job 61665377（1 GPU / 8 CPU / 48G）已于 2026-09-21 取消；现役占位 job 为 61673583、61673584、61673585、61673586（各 1 GPU / 4 CPU / 32G / 48h，`hold-4cpu-1..4`，日志 `slurm-holds/logs/hold-4cpu-<jobid>.log`），到期或被回收后按同形状重申请并更新此处编号。
 
 ## 十一、HDF5 对拍实现
 
