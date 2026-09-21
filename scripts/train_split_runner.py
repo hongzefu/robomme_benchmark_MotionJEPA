@@ -78,6 +78,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--results-json", required=True, help="逐条结果输出")
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--gpu", default="0")
+    parser.add_argument(
+        "--sampling-config", default=None,
+        help="C／D 路：显式采样配置 JSON（形如 {\"tasks\": {<env>: {...}}}），按 task 取块传给 gym.make",
+    )
+    parser.add_argument(
+        "--episode-specs", default=None,
+        help="D 路：每局规格 JSON（形如 {\"specs\": {<task>/<episode>: {...}}}）",
+    )
     args = parser.parse_args(argv)
 
     official_root = Path(args.official_root).resolve()
@@ -94,6 +102,21 @@ def main(argv: list[str] | None = None) -> int:
 
     if Path(official.__file__).resolve() != (script_dir / "generate_dataset.py").resolve():
         raise SystemExit(f"导入到的不是官方脚本：{official.__file__}")
+
+    sampling_by_task: dict = {}
+    if args.sampling_config:
+        payload = json.loads(Path(args.sampling_config).read_text(encoding="utf-8"))
+        sampling_by_task = payload.get("tasks", payload)
+    specs_by_identity: dict = {}
+    if args.episode_specs:
+        payload = json.loads(Path(args.episode_specs).read_text(encoding="utf-8"))
+        specs_by_identity = payload.get("specs", payload)
+    use_mirror = bool(sampling_by_task or specs_by_identity)
+    if use_mirror:
+        # 子进程要能按模块名 import 本文件所在目录下的 train_split_worker
+        scripts_dir = str(Path(__file__).resolve().parent)
+        if scripts_dir not in sys.path:
+            sys.path.insert(0, scripts_dir)
 
     jobs_payload = json.loads(Path(args.jobs_json).read_text(encoding="utf-8"))
     # 用官方自己的 metadata 读取器复核每条身份，seed 与难度必须逐字相同。
@@ -126,11 +149,26 @@ def main(argv: list[str] | None = None) -> int:
     os.environ["CUDA_VISIBLE_DEVICES"] = official.GPU_ID
     results: list[dict] = []
     started = time.time()
+
+    def _submit(executor, job):
+        """A／B 路用官方 _worker；C／D 路用只多传两个显式输入的镜像 worker。"""
+        if not use_mirror:
+            return executor.submit(official._worker, job)
+        import train_split_worker  # noqa: PLC0415 仅 C／D 路需要
+
+        config = sampling_by_task.get(job.task)
+        spec = specs_by_identity.get(f"{job.task}/{job.episode}")
+        if sampling_by_task and config is None:
+            raise SystemExit(f"采样配置缺少环境 {job.task}")
+        if specs_by_identity and spec is None:
+            raise SystemExit(f"每局规格缺少身份 {job.task}/{job.episode}")
+        return executor.submit(train_split_worker.run_one, (job, config, spec))
+
     with ProcessPoolExecutor(
         max_workers=min(max(args.workers, 1), len(jobs)),
         mp_context=mp.get_context("spawn"),
     ) as executor:
-        futures = {executor.submit(official._worker, job): job for job in jobs}
+        futures = {_submit(executor, job): job for job in jobs}
         for future in as_completed(futures):
             job = futures[future]
             try:
@@ -160,6 +198,9 @@ def main(argv: list[str] | None = None) -> int:
         "removed_sys_path_entries": removed,
         "workers": args.workers,
         "gpu": args.gpu,
+        "sampling_config": args.sampling_config,
+        "episode_specs": args.episode_specs,
+        "worker": "train_split_worker.run_one" if use_mirror else "official._worker",
         "elapsed_seconds": round(time.time() - started, 3),
         "results": results,
     }

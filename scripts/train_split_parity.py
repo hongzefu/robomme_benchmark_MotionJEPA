@@ -810,6 +810,8 @@ def run_path(
     official_root: Path,
     workers: int,
     gpu: str,
+    sampling_config: str | None = None,
+    episode_specs: str | None = None,
 ) -> dict[str, object]:
     """跑一路。
 
@@ -817,10 +819,10 @@ def run_path(
     因此 A↔B 的差异只可能来自环境源码本身（步 2 要找的正是这些继承改动）。
     C／D 需要额外传 `sampling_config`／`episode_spec`，待步 3／4 实现。
     """
-    if path_name in ("C", "D"):
-        raise IdentityFreezeError(
-            f"{path_name} 路待步 3／4 实现：C 加显式原值 sampling_config，D 回注 episode_spec"
-        )
+    if path_name == "C" and not sampling_config:
+        raise IdentityFreezeError("C 路需要 --sampling-config 指定显式原值配置")
+    if path_name == "D" and not (sampling_config and episode_specs):
+        raise IdentityFreezeError("D 路需要 --sampling-config 与 --episode-specs")
     path_dir = output / path_name
     jobs: list[dict[str, object]] = []
     skipped: list[str] = []
@@ -868,7 +870,9 @@ def run_path(
         sys.executable,
         str(REPO_ROOT / "scripts" / "train_split_runner.py"),
         "--official-root", str(official_root),
-        *(["--src-root", str(REPO_ROOT)] if path_name == "B" else []),
+        *(["--src-root", str(REPO_ROOT)] if path_name in ("B", "C", "D") else []),
+        *(["--sampling-config", sampling_config] if path_name in ("C", "D") and sampling_config else []),
+        *(["--episode-specs", episode_specs] if path_name == "D" and episode_specs else []),
         "--jobs-json", str(jobs_path),
         "--results-json", str(results_path),
         "--workers", str(workers),
@@ -911,6 +915,11 @@ def cmd_run(args: argparse.Namespace) -> int:
         raise IdentityFreezeError("--episode 必须与 --env 一起给出")
     if args.workers < 1:
         raise IdentityFreezeError("--workers 必须 ≥ 1")
+    # 缺输入的路径先在导出官方源码之前挡掉，避免留下半个运行目录
+    if "C" in paths and not args.sampling_config:
+        raise IdentityFreezeError("C 路需要 --sampling-config 指定显式原值配置")
+    if "D" in paths and not (args.sampling_config and args.episode_specs):
+        raise IdentityFreezeError("D 路需要 --sampling-config 与 --episode-specs")
     if args.gpus != "0":
         raise IdentityFreezeError("官方 _parse_gpus 只接受 \"0\"；集群 job 内 CUDA_VISIBLE_DEVICES=0")
 
@@ -955,7 +964,10 @@ def cmd_run(args: argparse.Namespace) -> int:
     summaries = []
     failed = 0
     for path_name in paths:
-        summary = run_path(path_name, rows, output, official_root, args.workers, args.gpus)
+        summary = run_path(
+            path_name, rows, output, official_root, args.workers, args.gpus,
+            sampling_config=args.sampling_config, episode_specs=args.episode_specs,
+        )
         summaries.append(summary)
         failed += int(summary.get("failed_count", 0) or 0) + (1 if summary["exit_code"] else 0)
         print(
@@ -1400,6 +1412,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--source-repo", default=DEFAULT_SOURCE_REPO)
     run.add_argument("--source-ref", default=DEFAULT_SOURCE_REF)
     run.add_argument("--official-root", default=None, help="官方隔离源码目录，默认 <output>/official-src")
+    run.add_argument("--sampling-config", default=None, help="C／D 路的显式采样配置 JSON")
+    run.add_argument("--episode-specs", default=None, help="D 路的每局规格 JSON")
     run.add_argument("--output", required=True)
     run.set_defaults(func=cmd_run)
 
