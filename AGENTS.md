@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 全环境方案恢复表格排布（2026-09-21） | 文档排版完成（11.22） | 十六环境各两张表，共32表128行，先固定内容后现行值；逐条文字及其他正文零差异，23个本地链接有效 | 仅排版调整，文档核验通过；代码、配置、分支保持原状 |
 | 全环境方案拆分“固定哪些”与“现在的值”（2026-09-21） | 文档重排完成（11.21） | 十六环境各64条固定内容与64条现行值按编号一一对应，旧三列表全部拆除；16段未来需求、23本地链接及第二节以外正文保留，静态核验退出0 | 仅文档表达修订；仍未开始实施，不切分支、不改配置或代码 |
 | `newtaskRelease-v3` 全环境配置与原值注入方案（2026-09-21） | 文档完成，静态核验通过（11.20） | [根目录方案](NEWTASK_RELEASE_V3_PLAN.md) 覆盖十六环境、64 组固定项、23 本地链接；最终基线为官方 `dataset-gen@d53f21a` 的 train 16×100，保留 z48／xy48／关闭1504 的 fail recover；原报告1600生成成功但动作对发布集比较未通过的边界已写清 | 本轮仅方案与必要账本，代码及配置零改动；后续实施先切 `newtaskRelease-v3`，`src` 各项仍须批准 |
 | 注入重构计划阶段 0～9（2026-09-18） | 已全部实施与验收留档 | L1 3400 条规格相同；L2 113 PNG/表/完整数轴相同；L3 210 条 HDF5 尝试、L4 720 reset 对拍通过；838 unused 补查完成；3820 旧文件迁移字节守恒；最终冒烟 60 秒通过（200 候选、1 HDF5、1 reset、9 图、3 报告、重复 reset 零重跑）；候选输入与代码进 Git；[现行说明](scripts/INJECTION.md)、[完整证据](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 本轮无剩余实施步骤；保留 4 项既有测试失败、22 项历史规格缺失跳过及视频诊断 NOT_RUN 边界；未推送 |
@@ -1717,3 +1718,14 @@
 - 十六环境统一改成「先说固定哪些」编号1～4、「再说现在的值」同编号1～4、原有未来接口与值。先用白话解释对象、规则和每局要记录的结果，再列具体数值；原混合三列表全部移除。VideoUnmaskSwap等难度档不再仅写省略的数字组，补齐容器／交换／拾取单位；两种VideoPlace的表外布局值归入对应现行值项。
 - 已检查原文数字集合与未来段逐节保留，补回 `target_cube/target` 和 `peg_0` 等对象名；独立只读复核确认随机消费、两次初始化、布局参数与未来需求没有实质遗漏。官方dataset-gen 1600条及fail recover、对拍验收、实施步骤均未改。
 - `command -v uv` 后运行标准库文档核验，退出0：`READING_ORDER=PASS environments=16 fixed_items=64 value_items=64 matching_labels=64 mixed_tables=0`、`CONTENT_PRESERVED=PASS future_sections=16 numeric_values_missing=0 local_links=23 outside_section_2_unchanged=1`；`git diff --check`通过。纯文档未运行仿真或代码测试，当前分支保持 `newtask-v2.1refractor`，只提交方案及必要账本。
+
+### 2026-09-21 America/Detroit — 逐环境说明恢复为两张独立表格
+
+- 用户原话：「还是按照表格排布」。保持上一轮明确的阅读顺序，每环境先列固定内容表，再列现行值表，编号1～4对应；未来需求仍在后面，不合回原来混杂数值的三列表。
+- 本轮仅将第二节2.1～2.16的编号段落转成表格，必要处增加单元格内换行，不改字段、数值或其他章节。验证32张表、128条内容逐字守恒及编号对应；纯文档不切分支、不实施配置或代码。
+
+### 2026-09-21 America/Detroit — 两表排布核验完成（11.22）
+
+- 十六环境分别使用「编号／固定项／固定内容」与「编号／固定项／现在的值或规则」两表，先后顺序及1～4编号不变。单元格内将每局结果和不同难度档换行，未来需求和代码锚点仍按原文保留。
+- `command -v uv` 后以 `PYTHONDONTWRITEBYTECODE=1 uv run --no-sync python` 做纯文档检查，退出0：`TABLE_LAYOUT=PASS environments=16 tables=32 rows=128 matched_labels=64`、`CONTENT_INTACT=PASS row_text_mismatch=0 other_text_mismatch=0 local_links=23`。去除表格标记和换行标签后128条与修改前逐字相同，其他正文亦逐字相同；`git diff --check`通过。
+- 本轮只提交方案与必要账本；当前仍为 `newtask-v2.1refractor`，无代码／配置改动，不运行仿真或代码测试。
