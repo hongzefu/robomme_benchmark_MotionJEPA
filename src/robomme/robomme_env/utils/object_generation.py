@@ -235,6 +235,8 @@ def spawn_random_cube(
         generator=None,
         fixed_xy=None,
         fixed_yaw=None,
+        recorder=None,  # newtaskRelease-v3 步 4：只读导出／原值回注的记录器
+        spec_path=None,  # 该取值点在 episode_spec 里的路径
     ):
     """
     Drop a cube (onto table) in rectangular region using rejection sampling, and return the cube actor.
@@ -450,6 +452,9 @@ def spawn_random_cube(
             continue
 
         # Passing detection, create cube (pose and collision detection use same yaw to ensure consistency)
+        if recorder is not None and spec_path is not None:
+            # 拒绝采样的全部失败尝试照常发生（随机流不漂移）；这里只冻结被接受的那组位姿
+            x, y, yaw = recorder.value(spec_path, [x, y, yaw])
         return _finalize_cube(x, y, yaw)
 
     raise RuntimeError("spawn_random_cube: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease cube/decrease min_gap.")
@@ -484,6 +489,8 @@ def spawn_random_target(
         generator=None,
         randomize=True,      # Control whether to randomize position
         target_style="purple",  # Choose which color scheme target to create
+        recorder=None,  # newtaskRelease-v3 步 4：只读导出／原值回注的记录器
+        spec_path=None,  # 该取值点在 episode_spec 里的路径
     ):
     """
     Drop a target (onto table) in rectangular region using rejection sampling, and return the target actor.
@@ -687,6 +694,9 @@ def spawn_random_target(
             continue
 
         # Passed detection, create target (pose and collision detection use same yaw to ensure consistency)
+        if recorder is not None and spec_path is not None:
+            # 拒绝采样的失败尝试照常发生；这里只冻结被接受的 xy
+            x, y = recorder.value(spec_path, [x, y])
         rotate = np.array([np.cos(yaw/2), 0, 0, np.sin(yaw/2)])  # Quaternion for z-axis rotation
         angles = torch.deg2rad(torch.tensor([0.0, 90.0, 0.0], dtype=torch.float32))  # (3,)
         rotate = matrix_to_quaternion(
@@ -740,6 +750,8 @@ def build_button(
             name: str = "button",  # ⭐ New: button name
             randomize: bool = True,  # ⭐ New: whether to randomize position
             randomize_range=(0.1, 0.4),  # ⭐ New: randomization range, (range_x, range_y)
+            recorder=None,  # newtaskRelease-v3 步 4：只读导出／原值回注的记录器
+            spec_path=None,  # 该取值点在 episode_spec 里的路径
     ):
         # ------- Scaling and Travel -------
         if scale is None:
@@ -776,6 +788,9 @@ def build_button(
             offset = torch.rand(2, generator=generator) - 0.5
             cx += float(offset[0]) * range_x
             cy += float(offset[1]) * range_y
+        if recorder is not None and spec_path is not None:
+            # 原抽样照常执行（随机流不漂移）；回注模式下真正用于建按钮的是冻结值
+            cx, cy = recorder.value(spec_path, [cx, cy])
         center_xy = (cx, cy)
 
         scene = self.scene
@@ -946,7 +961,9 @@ def spawn_random_bin(
         name_prefix="bin",
         max_trials=256,
         generator=None,
-        yaw_scale_deg=90.0
+        yaw_scale_deg=90.0,
+        recorder=None,  # newtaskRelease-v3 步 4：只读导出／原值回注的记录器
+        spec_path=None,  # 该取值点在 episode_spec 里的路径
 ):
     """
     Drop a bin in rectangular region using rejection sampling, and return the bin actor.
@@ -1025,6 +1042,9 @@ def spawn_random_bin(
         # Passing detection, create bin (at specified position), with random z-axis rotation
         # yaw_scale_deg 的默认值即原来的内联常量 90.0，范围外的任务照原样调用不受影响
         z_rotation = float(torch.rand(1, generator=generator).item() * yaw_scale_deg)  # 0-360 degrees
+        if recorder is not None and spec_path is not None:
+            # 位置通过拒绝检查后才抽 yaw：三个量一起冻结，失败尝试照常发生
+            x, y, z_rotation = recorder.value(spec_path, [x, y, z_rotation])
         bin_actor = build_bin(self, callsign=name_prefix, position=[x, y, 0.002], z_rotation_deg=z_rotation)
 
         return bin_actor

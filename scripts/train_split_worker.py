@@ -80,7 +80,9 @@ def run_one(payload: tuple) -> dict[str, Any]:
         if sampling_config is not None:
             kwargs["sampling_config"] = sampling_config
         if episode_spec is not None:
-            kwargs["episode_spec"] = episode_spec
+            # D 路走的是步 4 的原值回注通道 native_episode_spec：原抽样照常执行、
+            # 用于建场景的值来自冻结规格；旧的 episode_spec 注入通道保持不变（红线 R9）。
+            kwargs["native_episode_spec"] = episode_spec
         # ─────────────────────────────────────────────────────────────────────
         worker_dir.mkdir(parents=True, exist_ok=False)
         base_env = gym.make(job.task, **kwargs)
@@ -106,6 +108,36 @@ def run_one(payload: tuple) -> dict[str, Any]:
         else:
             planner = arm_cls(record_env, **planner_kwargs)
         official._execute_tasks(record_env, planner, torch, job)
+        # 只读导出／回注核验：C 路把本局规格封存，D 路把兼容核验结果落档
+        recorder = getattr(record_env.unwrapped, "_spec", None)
+        if recorder is not None:
+            recorder.identity.update(
+                {"task": job.task, "episode": job.episode, "seed": job.seed,
+                 "difficulty": job.difficulty, "recovery_mode": job.recovery_mode}
+            )
+            if recorder.mode == "export":
+                (worker_dir / "episode_spec.json").write_text(
+                    json.dumps(recorder.to_dict(), ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+            else:
+                consumed = set(recorder.consumed_paths())
+                leaves = set(recorder.leaf_paths())
+                # 「有记录却没被消费」＝规格里存了值但这一局没走到那个调用点；
+                # 这正是 G4 要抓的「规格没被真正消费」的另一面。
+                unused = sorted(path for path in leaves if not any(
+                    path == item or path.startswith(item + ".") for item in consumed
+                ))
+                (worker_dir / "spec_replay.json").write_text(
+                    json.dumps(
+                        {"mismatches": recorder.mismatches,
+                         "value_points": len(recorder.trace),
+                         "consumed": sorted(consumed),
+                         "unused": unused},
+                        ensure_ascii=False, indent=2,
+                    ) + "\n",
+                    encoding="utf-8",
+                )
     except Exception as exc:  # noqa: BLE001 官方同样先分类后兜底，这里合并但保留类型名
         caught = exc
         error_traceback = traceback.format_exc()
@@ -129,6 +161,8 @@ def run_one(payload: tuple) -> dict[str, Any]:
         "inputs": {
             "sampling_config_sha256": _digest(sampling_config),
             "episode_spec_sha256": _digest(episode_spec),
+            "spec_mode": None if record_env is None or getattr(record_env.unwrapped, "_spec", None) is None
+                          else record_env.unwrapped._spec.mode,
         },
     }
     if caught is not None:

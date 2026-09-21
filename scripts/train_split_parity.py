@@ -904,6 +904,27 @@ def run_path(
     return summary
 
 
+def collect_episode_specs(output: Path, rows: list[dict[str, object]]) -> Path:
+    """把 C 路导出的逐局规格汇成 D 路的输入文件；缺一条就报错，不允许补抽。"""
+    specs: dict[str, object] = {}
+    missing: list[str] = []
+    for row in rows:
+        identity = f"{row['task']}/{row['episode']}"
+        path = output / "C" / f"{row['task']}_episode_{row['episode']}" / "episode_spec.json"
+        if not path.exists():
+            missing.append(identity)
+            continue
+        specs[identity] = json.loads(path.read_text(encoding="utf-8"))
+    if missing:
+        raise IdentityFreezeError(
+            "C 路尚未导出这些身份的规格：" + ", ".join(missing) + "；不得用重抽补位"
+        )
+    target = output / "episode_specs.json"
+    target.write_bytes(_json_bytes({"schema": "train-parity-episode-specs/1", "specs": specs}))
+    print(f"# 已汇总 C 路导出的 {len(specs)} 份规格 → {target}")
+    return target
+
+
 def cmd_run(args: argparse.Namespace) -> int:
     manifest_path = Path(args.manifest)
     manifest = _load_subset_manifest(manifest_path)
@@ -918,8 +939,12 @@ def cmd_run(args: argparse.Namespace) -> int:
     # 缺输入的路径先在导出官方源码之前挡掉，避免留下半个运行目录
     if "C" in paths and not args.sampling_config:
         raise IdentityFreezeError("C 路需要 --sampling-config 指定显式原值配置")
-    if "D" in paths and not (args.sampling_config and args.episode_specs):
-        raise IdentityFreezeError("D 路需要 --sampling-config 与 --episode-specs")
+    if "D" in paths and not args.sampling_config:
+        raise IdentityFreezeError("D 路需要 --sampling-config")
+    if "D" in paths and not args.episode_specs and "C" not in paths:
+        raise IdentityFreezeError(
+            "D 路的规格来源固定为 C 路的只读导出：要么同时跑 C，要么用 --episode-specs 指定已封存的规格"
+        )
     if args.gpus != "0":
         raise IdentityFreezeError("官方 _parse_gpus 只接受 \"0\"；集群 job 内 CUDA_VISIBLE_DEVICES=0")
 
@@ -963,10 +988,14 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     summaries = []
     failed = 0
+    episode_specs = args.episode_specs
     for path_name in paths:
+        if path_name == "D" and not episode_specs:
+            # 方案 8.2：第一轮的规格来源固定为 C 路的只读导出，不用新 seed 重抽
+            episode_specs = str(collect_episode_specs(output, rows))
         summary = run_path(
             path_name, rows, output, official_root, args.workers, args.gpus,
-            sampling_config=args.sampling_config, episode_specs=args.episode_specs,
+            sampling_config=args.sampling_config, episode_specs=episode_specs,
         )
         summaries.append(summary)
         failed += int(summary.get("failed_count", 0) or 0) + (1 if summary["exit_code"] else 0)
@@ -1147,11 +1176,15 @@ def _h5_of(identity_dir: Path) -> Path | None:
     return files[0] if len(files) == 1 else None
 
 
+# 本工具自己写进身份目录的证据文件：它们是对拍的证据，不是仿真产物，不参与伴生文件比较。
+EVIDENCE_FILES = ("episode_spec.json", "spec_replay.json")
+
+
 def _sidecars(identity_dir: Path) -> dict[str, str]:
-    """身份目录下除 HDF5 外的落盘文件散列（视频、图像、json 等）。"""
+    """身份目录下除 HDF5 与本工具证据文件外的落盘文件散列（视频、图像、json 等）。"""
     out: dict[str, str] = {}
     for item in sorted(identity_dir.rglob("*")):
-        if not item.is_file() or item.suffix == ".h5":
+        if not item.is_file() or item.suffix == ".h5" or item.name in EVIDENCE_FILES:
             continue
         out[str(item.relative_to(identity_dir))] = sha256_file(item)
     return out
@@ -1334,6 +1367,24 @@ def cmd_compare(args: argparse.Namespace) -> int:
                 f"BASELINE_REPEAT={'PASS' if total_mismatch == 0 and total_compared else 'FAIL'} "
                 f"compared={total_compared} different={total_mismatch}"
             )
+        elif args.gate == "SPEC_BINDING":
+            # G4：C 路是否为每条身份导出了规格，D 路是否真的消费了它
+            missing = unused = mismatch = 0
+            for label, run_dir in runs.items():
+                for identity_dir in _identity_dirs(run_dir / "C"):
+                    if not (run_dir / "C" / identity_dir / "episode_spec.json").exists():
+                        missing += 1
+                for identity_dir in _identity_dirs(run_dir / "D"):
+                    replay = run_dir / "D" / identity_dir / "spec_replay.json"
+                    if not replay.exists():
+                        missing += 1
+                        continue
+                    payload = json.loads(replay.read_text(encoding="utf-8"))
+                    mismatch += len(payload.get("mismatches", []))
+                    unused += len(payload.get("unused", []))
+            status = "PASS" if missing == unused == mismatch == 0 else "FAIL"
+            print(f"SPEC_BINDING={status} missing={missing} unused={unused} mismatch={mismatch}")
+            overall_fail += missing + unused + mismatch
         elif args.gate == "NODE_PARITY":
             identities = max((int(row["compared"]) for row in summary_rows), default=0)
             print(
@@ -1431,7 +1482,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="历史投影 JSON（步 1a 产物），给出后按 R1a 可比字段比对并输出 DATASET_GEN_REPORT_PARITY",
     )
     compare.add_argument("--history-path", default="A1", help="与历史投影比对的路径名，默认 A1")
-    compare.add_argument("--gate", default=None, help="额外输出闸门判定行：BASELINE_REPEAT 或 NODE_PARITY")
+    compare.add_argument(
+        "--gate", default=None,
+        help="额外输出闸门判定行：BASELINE_REPEAT / NODE_PARITY / SPEC_BINDING",
+    )
     compare.add_argument("--output", default=None, help="比较结果目录，默认 <第一个运行目录>/compare")
     compare.set_defaults(func=cmd_compare)
     return parser

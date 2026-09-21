@@ -31,6 +31,7 @@ from .utils.subgoal_evaluate_func import static_check, too_many_swings
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 
 from ..logging_utils import logger
@@ -159,9 +160,11 @@ class SwingXtimes(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._spec = SpecRecorder(native_episode_spec, "SwingXtimes", {"seed": seed})
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -209,7 +212,11 @@ class SwingXtimes(BaseEnv):
         generator = torch.Generator()
         generator.manual_seed(seed)
         number_range = self._sampling["decision"]["number_range"][self.difficulty]
-        self.num_repeats = torch.randint(number_range[0], number_range[1]+1, (1,), generator=generator).item()
+        self.num_repeats = self._spec.value(
+            "objects.num_repeats",
+            torch.randint(number_range[0], number_range[1]+1, (1,), generator=generator).item(),
+        )
+        self._spec.identity.setdefault("difficulty", self.difficulty)
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
 
 
@@ -256,6 +263,8 @@ class SwingXtimes(BaseEnv):
                 center_xy=tuple(button_cfg["center_xy"]),
                 scale=button_cfg["scale"],
                 generator=generator,
+                recorder=self._spec,
+                spec_path="layout.button_xy",
             )
             avoid = [button_obb]
 
@@ -275,11 +284,16 @@ class SwingXtimes(BaseEnv):
                 {"color": (0, 0, 1, 1), "name": "blue", "list": self.blue_cubes, "name_list": self.blue_cube_names},
                 {"color": (0, 1, 0, 1), "name": "green", "list": self.green_cubes, "name_list": self.green_cube_names}
             ]
-            shuffle_indices = torch.randperm(len(color_groups), generator=generator).tolist()
+            shuffle_indices = self._spec.value(
+                "objects.color_order", torch.randperm(len(color_groups), generator=generator).tolist()
+            )
             color_groups = [color_groups[i] for i in shuffle_indices]
 
             # Randomly select target color using generator
-            target_color_idx = torch.randint(0, len(color_groups), (1,), generator=generator).item()
+            target_color_idx = self._spec.value(
+                "objects.target_color_idx",
+                torch.randint(0, len(color_groups), (1,), generator=generator).item(),
+            )
             self.target_color_name = color_groups[target_color_idx]["name"]
             logger.debug(f"Target color selected: {self.target_color_name}")
 
@@ -301,6 +315,8 @@ class SwingXtimes(BaseEnv):
                                 random_yaw=cubes_cfg["random_yaw"],
                                 name_prefix=f"cube_{group['name']}_{cube_idx}",
                                 generator=generator,
+                                recorder=self._spec,
+                                spec_path=f"layout.cubes.{group['name']}_{cube_idx}",
                             )
                         except RuntimeError as e:
                             raise SceneGenerationError(
@@ -332,7 +348,9 @@ class SwingXtimes(BaseEnv):
                     min_gap=self.cube_half_size*target_geom["min_gap_factor"],  # Gap requirement same as cube
                     name_prefix=f"temp_target_0",
                     generator=generator,
-                    target_style="gray"
+                    target_style="gray",
+                    recorder=self._spec,
+                    spec_path="layout.targets.0",
                 )
                 avoid.append(temp_target_0)
                 logger.debug(f"Generated first target")
@@ -353,7 +371,9 @@ class SwingXtimes(BaseEnv):
                     min_gap=self.cube_half_size*target_geom["min_gap_factor"],  # Gap requirement same as cube
                     name_prefix=f"temp_target_1",
                     generator=generator,
-                    target_style="gray"
+                    target_style="gray",
+                    recorder=self._spec,
+                    spec_path="layout.targets.1"
                 )
                 avoid.append(temp_target_1)
                 logger.debug(f"Generated second target")
@@ -377,7 +397,10 @@ class SwingXtimes(BaseEnv):
 
             # Randomly select one cube from all available cubes as the target
             if len(self.all_cubes) > 0:
-                target_cube_idx = torch.randint(0, len(self.all_cubes), (1,), generator=generator).item()
+                target_cube_idx = self._spec.value(
+                    "objects.target_cube_idx",
+                    torch.randint(0, len(self.all_cubes), (1,), generator=generator).item(),
+                )
                 self.target_cube = self.all_cubes[target_cube_idx]
 
                 # Determine the color of the selected target cube

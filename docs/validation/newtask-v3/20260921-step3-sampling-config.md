@@ -63,7 +63,9 @@
 | PatternLock | `sha_equal=1 field_mismatch=0` | `sha_equal=1 field_mismatch=0` |
 | ButtonUnmaskSwap | `sha_equal=1 field_mismatch=0` | `sha_equal=1 field_mismatch=0` |
 | VideoPlaceButton | `sha_equal=1 field_mismatch=0` | `sha_equal=1 field_mismatch=0` |
-| VideoPlaceOrder | 见运行目录 `gl-bc-04/VideoPlaceOrder/compare` | 同左 |
+| VideoPlaceOrder | `sha_equal=1 field_mismatch=0` | `sha_equal=1 field_mismatch=0` |
+
+**十六个环境的 A↔B 与 B↔C 全部逐字节相同。** 
 
 **覆盖边界**：每环境只跑了 `episode 0` 一条，不代表 48 格全部已验；48 格与三种恢复模式在步 5b。
 

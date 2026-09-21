@@ -29,6 +29,7 @@ from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils import subgoal_language
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import (
     SamplingConfigError,
     assert_native_decision,
@@ -257,10 +258,14 @@ class BinFill(BaseEnv):
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
                      episode_spec=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self._episode_spec = _resolve_episode_spec(episode_spec, "BinFill")
+        # 步 4：只读导出（native_episode_spec=None）或原值回注（传入冻结规格）。
+        # 与上面的旧注入通道相互独立：本记录器只挂在原随机分支上（红线 R9）。
+        self._spec = SpecRecorder(native_episode_spec, "BinFill", {"seed": seed})
         # 注入生效的只读证据，供对拍观察器核对「创建输入 vs 创建后位姿」
         self._injection_evidence = {}
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -310,7 +315,8 @@ class BinFill(BaseEnv):
         self.generator.manual_seed(seed)
         dynamic_cfg = self._sampling["parameters"]["dynamic"]
         if self._episode_spec is None:
-            self.dynamic=bool(torch.randint(dynamic_cfg["low"], dynamic_cfg["high_exclusive"], tuple(dynamic_cfg["shape"]), generator=self.generator).item())
+            self.dynamic=bool(self._spec.value("layout.dynamic", bool(torch.randint(dynamic_cfg["low"], dynamic_cfg["high_exclusive"], tuple(dynamic_cfg["shape"]), generator=self.generator).item())))
+            self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
         else:
             # 规格定死 dynamic：不抽这一次 randint。开启态不要求随机流位置与原版对齐——
             # 凡规格覆盖的量都由规格决定，规格没覆盖的量（如 inject_fail_grasp）继续用
@@ -369,6 +375,8 @@ class BinFill(BaseEnv):
                 generator=generator,
                 randomize=button_cfg["randomize"],
                 randomize_range=tuple(button_cfg["randomize_range"]),
+                recorder=self._spec,
+                spec_path="layout.button_xy",
             )
         else:
             # 规格给的是**最终**中心；关掉 randomize 后 build_button 不抽随机数，
@@ -393,6 +401,8 @@ class BinFill(BaseEnv):
             x_var = torch.rand(1, generator=generator).item() * board_x["scale"] - board_x["subtract"]  # [-0.25, 0.25]
             y_var = torch.rand(1, generator=generator).item() * board_y["scale"] - board_y["subtract"]  # [-0.25, 0.25]
             z_rot_deg = (torch.rand(1, generator=generator).item() * board_yaw["scale"] - board_yaw["subtract"])  # [-20, 20] degrees
+            # 三次抽样照常发生；回注模式下真正用于建板的是冻结值
+            x_var, y_var, z_rot_deg = self._spec.value("layout.board.offsets", [x_var, y_var, z_rot_deg])
         else:
             # 规格存的是最终位置，这里反解回原公式里的偏移量，位置计算仍走下面同一行
             board_spec = spec["layout"]["board"]
@@ -450,6 +460,9 @@ class BinFill(BaseEnv):
         ).item()
         put_in_color = max(1, min(3, put_in_color))
         put_in_color = min(put_in_color, max(1, num_colors))
+        if spec is None:
+            color_pool = self._spec.value("objects.color_pool", color_pool)
+            put_in_color = self._spec.value("objects.put_in_color", put_in_color)
         active_color_indices = color_pool[:put_in_color]
         put_in_range = config['put_in_numbers']  # [min, max]
 
@@ -499,6 +512,9 @@ class BinFill(BaseEnv):
                 idx = torch.randint(0, len(color_pool), (1,), generator=generator).item()
                 spawn_numbers[color_pool[idx]] += 1
 
+        if spec is None:
+            spawn_numbers = self._spec.value("objects.spawn_numbers", spawn_numbers)
+            target_numbers = self._spec.value("objects.target_numbers", target_numbers)
         self.red_cubes_spawn_number = spawn_numbers[0]
         self.blue_cubes_spawn_number = spawn_numbers[1]
         self.green_cubes_spawn_number = spawn_numbers[2]
@@ -528,7 +544,9 @@ class BinFill(BaseEnv):
 
         if spec is None:
             # Shuffle generation order
-            shuffle_order = torch.randperm(len(cube_tasks), generator=generator).tolist()
+            shuffle_order = self._spec.value(
+                "objects.spawn_order", torch.randperm(len(cube_tasks), generator=generator).tolist()
+            )
             cube_tasks = [cube_tasks[i] for i in shuffle_order]
         else:
             # 规格的 cubes 列表本身就是生成顺序，直接按它重排并挂上固定位姿；
@@ -561,6 +579,8 @@ class BinFill(BaseEnv):
                     random_yaw=cubes_cfg["random_yaw"], name_prefix=f"cube_{task['name']}_{task['idx']}",
                     generator=generator,
                     fixed_xy=task.get("fixed_xy"), fixed_yaw=task.get("fixed_yaw"),
+                    recorder=None if spec is not None else self._spec,
+                    spec_path=None if spec is not None else f"layout.cubes.{task['name']}_{task['idx']}",
                 )
                 self.all_cubes.append(cube)
                 task["list"].append(cube)
@@ -613,7 +633,12 @@ class BinFill(BaseEnv):
                 ("green", self.green_cubes, self.green_cubes_target_number),
             ]
             if self._episode_spec is None:
-                color_order = torch.randperm(len(color_task_definitions), generator=self.generator).tolist()
+                init_index = getattr(self, "_native_init_index", 0)
+                self._native_init_index = init_index + 1
+                color_order = self._spec.value(
+                    f"initializations.{init_index}.color_order",
+                    torch.randperm(len(color_task_definitions), generator=self.generator).tolist(),
+                )
             else:
                 # 规格的 initialize_color_order 直接定死定义表 (blue, red, green) 的遍历顺序，
                 # 替代源码这次 randperm。两次初始化都从同一份规格重建，不复用上一次的结果。

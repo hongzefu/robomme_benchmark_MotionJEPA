@@ -30,6 +30,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import *
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from ..logging_utils import logger
 
@@ -135,9 +136,11 @@ class StopCube(BaseEnv):
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
+                     native_episode_spec=None,
                      **kwargs):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
+        self._spec = SpecRecorder(native_episode_spec, "StopCube", {"seed": seed})
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -226,6 +229,8 @@ class StopCube(BaseEnv):
             scale=button_cfg["scale"],
             generator=generator,
             randomize=button_cfg["randomize"],
+            recorder=self._spec,
+            spec_path="layout.button_xy",
         )
         #avoid = [button_obb]
 
@@ -237,6 +242,7 @@ class StopCube(BaseEnv):
         
         target_x = torch.FloatTensor(1).uniform_(target_cfg["low"], target_cfg["high"], generator=generator).item()
         target_y = torch.FloatTensor(1).uniform_(target_cfg["low"], target_cfg["high"], generator=generator).item()
+        target_x, target_y = self._spec.value("layout.target_xy", [target_x, target_y])
         self.target = build_purple_white_target(
                 scene=self.scene,
                 radius=self.cube_half_size*target_cfg["radius_factor"],
@@ -247,7 +253,9 @@ class StopCube(BaseEnv):
                 initial_pose=sapien.Pose(p=[target_x, target_y, target_cfg["z"]], q=rotate),
             )
         color_cfg = self._sampling["positions"]["cube_color"]
-        cube_color_rgb = torch.rand(*color_cfg["shape"], generator=generator).tolist()
+        cube_color_rgb = self._spec.value(
+            "objects.cube_rgb", torch.rand(*color_cfg["shape"], generator=generator).tolist()
+        )
         cube_color = (cube_color_rgb[0], cube_color_rgb[1], cube_color_rgb[2], color_cfg["alpha"])
         self.cube= spawn_fixed_cube(
                 self,
@@ -277,17 +285,27 @@ class StopCube(BaseEnv):
             generator.manual_seed(self.seed)
             interval_cfg = self._sampling["parameters"]["interval_sample"]
             # 这次抽样的结果原本就立刻被覆盖，保留它只为不平移随机流（红线 R8）
-            interval = torch.randint(interval_cfg["low"], interval_cfg["high_exclusive"], tuple(interval_cfg["shape"]), generator=generator).item()
+            # 这次抽样的结果原本就被覆盖；记进 sampling_trace 以证明它照常发生（红线 R8）
+            self._spec.value(
+                "actions.sampling_trace.interval_draw",
+                torch.randint(interval_cfg["low"], interval_cfg["high_exclusive"], tuple(interval_cfg["shape"]), generator=generator).item(),
+            )
             interval = interval_cfg["overridden_to"]
             self.interval = interval
 
 
             move_interval_list = list(self._sampling["decision"]["move_interval_choices"])
-            idx = torch.randint(0, len(move_interval_list), (1,), generator=generator).item()
+            idx = self._spec.value(
+                "actions.move_interval_idx",
+                torch.randint(0, len(move_interval_list), (1,), generator=generator).item(),
+            )
             self.move_interval = move_interval_list[idx]
 
             stop_cfg = self._sampling["decision"]["stop_time_range"]
-            stop_time=torch.randint(stop_cfg["low"], stop_cfg["high_exclusive"], (1,), generator=generator).item()
+            stop_time=self._spec.value(
+                "actions.stop_time",
+                torch.randint(stop_cfg["low"], stop_cfg["high_exclusive"], (1,), generator=generator).item(),
+            )
 
             self.steps_press=self.move_interval*(stop_time)-self.move_interval/2
             self.stop_time_range = (
@@ -307,7 +325,10 @@ class StopCube(BaseEnv):
 
             # Generate random rotation angle (-30 to +30 degrees)
             rotation_cfg = self._sampling["parameters"]["route_rotation_deg"]
-            rotation_angle = torch.FloatTensor(1).uniform_(rotation_cfg["low"], rotation_cfg["high"], generator=generator).item()
+            rotation_angle = self._spec.value(
+                "actions.rotation_deg",
+                torch.FloatTensor(1).uniform_(rotation_cfg["low"], rotation_cfg["high"], generator=generator).item(),
+            )
             rotation_rad = np.deg2rad(rotation_angle)
 
             # Define original start and end coordinates (around origin (0,0))
