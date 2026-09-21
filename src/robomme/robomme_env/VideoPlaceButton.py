@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -30,6 +31,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 
 from ..logging_utils import logger
 
@@ -47,6 +49,61 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
+
+
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.11）────────
+NATIVE_SAMPLING = {
+    "parameters": {
+        "color_pool": [
+            {"rgba": [1, 0, 0, 1], "name": "red"},
+            {"rgba": [0, 0, 1, 1], "name": "blue"},
+            {"rgba": [0, 1, 0, 1], "name": "green"},
+        ],
+        "color_order": {"sampler": "torch.randperm(3)"},
+        "target_selection": {"sampler": "torch.randint(0, len(all_cubes))"},
+        "task_mapping": "before→target_0，after→target_1；演示 target_0→按钮→target_1→goal_site",
+        "swap_duration_steps": 50,
+        "goal_site_z_override": -0.05,
+        "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+        "target_slots": 4,
+    },
+    "positions": {
+        "goal": {"region_center": [-0.1, 0], "region_half_size": 0.1,
+                  "radius_factor": 3, "thickness": 0.005},
+        "button": {"center_xy": [0.1, 0], "scale": 1.5, "randomize_range": [0.05, 0.3]},
+        "cubes": {"region_center": [0, 0], "region_half_size": 0.2, "random_yaw": True},
+        "targets": {"region_center": [0, 0], "region_half_size": 0.2,
+                     "radius_factor": 2, "thickness": 0.005, "min_gap_factor": 1},
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节 2.11 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        # 视频中演示操作多少个方块：原值 1（当前唯一 target_cube）；第二节的 2 个本轮不启用。
+        "demo_object_count": 1,
+        # 每个方块演示完成后返回哪里：原值＝最后放同一个随机 goal_site。
+        "demo_return_policy": "native_random_goal_site",
+        "color": {difficulty: cfg["color"] for difficulty, cfg in cls.configs.items()},
+        "targets": {difficulty: cfg["targets"] for difficulty, cfg in cls.configs.items()},
+        "swap": {difficulty: cfg["swap"] for difficulty, cfg in cls.configs.items()},
+        "additional_place": {difficulty: cfg["additional_place"] for difficulty, cfg in cls.configs.items()},
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
 
 
 @register_env("VideoPlaceButton")
@@ -96,7 +153,10 @@ class VideoPlaceButton(BaseEnv):
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -190,9 +250,9 @@ class VideoPlaceButton(BaseEnv):
                     avoid=None,  # Use current avoidance list, containing all spawned cubes
                     include_existing=False,  # Manually maintain list
                     include_goal=False,  # Manually maintain list
-                    region_center=[-0.1, 0],
-                    region_half_size=0.1,
-                    radius=self.cube_half_size * 3,  # Use radius instead of half_size
+                    region_center=list(self._sampling["positions"]["goal"]["region_center"]),
+                    region_half_size=self._sampling["positions"]["goal"]["region_half_size"],
+                    radius=self.cube_half_size * self._sampling["positions"]["goal"]["radius_factor"],  # Use radius instead of half_size
                     thickness=0.005,  # target thickness
                     min_gap=self.cube_half_size * 1,  # Gap requirement same as cube
                     name_prefix=f"goal_site",
@@ -202,12 +262,16 @@ class VideoPlaceButton(BaseEnv):
                 raise SceneGenerationError("goal_site sampling failed") from exc
             avoid = [self.goal_site]
 
+            button_cfg = self._sampling["positions"]["button"]
+            cubes_cfg = self._sampling["positions"]["cubes"]
+            targets_cfg = self._sampling["positions"]["targets"]
+            decision_cfg = self._sampling["decision"]
             button_obb = build_button(
                 self,
-                center_xy=(0.1, 0),
-                scale=1.5,
+                center_xy=tuple(button_cfg["center_xy"]),
+                scale=button_cfg["scale"],
                 generator=generator,
-                randomize_range=(0.05, 0.3)
+                randomize_range=tuple(button_cfg["randomize_range"])
             )
             avoid.append(button_obb)
 
@@ -235,7 +299,7 @@ class VideoPlaceButton(BaseEnv):
 
             # Generate cubes for each color group
             for idx, group in enumerate(color_groups):
-                if idx < self.configs[self.difficulty]["color"]:
+                if idx < decision_cfg["color"][self.difficulty]:
                     for cube_idx in range(cubes_per_color):
                         try:
                             cube = spawn_random_cube(
@@ -244,11 +308,11 @@ class VideoPlaceButton(BaseEnv):
                                 avoid=avoid,
                                 include_existing=False,
                                 include_goal=False,
-                                region_center=[0 , 0],
-                                region_half_size=0.2,
+                                region_center=list(cubes_cfg["region_center"]),
+                                region_half_size=cubes_cfg["region_half_size"],
                                 half_size=self.cube_half_size,
                                 min_gap=self.cube_half_size,
-                                random_yaw=True,
+                                random_yaw=cubes_cfg["random_yaw"],
                                 name_prefix=f"cube_{group['name']}_{cube_idx}",
                                 generator=generator,
                             )
@@ -271,19 +335,19 @@ class VideoPlaceButton(BaseEnv):
             )
 
             self.targets = []
-            for i in range(4):
-                if i < self.configs[self.difficulty]["targets"]:
+            for i in range(self._sampling["parameters"]["target_slots"]):
+                if i < decision_cfg["targets"][self.difficulty]:
                     try:
                         target = spawn_random_target(
                             self,
                             avoid=avoid,  # Use current avoidance list, containing all spawned cubes
                             include_existing=False,  # Manually maintain list
                             include_goal=False,  # Manually maintain list
-                            region_center=[0, 0],
-                            region_half_size=0.2,
-                            radius=self.cube_half_size * 2,  # Use radius instead of half_size
-                            thickness=0.005,  # target thickness
-                            min_gap=self.cube_half_size * 1,  # Gap requirement same as cube
+                            region_center=list(targets_cfg["region_center"]),
+                            region_half_size=targets_cfg["region_half_size"],
+                            radius=self.cube_half_size * targets_cfg["radius_factor"],  # Use radius instead of half_size
+                            thickness=targets_cfg["thickness"],  # target thickness
+                            min_gap=self.cube_half_size * targets_cfg["min_gap_factor"],  # Gap requirement same as cube
                             name_prefix=f"target_{i}",
                             generator=generator,
                         )
@@ -320,7 +384,7 @@ class VideoPlaceButton(BaseEnv):
             self.swap_target_b = None
             self.swap_target_other = []
 
-            if self.configs[self.difficulty]["swap"] == True:
+            if self._sampling["decision"]["swap"][self.difficulty] == True:
                 if len(self.targets) >= 2:
                     perm = torch.randperm(len(self.targets), generator=generator)
                     swap_idx_a = perm[0].item()
@@ -336,7 +400,7 @@ class VideoPlaceButton(BaseEnv):
                         f"Swap targets selected: target_{swap_idx_a} <-> target_{swap_idx_b}"
                     )
 
-            if self.configs[self.difficulty]["additional_place"] == True:
+            if self._sampling["decision"]["additional_place"][self.difficulty] == True:
                 self.pre_flag = torch.rand(1, generator=generator).item() < 0.5
                 self.post_flag = torch.rand(1, generator=generator).item() < 0.5
             else:

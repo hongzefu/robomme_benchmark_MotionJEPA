@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -26,6 +27,7 @@ from mani_skill.utils.geometry.rotation_conversions import (
 from .utils import *
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.subgoal_evaluate_func import static_check
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
@@ -47,6 +49,78 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 """
 
 
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.14）────────
+NATIVE_SAMPLING = {
+    "parameters": {
+        "peg_size": {
+            "length_expression": "0.05 + (0.01 - 0.01) * rand()",
+            "radius_expression": "0.01 + (0.005 - 0.005) * rand()",
+            "note": "两次 rand 被乘 0 消掉，仍须保留以免平移随机流（红线 R8）",
+        },
+        "head_color": {"sampler": "torch.rand", "shape": [3]},
+        "tail_color_rule": "1 - head",
+        "target_peg": {
+            "sampler": "torch.randint(0, 3)",
+            "overridden_to": 0,
+            "note": "抽完立刻被 0 覆盖，保留抽样次数",
+        },
+        "obj_selection": {"sampler": "torch.randint(0, 2)", "mapping": [-1, 1]},
+        "direction_selection": {"sampler": "torch.randint(0, 2)", "mapping": [-1, 1]},
+        "recovery": "本环境没有 inject_fail_grasp，只接收入口恢复模式，实际恢复动作为 null",
+    },
+    "positions": {
+        "construction_peg": {
+            "y_base": -0.15,
+            "initial_yaw": 0,
+            "note": "构造期临时位姿；真实输入是每次初始化重新采样的位姿",
+        },
+        "box": {
+            "base_translation": [0, 0],
+            "jitter_span": 0.2,
+            "yaw_center_rad": "np.pi / 2",
+            "yaw_half_span_deg": 20,
+            "z_factor": 4,
+            "inner_radius_factor": 1.7,
+            "outer_radius_factor": 4,
+        },
+        "peg_sampling": {
+            "x_span": 0.4, "x_offset": -0.2,
+            "y_span": 0.6, "y_offset": -0.3,
+            "min_distance_to_box_factor": 6,
+            "min_distance_between_pegs_factor": 1.5,
+            "max_attempts": 512,
+        },
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节 2.14 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        # 场上杆的总数：原值 3 根（offsets 决定构造期的排布）。
+        "peg_count": 3,
+        "peg_offsets": [0.1, 0, -0.1],
+        # 新增干扰杆相对目标杆的距离与方位约束：本轮不启用。
+        "near_target_distractor": None,
+        # 杆在桌面内的转角范围：原值 ±45°（表达式 (u*2-1)*radians(45)）。
+        "peg_yaw_range": {"half_span_deg": 45},
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
+
+
 @register_env("InsertPeg")
 class InsertPeg(BaseEnv):
 
@@ -65,7 +139,10 @@ class InsertPeg(BaseEnv):
     _clearance = 0.01
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -157,17 +234,19 @@ class InsertPeg(BaseEnv):
         self.peg_tails = []
         self._peg_initial_poses = []
 
-        offsets = [0.1,0,-0.1]  # X-axis differences for the 3 pegs
+        decision_cfg = self._sampling["decision"]
+        native_pos = self._sampling["positions"]
+        offsets = list(decision_cfg["peg_offsets"])  # X-axis differences for the 3 pegs
         # Sample a single pair of colors so all pegs share the same appearance per seed.
         peg_head_color = torch.rand(3, generator=self._hb_generator).tolist()
         # Use complementary tail color so head/tail are contrasting.
         peg_tail_color = [1.0 - c for c in peg_head_color]
 
         for offset in offsets:
-            peg_spawn_translation = np.array([self.length / 2 , -0.15-offset, self.radius], dtype=np.float32)
+            peg_spawn_translation = np.array([self.length / 2 , native_pos["construction_peg"]["y_base"]-offset, self.radius], dtype=np.float32)
 
             #initial_yaw = (torch.rand(1, generator=self._hb_generator).item() * 2 * np.pi) - np.pi
-            initial_yaw =  0
+            initial_yaw =  native_pos["construction_peg"]["initial_yaw"]
             yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
             yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
             yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -193,8 +272,9 @@ class InsertPeg(BaseEnv):
             self._peg_initial_poses.append(peg_initial_pose)
 
         # Randomly select one peg from the 3 pegs
-        random_peg_idx = int(torch.randint(0, 3, (1,), generator=self._hb_generator).item())
-        random_peg_idx=0
+        target_cfg = self._sampling["parameters"]["target_peg"]
+        random_peg_idx = int(torch.randint(0, decision_cfg["peg_count"], (1,), generator=self._hb_generator).item())
+        random_peg_idx=target_cfg["overridden_to"]
         self.peg = self.pegs[random_peg_idx]
 
         self.peg_head = self.peg_heads[random_peg_idx]
@@ -202,7 +282,8 @@ class InsertPeg(BaseEnv):
         self._peg_initial_pose = self._peg_initial_poses[random_peg_idx]
 
 
-        self.box=build_box_with_hole(self,inner_radius=self.radius*1.7,outer_radius=self.radius*4,depth=self.length,center=[0,0])
+        box_cfg = native_pos["box"]
+        self.box=build_box_with_hole(self,inner_radius=self.radius*box_cfg["inner_radius_factor"],outer_radius=self.radius*box_cfg["outer_radius_factor"],depth=self.length,center=list(box_cfg["base_translation"]))
         
         self.reset_in_proecess=False
    
@@ -218,13 +299,15 @@ class InsertPeg(BaseEnv):
             if not hasattr(self, "pegs"):
                 return
 
-            base_translation = (0, 0)
-            x_jitter_2 = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * 0.2
-            y_jitter_2 = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * 0.2
+            box_cfg = self._sampling["positions"]["box"]
+            peg_sampling = self._sampling["positions"]["peg_sampling"]
+            base_translation = tuple(box_cfg["base_translation"])
+            x_jitter_2 = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * box_cfg["jitter_span"]
+            y_jitter_2 = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * box_cfg["jitter_span"]
             # x_jitter_2=0
             # y_jitter_2=0
-            box_translation = [base_translation[0] + x_jitter_2, base_translation[1] + y_jitter_2, self.radius * 4]
-            box_yaw = np.pi / 2 + (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(20)
+            box_translation = [base_translation[0] + x_jitter_2, base_translation[1] + y_jitter_2, self.radius * box_cfg["z_factor"]]
+            box_yaw = np.pi / 2 + (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(box_cfg["yaw_half_span_deg"])
             box_angles = torch.tensor([[0.0, 0.0, box_yaw]], dtype=torch.float32)
             box_matrix = euler_angles_to_matrix(box_angles, convention="XYZ")
             box_quat = matrix_to_quaternion(box_matrix)[0].detach().cpu().numpy().tolist()
@@ -232,20 +315,20 @@ class InsertPeg(BaseEnv):
 
             box_xy = np.array(box_translation[:2], dtype=np.float32)
             sampled_xy_positions = []
-            max_sampling_attempts = 512
+            max_sampling_attempts = peg_sampling["max_attempts"]
 
             #Initialize all 3 pegs with constrained random placements
             for i, peg in enumerate(self.pegs):
                 candidate_xy = None
                 for _ in range(max_sampling_attempts):
-                    x_sample = (torch.rand(1, generator=self._hb_generator).item() * 0.4) - 0.2
-                    y_sample = (torch.rand(1, generator=self._hb_generator).item() * 0.6) - 0.3
+                    x_sample = (torch.rand(1, generator=self._hb_generator).item() * peg_sampling["x_span"]) + peg_sampling["x_offset"]
+                    y_sample = (torch.rand(1, generator=self._hb_generator).item() * peg_sampling["y_span"]) + peg_sampling["y_offset"]
                     sampled_xy = np.array([x_sample, y_sample], dtype=np.float32)
 
-                    if np.linalg.norm(sampled_xy - box_xy) <= self.radius * 6:
+                    if np.linalg.norm(sampled_xy - box_xy) <= self.radius * peg_sampling["min_distance_to_box_factor"]:
                         continue
 
-                    if any(np.linalg.norm(sampled_xy - prev_xy) <= self.length * 1.5 for prev_xy in sampled_xy_positions):
+                    if any(np.linalg.norm(sampled_xy - prev_xy) <= self.length * peg_sampling["min_distance_between_pegs_factor"] for prev_xy in sampled_xy_positions):
                         continue
 
                     candidate_xy = sampled_xy
@@ -254,7 +337,7 @@ class InsertPeg(BaseEnv):
                 if candidate_xy is None:
                     raise RuntimeError("Failed to sample peg positions satisfying placement constraints.")
 
-                yaw_value = (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(45)
+                yaw_value = (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(self._sampling["decision"]["peg_yaw_range"]["half_span_deg"])
 
                 yaw_angles = torch.tensor([[0.0, 0.0, yaw_value]], dtype=torch.float32)
                 yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")

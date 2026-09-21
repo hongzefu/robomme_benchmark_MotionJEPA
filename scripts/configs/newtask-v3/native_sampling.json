@@ -5,23 +5,22 @@
   "tasks_ready": [
     "BinFill",
     "ButtonUnmask",
+    "ButtonUnmaskSwap",
+    "InsertPeg",
     "MoveCube",
+    "PatternLock",
     "PickHighlight",
     "PickXtimes",
     "RouteStick",
     "StopCube",
     "SwingXtimes",
+    "VideoPlaceButton",
+    "VideoPlaceOrder",
     "VideoRepick",
     "VideoUnmask",
     "VideoUnmaskSwap"
   ],
-  "tasks_pending": [
-    "ButtonUnmaskSwap",
-    "VideoPlaceButton",
-    "VideoPlaceOrder",
-    "InsertPeg",
-    "PatternLock"
-  ],
+  "tasks_pending": [],
   "tasks": {
     "PickXtimes": {
       "decision": {
@@ -679,6 +678,188 @@
         }
       }
     },
+    "ButtonUnmaskSwap": {
+      "decision": {
+        "swap_count_range": {
+          "hard": [
+            2,
+            3
+          ],
+          "easy": [
+            1,
+            2
+          ],
+          "medium": [
+            1,
+            2
+          ]
+        },
+        "pick_count_range": {
+          "hard": [
+            2,
+            2
+          ],
+          "easy": [
+            1,
+            2
+          ],
+          "medium": [
+            1,
+            1
+          ]
+        },
+        "swap_speed_multiplier": 1,
+        "distractor": null
+      },
+      "native": {
+        "parameters": {
+          "bin_count": {
+            "hard": 4,
+            "easy": 3,
+            "medium": 4
+          },
+          "color_pool": [
+            {
+              "rgba": [
+                1,
+                0,
+                0,
+                1
+              ],
+              "name": "red"
+            },
+            {
+              "rgba": [
+                0,
+                1,
+                0,
+                1
+              ],
+              "name": "green"
+            },
+            {
+              "rgba": [
+                0,
+                0,
+                1,
+                1
+              ],
+              "name": "blue"
+            }
+          ],
+          "color_order": {
+            "sampler": "torch.randperm(3)"
+          },
+          "hidden_rule": "前三容器藏三色，第四个为空",
+          "pick_rule": "右按钮→左按钮后，抓 selected_bins[0]，count=2 时再抓 [1]",
+          "partner_rule": "交换开始时按实际 XY 取最近邻，不另抽签",
+          "swap_window": {
+            "start_step": 64,
+            "duration_steps": 50
+          },
+          "swap_path": {
+            "lane_offset": 0.07,
+            "smooth": true,
+            "keep_upright": true
+          },
+          "button_order": [
+            "right",
+            "left"
+          ],
+          "recovery": "构造器的 self.generator 用于恢复；场景另建同 seed 局部流，两条流分开"
+        },
+        "positions": {
+          "buttons": [
+            {
+              "name": "button_left",
+              "center_xy": [
+                -0.2,
+                -0.1
+              ],
+              "scale": 1.5,
+              "randomize": true,
+              "randomize_range": [
+                0.05,
+                0.05
+              ]
+            },
+            {
+              "name": "button_right",
+              "center_xy": [
+                -0.2,
+                0.1
+              ],
+              "scale": 1.5,
+              "randomize": true,
+              "randomize_range": [
+                0.05,
+                0.05
+              ]
+            }
+          ],
+          "anchors": {
+            "four_point": [
+              [
+                0,
+                -0.1
+              ],
+              [
+                0,
+                0.1
+              ],
+              [
+                0.1,
+                0.1
+              ],
+              [
+                0.1,
+                -0.1
+              ]
+            ],
+            "triangle": [
+              [
+                -0.05,
+                -0.15
+              ],
+              [
+                -0.05,
+                0.15
+              ],
+              [
+                0.05,
+                0
+              ]
+            ],
+            "line": [
+              [
+                -0.05,
+                -0.15
+              ],
+              [
+                -0.05,
+                0.15
+              ],
+              [
+                -0.05,
+                0
+              ]
+            ],
+            "offset_scale": 0.1,
+            "offset_note": "四点按两组各抽一次 y 偏移；三点各自抽一次 x 偏移；未被选中的那一套分支仍然照常消费随机数（红线 R8）",
+            "choice_sampler": "torch.randint(0, 2)"
+          },
+          "bins": {
+            "region_half_size": 0.07,
+            "min_gap_factor": 1,
+            "max_trials": 256
+          },
+          "hidden_cube": {
+            "half_size_divisor": 1.2,
+            "yaw": 0.0
+          }
+        }
+      }
+    },
     "ButtonUnmask": {
       "decision": {
         "pick_count": {
@@ -949,6 +1130,233 @@
         }
       }
     },
+    "VideoPlaceButton": {
+      "decision": {
+        "demo_object_count": 1,
+        "demo_return_policy": "native_random_goal_site",
+        "color": {
+          "hard": 3,
+          "easy": 1,
+          "medium": 3
+        },
+        "targets": {
+          "hard": 4,
+          "easy": 3,
+          "medium": 4
+        },
+        "swap": {
+          "hard": true,
+          "easy": false,
+          "medium": false
+        },
+        "additional_place": {
+          "hard": false,
+          "easy": false,
+          "medium": false
+        }
+      },
+      "native": {
+        "parameters": {
+          "color_pool": [
+            {
+              "rgba": [
+                1,
+                0,
+                0,
+                1
+              ],
+              "name": "red"
+            },
+            {
+              "rgba": [
+                0,
+                0,
+                1,
+                1
+              ],
+              "name": "blue"
+            },
+            {
+              "rgba": [
+                0,
+                1,
+                0,
+                1
+              ],
+              "name": "green"
+            }
+          ],
+          "color_order": {
+            "sampler": "torch.randperm(3)"
+          },
+          "target_selection": {
+            "sampler": "torch.randint(0, len(all_cubes))"
+          },
+          "task_mapping": "before→target_0，after→target_1；演示 target_0→按钮→target_1→goal_site",
+          "swap_duration_steps": 50,
+          "goal_site_z_override": -0.05,
+          "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+          "target_slots": 4
+        },
+        "positions": {
+          "goal": {
+            "region_center": [
+              -0.1,
+              0
+            ],
+            "region_half_size": 0.1,
+            "radius_factor": 3,
+            "thickness": 0.005
+          },
+          "button": {
+            "center_xy": [
+              0.1,
+              0
+            ],
+            "scale": 1.5,
+            "randomize_range": [
+              0.05,
+              0.3
+            ]
+          },
+          "cubes": {
+            "region_center": [
+              0,
+              0
+            ],
+            "region_half_size": 0.2,
+            "random_yaw": true
+          },
+          "targets": {
+            "region_center": [
+              0,
+              0
+            ],
+            "region_half_size": 0.2,
+            "radius_factor": 2,
+            "thickness": 0.005,
+            "min_gap_factor": 1
+          }
+        }
+      }
+    },
+    "VideoPlaceOrder": {
+      "decision": {
+        "demo_object_count": 1,
+        "demo_return_policy": "native_random_goal_site",
+        "color": {
+          "hard": 3,
+          "easy": 1,
+          "medium": 3
+        },
+        "targets": {
+          "hard": 4,
+          "easy": 4,
+          "medium": 4
+        },
+        "swap": {
+          "hard": true,
+          "easy": false,
+          "medium": false
+        }
+      },
+      "native": {
+        "parameters": {
+          "color_pool": [
+            {
+              "rgba": [
+                1,
+                0,
+                0,
+                1
+              ],
+              "name": "red"
+            },
+            {
+              "rgba": [
+                0,
+                0,
+                1,
+                1
+              ],
+              "name": "blue"
+            },
+            {
+              "rgba": [
+                0,
+                1,
+                0,
+                1
+              ],
+              "name": "green"
+            }
+          ],
+          "color_order": {
+            "sampler": "torch.randperm(3)"
+          },
+          "target_selection": {
+            "sampler": "torch.randint(0, len(all_cubes))"
+          },
+          "visit_selection": {
+            "count_sampler": "torch.randint(2, len(targets) + 1)",
+            "order_sampler": "torch.randperm(len(targets))[:count]"
+          },
+          "answer_selection": {
+            "sampler": "torch.randint(1, len(subset) + 1)",
+            "mapping": "target_target = visit_ids[which_in_subset - 1]"
+          },
+          "button_insertion": {
+            "sampler": "torch.randint(0, len(subset))",
+            "mapping": "button_task_index = k * 2 + 2"
+          },
+          "swap_selection": {
+            "sampler": "torch.randperm(len(targets))[:2]"
+          },
+          "swap_duration_steps": 50,
+          "goal_site_z_override": -0.05,
+          "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+          "target_slots": 4
+        },
+        "positions": {
+          "goal": {
+            "region_center": [
+              -0.1,
+              0
+            ],
+            "region_half_size": 0.1,
+            "radius_factor": 5,
+            "thickness": 0.005
+          },
+          "button": {
+            "center_xy": [
+              0.1,
+              0
+            ],
+            "scale": 1.5,
+            "randomize_range": [
+              0.05,
+              0.3
+            ]
+          },
+          "cubes": {
+            "region_center": [
+              0,
+              0
+            ],
+            "region_half_size": 0.2
+          },
+          "targets": {
+            "region_center": [
+              0,
+              0
+            ],
+            "region_half_size": 0.2,
+            "radius_factor": 2,
+            "thickness": 0.005
+          }
+        }
+      }
+    },
     "PickHighlight": {
       "decision": {
         "layout_mode": "native_region",
@@ -1040,6 +1448,84 @@
         }
       }
     },
+    "InsertPeg": {
+      "decision": {
+        "peg_count": 3,
+        "peg_offsets": [
+          0.1,
+          0,
+          -0.1
+        ],
+        "near_target_distractor": null,
+        "peg_yaw_range": {
+          "half_span_deg": 45
+        }
+      },
+      "native": {
+        "parameters": {
+          "peg_size": {
+            "length_expression": "0.05 + (0.01 - 0.01) * rand()",
+            "radius_expression": "0.01 + (0.005 - 0.005) * rand()",
+            "note": "两次 rand 被乘 0 消掉，仍须保留以免平移随机流（红线 R8）"
+          },
+          "head_color": {
+            "sampler": "torch.rand",
+            "shape": [
+              3
+            ]
+          },
+          "tail_color_rule": "1 - head",
+          "target_peg": {
+            "sampler": "torch.randint(0, 3)",
+            "overridden_to": 0,
+            "note": "抽完立刻被 0 覆盖，保留抽样次数"
+          },
+          "obj_selection": {
+            "sampler": "torch.randint(0, 2)",
+            "mapping": [
+              -1,
+              1
+            ]
+          },
+          "direction_selection": {
+            "sampler": "torch.randint(0, 2)",
+            "mapping": [
+              -1,
+              1
+            ]
+          },
+          "recovery": "本环境没有 inject_fail_grasp，只接收入口恢复模式，实际恢复动作为 null"
+        },
+        "positions": {
+          "construction_peg": {
+            "y_base": -0.15,
+            "initial_yaw": 0,
+            "note": "构造期临时位姿；真实输入是每次初始化重新采样的位姿"
+          },
+          "box": {
+            "base_translation": [
+              0,
+              0
+            ],
+            "jitter_span": 0.2,
+            "yaw_center_rad": "np.pi / 2",
+            "yaw_half_span_deg": 20,
+            "z_factor": 4,
+            "inner_radius_factor": 1.7,
+            "outer_radius_factor": 4
+          },
+          "peg_sampling": {
+            "x_span": 0.4,
+            "x_offset": -0.2,
+            "y_span": 0.6,
+            "y_offset": -0.3,
+            "min_distance_to_box_factor": 6,
+            "min_distance_between_pegs_factor": 1.5,
+            "max_attempts": 512
+          }
+        }
+      }
+    },
     "MoveCube": {
       "decision": {
         "demo_layout": {
@@ -1124,6 +1610,52 @@
             "head": "#EC7357",
             "tail": "#EC7357"
           }
+        }
+      }
+    },
+    "PatternLock": {
+      "decision": {
+        "demo_duration_seconds_range": null,
+        "demonstration_duration_policy": "native",
+        "grid": {
+          "hard": 5,
+          "easy": 3,
+          "medium": 4
+        },
+        "path_length_range": {
+          "hard": [
+            4,
+            8
+          ],
+          "easy": [
+            2,
+            4
+          ],
+          "medium": [
+            3,
+            5
+          ]
+        }
+      },
+      "native": {
+        "parameters": {
+          "path_selection": {
+            "start_end_sampler": "torch.randperm(num_targets)[:2]",
+            "search": "允许对角线的随机 DFS（find_path_0_to_8, diagonals=True）",
+            "max_attempts": 1000,
+            "exhausted_rule": "耗尽后使用最后一次搜索到的路径，不另抽"
+          },
+          "path_binding": "演示与执行复用同一条路径；首个目标保留 NO RECORD",
+          "motion_template": "每个目标 solve_swingonto 两次 screw 运动并 close_gripper",
+          "recovery": "沿用入口给定的 fail recover 模式与原 generator"
+        },
+        "positions": {
+          "grid_center": [
+            -0.1,
+            0
+          ],
+          "grid_spacing": 0.1,
+          "node_position_expression": "center + (index - (n-1)/2) * spacing"
         }
       }
     },

@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -30,6 +31,7 @@ from .utils.subgoal_evaluate_func import *
 from .utils.object_generation import *
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from ..logging_utils import logger
 
 
@@ -46,6 +48,53 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
+
+
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.15）────────
+NATIVE_SAMPLING = {
+    "parameters": {
+        "path_selection": {
+            "start_end_sampler": "torch.randperm(num_targets)[:2]",
+            "search": "允许对角线的随机 DFS（find_path_0_to_8, diagonals=True）",
+            "max_attempts": 1000,
+            "exhausted_rule": "耗尽后使用最后一次搜索到的路径，不另抽",
+        },
+        "path_binding": "演示与执行复用同一条路径；首个目标保留 NO RECORD",
+        "motion_template": "每个目标 solve_swingonto 两次 screw 运动并 close_gripper",
+        "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+    },
+    "positions": {
+        "grid_center": [-0.1, 0],
+        "grid_spacing": 0.1,
+        "node_position_expression": "center + (index - (n-1)/2) * spacing",
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节 2.15 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        # 演示视频目标时长及调节时长的方式：本轮不启用（None 即由原路径与求解运动决定）。
+        "demo_duration_seconds_range": None,
+        "demonstration_duration_policy": "native",
+        # 网格边长与路径节点数范围按字段表属 native 规则，这里只记录原值供核验，不作为新参数。
+        "grid": {difficulty: cfg["grid"] for difficulty, cfg in cls.configs.items()},
+        "path_length_range": {difficulty: list(cfg["length"]) for difficulty, cfg in cls.configs.items()},
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
 
 
 @register_env("PatternLock")
@@ -88,7 +137,10 @@ class PatternLock(BaseEnv):
 
 
     def __init__(self, *args, robot_uids="panda_stick", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.achieved_list=[]
         self.match=False
         self.after_demo=False
@@ -177,8 +229,10 @@ class PatternLock(BaseEnv):
         self.table_scene.build()
 
         # Generate 3x3 grid of buttons
-        grid_center = [-0.1, 0]  # Grid center position
-        grid_spacing = 0.1  # Spacing between buttons
+        layout_cfg = self._sampling["positions"]
+        decision_cfg = self._sampling["decision"]
+        grid_center = list(layout_cfg["grid_center"])  # Grid center position
+        grid_spacing = layout_cfg["grid_spacing"]  # Spacing between buttons
 
         self.buttons_grid = []
         self.button_joints_grid = []
@@ -187,7 +241,7 @@ class PatternLock(BaseEnv):
 
         
         num_rows, num_cols = 5, 8
-        num_rows, num_cols = self.configs[self.difficulty]["grid"],self.configs[self.difficulty]["grid"]
+        num_rows, num_cols = decision_cfg["grid"][self.difficulty],decision_cfg["grid"][self.difficulty]
         row_center = (num_rows - 1) / 2
         col_center = (num_cols - 1) / 2
 
@@ -262,7 +316,7 @@ class PatternLock(BaseEnv):
         # self.selected_buttons = [self.buttons_grid[i] for i in path_nodes]
 
         num_targets = len(self.targets_grid)
-        max_attempts = 1000  # Safety limit
+        max_attempts = self._sampling["parameters"]["path_selection"]["max_attempts"]  # Safety limit
 
         for attempt in range(max_attempts):
             node_choices = torch.randperm(num_targets, generator=generator)[:2]
@@ -277,7 +331,7 @@ class PatternLock(BaseEnv):
                 generator=generator,
             )
 
-            length_range = self.configs[self.difficulty]["length"]
+            length_range = decision_cfg["path_length_range"][self.difficulty]
             if length_range[0] <= len(path_nodes) <= length_range[1]:
                 break
         else:

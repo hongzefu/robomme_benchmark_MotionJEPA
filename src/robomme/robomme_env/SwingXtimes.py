@@ -285,7 +285,7 @@ class SwingXtimes(BaseEnv):
 
             # Generate cubes for each color group
             for idx, group in enumerate(color_groups):
-                if idx < self.configs[self.difficulty]['color']:
+                if idx < self._sampling["decision"]["color"][self.difficulty]:
                     for cube_idx in range(cubes_per_color):
                         try:
                             cube = spawn_random_cube(

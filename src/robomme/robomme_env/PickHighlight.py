@@ -507,7 +507,7 @@ class PickHighlight(BaseEnv):
 
       
 
-        highlight_count = min(self.configs[self.difficulty]["pickup"], len(target_cubes))
+        highlight_count = min(self._sampling["decision"]["highlight_count"][self.difficulty], len(target_cubes))
         for i in range(highlight_count):
             highlight_obj(
                 self,

@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -29,6 +30,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from ..logging_utils import logger
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
@@ -44,6 +46,80 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
+
+
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.8）────────
+NATIVE_SAMPLING = {
+    "parameters": {
+        "bin_count": "FROM_CLASS_CONFIGS",
+        "color_pool": [
+            {"rgba": [1, 0, 0, 1], "name": "red"},
+            {"rgba": [0, 1, 0, 1], "name": "green"},
+            {"rgba": [0, 0, 1, 1], "name": "blue"},
+        ],
+        "color_order": {"sampler": "torch.randperm(3)"},
+        "hidden_rule": "前三容器藏三色，第四个为空",
+        "pick_rule": "右按钮→左按钮后，抓 selected_bins[0]，count=2 时再抓 [1]",
+        "partner_rule": "交换开始时按实际 XY 取最近邻，不另抽签",
+        "swap_window": {"start_step": 64, "duration_steps": 50},
+        "swap_path": {"lane_offset": 0.07, "smooth": True, "keep_upright": True},
+        "button_order": ["right", "left"],
+        "recovery": "构造器的 self.generator 用于恢复；场景另建同 seed 局部流，两条流分开",
+    },
+    "positions": {
+        "buttons": [
+            {"name": "button_left", "center_xy": [-0.2, -0.1], "scale": 1.5,
+             "randomize": True, "randomize_range": [0.05, 0.05]},
+            {"name": "button_right", "center_xy": [-0.2, 0.1], "scale": 1.5,
+             "randomize": True, "randomize_range": [0.05, 0.05]},
+        ],
+        "anchors": {
+            "four_point": [[0, -0.1], [0, 0.1], [0.1, 0.1], [0.1, -0.1]],
+            "triangle": [[-0.05, -0.15], [-0.05, 0.15], [0.05, 0]],
+            "line": [[-0.05, -0.15], [-0.05, 0.15], [-0.05, 0]],
+            "offset_scale": 0.1,
+            "offset_note": "四点按两组各抽一次 y 偏移；三点各自抽一次 x 偏移；"
+                            "未被选中的那一套分支仍然照常消费随机数（红线 R8）",
+            "choice_sampler": "torch.randint(0, 2)",
+        },
+        "bins": {"region_half_size": 0.07, "min_gap_factor": 1, "max_trials": 256},
+        "hidden_cube": {"half_size_divisor": 1.2, "yaw": 0.0},
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    native = copy.deepcopy(NATIVE_SAMPLING)
+    # 容器数按字段表属 native（本次未要求改按钮／容器布局），从类属性取原值。
+    native["parameters"]["bin_count"] = {
+        difficulty: cfg["bin"] for difficulty, cfg in cls.configs.items()
+    }
+    return _native_decision(cls), native
+
+
+def _native_decision(cls):
+    """按方案第二节 2.8 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        "swap_count_range": {
+            difficulty: [cfg["swap_min"], cfg["swap_max"]] for difficulty, cfg in cls.configs.items()
+        },
+        "pick_count_range": {
+            difficulty: [cfg["pick_min"], cfg["pick_max"]] for difficulty, cfg in cls.configs.items()
+        },
+        # 交换速度倍率：原值 1（每段 50 步）；第二节的 1.5 倍本轮不启用。
+        "swap_speed_multiplier": 1,
+        "distractor": None,
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
 
 
 @register_env("ButtonUnmaskSwap")
@@ -94,7 +170,10 @@ class ButtonUnmaskSwap(BaseEnv):
     
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -140,11 +219,13 @@ class ButtonUnmaskSwap(BaseEnv):
         # Use seed to randomly determine number of repetitions (1-5)
         generator = torch.Generator()
         generator.manual_seed(seed)
-        self.swap_times = torch.randint(self.configs[self.difficulty]['swap_min'], self.configs[self.difficulty]['swap_max']+1, (1,), generator=generator).item()
+        swap_range = self._sampling["decision"]["swap_count_range"][self.difficulty]
+        self.swap_times = torch.randint(swap_range[0], swap_range[1]+1, (1,), generator=generator).item()
         logger.debug(f"Task will swap {self.swap_times} times")
 
 
-        self.pick_times = torch.randint(self.configs[self.difficulty]['pick_min'], self.configs[self.difficulty]['pick_max']+1, (1,), generator=generator).item()
+        pick_range = self._sampling["decision"]["pick_count_range"][self.difficulty]
+        self.pick_times = torch.randint(pick_range[0], pick_range[1]+1, (1,), generator=generator).item()
         logger.debug(f"Task will pick {self.pick_times} times")
 
         super().__init__(*args, robot_uids=robot_uids, **kwargs)
@@ -200,14 +281,17 @@ class ButtonUnmaskSwap(BaseEnv):
         avoid=[]
 
         avoid=[]
+        buttons_cfg = self._sampling["positions"]["buttons"]
+        anchors_cfg = self._sampling["positions"]["anchors"]
+        bins_cfg = self._sampling["positions"]["bins"]
         button_obb_1 = build_button(
             self,
-            center_xy=(-0.2, -0.1),
-            scale=1.5,
+            center_xy=tuple(buttons_cfg[0]["center_xy"]),
+            scale=buttons_cfg[0]["scale"],
             generator=generator,
-            name="button_left",
-            randomize=True,
-            randomize_range=(0.05, 0.05)
+            name=buttons_cfg[0]["name"],
+            randomize=buttons_cfg[0]["randomize"],
+            randomize_range=tuple(buttons_cfg[0]["randomize_range"])
         )
         # Store first button before building second one
         self.button_left = self.button
@@ -217,12 +301,12 @@ class ButtonUnmaskSwap(BaseEnv):
 
         button_obb_2 = build_button(
             self,
-            center_xy=(-0.2, 0.1),
-            scale=1.5,
+            center_xy=tuple(buttons_cfg[1]["center_xy"]),
+            scale=buttons_cfg[1]["scale"],
             generator=generator,
-            name="button_right",
-            randomize=True,
-            randomize_range=(0.05, 0.05)
+            name=buttons_cfg[1]["name"],
+            randomize=buttons_cfg[1]["randomize"],
+            randomize_range=tuple(buttons_cfg[1]["randomize_range"])
         )
         # Store first button before building second one
         self.button_right = self.button
@@ -231,36 +315,40 @@ class ButtonUnmaskSwap(BaseEnv):
          # Generate 3 bins
         self.spawned_bins = []
         # Generate y offsets for region4 using torch generator
-        y_offset_1 = (torch.rand(1, generator=generator).item()) * 0.1  # for first two points
-        y_offset_2 = (torch.rand(1, generator=generator).item()) * 0.1  # for last two points
+        offset_scale = anchors_cfg["offset_scale"]
+        four_point = anchors_cfg["four_point"]
+        y_offset_1 = (torch.rand(1, generator=generator).item()) * offset_scale  # for first two points
+        y_offset_2 = (torch.rand(1, generator=generator).item()) * offset_scale  # for last two points
 
-        region4=[[0, -0.1 + y_offset_1],
-                 [0, 0.1 + y_offset_1],
-                 [0.1, 0.1 + y_offset_2],
-                 [0.1, -0.1 + y_offset_2]]
+        region4=[[four_point[0][0], four_point[0][1] + y_offset_1],
+                 [four_point[1][0], four_point[1][1] + y_offset_1],
+                 [four_point[2][0], four_point[2][1] + y_offset_2],
+                 [four_point[3][0], four_point[3][1] + y_offset_2]]
 
 
         # Generate independent random x offsets for each point using torch generator
-        x_offset_tri_1 = (torch.rand(1, generator=generator).item()) * 0.1
-        x_offset_tri_2 = (torch.rand(1, generator=generator).item()) * 0.1
-        x_offset_tri_3 = (torch.rand(1, generator=generator).item()) * 0.1
+        triangle = anchors_cfg["triangle"]
+        line = anchors_cfg["line"]
+        x_offset_tri_1 = (torch.rand(1, generator=generator).item()) * offset_scale
+        x_offset_tri_2 = (torch.rand(1, generator=generator).item()) * offset_scale
+        x_offset_tri_3 = (torch.rand(1, generator=generator).item()) * offset_scale
 
-        x_offset_line_1 = (torch.rand(1, generator=generator).item()) * 0.1
-        x_offset_line_2 = (torch.rand(1, generator=generator).item()) * 0.1
-        x_offset_line_3 = (torch.rand(1, generator=generator).item()) * 0.1
+        x_offset_line_1 = (torch.rand(1, generator=generator).item()) * offset_scale
+        x_offset_line_2 = (torch.rand(1, generator=generator).item()) * offset_scale
+        x_offset_line_3 = (torch.rand(1, generator=generator).item()) * offset_scale
 
-        region3_tri=[[-0.05 + x_offset_tri_1, -0.15],
-                     [-0.05 + x_offset_tri_2, 0.15],
-                     [0.05 + x_offset_tri_3, 0]]
-        region3_line=[[-0.05 + x_offset_line_1, -0.15],
-                      [-0.05 + x_offset_line_2, 0.15],
-                      [-0.05 + x_offset_line_3, 0]]
+        region3_tri=[[triangle[0][0] + x_offset_tri_1, triangle[0][1]],
+                     [triangle[1][0] + x_offset_tri_2, triangle[1][1]],
+                     [triangle[2][0] + x_offset_tri_3, triangle[2][1]]]
+        region3_line=[[line[0][0] + x_offset_line_1, line[0][1]],
+                      [line[1][0] + x_offset_line_2, line[1][1]],
+                      [line[2][0] + x_offset_line_3, line[2][1]]]
 
         # Use generator to randomly select region3_tri or region3_line
         region3_choice = torch.randint(0, 2, (1,), generator=generator).item()
         region3 = region3_tri if region3_choice == 0 else region3_line
 
-        if self.configs[self.difficulty]['bin']==4:
+        if self._sampling["parameters"]["bin_count"][self.difficulty]==4:
             region=region4
         else:
              region=region3
@@ -271,16 +359,16 @@ class ButtonUnmaskSwap(BaseEnv):
         #     if region[i][0] < -0:
         #         region[i][0] = 0
 
-        for i in range(self.configs[self.difficulty]['bin']):
+        for i in range(self._sampling["parameters"]["bin_count"][self.difficulty]):
             try:
                 bin_actor = spawn_random_bin(
                     self,
                     avoid=avoid,  # Use current avoidance list, containing all spawned objects
                     region_center=region[i],
-                    region_half_size=0.07,
-                    min_gap=self.cube_half_size*1,  # bins need larger gap, increased to 6x to avoid collision
+                    region_half_size=bins_cfg["region_half_size"],
+                    min_gap=self.cube_half_size*bins_cfg["min_gap_factor"],  # bins need larger gap, increased to 6x to avoid collision
                     name_prefix=f"bin_{i}",
-                    max_trials=256,
+                    max_trials=bins_cfg["max_trials"],
                     generator=generator
                 )
             except RuntimeError as e:
@@ -329,10 +417,10 @@ class ButtonUnmaskSwap(BaseEnv):
             cube_actor = spawn_fixed_cube(
                 self,
                 position=cube_position,
-                half_size=self.cube_half_size/1.2,
+                half_size=self.cube_half_size/self._sampling["positions"]["hidden_cube"]["half_size_divisor"],
                 color=cube_colors[i],  # Use red, green, blue in order
                 name_prefix=f"target_cube_{color_names[i]}",
-                yaw=0.0,  # No rotation
+                yaw=self._sampling["positions"]["hidden_cube"]["yaw"],  # No rotation
                 dynamic=True
             )
 
