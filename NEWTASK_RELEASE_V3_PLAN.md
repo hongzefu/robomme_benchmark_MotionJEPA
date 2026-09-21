@@ -21,7 +21,7 @@
 7. 既有 `dataset-gen` 报告 `status=failed`（217242 个元素非零差异、10 条帧数不符、阈值 `1e-8`）原样保留，不为得到 PASS 改阈值、关恢复或换样本。依据第四节，细节见第二部分 9.5。
 8. `RouteStick.py::step` 白球尾迹现为 10 步、官方为 40 步，恢复原值须单列审批，不把 10 步冒充原始行为。依据第四节，细节见第二部分 9.2。
 9. 录像器 `RecordWrapper.py` 全程冻结；`src/robomme/` 每处改动逐项批准，计划中的改动清单不等于批准。依据第二部分〇。
-10. 实施开始前先切 `newtaskRelease-v3`，本轮不切分支、不生成配置或数据、不跑仿真。依据 五 阶段 0、六。
+10. 实施开始前先切 `newtaskRelease-v3`，本轮不切分支、不生成配置或数据、不跑仿真。依据第五节步 0、第六节。
 
 **读表说明**：
 每个环境只使用四列：**修改后的字段｜什么含义｜现在的值｜是否修改／拟定修改后的值**。最后一列直接说明以后要改什么，或注明规则不改、只由外部生成本局值；不再用分类编号前后查表。
@@ -237,26 +237,50 @@ episode_spec  layout / objects / actions / initializations
 
 **拿什么跟基线比**：B 是新分支恢复后的默认路径，C 是 B 加显式原值 `sampling_config`，D 是 C 导出的 `episode_spec` 原值回注。`A1↔A2` 先证明基线自身可重复；`A1↔B` 证明恢复到了官方行为（会抓出继承的旧改动，如 `RouteStick.py::step` 尾迹 10 步对官方 40 步）；`B↔C↔D` 与 `A1↔D` 证明接口拆分和回注没有改数。
 
-**判据是什么**：逐元素比 HDF5 的 dtype、shape、数值位模式与全部 group／dataset／attribute，比落盘 RGB 与 MP4 解码帧，比随机流的调用序号、签名、结果与前后状态，比恢复开关、z／xy 与实际失败动作索引。每一项输出具名判定行，例如 `TRAIN_IDENTITY=PASS tasks=16 rows=1600 mismatch=0`、`BASELINE_REPEAT=PASS compared=N different=0`、`TRAIN_RESTORE=PASS compared=N mismatch=0`、`INJECTION_PARITY=PASS compared=N mismatch=0`、`RNG_PARITY=PASS compared=N calls_mismatch=0 state_mismatch=0`、`RECOVERY_PARITY=PASS configured=96 mode_mismatch=0 event_mismatch=0`、`TRAIN_COVERAGE=PASS expected=1600 terminal=1600 missing=0`，共十四条，定义与「为什么能逐位」见第二部分 9.4。验收分母固定 1600 条、8000 次生成；子集通过只报子集。A1↔A2 不逐位一致的条目记 `BASELINE_NONDETERMINISTIC`，不设新种子、不放宽容差。对官方发布 HDF5 的既有 `1e-8` 比较（报告 `status=failed`，217242 个元素非零差异、10 条帧数不符）原样保留，不改阈值、不关恢复、不换样本。
+**能否并行对拍**：能，但分两步放开。每条身份的五路各自是独立进程、独立输出目录，身份之间也互不依赖，所以全集可以按批次并行，用 detached tmux 分批跑。前提是第五节步 1b～5b 先单 worker、固定物理 GPU 0 把基线定死，再经步 5c 核验官方历史用的 20 worker 配置与单 worker 一致并过 P6，才把全集放到多 worker 上跑。并行不改 seed 规则与 fail recover；D 路依赖 C 路导出的规格，所以同一身份内 C→D 串行、不同身份间并行。
 
-**能否并行对拍**：能，但分两步放开。每条身份的五路各自是独立进程、独立输出目录，身份之间也互不依赖，所以全集可以按批次并行，用 detached tmux 分批跑。前提有两条：第一轮先单 worker、固定物理 GPU 0 跑通冒烟与 48 格，把基线定死；然后另核验官方历史用的 20 worker 配置结果与单 worker 一致，并通过 `WORKER_ISOLATION=PASS tasks=16 mismatch=0 input_mutation=0`（同一 PID 甲→乙→甲连跑与独立进程结果相同、输入散列不变）后，才把全集放到多 worker 上跑。并行不改 seed 规则与 fail recover；D 路依赖 C 路导出的规格，所以同一身份内 C→D 串行、不同身份间并行。完整展开见第二部分「九」。
+**判据表**：判据行全部摘进运行目录的 `compare` 输出；任一 FAIL 即停、把原文交用户处置，不放宽判据。`N` 出结果时替换为实测条数。「步骤」列对应第五节的步号，定义与「为什么能逐位」的完整展开见第二部分 9.4。
 
-## 五、实施顺序（阶段／内容／判据）
+| # | 验证 | 步骤 | 证明什么 | 判据行 | 耗时／资源 |
+|---|---|---|---|---|---|
+| G1 | 原身份完整 | 0 | manifest 与官方固定 metadata 逐条双向相等；无重复、漏项、额外项，170 条非公式 seed 未被公式替代 | `TRAIN_IDENTITY=PASS tasks=16 rows=1600 mismatch=0` | 秒级／CPU，不启动仿真 |
+| G2 | 配置外提完整 | 3 | 十六环境 `decision`／`native` 每个键映射到源码消费点；原运算元、dtype、区间边界及有效／死字段逐一核对 | `SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0` | 分钟级／CPU |
+| G3 | 字段归属完整 | 3 | 第二节 101 行每项落到 `decision` 或 `native` 及其本局输入／运行观测；原值阶段两块均原值；最近邻／补集／时间表不独立抽签 | `FIELD_OWNERSHIP=PASS tasks=16 unmapped=0 native_rule_overrides=0` | 分钟级／CPU |
+| G4 | 规格真正被消费 | 4 | 逐局比对象 ID、布局、目标、动作、恢复与初始化编号；记录最终赋值／对象绑定，只读取不算消费；绕开规格赋值的反例必须被抓到 | `SPEC_BINDING=PASS missing=0 unused=0 mismatch=0` | 单条秒级／GPU 0 |
+| P1 | 原版自身重复 | 1b | A1↔A2 的 HDF5、图像、状态与事件逐位相同；不可重复的身份单列 `BASELINE_NONDETERMINISTIC`，不设新种子 | `BASELINE_REPEAT=PASS compared=N different=0` | 单条约 40 s 量级（历史 60 次 2479.7 s 仅供估算）／GPU 0 |
+| P2 | 原始行为已恢复 | 2 | A1↔B 全字段相同；不能排除 RouteStick 尾迹、演示标志或恢复事件来求通过 | `TRAIN_RESTORE=PASS compared=N mismatch=0` | 同 P1／GPU 0 |
+| P3 | 随机流不漂移 | 4 | B／C／D 比调用序号、源身份、签名、结果、拒绝记录与前后状态 | `RNG_PARITY=PASS compared=N calls_mismatch=0 state_mismatch=0` | 同 P1／GPU 0 |
+| P4 | 原值注入等价 | 4 | B↔C、C↔D、A1↔D 逐元素比 dtype、shape、位模式与全部 group／dataset／attribute；SHA 相同即字节相同，不同则继续逐字段比 | `INJECTION_PARITY=PASS compared=N mismatch=0` | 同 P1／GPU 0 |
+| P5 | 图像与录像事件 | 5a | 落盘 RGB、演示／执行标志、真实帧索引相同；MP4 比完整解码帧数与像素，编码容器散列单列 | `VIDEO_PARITY=PASS compared=N frames_mismatch=0 pixels_mismatch=0` | 同 P1／GPU 0 |
+| P6 | 连续 worker 不污染 | 5b | 每环境选不同原身份，甲→乙→甲在同一 PID 运行，各自与独立进程相同；配置、规格输入散列不变 | `WORKER_ISOLATION=PASS tasks=16 mismatch=0 input_mutation=0` | 48 条生成／GPU 0 |
+| P7 | fail recover 原样 | 5a | 原分支与各新路径逐条比恢复开关、z／xy、实际失败动作索引、恢复任务与结果，不只比模式名 | `RECOVERY_PARITY=PASS configured=96 mode_mismatch=0 event_mismatch=0` | 随 5a／5d 产出 |
+| R1 | 原测试结果对拍 | 1b、5e | A 的身份、恢复、成功与帧数逐条对原报告；取得发布集后复跑 `validate_generated_dataset_contract.py` 与 `compare_joint_actions.py`，保留既有失败与 `1e-8` | `DATASET_GEN_REPORT_PARITY=PASS compared=1600 outcome_mismatch=0 detail_mismatch=0` | 1b 秒级；5e 需先恢复 `data/robomme_data_h5/` |
+| R2 | 历史成品额外比较 | 1a | 历史原 HDF5 当前缺失；找回且散列核验通过后才实跑 | `HISTORICAL_ARTIFACT_PARITY=NOT_RUN reason=historical_files_missing` | 无 |
+| C1 | 失败与全集覆盖 | 5d | 1600 条全部有终态；missing、timeout、error、不可重复、不可比、成功分别计数并留退出码与阶段 | `TRAIN_COVERAGE=PASS expected=1600 terminal=1600 missing=0` | 8000 次生成／分批 tmux |
 
-判据直接引用第二部分 9.4 的判定行；实施完成后的实测结果以子节追加在本表之后，不改写原计划。每阶段涉及 `src/robomme/` 的具体文件与函数见第二部分「一」，须逐项审批后才动。
+**四组目的**：G1～G4 验身份与两个接口的静态完整；P1～P4 验基线可重复、原行为恢复与回注逐位等价；P5～P7 验录像、worker 隔离与恢复事件；R1／R2／C1 分别负责对历史报告、历史成品与全集执行完整性。C1 只说明执行完整，不说明全部一致；总体完成还要求每条身份有完整适用的对拍结论。既有报告对发布 HDF5 的 `1e-8` 失败（217242 个元素非零差异、10 条帧数不符）原样保留，不改阈值、不关恢复、不换样本。
 
-| 阶段 | 要做什么 | 结束判据 |
-| --- | --- | --- |
-| 0 | **实施开始前**切 `newtaskRelease-v3`；冻结父提交、官方源码、官方 1600 条 metadata、锁文件、设备与用例清单，核验输出路径与存储空间 | 分支正确；`TRAIN_IDENTITY`；来源散列齐全 |
-| 1 | 冻结 `dataset-gen` 原报告与逐文件散列，定位历史成品和官方参考数据；在 `scripts/` 新增严格原 train manifest 与对拍编排；A1／A2 单条试跑 | 原结果可用性如实记录；原 worker 含 fail recover；不以公式替换 seed |
-| 2 | 按逐项批准的范围恢复历史原值默认路径，先做 A↔B；RouteStick 尾迹等逐项验收 | `TRAIN_RESTORE` 在指定样本通过；未解决项不隐藏 |
-| 3 | 十六环境逐个切出 `sampling_config` 的decision／native，按第二节字段表与第二部分「二」的映射；每环境先 B↔C，再进入下一环境 | `FIELD_OWNERSHIP`、`SAMPLING_ORIGINAL`；对应原始样本 B↔C 通过 |
-| 4 | 按同一顺序切出完整 `episode_spec`，支持原位抽样记录与原值回注，包括两次初始化和动态事件 | `SPEC_BINDING`、`RNG_PARITY`、`INJECTION_PARITY` |
-| 5 | 16 环境冒烟、48 格与恢复分支、连续 worker；分批执行全集五路对拍，复跑原比较器；另核验原 20 worker 配置 | 包括 `RECOVERY_PARITY`、历史成品与原报告对拍；各项按实际范围输出，未齐前不标完成 |
-| 6 | 保存逐条身份、配置／规格、差异、命令、退出码、原始结果及图像索引；更新使用说明并提交 | 源文件和原产物未被覆盖；状态与证据一一对应 |
-| 后续新任务 | 用户另行启动布局／难度改动后，启用第二节的未来值和算法 | 单独定义新值验收，不能复用原 train 相等结论 |
+## 五、实施顺序（十二步，全文以本表为准）
 
-每次代码提交前的测试预算不超过 5 分钟：先跑相关定向测试和核心路径；完整五路矩阵属于独立的长时实验，按批次用 detached tmux 管理，日志采用 `PYTHONUNBUFFERED=1`、`set -o pipefail`、`tee` 与 `EXIT_CODE=`。单条冒烟失败先定位，不能直接放大全集。第一次实测后再估算耗时和磁盘，不能用历史四任务的耗时线性外推作保证。
+主副本上顺序执行；每步 commit 后按仓库规则 push；所有仿真钉物理 GPU 0，步 1b～5b 单 worker，5c 起才用 20 worker。「闸门」列引用第四节判据表编号；任一 FAIL 停下交用户，不放大范围。涉及 `src/robomme/` 的步骤须先按第二部分「一」逐项获批。会话名、命令与失败分流见第二部分「四」。
+
+| # | 步骤 | 做什么 | 闸门 | 失败处置 |
+|---|---|---|---|---|
+| 0 | 切分支与冻结 | 从含本方案的提交切 `newtaskRelease-v3`；冻结父提交、官方源码、1600 条 metadata、锁文件、设备与用例清单；核验输出路径与存储 | G1、来源散列齐全 | 分支或散列不对即停，不改代码 |
+| 1a | 冻结历史证据 | 冻结 `dataset-gen` 原报告与逐文件散列；定位历史成品与官方参考数据，如实登记缺失 | R2 记 `NOT_RUN` | 缺失只登记，不冒称 |
+| 1b | A 路单条试跑 | 在 `scripts/` 新增严格 manifest 与五路编排；`BinFill/easy/episode_0` 单任务、单 episode、单 worker 跑 A1、A2，保留 z 恢复 | P1、R1（帧数／成功／恢复对报告） | 不以公式替换 seed；不一致先定位 |
+| 2 | 恢复原值默认路径 | 按逐项批准恢复历史原值（含 RouteStick 尾迹 40 步），只做 A↔B | P2 在指定样本通过 | 未解决项不隐藏；数值 FAIL 只 revert 该项 |
+| 3 | 逐环境切出 `sampling_config` | 十六环境逐个拆 `decision`／`native`，按第二节字段表与第二部分「二」映射；每环境先 B↔C 再进下一环境 | G2、G3；该环境 B↔C 过 P4 | 一环境未过不进下一环境 |
+| 4 | 逐环境切出 `episode_spec` | 同顺序实现原位抽样记录与原值回注，含两次初始化与动态事件；每环境 B↔C↔D | G4、P3、P4 | 现有「注入后跳过抽样」分支不得沿用为 D |
+| 5a | 16 环境冒烟 | 每环境各一条原 episode 走五路，比全部字段、图像与恢复 | P5、P7 | 单条失败先定位 |
+| 5b | 48 格与恢复分支 | 覆盖 48 个 task／difficulty 格、`BinFill` 两种 dynamic、`VideoRepick/hard`、单双拾取、零／非零交换、延迟搭档，每环境 episode 0～5 全部纳入；连续 worker 甲→乙→甲 | P6 及 P1～P5、P7 在子集通过 | 未出现的分支列覆盖缺口，不另造用例 |
+| 5c | 20 worker 核验 | 用官方历史的 20 worker 配置重跑 5b 子集，与单 worker 结果比 | P4、P6 在子集通过 | 不一致回单 worker，不改 seed 与恢复 |
+| 5d | 全集五路 | 分批 tmux 跑 1600×5，每批独立目录；`compare` 只读汇总 | C1 及 P1～P7 全集 | 任一未完成留在分母，不宣布 1600 条一致 |
+| 5e | 复跑原比较器 | 恢复发布集到 `data/robomme_data_h5/` 后跑原合同与动作比较器，对照报告已存字段 | R1 完整 | 既有 `1e-8` 失败照记，不改阈值 |
+| 6 | 留档提交 | 保存逐条身份、配置／规格、差异、命令、退出码、原始结果与图像索引；更新使用说明；提交并 push | 源文件与原产物未覆盖；状态与证据一一对应 | 存储不足先汇报占用，不清理旧产物 |
+| 后续 | 新值模式 | 用户另行启动布局／难度改动后，才在 `decision` 启用第二节拟修改值与新算法 | 单独定义新值验收 | 不复用原 train 相等结论 |
+
+每次代码提交前的测试预算不超过 5 分钟：先跑相关定向测试和核心路径；完整五路矩阵属于独立的长时实验，按批次用 detached tmux 管理，日志采用 `PYTHONUNBUFFERED=1`、`set -o pipefail`、`tee` 与 `EXIT_CODE=`。第一次实测后再估算耗时和磁盘，不能用历史四任务的耗时线性外推作保证。
 
 ## 六、本轮方案的状态
 
@@ -271,6 +295,8 @@ episode_spec  layout / objects / actions / initializations
 文档核验退出0：`FIELD_SPLIT=PASS environments=16 tables=32 field_groups=101 user_groups=46 random_groups=35 derived_groups=20`、`DOC_CHECK=PASS matching_rows=101 local_links=20 baseline_section_unchanged=1 code_line_refs=0`。只改方案与账本；本次没有生成配置、候选或数据，没有运行代码测试或真实仿真，文档核验不代表未来对拍已经通过。
 
 本次四列单表调整（11.24）保留全部101行，将十六环境改为16张表；当前值逐行与上一版核对一致（仅展开字段简写），旧键映射移至4.3，共用约束移至4.4。静态核验退出0：`SINGLE_TABLE=PASS environments=16 tables=16 columns=4 rows=101`、`CONTENT_CHECK=PASS current_values_unchanged=101 baseline_unchanged=1 local_links=20`；只读复核确认未来数值和待定事项保留，未修改任何生效配置或代码。
+
+本次格式对齐（11.27）参照 `robomme_policy_learning_MotionJEPA@v2-motionmem` 的 `0920-32frame-8x8-modul-2048-plan.md`：第四节改为带编号（G1～G4、P1～P7、R1～R2、C1）的六列判据表并保留基线／比什么／能否并行三段结论，第五节改为十二步编号步骤表（0、1a、1b、2、3、4、5a～5e、6、后续），第二部分「三」改为闸门前置条件表，所有阶段引用改为步号。内容仍取自原文，未新增事实。
 
 本次两部分重排（11.25）不改第二节的 16 张表与 101 行；原「三、原始 train 的身份与代码基线」与「五、怎样对拍」合并为第四节「原始对拍这么比」，原「四、两个接口」去掉字段映射后成为第三节，三、四两节按用户要求只留高层结论，完整展开下沉为第二部分「八」「九」，原 4.3 字段映射、6.2 改动清单、6.3 命令与留档移入第二部分，并新增前置红线、对拍闸门总表、风险登记与盲区清单，内容均取自原文，未新增事实。静态核验退出0：`TWO_PART=PASS environments=16 tables=16 rows=101 local_links_missing=0 code_line_refs=0`，`git diff --check` 通过；本次同样没有生成配置、候选或数据，没有运行仿真。
 
@@ -361,18 +387,21 @@ episode_spec  layout / objects / actions / initializations
 
 ## 三、对拍闸门总表
 
-判定行的定义与「为什么能证明」见第二部分 9.4；本表只把闸门挂到实施阶段与比较对象上，`N` 出结果时替换为实测条数。
+闸门编号、判定行、步号与「证明什么」以第一部分第四节判据表为准，定义与「为什么能逐位」见 9.4；本表只补每个闸门的前置条件。
 
-| 闸门 | 首次要求通过的阶段 | 比较对象 | 前置条件 |
-| --- | --- | --- | --- |
-| `TRAIN_IDENTITY` | 0 | manifest ↔ 官方 1600 条 metadata | `freeze-identities` 完成，不启动仿真 |
-| `BASELINE_REPEAT` | 1 | A1 ↔ A2 | A 路单条试跑通过 |
-| `DATASET_GEN_REPORT_PARITY` | 1（身份／恢复／成功／帧数）、5（复跑原比较器） | A ↔ 原 `generation_report`；取得发布集后再跑 `validate_generated_dataset_contract.py` 与 `compare_joint_actions.py` | 发布数据按 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337` 恢复至 `data/robomme_data_h5/` |
-| `HISTORICAL_ARTIFACT_PARITY` | 1 登记为 `NOT_RUN` | 历史原 HDF5（当前缺失） | 找回并散列核验通过后才改为实跑 |
-| `TRAIN_RESTORE` | 2 | A1 ↔ B | RouteStick 尾迹等逐项获批恢复 |
-| `FIELD_OWNERSHIP`、`SAMPLING_ORIGINAL` | 3（逐环境） | 第二节字段 ↔ 第二部分「二」映射 ↔ 源码消费点；B ↔ C | 每环境 B↔C 通过后再进入下一环境 |
-| `SPEC_BINDING`、`RNG_PARITY`、`INJECTION_PARITY` | 4（逐环境） | B ↔ C ↔ D、A1 ↔ D | C 路完整规格已导出并封存 |
-| `VIDEO_PARITY`、`WORKER_ISOLATION`、`RECOVERY_PARITY`、`TRAIN_COVERAGE` | 5 | 全集五路；甲→乙→甲同 PID；原分支 ↔ 各新路径 | 16 环境冒烟、48 格与恢复分支先过 |
+| # | 判定行 | 步号 | 前置条件 |
+|---|---|---|---|
+| G1 | `TRAIN_IDENTITY` | 0 | `freeze-identities` 完成，不启动仿真 |
+| G2、G3 | `SAMPLING_ORIGINAL`、`FIELD_OWNERSHIP` | 3 | 该环境 `decision`／`native` 已按第二部分「二」映射提取 |
+| G4 | `SPEC_BINDING` | 4 | 该环境 C 路完整规格已导出并封存 |
+| P1 | `BASELINE_REPEAT` | 1b | 官方源码隔离目录与 manifest 就绪 |
+| P2 | `TRAIN_RESTORE` | 2 | RouteStick 尾迹等恢复项逐项获批 |
+| P3、P4 | `RNG_PARITY`、`INJECTION_PARITY` | 4 | G4 通过 |
+| P5、P7 | `VIDEO_PARITY`、`RECOVERY_PARITY` | 5a | 16 环境各一条五路完成 |
+| P6 | `WORKER_ISOLATION` | 5b | 48 格子集完成 |
+| R1 | `DATASET_GEN_REPORT_PARITY` | 1b、5e | 5e 需发布数据按 revision `a5e4e25ffe8af34f64944f9533d06455ce5f8337` 恢复至 `data/robomme_data_h5/` |
+| R2 | `HISTORICAL_ARTIFACT_PARITY` | 1a | 找回历史 HDF5 并散列核验通过后才改为实跑 |
+| C1 | `TRAIN_COVERAGE` | 5d | 5a～5c 全部通过 |
 
 ## 四、runbook：命令与留档
 
@@ -399,7 +428,7 @@ uv run --no-sync python scripts/train_split_parity.py run --manifest artifacts/t
 uv run --no-sync python scripts/train_split_parity.py compare --run artifacts/train-parity/v3-smoke
 ```
 
-`freeze-identities` 读取官方原文并保存身份，不启动仿真；C 路完整规格导出需要真实运行，必须在阶段 1 的 A 冒烟及阶段 3 的 C 冒烟通过后才分批启动，不能第一次执行命令就直接展开全部 1600 条。第一次 `run` 只覆盖显式选择的单条；候选规格来自已完成的 C 路，不接受重新抽取的候选填补。
+`freeze-identities` 读取官方原文并保存身份，不启动仿真；C 路完整规格导出需要真实运行，必须在第五节步 1b 的 A 冒烟及步 3 的 C 冒烟通过后才分批启动，不能第一次执行命令就直接展开全部 1600 条。第一次 `run` 只覆盖显式选择的单条；候选规格来自已完成的 C 路，不接受重新抽取的候选填补。
 
 每次代码改动后先运行 5 分钟内的相关测试；可以参考现有入口：
 
