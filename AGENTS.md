@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
 | 全环境方案按用户决策与原规则外部供值拆分（2026-09-21） | 文档修订完成（11.23） | 十六环境32表、101字段组：用户决策46、原规则抽样35、派生／观测20；新旧键映射、decision/native及回注关系明确，静态核验与只读复核通过 | 仅方案与账本，未切分支、未改配置代码；原值实施仍按既定授权边界执行 |
 | 全环境方案恢复表格排布（2026-09-21） | 文档排版完成（11.22） | 十六环境各两张表，共32表128行，先固定内容后现行值；逐条文字及其他正文零差异，23个本地链接有效 | 仅排版调整，文档核验通过；代码、配置、分支保持原状 |
@@ -1757,3 +1758,22 @@
 - 原键映射和接口缺口移至4.3，跨环境约束移至4.4；读表说明缩短，技术段的旧分类简写同步展开。第三节官方dataset-gen基线原文不变。只读复核确认未来数值和待定事项未丢失。
 - `command -v uv` 后运行标准库文档核验，退出0：`SINGLE_TABLE=PASS environments=16 tables=16 columns=4 rows=101`、`CONTENT_CHECK=PASS current_values_unchanged=101 baseline_unchanged=1 local_links=20`。首轮逐字比较因旧E字段简写展开误报，统一表达后101行现值全部相同；`git diff --check`通过，src/scripts/依赖零改动。
 - 仅提交方案与必要账本，分支仍为newtask-v2.1refractor，未运行仿真或代码测试，未推送。
+
+### 2026-09-21 America/Detroit — 全环境原值方案对抗验证开始
+
+- 用户原话：「/data/hongzefu/robomme\_benchmark\_MotionJEPANewTask/NEWTASK\_RELEASE\_V3\_PLAN.md」「对抗验证」。本轮审查固定提交 `74dc5ce`（11.28）的方案，核查实际代码、官方 Git 对象和可执行反例；不把方案中的后续实施步骤当成本轮授权。
+- 初始工作区干净，分支 `newtask-v2.1refractor`，`command -v uv` 返回 `/home/hongzefu/.local/bin/uv`。三路并行只读核查144条抽样与恢复覆盖、规格与随机流消费、原版与历史报告判据；主审核对步骤依赖、命令和证据完整性。
+- 本轮只新增独立审查报告和必要账本记录，保留原方案；不切实施分支，不改生产源码／配置，不启动仿真，不运行新数据生成。
+
+### 2026-09-21 America/Detroit — 144条子集的两项阻断已复现
+
+- 官方十六环境按方案「每难度前3条」选出的 episode 均为 `0,1,2,3,4,6,7,10,11`，恢复模式合计 z=48、xy=32、关闭64，即80条配置恢复；P7仍写 `configured=96`，不能同时成立。九条中已经包含三种模式，不会触发方案替换规则。
+- 官方 `validate_generated_dataset_contract` 与 `compare_joint_actions` 都要求 episode 从0连续；用上述稀疏编号执行原函数参数检查，两者分别抛出 `validation episodes must be a contiguous range starting at 0` 和 `comparison episodes must be a contiguous range starting at 0`，步5e的直接复用路径不成立。探针仅隔离执行参数守卫，不读取HDF5、不加载环境。
+- 现有配置与对拍反例短测：`uv run --no-sync python -m pytest tests/lightweight/test_native_sampling_config.py tests/lightweight/test_native_sampling_evidence.py -q --basetemp artifacts/train-parity/20260921-plan-audit/pytest-tmp`，62 passed、3.05秒、退出0；日志 `artifacts/train-parity/20260921-plan-audit/pytest.log`。这只验证已有工具，不代表新方案通过。继续核验历史报告投影和恢复方向外部供值。
+
+### 2026-09-21 America/Detroit — 全环境原值方案对抗审查完成（11.29）
+
+- 独立报告 `docs/validation/newtask-v3/20260921-release-plan-audit.md` 确认3项P1与1项P2。除前述两项外，历史 `joint_action_comparison` 没有逐episode数值摘要，最大差位置BinFill/99不在144子集，不能据此验历史子集数值零漂移；xy恢复在 `subgoal_planner_func.py::_sample_fail_recover_xy_signs/solve_pickup_fail` 另抽方向，方案须补入真实规格消费及工具审批锚点。
+- 两段可复制探针从报告直接提取执行：官方metadata子集为z48／xy32／关闭64，两个原比较器均按预期拒绝；xy真实身份seed11401和5300均出现先抽[0,0]再拒绝重抽，seed4301重抽与外部记录值相同但规格读取为0。探针不导入仿真、不覆盖生产函数，退出0。原工具短测62项通过，不能代替新方案验收。
+- 初次静态链接检查误把代码块中的 `scope[function](*args)` 当成Markdown链接；检查器排除代码块后通过，正文无需因误报改写。`AUDIT_DOC=PASS local_links=1 original_plan_unchanged=1 production_unchanged=1`，`git diff --check`通过；独立复核收窄了R1措辞，允许可投影字段单独判零差异，但不能覆盖数值摘要不可比状态。
+- 原方案SHA-256仍为 `78faf72d69be6fda79f7cd84df3c08288666d9a96d1a1c4e68cc729196690bf8`，相对审查锚点的 `NEWTASK_RELEASE_V3_PLAN.md/src/scripts/pyproject.toml/uv.lock` 零改动；录像器与官方d53字节相同。只逐路径提交本报告和账本；未切分支、未启动仿真、未生成轨迹、未推送。下一步须先修订方案，本轮未代为实施。
