@@ -53,10 +53,28 @@ def _get_fail_recover_rng(env):
 
 
 def _sample_fail_recover_xy_signs(env) -> tuple[np.ndarray, int]:
+    """执行时恢复的 xy 方向：独立随机流，拒绝 [0,0]。
+
+    newtaskRelease-v3 步 4：这是方案 8.2 点名要求「在各自原调用点导出与消费」的取值点之一
+    （选失败动作与抽 xy 方向是**两个不同的随机事件**，不能只冻结前一个）。原抽样与拒绝轨迹
+    照常发生；回注模式下真正用于派生偏移的是冻结符号，且按恢复事件序号分开存。
+    """
     generator, seed_anchor = _get_fail_recover_rng(env)
+    rejected: list[list[int]] = []
     signs = torch.randint(-1, 2, (2,), generator=generator, dtype=torch.int64)
     while bool(torch.all(signs == 0)):
+        rejected.append([int(v) for v in signs.tolist()])
         signs = torch.randint(-1, 2, (2,), generator=generator, dtype=torch.int64)
+
+    recorder = getattr(env, "_spec", None)
+    if recorder is not None:
+        index = getattr(env, "_native_recovery_event_index", -1) + 1
+        env._native_recovery_event_index = index
+        prefix = f"actions.recovery.events.{index}"
+        frozen = recorder.value(f"{prefix}.xy_signs", [int(v) for v in signs.tolist()])
+        recorder.record(f"{prefix}.seed_anchor", int(seed_anchor))
+        recorder.record(f"{prefix}.rejected_attempts", rejected)
+        signs = torch.tensor(frozen, dtype=torch.int64)
     return signs.detach().cpu().numpy().astype(np.int32), seed_anchor
 
 

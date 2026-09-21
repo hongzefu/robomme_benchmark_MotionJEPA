@@ -106,8 +106,13 @@ class SpecRecorder:
         return frozen
 
     def record(self, path: str, value: Any) -> None:
-        """只读记录派生量或运行观测；回注模式下同样核验。"""
+        """只读记录派生量或运行观测；回注模式下同样核验。
+
+        与 :meth:`value` 的区别只在于「不替换取值」——它同样计入 trace，因为这个路径
+        确实在本局被访问过；否则 SPEC_BINDING 会把它误判成「有记录却没被消费」。
+        """
         plain = _plain(value)
+        self.trace.append({"path": path, "value": plain, "source": "record"})
         if self.mode == "export":
             _set_path(self._document, path, plain)
             return

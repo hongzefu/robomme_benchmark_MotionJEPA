@@ -79,8 +79,26 @@ def test_replay_rejects_missing_value_point() -> None:
 
 def test_trace_records_every_value_point() -> None:
     recorder = _export()
+    # value() 与 record() 都要进 trace：后者虽然不替换取值，但路径确实被访问过，
+    # 否则 SPEC_BINDING 会把它误判成「有记录却没被消费」（unused）。
     assert [item["path"] for item in recorder.trace] == [
-        "layout.dynamic", "layout.board.x_var", "objects.color_order",
+        "layout.dynamic", "layout.board.x_var", "objects.color_order", "objects.spawn_total",
     ]
     document = recorder.to_dict()
+    # value_points 只数真正的取值点（draw/spec），不把 record 计进去
     assert document["provenance"]["value_points"] == 3
+
+
+def test_recorded_paths_count_as_consumed() -> None:
+    """只读记录的派生量也算被消费，不能进 unused。"""
+    document = _export().to_dict()
+    replay = SpecRecorder(document, "BinFill", IDENTITY)
+    replay.value("layout.dynamic", True)
+    replay.value("layout.board.x_var", 0.123456789)
+    replay.value("objects.color_order", [2, 0, 1])
+    replay.record("objects.spawn_total", 5)
+    consumed = set(replay.consumed_paths())
+    unused = [path for path in replay.leaf_paths() if not any(
+        path == item or path.startswith(item + ".") for item in consumed
+    )]
+    assert unused == []
