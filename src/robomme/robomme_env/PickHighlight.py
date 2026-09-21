@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -28,6 +29,7 @@ from .utils import *
 from .utils.subgoal_evaluate_func import static_check
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 from ..logging_utils import logger
@@ -46,6 +48,62 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
+
+
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.9）────────
+# decision：方块摆放模式与采样区域、同时高亮并需抓取的目标数、场上方块总数、逐块颜色策略。
+# native：每块的具体颜色与位姿抽法、高亮目标选择（randperm）、按钮位置、恢复、
+#        高亮窗口与抓取顺序（所有目标共用同一个窗口、同时高亮）。
+NATIVE_SAMPLING = {
+    "parameters": {
+        "color_pool": [
+            {"rgba": [1, 0, 0, 1], "name": "red"},
+            {"rgba": [0, 0, 1, 1], "name": "blue"},
+            {"rgba": [0, 1, 0, 1], "name": "green"},
+        ],
+        "color_draw": {"sampler": "torch.randint", "low": 0, "high_exclusive": "len(color_pool)"},
+        "target_selection": {"sampler": "torch.randperm(len(all_cubes))[:pickup]"},
+        "spawn_failure": "生成失败 break，保存实际数量，不补抽",
+        "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+    },
+    "positions": {
+        "button": {"center_xy": [-0.2, 0], "scale": 1.5},
+        "cubes": {
+            "region_center": [-0.1, 0],
+            "region_half_size": 0.2,
+            "min_gap_factor": 2,
+            "random_yaw": True,
+            "include_existing": False,
+            "include_goal": False,
+        },
+        "highlight_window": {"start_step": 10, "end_step": 100, "simultaneous": True},
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节 2.9 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        "layout_mode": "native_region",
+        "cube_region": {"region_center": [-0.1, 0], "region_half_size": 0.2},
+        "highlight_count": {difficulty: cfg["pickup"] for difficulty, cfg in cls.configs.items()},
+        "spawn_count": {difficulty: cfg["spawn"] for difficulty, cfg in cls.configs.items()},
+        "block_color_policy": "native_per_cube_uniform",
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
 
 
 @register_env("PickHighlight")
@@ -88,7 +146,10 @@ class PickHighlight(BaseEnv):
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.robot_init_qpos_noise = robot_init_qpos_noise
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
@@ -167,10 +228,14 @@ class PickHighlight(BaseEnv):
         self.table_scene.build()
 
 
+        button_cfg = self._sampling["positions"]["button"]
+        cubes_cfg = self._sampling["positions"]["cubes"]
+        decision_cfg = self._sampling["decision"]
+        cube_region = decision_cfg["cube_region"]
         button_obb = build_button(
             self,
-            center_xy=(-0.2, 0),
-            scale=1.5,
+            center_xy=tuple(button_cfg["center_xy"]),
+            scale=button_cfg["scale"],
             generator=self.generator,
         )
         avoid = [button_obb]
@@ -187,7 +252,7 @@ class PickHighlight(BaseEnv):
         ]
 
         # Get number of cubes to spawn based on difficulty
-        num_cubes_to_spawn = self.configs[self.difficulty]['spawn']
+        num_cubes_to_spawn = decision_cfg["spawn_count"][self.difficulty]
 
         # Spawn specified number of cubes, each with random color
         for cube_idx in range(num_cubes_to_spawn):
@@ -202,11 +267,11 @@ class PickHighlight(BaseEnv):
                     avoid=avoid,
                     include_existing=False,
                     include_goal=False,
-                    region_center=[-0.1, 0],
-                    region_half_size=0.2,
+                    region_center=list(cube_region["region_center"]),
+                    region_half_size=cube_region["region_half_size"],
                     half_size=self.cube_half_size,
-                    min_gap=self.cube_half_size*2,
-                    random_yaw=True,
+                    min_gap=self.cube_half_size*cubes_cfg["min_gap_factor"],
+                    random_yaw=cubes_cfg["random_yaw"],
                     name_prefix=f"cube_{chosen_color['name']}_{cube_idx}",
                     generator=self.generator,
                 )
@@ -229,7 +294,7 @@ class PickHighlight(BaseEnv):
 
 
          # Randomly select one cube from all available cubes as the target
-        target_cube_indices = torch.randperm(len(self.all_cubes), generator=self.generator)[:self.configs[self.difficulty]['pickup']]
+        target_cube_indices = torch.randperm(len(self.all_cubes), generator=self.generator)[:decision_cfg["highlight_count"][self.difficulty]]
 
         self.target_cubes = [self.all_cubes[idx] for idx in target_cube_indices]
         self.target_cube_names = [self.all_cube_names[idx] for idx in target_cube_indices]
@@ -447,8 +512,8 @@ class PickHighlight(BaseEnv):
             highlight_obj(
                 self,
                 target_cubes[i],
-                start_step=10,
-                end_step=100,
+                start_step=self._sampling["positions"]["highlight_window"]["start_step"],
+                end_step=self._sampling["positions"]["highlight_window"]["end_step"],
                 cur_step=timestep,
             )
         obs, reward, terminated, truncated, info = super().step(action)

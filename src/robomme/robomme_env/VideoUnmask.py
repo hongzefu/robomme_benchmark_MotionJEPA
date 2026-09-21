@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -8,6 +9,7 @@ import mani_skill.envs.utils.randomization as randomization
 from mani_skill.agents.robots import SO100, Fetch, Panda
 from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.envs.tasks.tabletop.pick_cube_cfgs import PICK_CUBE_CONFIGS
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from mani_skill.sensors.camera import CameraConfig
 from mani_skill.utils import sapien_utils
 from mani_skill.utils.building import actors
@@ -46,6 +48,61 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
+
+
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.5）────────
+NATIVE_SAMPLING = {
+    "parameters": {
+        "color_pool": [
+            {"rgba": [1, 0, 0, 1], "name": "red"},
+            {"rgba": [0, 1, 0, 1], "name": "green"},
+            {"rgba": [0, 0, 1, 1], "name": "blue"},
+        ],
+        "color_order": {"sampler": "torch.randperm(3)"},
+        "hidden_rule": "前 3 个容器各藏一块，其余为空",
+        "pick_rule": "先抓 bin_0，pick>1 再抓 bin_1",
+        "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+        "step_bin_scan": 15,
+    },
+    "positions": {
+        "bins": {
+            "min_gap_factor": 2,
+            "max_trials": 256,
+            "yaw_expression": "u * 90 度（通过拒绝检查后才抽）",
+        },
+        "hidden_cube": {"half_size_divisor": 1.2, "yaw": 0.0, "dynamic": True},
+        "reveal_window": {"start_step": 0, "end_step": 64},
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节 2.5 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        # 需要拾取的目标数量；第二节的 pick=3 本轮不启用。
+        "pick_count": {difficulty: cfg["pick"] for difficulty, cfg in cls.configs.items()},
+        # 容器怎样摆放、摆放区域多大；原值＝按难度给的容器数 + 同一块区域。
+        "bin_layout_policy": {
+            "count": {difficulty: cfg["bin"] for difficulty, cfg in cls.configs.items()},
+            "region_center": [0, 0],
+            "region_half_size": 0.2,
+        },
+        "distractor": None,
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
 
 
 @register_env("VideoUnmask")
@@ -88,7 +145,10 @@ class VideoUnmask(BaseEnv):
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -171,16 +231,20 @@ class VideoUnmask(BaseEnv):
 
          # Generate 3 bins
         self.spawned_bins = []
-        for i in range(self.configs[self.difficulty]['bin']):
+        decision_cfg = self._sampling["decision"]
+        bin_layout = decision_cfg["bin_layout_policy"]
+        bins_cfg = self._sampling["positions"]["bins"]
+        hidden_cfg = self._sampling["positions"]["hidden_cube"]
+        for i in range(bin_layout["count"][self.difficulty]):
             try:
                 bin_actor = spawn_random_bin(
                     self,
                     avoid=avoid,  # Use current avoidance list, containing all spawned objects
-                    region_center=[0, 0],
-                    region_half_size=0.2,
-                    min_gap=self.cube_half_size*2,  # bins need larger gap, increased to 6x to avoid collision
+                    region_center=list(bin_layout["region_center"]),
+                    region_half_size=bin_layout["region_half_size"],
+                    min_gap=self.cube_half_size*bins_cfg["min_gap_factor"],  # bins need larger gap, increased to 6x to avoid collision
                     name_prefix=f"bin_{i}",
-                    max_trials=256,
+                    max_trials=bins_cfg["max_trials"],
                     generator=generator
                 )
                 logger.debug(f"Spawned bin_{i} at position {bin_actor.pose.p}")
@@ -220,11 +284,11 @@ class VideoUnmask(BaseEnv):
             cube_actor = spawn_fixed_cube(
                 self,
                 position=cube_position,
-                half_size=self.cube_half_size/1.2,
+                half_size=self.cube_half_size/hidden_cfg["half_size_divisor"],
                 color=cube_colors[i],  # Use red, green, blue in order
                 name_prefix=f"target_cube_{color_names[i]}",
-                yaw=0.0,  # No rotation
-                dynamic=True
+                yaw=hidden_cfg["yaw"],  # No rotation
+                dynamic=hidden_cfg["dynamic"]
             )
 
             spawned_dynamic_cubes.append(cube_actor)
@@ -258,7 +322,7 @@ class VideoUnmask(BaseEnv):
                 "solve": lambda env, planner: solve_pickup_bin(env, planner, obj=self.bin_0),
                 "segment":self.bin_0,
             },]
-        if self.configs[self.difficulty]['pick']>1:
+        if decision_cfg["pick_count"][self.difficulty]>1:
             tasks.append({
                     "func": (lambda: is_bin_putdown(self, obj=self.bin_0)),
                     "name": "put down the container",
@@ -389,14 +453,14 @@ class VideoUnmask(BaseEnv):
 
         timestep = self.elapsed_steps        
         #Lift and drop bins (bin_0 to bin_4 if they exist)
-        for i in range(15):
+        for i in range(self._sampling["parameters"]["step_bin_scan"]):
             bin_attr = f"bin_{i}"
             if hasattr(self, bin_attr):
                 lift_and_drop_objects_back_to_original(
                     self,
                     obj=getattr(self, bin_attr),
-                    start_step=0,
-                    end_step=32*2,
+                    start_step=self._sampling["positions"]["reveal_window"]["start_step"],
+                    end_step=self._sampling["positions"]["reveal_window"]["end_step"],
                     cur_step=timestep,
                 ) 
 

@@ -26,6 +26,7 @@ import copy
 from .utils import *
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.subgoal_evaluate_func import static_check
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
@@ -47,6 +48,66 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 """
 
 
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.13）────────
+NATIVE_SAMPLING = {
+    "parameters": {
+        "peg_size": {
+            "length_expression": "0.1 + (0.05 - 0.05) * rand()",
+            "radius_expression": "0.01 + (0.005 - 0.005) * rand()",
+            "note": "两次 rand 结果被乘 0 消掉，但必须保留以免平移随机流（红线 R8）",
+        },
+        "way_selection": {"sampler": "torch.randint(len(self.ways))"},
+        "obj_selection": {"sampler": "torch.randint(0, 2)", "mapping": [-1, 1]},
+        "dir_sample": {"sampler": "torch.randint(0, 2)", "consumed": False,
+                        "note": "抽了但未使用，保留为 sampling_trace"},
+        "direction_rule": "evaluate 按两套布局的实际 y 差给 ±1，不再随机抽",
+        "reset_rule": "step 切换到已生成的执行位姿",
+        "recovery": "本环境没有 inject_fail_grasp，只接收入口恢复模式，实际恢复动作为 null",
+    },
+    "positions": {
+        "goal_demo": {"region_center": [0.0, 0.0], "region_half_size": 0.15,
+                       "radius_factor": 2, "min_gap_factor": 1},
+        "goal_execution": {"region_center": [0.0, 0.0], "region_half_size": 0.1,
+                            "radius_factor": 2, "min_gap_factor": 1},
+        "cube_rejection": {"max_trials": 128, "min_distance_factor": 5},
+        "peg_color": {"head": "#EC7357", "tail": "#EC7357"},
+    },
+}
+
+
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节 2.13 切出 decision 块（原值阶段等于原值）。"""
+    return {
+        # 演示阶段的方块与杆位置采样规则（原值：杆基位 y=±0.2、xy 各抖动 ±0.05；
+        # 方块候选中心 xy 各 ±0.1，再在 half_size 0.05 的小区里生成）。
+        "demo_layout": {
+            "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
+            "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
+        },
+        # 执行阶段另抽一套，原规则与演示相同但必须分开，不能误合并。
+        "execution_layout": {
+            "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
+            "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
+        },
+        # 杆在桌面内的转角范围：原值 ±π/4（表达式为 u*span - offset）。
+        "peg_yaw_range": {"span_rad": np.pi / 2, "offset_rad": np.pi / 4},
+    }
+
+
+def _resolve_sampling_config(cls, override):
+    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    assert_native_decision(decision, decision_default, cls.__name__)
+    native["decision"] = decision
+    return native
+
+
 @register_env("MoveCube")
 class MoveCube(BaseEnv):
 
@@ -65,7 +126,10 @@ class MoveCube(BaseEnv):
     _clearance = 0.01
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
                      **kwargs):
+        # 必须落在任何随机数调用与 super().__init__() 之前
+        self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self.reset_in_proecess=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
         if robot_uids in PICK_CUBE_CONFIGS:
@@ -152,20 +216,25 @@ class MoveCube(BaseEnv):
 
         # Create a single peg
         #peg_spawn_translation = np.array([self.length / 2, 0.0, self.radius], dtype=np.float32)
-        base_y = -0.2 if torch.rand(1, generator=self._hb_generator).item() < 0.5 else 0.2
+        demo_layout = self._sampling["decision"]["demo_layout"]
+        exec_layout = self._sampling["decision"]["execution_layout"]
+        peg_yaw_range = self._sampling["decision"]["peg_yaw_range"]
+        native_pos = self._sampling["positions"]
+        demo_peg = demo_layout["peg_position_policy"]
+        base_y = -demo_peg["base_y_abs"] if torch.rand(1, generator=self._hb_generator).item() < demo_peg["base_y_threshold"] else demo_peg["base_y_abs"]
 
         peg_spawn_translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
 
         # Generate [-0.05, 0.05] random offset (using torch generator)
-        x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * 0.1
-        y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * 0.1
+        x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
+        y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
 
         # Apply offset
         peg_spawn_translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
         self.peg1_basex=peg_spawn_translation[0]
         self.peg1_basey=peg_spawn_translation[1]
 
-        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (np.pi / 2) - (np.pi / 4)
+        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (peg_yaw_range["span_rad"]) - (peg_yaw_range["offset_rad"])
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -197,14 +266,15 @@ class MoveCube(BaseEnv):
         self.peg_init_pose = self.pegs[0].pose  # Keep backward compatibility
 
         #generate another set of pose for another reset
-        base_y = -0.2 if torch.rand(1, generator=self._hb_generator).item() < 0.5 else 0.2
+        exec_peg = exec_layout["peg_position_policy"]
+        base_y = -exec_peg["base_y_abs"] if torch.rand(1, generator=self._hb_generator).item() < exec_peg["base_y_threshold"] else exec_peg["base_y_abs"]
 
         peg_spawn_translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
-        x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * 0.1
-        y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * 0.1
+        x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
+        y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
         peg_spawn_translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
 
-        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (np.pi / 2) - (np.pi / 4)
+        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (peg_yaw_range["span_rad"]) - (peg_yaw_range["offset_rad"])
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -231,9 +301,9 @@ class MoveCube(BaseEnv):
                         avoid=None,  # Use current avoidance list, containing all spawned cubes
                         include_existing=False,  # Manually maintain list
                         include_goal=False,  # Manually maintain list
-                        region_center=[0.0, 0.0],
-                        region_half_size=0.15,
-                        radius=self.cube_half_size*2,  # Use radius instead of half_size
+                        region_center=list(native_pos["goal_demo"]["region_center"]),
+                        region_half_size=native_pos["goal_demo"]["region_half_size"],
+                        radius=self.cube_half_size*native_pos["goal_demo"]["radius_factor"],  # Use radius instead of half_size
                         thickness=0.005,  # target thickness
                         min_gap=self.cube_half_size*1,  # Gap requirement same as cube
                         name_prefix=f"goal_site",
@@ -244,9 +314,9 @@ class MoveCube(BaseEnv):
                 avoid=None,  # Use current avoidance list, containing all spawned cubes
                 include_existing=False,  # Manually maintain list
                 include_goal=False,  # Manually maintain list
-                region_center=[0.0, 0.0],
-                region_half_size=0.1,
-                radius=self.cube_half_size*2,  # Use radius instead of half_size
+                region_center=list(native_pos["goal_execution"]["region_center"]),
+                region_half_size=native_pos["goal_execution"]["region_half_size"],
+                radius=self.cube_half_size*native_pos["goal_execution"]["radius_factor"],  # Use radius instead of half_size
                 thickness=0.005,  # target thickness
                 min_gap=self.cube_half_size*1,  # Gap requirement same as cube
                 name_prefix=f"goal_site_2",
@@ -255,7 +325,7 @@ class MoveCube(BaseEnv):
         
 
 
-        max_cube_spawn_trials = 128
+        max_cube_spawn_trials = native_pos["cube_rejection"]["max_trials"]
 
         goal_pos = self.goal_site.pose.p
         goal_xy = np.asarray(goal_pos)
@@ -263,16 +333,17 @@ class MoveCube(BaseEnv):
 
         def _sample_cube_center(required_distance: float):
             for _ in range(max_cube_spawn_trials):
-                sampled_x = torch.rand(1, generator=self._hb_generator).item() * 0.2 -0.1
+                demo_cube = demo_layout["cube_position_policy"]
+                sampled_x = torch.rand(1, generator=self._hb_generator).item() * demo_cube["center_span"] + demo_cube["center_offset"]
                 #direction = -1.0 if -self.peg1_basey < 0 else 1.0
                 #sampled_y = torch.rand(1, generator=self._hb_generator).item() * 0.2 * direction
-                sampled_y = torch.rand(1, generator=self._hb_generator).item() * 0.2 -0.1
+                sampled_y = torch.rand(1, generator=self._hb_generator).item() * demo_cube["center_span"] + demo_cube["center_offset"]
                 candidate_xy = np.array([sampled_x, sampled_y], dtype=np.float64)
                 if np.linalg.norm(candidate_xy - goal_xy) > required_distance:
                     return candidate_xy
             return None
 
-        cube_center = _sample_cube_center(self.cube_half_size*5)
+        cube_center = _sample_cube_center(self.cube_half_size*native_pos["cube_rejection"]["min_distance_factor"])
 
         cube_x, cube_y = float(cube_center[0]), float(cube_center[1])
 
@@ -281,7 +352,7 @@ class MoveCube(BaseEnv):
                             region_center=[cube_x, cube_y],
                             color=(1, 0, 0, 1),
                             name_prefix="fixed_cube",
-                            region_half_size=0.05,
+                            region_half_size=demo_layout["cube_position_policy"]["region_half_size"],
                             generator=self._hb_generator,
                             half_size=self.cube_half_size,
                         )
@@ -295,16 +366,17 @@ class MoveCube(BaseEnv):
         goal_xy = np.asarray(goal_xy, dtype=np.float64).reshape(-1)[:2]
         def _sample_cube_center(required_distance: float):
             for _ in range(max_cube_spawn_trials):
-                sampled_x = torch.rand(1, generator=self._hb_generator).item() * 0.2 -0.1
+                exec_cube = exec_layout["cube_position_policy"]
+                sampled_x = torch.rand(1, generator=self._hb_generator).item() * exec_cube["center_span"] + exec_cube["center_offset"]
                 #direction = -1.0 if -self.peg2_basey < 0 else 1.0
                 #sampled_y = torch.rand(1, generator=self._hb_generator).item() * 0.2 * direction
-                sampled_y = torch.rand(1, generator=self._hb_generator).item()  * 0.2 -0.1
+                sampled_y = torch.rand(1, generator=self._hb_generator).item()  * exec_cube["center_span"] + exec_cube["center_offset"]
                 candidate_xy = np.array([sampled_x, sampled_y], dtype=np.float64)
                 if np.linalg.norm(candidate_xy - goal_xy) > required_distance:
                     return candidate_xy
             return None
 
-        cube_center = _sample_cube_center(self.cube_half_size*5)
+        cube_center = _sample_cube_center(self.cube_half_size*native_pos["cube_rejection"]["min_distance_factor"])
 
         cube_x, cube_y = float(cube_center[0]), float(cube_center[1])
         self.cube_2 = spawn_random_cube(
@@ -312,7 +384,7 @@ class MoveCube(BaseEnv):
                             region_center=[cube_x, cube_y],
                             color=(1, 0, 0, 1),
                             name_prefix="fixed_cube_2",
-                            region_half_size=0.05,
+                            region_half_size=exec_layout["cube_position_policy"]["region_half_size"],
                             generator=self._hb_generator,
                             half_size=self.cube_half_size,
                         )
