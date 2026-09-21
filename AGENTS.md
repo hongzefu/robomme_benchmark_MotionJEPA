@@ -197,6 +197,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| `newtaskRelease-v3` 全环境配置与原值注入方案（2026-09-21） | 文档完成，静态核验通过（11.20） | [根目录方案](NEWTASK_RELEASE_V3_PLAN.md) 覆盖十六环境、64 组固定项、23 本地链接；最终基线为官方 `dataset-gen@d53f21a` 的 train 16×100，保留 z48／xy48／关闭1504 的 fail recover；原报告1600生成成功但动作对发布集比较未通过的边界已写清 | 本轮仅方案与必要账本，代码及配置零改动；后续实施先切 `newtaskRelease-v3`，`src` 各项仍须批准 |
 | 注入重构计划阶段 0～9（2026-09-18） | 已全部实施与验收留档 | L1 3400 条规格相同；L2 113 PNG/表/完整数轴相同；L3 210 条 HDF5 尝试、L4 720 reset 对拍通过；838 unused 补查完成；3820 旧文件迁移字节守恒；最终冒烟 60 秒通过（200 候选、1 HDF5、1 reset、9 图、3 报告、重复 reset 零重跑）；候选输入与代码进 Git；[现行说明](scripts/INJECTION.md)、[完整证据](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 本轮无剩余实施步骤；保留 4 项既有测试失败、22 项历史规格缺失跳过及视频诊断 NOT_RUN 边界；未推送 |
 | 注入重构阶段 8（2026-09-18） | 完成 | 两包生产导入 25 模块无旧依赖；623 项测试收集无错误；核心回归 490 passed、4 项既有失败、22 项既有跳过、74 项按预算未选，146.83 秒；Git/媒体边界与 114 个现行链接通过 | 最终独立 200 候选、1 HDF5、1 reset 单 worker 冒烟及幂等复核 |
 | 注入重构阶段 7（2026-09-18） | 完成 | `H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0`；`ARTIFACTS_INTACT=PASS count=3820 missing=0 extra=0 sha_mismatch=0`；活动路径零失效、旧前缀零残留、元数据仅允许字段变化；迁移退出 0，恢复反例 5 passed | 清理已替换旧入口、迁移测试与现行说明，再运行最终冒烟 |
@@ -1676,3 +1677,30 @@
 - HDF5 300 帧，SHA-256 `27d7e1c62583025e7f6a18610749e6e3990cfe85c00219e80fbf1d1b086c203b` 与阶段二及原成品相同；视频 complete，300 帧。再次 reset 输出 `RESET_IDEMPOTENT=PASS rerun=0 duplicates=0`。影子结果恰 2 条，其余 198 pending 符合局部 smoke 口径，不宣称完整交付。
 - 迁移和旧入口清理后再复核 L2，113 张 PNG、事件表、1796 条含完整剔除的数轴仍零差异。新增最终候选原件及影子快照都纳入 Git，重媒体未跟踪；原运行候选字节不变，正式角色仍为 train 1600/196/46、test 700/858/0，pending/unused 均 0。
 - 阶段 0～9 全部完成，现行入口和复现命令见 scripts/INJECTION.md。环境源码、录像器、发布脚本未修改；策略侧第三处只定义消费契约，本仓库未新增策略实现。全量 GPU 测试的预算中止、4 项既有失败、22 项历史缺失跳过与两条无可比视频的诊断边界保留，不写成全套通过。测试原始输出中的尾部空白按证据原样保留，源码/文档 diff 检查通过。所有变更逐阶段提交，未推送。
+
+### 2026-09-21 America/Detroit — 全环境配置与原始 train 对拍方案开始
+
+- 用户要求根目录写方案，为全部十六环境切出 `sampling_config` 与 `episode_spec`，重点按环境说明固定了什么，并预留所列布局、物体、动作与视频时长调整能力。
+- 用户边界：「这个方案之后的修改开始要切出branch newtaskRelease-v3 落地方案不用动」「新的branch先不修改任何配置布局 先只做回到原始train split 在注入前后保持一致 只实现对拍和为以后改配置接口预备好」。本轮只写方案及必要账本，不创建或切换分支，不修改运行代码、配置、数据。
+- 初始核验：当前分支 `newtask-v2.1refractor`，HEAD 为 `a4a6e9fab630e9399ca538ab2cc9d008e9638713`，工作区干净，`command -v uv` 返回 `/home/hongzefu/.local/bin/uv`。并行只读检查十六环境与 train 身份、既有对拍证据；后续 `src/robomme/` 改动仍按强制规则第 11 条逐项批准。
+
+### 2026-09-21 America/Detroit — 官方 train 范围纠正与方案主文完成
+
+- 用户纠正原话：「我说的是原始的[https://github.com/RoboMME/robomme_benchmark](https://github.com/RoboMME/robomme_benchmark) train16*100」。方案权威来源已改为官方仓库，不使用本地 fork 的 2800 条全集。
+- `git ls-remote --symref https://github.com/RoboMME/robomme_benchmark.git HEAD` 核验官方 `main` 为 `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`；按固定 SHA 从 GitHub 只读取得十六份 metadata，每环境 100、共 1600，难度各 50/25/25；与本地每环境前 100 条完整记录差异 0，实际 seed 与公式 attempt 0 不同 170 条。records 顺序规范化散列为 `a57655d601c7e974c688b2b5c3602e7eb8606e2bd312dcc4ba00a1abb29d73bf`。网络响应仅存内存，未下载数据集、未修改 refs 或创建源码目录。
+- 官方 54 个 Python 文件与本地历史 `3a5951a` 的 Git blob 全同，官方锁文件亦与该提交相同；现行录像器与官方字节相同。官方 RouteStick 尾迹 40、当前 10，需后续单列恢复；官方 Builder 默认不启用失败恢复，本地生成器前六条自动启用的行为不进入官方原值合同。
+- 根目录方案逐环境列约定、`sampling_config` 原值、`episode_spec` 本局结果及未来接口；新值不启用。写清 1600 条官方身份、五路对拍、原位随机消费、原 hard 分支补齐、录像器冻结与后续逐项审批。正在核验文档链接、字段语义和命令边界；尚未实施或运行仿真。
+
+### 2026-09-21 America/Detroit — 按用户最终指定改为 dataset-gen 测试结果对拍
+
+- 用户追加原话：「[https://github.com/RoboMME/robomme_benchmark/tree/dataset-gen](https://github.com/RoboMME/robomme_benchmark/tree/dataset-gen)和这个branch的测试结果对拍」「这个里面也有fail recover」。本条取代上条日志中的 main Builder 无恢复口径；最终方案基线为官方 `dataset-gen@d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa`，不关掉恢复。
+- 远端 `git ls-remote` 与本地 Git 对象一致。该分支十六份 metadata 与官方 main 全部字节相同，报告1600身份亦相同；`EpisodeJob.recovery_mode` 保留 ep0～2=z、ep3～5=xy，其余关闭，报告实计 z48／xy48／关闭1504。原入口每条 seed 只尝试一次；三次 screw 后三次 RRTStar 的原求解链与原录像器一并作为 A 基线。
+- 已实读分支 `scripts/data-generation/reports/generation_report.json/.md`：1600生成成功、0生成失败、结构错误0；761885向量／6095080元素中217242个非零差异元素，10条时间步集合不符，最大差0.007857919612339614，原阈值1e-8，原报告失败。217242不是超阈元素数。十条帧数差异逐条写入方案，禁止改写历史结果为通过。
+- 原报告标称HEAD为9430e20，但该提交校验器仍限9条，后至d53才改100条且父编排参数改变；环境／锁／worker／求解执行／合并／动作比较器均未变。计划固定d53重跑，历史报告作为独立对照，记录标称源码不完整。报告的原工作副本及历史HDF5目录均已不存在，历史成品比较保留NOT_RUN；现有报告字段、重新生成的五路结果与发布参考集比较分别验收。
+- 三路独立只读审查补全了VideoPlace两环境布局原值、两种Swap的空容器和索引映射边界，修正不存在的RouteStick函数锚点；增加“规格校验读取不算实际消费”的反例要求。静态初检通过：16环境、64固定项、23本地链接、0硬编码代码行号；修订后再做最终核验。仅两份Markdown在途，运行源码及配置未改。
+
+### 2026-09-21 America/Detroit — 根目录方案验收完成（11.20）
+
+- `command -v uv` 后运行 `PYTHONDONTWRITEBYTECODE=1 uv run --no-sync python` 标准库静态核验，退出0：`PLAN_STRUCTURE=PASS environments=16 fixed_rows=64 local_links=23 code_line_refs=0`、`PLAN_BASELINE=PASS ref=d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa train=1600 recovery_z=48 recovery_xy=48 recovery_off=1504`；检查了16节结构、原值/未来值分离、实际链接、官方metadata全集及最终恢复口径。
+- `git diff --check` 通过；`git diff --quiet a4a6e9fab630e9399ca538ab2cc9d008e9638713 -- src scripts pyproject.toml uv.lock` 退出0。三路只读复核结束，新增代码/配置/数据为0，未创建新分支、未运行仿真、未推送。纯文档不启动端到端生成，不把文档核验写成对拍已通过。
+- 本轮逐路径提交 `NEWTASK_RELEASE_V3_PLAN.md` 与 `AGENTS.md`。后续实施从包含方案的提交切 `newtaskRelease-v3`，先对齐官方dataset-gen原始1600条及fail recover，再做完整原值回注；所列布局和难度新值留待后续启用。
