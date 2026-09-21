@@ -31,6 +31,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils.bin_collision import (
     BinCollisionError,
     SpecBindingError,
@@ -126,15 +127,36 @@ def _bin_index_of(name):
     return int(str(name).rsplit("_", 1)[1])
 
 
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份，杜绝两套真值。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节字段表切出 decision 块（原值阶段等于原值）。"""
+    # 第二节 2.7：decision 为交换次数范围、交换后拾取数量范围、交换速度倍率与额外干扰物。
+    # 原值阶段：次数与拾取数取自 configs，速度倍率为 1（每次交换 50 步），无额外干扰物。
+    return {
+        "swap_count_range": {
+            difficulty: [cfg["swap_min"], cfg["swap_max"]] for difficulty, cfg in cls.configs.items()
+        },
+        "pick_count_range": {
+            difficulty: [cfg["pick_min"], cfg["pick_max"]] for difficulty, cfg in cls.configs.items()
+        },
+        "swap_speed_multiplier": 1,
+        "distractor": None,
+    }
+
+
 def _resolve_sampling_config(cls, override):
     """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
-    if override is None:
-        resolved = copy.deepcopy(NATIVE_SAMPLING)
-    else:
-        if not isinstance(override, dict) or set(override) != {"parameters", "positions"}:
-            raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
-        resolved = copy.deepcopy(override)
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    # 第一轮只做原值导出／消费：decision 必须逐键等于原值（红线 R7）。
+    assert_native_decision(decision, decision_default, cls.__name__)
+    resolved = native
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    resolved["decision"] = decision
     for key in ("object_selection", "swap_selection"):
         if json.dumps(resolved["parameters"].get(key), sort_keys=True) != json.dumps(NATIVE_SAMPLING["parameters"][key], sort_keys=True):
             raise ValueError(f"VideoUnmaskSwap.parameters.{key} 必须完整保留原版规则与类型")

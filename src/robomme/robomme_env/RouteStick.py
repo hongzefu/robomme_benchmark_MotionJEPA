@@ -35,6 +35,7 @@ from .utils import reset_panda
 from .utils.route import *
 from .utils.subgoal_planner_func import *
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 
 from ..logging_utils import logger
 
@@ -133,15 +134,31 @@ def _resolve_episode_spec(spec, task):
     return copy.deepcopy(spec)
 
 
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份，杜绝两套真值。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节字段表切出 decision 块（原值阶段等于原值）。"""
+    # 第二节 2.16：RouteStick 的 decision 只有「演示视频目标时长及调节时长的方式」，
+    # 本轮不启用（值为 None 即保持原路径与求解运动决定时长）；段数 length 与 backtrack
+    # 按字段表属 native，随 configs 一起留在 native 块里。
+    return {
+        "demo_duration_seconds_range": None,
+        "demonstration_duration_policy": "native",
+    }
+
+
 def _resolve_sampling_config(cls, override):
     """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
-    if override is None:
-        resolved = copy.deepcopy(NATIVE_SAMPLING)
-    else:
-        if not isinstance(override, dict) or set(override) != {"parameters", "positions"}:
-            raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
-        resolved = copy.deepcopy(override)
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    # 第一轮只做原值导出／消费：decision 必须逐键等于原值（红线 R7）。
+    assert_native_decision(decision, decision_default, cls.__name__)
+    resolved = native
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    resolved["decision"] = decision
     walk = copy.deepcopy(resolved["parameters"].get("walk"))
     if not isinstance(walk, dict) or not isinstance(walk.get("direction"), dict):
         raise ValueError("RouteStick.parameters.walk 缺少完整游走规则")

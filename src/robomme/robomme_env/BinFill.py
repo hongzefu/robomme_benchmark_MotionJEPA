@@ -29,6 +29,11 @@ from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils import subgoal_language
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.sampling_config import (
+    SamplingConfigError,
+    assert_native_decision,
+    split_sampling_config,
+)
 
 from ..logging_utils import logger
 
@@ -39,8 +44,41 @@ from ..logging_utils import logger
 # 因此「提取到的原值」与「实际跑的默认值」永远是同一处，不存在双真值。
 # 难度字典不在这里重复，仍以类属性 config_easy / config_medium / config_hard 为准。
 # 表达式与来源说明字段只作核查用，运行时不消费。
+# ── decision／native 两块的原值（newtaskRelease-v3 步 3）──────────────────────
+# decision 是第二节字段表里标「是，拟修改」的参数；原值对拍阶段它也必须等于原值（红线 R7）。
+# 取值全部来自类属性 config_easy / config_medium / config_hard，这里不另起一套数值，
+# 避免两份真值漂移；native 保留原随机规则与常量。
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份，杜绝两套真值。"""
+    native = copy.deepcopy(NATIVE_SAMPLING)
+    native["parameters"]["put_in_color"] = {
+        difficulty: list(cfg["put_in_color"]) for difficulty, cfg in cls.configs.items()
+    }
+    return _native_decision(cls), native
+
+
+def _native_decision(cls):
+    """从类属性的难度配置里切出 decision 块：色数、生成总数、投入总数。"""
+    return {
+        # 方块摆放模式：原值＝由 native.parameters.dynamic 的 randint 决定，
+        # 第二节的 clutter 等新模式本轮不启用。
+        "layout_mode": "native_dynamic",
+        "configs": {
+            difficulty: {
+                "color": cfg["color"],
+                "spawn_cubes": list(cfg["spawn_cubes"]),
+                "put_in_numbers": list(cfg["put_in_numbers"]),
+            }
+            for difficulty, cfg in cls.configs.items()
+        },
+    }
+
+
 NATIVE_SAMPLING = {
     "parameters": {
+        # put_in_color 属于 native（第二节：投入哪些颜色的规则不改，只外部生成本局值），
+        # 按难度取自同一套类属性配置。
+        "put_in_color": "FROM_CLASS_CONFIGS",
         "dynamic": {
             "sampler": "torch.randint",
             "low": 0,
@@ -95,14 +133,24 @@ def _resolve_sampling_config(cls, override):
     gymnasium 会把 kwargs 字典的引用存进 env.unwrapped.spec.kwargs，
     因此独立副本只能由这里的 deepcopy 保证。
     """
-    if override is None:
-        resolved = copy.deepcopy(NATIVE_SAMPLING)
-    else:
-        if not isinstance(override, dict) or set(override) != {"parameters", "positions"}:
-            raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
-        resolved = copy.deepcopy(override)
-    resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
-    return resolved
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    # 第一轮只做原值导出／消费：decision 必须逐键等于原值，否则就是没申报的新用户决策。
+    assert_native_decision(decision, decision_default, "BinFill")
+    if decision.get("layout_mode") != "native_dynamic":
+        raise SamplingConfigError("BinFill: 本轮只支持原布局模式 native_dynamic")
+    native["parameters"].setdefault("put_in_color", native_default["parameters"]["put_in_color"])
+    # 消费侧仍按难度读一份合并后的配置：decision 出色数／生成数／投入数，
+    # native 出投入颜色数范围，合并结果与改动前的 cls.configs[difficulty] 逐键相同。
+    native["parameters"]["configs"] = {
+        difficulty: {
+            **decision["configs"][difficulty],
+            "put_in_color": list(native["parameters"]["put_in_color"][difficulty]),
+        }
+        for difficulty in decision["configs"]
+    }
+    native["decision"] = decision
+    return native
 
 
 def _actor_xyz(actor):

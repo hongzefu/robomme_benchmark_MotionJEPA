@@ -32,6 +32,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils.bin_collision import (
     BinCollisionError,
     SpecBindingError,
@@ -155,15 +156,38 @@ def _cube_index_of(name):
     return int(str(name).rsplit("_", 1)[1])
 
 
+def native_blocks(cls):
+    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份，杜绝两套真值。"""
+    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+
+
+def _native_decision(cls):
+    """按方案第二节字段表切出 decision 块（原值阶段等于原值）。"""
+    # 第二节 2.10：decision 为布局模式、重复抓放次数范围、逐块颜色策略与是否交换／交换次数。
+    # 原值阶段全部取原规则：布局模式沿用难度自带的锚点／区域，次数与交换次数取自 configs。
+    return {
+        "layout_mode": "native_by_difficulty",
+        "num_repeats_range": {
+            "low": NATIVE_SAMPLING["parameters"]["num_repeats"]["low"],
+            "high_exclusive": NATIVE_SAMPLING["parameters"]["num_repeats"]["high_exclusive"],
+        },
+        "block_color_policy": "native_by_difficulty",
+        "swap": {
+            difficulty: {"swap_min": cfg["swap_min"], "swap_max": cfg["swap_max"]}
+            for difficulty, cfg in cls.configs.items()
+        },
+    }
+
+
 def _resolve_sampling_config(cls, override):
     """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
-    if override is None:
-        resolved = copy.deepcopy(NATIVE_SAMPLING)
-    else:
-        if not isinstance(override, dict) or set(override) != {"parameters", "positions"}:
-            raise ValueError("sampling_config 必须是只含 parameters 与 positions 的字典")
-        resolved = copy.deepcopy(override)
+    decision_default, native_default = native_blocks(cls)
+    decision, native = split_sampling_config(override, native_default, decision_default)
+    # 第一轮只做原值导出／消费：decision 必须逐键等于原值（红线 R7）。
+    assert_native_decision(decision, decision_default, cls.__name__)
+    resolved = native
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
+    resolved["decision"] = decision
     for key in ("object_selection", "swap_selection"):
         if json.dumps(resolved["parameters"].get(key), sort_keys=True) != json.dumps(NATIVE_SAMPLING["parameters"][key], sort_keys=True):
             raise ValueError(f"VideoRepick.parameters.{key} 必须完整保留原版规则与类型")
