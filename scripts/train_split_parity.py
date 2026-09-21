@@ -1190,6 +1190,72 @@ def _sidecars(identity_dir: Path) -> dict[str, str]:
     return out
 
 
+def _videos(identity_dir: Path) -> dict[str, Path]:
+    """身份目录下的 MP4（录像器产物），按文件名索引。"""
+    root = identity_dir / "videos"
+    return {item.name: item for item in sorted(root.glob("*.mp4"))} if root.is_dir() else {}
+
+
+def compare_videos(left_dir: Path, right_dir: Path) -> dict[str, int]:
+    """P5：先比容器散列，散列不同才解码逐帧比像素（方案第四节要求两者分开报）。"""
+    left, right = _videos(left_dir), _videos(right_dir)
+    result = {"compared": 0, "container_equal": 0, "frames_mismatch": 0, "pixels_mismatch": 0,
+              "missing": len(set(left) ^ set(right))}
+    for name in sorted(set(left) & set(right)):
+        result["compared"] += 1
+        if sha256_file(left[name]) == sha256_file(right[name]):
+            # 容器字节相同 ⇒ 解码帧与像素必然相同，不必再解一遍
+            result["container_equal"] += 1
+            continue
+        import cv2  # noqa: PLC0415 仅在散列不同时才需要解码
+
+        caps = [cv2.VideoCapture(str(left[name])), cv2.VideoCapture(str(right[name]))]
+        frames = 0
+        pixel_diff = 0
+        while True:
+            ok_l, frame_l = caps[0].read()
+            ok_r, frame_r = caps[1].read()
+            if not ok_l or not ok_r:
+                if ok_l != ok_r:
+                    result["frames_mismatch"] += 1
+                break
+            frames += 1
+            if frame_l.shape != frame_r.shape or not (frame_l == frame_r).all():
+                pixel_diff += 1
+        for cap in caps:
+            cap.release()
+        if pixel_diff:
+            result["pixels_mismatch"] += pixel_diff
+    return result
+
+
+def collect_recovery(run_dir: Path, path_name: str) -> dict[str, dict]:
+    """把一路的恢复证据汇成 身份 → {模式, 动作索引, xy 事件}。"""
+    out: dict[str, dict] = {}
+    results_path = run_dir / "results" / f"{path_name}.json"
+    if not results_path.exists():
+        return out
+    for item in json.loads(results_path.read_text(encoding="utf-8"))["results"]:
+        identity = f"{item['task']}/{item['episode']}"
+        entry = {"configured_mode": item.get("recovery_mode"), "ok": item.get("ok")}
+        spec_path = (
+            run_dir / path_name / f"{item['task']}_episode_{item['episode']}" / "episode_spec.json"
+        )
+        if spec_path.exists():
+            spec = json.loads(spec_path.read_text(encoding="utf-8"))
+            recovery = spec.get("actions", {}).get("recovery", {})
+            entry["selected_action_index"] = recovery.get("selected_action_index")
+            entry["events"] = recovery.get("events", {})
+            inits = spec.get("initializations", {})
+            entry["per_init_action_index"] = {
+                key: value.get("recovery_action_index")
+                for key, value in inits.items()
+                if isinstance(value, dict) and "recovery_action_index" in value
+            }
+        out[identity] = entry
+    return out
+
+
 def _resolve_side(spec: str, runs: dict[str, Path]) -> tuple[str, Path]:
     if "/" in spec:
         label, _, path_name = spec.partition("/")
@@ -1359,15 +1425,71 @@ def cmd_compare(args: argparse.Namespace) -> int:
         )
         overall_fail += outcome_mismatch + detail_mismatch
 
-    if args.gate:
+    for gate_name in (args.gate or []):
         total_compared = sum(int(row["compared"]) for row in summary_rows)
         total_mismatch = sum(int(row["field_mismatch"]) for row in summary_rows)
-        if args.gate == "BASELINE_REPEAT":
+        if gate_name == "BASELINE_REPEAT":
             print(
                 f"BASELINE_REPEAT={'PASS' if total_mismatch == 0 and total_compared else 'FAIL'} "
                 f"compared={total_compared} different={total_mismatch}"
             )
-        elif args.gate == "SPEC_BINDING":
+        elif gate_name == "VIDEO_PARITY":
+            compared = frames_mismatch = pixels_mismatch = container_equal = missing = 0
+            for row in summary_rows:
+                left_label, right_label = row["left"], row["right"]
+                left_run, left_path = str(left_label).split("/")
+                right_run, right_path = str(right_label).split("/")
+                left_dirs = _identity_dirs(runs[left_run] / left_path)
+                right_dirs = _identity_dirs(runs[right_run] / right_path)
+                for identity in sorted(set(left_dirs) & set(right_dirs)):
+                    stat = compare_videos(left_dirs[identity], right_dirs[identity])
+                    compared += stat["compared"]
+                    container_equal += stat["container_equal"]
+                    frames_mismatch += stat["frames_mismatch"]
+                    pixels_mismatch += stat["pixels_mismatch"]
+                    missing += stat["missing"]
+            status = "PASS" if compared and frames_mismatch == pixels_mismatch == missing == 0 else "FAIL"
+            print(
+                f"VIDEO_PARITY={status} compared={compared} frames_mismatch={frames_mismatch} "
+                f"pixels_mismatch={pixels_mismatch}"
+            )
+            print(f"# 容器散列已相同 {container_equal} 个；仅一侧存在的视频 {missing} 个")
+            overall_fail += frames_mismatch + pixels_mismatch + missing
+        elif gate_name == "RECOVERY_PARITY":
+            # P7：逐条比恢复开关、模式与实际动作索引／xy 方向；配置计数与触发计数分开
+            counts = {"z": 0, "xy": 0, "off": 0}
+            compared = mode_mismatch = event_mismatch = 0
+            reference = None
+            for label, run_dir in runs.items():
+                for path_name in PATH_NAMES:
+                    evidence = collect_recovery(run_dir, path_name)
+                    if not evidence:
+                        continue
+                    if reference is None:
+                        reference = evidence
+                        for entry in evidence.values():
+                            mode = entry.get("configured_mode")
+                            counts["off" if mode is None else str(mode)] += 1
+                        continue
+                    for identity, entry in evidence.items():
+                        base = reference.get(identity)
+                        if base is None:
+                            mode_mismatch += 1
+                            continue
+                        compared += 1
+                        if base.get("configured_mode") != entry.get("configured_mode"):
+                            mode_mismatch += 1
+                        for key in ("selected_action_index", "events", "per_init_action_index"):
+                            if key in base and key in entry and base[key] != entry[key]:
+                                event_mismatch += 1
+            status = "PASS" if compared and mode_mismatch == event_mismatch == 0 else "FAIL"
+            print(
+                f"RECOVERY_PARITY={status} compared={compared} "
+                f"configured={counts['z'] + counts['xy']} z={counts['z']} xy={counts['xy']} "
+                f"off={counts['off']} mode_mismatch={mode_mismatch} event_mismatch={event_mismatch}"
+            )
+            overall_fail += mode_mismatch + event_mismatch
+        elif gate_name == "SPEC_BINDING":
             # G4：C 路是否为每条身份导出了规格，D 路是否真的消费了它
             missing = unused = mismatch = 0
             for label, run_dir in runs.items():
@@ -1385,14 +1507,14 @@ def cmd_compare(args: argparse.Namespace) -> int:
             status = "PASS" if missing == unused == mismatch == 0 else "FAIL"
             print(f"SPEC_BINDING={status} missing={missing} unused={unused} mismatch={mismatch}")
             overall_fail += missing + unused + mismatch
-        elif args.gate == "NODE_PARITY":
+        elif gate_name == "NODE_PARITY":
             identities = max((int(row["compared"]) for row in summary_rows), default=0)
             print(
                 f"NODE_PARITY={'PASS' if total_mismatch == 0 and total_compared else 'FAIL'} "
                 f"identities={identities} jobs={len(runs)} mismatch={total_mismatch}"
             )
         else:
-            raise IdentityFreezeError(f"未知闸门名：{args.gate}")
+            raise IdentityFreezeError(f"未知闸门名：{gate_name}")
 
     (output / "summary.json").write_bytes(
         _json_bytes(
@@ -1483,8 +1605,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     compare.add_argument("--history-path", default="A1", help="与历史投影比对的路径名，默认 A1")
     compare.add_argument(
-        "--gate", default=None,
-        help="额外输出闸门判定行：BASELINE_REPEAT / NODE_PARITY / SPEC_BINDING",
+        "--gate", action="append", default=None,
+        help="额外输出闸门判定行：BASELINE_REPEAT / NODE_PARITY / SPEC_BINDING / VIDEO_PARITY / RECOVERY_PARITY",
     )
     compare.add_argument("--output", default=None, help="比较结果目录，默认 <第一个运行目录>/compare")
     compare.set_defaults(func=cmd_compare)
