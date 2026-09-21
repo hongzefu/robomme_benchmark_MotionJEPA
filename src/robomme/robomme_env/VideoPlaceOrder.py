@@ -168,6 +168,9 @@ class VideoPlaceOrder(BaseEnv):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self._spec = SpecRecorder(native_episode_spec, "VideoPlaceOrder", {"seed": seed})
+        # 初始化序号从 -1 起，_initialize_episode 每次进来先加一；
+        # _load_scene 里的取值点用不带序号的路径，所以这里只作兜底。
+        self._native_init_index = -1
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -405,7 +408,7 @@ class VideoPlaceOrder(BaseEnv):
             if decision_cfg["swap"][self.difficulty]==True:
                 if len(self.targets) >= 2:
                     perm = self._spec.value(
-                        f"initializations.{self._native_init_index}.swap_pair_ids",
+                        "objects.swap_pair_ids",
                         torch.randperm(len(self.targets), generator=self.generator).tolist(),
                     )
                     # perm 现在是规格里的整数列表（原为张量），取值语义不变
@@ -422,19 +425,19 @@ class VideoPlaceOrder(BaseEnv):
                         f"Swap targets selected: target_{swap_idx_a} <-> target_{swap_idx_b}"
                     )
             num_targets_to_pick = self._spec.value(
-                f"initializations.{self._native_init_index}.num_targets_to_pick",
+                "objects.num_targets_to_pick",
                 torch.randint(2, len(self.targets) + 1, (1,), generator=self.generator).item(),
             )
 
             indices = self._spec.value(
-                f"initializations.{self._native_init_index}.visit_ids",
+                "objects.visit_ids",
                 torch.randperm(len(self.targets), generator=self.generator)[:num_targets_to_pick].tolist(),
             )
 
             self.which_targets_to_pick = [self.targets[i] for i in indices]
 
             self.which_in_subset=self._spec.value(
-                f"initializations.{self._native_init_index}.which_in_subset",
+                "objects.which_in_subset",
                 torch.randint(1,len(self.which_targets_to_pick)+1,(1,),generator=self.generator).item(),
             )
 
@@ -445,7 +448,7 @@ class VideoPlaceOrder(BaseEnv):
 
             if len(self.which_targets_to_pick) > 0:
                 k = self._spec.value(
-                    f"initializations.{self._native_init_index}.button_after_pair_index",
+                    "objects.button_after_pair_index",
                     torch.randint(0, len(self.which_targets_to_pick), (1,), generator=self.generator).item(),
                 )
                 self.button_task_index = k * 2 + 2  # each pair contributes pickup + drop

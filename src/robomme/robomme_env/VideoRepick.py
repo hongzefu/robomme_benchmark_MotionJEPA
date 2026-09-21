@@ -252,6 +252,9 @@ class VideoRepick(BaseEnv):
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self._episode_spec = _resolve_episode_spec(episode_spec, "VideoRepick")
         self._spec = SpecRecorder(native_episode_spec, "VideoRepick", {"seed": seed})
+        # 初始化序号从 -1 起，_initialize_episode 每次进来先加一；
+        # _load_scene 里的取值点用不带序号的路径，所以这里只作兜底。
+        self._native_init_index = -1
         self._injection_evidence = {}
         self._runtime_checks = []
         self.use_demonstrationwrapper=False

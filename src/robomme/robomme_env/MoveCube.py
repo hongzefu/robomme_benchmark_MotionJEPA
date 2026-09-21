@@ -133,6 +133,9 @@ class MoveCube(BaseEnv):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self._spec = SpecRecorder(native_episode_spec, "MoveCube", {"seed": seed})
+        # 初始化序号从 -1 起，_initialize_episode 每次进来先加一；
+        # _load_scene 里的取值点用不带序号的路径，所以这里只作兜底。
+        self._native_init_index = -1
         self.reset_in_proecess=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
         if robot_uids in PICK_CUBE_CONFIGS:

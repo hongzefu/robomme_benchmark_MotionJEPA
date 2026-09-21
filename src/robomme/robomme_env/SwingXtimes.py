@@ -165,6 +165,9 @@ class SwingXtimes(BaseEnv):
         # 必须落在任何随机数调用与 super().__init__() 之前
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
         self._spec = SpecRecorder(native_episode_spec, "SwingXtimes", {"seed": seed})
+        # 初始化序号从 -1 起，_initialize_episode 每次进来先加一；
+        # _load_scene 里的取值点用不带序号的路径，所以这里只作兜底。
+        self._native_init_index = -1
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -504,7 +507,7 @@ class SwingXtimes(BaseEnv):
             # Only inject an intentional failed grasp when recovery mode is enabled
             # 恢复动作的选择是一次真实抽样：原位置照常抽，回注模式下用冻结的索引
             self.fail_grasp_task_index = self._spec.value(
-                f"initializations.{self._native_init_index}.recovery_action_index",
+                "actions.recovery.selected_action_index",
                 inject_fail_grasp(
                 self.task_list,
                 generator=generator,
