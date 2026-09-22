@@ -129,7 +129,10 @@ xhard 派生基准；2.2 是四条动手前必须知道的机制；2.3 起是**�
 
 #### ① 机制层（`src/robomme/robomme_env/utils/`）
 
-| 文件::锚点 | 改什么 | 为什么 | 关闭态 |
+最后一列是**这处改动在不启用新值时必须表现成什么样**——代码改了，但 easy/medium/hard 三档
+（以及甲的旧通道）跑出来的东西不许变。这正是 V0／V1 回归判据要验的内容。
+
+| 文件::锚点 | 改什么 | 为什么 | 不启用新值时必须 |
 |---|---|---|---|
 | `sampling_config.py::assert_native_decision` | 守卫**分叉**：原值模式仍与 `_native_decision(cls)` 逐键全等；新值模式改为"与本次 `sampling_config` 声明的 decision 一致" | 现在它逐键 JSON 全等比对，**改新值会当场被拒** | 原值模式行为逐字不变 |
 | `episode_spec.py::SPEC_KIND` / `SpecRecorder.__init__` | 增开 `native-newvalue/1`，按 `spec_kind` 分叉核验；`mismatches` 增加"归因到哪个 `decision` 键"的字段 | 原值模式下 `mismatches` 非空 = RNG 漂移 = 失败；**新值模式下它必然大量非空**，两种语义必须分开 | `native-parity/1` 的 `mismatches` 仍须为 0 |
