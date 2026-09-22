@@ -812,6 +812,7 @@ def run_path(
     gpu: str,
     sampling_config: str | None = None,
     episode_specs: str | None = None,
+    trace: bool = False,
 ) -> dict[str, object]:
     """跑一路。
 
@@ -819,6 +820,7 @@ def run_path(
     因此 A↔B 的差异只可能来自环境源码本身（步 2 要找的正是这些继承改动）。
     C／D 需要额外传 `sampling_config`／`episode_spec`，待步 3／4 实现。
     """
+    force_mirror = bool(trace) and path_name == "B"
     if path_name == "C" and not sampling_config:
         raise IdentityFreezeError("C 路需要 --sampling-config 指定显式原值配置")
     if path_name == "D" and not (sampling_config and episode_specs):
@@ -872,6 +874,7 @@ def run_path(
         "--official-root", str(official_root),
         *(["--src-root", str(REPO_ROOT)] if path_name in ("B", "C", "D") else []),
         *(["--sampling-config", sampling_config] if path_name in ("C", "D") and sampling_config else []),
+        *(["--force-mirror"] if force_mirror else []),
         *(["--episode-specs", episode_specs] if path_name == "D" and episode_specs else []),
         "--jobs-json", str(jobs_path),
         "--results-json", str(results_path),
@@ -996,6 +999,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         summary = run_path(
             path_name, rows, output, official_root, args.workers, args.gpus,
             sampling_config=args.sampling_config, episode_specs=episode_specs,
+            trace=args.trace,
         )
         summaries.append(summary)
         failed += int(summary.get("failed_count", 0) or 0) + (1 if summary["exit_code"] else 0)
@@ -1294,12 +1298,15 @@ def cmd_merge(args: argparse.Namespace) -> int:
     for task, rows in rows_by_task.items():
         results = []
         for row in rows:
-            worker_dir = Path(args.run) / args.path / f"{task}_episode_{row['episode']}"
-            files = sorted((worker_dir / "hdf5_files").glob("*.h5"))
-            if len(files) != 1:
-                missing.append(f"{task}/{row['episode']}")
+            # 分片跑出来的产物分散在多个运行目录里，逐个找；找到且唯一才算数
+            found = []
+            for run in args.run:
+                worker_dir = Path(run) / args.path / f"{task}_episode_{row['episode']}"
+                found.extend(sorted((worker_dir / "hdf5_files").glob("*.h5")))
+            if len(found) != 1:
+                missing.append(f"{task}/{row['episode']}（找到 {len(found)} 个）")
                 continue
-            results.append({"episode": int(row["episode"]), "raw_h5_path": str(files[0])})
+            results.append({"episode": int(row["episode"]), "raw_h5_path": str(found[0])})
         if missing:
             continue
         official._merge(output, task, results)
@@ -1545,6 +1552,57 @@ def cmd_compare(args: argparse.Namespace) -> int:
                 f"off={counts['off']} mode_mismatch={mode_mismatch} event_mismatch={event_mismatch}"
             )
             overall_fail += mode_mismatch + event_mismatch
+        elif gate_name == "RNG_PARITY":
+            # P3：比 B／C／D 的随机流轨迹——调用序号、取值点签名、抽样结果，以及收尾的生成器状态。
+            # 粒度是「取值点级」而非「每一次 torch 调用」，报告里如实说明。
+            traces: dict[str, dict[str, object]] = {}
+            for label, run_dir in runs.items():
+                for path_name in ("B", "C", "D"):
+                    for identity in _identity_dirs(run_dir / path_name):
+                        trace_file = run_dir / path_name / identity / "rng_trace.json"
+                        if trace_file.exists():
+                            key = f"{label}/{identity}"
+                            traces.setdefault(key, {})[path_name] = json.loads(
+                                trace_file.read_text(encoding="utf-8")
+                            )
+            compared = calls_mismatch = state_mismatch = 0
+            missing_trace = 0
+            details: list[str] = []
+            for identity, by_path in sorted(traces.items()):
+                if len(by_path) < 2:
+                    missing_trace += 1
+                    continue
+                reference_path = "B" if "B" in by_path else sorted(by_path)[0]
+                reference = by_path[reference_path]
+                signature = [(c["path"], c["drawn"]) for c in reference["calls"]]
+                for path_name, payload in by_path.items():
+                    if path_name == reference_path:
+                        continue
+                    compared += 1
+                    other = [(c["path"], c["drawn"]) for c in payload["calls"]]
+                    if other != signature:
+                        calls_mismatch += 1
+                        first = next(
+                            (i for i, (a, b) in enumerate(zip(signature, other)) if a != b),
+                            min(len(signature), len(other)),
+                        )
+                        details.append(
+                            f"{identity} {reference_path}↔{path_name} 第 {first} 个取值点起不同"
+                            f"（{len(signature)} vs {len(other)} 个）"
+                        )
+                    if payload.get("final_generator_states") != reference.get("final_generator_states"):
+                        state_mismatch += 1
+                        details.append(f"{identity} {reference_path}↔{path_name} 收尾生成器状态不同")
+            status = "PASS" if compared and calls_mismatch == 0 and state_mismatch == 0 else "FAIL"
+            print(
+                f"RNG_PARITY={status} compared={compared} calls_mismatch={calls_mismatch} "
+                f"state_mismatch={state_mismatch}"
+            )
+            if missing_trace:
+                print(f"# 缺轨迹（该身份只有一路有 rng_trace.json）：{missing_trace} 条")
+            for item in details[:10]:
+                print(f"# {item}")
+            overall_fail += calls_mismatch + state_mismatch
         elif gate_name == "WORKER_ISOLATION":
             # P6／5c：单 worker 与多 worker（或独立进程与同一 PID 连续跑）的产物必须逐位相同，
             # 且两侧消费的配置／规格输入散列不得被改动（input_mutation）。
@@ -1669,11 +1727,15 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--official-root", default=None, help="官方隔离源码目录，默认 <output>/official-src")
     run.add_argument("--sampling-config", default=None, help="C／D 路的显式采样配置 JSON")
     run.add_argument("--episode-specs", default=None, help="D 路的每局规格 JSON")
+    run.add_argument(
+        "--trace", action="store_true",
+        help="P3：让 B 路也走镜像 worker 以产出随机流轨迹（两个输入都为 None 时镜像与官方 _worker 逐句一致）",
+    )
     run.add_argument("--output", required=True)
     run.set_defaults(func=cmd_run)
 
     merge = sub.add_parser("merge", help="把某一路的逐 episode 产物合并成官方格式（步 5e 前置）")
-    merge.add_argument("--run", required=True, help="运行目录")
+    merge.add_argument("--run", action="append", required=True, help="运行目录，可重复（分片）")
     merge.add_argument("--path", default="A1", help="要合并的路径名")
     merge.add_argument("--manifest", default=str(DEFAULT_FROZEN_DIR / "subset_manifest.json"))
     merge.add_argument("--official-root", required=True, help="官方隔离源码目录")
@@ -1696,7 +1758,8 @@ def build_parser() -> argparse.ArgumentParser:
     compare.add_argument("--history-path", default="A1", help="与历史投影比对的路径名，默认 A1")
     compare.add_argument(
         "--gate", action="append", default=None,
-        help="额外输出闸门判定行：BASELINE_REPEAT / NODE_PARITY / SPEC_BINDING / VIDEO_PARITY / RECOVERY_PARITY / WORKER_ISOLATION",
+        help="额外输出闸门判定行：BASELINE_REPEAT / NODE_PARITY / SPEC_BINDING / VIDEO_PARITY / "
+             "RECOVERY_PARITY / WORKER_ISOLATION / RNG_PARITY",
     )
     compare.add_argument("--output", default=None, help="比较结果目录，默认 <第一个运行目录>/compare")
     compare.set_defaults(func=cmd_compare)

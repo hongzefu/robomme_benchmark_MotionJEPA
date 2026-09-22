@@ -83,6 +83,10 @@ def main(argv: list[str] | None = None) -> int:
         help="C／D 路：显式采样配置 JSON（形如 {\"tasks\": {<env>: {...}}}），按 task 取块传给 gym.make",
     )
     parser.add_argument(
+        "--force-mirror", action="store_true",
+        help="即使不传两个显式输入也走镜像 worker（用于让 B 路产出随机流轨迹）",
+    )
+    parser.add_argument(
         "--episode-specs", default=None,
         help="D 路：每局规格 JSON（形如 {\"specs\": {<task>/<episode>: {...}}}）",
     )
@@ -111,7 +115,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.episode_specs:
         payload = json.loads(Path(args.episode_specs).read_text(encoding="utf-8"))
         specs_by_identity = payload.get("specs", payload)
-    use_mirror = bool(sampling_by_task or specs_by_identity)
+    use_mirror = bool(sampling_by_task or specs_by_identity) or args.force_mirror
     if use_mirror:
         # 子进程要能按模块名 import 本文件所在目录下的 train_split_worker
         scripts_dir = str(Path(__file__).resolve().parent)
@@ -154,6 +158,7 @@ def main(argv: list[str] | None = None) -> int:
         """A／B 路用官方 _worker；C／D 路用只多传两个显式输入的镜像 worker。"""
         if not use_mirror:
             return executor.submit(official._worker, job)
+        # force_mirror 时两个输入都是 None，镜像 worker 的 gym.make 参数表与官方逐句一致
         import train_split_worker  # noqa: PLC0415 仅 C／D 路需要
 
         config = sampling_by_task.get(job.task)

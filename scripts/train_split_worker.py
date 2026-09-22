@@ -111,6 +111,35 @@ def run_one(payload: tuple) -> dict[str, Any]:
         # 只读导出／回注核验：C 路把本局规格封存，D 路把兼容核验结果落档
         recorder = getattr(record_env.unwrapped, "_spec", None)
         if recorder is not None:
+            # P3：随机流轨迹。三路都写，因为 D 路的兼容抽样照常发生，
+            # 比的是「调用序号 + 取值点签名 + 抽样结果」这条有序序列。
+            base_env = record_env.unwrapped
+            states = {}
+            for attribute in ("generator", "_hb_generator"):
+                generator = getattr(base_env, attribute, None)
+                if generator is not None and hasattr(generator, "get_state"):
+                    states[attribute] = hashlib.sha256(
+                        bytes(generator.get_state().numpy().tobytes())
+                    ).hexdigest()
+            (worker_dir / "rng_trace.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "train-parity-rng-trace/1",
+                        "mode": recorder.mode,
+                        "calls": [
+                            {"index": index, "path": item["path"],
+                             "drawn": item.get("drawn", item.get("value")),
+                             "source": item["source"]}
+                            for index, item in enumerate(recorder.trace)
+                        ],
+                        "final_generator_states": states,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
             recorder.identity.update(
                 {"task": job.task, "episode": job.episode, "seed": job.seed,
                  "difficulty": job.difficulty, "recovery_mode": job.recovery_mode}
