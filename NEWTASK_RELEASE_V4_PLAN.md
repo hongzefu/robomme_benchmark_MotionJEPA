@@ -30,7 +30,7 @@
 | 2 | **在链路乙上实现**，用 `sampling_config` + `native_episode_spec`，**不复活甲的 `episode_spec` 旧通道** | 用户原话「在乙的基础上实现」 |
 | 3 | **jsonl 继承甲的封套契约**（header 内嵌配置全文与来源指纹、逐行 `spec_sha256`、`identity_sha256`、字段集合精确比对、冻结进 Git 禁覆盖）；**不继承**甲的采样器、配额、分层与方向平衡 | 用户原话「jsonl 生成机制 参考甲的实现」；3.4 |
 | 4 | **推理必须兼容**。现状是完全没实现，要补出读 V4 快照起环境的路径与落 `eval_results.jsonl` 的入口 | 用户原话「推理也要兼容」；第四节 |
-| 5 | **改完跑对拍**，换成五条判据（原值回归 / 新值重放 / 规格绑定 / 可完成性报告 / 推理链路） | 用户原话「改完后还需要跑对拍」；第五节 |
+| 5 | **改完跑对拍**，换成六条判据（原值回归 / 新值重放 / 规格绑定 / 可完成性报告 / 推理链路 / 组合覆盖） | 用户原话「改完后还需要跑对拍」；第五节 |
 | 6 | **改动内容以 1.2 的用户原文为准** | 1.2 |
 | 7 | **新值一律落新增的 `xhard` 档，从 `hard` 派生；`VideoRepick` 从 `medium` 派生。原三档一个数都不动** | 用户原话「v4派生的任务 都是基于hard来派生的 作为xhard，但是对于videorepick是以medium派生」；2.1 |
 | 8 | **`scripts/` 顶层只允许五个入口**，新增顶层文件或子目录须先获批 | AGENTS.md 强制规则第 12 条；2.0④ |
@@ -39,7 +39,7 @@
 | 11 | **未定的量一律保留为待决，不编造默认值** | V3 8.3 的纪律 |
 | 12 | **录像器全程冻结**；`src/robomme/` 改动免逐项事前批准但每步须出 md 报告 | 题注；红线 N1/N2 |
 | 13 | **规模定死**：每环境 10 条 `reset` 成功候选（尝试上限 30）⇒ 全局 160 条；按 index `0/3/6` 选 3 条为正式局 ⇒ 全局 48 条；落选候选一并冻进快照、只标 `selected=false` | 用户 2026-09-22 决策；3.2 |
-| 14 | **传入即可生成**：每个环境 xhard 声明的参数，其**所有排列组合**（离散量逐值、连续量取端点，与其他参数交叉）都必须**实测出生成成功率且实际能生成成功**；任一组合生成不出来，**必须回报用户、重新定传入参数**，不许出现「传入了但实际不可能生成」的值，也不许实施方自行收窄范围了事 | 用户 2026-09-22 约定；红线 N11 |
+| 14 | **传入即可生成**：每个环境 xhard 声明的参数，其**所有排列组合**（离散量逐值、连续量取端点，与其他参数交叉）都必须**实测出生成成功率且实际能生成成功**；任一组合生成不出来，**必须回报用户、重新定传入参数**，不许出现「传入了但实际不可能生成」的值，也不许实施方自行收窄范围了事。**判据两级都报、以演示级为准**（H3）：某组合演示成功数为 0 即算生成不出来。**实现后**另跑冻结的组合清单（V6），终验 `missing_combinations=0`、`zero_success_combinations=0`；每环境 3 条正式局**不能替代**组合覆盖 | 用户 2026-09-22 约定；红线 N11；V6 |
 
 ### 1.2 十六环境的改动内容（用户原文，逐字保留）
 
@@ -67,7 +67,7 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 
 ### 1.3 用户决策速查
 
-实施前的待决项已在 2026-09-22 逐条答复；其中 **G2 / G3 是「先实测再定」**，实测结果须交用户定数后才算闭环。下表只记结论与落点，原始的"问题与建议"不再保留。
+实施前的待决项已在 2026-09-22 逐条答复（H1~H4 来自同日 Codex 审计后的用户决策）；其中 **G2 / G3 是「先实测再定」**，实测结果须交用户定数后才算闭环。下表只记结论与落点，原始的"问题与建议"不再保留。
 
 | 编号 | 决策结论 | 落在哪 |
 |---|---|---|
@@ -95,18 +95,22 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | C3 | PickHighlight 高亮连片**先不动**：`disk_radius` 保持 0.05、不改同心环 | 2.12 |
 | C4 | StopCube **只锁速度最快档与 number `[6,15]`**，其余阈值由实施方按实测调 | 2.6 |
 | C5 | InsertPeg 目标识别**本来就靠 video demo**，不是本轮引入的问题 | 2.18 |
-| D1~D5 | 五个既有缺陷**全部修复** | 2.0① / 2.3 / 2.4 / 2.12 / 2.17 |
+| D1~D5 | 五个既有缺陷**全部修复**，但**只在 xhard 生效**（H2），原三档逐字不变 | 2.0① / 2.3 / 2.4 / 2.12 / 2.17 |
 | D6 | BinFill 的 `dynamic`：**xhard 固定 `false`**，原三档不动 | 2.3 |
 | E1 | **批准新建 `scripts/eval/`** | 2.0④ |
 | E2 | 序数表**扩到 20 + 规范英文序数兜底**（前十项逐字不变） | 2.0① / E2 方案 |
 | E3 | **批准重导 v2 快照**（可能一并消解当前 46 项既有失败 ⇒ 须重测基线） | 2.0⑤ |
 | F1 | 候选规模＝**每环境 10 条 `reset` 成功**；正式局＝**每环境 3 条**（全局 160 / 48） | 3.2 |
 | F2 | `reset` 失败**补抽到 10 条成功为止**，每环境尝试上限 30；凑不满如实记 `candidate_shortfall`，不降难度 | 3.2 |
-| F3 | 挑选规则＝在成功候选序列里**按固定步长取 index `0/3/6`**（确定性、可复现） | 3.2 |
+| F3 | 挑选规则＝在成功候选序列里**按固定步长取 index `0/3/6`**（确定性、可复现）；演示失败时按 H4 递补 | 3.2 |
 | G1 | PickXtimes 圆盘放不下 ⇒ **改成先放圆盘再放方块**（不放大圆盘区域） | 2.4 |
 | G2 | clutter 具体数量（Unmask 容器数、VideoRepick 方块数）**先实测再定**：实施方跑容量／成功率实测，结果交用户定数，不自填 | 2.8 / 2.13 |
 | G3 | 成功率扫描的样本量与 MoveCube `corner_bias` 取值**先实测再定**：实施方先跑一轮实测，结果交用户定口径与取值 | 2.17 / 第二部分五 |
 | G4 | **重要约定：传入即可生成**（口径 14 / N11） | 1.1 |
+| H1 | 干扰容器**不当交换搭档，但必须进碰撞检查**（初态＋连续扫掠）；删去「不进碰撞证据」 | 2.7① |
+| H2 | D1~D5 的修复**只挂在 xhard 分支**，原三档行为逐字不变，V1 仍为零差异硬闸门；原三档的缺陷留作日后单独处理 | 2.0① / 2.3 / 2.4 / 2.12 / 2.17 |
+| H3 | 口径 14 的「能生成」**两级都报（reset 级＋演示级），以演示级为准**：某组合演示成功数为 0 即回报用户重定参数 | 1.1 / V6 |
+| H4 | 正式局演示失败 ⇒ **在本环境已有的 10 条候选内按 index 顺序递补**下一条演示成功的，**不超出这 10 条、不追加抽签**；递补不满如实报 `selected_shortfall`，失败局保留在分母里 | 3.2 / 3.3③ / V2 |
 | F4 | 落选候选**一并写进 `specs.jsonl`**，用 `selected` 真假标记；`selected` 属可变字段、不改 `identity_sha256` | 3.2 |
 
 ## 二、逐环境改动
@@ -149,7 +153,7 @@ xhard 派生基准；2.2 是四条动手前必须知道的机制；2.3 起是**�
 | `subgoal_language.py::get_subgoal_with_index` | 扩表到 20 + 规范英文序数兜底（方案见 E2） | 现在 idx ≥ 10 直接 `raise ValueError`，`PickXtimes` 的 `num [6,15]` 必崩 | **idx 0~9 输出逐字不变** |
 | `object_generation.py`（新增采样模式） | 新增**边角偏置**采样（`corner_bias ∈ [0,1]`，0 = 现有均匀采样）；新增**干扰容器**生成入口 | 全仓 grep `corner`/`annulus`/`min_radius` 无任何边角采样工具，要新写 | `corner_bias=0` 时与现有均匀采样逐字等价 |
 | 新增全局常量：干扰色池 | 黄 `(1,1,0,1)` / 青 `(0,1,1,1)` / 品红 `(1,0,1,1)`，六个环境共用（B2） | "其他颜色"需要一个跨任务一致的定义 | 不启用 distractor 时不被读 |
-| `VideoRepick` 的四处扫掠检查（D5） | 开关条件从 `if self._episode_spec is None: return` 改为"两条通道任一" | 它们只认**甲的旧通道**，V4 走 `native_episode_spec` ⇒ **一次都不会跑**，clutter+swap 会穿模不报错 | 甲通道行为不变 |
+| `VideoRepick` 的四处扫掠检查（D5） | 开关条件改为「甲通道，或 xhard 的乙通道」（H2：**原三档的乙通道仍不开**） | 它们只认**甲的旧通道**，V4 走 `native_episode_spec` ⇒ **一次都不会跑**，clutter+swap 会穿模不报错 | 甲通道行为不变；原三档乙通道仍不做检查 |
 
 **E2 扩表方案（`get_subgoal_with_index`）**——三条约束缺一不可：
 
@@ -262,7 +266,7 @@ V4 要给审计加一条：`decision` 的每个叶子键都必须能在本局 `t
 `_after_simulation_step` 全部以 `if self._episode_spec is None: return` 开头——它们只认**甲的旧通道**。
 V4 走的是 `native_episode_spec`（乙的通道），所以**这些检查一次都不会跑**。clutter + swap 8~12 次会产出
 物理穿模但不报错的 episode。`VideoPlaceButton` / `VideoPlaceOrder` 的 `swap_flat_two_lane` 连检查代码都没有。
-**这是 V4 必须处理的一条**：要么把检查的开关条件从 `_episode_spec` 改成"两条通道任一"，要么在 V4 侧另做
+**这是 V4 必须处理的一条**：把检查的开关条件改成「甲通道，或 xhard 的乙通道」（H2：原三档乙通道仍不开），并在 V4 侧另做
 一次只读的扫掠核验。属 `src/robomme/` 改动，须出 md 报告。
 
 **④ 生成失败是"静默截断"，不是报错。**
@@ -389,7 +393,8 @@ V4 走的是 `native_episode_spec`（乙的通道），所以**这些检查一�
 | 要点 | 怎么做 |
 |---|---|
 | 不被选成交换搭档 | 干扰容器**单独存 `distractor_bins`，不进 `self.spawned_bins`**。两个 Swap 环境的最近邻搜索遍历的就是 `spawned_bins` ⇒ 天然排除，**不用改搜索逻辑** |
-| 不进碰撞证据与绑定核验 | `_verify_swap_binding` / `_object_states_for_collision` / `_check_swap_sweep_from_actual` 同样只认 `spawned_bins` ⇒ 一并排除 |
+| 不进绑定核验 | `_verify_swap_binding` 只认 `spawned_bins` ⇒ 干扰容器天然不参与交换绑定 |
+| **必须进碰撞检查**（H1） | 外环初态安全，但**交换途中仍可能撞上**（Codex 审计已复现）⇒ `_object_states_for_collision` 与 `_check_swap_sweep_from_actual` 要**显式并入 `distractor_bins`**，初态与连续扫掠都查；原三档无干扰容器，行为不变 |
 | 不进揭示动画 | `step` 的 `for i in range(step_bin_scan)` + `hasattr(self, f"bin_{i}")` 只扫 `bin_<i>` ⇒ 干扰容器**不要用这个命名** |
 | 采样区域 | 外环 `max(|x|,|y|) ∈ [0.2675, 0.45]`，见下方 B13 实测 |
 | 随机流 | 干扰容器的位置抽样**必须追加在全部既有取值点之后**（红线 N5） |
@@ -580,8 +585,8 @@ pick 2→3 会把候选从 2 个变 3 个，那次 `randint` 的分布随之改�
 - **误抓失败会激增**：每个 pick 的 `failure_func` 是"抓起任何一块非目标即失败"。
 - `task_goal` **不含颜色词**、`evaluate()` **也不看颜色** ⇒ 颜色任意对本环境几乎无代价，
   唯一要处理的是 subgoal 里的 `, which is {color}` 后缀。
-- **D4 必修**：首个按钮任务 `failure_func` 缺 lambda ⇒ 这条判据从来没生效过。
-  补上后**原三档失败率可能上升**，V1 回归时单独观察。
+- **D4 只在 xhard 修**（H2）：首个按钮任务 `failure_func` 缺 lambda ⇒ 这条判据从来没生效过。
+  补上会改变原三档的失败语义、与 V1 零差异冲突 ⇒ **原三档保留现状**，只有 xhard 分支带上 lambda。
 
 ### 2.13 VideoRepick（**派生自 medium**）
 
@@ -637,9 +642,12 @@ pick 2→3 会把候选从 2 个变 3 个，那次 `randint` 的分布随之改�
   ⇒ 其后的 swap randperm、`task_flag` 等全部平移。xhard 是新档、可接受，**但不得影响原三档**。
 - **"放回原位"需要一个 actor 作落点**：`solve_putonto_whenhold(target=…)` 与
   `is_obj_dropped_onto(obj, target)` 内部都取 `target.pose.p`。全仓**没有任何地方保存方块初始位姿**。
-  **唯一不平移随机流的插入方式是 `spawn_random_target(randomize=False, region_center=<该方块 xy>)`**
-  （`randomize=False` 时不抽随机数），且放在所有其他 spawn **之后**、`include_existing=False`、
-  `include_goal=False`、`avoid=None`。
+  ⚠ **`spawn_random_target(randomize=False)` 不能用**：`randomize` 形参在采样循环里**根本没被读**，照样 `torch.rand`
+  （Codex 反例：请求 `[0,0]` 得到约 `[-0.00067, 0.04828]`）；而 `BinFill` 原三档正在传 `randomize=False`，
+  **修这个工具函数会平移 BinFill 原三档的随机流** ⇒ 不改它。
+  ⇒ 改为**直接调 target builder（如 `build_*_white_target`）在该方块初始位姿建 actor**，只在 xhard 分支走，
+  放在所有其他 spawn **之后**。验收两条：**落点位姿逐位等于方块初始位姿**；**建 actor 前后 generator 状态不变**
+  （`generator.get_state()` 逐字节相等）。
 - **`vqa_options.py::_options_videoplacebutton` 的 `"available": env.targets`** 不含 home site
   ⇒ "回原位"步若走 choice-action 匹配会选不到，需扩 `available`。
 - **撤销审计豁免**：`train_split_audit.py::NEUTRAL_KEYS` 里 `demo_object_count` 那条。
@@ -683,6 +691,11 @@ pick 2→3 会把候选从 2 个变 3 个，那次 `randint` 的分布随之改�
 `R_grasp(yaw+π) = Rz(yaw)·Rx(π)·Rz(π) = R_grasp(yaw)·Rz(π)` ⇒ 两者只差一个绕夹爪自身 approach 轴的 180°，
 对平行两指夹爪**夹持几何完全等价**。所以归约**只改夹爪姿态、不碰杆位姿**，
 head/tail 空间位置不变，`InsertPeg` 的 near/far 判定不受影响，**两个环境同等处理**。
+
+⚠ **夹持几何等价 ≠ 整段动作等价**（Codex 审计）：`insert_peg` 的插入路点是在**夹爪局部系**里做平移，
+夹爪翻 180° 后这些局部平移也跟着翻向——反例中首个路点相差 **0.4 m**。所以归约后必须**同步补偿插入轨迹**
+（局部平移在归约时取反，或改在杆/世界系里表达），并对 **`obj` × `direction` 四种组合逐一核验**
+归约前后世界系路点一致；MoveCube 在抓杆之后的 push / putdown 路点同样要按此核一遍。只在 xhard 分支生效。
 
 ### 2.17 MoveCube（派生自"现值即 hard"，A6）
 
@@ -960,6 +973,10 @@ xhard 每一局要用到的具体数字（这局几块、各在哪、swap 哪两
 然后把 ③ **原样再跑一遍**，两遍 h5 逐位比 ⇒ V2「可重放」。抽签那一遍只 `reset`、没有 h5，不能当其中一遍。
 ①③ 都必须单 worker、A40（口径 10）。
 
+**正式局演示失败的递补（H4）**：③ 实跑时某条 selected 局演示失败，就在**本环境剩下的候选**里按 index 顺序
+（1、2、4、5、7、8、9）取下一条跑，演示成功即改标 `selected=true` 顶上；**只在这 10 条内递补、不追加抽签**，
+10 条耗尽仍不满 3 条就如实记 `selected_shortfall`。失败局**保留在 `results.jsonl` 与分母里**，报告里写明谁被谁递补。
+
 规模是用户定的（1.3 F1~F4）：每环境 10 候选 → 3 正式，全局 160 → 48；攒不够 10 条就如实记 `candidate_shortfall`，
 **不降难度去凑**。落选的 7 条也留在文件里，以后要扩规模只改 `selected`，不必重开 GPU。
 
@@ -999,6 +1016,9 @@ drafts.append({"identity": ..., "reset_ok": ..., "fail_class": ..., "spec": spec
 
 每个环境循环到 `reset_ok` 满 10 条或尝试满 30 次为止，`attempt` 每失败一次加 1。全部写入 `drafts.jsonl`。
 
+**来源在抽签时就封存**（Codex 审计 #7）：`drafts.jsonl` 的 header 当场写入 `sampling_config` 全文、源码指纹、
+runtime 四项与 seed 公式参数。否则抽签到冻结之间配置或源码一改，冻结时读到的是新来源，旧规格就被绑到了错的来源上。
+
 #### ② 冻结怎么调（同一入口的纯 CPU 子命令，登录节点可跑）
 
 ```python
@@ -1007,8 +1027,9 @@ write_specs(drafts="artifacts/newtask-v4/<run-id>/draft/drafts.jsonl",
             out="scripts/configs/newtask-v4/<run-id>/specs.jsonl")   # 已存在 ⇒ 拒绝
 ```
 
-做的事：只留 `reset_ok` 的行；每环境按 index `0/3/6` 标 `selected=true`；把 `sampling_config` 全文与源码指纹
-塞进 header；算每行与整文件的校验和；写出。**不碰环境、不抽数。**
+做的事：先核验 drafts header 封存的配置／源码指纹／runtime／seed 规则与当前磁盘**逐项一致**，不一致即拒绝冻结
+（不能只查最终散列自洽）；然后只留 `reset_ok` 的行；每环境按 index `0/3/6` 标 `selected=true`；把封存的来源
+原样转入 header；算每行与整文件的校验和；写出。**不碰环境、不抽数。**
 
 #### ③ 实跑怎么调（`train_split_parity.py run` 的新分片模式）
 
@@ -1033,6 +1054,9 @@ spec_replay.json ← env.unwrapped._spec 的对账结果（规格里有没有缺
 results.jsonl   ← 这局成败 + 身份 + spec_sha256
 ```
 
+演示失败的局按 3.2 的 H4 规则递补：runner 从本环境未选候选里按 index 顺序续跑，成功者回写 `selected=true`
+（`selected` 是管理字段，不改身份散列，见 3.4），失败者留在 `results.jsonl`。
+
 对账里"规格值 ≠ 当场抽到的值"在新值模式下**本来就会大量出现**（规格是新范围抽的），
 所以规格标 `spec_kind=native-newvalue/1`，对账改为每条不等都要归因到某个 `decision` 键，
 归不了因的才算 RNG 漂移；原值规格 `native-parity/1` 仍要求零不等。两类不许互喂。这是步 2 要改的内容。
@@ -1042,7 +1066,10 @@ results.jsonl   ← 这局成败 + 身份 + spec_sha256
 `specs.jsonl` 人不直接读，只有两个入口碰它：②的 `write_specs`（写）和③／推理侧的 `load_specs`（读）。
 两个函数共用一套校验：header 内嵌配置全文与源码指纹、runtime 四项逐字比、每行 `spec_sha256`、
 整文件 `identity_sha256`（改 `selected` 不变、改任一规格值必变）、字段缺一多一都报错、已存在拒绝覆盖。
-散列直接复用 `scripts/injection/candidates/io.py` 的 `canonical_json` / `digest` / `record_sha256` / `identity_sha256`，
+⚠ **身份散列要在 V4 层另做投影**（Codex 审计 #6）：甲的 `io.py::identity_sha256` 只排除自己的 `_MUTABLE` 集合，
+其中**没有 `selected`** ⇒ 直接复用会让改选择就改身份。做法是 V4 层先剔除 `selected` 等管理字段再调 `digest`，
+**不改冻结的甲代码**；并补两条反例测试：改 `selected` 身份散列不变、改任一规格值身份散列必变。
+底层纯函数复用 `scripts/injection/candidates/io.py` 的 `canonical_json` / `digest` / `record_sha256`，
 甲的其余东西（采样器、配额、分层、方向平衡、碰撞筛查硬规则）一概不用（红线 R6）。
 函数名以实现为准。
 
@@ -1104,16 +1131,17 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 
 ## 五、改完怎么对拍
 
-新值局**没有官方原版可比**，所以 V3 那套「五路 A1/A2/B/C/D 对官方逐位」不能照搬。V4 换成五条判据，
-前三条是零容差硬判据，后两条是统计报告：
+新值局**没有官方原版可比**，所以 V3 那套「五路 A1/A2/B/C/D 对官方逐位」不能照搬。V4 换成六条判据，
+V0~V3g、V5e、V6 是硬判据，V4f 是统计报告：
 
 | 编号 | 查什么 | 怎么查 | 判定行 |
 |---|---|---|---|
 | **V1** | **原值回归**：加了新值能力之后，原三档一个数都没改 | 重跑 V3 的 144 条子集（全在 easy/medium/hard），与 V3 留档的 B／C／D 产物逐位比。**口径 12 之后这条更强**：新值只落 xhard，原三档在结构上就不该有任何差异，任何非零差异都是明确的 bug | `NATIVE_REGRESSION=PASS compared=144 sha_equal=k field_mismatch=0` |
 | **V0** | **原三档的定义没被动过**（静态，V1 的前置） | `git diff` 只看 `config_easy` / `config_medium` / `config_hard` 三个类属性与 `NATIVE_SAMPLING` 里被原三档消费的键，应全部无改动；三个新建分档的环境（A6）另按"三档同值"逐项核对 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
-| **V2** | **新值可重放**：同一份冻结规格跑两次完全一致 | 同一 `specs.jsonl`、同一机型（A40）、**单 worker**，两次实跑的 HDF5 全字段零容差比较（复用 `compare_h5_pair`，不设容差、不跳字段）。**跑 `selected=true` 的 48 条全量，不取子集**；抽签段只 reset、拿不出 h5，**不能充当这里的一路**（3.2） | `NEWVALUE_REPLAY=PASS compared=48 sha_equal=k field_mismatch=0` |
+| **V2** | **新值可重放**：同一份冻结规格跑两次完全一致 | 同一 `specs.jsonl`、同一机型（A40）、**单 worker**，分两层：**V2a** 本轮实跑过的**全部身份**（48 条正式局＋H4 递补中跑过的候选，含失败局）两次的**终态与失败类别**逐条一致；**V2b** 两次都成功的局做 HDF5 全字段零容差比较。比较前先查：episode 有效、HDF5 非空、终态为成功；并**补比根属性**——现有 `compare_h5_pair` 用 `visititems` 不访问根节点，**两个空 HDF5 会被判通过**，V4 层包一层前置检查＋根属性比较（不改 V3 用的比较器，以免影响 V1）。抽签段只 reset、拿不出 h5，**不能充当这里的一路**（3.2） | `NEWVALUE_REPLAY=PASS identities=N terminal_mismatch=0 compared_success=k sha_equal=j field_mismatch=0 empty_or_invalid=0` |
 | **V3g** | **规格真被消费**：改坏规格必须产生差异 | 取若干局，逐个改坏规格里的一个叶子值，重跑必须出现字段差异；同时 `missing=0`、`unused=0`、mismatch 全部可归因到 `decision` 键 | `SPEC_BINDING=PASS missing=0 unused=0 unattributed_mismatch=0` ＋ `SPEC_NEGATIVE=PASS cases=M diff_zero=0` |
-| **V4f** | **新值可完成性**：新值局到底跑不跑得通 | **分两档、各按环境报告**：①**抽签档**＝`reset` 成功率（分母是 `drafts.jsonl` 的全部尝试，含补抽；另报 `candidate_shortfall`）；②**实跑档**＝48 条正式局的演示成功率与失败分类（规格拒绝／碰撞／绑定不符／规划失败／超时） | `NEWVALUE_FEASIBILITY=REPORT tasks=16 draft_attempted=A draft_ok=160-s shortfall=s rollout_attempted=48 rollout_ok=M by_class=…`（**不设通过门槛**，见下） |
+| **V4f** | **新值可完成性**：新值局到底跑不跑得通 | **分两档、各按环境报告**：①**抽签档**＝`reset` 成功率（分母是 `drafts.jsonl` 的全部尝试，含补抽；另报 `candidate_shortfall`）；②**实跑档**＝正式局＋H4 递补局的演示成功率与失败分类（分母含失败局）（规格拒绝／碰撞／绑定不符／规划失败／超时） | `NEWVALUE_FEASIBILITY=REPORT tasks=16 draft_attempted=A draft_ok=160-s shortfall=s rollout_attempted=R rollout_ok=M backfilled=b selected_shortfall=t by_class=…`（**不设通过门槛**，见下） |
+| **V6** | **组合覆盖**：xhard 声明的每个参数组合都真能生成（口径 14） | 实现后按冻结的组合清单逐组合跑（离散量逐值、连续量取端点、与其他参数交叉），**reset 级与演示级两级都报、以演示级为准**（H3）；每组合样本量按 G3 实测后由用户定 | `COMBO_COVERAGE=PASS combos=C missing_combinations=0 zero_success_combinations=0` |
 | **V5e** | **推理链路通**：新值数据能起环境、能评、能落表 | 用新入口跑一个小分片，核验 `runtime_ok` 全真、`eval_results.jsonl` 行数与分片一致、能按身份 join 上 `results.jsonl` | `EVAL_PIPELINE=PASS episodes=N runtime_ok=N join_missing=0` |
 
 三条纪律：
@@ -1130,15 +1158,16 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 
 | 步 | 内容 | 闸门 |
 |---|---|---|
-| 0 | 从当前 HEAD 切分支；先跑 G2 / G3 与口径 14 要求的实测，把结果交用户定数后写回第二节 | G2 / G3 有用户定数；口径 14 实测无「生成不出来」的组合 |
+| 0 | 从当前 HEAD 切分支；**只做容量探索**（G2 / G3），结果交用户定数后写回第二节。新行为尚未实现，这一步**证明不了**组合可生成，组合覆盖放步 3c | G2 / G3 有用户定数 |
 | 1 | 链路甲退役：停用 `scripts/injection/candidates` 与 `rollout` 的新增运行，产物与代码原样留档；`hf_release.py` 维持现状 | 退役说明入 `scripts/README.md`；已进 Git 的产物零改动 |
 | 2 | `SpecRecorder` 升版：加 `native-newvalue/1`，核验口径按 3.3③ 分叉；mismatch 归因到 `decision` 键 | 原值模式行为零变化（V1 的前置） |
 | 3a | 按 2.0 的派生基准总表建 `xhard` 档：十三个新建、三个覆盖；`StopCube`/`MoveCube`/`InsertPeg` 先建分档机制（A6） | `NATIVE_DEFS_UNCHANGED`（V0） |
 | 3b | 十六环境逐个在 xhard 档开新值（按第二节分组推进，每组先过 V0+V1 再进下一组） | 每组 `NATIVE_REGRESSION` 局部通过 |
+| 3c | 冻结组合清单并跑组合覆盖扫描（V6）；有演示级零成功的组合就**停下回报用户重定参数**，改完重跑 | `missing_combinations=0`、`zero_success_combinations=0` |
 | 4 | 抽签段＋冻结段：**每环境抽到 10 条 `reset` 成功**（尝试上限 30）→ `drafts.jsonl`；按 index `0/3/6` 标 `selected=true`，**160 条全部**冻进 `specs.jsonl`（复用甲的 io 纯函数做封套）（3.2） | 键集精确比对、`identity_sha256` 自洽、禁覆盖生效；**自检 `per_env_candidates=10`、`selected_total=48`**，`candidate_shortfall` 如实记录 |
 | 5 | 实跑段打通：回注规格出 h5 + 视频、落 `results.jsonl`，并**同一份规格再跑一遍**供 V2 比对。**试点规模由实施方定**（建议先取 2～3 个环境的 selected 局），48 条全量放步 7 | V2、V3g（试点规模上先过） |
 | 6 | 推理侧：`BenchmarkEnvBuilder` 新路径 + `scripts/eval/` 入口 + `eval_results.jsonl` | V5e |
-| 7 | 全量新值生成与报告：`selected=true` 的 **48 条 × 两次实跑** | V1、V2（`compared=48`）、V3g 全过；V4f 两档报告交用户 |
+| 7 | 全量新值生成与报告：48 条正式局（含 H4 递补）× 两次实跑 | V1、V2（`terminal_mismatch=0`、`field_mismatch=0`、`empty_or_invalid=0`）、V3g、V6 全过；V4f 两档报告交用户（含 `backfilled` / `selected_shortfall`） |
 | 8 | 留档与提交：`docs/validation/newtask-v4/` 逐步报告 | 每步 md 报告齐备 |
 
 测试预算沿用：每次提交前 ≤5 分钟（`timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`），
@@ -1157,7 +1186,9 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 - **N2 录像器冻结。** `RecordWrapper.py` 不改不覆盖；验证 `git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py`。
 - **N3 开放项不许自填默认值。** 1.3 的 G2 / G3「先实测再定」项在用户定数前不得落值；实施中新发现的待决项同样追加进 1.3 再问。
 - **N11 传入即可生成。** 见口径 14：xhard 参数的所有排列组合都要有实测生成成功率、都要真能生成成功；生成不出来就停下回报用户重定参数，
-  实施方**不得自行收窄范围或降难度**。实测结果（逐组合的尝试数／成功数）进 `docs/validation/newtask-v4/`。
+  实施方**不得自行收窄范围或降难度**。实测结果（逐组合的尝试数／reset 成功数／演示成功数）进 `docs/validation/newtask-v4/`。
+- **N12 既有缺陷只在 xhard 修。** D1~D5 的修复一律挂在 xhard 分支（H2），原三档行为逐字不变；共享工具函数（如 `spawn_random_target`）
+  的既有缺陷**不就地修**，另写 xhard 专用路径。
 - **N4 原值路径不许被改坏。** 任何一步收尾都要能过 `NATIVE_REGRESSION`（V1）；不允许以「新值模式用不到原路径」为由放过。
 - **N5 随机流位置。** 新增的 `torch.rand*` 调用一律**追加在既有取值点之后**；插在中间会平移其后全部取值，
   使既有 `episode_spec` / `native_sampling.json` / parity 产物全部失效。`ButtonUnmask::__init__` 那次
@@ -1188,12 +1219,12 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 | 步 3 | 四个 Unmask 的 `_load_scene` / `_initialize_episode` | pick 分支循环化（两个用 `>1`、两个用 `==2`）；`ButtonUnmaskSwap::_refresh_swap_schedule` 三分支换成通式＋补槽位循环；`swap_window` 真正被消费 | pick ≤ 2、swap ≤ 3 的行为不变 |
 | 步 3 | `PickHighlight.py::_load_scene` / `step`、`utils/statechange.py::highlight_obj` | spawn≥highlight 硬断言；`disk_radius` 不动（C3）；subgoal 的 `, which is {color}` 后缀处理 | 现值下断言恒真、视觉不变 |
 | 步 3 | `VideoRepick.py::_load_scene` | hard 统一成扁平 clutter 并统一 `bin_{i}` 命名；`num_repeats` 改 native 块的 `low`/`high_exclusive` | 不启用 clutter 时保留 5 轮 15 块 |
-| 步 3 | `VideoPlaceButton.py` / `VideoPlaceOrder.py` 的 `_load_scene` / `_initialize_episode` | 演示模板从内联硬编码改为按对象循环；`button_task_index` 公式重推；新建 home-site actor（`spawn_random_target(randomize=False)`，不抽随机数） | `demo_object_count=1` 时序列逐字不变 |
+| 步 3 | `VideoPlaceButton.py` / `VideoPlaceOrder.py` 的 `_load_scene` / `_initialize_episode` | 演示模板从内联硬编码改为按对象循环；`button_task_index` 公式重推；新建 home-site actor（直接调 target builder 放在初始位姿，**不用** `spawn_random_target`；验收位姿相等＋generator 状态不变） | `demo_object_count=1` 时序列逐字不变 |
 | 步 3 | `MoveCube.py::_load_scene` | 边角偏置（**新增采样模式**）；yaw 域放宽到 ±180°（A1）；修 D3 的 `None` 返回 | 原均匀采样与 ±45° 不变 |
 | 步 3 | `InsertPeg.py::_initialize_episode` | 第 4 根杆的独立采样分支与距离带判据；`peg_offsets` 扩容 | 三根杆路径不变 |
 | 步 3 | `PatternLock.py::configs` | 只加 xhard 的 `length=[20,25]`；**grid 与路径搜索都不改**（B8） | 原三档不变 |
 | 步 3 | `RouteStick.py::configs` | xhard 的 `length` 覆盖为 `[12,15]`（B9）；`VALID_DIFFICULTIES` 白名单同步 | 四档不变 |
-| 步 3 | `VideoRepick.py` 的扫掠检查四处 | 开关条件从 `self._episode_spec is None` 改为「两条通道任一」（D5） | 甲通道行为不变 |
+| 步 3 | `VideoRepick.py` 的扫掠检查四处 | 开关条件改为「甲通道，或 xhard 的乙通道」（D5，H2） | 甲通道行为不变；原三档乙通道仍不检查 |
 | 步 4 | `scripts/parity/`（新增模块） | 抽签段：按新 `decision` 跑 make/reset/导出，产出 `drafts.jsonl`；冻结段：复用 `scripts/injection/candidates/io.py` 的 `canonical_json` / `digest` / `record_sha256` / `identity_sha256` 产出 `specs.jsonl` | 不影响既有 `train_split_*` 子命令 |
 | 步 5 | `scripts/parity/train_split_parity.py` | `run` 增加读 `specs.jsonl` 的分片模式；结果落 `results.jsonl` | 原五路模式不变 |
 | 步 5 | `scripts/parity/train_split_runner.py` 的身份复核（`official.read_train_metadata()`） | 按 header 的 `identity_source` **分叉**：`formula` 改用 `scripts/seed_layout.py` 的公式复核，**仍是硬校验**（算出来对不上照样拒绝）；否则 xhard 身份不在官方 metadata 里，必然 `SystemExit`（3.5） | `identity_source=train_metadata` 分支逐字不变 |
@@ -1211,7 +1242,8 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 |---|---|---|
 | V0 `NATIVE_DEFS_UNCHANGED` | 无（静态检查，可在每步收尾跑） | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
 | V1 `NATIVE_REGRESSION` | V3 的 144 条基线产物可读；V0 已过 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=k field_mismatch=0` |
-| V2 `NEWVALUE_REPLAY` | `specs.jsonl` 已冻结；同机型 A40、单 worker；`selected=true` 的 48 条**两次实跑**均完成 | `NEWVALUE_REPLAY=PASS compared=48 sha_equal=k field_mismatch=0` |
+| V2 `NEWVALUE_REPLAY` | `specs.jsonl` 已冻结；同机型 A40、单 worker；正式局与递补局**两次实跑**均完成 | `NEWVALUE_REPLAY=PASS identities=N terminal_mismatch=0 compared_success=k sha_equal=j field_mismatch=0 empty_or_invalid=0` |
+| V6 `COMBO_COVERAGE` | xhard 实现完成；组合清单已冻结；每组合样本量用户已定（G3） | `COMBO_COVERAGE=PASS combos=C missing_combinations=0 zero_success_combinations=0` |
 | V3g `SPEC_BINDING` ＋ `SPEC_NEGATIVE` | 步 2 的归因字段已落地 | `SPEC_BINDING=PASS missing=0 unused=0 unattributed_mismatch=0`；`SPEC_NEGATIVE=PASS cases=M diff_zero=0` |
 | V4f `NEWVALUE_FEASIBILITY` | 抽签段与实跑段均完成 | `NEWVALUE_FEASIBILITY=REPORT tasks=16 draft_attempted=A draft_ok=160-s shortfall=s rollout_attempted=48 rollout_ok=M by_class=…`（**不设门槛**，N10） |
 | V5e `EVAL_PIPELINE` | 步 6 完成；E1 已批 | `EVAL_PIPELINE=PASS episodes=N runtime_ok=N join_missing=0` |
@@ -1246,7 +1278,7 @@ tmux new-session -d -s v4-draft \
 |---|---|---|
 | 1 | 新值把演示成功率打到 0（MoveCube 边角＋大 yaw、StopCube 最快档、InsertPeg 近距干扰） | 每项做成可调标量，实施前先跑成功率扫描；失败是**静默跳过演示段**而非报错，必须看成功率不能只看异常 |
 | 2 | clutter 后生成静默截断，实际数量少于设定 | 规格里记「请求数 vs 实际数」，不相等即判该局失败（2.0 ④） |
-| 3 | 几何检查不触发导致穿模 | D5 必修；另在 V4 侧加只读扫掠核验 |
+| 3 | 几何检查不触发导致穿模 | D5 在 xhard 必修；干扰容器并入碰撞检查（H1）；另在 V4 侧加只读扫掠核验 |
 | 4 | 改 `decision` 撞 `assert_native_decision` 或两道额外铁闸 | 步 2 先把守卫分叉；`VideoUnmaskSwap` 的 `pickup_selected_indices` 只能改源码字面量 |
 | 5 | 随机流平移使既有规格与 parity 产物失效 | N5；新抽样一律追加在最后，并在报告里显式归因 |
 | 6 | 步数逼近评估上限（ButtonUnmaskSwap 8 swap + 3 pick ≈960/1302；RouteStick L>22 被截断） | 实施前按第二节的估算表核对；必要时用 swap 速度 ×1.5 对冲 |
