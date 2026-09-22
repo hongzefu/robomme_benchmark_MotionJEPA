@@ -81,7 +81,13 @@ NATIVE_SAMPLING = {
 
 def native_blocks(cls):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
-    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+    native = copy.deepcopy(NATIVE_SAMPLING)
+    # 方案第二节把 color 列在 native（「规则不改，只外部生成本局值」），不是 decision：
+    # 本轮没有要求改颜色数，它只是随难度取原值。
+    native["parameters"]["color"] = {
+        difficulty: cfg["color"] for difficulty, cfg in cls.configs.items()
+    }
+    return _native_decision(cls), native
 
 
 def _native_decision(cls):
@@ -91,7 +97,6 @@ def _native_decision(cls):
         "demo_object_count": 1,
         # 每个方块演示完成后返回哪里：原值＝最后放同一个随机 goal_site。
         "demo_return_policy": "native_random_goal_site",
-        "color": {difficulty: cfg["color"] for difficulty, cfg in cls.configs.items()},
         "targets": {difficulty: cfg["targets"] for difficulty, cfg in cls.configs.items()},
         "swap": {difficulty: cfg["swap"] for difficulty, cfg in cls.configs.items()},
         "additional_place": {difficulty: cfg["additional_place"] for difficulty, cfg in cls.configs.items()},
@@ -312,7 +317,7 @@ class VideoPlaceButton(BaseEnv):
 
             # Generate cubes for each color group
             for idx, group in enumerate(color_groups):
-                if idx < decision_cfg["color"][self.difficulty]:
+                if idx < self._sampling["parameters"]["color"][self.difficulty]:
                     for cube_idx in range(cubes_per_color):
                         try:
                             cube = spawn_random_cube(

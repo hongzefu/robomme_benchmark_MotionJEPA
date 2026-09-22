@@ -254,10 +254,10 @@ class PickHighlight(BaseEnv):
         self.all_cube_colors = []
 
         # List of available colors
+        # 颜色池取自快照（顺序与原字面量一致：红、蓝、绿）
         available_colors = [
-            {"color": (1, 0, 0, 1), "name": "red"},
-            {"color": (0, 0, 1, 1), "name": "blue"},
-            {"color": (0, 1, 0, 1), "name": "green"}
+            {"color": tuple(entry["rgba"]), "name": entry["name"]}
+            for entry in self._sampling["parameters"]["color_pool"]
         ]
 
         # Get number of cubes to spawn based on difficulty
@@ -268,7 +268,10 @@ class PickHighlight(BaseEnv):
             # Randomly select a color
             color_choice_idx = self._spec.value(
                 f"objects.color_choice.{cube_idx}",
-                torch.randint(0, len(available_colors), (1,), generator=self.generator).item(),
+                torch.randint(
+                    self._sampling["parameters"]["color_draw"]["low"],
+                    len(available_colors), (1,), generator=self.generator,
+                ).item(),
             )
             chosen_color = available_colors[color_choice_idx]
 

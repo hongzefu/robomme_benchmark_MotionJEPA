@@ -1134,11 +1134,6 @@
       "decision": {
         "demo_object_count": 1,
         "demo_return_policy": "native_random_goal_site",
-        "color": {
-          "hard": 3,
-          "easy": 1,
-          "medium": 3
-        },
         "targets": {
           "hard": 4,
           "easy": 3,
@@ -1196,7 +1191,12 @@
           "swap_duration_steps": 50,
           "goal_site_z_override": -0.05,
           "recovery": "沿用入口给定的 fail recover 模式与原 generator",
-          "target_slots": 4
+          "target_slots": 4,
+          "color": {
+            "hard": 3,
+            "easy": 1,
+            "medium": 3
+          }
         },
         "positions": {
           "goal": {
@@ -1244,11 +1244,6 @@
       "decision": {
         "demo_object_count": 1,
         "demo_return_policy": "native_random_goal_site",
-        "color": {
-          "hard": 3,
-          "easy": 1,
-          "medium": 3
-        },
         "targets": {
           "hard": 4,
           "easy": 4,
@@ -1315,7 +1310,12 @@
           "swap_duration_steps": 50,
           "goal_site_z_override": -0.05,
           "recovery": "沿用入口给定的 fail recover 模式与原 generator",
-          "target_slots": 4
+          "target_slots": 4,
+          "color": {
+            "hard": 3,
+            "easy": 1,
+            "medium": 3
+          }
         },
         "positions": {
           "goal": {

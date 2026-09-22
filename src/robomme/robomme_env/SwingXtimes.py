@@ -281,11 +281,21 @@ class SwingXtimes(BaseEnv):
             self.green_cubes = []
             self.green_cube_names = []
 
-            cubes_per_color = 1
+            cubes_per_color = self._sampling["parameters"]["cubes_per_color"]
+            _color_lists = {
+                "red": (self.red_cubes, self.red_cube_names),
+                "blue": (self.blue_cubes, self.blue_cube_names),
+                "green": (self.green_cubes, self.green_cube_names),
+            }
+            # 颜色池取自快照（顺序与原字面量一致：红、蓝、绿）
             color_groups = [
-                {"color": (1, 0, 0, 1), "name": "red", "list": self.red_cubes, "name_list": self.red_cube_names},
-                {"color": (0, 0, 1, 1), "name": "blue", "list": self.blue_cubes, "name_list": self.blue_cube_names},
-                {"color": (0, 1, 0, 1), "name": "green", "list": self.green_cubes, "name_list": self.green_cube_names}
+                {
+                    "color": tuple(entry["rgba"]),
+                    "name": entry["name"],
+                    "list": _color_lists[entry["name"]][0],
+                    "name_list": _color_lists[entry["name"]][1],
+                }
+                for entry in self._sampling["parameters"]["color_pool"]
             ]
             shuffle_indices = self._spec.value(
                 "objects.color_order", torch.randperm(len(color_groups), generator=generator).tolist()
@@ -446,32 +456,34 @@ class SwingXtimes(BaseEnv):
                 'segment':self.target_cube,
             })
 
+        # 摆动成功阈值与抬升高度取自快照（原值 distance 0.03 / z 0.12 / height 0.1）
+        _swing_cfg = self._sampling["parameters"]["swing_thresholds"]
         ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"]
         for i in range(self.num_repeats):
             ordinal = ordinals[i] if i < len(ordinals) else f"{i+1}th"
             tasks.append({
-                "func": (lambda: is_obj_swing_onto(self,obj=self.target_cube,target=self.target_right,distance_threshold=0.03,z_threshold=0.12)),
+                "func": (lambda: is_obj_swing_onto(self,obj=self.target_cube,target=self.target_right,distance_threshold=_swing_cfg["distance"],z_threshold=_swing_cfg["z"])),
                 "name": f"move to the top of the right-side target for the {ordinal} time",
                 "subgoal_segment":f"move to the top of the right-side target at <> for the {ordinal} time",
                 "choice_label": "move to the top of the target",
                 "demonstration": False,
                 "failure_func": lambda:  [is_any_obj_pickup(self, self.non_target_cubes),is_button_pressed(self, obj=self.button),too_many_swings(self)],
-                # "solve": lambda env, planner: [solve_swingonto_whenhold(env, planner,target=self.target_right,height=0.1),
+                # "solve": lambda env, planner: [solve_swingonto_whenhold(env, planner,target=self.target_right,height=_swing_cfg["height"]),
                 #                             ],
-                "solve": lambda env, planner: [solve_swingonto_whenhold(env, planner,target=self.target_right,height=0.1),
+                "solve": lambda env, planner: [solve_swingonto_whenhold(env, planner,target=self.target_right,height=_swing_cfg["height"]),
                                                 # solve_swingonto_whenhold(env, planner,target=self.target_right,height=0.15),
-                                                # solve_swingonto_whenhold(env, planner,target=self.target_right,height=0.1),
+                                                # solve_swingonto_whenhold(env, planner,target=self.target_right,height=_swing_cfg["height"]),
                                             ],
                 'segment':self.target_right,
             })
             tasks.append({
-                "func": (lambda: is_obj_swing_onto(self,obj=self.target_cube,target=self.target_left,distance_threshold=0.03,z_threshold=0.12)),
+                "func": (lambda: is_obj_swing_onto(self,obj=self.target_cube,target=self.target_left,distance_threshold=_swing_cfg["distance"],z_threshold=_swing_cfg["z"])),
                 "name": f"move to the top of the left-side target for the {ordinal} time",
                 "subgoal_segment":f"move to the top of the left-side target at <> for the {ordinal} time",
                 "choice_label": "move to the top of the target",
                 "demonstration": False,
                 "failure_func": lambda:  [is_any_obj_pickup(self, self.non_target_cubes),is_button_pressed(self, obj=self.button),too_many_swings(self)],
-                "solve": lambda env, planner: [solve_swingonto_whenhold(env, planner, target=self.target_left,height=0.1),
+                "solve": lambda env, planner: [solve_swingonto_whenhold(env, planner, target=self.target_left,height=_swing_cfg["height"]),
                                             ],
                 'segment':self.target_left,
             })
