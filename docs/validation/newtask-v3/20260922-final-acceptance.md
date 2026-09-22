@@ -39,10 +39,23 @@
 | P7 | `RECOVERY_PARITY=PASS z=48 xy=32 off=64 mode_mismatch=0 event_mismatch=0` | ✅ |
 | C1 | `TRAIN_COVERAGE=PASS expected=144 terminal=144 missing=0` | ✅ |
 | 5b | `SUBSET_BRANCH_COVERAGE=PASS cells=48/48 gaps=0` | ✅ |
+| 6b | `FOUR_ENV_RESYNC_PARITY=PASS compared=108 sha_equal=108 field_mismatch=0` | ✅ |
 | R1a | `DATASET_GEN_REPORT_PARITY=FAIL detail_mismatch=38 outcome_mismatch=0` | ⚠ 见第三节 |
 | R1b | `REFERENCE_AUDIT_COMPLETE=PASS compared=144 contract_errors=0 missing=0`；动作数值 `passed=False` | ⚠ 见第三节 |
 | R1c | `HISTORICAL_ACTION_PARITY=NOT_RUN reason=historical_per_episode_evidence_missing blocking=0` | 📋 |
 | R2 | `HISTORICAL_ARTIFACT_PARITY=NOT_RUN reason=historical_files_missing` | 📋 |
+
+## 二·五、12.23 的欠账已补（判据 6b）
+
+步 5d 开跑之后，12.23 改过四个环境的源码（SwingXtimes／PickHighlight／VideoPlaceButton／
+VideoPlaceOrder），当时承诺「跑完再复验」。已补：用 `git worktree` 拉出改动前的 `a38a614`，
+与当前提交在**同机同卡、严格串行**下各跑一遍这四个环境的 B／C／D × 9 条，
+216 次生成零失败、108 对比较零差异。两个 Video 环境的 C／D 两路是**用各自结构不同的配置文件**
+跑的（`color` 旧在 decision、新在 native），仍逐位相同。
+
+详见 [四环境同步复验](20260922-step6b-four-env-resync.md)。同一份报告里还记了一件事：
+**greatlakes 全分区 GPU 在 09-22 00:17～01:13 之间转为 `Exclusive_Process`，sapien 渲染器
+自此起不来**，在恢复前挡住一切集群上的生成（包括可选的步 7）。
 
 ## 三、三条必须写进结论、不能淡化的边界
 
