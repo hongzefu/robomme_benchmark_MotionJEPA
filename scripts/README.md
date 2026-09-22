@@ -3,8 +3,8 @@
 本文只讲三件事：
 
 1. **生成数据的两阶段**——用到哪些 jsonl，值是怎么注入进环境的（第一节）；
-2. **[NEWTASK_RELEASE_V3_PLAN.md](../NEWTASK_RELEASE_V3_PLAN.md) 固化了哪些指标**——锚点、分母、比较口径、具名判据与已落地实测（第二节）；
-3. **评估执行环境的入口**——在哪里、怎么搭起来的，与上游 [RoboMME/robomme_benchmark](https://github.com/RoboMME/robomme_benchmark) main 的关系（第三节）。
+2. **控制哪些**——十六个环境各自能调什么参数、现值多少、在哪被消费（第二节）；
+3. **eval 怎么传入**——评估侧怎么把身份与配置喂进环境、指标落哪，以及新值数据目前**传不进去**的缺口（第三节）。
 
 > 原 `scripts/INJECTION.md` 已并入本文第一节，文件已删除；历史文档里指向它的链接对应本文第一节。
 > 旧版本 README 里的十五份难度字典表、A/B/C 四路历史对拍五项结论、schema 3 多 GPU 并行校准五轮报告不再收录，
@@ -44,6 +44,10 @@
 ### 1.0 先分清：仓库里有两条注入链路
 
 两条链路共用同一套「外部造值、环境只消费」的思路，但覆盖范围、输入文件和使用的 kwarg 都不同，读代码时不要混。
+
+> **链路甲已决定废弃**（2026-09-22 用户拍板）。后续的新值注入在链路乙上实现，
+> 并沿用甲的 jsonl 封套契约（见 1.2～1.4）；甲的代码与已进 Git 的产物作为历史证据原样保留、不删不改。
+> 方案见 [NEWTASK_RELEASE_V4_PLAN.md](../NEWTASK_RELEASE_V4_PLAN.md)。本节描述的是**当前代码的实际状态**。
 
 | | 链路甲：新值注入 | 链路乙：原始 train 五路对拍 |
 | --- | --- | --- |
@@ -324,137 +328,170 @@ seed 的入口没有变：`seed` 仍是 `gym.make` 的 kwarg，由任务 `__init
 
 ---
 
-## 第二节　NEWTASK_RELEASE_V3_PLAN.md 固化的指标
+## 第二节　控制哪些：十六个环境各自能调什么
 
-[NEWTASK_RELEASE_V3_PLAN.md](../NEWTASK_RELEASE_V3_PLAN.md) 的目标是：**十六个环境都能显式传入 `sampling_config`
-与 `native_episode_spec`，从官方原始 train 的 1600 条实际身份里抽 144 条重放，与官方 `dataset-gen` 分支对拍，
-证明注入前后一个数都没改。** 下面是它定死、不许在实施中改的那些量。
+### 2.0 两块怎么分，以及那道必过的守卫
 
-### 2.1 权威锚点
+每个环境的 `sampling_config` 分两块，由该环境模块顶层的 `native_blocks(cls)` / `_native_decision(cls)` 产出：
 
-| 项 | 值 |
-| --- | --- |
-| 官方仓库／分支 | `https://github.com/RoboMME/robomme_benchmark` 的 `dataset-gen` |
-| **官方核验提交** | `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa` |
-| 官方 metadata 串接 SHA-256 | `a57655d601c7e974c688b2b5c3602e7eb8606e2bd312dcc4ba00a1abb29d73bf`（按 `seed_layout.py` 的 `ALL_TASKS` 顺序、`json.dumps(records, sort_keys=True, separators=(',',':'))`） |
-| 发布集 revision | `a5e4e25ffe8af34f64944f9533d06455ce5f8337`，恢复至 `data/robomme_data_h5/`（16/16 文件大小与散列已核验一致） |
-| 依赖指纹 | 本地 `uv.lock` `ff0ffd84…` / `pyproject.toml` `d03537d6…`；官方 `983de83f…` / `bc2346e4…`；两份锁文件**唯一差异是新增 `pebble==5.2.2`** |
+| 块 | 装什么 | 谁定义 |
+|---|---|---|
+| `decision` | **以后允许改的参数**（数量、次数、区域策略、干扰物…） | `_native_decision(cls)`，多数由类属性 `config_easy/medium/hard` 推导 |
+| `native` | **原随机规则与几何常量**（锚点坐标、间距、抽样器的运算元、拒绝判据…） | 模块级常量 `NATIVE_SAMPLING` 的 `parameters` / `positions` |
 
-依赖指纹只证字节关系：**锁文件指纹相同推不出仿真可复现**，方案里对这一条有专门说明。
+**`utils/sampling_config.py::assert_native_decision` 是第一道闸**：它把传入的 `decision` 与
+`_native_decision(cls)` 的返回值做 `json.dumps(sort_keys=True)` **逐键全等比对**，不等就抛
+`SamplingConfigError`。所以**改参数不是"从外部传个新配置进去"就行**——必须同步改
+`_native_decision()` 的返回结构（或改它依赖的类属性），否则外部传入当场被拒。
 
-### 2.2 固化的分母与配比
+两个环境还有**额外的独立铁闸**：
+- `VideoUnmaskSwap::_resolve_sampling_config` 对 `parameters.object_selection` 与 `parameters.swap_selection`
+  做 `json.dumps` 全等比对 ⇒ 不能从外部改 `pickup_selected_indices`，只能改源码字面量；
+- `RouteStick::_resolve_sampling_config` 要求 `parameters.walk` 除 `direction.threshold` 外完整保留原版。
 
-- 官方全集 **1600 条** = 16 环境 × episode 0～99，每环境 easy／medium／hard 为 **50／25／25**。
-- 验收子集 **16 × 3 × 3 ＝ 144 条**（用户拍板「每个 task 每个难度验证 3 条左右即可」），
-  每环境固定 episode **`[0,1,2,3,4,6,7,10,11]`**，覆盖 **48 个 task × difficulty 格**；
-  五路各跑一次 ⇒ **720 次生成、720 对比较**。全集 1600 条（8000 次生成）改为可选后续。
-- 身份逐条读官方 metadata 的 `(task, episode, seed, difficulty)`：**170 条 seed 不等于 `SeedLayout.base_seed`
-  的公式值**（例：`BinFill/episode_3` 记的是 `seed=4301`，公式算出来是 `4300`），照原记录用，
-  每条只跑该 seed 一次、**失败不换 seed、不补样本**。
-- fail recover 保持原样：`EpisodeJob.recovery_mode` 按每环境 **episode 0～2 为 z、3～5 为 xy**，其余关闭。
-  全集 **96 条**配置恢复（z48／xy48），本次 144 条子集实际 **80 条（z48／xy32／关闭 64）**。
-  不关闭所选身份的恢复，也不把「配置了恢复」等同于「实际触发了恢复」。
-- **覆盖缺口要如实写**：子集不含每环境的 episode 5 ⇒ **16 条 xy 恢复身份未验证**，不能宣称 96 条恢复全覆盖。
+`_resolve_sampling_config` 必须在任何 `torch.Generator()` 与随机调用**之前**执行，它本身不抽随机数。
 
-**五路 A1／A2／B／C／D 各是什么**：
+### 2.1 逐环境可控字段与现值
 
-| 路 | 输入 | 证明什么 |
-| --- | --- | --- |
-| A1、A2 | 固定 `dataset-gen` 源码 + 官方 metadata + 原 fail recover，独立进程跑原 `_worker`，同一批身份独立重跑两次 | `A1↔A2` 证基线自身可重复 |
-| B | 新分支恢复后的默认路径，两个接口都不传 | `A1↔B` 证原始行为已恢复（这一路会抓出 `RouteStick` 白球尾迹现为 10 步、官方 40 步这类差异） |
-| C | B ＋ 显式传原值 `sampling_config`，同时只读导出规格 | `B↔C` 证配置外提不改数 |
-| D | 同一配置 ＋ C 导出的原值规格回注 | `C↔D`、`A1↔D` 证规格回注不改数 |
+难度列按 easy / medium / hard 排（有第四档的单独注明）。**「消费点」列写的是这个值实际在哪被读**——
+有几个键读的位置和你以为的不一样，见 2.2。
 
-红线：**不能给 A 和 D 同时打补丁制造一致**；A 路必须用独立进程加载固定提交的源码跑官方 `_worker`。
+#### Counting 族
 
-### 2.3 固化的比较口径
+| 环境 | 字段 | 块 | 现值 | 消费点 |
+|---|---|---|---|---|
+| **BinFill** | `layout_mode` | decision | `"native_dynamic"` | `_resolve_sampling_config` **硬守卫，非此值直接报错** |
+| | `configs[难度].color` | decision | 1 / 2 / 3 | `_load_scene`（`randperm(3)` 的切片长度） |
+| | `configs[难度].spawn_cubes` | decision | `[4,6]` / `[8,10]` / `[10,12]`（闭） | `_load_scene` |
+| | `configs[难度].put_in_color` | native | `[1,1]` / `[1,2]` / `[2,3]`（闭） | `_load_scene` |
+| | `configs[难度].put_in_numbers` | decision | `[1,3]` / `[2,4]` / `[3,5]`（闭） | `_load_scene` |
+| | `dynamic` | native | `randint(0,2)` 转 bool，**generator 播种后第一次抽样** | `__init__` |
+| | 方块区域 | native | 中心 `[-0.1,0]`、半边长 `[0.2,0.25]`、`min_gap` **调用点写死** `cube_half_size` | `_load_scene` |
+| **PickXtimes** | `color[难度]` | decision | 1 / 3 / 3 | `_load_scene` |
+| | `number_range[难度]` | decision | `[1,3]` / `[1,3]` / `[4,5]`（闭） | **`__init__`**，不是 `_load_scene` |
+| | `target_cube_position_policy` | decision | 中心 `[-0.1,0]`、半边长 `0.2` | `_load_scene` |
+| | `goal_position_policy` | decision | **与上同值同区域** | `_load_scene` |
+| | `distractor` | decision | `None` | **全仓无消费点** |
+| **SwingXtimes** | `color[难度]` | decision | 1 / 3 / 3 | `_load_scene` |
+| | `number_range[难度]` | decision | `[1,3]` / `[1,2]` / `[3,3]`（闭） | `__init__` |
+| | `distractor` | decision | `None` | **无消费点** |
+| | `color_pool` | native | 红/蓝/绿 | `_load_scene` **真被消费**（与 PickXtimes 相反） |
+| | 摆动阈值 | native | `distance 0.03`、`z 0.12`、`height 0.1` | `step` 的迟滞判定 |
+| **StopCube** | `move_interval_choices` | decision | `[60, 80, 120]`，等概率抽；**值越小越快** | `_initialize_episode` |
+| | `stop_time_range` | decision | `low=2, high_exclusive=6` ⇒ 实际 `[2,5]` | `_initialize_episode` |
+| | 目标/按钮/颜色 | native | 目标 xy 各 `uniform(-0.1,0.1)`；方块色 `rand(3)`（**本来就是任意 RGB**） | `_load_scene` |
+| | 路线旋转 | native | `uniform(-30,30)` 度 | `_initialize_episode` |
 
-五路之间：**全字段、逐元素、浮点按位模式、不设容差**。`compare_h5_pair` 的两层算法——
-先算整文件 SHA-256，相同即直接判等不开文件；不同才 `h5py.File(..., "r")` + `visititems` 收全路径集合，
-逐个比 dtype／shape／attribute 与 `np.asarray(ds[()]).tobytes()` 的原始字节（NaN 也按位比，object dtype 先解码为
-bytes），时间步数不同先记 `timestep_count` 差异再只比共有时间步。**不做的事**：不设容差、不跳过任何字段
-（含 `info/*_online` 与 `is_video_demo`）、不因帧数不符跳过 HDF5 比较、不用四舍五入的文本比较。
+> **StopCube 没有难度字典**：类里无 `configs` / `config_*`，`self.difficulty` 被赋值但**全文件无消费点**。
 
-判定行原样是五行：
+#### Permanence 族
 
-```text
-H5_PARITY pair=A1A2 compared=N sha_equal=k field_mismatch=0
-H5_PARITY pair=A1B  compared=N sha_equal=k field_mismatch=0
-H5_PARITY pair=BC   compared=N sha_equal=k field_mismatch=0
-H5_PARITY pair=CD   compared=N sha_equal=k field_mismatch=0
-H5_PARITY pair=A1D  compared=N sha_equal=k field_mismatch=0
-```
+| 环境 | 字段 | 块 | 现值 | 消费点 |
+|---|---|---|---|---|
+| **VideoUnmask** | `bin_layout_policy.count[难度]` | decision | 3 / 5 / 15 | `_load_scene` |
+| | `bin_layout_policy.region_*` | decision | 中心 `[0,0]`、半边长 `0.2` | `_load_scene` |
+| | `pick_count[难度]` | decision | 1 / 1 / 2 | `_load_scene`；但 **`task_goal` 读的是类属性 `configs[...]['pick']`** |
+| | `min_gap_factor` / `max_trials` | native | `2`（⇒ `min_gap=0.04`）/ `256` | `_load_scene` |
+| | `step_bin_scan` | native | **15，容器遍历上限** | `step` |
+| | `reveal_window` | native | `[0, 64]` | `step` |
+| | `distractor` | decision | `None` | **无消费点** |
+| **ButtonUnmask** | 同 VideoUnmask | | 同上 | 另有按钮 `center_xy [-0.2,0]`、`randomize_range [0.1,0.1]`、`scale 1.5` |
+| | 构造期抽样 | native | `randint(1,6)`，**不决定任何行为、只占随机流位置**（红线 R8） | `__init__` |
+| **VideoUnmaskSwap** | `configs[难度].bin` | **native** | 3 / 4 / 4（xhard 4） | `_load_scene` |
+| | `configs[难度].swap_min/max` | **native** | `[1,2]` / `[1,2]` / `[2,3]`（xhard `[4,5]`） | `__init__` |
+| | `configs[难度].pick_min/max` | **native** | `[1,2]` / `[1,1]` / `[2,2]` | `__init__` |
+| | `swap_count_range`、`pick_count_range`、`swap_speed_multiplier`、`distractor` | decision | 有键 | **全是死键，一处消费都没有** |
+| | `object_selection.pickup_selected_indices` | native | `[0,1]` | `_load_scene`；**受额外铁闸保护** |
+| | 容器锚点 | native | 三角/直线/四点，局部半边长 `0.07`、整体旋转 `[0,180]` **弧度** | `_load_scene` |
+| **ButtonUnmaskSwap** | `swap_count_range[难度]` | **decision** | `[1,2]` / `[1,2]` / `[2,3]` | `__init__`（**与 VideoUnmaskSwap 相反**） |
+| | `pick_count_range[难度]` | **decision** | `[1,2]` / `[1,1]` / `[2,2]` | `__init__` |
+| | `bin_count[难度]` | **native** | 3 / 4 / 4 | `_load_scene` |
+| | `swap_window` `{start_step:64, duration_steps:50}` | native | 有键 | **声明了但没被消费**（`_refresh_swap_schedule` 用的是六处字面量） |
+| | `swap_path` `{lane_offset, smooth, keep_upright}` | native | 有键 | **同样未被消费**，`step` 里是内联字面量 |
 
-`field_mismatch` 必须为 0；任何一对出现 `>0` 就停下交用户，**不放宽、不排除字段**。
+#### Reference 族
 
-与之并列但**不互相替代**的是官方历史口径：`compare_joint_actions(max_abs_diff=1e-8)` 只比 `action/joint_action`
-（要求 `(8,)` float64、有限值），比的是 A 路对官方发布集。两套结论分开报。
+| 环境 | 字段 | 块 | 现值 | 消费点 |
+|---|---|---|---|---|
+| **PickHighlight** | `spawn_count[难度]` | decision | 3 / 4 / 6 | `_load_scene` |
+| | `highlight_count[难度]` | decision | 1 / 2 / 3 | `_load_scene` 与 `step` |
+| | `cube_region` | decision | 中心 `[-0.1,0]`、半边长 `0.2` | `_load_scene` |
+| | `min_gap_factor` | native | `2` ⇒ `min_gap=0.04` | `_load_scene` |
+| | `color_pool` / `color_draw` | native | 红/蓝/绿，**逐块独立抽、可重复** | `_load_scene` |
+| | `highlight_window` | native | `{start 10, end 100, simultaneous: True}` | `step`（**所有目标共用同一窗口、同时高亮**） |
+| **VideoRepick** | `configs[难度].cube` | native | 3 / 3 / **hard 无此键** | `_load_scene` |
+| | `configs[难度].swap_min/max` | native | `[1,2]` / `[2,3]` / `[0,0]`（xhard `[4,5]`） | `__init__` |
+| | `num_repeats` | **native** `parameters.num_repeats` | `low=1, high_exclusive=4` ⇒ 1/2/3 | `__init__` |
+| | `num_repeats_range` | decision | 有键 | **死键，改了不生效也不报错** |
+| | `hard_spawn_rounds` | native | `5`（每轮红蓝绿各一 ⇒ 15 块） | `_load_scene` hard 分支 |
+| | easy/medium 锚点 | native | 三角/直线/四点，局部半边长 `0.07` | `_load_scene` |
+| | hard 区域 | native | 中心 `[-0.1,0]`、半边长 `[0.2,0.25]` | `_load_scene` |
+| **VideoPlaceButton** | `targets[难度]` | decision | 3 / 4 / 4 | `_load_scene` |
+| | `swap[难度]` | decision | False / False / True | `_load_scene` |
+| | `additional_place[难度]` | decision | 全 `False` ⇒ **`target_2`/`target_3` 分支永不执行** | `_load_scene` |
+| | `demo_object_count` | decision | `1` | **死键**（审计文件里明文豁免："扩到 2 块时才会出现消费点"） |
+| | `demo_return_policy` | decision | `"native_random_goal_site"` | 演示末尾放**随机** `goal_site`，不是原位 |
+| | `color[难度]` | **native** | 1 / 3 / 3，`cubes_per_color=1` ⇒ **场上方块数 = color 值** | `_load_scene` |
+| **VideoPlaceOrder** | 同上，`targets` 全档 4 | | | `button_task_index = k*2+2`（假设每个 visit 恰两条任务） |
 
-### 2.4 具名判据与完成条件
+#### Imitation 族
 
-| 编号 | 查什么 | 判定行 |
-| --- | --- | --- |
-| G1 | 原身份完整 | `TRAIN_IDENTITY=PASS tasks=16 rows=1600 mismatch=0` ＋ `TRAIN_SUBSET=PASS tasks=16 per_cell=3 rows=144` |
-| P0 | 跨 job／跨节点等价 | `NODE_PARITY=PASS identities=N jobs=<实际 job 数> mismatch=0` |
-| G2 | 配置外提完整 | `SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0` |
-| G3 | 字段归属完整 | `FIELD_OWNERSHIP=PASS tasks=16 unmapped=0 native_rule_overrides=0` |
-| G4 | 规格真正被消费 | `SPEC_BINDING=PASS missing=0 unused=0 mismatch=0` |
-| G5 | 比较器支持稀疏身份 | `COMPARATOR_SCOPE=PASS contiguous_mismatch=0 sparse_mismatch=0 invalid_accepts=0` |
-| P1 | 原版自身可重复 | `BASELINE_REPEAT=PASS compared=N different=0`；不可重复者单列 `BASELINE_NONDETERMINISTIC` |
-| P2 | 原始行为已恢复 | `TRAIN_RESTORE=PASS compared=N mismatch=0` |
-| P3 | 随机流不漂移 | `RNG_PARITY=PASS compared=N calls_mismatch=0 state_mismatch=0` |
-| P4 | 原值注入等价 | `INJECTION_PARITY=PASS compared=N mismatch=0` |
-| P5 | 图像与录像事件 | `VIDEO_PARITY=PASS compared=N frames_mismatch=0 pixels_mismatch=0` |
-| P6 | 连续 worker 不污染 | `WORKER_ISOLATION=PASS tasks=16 mismatch=0 input_mutation=0` |
-| P7 | fail recover 原样 | `RECOVERY_PARITY=PASS compared=144 configured=80 z=48 xy=32 off=64 mode_mismatch=0 event_mismatch=0` |
-| R1a | 历史可比字段对照 | `DATASET_GEN_REPORT_PARITY=PASS compared=144 fields=identity,recovery_mode,success,timestep_count outcome_mismatch=0 detail_mismatch=0`（**不含历史动作数值**） |
-| R1b | 发布集审计完整 | `REFERENCE_AUDIT_COMPLETE=PASS compared=144 contract_errors=0 missing=0`（**不代表发布集动作数值相等**） |
-| R1c | 历史动作数值核对 | `HISTORICAL_ACTION_PARITY=NOT_RUN reason=historical_per_episode_evidence_missing blocking=0` |
-| R2 | 历史成品额外比较 | `HISTORICAL_ARTIFACT_PARITY=NOT_RUN reason=historical_files_missing` |
-| C1 | 失败与子集覆盖 | `TRAIN_COVERAGE=PASS expected=144 terminal=144 missing=0` |
+| 环境 | 字段 | 块 | 现值 | 消费点 |
+|---|---|---|---|---|
+| **MoveCube** | `demo_layout.peg_position_policy` | decision | `base_y_abs 0.2`、`jitter_span 0.1` ⇒ 根点 `x ∈ [-0.05,0.05]`、`y ∈ [±0.15,±0.25]` | `_load_scene` |
+| | `demo_layout.cube_position_policy` | decision | `center_span 0.2`、`center_offset -0.1`、`region_half_size 0.05` | `_load_scene` |
+| | `execution_layout.*` | decision | **与 demo 逐键同值，但各抽一套** | `_load_scene` |
+| | `peg_yaw_range` | decision | `span π/2`、`offset π/4` ⇒ **±45°** | `_load_scene` |
+| | `cube_rejection` | native | `max_trials 128`、`min_distance_factor 5` | `_load_scene` |
+| | `peg_size` | native | `length 0.1`、`radius 0.01`（两次 rand 乘 0，**必须保留**） | `_load_scene` |
+| **InsertPeg** | `peg_count` | decision | `3` | 只在一次 `randint(0, peg_count)` 用过，**结果立刻被 `overridden_to=0` 覆盖** |
+| | `peg_offsets` | decision | `[0.1, 0, -0.1]` | **杆数实际由它的长度决定** |
+| | `near_target_distractor` | decision | `None` | **无消费点**（V3 预留键） |
+| | `peg_yaw_range` | decision | `half_span_deg 45` ⇒ **±45°** | `_initialize_episode` |
+| | `peg_sampling` | native | `x ∈ [-0.2,0.2]`、`y ∈ [-0.3,0.3]`、离孔板 > `radius*6`、杆间 > `length*1.5`、`max_attempts 512` | `_initialize_episode` |
+| | `box` | native | xy 各 `±0.1`、yaw `90°±20°` | `_initialize_episode` |
+| **PatternLock** | `grid[难度]` | decision | 3 / 4 / 5（正方形网格，**无 xhard**） | `_load_scene` |
+| | `length[难度]` | decision | `[2,4]` / `[3,5]` / `[4,8]`，语义是**节点数**不是段数 | `_load_scene` |
+| | `path_selection.max_attempts` | native | `1000`，耗尽**不报错**、用最后一条 | `_load_scene` |
+| | 网格几何 | native | 中心 `[-0.1,0]`、间距 `0.1` | `_load_scene` |
+| **RouteStick** | `configs[难度].length` | decision | `[2,3]` / `[4,5]` / `[4,7]`（xhard `[8,10]`），语义是**段数 L** | `_load_scene` |
+| | `configs[难度].backtrack` | decision | False / False / True | `_load_scene` |
+| | `walk` | native | 节点 `[0,2,4,6,8]`、邻居 `[-1,1]`、端点强制回退 | **除 `direction.threshold` 外受铁闸保护** |
+| | `yaw_deg` | native | `rand*60 - 30` ⇒ ±30° | `_load_scene` |
+| | `tcp_trail.end_offset_steps` | native | **40**（官方原值，已恢复） | `step` |
 
-**完成条件**：G1～G5、P1～P7、R1a、R1b、C1 全部通过，并行资源安排另须满足 P0 或其明确的单路回退条件；
-R1c（历史只有 1600 条全局汇总、无逐局数值摘要）与 R2（历史 HDF5 成品三处探测点实测均不存在）**可保留 `NOT_RUN`，
-不阻塞完成，但不得伪造成 `detail_mismatch=0`**。方案原文写死的一句：
-**「最终结论必须同时写‘144 条子集通过’和‘历史动作数值未验证’，不能外推 1600 条。」**
+> **MoveCube 与 InsertPeg 没有难度分档**：两个类都无 `configs` / `config_*`，`self.difficulty` 算出来之后
+> 全文件无读取点。`env_metadata/train/` 里它们每条 record 都带 `difficulty` 字段，但**环境不读**。
 
-另有一条不许为了拿 PASS 而动的：官方 `dataset-gen` 既有报告本身就是 `status=failed`
-（761885 个向量／6095080 个元素中 **217242 个元素存在非零差异**，10 条时间步集合不符，最大绝对差
-`0.007857919612339614`，阈值 `1e-8`），原样保留，**不改阈值、不关恢复、不换样本**。
-其中只有 `BinFill/11` 与 `PickHighlight/3` 落进 144 条子集，最大差所在的 `BinFill/99` 不在子集里。
+### 2.2 改之前要知道的五个陷阱
 
-### 2.5 已落地的实测结果
+1. **死键**——有键、改了不生效、还不报错：`VideoRepick.decision.num_repeats_range`（真正读的是
+   `native.parameters.num_repeats`）、`VideoPlace*.decision.demo_object_count`、
+   `VideoUnmaskSwap.decision.{swap_count_range, pick_count_range, swap_speed_multiplier}`、
+   六个环境的 `decision.distractor`、`ButtonUnmaskSwap.native.{swap_window, swap_path}`。
+2. **读写方向相反**——`VideoUnmaskSwap` 的 swap/pick 读 **native** 的 `parameters.configs`，
+   `ButtonUnmaskSwap` 恰好读 **decision**；`VideoUnmask` / `ButtonUnmask` 的 pick 在 `_load_scene` 读 decision、
+   在 `task_goal` 读**类属性**。
+3. **同一个值有两处真值**——`PickXtimes` 的颜色池：`_load_scene` 用硬编码字面量，而
+   `NATIVE_SAMPLING.parameters.color_pool` 声明了却从未被读（`SwingXtimes` 则是真读）。
+   `BinFill` 的 `min_gap`：`positions.cubes.min_gap` 只是个说明字符串，运行时读的是调用点写死的字面量。
+4. **抽样区间闭/半开不统一**——写在难度字典里的 `[min,max]` 由 `torch.randint(low, high+1)` 消费、**含两端**；
+   而 `VideoRepick.num_repeats` 与 `StopCube.stop_time_range` 用的是 `high_exclusive`、**不含上界**。
+5. **生成失败多半是静默的**——`spawn_random_cube` / `spawn_random_bin` 放不下就 `RuntimeError`，
+   而环境侧普遍 `except: break` 或 `logger.debug` 且不补抽 ⇒ **实际数量可能少于设定值而没有任何信号**。
+   实测 `VideoUnmask` 的 `bin=15` 只放得下 9~12 个。少数例外是显式抛错：`SwingXtimes` 抛
+   `SceneGenerationError`、`InsertPeg` 的杆位采样耗尽 512 次抛 `RuntimeError`。
 
-以下是已发生的事实，与上面的「计划」分开读：
+### 2.3 不开放的东西
 
-- **144 条 × 五路 = 720 次生成全部成功，720 对逐位比较零差异**——`A1↔A2`／`A1↔B`／`B↔C`／`C↔D`／`A1↔D`
-  各 144 条，整文件 SHA-256 全部相同，**MP4 也在内**。
-- G1 实测：`TRAIN_IDENTITY=PASS tasks=16 rows=1600 mismatch=0`、`TRAIN_SUBSET=PASS tasks=16 per_cell=3 rows=144`；
-  非公式 seed 170 条、串接散列命中 `a57655d6…`、全集 z48／xy48／off1504、子集 z48／xy32／off64 全部对上。
-- G4 的反例实测（证明规格真的被消费，而不是写了没人读）：改坏规格里一个值 ⇒ **6352 处字段差异、帧数 550→558**。
-- P0 实测直接按 `jobs=4` 完成（4 个占位 job 全部 RUNNING，未走 3 job 回退）：
-  `NODE_PARITY=PASS identities=1 jobs=4 mismatch=0`；本机 sm_89 与 A40 sm_86 散列不同已证实，
-  所以五路全部在 greatlakes `spgpu`（A40）上跑，**本机结果不进任何判据**。
-- 分支覆盖：`SUBSET_BRANCH_COVERAGE` **48/48 格**、z48／xy32／off64。
+物体尺寸、材质、碰撞几何、相机、速度、交换时序、失败恢复、成功阈值都属于原实现，没有开放为可配。
+`cube_half_size`（= `0.02`）是个特例：它同时是四任务 `min_gap` 的实际值、容器半边长的收缩量、
+方块可行域的收缩量——不是纯尺寸参数，**被冻结为派生输入记进快照，但不开放为可配**。
 
-两条必须一起记住的负面实测：
+源码里的若干旧问题（`RouteStick` 结尾无条件覆盖难度、创建后从未使用的局部 generator、无调用者的死代码、
+`VideoRepick` 永不命中的 `region4` 分支、与实际不符的注释等）**原样保留、没有顺手修**，只在快照与计划文档里记录。
 
-1. **多 worker 会破坏逐位可复现。** `mplib` 的 RRT 用墙钟时间预算（`planning_time=1`），同一片 36 条身份在
-   4 worker 下 `BASELINE_REPEAT=FAIL(different=3064)`，换单 worker 后 PASS ⇒ **正式验收全部改用单 worker**
-   （方案正文里 `--workers 4`／16 worker 的写法以此实测为准修正）。互补的是 P6：进程复用（同一 PID 甲→乙→甲）
-   本身没问题，`WORKER_ISOLATION=PASS`。
-2. **R1a 有 38 条帧数与历史不符**（四片各 10／9／16／3，`outcome_mismatch=0`）。历史那轮跑在 sm_89，
-   本轮基线在 A40 sm_86，按用户决定**保留判据、逐条登记为硬件差异**，不改判据、不隐藏。
-
-发布集动作数值在原 `1e-8` 阈值下 `passed=False`，与历史那轮自身对发布集的 `failed` 同源同量级，
-按方案要求原样记录，不改写成 PASS。
-
-口径有两代的地方，只认现行这代：`NODE_PARITY`（跨 job、本机不跑仿真）取代早先的 `GPU_PARITY` 双卡分工；
-P0 实际是 `jobs=4`；worker 数以单 worker 结论为准。
-
----
-
-## 第三节　评估执行环境的入口
+## 第三节　eval 怎么传入
 
 ### 3.1 上游 main 怎么说
 
@@ -533,3 +570,37 @@ uv run --no-sync python challenge_interface/scripts/phase1_eval.py \
 数据生成侧的主入口是 [generate_dataset_newseed.py](generate_dataset_newseed.py)（三种模式：生成数据集 /
 `--extract-config` 核对导出原值快照 / `--merge-only` 按需合并），seed 由 [seed_layout.py](seed_layout.py) 的公式
 `offset + env_code × env_block + episode × 100 + attempt` 现算、不读表；这条链路与本节的评估入口互不影响。
+
+### 3.5 新值数据目前传不进去：缺口与 V4 的接法
+
+上面四个入口**只能评官方那套固定身份**。第一节的两条注入链路产出的数据（新值规格、`specs.jsonl`）
+**现在没有任何办法喂进评估侧**——这不是"实现了但没写 jsonl"，是整条路都没接。三条实据：
+
+1. **`BenchmarkEnvBuilder` 不认注入参数。** 在
+   [episode_config_resolver.py](../src/robomme/env_record_wrapper/episode_config_resolver.py) 里 grep
+   `sampling_config` / `episode_spec` / `native_episode_spec` / `candidates` / `jsonl`——**零命中**。
+   它只会从 `env_metadata/{train,test,val}` 读 `(seed, difficulty)` 建环境。生成侧靠
+   `generate_dataset_newseed` 转发这几个 kwarg，**评估侧没有这个转发点**。
+2. **评估侧一个 jsonl 都不写。** 全仓写 jsonl 的文件都在生成/对拍侧（`scripts/injection/`、`scripts/parity/`、
+   `generate_dataset_newseed.py`）。`evaluation.py` 只有 stdout，`phase1_eval.py` 写的是 json 不是 jsonl，
+   而且读的也是官方 test 分片。
+3. **账本里写明是故意留空的。** 注入重构阶段 0~9 的收尾记录原话：
+   「策略侧第三处只定义消费契约，本仓库未新增策略实现。」
+
+留了半截口子：`candidates.jsonl` 里确实按设计切了 test 分片（14 组 × 50 = 700 条 `test/primary`，
+另有 858 条 `test/spare`），行上还带 `role` / `counted` / `delivered` 三个为评估预留的字段。
+但这批 test 候选**唯一的消费者是 [reset_check.py](injection/rollout/reset_check.py)**，
+而它的 docstring 第一行就把边界划死了：只做 `gym.make → reset → 读证据 → close`，
+**不套录像器、不建 planner、不 step**。它证明的是"这些规格能产生环境"，跟"策略在这些局上成功率多少"
+是两回事。
+
+**[NEWTASK_RELEASE_V4_PLAN.md](../NEWTASK_RELEASE_V4_PLAN.md) 第四节规划的接法**（尚未实施）：
+
+| 要补的 | 怎么接 |
+|---|---|
+| 环境构建侧 | `BenchmarkEnvBuilder` 增加一条**并列**的构建路径：给定一份 `specs.jsonl` 与一条身份，取出该局规格与 header 里的 `sampling_config`，连同 `seed` / `difficulty` 一起进 `gym.make`。**现有 metadata 路径的行为逐字不变**，新路径由显式参数开启；`runtime` 四项 env kwargs 必须与快照 header 逐字相等，不等直接拒绝起环境 |
+| 评估入口 | 另起入口按 `specs.jsonl` 的分片逐局跑策略，边跑边写 `eval_results.jsonl`。**不改 `scripts/evaluation.py`**——它与上游逐字节相同这个性质要保住（见 3.4） |
+| 结果表 | `eval_results.jsonl` 每行的字段与生成侧 `results.jsonl` 对齐，能按 `(task, difficulty, episode, seed, spec_sha256)` 直接 join：身份 / `status`（取自 `info["status"]`）/ `steps` / `demo_steps` / 策略指纹 / `runtime_ok` / `spec_binding` / 产物路径。汇总另落 `eval_summary.json`，字段名与 `challenge_interface` 的 `metrics.json` 对齐 |
+
+⚠ 新入口要放进一个新建的子目录，而 [AGENTS.md](../AGENTS.md) 强制规则第 12 条要求新建子目录**先与用户沟通获准**，
+该项在 V4 计划的开放项 E1 里待批。
