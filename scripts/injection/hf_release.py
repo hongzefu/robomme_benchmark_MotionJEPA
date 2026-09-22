@@ -37,9 +37,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
-# 本文件位于 scripts/ 下，向上一级就是仓库根；与 campaign.py 同样把根与 src 插进 sys.path，
-# 这样既能 `python scripts/hf_release.py` 直跑，也能 `from scripts.hf_release import ...`。
-REPO_ROOT = Path(__file__).resolve().parents[1]
+# 本文件位于 scripts/injection/ 下，向上两级就是仓库根；把根与 src 插进 sys.path，
+# 这样既能 `python scripts/injection/hf_release.py` 直跑，
+# 也能 `from scripts.injection.hf_release import ...`。
+REPO_ROOT = Path(__file__).resolve().parents[2]
 for _extra in (REPO_ROOT, REPO_ROOT / "src"):
     if str(_extra) not in sys.path:
         sys.path.insert(0, str(_extra))

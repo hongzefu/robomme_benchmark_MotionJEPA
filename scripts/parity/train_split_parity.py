@@ -29,15 +29,18 @@ import sys
 import time
 from pathlib import Path
 
-from seed_layout import (
+REPO_ROOT = Path(__file__).resolve().parents[2]
+# 本文件在 scripts/parity/ 下，而 seed_layout 留在 scripts/ 顶层，须先接上再导入。
+if str(REPO_ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+
+from seed_layout import (  # noqa: E402
     ALL_TASKS,
     DIFFICULTY_ORDER,
     MAX_EPISODES,
     DatasetContractError,
     get_layout,
 )
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # 官方 dataset-gen 分支的本轮核验提交（方案第四节固定的对拍基线）。
 DEFAULT_SOURCE_REF = "d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa"
@@ -893,7 +896,7 @@ def run_path(
 
     command = [
         sys.executable,
-        str(REPO_ROOT / "scripts" / "train_split_runner.py"),
+        str(REPO_ROOT / "scripts" / "parity" / "train_split_runner.py"),
         "--official-root", str(official_root),
         *(["--src-root", str(REPO_ROOT)] if path_name in ("B", "C", "D") else []),
         *(["--sampling-config", sampling_config] if path_name in ("C", "D") and sampling_config else []),

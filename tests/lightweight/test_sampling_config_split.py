@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from tests._shared.repo_paths import find_repo_root  # noqa: E402
 
 REPO_ROOT = find_repo_root(__file__)
-for extra in (REPO_ROOT / "src", REPO_ROOT / "scripts"):
+for extra in (REPO_ROOT / "src", REPO_ROOT / "scripts", REPO_ROOT / "scripts" / "parity"):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
@@ -75,9 +75,9 @@ def test_changed_decision_is_rejected_in_native_mode(task: str) -> None:
 
 def test_snapshot_matches_source() -> None:
     if not SNAPSHOT.exists():
-        pytest.skip("快照缺失；先运行 train_split_config.py extract")
+        pytest.skip("快照缺失；先运行 scripts/parity/train_split_config.py extract")
     result = subprocess.run(
-        [sys.executable, str(REPO_ROOT / "scripts" / "train_split_config.py"), "extract", "--verify"],
+        [sys.executable, str(REPO_ROOT / "scripts" / "parity" / "train_split_config.py"), "extract", "--verify"],
         capture_output=True,
         text=True,
         cwd=REPO_ROOT,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""用实测结果标定容差表（`scripts/test-vs-original/tolerance.json`）。
+"""用实测结果标定容差表（`scripts/parity/tolerance.json`）。
 
 输入是一份或多份 ``compare_vs_original.py`` 产出的 ``episodes.jsonl``（**全部是"产物 vs 原版发布集"**，
 不接受产物互比的结果），按档位汇总：

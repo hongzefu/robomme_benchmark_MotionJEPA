@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""生成产物 vs 官方原始发布集的容差比较（`scripts/test-vs-original/`）。
+"""生成产物 vs 官方原始发布集的容差比较（`scripts/parity/`）。
 
 背景：官方发布集本身是多 worker 生成的，逐位复现不可能；官方比较器只比 ``joint_action``、
 零容差、帧数不等整局丢弃。本脚本在官方合同审计之上加一层**分档容差**判定：
@@ -40,8 +40,10 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[1]
 SCRIPTS_DIR = REPO_ROOT / "scripts"
-if str(SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_DIR))
+# HERE 是 scripts/parity/：同目录的 train_split_comparison 在被 import 时也要能找到。
+for _entry in (SCRIPTS_DIR, HERE):
+    if str(_entry) not in sys.path:
+        sys.path.insert(0, str(_entry))
 
 DEFAULT_REFERENCE = Path("/data/hongzefu/robomme_data_h5")
 DEFAULT_TOLERANCE = HERE / "tolerance.json"

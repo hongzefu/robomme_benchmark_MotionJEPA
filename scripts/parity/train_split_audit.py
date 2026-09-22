@@ -10,9 +10,9 @@
   native 项不得出现在 decision 里。
 * ``coverage``（C1 `TRAIN_COVERAGE`）：运行目录里 144 条身份是否都有终态，按状态分类计数。
 
-    uv run --no-sync python scripts/train_split_audit.py config-map
-    uv run --no-sync python scripts/train_split_audit.py field-ownership
-    uv run --no-sync python scripts/train_split_audit.py coverage --run <运行目录> [--run ...]
+    uv run --no-sync python scripts/parity/train_split_audit.py config-map
+    uv run --no-sync python scripts/parity/train_split_audit.py field-ownership
+    uv run --no-sync python scripts/parity/train_split_audit.py coverage --run <运行目录> [--run ...]
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ from pathlib import Path
 
 def _find_repo_root() -> Path:
     """脚本可能被放到仓库外执行（例如集群上的临时目录），所以按标志文件定位仓库。"""
-    here = Path(__file__).resolve().parents[1]
+    here = Path(__file__).resolve().parents[2]
     for candidate in (here, Path.cwd(), *Path.cwd().parents):
         if (candidate / "scripts" / "seed_layout.py").exists():
             return candidate

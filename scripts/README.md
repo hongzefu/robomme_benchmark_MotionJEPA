@@ -13,6 +13,32 @@
 
 ---
 
+## 〇、scripts/ 的布局
+
+**顶层只放五个入口，别的一律收进子目录。**（2026-09-22 用户定：「只保留这五个入口，以后新增要和用户沟通」，
+已写进 [AGENTS.md](../AGENTS.md) 强制规则第 12 条。）
+
+| 顶层入口 | 干什么 |
+| --- | --- |
+| [generate_dataset_newseed.py](generate_dataset_newseed.py) | **主入口**，三种模式：生成数据集 / `--extract-config` 核对导出原值快照 / `--merge-only` 按需合并 |
+| [seed_layout.py](seed_layout.py) | seed 公式 `offset + env_code × env_block + episode × 100 + attempt`、难度循环、16 任务规范序。纯标准库，被主入口导入 |
+| [dataset_replay.py](dataset_replay.py) | 回放已生成的数据集（与上游 main 逐字节相同） |
+| [evaluation.py](evaluation.py) | 评估示例（与上游 main 逐字节相同） |
+| [run_example.py](run_example.py) | 单环境运行示例（与上游 main 逐字节相同） |
+
+| 子目录 | 装什么 |
+| --- | --- |
+| [injection/](injection/) | 新值注入链路：`candidates/`（阶段一，造候选）、`rollout/`（阶段二，实跑）、`hf_release.py`（HF 发布）。见第一节 |
+| [parity/](parity/README.md) | 对拍链路：`train_split_*.py` 六件（原始 train 五路逐位对拍）＋ `compare_vs_original.py` / `calibrate.py` / `tolerance.json`（vs 原版发布集的容差校验）＋ `comparator_fixtures.py`。见第一节 1.5 |
+| [configs/](configs/) | 冻结的配置与快照：`newtask-v2/`（注入契约、原值快照、交付配置）、`newtask-v3/`（官方身份 manifest、原值快照、历史报告留档） |
+
+> 2026-09-22 的一次整理把六个 `train_split_*.py` 与 `comparator_fixtures.py` 从顶层移进 `parity/`
+> （该目录由 `test-vs-original/` 改名而来），把 `hf_release.py` 移进 `injection/`；文件名一律未改。
+> `parity/` 下的脚本既可按路径直跑，也可 `python -m scripts.parity.<模块>`；
+> `seed_layout` 仍在顶层，各入口自行把 `scripts/` 接上 `sys.path`。
+
+---
+
 ## 第一节　生成数据的两阶段：用什么 jsonl、怎么注入
 
 ### 1.0 先分清：仓库里有两条注入链路
@@ -21,7 +47,7 @@
 
 | | 链路甲：新值注入 | 链路乙：原始 train 五路对拍 |
 | --- | --- | --- |
-| 入口 | `scripts.injection.candidates` + `scripts.injection.rollout` | `scripts/train_split_parity.py` |
+| 入口 | `scripts.injection.candidates` + `scripts.injection.rollout` | `scripts/parity/train_split_parity.py` |
 | 覆盖环境 | 4 个（`BinFill`／`RouteStick`／`VideoUnmaskSwap`／`VideoRepick`，即 `candidates/io.py` 的 `_ENV_CODES`） | 16 个全部 |
 | 用哪个 kwarg | `sampling_config` + `episode_spec` | `sampling_config` + `native_episode_spec` |
 | 身份来源 | 自己按 `seed_for()` 公式造 | 官方 metadata 逐条读，**不重算 seed** |
@@ -208,13 +234,13 @@ artifacts/injection/<run-id>/
 
 两处如实标注的边界：
 
-- `scripts/hf_release.py` 本轮冻结，仍读迁移前的 `delivery_manifest.json` + `feasibility/*/episode_results.jsonl`；
+- `scripts/injection/hf_release.py` 本轮冻结，仍读迁移前的 `delivery_manifest.json` + `feasibility/*/episode_results.jsonl`；
   「改为读 `results.jsonl` 的 `role`」是**未做事项**，代码里不存在。
 - `--skip-done` 在 rollout 的执行路径里**没有任何读取点**（终态始终复用），是纯声明式开关。
 
 ### 1.5 链路乙：原始 train 五路对拍的两阶段
 
-入口是 `scripts/train_split_parity.py`，子命令按方案步骤排：
+入口是 `scripts/parity/train_split_parity.py`，子命令按方案步骤排：
 
 | 子命令 | 干什么 | 产物 |
 | --- | --- | --- |
@@ -236,10 +262,11 @@ jsonl 只出现在比较结果 `compare/h5_pairs.jsonl`——每行一对文件�
   这就是 G4 `SPEC_BINDING=PASS missing=0 unused=0 mismatch=0` 的证据文件。
 
 身份的红线：严格取官方 `(task, episode, seed, difficulty)`，**不用 `SeedLayout.base_seed` 公式替换实际 seed**，
-不重编号 episode，失败不换 seed、不补样本。配套工具还有 `train_split_runner.py`（A 路隔离运行器，用官方固定源码
-跑官方 `_worker`，不打补丁）、`train_split_worker.py`（C／D 路 worker，官方 `_worker` 的最小镜像，只多传两个显式输入）、
-`train_split_config.py`（从每个环境的 `native_blocks(cls)` 提取原值快照，不创建环境、不抽随机数）、
-`train_split_comparison.py`（官方比较器的稀疏范围适配）、`train_split_audit.py`（G2／G3／C1 的离线核对）。
+不重编号 episode，失败不换 seed、不补样本。同目录的配套工具还有 `train_split_runner.py`（A 路隔离运行器，
+用官方固定源码跑官方 `_worker`，不打补丁）、`train_split_worker.py`（C／D 路 worker，官方 `_worker` 的最小镜像，
+只多传两个显式输入）、`train_split_config.py`（从每个环境的 `native_blocks(cls)` 提取原值快照，不创建环境、
+不抽随机数）、`train_split_comparison.py`（官方比较器的稀疏范围适配）、`train_split_audit.py`（G2／G3／C1 的
+离线核对）、`comparator_fixtures.py`（G5 夹具）。
 
 ### 1.6 `episode_spec` 是怎么定死值的：三种手法
 

@@ -3,6 +3,12 @@
 本目录是 [NEWTASK_RELEASE_V3_PLAN.md](../../../NEWTASK_RELEASE_V3_PLAN.md) 的执行记录。
 本文只讲**怎么复现**，结论看各步报告。
 
+> **路径迁移（2026-09-22）**：六个 `train_split_*.py` 与 `comparator_fixtures.py` 已从 `scripts/` 顶层
+> 移进 [`scripts/parity/`](../../../scripts/parity/README.md)（该目录由 `scripts/test-vs-original/` 改名而来），
+> `hf_release.py` 移进 `scripts/injection/`。**本文的命令已更新为新路径**；
+> 下面各步报告（`20260921-*.md`、`20260922-*.md`）是当时的留档，其中的旧路径与链接按原样保留、不回改，
+> 读的时候按 `scripts/<文件>.py` → `scripts/parity/<文件>.py`、`scripts/test-vs-original/` → `scripts/parity/` 换算。
+
 ## 零、两条硬性前提
 
 1. **正式验收必须单 worker**（`--workers 1`）。`mplib` 的 RRT 用墙钟时间预算，多 worker 争抢会
@@ -14,8 +20,8 @@
 ## 一、冻结身份与历史证据（步 0／1a，只读，秒级）
 
 ```bash
-uv run --no-sync python scripts/train_split_parity.py freeze-identities --output artifacts/train-parity/v3-native
-uv run --no-sync python scripts/train_split_parity.py freeze-history    --output artifacts/train-parity/v3-native
+uv run --no-sync python scripts/parity/train_split_parity.py freeze-identities --output artifacts/train-parity/v3-native
+uv run --no-sync python scripts/parity/train_split_parity.py freeze-history    --output artifacts/train-parity/v3-native
 ```
 
 产出 `scripts/configs/newtask-v3/` 下的 1600 条全量与 144 条子集 manifest、官方十六份 metadata 原文
@@ -24,11 +30,11 @@ uv run --no-sync python scripts/train_split_parity.py freeze-history    --output
 ## 二、离线核对器（G2／G3／G5／C1／5b，纯 CPU）
 
 ```bash
-uv run --no-sync python scripts/train_split_audit.py config-map        # G2 SAMPLING_ORIGINAL
-uv run --no-sync python scripts/train_split_audit.py field-ownership   # G3 FIELD_OWNERSHIP
-uv run --no-sync python scripts/train_split_comparison.py check --official-root <官方源码目录>  # G5
-uv run --no-sync python scripts/train_split_audit.py coverage        --run <运行目录>... --paths A1,A2,B,C,D  # C1
-uv run --no-sync python scripts/train_split_audit.py branch-coverage --run <运行目录>...          # 5b 分支覆盖
+uv run --no-sync python scripts/parity/train_split_audit.py config-map        # G2 SAMPLING_ORIGINAL
+uv run --no-sync python scripts/parity/train_split_audit.py field-ownership   # G3 FIELD_OWNERSHIP
+uv run --no-sync python scripts/parity/train_split_comparison.py check --official-root <官方源码目录>  # G5
+uv run --no-sync python scripts/parity/train_split_audit.py coverage        --run <运行目录>... --paths A1,A2,B,C,D  # C1
+uv run --no-sync python scripts/parity/train_split_audit.py branch-coverage --run <运行目录>...          # 5b 分支覆盖
 ```
 
 ## 三、生成与对拍（步 1b～5d）
@@ -38,7 +44,7 @@ uv run --no-sync python scripts/train_split_audit.py branch-coverage --run <运�
 
 ```bash
 # 单条冒烟
-uv run --no-sync python scripts/train_split_parity.py run \
+uv run --no-sync python scripts/parity/train_split_parity.py run \
   --env BinFill --episode 0 --paths A1,A2,B,C,D --workers 1 --gpus 0 \
   --sampling-config scripts/configs/newtask-v3/native_sampling.json \
   --output artifacts/train-parity/<运行名>
@@ -56,7 +62,7 @@ uv run --no-sync python scripts/train_split_parity.py run \
 比较与闸门（`--gate` 可重复）：
 
 ```bash
-uv run --no-sync python scripts/train_split_parity.py compare \
+uv run --no-sync python scripts/parity/train_split_parity.py compare \
   --run <运行目录> --pair A1:A2 --pair A1:B --pair B:C --pair C:D --pair A1:D \
   --gate BASELINE_REPEAT --gate SPEC_BINDING --gate VIDEO_PARITY \
   --gate RECOVERY_PARITY --gate RNG_PARITY \
@@ -70,11 +76,11 @@ uv run --no-sync python scripts/train_split_parity.py compare \
 
 ```bash
 # 1) 合并成官方比较器吃的格式（调官方 _merge，元数据按 144 条投影）
-uv run --no-sync python scripts/train_split_parity.py merge \
+uv run --no-sync python scripts/parity/train_split_parity.py merge \
   --run <分片目录>... --path A1 --official-root <官方源码目录> --output <合并目录>
 
 # 2) 跑官方合同校验与 joint_action 逐元素比较
-uv run --no-sync python scripts/train_split_comparison.py audit \
+uv run --no-sync python scripts/parity/train_split_comparison.py audit \
   --official-root <官方源码目录> --generated <合并目录> \
   --reference /data/hongzefu/robomme_data_h5 \
   --manifest scripts/configs/newtask-v3/subset_manifest.json \

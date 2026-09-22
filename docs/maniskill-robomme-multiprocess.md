@@ -1,7 +1,7 @@
 # ManiSkill / robomme 多进程与多 worker 生成：实测经验（本仓库）
 
 只收本仓库 2026-09-21～22 亲自跑出来、有判定行或原始数字为证的结论。与集群操作相关的条目在
-[`greatlakes.md`](greatlakes.md)，容差校验方法与命令在 [`../scripts/test-vs-original/README.md`](../scripts/test-vs-original/README.md)。
+[`greatlakes.md`](greatlakes.md)，容差校验方法与命令在 [`../scripts/parity/README.md`](../scripts/parity/README.md)。
 
 ## 一、不可复现的根源只有一个：`mplib` 的 RRT 用墙钟预算
 
@@ -53,7 +53,7 @@
 - 4 worker（4 CPU 的 job）：36 局 273～685 s，约为单 worker 的 2.1～2.2 倍吞吐。
 - 4 worker 下用 `--gpus 0`、`CUDA_VISIBLE_DEVICES=0`；官方与本仓库 runner 都不做多卡分配。
 
-## 六、容差校验的结论（详见 `scripts/test-vs-original/`）
+## 六、容差校验的结论（详见 `scripts/parity/`）
 
 - 按硬件分三档：`a6000`（aspen，逐位为主）/ `ada`（sled-vail，1e-6）/ `a40`（松，手臂 p99 0.04、帧差 4、REPLAN 率 ≤ 0.2188）。判定行必须标档位，`--tier auto` 用 `nvidia-smi` 选。
 - 每局 IDENTICAL / DRIFT / REPLAN / FAIL；FAIL 只来自合同层与布局层（ts0 目标中心 + ts0 深度/rgb 图像）；规划层差异一律 REPLAN。

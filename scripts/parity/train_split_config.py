@@ -5,9 +5,9 @@
 汇成一份 `{"tasks": {<env>: {"decision": ..., "native": ...}}}`，供 C／D 路显式传入。
 提取过程**不创建环境、不抽随机数**，只读类属性与模块级常量。
 
-    uv run --no-sync python scripts/train_split_config.py extract \
+    uv run --no-sync python scripts/parity/train_split_config.py extract \
         --output scripts/configs/newtask-v3/native_sampling.json
-    uv run --no-sync python scripts/train_split_config.py extract --verify
+    uv run --no-sync python scripts/parity/train_split_config.py extract --verify
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ import json
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 

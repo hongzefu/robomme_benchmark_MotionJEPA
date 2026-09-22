@@ -103,6 +103,12 @@
     - **默认冻结项**：录像器 `src/robomme/env_record_wrapper/RecordWrapper.py`（`RobommeRecordWrapper` 的视频合成、`NO RECORD` 阶段跳过、不补 reset 帧、命名与落盘位置）当前明确冻结，不改、不覆盖；需要视频状态时在生成入口 `scripts/` 侧做只读核验。验证命令 `git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py`。
     - 测试代码在 `tests/` 里对 `src/robomme` 做的临时 mock／patch 仅限测试进程内且不落盘时不受本条约束；但生产入口（`scripts/`）与对拍观察器对 `src/robomme` 的运行时补丁属于「覆盖」，同样逐个批准。
 
+12. **`scripts/` 顶层只允许存在五个入口文件，新增任何顶层文件必须先与用户沟通并获准。**（2026-09-22 用户原话「只保留这五个入口 以后新增要和用户沟通」。）
+    - **五个入口**：`generate_dataset_newseed.py`（主入口：生成 / `--extract-config` / `--merge-only`）、`seed_layout.py`（seed 公式与 16 任务规范序）、`dataset_replay.py`、`evaluation.py`、`run_example.py`。后三者与上游 main 逐字节相同，不得改动。
+    - **其余一律收进子目录**：新值注入链路进 `scripts/injection/`（含 `hf_release.py`）；对拍链路进 `scripts/parity/`（`train_split_*.py` 六件、`comparator_fixtures.py`、`compare_vs_original.py`、`calibrate.py` 等）；冻结配置进 `scripts/configs/`。
+    - **本条约束的是"新增顶层文件"这个动作**，不是禁止写新脚本：新脚本默认落到已有子目录；确实不属于任何现有子目录时，先向用户说明用途与建议位置，获准后再建新子目录。临时脚本一律写到 scratchpad 或 `artifacts/`，不得落在 `scripts/` 顶层。
+    - 核查方式：`ls -1 scripts/*.py` 应恰好列出上述五个文件。
+
 ## 仓库目标
 
 本仓库专门用于寻找、恢复并验证 RoboMME dataset 的生成脚本。最终目标不是只找到一个历史文件，而是完成以下闭环：

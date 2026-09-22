@@ -1,4 +1,4 @@
-"""``scripts/hf_release.py``（HF dataset 发布链路）的定向测试。
+"""``scripts/injection/hf_release.py``（HF dataset 发布链路）的定向测试。
 
 全部**脱网、秒级**：真实交付清单只读 JSON（不碰 844 GiB 的 h5），端到端打包只在
 ``tmp_path`` 里拿 2 KB 假 h5 走一遍 ``tar | xz`` 全流程。
@@ -27,7 +27,7 @@ for _extra in (REPO_ROOT, REPO_ROOT / "src"):
     if str(_extra) not in sys.path:
         sys.path.insert(0, str(_extra))
 
-from scripts.hf_release import (  # noqa: E402
+from scripts.injection.hf_release import (  # noqa: E402
     DEFAULT_REPO_ID,
     DEFAULT_RUN_ID,
     EXPECTED_PRIMARY,

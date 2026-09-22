@@ -1,9 +1,24 @@
-# 生成产物 vs 官方原始发布集：容差校验（test-vs-original）
+# scripts/parity/：对拍链路
 
-一句话：**官方发布集本身是 20 worker 生成的，逐位复现不可能；本目录给出"按硬件分三档"的容差判据，
+本目录装两族脚本，都围绕「和原版比」：
+
+| 族 | 文件 | 干什么 |
+|---|---|---|
+| 原始 train 五路逐位对拍 | `train_split_parity.py`（主入口，`freeze-identities` / `freeze-history` / `run` / `merge` / `compare`）、`train_split_runner.py`（A 路隔离运行器）、`train_split_worker.py`（C／D 路 worker）、`train_split_config.py`（原值快照提取）、`train_split_comparison.py`（官方比较器的稀疏范围适配）、`train_split_audit.py`（G2／G3／C1 离线核对）、`comparator_fixtures.py`（G5 夹具） | 五路之间**全字段零容差**逐位对拍，证明拆接口与原值回注不改数。判据与口径见 [../README.md](../README.md) 第二节 |
+| vs 原版发布集的容差校验 | `compare_vs_original.py`、`calibrate.py`、`tolerance.json`、`manifest_16x3.json`、`identities_16x3.txt`、`results/`、`gl/` | 按硬件分三档的**容差**判据，见下文 |
+
+> 2026-09-22 起本目录由 `scripts/test-vs-original/` 改名而来，并从 `scripts/` 顶层收编了六个
+> `train_split_*.py` 与 `comparator_fixtures.py`；顶层只保留五个入口（见 [../README.md](../README.md)）。
+> 目录内文件名未改，`results/` 下的历史日志与 summary 保留旧路径原文，不回改。
+
+---
+
+## 〇、容差校验一句话
+
+**官方发布集本身是 20 worker 生成的，逐位复现不可能；本节给出"按硬件分三档"的容差判据，
 让以后多 worker 生成的数据集能对原版做"在差距内"的校验，同时仍能抓住真正的改动（布局、seed、指令）。**
 
-生成仍走现有 `scripts/train_split_parity.py run` 流水线（不改）；本目录只放比较与标定脚本。
+生成仍走同目录的 `train_split_parity.py run` 流水线（不改）；容差侧只做比较与标定。
 全部实测一律"产物 vs 原版发布集"，不做产物之间的互比。
 
 ```text
@@ -118,9 +133,9 @@ sled-vail（本机，紧档）：
 
 ```bash
 cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask
-SEQ=$(cat scripts/test-vs-original/identities_16x3.txt)
+SEQ=$(cat scripts/parity/identities_16x3.txt)
 OUT=artifacts/train-parity/tvo-vail-16x3; mkdir -p $OUT
-tmux new-session -d -s tvo-vail "set -o pipefail; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 .venv/bin/python scripts/train_split_parity.py run --sequence '$SEQ' --paths B --workers 1 --gpus 0 --official-root artifacts/train-parity/local-smoke-01/official-src --output $OUT 2>&1 | tee $OUT/run.log; echo \"EXIT_CODE=\$?\" >> $OUT/run.log"
+tmux new-session -d -s tvo-vail "set -o pipefail; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 .venv/bin/python scripts/parity/train_split_parity.py run --sequence '$SEQ' --paths B --workers 1 --gpus 0 --official-root artifacts/train-parity/local-smoke-01/official-src --output $OUT 2>&1 | tee $OUT/run.log; echo \"EXIT_CODE=\$?\" >> $OUT/run.log"
 ```
 
 aspen（`ssh -i ~/.ssh/id_ed25519_umich hongzefu@sled-aspen.eecs.umich.edu`，直接用 NFS 克隆的 `.venv`）：
@@ -128,7 +143,7 @@ aspen（`ssh -i ~/.ssh/id_ed25519_umich hongzefu@sled-aspen.eecs.umich.edu`，�
 ```bash
 GL=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl
 OUT=$GL/artifacts/train-parity/aspen-tvo-16x3; mkdir -p $OUT
-tmux new-session -d -s tvo-aspen "set -o pipefail; cd $GL; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 .venv/bin/python scripts/train_split_parity.py run --sequence '$SEQ' --paths B --workers 1 --gpus 0 --official-root $GL/artifacts/train-parity/gl-5d/shard1/official-src --output $OUT 2>&1 | tee $OUT/run.log; echo \"EXIT_CODE=\$?\" >> $OUT/run.log"
+tmux new-session -d -s tvo-aspen "set -o pipefail; cd $GL; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 .venv/bin/python scripts/parity/train_split_parity.py run --sequence '$SEQ' --paths B --workers 1 --gpus 0 --official-root $GL/artifacts/train-parity/gl-5d/shard1/official-src --output $OUT 2>&1 | tee $OUT/run.log; echo \"EXIT_CODE=\$?\" >> $OUT/run.log"
 ```
 
 greatlakes（四个 spgpu 占位 job，**必须带 `--gpu_cmode=shared`**；每 job 先跑自己那 12 局单 worker，再跑自己那片 144 局 4 worker）：
@@ -144,8 +159,8 @@ tmux new-session -d -s tvo-$K "srun --jobid=<占位job> --overlap --exact --ntas
 ### 3.3 合并成官方布局
 
 ```bash
-.venv/bin/python scripts/train_split_parity.py merge --run <run或分片…可重复> --path B \
-  --manifest scripts/test-vs-original/manifest_16x3.json \
+.venv/bin/python scripts/parity/train_split_parity.py merge --run <run或分片…可重复> --path B \
+  --manifest scripts/parity/manifest_16x3.json \
   --official-root artifacts/train-parity/local-smoke-01/official-src --output <merged>
 ```
 
@@ -154,17 +169,17 @@ tmux new-session -d -s tvo-$K "srun --jobid=<占位job> --overlap --exact --ntas
 ### 3.4 比较
 
 ```bash
-.venv/bin/python scripts/test-vs-original/compare_vs_original.py \
+.venv/bin/python scripts/parity/compare_vs_original.py \
   --generated <merged> --reference /data/hongzefu/robomme_data_h5 \
   --tier auto --official-root artifacts/train-parity/local-smoke-01/official-src \
-  --label "<机器 规模 worker数>" --output scripts/test-vs-original/results/<名字> [--verbose]
+  --label "<机器 规模 worker数>" --output scripts/parity/results/<名字> [--verbose]
 ```
 
 ### 3.5 标定
 
 ```bash
-.venv/bin/python scripts/test-vs-original/calibrate.py --tier a40 \
-  --results scripts/test-vs-original/results/gl-16x3-48-w1 scripts/test-vs-original/results/gl-w4-144 ... \
+.venv/bin/python scripts/parity/calibrate.py --tier a40 \
+  --results scripts/parity/results/gl-16x3-48-w1 scripts/parity/results/gl-w4-144 ... \
   --note "<用了哪些产物>" --write
 ```
 
