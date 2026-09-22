@@ -145,7 +145,7 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | B2 ✅ | **distractor 数量与颜色池** | 六个环境都要加 | **已答复：「全局增加 3 个颜色」** ⇒ 六个环境**共用同一组 3 种新颜色**，每色 1 个共 3 个 distractor。具体 RGB 取黄 `(1,1,0,1)` / 青 `(0,1,1,1)` / 品红 `(1,0,1,1)`（与红蓝绿区分度最大），定为全局常量 |
 | B3 ✅ | **distractor 放哪** | 四个 Unmask 可放容器内或桌面 | **已答复：做成额外容器，放在目前生成区间之外、但相机能看到的位置；部分容器内有 cube；一律不参与 swap。** ⇒ 采纳"额外容器"而非我建议的桌面散块，因此**必须改 partner 搜索**把干扰容器排除，见 2.2 的落实说明 |
 | B4 ✅ | **swap 速度 ×1.5 的取整** | `50/1.5 = 33.33` | **已答复：由实施方决定。** ⇒ 定 `SWAP_WINDOW_STEPS = round(50 / 1.5) = 33`，窗口变为 `[64 + 33k, 64 + 33(k+1))`。把 50 提成类级具名常量再乘倍率并取整，**不在分散字面量上手改**（ButtonUnmaskSwap 有六处）。下游同步见 2.2 |
-| B5 ✅⚠ | **PickHighlight 的 spawn 总数** | highlight [5,7] ⇒ spawn ≥ 7 | **已答复：选 10~12。** ⚠ **与 B1「不动」冲突**：PickHighlight 现 `min_gap_factor=2`（`min_gap=0.04`）实测只稳放 **8~10 块**，**放不下 12**。B1 的"能放下就不动"前提在这里不成立 ⇒ **必须把 `min_gap_factor` 降到 1**（`min_gap=0.02`，与 BinFill／VideoRepick 一致）才放得下。该键在 `native` 块、不触发 decision 守卫。**请确认**这一处可以动 |
+| B5 ✅ | **PickHighlight 的 spawn 总数** | highlight [5,7] ⇒ spawn ≥ 7；现 `min_gap_factor=2` 实测只稳放 8~10 块 | **已答复：「实测只稳放 8~10 块 那就只放 8-10」** ⇒ `spawn_count[xhard] = [8,10]`，**`min_gap_factor` 与区域一律不动**（与 B1 一致）。`highlight_count[xhard] = [5,7]` 的上界 7 ≤ 下界 8 ⇒ 恒有余量，不会触发"目标数被静默截断" |
 | B6 ✅ | **InsertPeg「更近」的距离带** | **杆跨度 0.1 m > 现最小间距 0.075 m，现在就会穿插** | **已答复：不动。** ⇒ 沿用现有 `min_distance_between_pegs_factor = 1.5`（0.075 m），不放松。第 4 根杆在现判据允许范围内**尽量贴近下限 0.075 m** 生成。⚠ 代价：①"更近"的幅度因此有限（最近就是 0.075 m）；②"杆跨度 0.1 m > 间距 0.075 m"这个既有穿插风险**保持原样、不因本轮加剧也不修复** |
 | B7 ✅ | **MoveCube 边角偏置强度** | 无边角采样工具，要新增 | **已答复：同意。** ⇒ 新增 `corner_bias ∈ [0,1]` 可调标量（0 = 现有均匀采样，1 = 最大边角偏置），**实施时先跑成功率扫描定值**，不预设 |
 | B8 ✅⚠ | **PatternLock 怎么够到 20~30 s** | 实测 hard 只有 3.1~8.6 s | **已答复：不改变布局，只增加步骤长度。** ⇒ 保持 5×5 网格不动，把 `length`（节点数）提到 `[20,25]`，并把路径搜索从"随机起终点取第一条解"改为**长度定向搜索**（不改网格几何，只改搜法）。⚠ **两条物理上限要知道**：①简单路径 DFS 不许重复节点 ⇒ 段数上限 = 25−1 = **24 段 ≈ 744 帧 ≈ 24.8 s**，**30 s 在不改布局的前提下够不到**，实际只能落在 **20~24.8 s**；②不改搜索策略的话，1000 次随机 DFS 命中近乎遍历全图的超长路径**概率极低**，所以"只增加长度"必须配合改搜法才成立 |
@@ -164,7 +164,7 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 > （`abs(head_x - agent_x) <= abs(tail_x - agent_x)`）**不受影响**，
 > **两个环境可以同等处理**，`MoveCube` 头尾同色与否也与此无关。
 
-| **B13** | **干扰容器的区域与含 cube 比例**（B3 的连带） | 用户定了"现生成区间之外、相机能看到、部分内含 cube"，但**没给具体坐标与比例** | 需按前视相机视野反推可见区域，给出干扰容器的采样区域（建议在现 region 外环、x 或 y 方向各外扩一段），以及"几个有 cube 几个空"（建议 3 个里 1~2 个有） |
+| **B13** ✅ | **干扰容器的区域与含 cube 比例**（B3 的连带） | 需按相机视野反推 | **已答复：「3 个里 1~2 个有 cube」＋ 要我实测可见范围能放几个。实测结果见 2.2 的「B13 实测」小节**：相机可见 ∩ 桌面 = `x ∈ [-0.720, +0.430]`、y 随 x 收窄；现 region 外的可见桌面**饱和能放 65~70 个**容器，请求 3 个毫无压力。**推荐采样区域**：外环 `max(|x|,|y|) ∈ [0.2675, 0.45]`（饱和 37.7 个，请求 2~6 个均 100% 放下），既在现 region 外又离相机够近、画面里清晰 |
 
 #### C 组：方向性取舍（改了可能适得其反）
 
@@ -180,20 +180,60 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 
 | # | 缺陷 | 现状 | 建议 |
 |---|---|---|---|
-| D1 | `BinFill::_load_scene` 静默吞 `RuntimeError` + `_initialize_episode` 的 `cube_collection[i]` 无长度保护 | clutter 缩域后**必然 `IndexError`** | **必须修** |
-| D2 | `PickXtimes::_load_scene` 的 `target` 未绑定 | 圆盘采样失败即 `UnboundLocalError`，加 distractor 后触发率从 ~0 升到几十个百分点 | **必须修** |
-| D3 | `MoveCube::_sample_cube_center` 返回 `None` 后 `float(None[0])` | 边角推移后高频 `TypeError` | **必须修** |
-| D4 | `PickHighlight` 首个按钮任务 `failure_func` 缺 lambda | 加载期求值为 `False` 再被 `or` 吞成 `None`，**这条判据从来没生效过** | 请决定——修了会突然多出大量失败样本 |
-| D5 | 几何检查只认甲的旧通道（`if self._episode_spec is None: return`） | **V4 走 `native_episode_spec`，这些检查一次都不会跑**，clutter+swap 会穿模不报错 | **建议修**：开关条件改成"两条通道任一" |
-| D6 | `BinFill` 的 `dynamic` 与块数耦合 | 12 块时 `end_step` 到 400~600，最后一块要几百步才落回 | 若 clutter 本意是"静态密集"，建议把 `dynamic` 钉成 `False` |
+**已答复：D1~D6 全部修复；其中 D6 的做法是「xhard 使用 `dynamic=false`」。**
+
+| # | 缺陷 | 现状 | 处置（已定） |
+|---|---|---|---|
+| D1 ✅ | `BinFill::_load_scene` 静默吞 `RuntimeError` + `_initialize_episode` 的 `cube_collection[i]` 无长度保护 | clutter 缩域后**必然 `IndexError`** | **修**：生成失败改为显式报错或记账，并给 `cube_collection[i]` 加长度保护 |
+| D2 ✅ | `PickXtimes::_load_scene` 的 `target` 未绑定 | 圆盘采样失败即 `UnboundLocalError` | **修**：`except` 分支补 `raise`（与 SwingXtimes 的 `SceneGenerationError` 口径一致） |
+| D3 ✅ | `MoveCube::_sample_cube_center` 返回 `None` 后 `float(None[0])` | 边角推移后高频 `TypeError` | **修**：`None` 时显式抛错 |
+| D4 ✅ | `PickHighlight` 首个按钮任务 `failure_func` 缺 lambda | 加载期求值为 `False` 再被 `or` 吞成 `None`，**这条判据从来没生效过** | **修**：补 lambda。⚠ 注意这会让"按按钮前先碰倒/抓起方块"重新被判失败，**原三档的失败率可能上升** ⇒ 须在 V1 回归里单独观察；若原三档产物因此变化，属**预期内的行为修正**，要在报告里点名 |
+| D5 ✅ | 几何检查只认甲的旧通道（`if self._episode_spec is None: return`） | **V4 走 `native_episode_spec`，这些检查一次都不会跑** | **修**：开关条件改成"两条通道任一" |
+| D6 ✅ | `BinFill` 的 `dynamic` 与块数耦合 | 12 块时 `end_step` 到 400~600，最后一块要几百步才落回 | **修，做法已定：`xhard` 档固定 `dynamic = False`**（原三档仍走 `randint(0,2)` 不动）。注意 `dynamic` 是 generator 播种后的**第一次抽样** ⇒ xhard 分支要么照抽后丢弃、要么显式跳过，**两种都会改变 xhard 自己的随机流**（xhard 是新档、无历史可比，不受 R8 约束），但**绝不能影响原三档** |
 
 #### E 组：流程与授权
 
 | # | 项 | 说明 |
 |---|---|---|
-| E1 | **新建 `scripts/eval/` 子目录** | `AGENTS.md` 规则 12 要求新建子目录先获批（见 4.3） |
-| E2 | **`PickXtimes` 序数表上限** | `get_subgoal_with_index` 在 idx ≥ 10 抛错，`num [6,15]` 必崩。扩表还是改成 `SwingXtimes` 那种兜底写法？ |
-| E3 | **`--check-config` 基线会报红** | `SAMPLING_OPERAND_PATHS` 冻结了 BinFill 的 `configs`/`cubes.*` 与 VideoRepick 的 `num_repeats` 操作元，一改就对基线 `94449db` 报"原版操作元不一致"，须同步重导快照 |
+| E1 ✅ | **新建 `scripts/eval/` 子目录** | **已批准。** 新值评估入口落 `scripts/eval/`，不改 `scripts/evaluation.py`（口径 8） |
+| E2 ✅ | **`PickXtimes` 序数表上限** | **已答复：扩表。方案见下方「E2 扩表方案」** |
+| E3 ✅ | **`--check-config` 基线会报红** | **已批准重导快照。** ⚠ 顺带效应：当前分支 `tests/lightweight` 的 **46 项既有失败**正是 `configs/newtask-v2/native_sampling.json` 的来源指纹与已改源码不符所致，重导 v2 快照**可能一并消解这批失败** ⇒ 重导后要重新测基线，不能再沿用"46 failed"这个数字 |
+
+#### E2 扩表方案
+
+现状：`utils/subgoal_language.py::get_subgoal_with_index` 是 `if idx == 0 … elif idx == 9 … else raise ValueError`
+的硬编码链，只到 `tenth`。`PickXtimes::_load_scene` 把循环变量原样传进去 ⇒ `num` 超过 10 必崩。
+
+方案（三条约束缺一不可）：
+
+1. **前十项逐字不变。** 新实现对 `idx = 0…9` 必须输出与现在**完全相同**的 `first … tenth`——
+   原三档的 subgoal 文本一个字都不能变，否则 V0／V1 回归对拍直接挂。
+2. **表扩到 20**，与 `utils/task_goal.py::num2words` 的覆盖范围对齐（它已经支持到 20），
+   避免出现"任务目标文本说 fifteen、子目标却报错"的不一致。
+3. **超出表范围用规范的英文序数兜底**，而不是 `SwingXtimes` 那种 `f"{i+1}th"`
+   （它对 21/22/23 会给出 "22th" 这种错形）。兜底规则：`n % 100 in (11,12,13)` 用 `th`，
+   否则按个位 `1→st, 2→nd, 3→rd, 其余 th`。
+
+```python
+_ORDINALS = ("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth",
+             "ninth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth",
+             "sixteenth", "seventeenth", "eighteenth", "nineteenth", "twentieth")
+
+def _ordinal_word(idx: int) -> str:
+    if idx < 0:
+        raise ValueError(f"Invalid index: {idx}")
+    if idx < len(_ORDINALS):
+        return _ORDINALS[idx]
+    n = idx + 1                                   # 序数是 1-based
+    suffix = "th" if n % 100 in (11, 12, 13) else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+def get_subgoal_with_index(idx, template, **kwargs):
+    return template.format(idx=_ordinal_word(idx), **kwargs)
+```
+
+配套测试：①`idx 0…9` 的输出与改动前逐字相同（可对着旧实现做表驱动断言）；②`idx 10…19` 给出
+`eleventh … twentieth`；③`idx 20/21/22/112` 分别给 `21st / 22nd / 23rd / 113th`；④负数仍报 `ValueError`。
 
 ## 二、逐环境改动
 
@@ -527,6 +567,35 @@ partner 污染必须正面解决：
   **取整后对齐量会变**，须同步改；
 - `windows.py::MAX_SEGMENT_FRAMES = 400` 的"单 subgoal 超 400 帧判慢"：33 步窗口下
   static 段 = `64+33n`，n=12 时 460 仍 > 400 ⇒ 该阈值仍会误判，需在 V4 侧另定。
+
+#### B13 实测：相机可见范围与干扰容器容量
+
+纯几何计算，不起渲染——前视相机在 `_default_sensor_configs` 里是写死的
+（`eye=[0.3,0,0.4]`、`target=[0,0,-0.2]`、`fov=90°`、256×256），桌面来自 `TableSceneBuilder` 的碰撞盒
+（`half_size=(1.209, 0.6045, 0.4598)`，`initial_pose` 含绕 z 轴 90° 旋转 + 平移 `[-0.12, 0, -0.9196]`
+⇒ 世界系 **x ∈ [-0.7245, +0.4845]、y ∈ [-1.209, +1.209]**，顶面正好 z=0）。
+
+**① 相机可见 ∩ 桌面**（z=0 平面）：`x ∈ [-0.720, +0.430]`，y 随 x 收窄——
+
+| x | -0.70 | -0.60 | -0.40 | -0.20 | 0.00 | +0.20 | +0.40 |
+|---|---|---|---|---|---|---|---|
+| 可见 y 范围 | ±0.800 | ±0.760 | ±0.670 | ±0.580 | ±0.490 | ±0.400 | ±0.310 |
+
+**② 能放几个**（容器外廓半边 0.0275、`min_gap=0.04` ⇒ 中心最小距 0.095；扣掉现 region、机器人基座、按钮区）：
+
+| 区域 | 饱和容量 | 请求 3 个 |
+|---|---|---|
+| 现 region 之外的全部可见桌面 | **65~70 个** | 100% 放下 |
+| **推荐外环** `max(\|x\|,\|y\|) ∈ [0.2675, 0.45]` | **37.7 个**（min 33 / max 43） | 100% 放下（请求 2~6 个均 100%） |
+
+**③ 画面里有多大**（256×256，容器外廓 0.055 m 的投影宽度）：`(0,0)` 处 14.3 px、`(-0.3,0)` 处 11.2 px、
+**外环典型位置 `(-0.45,0.45)` 处 10.2 px**、`(-0.6,0.6)` 处 9.3 px、`(+0.3,+0.3)` 处 19.7 px。
+
+**结论与建议**：放 3 个干扰容器**毫无容量压力**（余量 10 倍以上）。但"能放"不等于"看得清"——
+可见区域最远处（y≈±0.8）容器只有 9 px 宽、贴在画面边缘。**建议采样区域取外环
+`max(|x|,|y|) ∈ [0.2675, 0.45]`**：下界 = 现 region 半边 0.20 + 容器半廓 0.0275 + `min_gap` 0.04
+（保证与现 region 内的容器不干涉），上界 0.45 保证容器在画面里仍有约 10 px、位置明显。
+**含 cube 比例按用户定的「3 个里 1~2 个有」**，建议实现为"随机取 1 或 2 个装 cube"。
 
 **一个正向副作用**：`ButtonUnmaskSwap` 的步数余量原本只剩约 25%（8 swap + 3 pick ≈960 对 1302，
 且它所有任务 `demonstration=False` ⇒ 观看交换那段计入配额）。33 步窗口把这段从 464 压到 **328**，
