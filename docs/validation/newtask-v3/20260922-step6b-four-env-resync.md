@@ -75,6 +75,42 @@ C／D 两路下逐位不变。
 产物：`artifacts/train-parity/local-recheck/{old,new}/<环境>/`，
 比较明细 `artifacts/train-parity/local-recheck/compare/<环境>/h5_pairs.jsonl`。
 
+## 三·五、集群侧复核（2026-09-22，原定做法）
+
+`--gpu_cmode=shared` 把集群恢复可用之后，把原定做法也补做了：当前 HEAD 在四个 spgpu 占位 job 上
+跑同样的 B／C／D × 9 条，与**步 5d 存档的 A40 产物**逐位对拍。这比本机那轮更进一步——
+证的是「改完之后仍能一字不差复现已经进了判据的那批数据」。
+
+108 次生成零失败，108 对比较里 **107 对逐位相同**：
+
+| 环境 | B | C | D |
+|---|---|---|---|
+| SwingXtimes | 9/9 | 9/9 | 9/9 |
+| VideoPlaceButton | 9/9 | 9/9 | 9/9 |
+| VideoPlaceOrder | 9/9 | 9/9 | 9/9 |
+| PickHighlight | **8/9** | **8/9** | **8/9** |
+
+### 唯一的例外：`PickHighlight/episode_3`
+
+5d 是 647 帧，本次是 641 帧，从 `timestep_549` 起分叉，三路差法完全一致
+（各 `field_mismatch=1161`）。
+
+**与本次改动无关**，两条独立证据：
+
+1. **本次运行内三路两两逐位相同**：`rc.B|rc.C`、`rc.C|rc.D`、`rc.B|rc.D`
+   各 `compared=9 sha_equal=9 field_mismatch=0`；
+2. 本机新旧代码对比里这条身份三路全同（见上一节）。
+
+真正的原因是这条身份对**时序**敏感：它是 `FailRecoverXY` + hard，失败恢复要重规划，
+而 `mplib` 的 RRT 用墙钟预算（`planning_time=1`），卡在临界点上。它正是 5d 首轮 4 worker 时
+暴露非确定性的同一条（当时 641 vs 643）。5d 跑在 gl1517、本次跑在 gl1508，机器与时间都变了。
+
+**由此要修正一个说法**：「单 worker 可逐位复现」只在**同一次运行内**成立，跨运行、跨节点不保证。
+`NODE_PARITY=PASS`（步 P0）只验过一条身份，撑不起「任意身份跨节点可复现」。
+详见 [多 worker 专题的第六节补记](20260921-worker-nondeterminism.md)。
+
+**对判据无影响**：所有判据比的都是同一次运行内五路之间的关系，这些路背靠背产出、共享同一段机器时间。
+
 ## 四、顺带踩到的坑：GPU compute mode 与 `--gpu_cmode`
 
 集群路线第一步失败：B 路九条全部报

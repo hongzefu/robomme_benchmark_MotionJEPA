@@ -53,6 +53,11 @@ VideoPlaceOrder），当时承诺「跑完再复验」。已补：用 `git workt
 216 次生成零失败、108 对比较零差异。两个 Video 环境的 C／D 两路是**用各自结构不同的配置文件**
 跑的（`color` 旧在 decision、新在 native），仍逐位相同。
 
+集群恢复可用后又补做了原定做法：当前 HEAD 在 spgpu 上重跑同样的 108 条，与 5d 存档对拍，
+**107 对逐位相同**。唯一例外是 `PickHighlight/episode_3`（5d 647 帧、本次 641 帧），
+本次运行内三路仍两两逐位相同，本机新旧对比也全同——是这条身份对时序敏感，与改动无关，
+详见第三节第 1 条的补充。
+
 详见 [四环境同步复验](20260922-step6b-four-env-resync.md)。同一份报告里还记了一个坑：
 greatlakes 的 GPU compute mode 默认是 `exclusive`，sapien 的渲染器在该模式下起不来。
 **提交时显式带 `--gpu_cmode=shared` 即可恢复 `Default`**，5a／5c／5d 当时跑的就是这个状态，
@@ -67,6 +72,12 @@ greatlakes 的 GPU compute mode 默认是 `exclusive`，sapien 的渲染器在�
 `VIDEO_PARITY=FAIL pixels_mismatch=342`；换单 worker 后全部 PASS。
 
 **所有进判据的数据都是单 worker 跑的。** 与之互补：进程复用（甲→乙→甲 同 PID）没问题（P6 PASS）。
+
+**2026-09-22 补充：单 worker 也只在同一次运行内可复现。** 同一条 `PickHighlight/episode_3`
+两次都单 worker，5d 在 gl1517 跑出 647 帧、次日在 gl1508 跑出 641 帧。`planning_time=1` 是墙钟预算，
+机器快慢与当时负载同样会改变结果。**判据不受影响**——所有判据比的都是同一次运行内五路之间的关系，
+它们背靠背产出、共享同一段机器时间。**但不能承诺「换台机器按同一份清单重跑得到同样的字节」**；
+要复现某批确切产物，只能用那批存档本身。`NODE_PARITY=PASS` 只验过一条身份，撑不起更强的说法。
 
 ### 2. R1a 有 38 条帧数与历史不符（跨 GPU 架构）
 
