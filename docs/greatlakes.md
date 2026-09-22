@@ -209,6 +209,23 @@ engin1       QOS=normal
 - **NFS 克隆的 `.venv` 可直接用**：`python 3.11.14 / torch 2.9.1+cu128 / cuda.is_available()=True`，torch 走 NFS 导入约 32 s。零环境搭建即可跑 `train_split_parity.py run`，输出写 NFS，本机直读。
 - 用法：`tmux` 在 aspen 上起，`CUDA_VISIBLE_DEVICES=0` 锁单卡；用户定为**只当算力、只测单 worker**，不进容差标定。
 
+### aspen 常态化使用（用户 2026-09-22 定：常驻算力，GPU 无他人占用时优先用）
+
+- **定位**：aspen 是常驻机器，无 Slurm、不排队，与 sled-vail、greatlakes 共用同一份 `/nfs/turbo/coe-chaijy-unreplicated`。
+  **以后凡是能落在 NFS turbo 上的 compute，若 aspen 的 GPU 没被其他用户占用，优先放 aspen**，其次 greatlakes 占位 job，再次本机。
+- **登录**：`~/.ssh/config` 已加别名，直接 `ssh sled-aspen`（等价于 `ssh -i ~/.ssh/id_ed25519_umich hongzefu@sled-aspen.eecs.umich.edu`）。
+- **开工前查占用**（两张卡各自看，别人在用就不抢）：
+  ```bash
+  ssh sled-aspen 'nvidia-smi --query-gpu=index,name,memory.used,utilization.gpu --format=csv,noheader; nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader; who'
+  ```
+  判读：`memory.used` 只有几百 MiB 且无 compute app → 空闲可用；有他人进程 → 换另一张卡或改走集群。
+- **起任务模板**（tmux 在 aspen 上起，NFS 克隆的 venv 直接用，锁单卡，日志落 NFS 供本机 Monitor 直读）：
+  ```bash
+  ssh sled-aspen "tmux new-session -d -s <任务名> \"set -o pipefail; cd /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl; CUDA_VISIBLE_DEVICES=<0或1> PYTHONUNBUFFERED=1 .venv/bin/python <脚本与参数> 2>&1 | tee <NFS 日志路径>; echo \\\"EXIT_CODE=\\\$?\\\" >> <NFS 日志路径>\""
+  ```
+  完成信号仍靠本机 Monitor `tail -F` 那份 NFS 日志；死活判断 `ssh sled-aspen 'tmux has-session -t <任务名>'`。
+- **纪律**：只测/只跑用户授权的 worker 数（当前：单 worker）；不要动别人的进程；`/data/hongzefu` 可作本地盘，大产物仍优先落 NFS 便于本机直读。
+
 ---
 
 ## 九、教训清单（2026-09-22 复盘，按"下次怎么做"写）
