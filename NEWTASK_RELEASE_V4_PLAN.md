@@ -12,91 +12,34 @@
 
 # 第一部分（给人看）
 
-## 一、总览、已定死口径与开放项
+## 一、口径
 
-**一句话方案**：**废弃链路甲**（`scripts/injection/` 的 candidates + rollout，只覆盖四环境），
-**在链路乙**（`scripts/parity/train_split_*`，十六环境、`sampling_config` + `native_episode_spec`）**上扩出新值模式**——
-把 V3 里锁死的 `sampling_config.decision` 打开，让环境**按新范围自己抽、`SpecRecorder` 导出**成每局规格（3.2 路线 C），
-再**沿用甲的 jsonl 封套契约**冻成 `specs.jsonl`（一行 header + 每行一条规格，带来源指纹与 `identity_sha256`），
-实跑落 `results.jsonl`；同时给**推理侧**补一条读同一份快照的环境构建路径，让策略能在新值数据上评测并落
-`eval_results.jsonl`；改完跑**三类对拍**（原值回归零差异、新值二次重放零差异、规格绑定反例）。
+**一句话方案**：**废弃链路甲**（`scripts/injection/`，只覆盖四环境），**在链路乙上**
+（`scripts/parity/`，十六环境、`sampling_config` + `native_episode_spec`）**扩出新值模式**——
+新值一律落在**新增的 `xhard` 档**，让环境按新范围自己抽、`SpecRecorder` 导出成规格，
+沿用甲的 jsonl 封套契约冻成 `specs.jsonl`，实跑落 `results.jsonl`；
+同时给推理侧补一条读同一份快照的环境构建路径；改完跑原值回归、新值重放、规格绑定三类对拍。
 
-### 1.1 已定死口径
+### 1.1 定死的口径
 
-每条注明依据小节；用户原话逐字保留。
+**实施中不得更改。** 每条给出依据小节。
 
-1. **废弃链路甲。** 用户原话：「废弃原来链路甲」。`scripts/injection/candidates` 与 `scripts/injection/rollout`
-   不再新增运行；已进 Git 的 `candidates.jsonl` / `results.jsonl` 与 `artifacts/injection/` 产物作为历史证据
-   **原样保留、不删不改**。依据 5.1，退役方式见第二部分 9.1。
-2. **在链路乙上实现。** 用户原话：「在乙的基础上实现」。新值生成走 `scripts/parity/` 这套十六环境接口，
-   用 `sampling_config`（`decision` 启用新值 + `native` 原规则）与 `native_episode_spec`（`SpecRecorder` 的回注通道），
-   **不复活甲的 `episode_spec` 旧通道**。依据 5.2。
-3. **jsonl 机制参考甲。** 用户原话：「新值注入的jsonl生成机制 参考甲的实现」。要继承的是甲的**封套契约**：
-   header 内嵌配置全文与来源指纹、每行一条规格、身份散列 `identity_sha256`、字段集合**精确比对**、
-   读写两端共用一个校验入口、冻结后进 Git 且禁止覆盖。**不继承**甲的 PCG64 采样器、400 条交付配额、
-   分层与跨局方向平衡（V3 红线 R6 已禁）。依据 3.1，字段设计见 3.2。
-4. **推理必须兼容。** 用户原话：「推理也要兼容」。现状是**完全没实现**：`BenchmarkEnvBuilder` 不认
-   `sampling_config` / `native_episode_spec` / 任何 jsonl，只从 `env_metadata/{train,test,val}` 读固定 seed；
-   评估侧一个 jsonl 都不写。本轮要补出一条读 V4 快照起环境的路径与一个落 `eval_results.jsonl` 的评估入口。
-   依据第四节。
-5. **改完跑对拍。** 用户原话：「改完后还需要跑对拍」。新值局没有官方原版可比，所以对拍换成三类：
-   **原值回归**（新值开关关闭时与 V3 的 144 条基线逐位一致）、**新值可重放**（同一份规格两次生成逐位一致）、
-   **规格绑定**（改坏规格必须产生差异）。判据见第五节。
-6. **十六环境的改动内容以用户本轮原文为准**（1.2 逐字保留），字段映射沿用
-   [NEWTASK_RELEASE_V3_PLAN.md](NEWTASK_RELEASE_V3_PLAN.md) 第二节「拟修改」列与第二部分 8.3 的派生关系表。
-7. **`scripts/` 顶层五个入口不变。** [AGENTS.md](AGENTS.md) 强制规则第 12 条：顶层只允许
-   `generate_dataset_newseed.py` / `seed_layout.py` / `dataset_replay.py` / `evaluation.py` / `run_example.py`，
-   新增顶层文件或新建子目录**必须先与用户沟通获准**。本方案需要的新子目录见 4.3，已列为待批准项。
-8. **`evaluation.py` 与上游 main 逐字节相同这一性质要保住。** 它和 `run_example.py`、`dataset_replay.py`
-   的 blob SHA 与上游一致，是「评估栈未被 fork 改动」的直接证据。新值评估**另起入口**，不改这三个文件。依据 4.3。
-9. **正式验收单 worker、判据只认 A40。** V3 实测：`mplib` 的 RRT 用墙钟预算（`planning_time=1`），
-   4 worker 时 `BASELINE_REPEAT=FAIL(different=3064)`，单 worker 才 PASS；本机 sm_89 与 A40 sm_86 产物不同。
-   新值的可重放对拍同受此约束。依据第五节。
-10. **未定的量一律保留为待决，不编造默认值。** 沿用 V3 第二部分 8.3「仍需决定或保持的边界」列的纪律。
-    本轮的全部开放项集中在 1.3，实施前须逐项获得用户答复。
-11. **录像器冻结**，`src/robomme/` 的改动免逐项事前批准但须出 md 报告（见题注）。
-12. **新值一律落在新增的 `xhard` 档，从 `hard` 派生；`VideoRepick` 例外，从 `medium` 派生。**
-    用户原话：「v4派生的任务 都是基于hard来派生的 作为xhard，但是对于videorepick是以medium派生」。
-    ⇒ **原有 easy / medium / hard 三档一个数都不动**，新值只在 `xhard` 生效。这条大幅简化了全局，见 1.4。
+| # | 口径 | 依据 |
+|---|---|---|
+| 1 | **废弃链路甲**。`candidates`/`rollout` 不再新增运行；已进 Git 的产物与代码**原样保留、不删不改** | 用户原话「废弃原来链路甲」；红线 N6 |
+| 2 | **在链路乙上实现**，用 `sampling_config` + `native_episode_spec`，**不复活甲的 `episode_spec` 旧通道** | 用户原话「在乙的基础上实现」 |
+| 3 | **jsonl 继承甲的封套契约**（header 内嵌配置全文与来源指纹、逐行 `spec_sha256`、`identity_sha256`、字段集合精确比对、冻结进 Git 禁覆盖）；**不继承**甲的采样器、配额、分层与方向平衡 | 用户原话「jsonl 生成机制 参考甲的实现」；3.3 |
+| 4 | **推理必须兼容**。现状是完全没实现，要补出读 V4 快照起环境的路径与落 `eval_results.jsonl` 的入口 | 用户原话「推理也要兼容」；第四节 |
+| 5 | **改完跑对拍**，换成五条判据（原值回归 / 新值重放 / 规格绑定 / 可完成性报告 / 推理链路） | 用户原话「改完后还需要跑对拍」；第五节 |
+| 6 | **改动内容以 1.2 的用户原文为准** | 1.2 |
+| 7 | **新值一律落新增的 `xhard` 档，从 `hard` 派生；`VideoRepick` 从 `medium` 派生。原三档一个数都不动** | 用户原话「v4派生的任务 都是基于hard来派生的 作为xhard，但是对于videorepick是以medium派生」；2.1 |
+| 8 | **`scripts/` 顶层只允许五个入口**，新增顶层文件或子目录须先获批 | AGENTS.md 强制规则第 12 条；2.0④ |
+| 9 | **`evaluation.py` / `run_example.py` / `dataset_replay.py` 与上游 main 逐字节相同这一性质要保住**，新值评估另起入口 | 2.0④ |
+| 10 | **正式验收单 worker、判据只认 A40**（`mplib` 的 RRT 用墙钟预算；本机 sm_89 与 A40 sm_86 产物不同） | V3 实测；第五节 |
+| 11 | **未定的量一律保留为待决，不编造默认值** | V3 8.3 的纪律 |
+| 12 | **录像器全程冻结**；`src/robomme/` 改动免逐项事前批准但每步须出 md 报告 | 题注；红线 N1/N2 |
 
-### 1.4 口径 12 带来的简化与新增工作
-
-**先说现状**：`utils/difficulty.py::VALID_DIFFICULTIES` 白名单**已经含 `xhard`**，但十六个环境里
-**只有三个**真有 `config_xhard`——而且它们的派生基准**恰好已经与口径 12 一致**：
-
-| 环境 | 现有 xhard | 派生自 | 与口径 12 |
-|---|---|---|---|
-| `VideoUnmaskSwap` | `{bin:4, swap 4~5, pick 2~2}` | hard `{bin:4, swap 2~3, pick 2~2}` | ✅ 一致，V4 只需把值改成新值 |
-| `RouteStick` | `{length:[8,10], backtrack:True}` | hard `{[4,7], True}` | ✅ 一致 |
-| `VideoRepick` | `{cube:3, swap 4~5}` | **medium** `{cube:3, swap 2~3}` | ✅ **恰好就是 medium 派生**（hard 是 5 轮 15 块、swap=0 的特殊结构） |
-
-其余**十三个环境传 `xhard` 会在 `configs[...]` 查表处 KeyError**，要新建这一档。
-
-**简化了什么**（这几条原本是硬阻塞，现在直接消失）：
-
-- **`VideoPlace*` 的 easy 只有 1 块方块** —— 原本是"演示 2 块"的硬阻塞。现在只做 xhard、从 hard 派生，
-  而 hard 的 `color=3` ⇒ 场上 3 块，**够演示 2 块**。开放项 B10 作废。
-- **`VideoRepick` hard 的 5 轮 × 红蓝绿 = 15 块特殊结构** —— 原本要为 clutter 统一命名、作废
-  `hard_round_order` 规格路径。现在从 **medium** 派生（3 块锚点结构、swap `[2,3]`），**完全绕开**；
-  而且 medium 有 swap 而 hard 是 `swap=0`，`swap [8,12]` 正好接得上。
-- **`NATIVE_REGRESSION`（V1）变得更强也更容易过** —— 原三档一个数都不动，回归对拍从"改完还得证明没改坏"
-  变成"结构上就不该有任何差异"，任何非零差异都是明确的 bug。
-
-**新增了什么工作**（口径 12 的代价）：
-
-- **十三个环境要新建 `config_xhard`**，其中三个还**根本没有难度分档机制**：`StopCube`、`MoveCube`、`InsertPeg`
-  的类里没有 `configs` / `config_*`，`self.difficulty` 算出来之后全文件无消费点。
-  **用户已定（A6）：把现在的参数作为 `hard`，在此基础上派生 `xhard`** ⇒ 取
-  `configs = {easy: X, medium: X, hard: X, xhard: 新值}`（`X` = 现有全局常量原值）。三档同值保证
-  "不管传哪档行为都与现状一致"——现状本就如此，因为 difficulty 无消费点。
-- **已有 xhard 的三个环境：旧值全部作废。** **用户原话（A7）：「我不需要兼容任何上一版本选择的额外 task，
-  全部作废！」** ⇒ 直接覆盖成 V4 新值，不保留、不另起档名、不扩白名单。
-  **这会打掉若干现有测试断言**（它们锁的是旧 xhard 的 4~5 次语义），清单见第二部分「一」的步 3a 行。
-- **生成入口的难度配额**：`--difficulty` 是 easy/medium/hard 的三位循环配额，**xhard 不进这个配额**
-  （V3 已定：只经清单里每组的 `difficulty` 字段显式指定）。V4 的 `specs.jsonl` 每行都带 `difficulty`，
-  天然走显式路径，但抽签段的入口要确保传的是 `difficulty="xhard"`。
-
-### 1.2 十六环境的改动内容（用户本轮原文，逐字保留）
+### 1.2 十六环境的改动内容（用户原文，逐字保留）
 
 ```text
 BinFill  全部clutter, 12, color 3 个, put_in_number [5,7]
@@ -118,101 +61,93 @@ InsertPeg, 多生成一个 stick 里 target stick 更近，stick 的转角更大
 PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 ```
 
-逐环境的字段落点、源码锚点、硬限制与改法见第二节。
+逐环境的字段落点、现值、新值与注入什么，见第二节的十六张表；布局改动的俯视图见 2.21。
 
-### 1.3 开放项：实施前必须先问用户
+### 1.3 用户决策速查
 
-源码核实后，用户原文里有 **19 处**无法直接落到代码的量或方向。分四组，每项给出建议与代价。
-**这些一个都不许在实施时自行填默认值。**
+实施前的全部待决项**已在 2026-09-22 逐条闭环**。下表只记结论与落点，原始的"问题与建议"不再保留。
 
-#### A 组：需求本身有歧义（不澄清就没法动手）
-
-| # | 项 | 问题 | 建议 |
-|---|---|---|---|
-| A1 ✅ | **「stick 可以和桌面平行」** | **杆现在已经与桌面平行**（四元数只绕世界 z、z 恒 0），原话是重言式 | **已答复（2026-09-22）：yaw 从 ±45° 放宽到 ±180°，不引入 pitch/roll。** ⇒ 不需要 z 补偿；但引出与 Panda joint7 限位的新冲突，见 B11 |
-| A2 ✅ | **20~30 秒按哪个 fps 算** | 两个口径结论相反 | **已答复：按 30 fps（录像器，V3 口径）** ⇒ 需 600~900 帧；RouteStick `L ∈ [12,18]`，PatternLock 必须改 grid 或搜索策略（B8 仍待定具体做法） |
-| A3 ✅ | **VideoRepick 要不要启用 swap** | 用户原文是"**如果是** swap [8,12]"，条件句 | **已答复：启用，swap `[8,12]`** ⇒ 发起者池只有 3 个的问题成为必须处理项，见 B12 |
-| A4 ✅ | **MoveCube / InsertPeg 没有难度分档** | 两个类无 `configs`，`self.difficulty` 全文件无消费点 | **已答复：同意**（认定现状就是全局参数、无分档）。具体建档方式以 A6 为准 |
-| A5 ✅ | **「其他颜色 distractor」的"其他"相对谁** | 相对目标三色（红蓝绿）？还是相对本局出现的颜色？ | **已答复：固定加入 3 个颜色。** ⇒ 干扰色池固定为 **3 种新颜色**（不在红/蓝/绿目标池内），每个需要 distractor 的环境按此池取色。**具体 RGB 值待定**（建议黄 `(1,1,0,1)`、青 `(0,1,1,1)`、品红 `(1,0,1,1)`，与红蓝绿区分度最大），数量默认每色 1 个 ⇒ 共 3 个 |
-| **A6** ✅ | **三个环境根本没有难度分档，怎么加 xhard**（口径 12 的连带） | `StopCube`、`MoveCube`、`InsertPeg` 的类里没有 `configs` / `config_*`，现在的参数是全局常量 | **已答复：把现在的参数作为 `hard`，在此基础上派生 `xhard`。** 实现取 `configs = {easy: X, medium: X, hard: X, xhard: 新值}`，其中 `X` = 现有全局常量原值——**三档同值保证"不管传哪档行为都与现状一致"**（现状本就如此，因为 difficulty 无消费点），只有 xhard 走新值 |
-| **A7** ✅ | **已有 xhard 的三个环境怎么处理** | `VideoUnmaskSwap` / `RouteStick` / `VideoRepick` 已有 xhard（2026-09-11 加、V3 记为"不属原 train"） | **已答复：不需要兼容任何上一版本选择的额外 task，全部作废。** ⇒ 直接覆盖成 V4 新值，不保留旧 xhard、不另起档名、不扩白名单。**连带要改的测试断言见第二部分「一」的步 3a 行** |
-
-#### B 组：数值待定（方向明确但没给具体值）
-
-| # | 项 | 现值与约束 | 建议 |
-|---|---|---|---|
-| B1 ✅ | **clutter 的密度／区域／间距** | BinFill 12 块在现区域 **100% 放得下** | **已答复：「已经能放下 12 就不动了」** ⇒ BinFill 的区域与间距**保持原值**。⚠ **但 PickHighlight 例外，见 B5 的冲突说明** |
-| B2 ✅ | **distractor 数量与颜色池** | 六个环境都要加 | **已答复：「全局增加 3 个颜色」** ⇒ 六个环境**共用同一组 3 种新颜色**，每色 1 个共 3 个 distractor。具体 RGB 取黄 `(1,1,0,1)` / 青 `(0,1,1,1)` / 品红 `(1,0,1,1)`（与红蓝绿区分度最大），定为全局常量 |
-| B3 ✅ | **distractor 放哪** | 四个 Unmask 可放容器内或桌面 | **已答复：做成额外容器，放在目前生成区间之外、但相机能看到的位置；部分容器内有 cube；一律不参与 swap。** ⇒ 采纳"额外容器"而非我建议的桌面散块，因此**必须改 partner 搜索**把干扰容器排除，见 2.2 的落实说明 |
-| B4 ✅ | **swap 速度 ×1.5 的取整** | `50/1.5 = 33.33` | **已答复：由实施方决定。** ⇒ 定 `SWAP_WINDOW_STEPS = round(50 / 1.5) = 33`，窗口变为 `[64 + 33k, 64 + 33(k+1))`。把 50 提成类级具名常量再乘倍率并取整，**不在分散字面量上手改**（ButtonUnmaskSwap 有六处）。下游同步见 2.2 |
-| B5 ✅ | **PickHighlight 的 spawn 总数** | highlight [5,7] ⇒ spawn ≥ 7；现 `min_gap_factor=2` 实测只稳放 8~10 块 | **已答复：「实测只稳放 8~10 块 那就只放 8-10」** ⇒ `spawn_count[xhard] = [8,10]`，**`min_gap_factor` 与区域一律不动**（与 B1 一致）。`highlight_count[xhard] = [5,7]` 的上界 7 ≤ 下界 8 ⇒ 恒有余量，不会触发"目标数被静默截断" |
-| B6 ✅ | **InsertPeg「更近」的距离带** | **杆跨度 0.1 m > 现最小间距 0.075 m，现在就会穿插** | **已答复：不动。** ⇒ 沿用现有 `min_distance_between_pegs_factor = 1.5`（0.075 m），不放松。第 4 根杆在现判据允许范围内**尽量贴近下限 0.075 m** 生成。⚠ 代价：①"更近"的幅度因此有限（最近就是 0.075 m）；②"杆跨度 0.1 m > 间距 0.075 m"这个既有穿插风险**保持原样、不因本轮加剧也不修复** |
-| B7 ✅ | **MoveCube 边角偏置强度** | 无边角采样工具，要新增 | **已答复：同意。** ⇒ 新增 `corner_bias ∈ [0,1]` 可调标量（0 = 现有均匀采样，1 = 最大边角偏置），**实施时先跑成功率扫描定值**，不预设 |
-| B8 ✅⚠ | **PatternLock 怎么够到 20~30 s** | 实测 hard 只有 3.1~8.6 s | **已答复：不改变布局，只增加步骤长度。** ⇒ 保持 5×5 网格不动，把 `length`（节点数）提到 `[20,25]`，并把路径搜索从"随机起终点取第一条解"改为**长度定向搜索**（不改网格几何，只改搜法）。⚠ **两条物理上限要知道**：①简单路径 DFS 不许重复节点 ⇒ 段数上限 = 25−1 = **24 段 ≈ 744 帧 ≈ 24.8 s**，**30 s 在不改布局的前提下够不到**，实际只能落在 **20~24.8 s**；②不改搜索策略的话，1000 次随机 DFS 命中近乎遍历全图的超长路径**概率极低**，所以"只增加长度"必须配合改搜法才成立 |
-| B9 ✅ | **RouteStick 的 L 目标值** | 按 30 fps 需 `L ∈ [12,18]` | **已答复：不改变布局，只增加步骤长度。** ⇒ 1×9 网格与节点表不动，只把 `length`（段数 L）提到 **`[12,15]`**（留步数余量：执行段也是 L×50 帧、加 reset 200 步，L > 约 22 会被评估入口截断）。RouteStick 的 `generate_dynamic_walk` **允许重复访问节点**，所以"只增加长度"在这里天然成立，无需改搜法 |
-| ~~B10~~ | ~~**VideoPlace\* 的 easy `color`**~~ | ~~easy 场上只有 1 块~~ | **已作废（口径 12）**：只做 xhard、从 hard 派生，hard 的 `color=3` ⇒ 场上 3 块，够演示 2 块 |
-| **B11** ✅ | **yaw ±180° 撞 Panda joint7 限位**（A1 的连带） | 夹爪姿态 `Rz(yaw)·Rx(π)`，yaw 直接透传腕关节，而 **joint7 限位约 ±166°** | **已答复：按等价朝向归约。** ⇒ 抓取时把 yaw 归约进 joint7 限位内（等价取 `yaw` 或 `yaw ± 180°` 中落在可达范围的那个）。**两个环境同等处理**——见下方更正 |
-| **B12** ✅ | **VideoRepick 发起者池写死 3 个**（A3 的连带） | `swap_indices[k % 3]` 循环复用 | **已答复：可以 swap 的仍然是 3 个，但要 8~12 次。** ⇒ 采纳 (a)：**发起者池保持 3 个、接受循环复用**，只把次数提到 `[8,12]`。改动最小，不动 `swap_remaining_count` 与 `object_selection` 的校验 |
-
-> **⚠ 对 B11 前一版分析的更正（2026-09-22）**：前一版写的「`InsertPeg` 归约会改变抓的是哪一端、
-> 改变任务语义」**是错的**。核实 `grasp_and_lift_peg_side` 后确认：它构造的是
-> `grasp_pose_q = peg_q ⊗ Rx(π)`，即**夹爪的目标姿态**，而 `grasp_pose_p = pose.p` 原样不动——
-> **归约只改夹爪绕自身 approach 轴的转角，杆的位姿一点没碰**。推导：
-> `R_grasp(yaw+π) = Rz(yaw+π)·Rx(π) = Rz(yaw)·Rx(π)·Rz(π) = R_grasp(yaw)·Rz(π)`，
-> 即两者只差一个绕夹爪自身 z 轴（approach 方向）的 180°，对平行两指夹爪**夹持几何完全等价**。
-> 因此 head／tail 的空间位置不变，`InsertPeg` 的 near／far 判定
-> （`abs(head_x - agent_x) <= abs(tail_x - agent_x)`）**不受影响**，
-> **两个环境可以同等处理**，`MoveCube` 头尾同色与否也与此无关。
-
-| **B13** ✅ | **干扰容器的区域与含 cube 比例**（B3 的连带） | 需按相机视野反推 | **已答复：「3 个里 1~2 个有 cube」＋ 要我实测可见范围能放几个。实测结果见 2.2 的「B13 实测」小节**：相机可见 ∩ 桌面 = `x ∈ [-0.720, +0.430]`、y 随 x 收窄；现 region 外的可见桌面**饱和能放 65~70 个**容器，请求 3 个毫无压力。**推荐采样区域**：外环 `max(|x|,|y|) ∈ [0.2675, 0.45]`（饱和 37.7 个，请求 2~6 个均 100% 放下），既在现 region 外又离相机够近、画面里清晰 |
-
-#### C 组：方向性取舍（改了可能适得其反）
-
-| # | 项 | 冲突 | 建议 |
-|---|---|---|---|
-| C1 ✅ | **PickXtimes「推向边角」与「加 distractor」互相抵消** | 目标推到边角会把圆盘挤向中心 | **已答复：没问题，圆盘可以出现在中间。** ⇒ 这不是副作用而是可接受的结果。仍需把 `target_cube_position_policy` 与 `goal_position_policy` **拆成两套参数**（现在是同一区域），否则边角偏置会同时作用到圆盘上 |
-| C2 ✅ | **VideoRepick 颜色任意会降低难度** | 原担心异色后退化成靠颜色记忆 | **已答复：「颜色任意」是指每次出现的 3 个颜色**都一样**、但这个颜色任意。** ⇒ **保持同色语义**（仍然只能靠位置记忆，难度不降），只是每局的那个统一色值不再限于红/蓝/绿。顾虑消解 |
-| C3 ✅ | **PickHighlight 高亮会连片** | 白盘直径 0.10 m 是方块边长的 2.5 倍 | **已答复：同意。** ⇒ 缩小 `disk_radius` 或改用同心环（`use_target_style=True`）。注意现在 `step` 调 `highlight_obj` 时**没有传 `disk_radius`**，要先把它接出来 |
-| C4 ✅ | **StopCube 最快档 + number 15 可能变成"不可能"** | 容错窗口砍半、±6 步命中窗、按钮提前量只剩半趟 | **已答复：只需满足"速度最快档 + number [6,15]"，其他可自行调整。** ⇒ `move_interval_choices = [60]`、`stop_time_range` 覆盖 `[6,15]` 固定不动；**判定阈值、按钮提前量 `interval`、`static_checkpoints` 间隔等由实施方按实测成功率调**，并在报告里逐项说明调了什么、为什么 |
-| C5 ✅ | **InsertPeg 目标识别可能不可判** | 4 根杆外观完全相同、文本无"哪一根"线索 | **已答复：本来就是靠 video demo 判断的。** ⇒ 这是该任务的既有设计（记忆型任务，目标靠演示视频里的位置确定），不是本轮引入的问题。顾虑消解，不需要额外的下限距离或人工看片验收 |
-
-#### D 组：要不要顺手修的既有缺陷（clutter 后都会被高频触发）
-
-| # | 缺陷 | 现状 | 建议 |
-|---|---|---|---|
-**已答复：D1~D6 全部修复；其中 D6 的做法是「xhard 使用 `dynamic=false`」。**
-
-| # | 缺陷 | 现状 | 处置（已定） |
-|---|---|---|---|
-| D1 ✅ | `BinFill::_load_scene` 静默吞 `RuntimeError` + `_initialize_episode` 的 `cube_collection[i]` 无长度保护 | clutter 缩域后**必然 `IndexError`** | **修**：生成失败改为显式报错或记账，并给 `cube_collection[i]` 加长度保护 |
-| D2 ✅ | `PickXtimes::_load_scene` 的 `target` 未绑定 | 圆盘采样失败即 `UnboundLocalError` | **修**：`except` 分支补 `raise`（与 SwingXtimes 的 `SceneGenerationError` 口径一致） |
-| D3 ✅ | `MoveCube::_sample_cube_center` 返回 `None` 后 `float(None[0])` | 边角推移后高频 `TypeError` | **修**：`None` 时显式抛错 |
-| D4 ✅ | `PickHighlight` 首个按钮任务 `failure_func` 缺 lambda | 加载期求值为 `False` 再被 `or` 吞成 `None`，**这条判据从来没生效过** | **修**：补 lambda。⚠ 注意这会让"按按钮前先碰倒/抓起方块"重新被判失败，**原三档的失败率可能上升** ⇒ 须在 V1 回归里单独观察；若原三档产物因此变化，属**预期内的行为修正**，要在报告里点名 |
-| D5 ✅ | 几何检查只认甲的旧通道（`if self._episode_spec is None: return`） | **V4 走 `native_episode_spec`，这些检查一次都不会跑** | **修**：开关条件改成"两条通道任一" |
-| D6 ✅ | `BinFill` 的 `dynamic` 与块数耦合 | 12 块时 `end_step` 到 400~600，最后一块要几百步才落回 | **修，做法已定：`xhard` 档固定 `dynamic = False`**（原三档仍走 `randint(0,2)` 不动）。注意 `dynamic` 是 generator 播种后的**第一次抽样** ⇒ xhard 分支要么照抽后丢弃、要么显式跳过，**两种都会改变 xhard 自己的随机流**（xhard 是新档、无历史可比，不受 R8 约束），但**绝不能影响原三档** |
-
-#### E 组：流程与授权
-
-| # | 项 | 说明 |
+| 编号 | 决策结论 | 落在哪 |
 |---|---|---|
-| E1 ✅ | **新建 `scripts/eval/` 子目录** | **已批准。** 新值评估入口落 `scripts/eval/`，不改 `scripts/evaluation.py`（口径 8） |
-| E2 ✅ | **`PickXtimes` 序数表上限** | **已答复：扩表。方案见下方「E2 扩表方案」** |
-| E3 ✅ | **`--check-config` 基线会报红** | **已批准重导快照。** ⚠ 顺带效应：当前分支 `tests/lightweight` 的 **46 项既有失败**正是 `configs/newtask-v2/native_sampling.json` 的来源指纹与已改源码不符所致，重导 v2 快照**可能一并消解这批失败** ⇒ 重导后要重新测基线，不能再沿用"46 failed"这个数字 |
+| A1 | 「和桌面平行」= **yaw 放宽到 ±180°**，不引入 pitch/roll | 2.16 / 2.17 / 2.18 |
+| A2 | 20~30 秒**按录像器的 30 fps 算**（⇒ 600~900 帧） | 2.19 / 2.20 |
+| A3 | VideoRepick **启用 swap**，`[8,12]` | 2.13 |
+| A4 | 认定 MoveCube / InsertPeg 现状就是全局参数、无分档 | 2.17 / 2.18 |
+| A5 | 干扰物「其他颜色」= **固定 3 个颜色** | 2.0① |
+| A6 | 三个无分档环境：**现值作 `hard`，在此基础上派生 `xhard`** | 2.1 / 2.6 / 2.17 / 2.18 |
+| A7 | **旧 xhard 全部作废**，直接覆盖，不保留、不另起档名 | 2.1 / 第二部分步 3a |
+| B1 | BinFill 区域与间距**不动**（12 块现区域 100% 放得下） | 2.3 |
+| B2 | 干扰色**全局 3 色**：黄 / 青 / 品红，六环境共用 | 2.0① |
+| B3 | 干扰做成**额外容器**，现 region 外、相机可见、部分含 cube、**不参与 swap** | 2.7① |
+| B4 | swap 速度取整由实施方定 ⇒ `SWAP_WINDOW_STEPS = round(50/1.5) = 33` | 2.7③ |
+| B5 | PickHighlight `spawn = [8,10]`（实测只稳放 8~10），间距不动 | 2.12 |
+| B6 | InsertPeg 杆间距判据**不动**，新杆贴近 0.075 下限 | 2.18 |
+| B7 | MoveCube 边角做成 `corner_bias ∈ [0,1]` + 先跑成功率扫描 | 2.17 |
+| B8 | PatternLock **不改布局、只增加步骤长度**（须配合改搜索策略） | 2.19 |
+| B9 | RouteStick **不改布局**，`L = [12,15]` | 2.20 |
+| ~~B10~~ | 作废——口径 7 之后 VideoPlace\* 的 easy 阻塞不存在 | — |
+| B11 | yaw ±180° 撞 joint7 限位 ⇒ **按等价朝向归约**（只改夹爪姿态，不碰杆位姿） | 2.16 |
+| B12 | VideoRepick **发起者仍 3 个**，只把次数提到 8~12 | 2.13 |
+| B13 | 干扰容器外环 `max(\|x\|,\|y\|) ∈ [0.2675, 0.45]`；**3 个里 1~2 个含 cube** | 2.7① / 2.21 |
+| C1 | PickXtimes **圆盘可以出现在中间**（两套区域参数仍要拆开） | 2.4 |
+| C2 | VideoRepick「颜色任意」= 每局 3 块**仍同色**、只是色值任意 | 2.13 |
+| C3 | PickHighlight 缩小 `disk_radius` 或改同心环 | 2.12 |
+| C4 | StopCube **只锁速度最快档与 number `[6,15]`**，其余阈值由实施方按实测调 | 2.6 |
+| C5 | InsertPeg 目标识别**本来就靠 video demo**，不是本轮引入的问题 | 2.18 |
+| D1~D5 | 五个既有缺陷**全部修复** | 2.0① / 2.3 / 2.4 / 2.12 / 2.17 |
+| D6 | BinFill 的 `dynamic`：**xhard 固定 `false`**，原三档不动 | 2.3 |
+| E1 | **批准新建 `scripts/eval/`** | 2.0④ |
+| E2 | 序数表**扩到 20 + 规范英文序数兜底**（前十项逐字不变） | 2.0① / E2 方案 |
+| E3 | **批准重导 v2 快照**（可能一并消解当前 46 项既有失败 ⇒ 须重测基线） | 2.0⑤ |
 
-#### E2 扩表方案
+## 二、逐环境改动
 
-现状：`utils/subgoal_language.py::get_subgoal_with_index` 是 `if idx == 0 … elif idx == 9 … else raise ValueError`
-的硬编码链，只到 `tenth`。`PickXtimes::_load_scene` 把循环变量原样传进去 ⇒ `num` 超过 10 必崩。
+**怎么读这一节**：2.0 是跨环境的公共改动（只写一次，各环境表里不重复）；2.1 是十六个环境的
+xhard 派生基准；2.2 是四条动手前必须知道的机制；2.3 起是**十六张环境表**，每张四列
+（字段 / 含义 / 派生基准档的现值 / xhard 新值与注入什么），表后跟该环境的「实施要点」。
+2.7 与 2.16 是族内共用事项，不对应单个环境。
 
-方案（三条约束缺一不可）：
+### 2.0 全局要改什么
 
-1. **前十项逐字不变。** 新实现对 `idx = 0…9` 必须输出与现在**完全相同**的 `first … tenth`——
-   原三档的 subgoal 文本一个字都不能变，否则 V0／V1 回归对拍直接挂。
-2. **表扩到 20**，与 `utils/task_goal.py::num2words` 的覆盖范围对齐（它已经支持到 20），
-   避免出现"任务目标文本说 fifteen、子目标却报错"的不一致。
-3. **超出表范围用规范的英文序数兜底**，而不是 `SwingXtimes` 那种 `f"{i+1}th"`
-   （它对 21/22/23 会给出 "22th" 这种错形）。兜底规则：`n % 100 in (11,12,13)` 用 `th`，
-   否则按个位 `1→st, 2→nd, 3→rd, 其余 th`。
+#### ⓪ 「新值只落 xhard」带来的简化与代价
+
+口径 7 规定新值一律落新增的 `xhard` 档、原三档一个数不动。这一条**消解了三个原本的硬阻塞**：
+
+- **`VideoPlace*` 的 easy 只有 1 块方块**——原本是"演示 2 块"的硬阻塞（`color=1` × `cubes_per_color=1` 写死，
+  而 `color` 在 native 块）。现在从 hard 派生、`color=3` ⇒ 场上 3 块够用，easy 完全不动。
+- **`VideoRepick` hard 的 5 轮 × 红蓝绿 = 15 块特殊结构**——原本要为 clutter 统一 `bin_{i}` 命名、
+  作废 `hard_round_order` 规格路径。从 **medium** 派生完全绕开；而且 medium 有 swap 而 hard 是 `swap=0`，
+  `swap [8,12]` 正好接得上。
+- **`NATIVE_REGRESSION`（V1）更强也更容易过**——原三档在结构上就不该有任何差异，
+  任何非零差异都是明确的 bug，而不是"要去分析是不是可接受的漂移"。
+
+**代价是三件新增工作**：
+
+1. **十三个环境要新建 `config_xhard`**（其余三个已有、按 A7 覆盖）；
+2. **`StopCube` / `MoveCube` / `InsertPeg` 连难度分档机制都没有**（类里无 `configs`，`difficulty` 无消费点）
+   ⇒ 按 A6 取 `configs = {easy: X, medium: X, hard: X, xhard: 新值}`，`X` = 现有全局常量原值。
+   **三档同值保证"不管传哪档行为都与现状一致"**——现状本就如此，所以这个写法不改变任何既有行为；
+3. **抽签段入口必须显式传 `difficulty="xhard"`**：`--difficulty` 那个三位循环配额只管 easy/medium/hard，
+   xhard 只经每条规格的 `difficulty` 字段进入。
+
+下面是**跨环境的公共改动**，十六张环境表里不再重复。按"改完才能往下走"的依赖顺序排。
+
+#### ① 机制层（`src/robomme/robomme_env/utils/`）
+
+| 文件::锚点 | 改什么 | 为什么 | 关闭态 |
+|---|---|---|---|
+| `sampling_config.py::assert_native_decision` | 守卫**分叉**：原值模式仍与 `_native_decision(cls)` 逐键全等；新值模式改为"与本次 `sampling_config` 声明的 decision 一致" | 现在它逐键 JSON 全等比对，**改新值会当场被拒** | 原值模式行为逐字不变 |
+| `episode_spec.py::SPEC_KIND` / `SpecRecorder.__init__` | 增开 `native-newvalue/1`，按 `spec_kind` 分叉核验；`mismatches` 增加"归因到哪个 `decision` 键"的字段 | 原值模式下 `mismatches` 非空 = RNG 漂移 = 失败；**新值模式下它必然大量非空**，两种语义必须分开 | `native-parity/1` 的 `mismatches` 仍须为 0 |
+| `subgoal_language.py::get_subgoal_with_index` | 扩表到 20 + 规范英文序数兜底（方案见 E2） | 现在 idx ≥ 10 直接 `raise ValueError`，`PickXtimes` 的 `num [6,15]` 必崩 | **idx 0~9 输出逐字不变** |
+| `object_generation.py`（新增采样模式） | 新增**边角偏置**采样（`corner_bias ∈ [0,1]`，0 = 现有均匀采样）；新增**干扰容器**生成入口 | 全仓 grep `corner`/`annulus`/`min_radius` 无任何边角采样工具，要新写 | `corner_bias=0` 时与现有均匀采样逐字等价 |
+| 新增全局常量：干扰色池 | 黄 `(1,1,0,1)` / 青 `(0,1,1,1)` / 品红 `(1,0,1,1)`，六个环境共用（B2） | "其他颜色"需要一个跨任务一致的定义 | 不启用 distractor 时不被读 |
+| `VideoRepick` 的四处扫掠检查（D5） | 开关条件从 `if self._episode_spec is None: return` 改为"两条通道任一" | 它们只认**甲的旧通道**，V4 走 `native_episode_spec` ⇒ **一次都不会跑**，clutter+swap 会穿模不报错 | 甲通道行为不变 |
+
+**E2 扩表方案（`get_subgoal_with_index`）**——三条约束缺一不可：
+
+1. **前十项逐字不变**：`idx = 0…9` 必须仍输出 `first … tenth`，否则原三档的 subgoal 文本变化、V0/V1 直接挂；
+2. **表扩到 20**，与 `utils/task_goal.py::num2words` 的覆盖范围对齐（避免"任务目标说 fifteen、子目标却报错"）；
+3. **超出表范围用规范英文序数兜底**，不沿用 `SwingXtimes` 那种会给出 "22th" 错形的 `f"{i+1}th"`。
 
 ```python
 _ORDINALS = ("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth",
@@ -232,30 +167,8 @@ def get_subgoal_with_index(idx, template, **kwargs):
     return template.format(idx=_ordinal_word(idx), **kwargs)
 ```
 
-配套测试：①`idx 0…9` 的输出与改动前逐字相同（可对着旧实现做表驱动断言）；②`idx 10…19` 给出
-`eleventh … twentieth`；③`idx 20/21/22/112` 分别给 `21st / 22nd / 23rd / 113th`；④负数仍报 `ValueError`。
-
-## 二、逐环境改动
-
-**怎么读这一节**：2.0 是跨环境的公共改动（只写一次，各环境表里不重复）；2.1 是十六个环境的
-xhard 派生基准；2.2 是四条动手前必须知道的机制；2.3 起是**十六张环境表**，每张四列
-（字段 / 含义 / 派生基准档的现值 / xhard 新值与注入什么），表后跟该环境的「实施要点」。
-2.7 与 2.16 是族内共用事项，不对应单个环境。
-
-### 2.0 全局要改什么
-
-下面是**跨环境的公共改动**，十六张环境表里不再重复。按"改完才能往下走"的依赖顺序排。
-
-#### ① 机制层（`src/robomme/robomme_env/utils/`）
-
-| 文件::锚点 | 改什么 | 为什么 | 关闭态 |
-|---|---|---|---|
-| `sampling_config.py::assert_native_decision` | 守卫**分叉**：原值模式仍与 `_native_decision(cls)` 逐键全等；新值模式改为"与本次 `sampling_config` 声明的 decision 一致" | 现在它逐键 JSON 全等比对，**改新值会当场被拒** | 原值模式行为逐字不变 |
-| `episode_spec.py::SPEC_KIND` / `SpecRecorder.__init__` | 增开 `native-newvalue/1`，按 `spec_kind` 分叉核验；`mismatches` 增加"归因到哪个 `decision` 键"的字段 | 原值模式下 `mismatches` 非空 = RNG 漂移 = 失败；**新值模式下它必然大量非空**，两种语义必须分开 | `native-parity/1` 的 `mismatches` 仍须为 0 |
-| `subgoal_language.py::get_subgoal_with_index` | 扩表到 20 + 规范英文序数兜底（方案见 E2） | 现在 idx ≥ 10 直接 `raise ValueError`，`PickXtimes` 的 `num [6,15]` 必崩 | **idx 0~9 输出逐字不变** |
-| `object_generation.py`（新增采样模式） | 新增**边角偏置**采样（`corner_bias ∈ [0,1]`，0 = 现有均匀采样）；新增**干扰容器**生成入口 | 全仓 grep `corner`/`annulus`/`min_radius` 无任何边角采样工具，要新写 | `corner_bias=0` 时与现有均匀采样逐字等价 |
-| 新增全局常量：干扰色池 | 黄 `(1,1,0,1)` / 青 `(0,1,1,1)` / 品红 `(1,0,1,1)`，六个环境共用（B2） | "其他颜色"需要一个跨任务一致的定义 | 不启用 distractor 时不被读 |
-| `VideoRepick` 的四处扫掠检查（D5） | 开关条件从 `if self._episode_spec is None: return` 改为"两条通道任一" | 它们只认**甲的旧通道**，V4 走 `native_episode_spec` ⇒ **一次都不会跑**，clutter+swap 会穿模不报错 | 甲通道行为不变 |
+配套测试：①`idx 0…9` 与改动前逐字相同；②`idx 10…19` 给 `eleventh … twentieth`；
+③`idx 20/21/22/112` 给 `21st / 22nd / 23rd / 113th`；④负数仍 `ValueError`。
 
 #### ② 每个环境都要做的三件事
 
