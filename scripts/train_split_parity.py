@@ -1181,7 +1181,7 @@ def _h5_of(identity_dir: Path) -> Path | None:
 
 
 # 本工具自己写进身份目录的证据文件：它们是对拍的证据，不是仿真产物，不参与伴生文件比较。
-EVIDENCE_FILES = ("episode_spec.json", "spec_replay.json")
+EVIDENCE_FILES = ("episode_spec.json", "spec_replay.json", "rng_trace.json")
 
 
 def _sidecars(identity_dir: Path) -> dict[str, str]:
