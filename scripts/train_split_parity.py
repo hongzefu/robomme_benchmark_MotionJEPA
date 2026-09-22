@@ -780,9 +780,24 @@ def select_rows(
     env: str | None,
     episode: int | None,
     shard: tuple[int, int] | None,
+    sequence: str | None = None,
 ) -> list[dict[str, object]]:
-    """从子集 manifest 里挑本次要跑的身份：单条、按 task 分片或全子集。"""
+    """从子集 manifest 里挑本次要跑的身份：单条、按 task 分片、显式序列或全子集。
+
+    ``sequence`` 形如 ``BinFill/0,PickXtimes/0,BinFill/1``：按给定顺序（允许同一环境重复出现）
+    排产，用于 P6 的「甲→乙→甲 在同一 PID 连续跑」。
+    """
     rows = list(manifest["rows"])  # type: ignore[arg-type]
+    if sequence:
+        index = {(str(row["task"]), int(row["episode"])): row for row in rows}
+        ordered: list[dict[str, object]] = []
+        for item in sequence.split(","):
+            task_name, _, episode_text = item.strip().partition("/")
+            key = (task_name, int(episode_text))
+            if key not in index:
+                raise IdentityFreezeError(f"{item} 不在子集 manifest 内")
+            ordered.append(index[key])
+        return ordered
     if env is not None:
         rows = [row for row in rows if row["task"] == env]
         if episode is not None:
@@ -951,7 +966,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     if args.gpus != "0":
         raise IdentityFreezeError("官方 _parse_gpus 只接受 \"0\"；集群 job 内 CUDA_VISIBLE_DEVICES=0")
 
-    rows = select_rows(manifest, args.env, args.episode, shard)
+    rows = select_rows(manifest, args.env, args.episode, shard, getattr(args, "sequence", None))
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     source_ref = ensure_source_ref(args.source_ref, args.source_repo)
@@ -1722,6 +1737,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--workers", type=int, default=1)
     run.add_argument("--gpus", default="0")
     run.add_argument("--shard", default=None, help="分片 k/N，按 task 切")
+    run.add_argument(
+        "--sequence", default=None,
+        help="P6：显式身份序列（如 BinFill/0,PickXtimes/0,BinFill/1），按给定顺序在同一 worker 进程里连续跑",
+    )
     run.add_argument("--source-repo", default=DEFAULT_SOURCE_REPO)
     run.add_argument("--source-ref", default=DEFAULT_SOURCE_REF)
     run.add_argument("--official-root", default=None, help="官方隔离源码目录，默认 <output>/official-src")
