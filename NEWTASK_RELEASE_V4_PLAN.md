@@ -237,7 +237,63 @@ def get_subgoal_with_index(idx, template, **kwargs):
 
 ## 二、逐环境改动
 
-### 2.0 派生基准总表，与四族共用的四条机制
+**怎么读这一节**：2.0 是跨环境的公共改动（只写一次，各环境表里不重复）；2.1 是十六个环境的
+xhard 派生基准；2.2 是四条动手前必须知道的机制；2.3 起是**十六张环境表**，每张四列
+（字段 / 含义 / 派生基准档的现值 / xhard 新值与注入什么），表后跟该环境的「实施要点」。
+2.7 与 2.16 是族内共用事项，不对应单个环境。
+
+### 2.0 全局要改什么
+
+下面是**跨环境的公共改动**，十六张环境表里不再重复。按"改完才能往下走"的依赖顺序排。
+
+#### ① 机制层（`src/robomme/robomme_env/utils/`）
+
+| 文件::锚点 | 改什么 | 为什么 | 关闭态 |
+|---|---|---|---|
+| `sampling_config.py::assert_native_decision` | 守卫**分叉**：原值模式仍与 `_native_decision(cls)` 逐键全等；新值模式改为"与本次 `sampling_config` 声明的 decision 一致" | 现在它逐键 JSON 全等比对，**改新值会当场被拒** | 原值模式行为逐字不变 |
+| `episode_spec.py::SPEC_KIND` / `SpecRecorder.__init__` | 增开 `native-newvalue/1`，按 `spec_kind` 分叉核验；`mismatches` 增加"归因到哪个 `decision` 键"的字段 | 原值模式下 `mismatches` 非空 = RNG 漂移 = 失败；**新值模式下它必然大量非空**，两种语义必须分开 | `native-parity/1` 的 `mismatches` 仍须为 0 |
+| `subgoal_language.py::get_subgoal_with_index` | 扩表到 20 + 规范英文序数兜底（方案见 E2） | 现在 idx ≥ 10 直接 `raise ValueError`，`PickXtimes` 的 `num [6,15]` 必崩 | **idx 0~9 输出逐字不变** |
+| `object_generation.py`（新增采样模式） | 新增**边角偏置**采样（`corner_bias ∈ [0,1]`，0 = 现有均匀采样）；新增**干扰容器**生成入口 | 全仓 grep `corner`/`annulus`/`min_radius` 无任何边角采样工具，要新写 | `corner_bias=0` 时与现有均匀采样逐字等价 |
+| 新增全局常量：干扰色池 | 黄 `(1,1,0,1)` / 青 `(0,1,1,1)` / 品红 `(1,0,1,1)`，六个环境共用（B2） | "其他颜色"需要一个跨任务一致的定义 | 不启用 distractor 时不被读 |
+| `VideoRepick` 的四处扫掠检查（D5） | 开关条件从 `if self._episode_spec is None: return` 改为"两条通道任一" | 它们只认**甲的旧通道**，V4 走 `native_episode_spec` ⇒ **一次都不会跑**，clutter+swap 会穿模不报错 | 甲通道行为不变 |
+
+#### ② 每个环境都要做的三件事
+
+1. **建 `xhard` 档**（按 2.1 的派生基准总表）：十三个新建、三个覆盖旧值；
+   `StopCube`/`MoveCube`/`InsertPeg` 先按 A6 建 `configs = {easy/medium/hard: 现值, xhard: 新值}`。
+2. **把新值接到消费点**：改 `_native_decision(cls)` 的返回结构（否则守卫拒），
+   并确认每个新键**真有消费点**（现存多个死键，见 2.2 ②）。
+3. **把新值取值点挂上 `SpecRecorder`**：新增的取值（干扰物位置/颜色、边角偏置后的 xy、
+   扩展后的 swap 次数与窗口……）都要经 `self._spec.value(path, drawn)` 走一遍，
+   否则规格里没有这些值、G4 的 `missing` 不为 0。
+   ⚠ **新增的随机调用一律追加在既有取值点之后**（红线 N5），否则平移随机流、毁掉原三档。
+
+#### ③ 链路层（`scripts/parity/`）
+
+| 新增 | 做什么 |
+|---|---|
+| 抽签段入口 | 按新 `decision` 跑 `make → reset → 导出 → close`（复用 `rollout/reset_check.py` 骨架），产出 `drafts.jsonl` |
+| 冻结段入口 | 纯 CPU，挑通过的规格、算来源指纹与 `identity_sha256`、做字段集合精确比对，产出 `specs.jsonl`；**复用甲的 `candidates/io.py` 纯函数**（`canonical_json`/`digest`/`record_sha256`/`identity_sha256`） |
+| `train_split_parity.py::run` | 增加"读 `specs.jsonl` 跑一个分片"的模式，结果落 `results.jsonl` |
+
+#### ④ 推理侧
+
+| 改什么 | 约束 |
+|---|---|
+| `env_record_wrapper/episode_config_resolver.py::BenchmarkEnvBuilder` | 增加一条**并列**的 from-spec 构建路径；`dataset="train"/"test"/"val"` 的行为**逐字不变**；`runtime` 四项 env kwargs 必须与快照 header 逐字相等，不等直接拒绝起环境 |
+| `scripts/eval/`（新建，E1 已批） | 新值评估入口 + `eval_results.jsonl` + `eval_summary.json`；**不改 `scripts/evaluation.py`** |
+
+#### ⑤ 测试与快照
+
+- **必改**：`test_swap_schedule_generic.py`、`test_episode_action_sampling.py`、`test_window_timeline.py`
+  里锁着旧 xhard「4~5 次」语义的断言（A7 作废旧 xhard 后必然失配）。
+- **必加**：decision 消费点检查、新值 mismatch 归因、`specs.jsonl` 封套反例、
+  pick=3 / swap≥4 的任务条数断言、`get_subgoal_with_index` 的前十项不变 + 扩展项 + 兜底。
+- **不动**：`tests/_shared/contract_builder_fixture.py` 与 `test_injection_delivery.py`（属甲的契约链路，红线 N6）。
+- **重导** `configs/newtask-v2/native_sampling.json`（E3 已批）：改源码后 `--check-config` 会对基线报红；
+  重导后当前那 46 项既有失败可能一并消解，**须重新测基线**。
+
+### 2.1 派生基准总表
 
 **所有改动都落在新增的 `xhard` 档（口径 12），原三档一个数都不动。** 十六个环境的派生基准与起手工作：
 
@@ -264,6 +320,8 @@ def get_subgoal_with_index(idx, template, **kwargs):
 > 连 `cube` 键都没有；medium 才是"3 块 + swap `[2,3]`"的常规结构，`swap [8,12]` 接得上。
 > 下面 Reference 族里关于"hard 改 clutter 要统一 `bin_{i}` 命名、作废 `hard_round_order`"的整段讨论
 > **因此不再适用**——从 medium 派生完全绕开了它。
+
+### 2.2 四条共用机制
 
 下面四条是源码核实出来的**全局约束**，任何一个环境动手前都要先过一遍。
 
@@ -295,278 +353,138 @@ V4 走的是 `native_episode_spec`（乙的通道），所以**这些检查一�
 就是这么写的）。clutter 把密度推高后，**实际块数可能少于设定值而没有任何信号**。V4 要在规格里记
 "请求数 vs 实际数"，并把不相等直接判为该局失败。
 
-### 2.1 Counting 族（BinFill / PickXtimes / SwingXtimes / StopCube）
+### 2.3 BinFill（派生自 hard）
 
-**这一族有两条「不改就必然全部失败」的硬限制，排在所有工作之前。**
+**要做**：全部 clutter、12 块、color 3、put_in `[5,7]`。
 
-- **`StopCube::step` 写死 `for segment in range(5)`。** 方块只在 5 趟内往返，而 `stop_time` 现在的取值域
-  `[2,5]`（`high_exclusive=6`）正好与之精确耦合。`number` 提到 `[6,15]` 后，方块在 `5*move_interval` 步
-  之后就不再移动，**第 6 次及以后的"经过目标"根本不存在** ⇒ 必然失败。必须改成按实际停止序号展开，
-  同时注意 `start_pos/end_pos` 的 `segment % 2` 交替逻辑。
-- **`utils/subgoal_language.py::get_subgoal_with_index` 在 idx ≥ 10 直接 `raise ValueError`。**
-  `PickXtimes::_load_scene` 的 `for i in range(self.num_repeats)` 把 `i` 原样传进去 ⇒ **`num` 改 `[6,15]` 必崩**。
-  对照组：`SwingXtimes` 用的是自带兜底的 `ordinals[i] if i < len(ordinals) else f"{i+1}th"`，所以 `[4,10]` 没事。
-  修法二选一：扩这张序数表，或把 PickXtimes 改成 SwingXtimes 那种兜底写法。**待决**。
-
-#### BinFill：全部 clutter、12 块、color 3、put_in [5,7]
-
-| 改什么 | 落到哪个键 | 现值 | 硬限制与风险 |
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
 |---|---|---|---|
-| clutter | `decision.layout_mode` | `"native_dynamic"` | **`_resolve_sampling_config` 里有一句硬守卫 `if decision.get("layout_mode") != "native_dynamic": raise SamplingConfigError("本轮只支持原布局模式")`**；且全仓 grep `clutter` **只命中一行注释**——**clutter 的摆放逻辑根本不存在，要新写** |
-| 块数 12 | `configs[难度].spawn_cubes` | easy/medium/hard = `[4,6]`/`[8,10]`/`[10,12]`（闭区间） | **好消息**：容量模拟显示 12 块在现区域（中心可行域 0.36×0.46 m、`min_gap=0.02`、`max_trials=256`）**100% 放得下**，饱和点在 16~20 之间。hard 上界本来就是 12，今天已经在跑 |
-| color 3 | `configs[难度].color` | 1/2/3 | 不抽随机数，只作 `torch.randperm(3)[:num_colors]` 的切片长度 |
-| put_in [5,7] | `configs[难度].put_in_numbers` | `[1,3]`/`[2,4]`/`[3,5]`（闭区间） | 投入 7 块**没有物理容量问题**（入孔判定会把方块 `set_pose` 移走，不堆叠）。但单色最多分到 7，**逼近 `get_subgoal_with_index` 的 idx<10 上限**，再加码就越界 |
+| `decision.layout_mode` | 方块摆放模式 | `"native_dynamic"` | **`"clutter"`（新增模式，代码不存在要新写）**；注入 `layout.mode` |
+| `decision.configs.xhard.spawn_cubes` | 本局方块总数 | `[10,12]`（闭） | **`[12,12]`**；注入 `objects.spawn_total` 与实际生成数 |
+| `decision.configs.xhard.color` | 本局出现几种颜色 | `3` | **`3`（不变）**；注入 `objects.colors_present` |
+| `decision.configs.xhard.put_in_numbers` | 要投入孔板的总数 | `[3,5]`（闭） | **`[5,7]`**；注入 `objects.put_in_total` 与逐色 `target_count` |
+| `native.put_in_color` | 投入哪几种颜色 | `[2,3]`（闭） | 规则不改；注入 `objects.target_pool` |
+| `native.dynamic` | 开局是否全部出现 | `randint(0,2)` 转 bool | **固定 `False`**（D6）；注入 `layout.dynamic` |
+| `native.cubes.region_*` / `min_gap` | 方块可行域与间距 | 中心 `[-0.1,0]`、半边长 `[0.2,0.25]`、`min_gap` 调用点写死 `cube_half_size` | **不动**（B1：12 块在现区域 100% 放得下，饱和点 16~20）；注入 `layout.cubes[].xy/yaw_rad` |
+| `native.board` / `native.button` | 孔板与按钮位姿 | 板基位 `[0.15,0,0]` + 三组偏移；按钮中心 `[-0.2,0]` | 不动；注入 `layout.board.{xy,yaw_deg}`、`layout.button_xy` |
+| `native.initialize_color_order` | 每次初始化的颜色遍历顺序 | 每次 `randperm` | 不动；注入 `initializations[].color_order` |
 
-**三条要一起处理的**：
+**实施要点**
 
-1. **静默截断 + `IndexError` 组合。** `_load_scene` 的 `except RuntimeError: logger.debug(...)` 不 raise 不补生成
-   ⇒ `len(all_cubes)` 可能少于 `total_spawn`；而 `_initialize_episode` 的 `cube = cube_collection[i]`
-   （`for i in range(target_number)`）**没有长度保护** ⇒ **clutter 缩小区域后必然 `IndexError`**。这是本族最高优先级。
-2. **`min_gap` 是调用点写死的字面量**（`spawn_random_cube(..., min_gap=self.cube_half_size, ...)`），
-   `NATIVE_SAMPLING.positions.cubes.min_gap` 只是个说明字符串、运行时不被读。放宽/收紧间距必须改调用点。
-3. **`dynamic` 与块数的隐式时间耦合。** `step` 里 `for idx in range(1, len(cube_list)): lift_and_drop_objects_back_to_original(..., end_step=idx*100, ...)`，
-   12 块 3 色时单色 4~6 块 ⇒ `end_step` 到 400~600，最后一块要 200~300 步才落回。**若 clutter 的本意是"静态密集"，
-   应同时把 `dynamic` 钉成 False**，否则密集摆放的视觉前提被"方块还没落回"破坏。**待决**。
+- **clutter 要新写。** `_resolve_sampling_config` 里有硬守卫 `if decision.get("layout_mode") != "native_dynamic": raise`，
+  而全仓 grep `clutter` **只命中一行注释** ⇒ 摆放逻辑根本不存在。
+- **D1 必须先修**：`_load_scene` 的 `except RuntimeError: logger.debug(...)` 不 raise 不补生成，
+  而 `_initialize_episode` 的 `cube_collection[i]` **没有长度保护** ⇒ 缺块即 `IndexError`。
+- `min_gap` 是**调用点写死的字面量**，`positions.cubes.min_gap` 只是说明字符串、运行时不被读。
+- `dynamic` 是 generator 播种后的**第一次抽样**，xhard 固定 False 会改变 xhard 自己的随机流（可接受），
+  **但绝不能影响原三档**。
+- `put_in [5,7]` 单色最多分到 7，**逼近 `get_subgoal_with_index` 的 idx<10 上限**（全局改动①已扩表到 20）。
+- `SAMPLING_OPERAND_PATHS` 冻结了 `parameters.BinFill.configs` 与 `positions.BinFill.cubes.*` ⇒ E3 重导快照。
 
-另：`SAMPLING_OPERAND_PATHS` 冻结了 `parameters.BinFill.configs` 与 `positions.BinFill.cubes.*`，
-一动 `--check-config` 就会对基线 `94449db` 报"原版操作元不一致"，须同步重导快照。
+### 2.4 PickXtimes（派生自 hard）
 
-#### PickXtimes：target 推向边角、color 3、num [6,15]、加其他颜色 distractor
+**要做**：target 位置推向边角、color 3、num `[6,15]`、加其他颜色 distractor。
 
-| 改什么 | 落到哪个键 | 现值 | 硬限制与风险 |
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
 |---|---|---|---|
-| num [6,15] | `decision.number_range[难度]`（闭区间，在 `__init__` 抽） | `[1,3]`/`[1,3]`/`[4,5]` | **上限 10**（见本节开头的 `get_subgoal_with_index`），15 必崩 |
-| color 3 | `decision.color[难度]` | 1/3/3 | hard 本来就是 3 |
-| 推向边角 | `decision.target_cube_position_policy` | 中心 `[-0.1,0]`、`region_half_size=0.2` | `spawn_random_cube` 只有 `x = x_low + u*(x_high-x_low)` 的**均匀采样**，全仓 grep `corner`/`annulus`/`min_radius` **无任何边角采样工具 ⇒ 要新增采样模式**。**且与下条冲突**：目标块被推到边角，会把圆盘挤向中心，**反而更简单**；而 `target_cube_position_policy` 与 `goal_position_policy` 现在是**同一区域** |
-| distractor | `decision.distractor` | `None` | 见下 |
+| `decision.number_range.xhard` | 同一目标重复抓放次数 | `[4,5]`（闭，在 `__init__` 抽） | **`[6,15]`**；注入 `objects.num_repeats` |
+| `decision.color.xhard` | 出现几种颜色 | `3` | **`3`（不变）**；注入 `objects.color_order` |
+| `decision.target_cube_position_policy` | **目标方块**的位置采样 | 中心 `[-0.1,0]`、半边长 `0.2`、均匀 | **加 `corner_bias`**（边角偏置，新增采样模式）；注入 `layout.cubes[].xy` |
+| `decision.goal_position_policy` | **放置圆盘**的位置采样 | **与上同值同区域** | **拆成独立一套**（C1：圆盘可留在中间）；注入 `layout.goal` |
+| `decision.distractor` | 干扰物 | `None`（无消费点） | **3 个、黄/青/品红各 1**；注入 `objects.distractors[]` |
+| `native.color_and_target_selection` | 颜色排列与目标块选择 | `randperm` → `randint` → `randint(0, len(all_cubes))` | 规则不改，但**目标候选池要与 `all_cubes` 解耦**；注入 `objects.target_cube_id` |
+| `native.button` | 按钮位姿 | 中心 `[-0.2,0]`、range `[0.1,0.4]` | 不动；注入 `layout.button_xy` |
 
-**这个环境的真正瓶颈不是方块、是后生成的那个目标圆盘。** 方块本身 3~12 块都 100% 放得下，
-但 `spawn_random_target`（`radius=0.04`、`min_gap=0.04`、`avoid` 含全部已放方块）的成功率随方块数急剧下降：
+**实施要点**
 
-| 已放方块数 | 3（现 hard） | 5 | 6 | 8 | 10 | 12 |
-|---|---|---|---|---|---|---|
-| 圆盘放置成功率 | 100% | 98.7% | 93.7% | **66.0%** | **27.3%** | **6.0%** |
+- **D2 必须先修**：`spawn_random_target` 失败后 `except` 里没有 `return`/`raise`，紧接着
+  `setattr(self, "target", target)` ⇒ **`UnboundLocalError`**。
+- **真正的瓶颈是后生成的圆盘**，不是方块。方块 3~12 块都 100% 放得下，但圆盘（`radius=0.04`、
+  `min_gap=0.04`、避让全部方块）成功率随方块数急剧下降：3 块 100%、**8 块 66%**、10 块 27%、**12 块 6%**
+  ⇒ 加 3 个 distractor 后必须**放大 `goal_position_policy` 区域，或把生成顺序改成"先放圆盘再放方块"**。
+- **distractor 的三处污染**：①`target_cube_idx = randint(0, len(all_cubes))` 会把干扰物抽成目标
+  ⇒ 改为从显式候选列表抽；②`target_color_name` 靠 `in self.red_cubes/blue_cubes/green_cubes` 三分支回填，
+  新颜色全不命中 ⇒ **保留前一次的残值**（不是 None，更隐蔽）；③`non_target_cubes` 被 `failure_func` 用
+  ⇒ 干扰物**必须**在里面，抓错才算失败。
+- **双真值**：`_load_scene` 用硬编码 `color_groups` 字面量，而 `NATIVE_SAMPLING.parameters.color_pool`
+  **声明了却从未被读** ⇒ 改错地方会"看起来改了其实没生效"。
+- `for idx, group in enumerate(...)` 与内层 `for idx in range(cubes_per_color)` **变量遮蔽**。
 
-而一旦失败就撞上**未绑定变量**：`except RuntimeError: logger.debug(...)` 之后没有 `return`/`raise`，
-紧接着 `setattr(self, "target", target)` ⇒ **`UnboundLocalError`**。加 distractor 前必须先做两件事：
-① 修这个分支；② 放大 `goal_position_policy.region_half_size`，**或者把生成顺序改成"先放圆盘再放方块"**。
+### 2.5 SwingXtimes（派生自 hard）
 
-**distractor 的三处污染**（与 SwingXtimes 同构）：
-- `objects.target_cube_idx = torch.randint(0, len(self.all_cubes), (1,))` ⇒ **distractor 会被抽成目标块**。
-  要改成从显式候选列表里抽。
-- `target_color_name` 靠 `if target_cube in self.red_cubes / blue_cubes / green_cubes` 三分支回填，
-  新颜色三条都不命中 ⇒ **保留前一次 `target_color_idx` 的残值**，指令文本与实际目标颜色不符。
-- `non_target_cubes = [c for c in all_cubes if c != target_cube]` 被 `failure_func` 用 ⇒
-  **distractor 必须在这个列表里**，抓错才算失败。
+**要做**：number `[4,10]`、加其他颜色 distractor。
 
-另两处：`_load_scene` 的 `color_groups` 是**硬编码字面量**，而模块级 `NATIVE_SAMPLING.parameters.color_pool`
-**声明了却从未被读**（双真值，改错地方会"看起来改了其实没生效"）；`for idx, group in enumerate(color_groups)`
-与内层 `for idx in range(cubes_per_color)` **变量遮蔽**，`cubes_per_color` 一变大就会计数错乱。
-
-#### SwingXtimes：number [4,10]、加其他颜色 distractor
-
-| 改什么 | 落到哪个键 | 现值 | 硬限制与风险 |
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
 |---|---|---|---|
-| number [4,10] | `decision.number_range[难度]`（闭区间，`__init__` 抽） | `[1,3]`/`[1,2]`/`[3,3]` | **序数表有兜底，10 轮安全**；`max_swings = num_repeats*2` 随之自动放大，无写死上限 |
-| distractor | `decision.distractor` | `None` | 见下 |
+| `decision.number_range.xhard` | 摆动轮数（一轮左右各一次） | `[3,3]`（闭，`__init__` 抽） | **`[4,10]`**；注入 `objects.num_repeats` |
+| `decision.color.xhard` | 出现几种颜色 | `3` | 不变；注入 `objects.color_order` |
+| `decision.distractor` | 干扰物 | `None`（无消费点） | **3 个、黄/青/品红各 1**；注入 `objects.distractors[]` |
+| `native.color_pool` | 颜色池 | 红/蓝/绿（**真被消费**） | 扩入干扰色；注入逐块 `color` |
+| `native.cube_region` / `target_regions` | 方块与两个圆盘区域 | 方块中心 `[-0.1,0]` 半边长 `0.25`；圆盘 `[-0.1,∓0.2]` 半边长 `0.1` | **不动**（容量宽松：3~12 块 100% 放下）；注入 `layout.cubes[]/targets[]` |
+| `native.swing_thresholds` | 摆动判定阈值 | `distance 0.03`、`z 0.12`、`height 0.1` | 不动；进 `sampling_trace` |
 
-**加第四种颜色的第一道硬墙是 `KeyError`**：`_load_scene` 里
-`_color_lists = {"red": (...), "blue": (...), "green": (...)}`，随后
-`"list": _color_lists[entry["name"]][0]` ⇒ 往 `color_pool` 加第四色**直接 `KeyError`**。
-必须同时给新颜色建 `self.<color>_cubes` 列表，或把 `_color_lists` 改成动态建表。
-（注意：SwingXtimes 的 `color_pool` **是真被消费的**，这点与 PickXtimes 相反。）
+**实施要点**
 
-容量宽松：区域 0.46×0.46 m，3~12 块全部 100% 放下，**加 3~6 个 distractor 不需要放大区域**。
-但两个圆盘区域各只有 0.2×0.2 且与方块区域重叠，distractor 多了会压缩圆盘可行集 ⇒ 抬高 seed 重试率
-（这里失败是 `raise SceneGenerationError`，不像 PickXtimes 那样崩在未绑定变量上）。
+- **加第四色的第一道硬墙是 `KeyError`**：`_load_scene` 里 `_color_lists = {"red":…, "blue":…, "green":…}`
+  随后 `_color_lists[entry["name"]][0]` ⇒ 往 `color_pool` 加新色**直接 KeyError**
+  ⇒ 必须同时给新色建 `self.<color>_cubes` 列表或改成动态建表。
+- **序数表本环境有兜底**（`ordinals[i] if i < len(ordinals) else f"{i+1}th"`），所以 10 轮不崩——
+  这与 PickXtimes 是关键差异。但全局改动①统一扩表后更稳。
+- 目标候选池与 `target_color_name` 回填的污染与 PickXtimes **完全同构**，同样要改。
+- `max_swings = num_repeats*2` 随之自动放大；10 轮 = 20 次摆动，`step` 的迟滞阈值
+  （enter 0.03/0.12、exit 0.04/0.3）在长序列里**累积抖动误计一次就整局失败**。
+- 任务条数 `2*num_repeats+3` ⇒ 10 轮 23 条，注意步数预算。
 
-风险：`max_swings` 的迟滞阈值（enter 0.03/0.12、exit 0.04/0.3）在 10 轮=20 次摆动的长序列里，
-**累积抖动误计一次就整局失败**；任务条数 `2*num_repeats+3` ⇒ 10 轮 23 条，`run_example.py` 的
-`MAX_STEPS=300` 明显不够（`evaluation.py` 是 1300）。
+### 2.6 StopCube（派生自"现值即 hard"，A6）
 
-#### StopCube：速度最快档、number [6,15]
+**要做**：速度最快档、number `[6,15]`。**本环境原本没有难度分档**（无 `configs`，`difficulty` 无消费点），
+按 A6 先建 `configs = {easy/medium/hard: 现值, xhard: 新值}`。
 
-`StopCube` **没有难度字典**——类里无 `config_*`、无 `configs`，`self.difficulty` 被赋值但**全文件无消费点**。
-两个量都在 `decision` 里：
-
-| 改什么 | 落到哪个键 | 现值 | 硬限制与风险 |
+| 字段 | 含义 | 现值（= 新建的 hard） | xhard 新值 / 注入什么 |
 |---|---|---|---|
-| 最快档 | `decision.move_interval_choices` | `[60, 80, 120]`，`randint` 半开等概率抽 | `move_interval` 是**单程步数**，值越小越快 ⇒ 最快档 = 只留 `[60]` |
-| number [6,15] | `decision.stop_time_range` | `low=2, high_exclusive=6` ⇒ 实际 `[2,5]` | **撞 `range(5)`**（见本节开头） |
+| `decision.move_interval_choices` | 速度档位（单程步数，**越小越快**） | `[60, 80, 120]` 等概率抽 | **`[60]`**（最快档）；注入 `actions.move_interval` |
+| `decision.stop_time_range` | 第几次经过目标时停 | `low=2, high_exclusive=6` ⇒ 实际 `[2,5]` | **覆盖 `[6,15]`**（半开则 `low=6, high_exclusive=16`）；注入 `actions.stop_time` |
+| `native.target` / `button` / `color` | 目标与按钮位姿、方块颜色 | 目标 xy 各 `uniform(-0.1,0.1)`；方块色 `rand(3)`（**本来就是任意 RGB**） | 不动；注入 `layout.target_xy/button_xy`、`objects.cube_rgb` |
+| `native.route_rotation` | 路线整体旋转 | `uniform(-30,30)` 度 | 不动；注入 `actions.rotation_deg` |
+| `native.motion_segments` / `time_rules` | 往返段数、按钮时刻、停止窗口 | **`step` 里写死 `for segment in range(5)`**；`steps_press = move_interval*(stop_time-0.5)`；窗口 `[move_interval*(stop_time-1), move_interval*stop_time]` | **段数改为按实际停止序号展开**；注入 `actions.segments[]/steps_press/stop_window` |
 
-**速度与判定阈值必须一起评估，否则不是"更难"而是"几乎不可能"**：
+**实施要点**
 
-- 停止窗口宽度恒等于 `move_interval`：`stop_time_range = (move_interval*(stop_time-1), move_interval*stop_time)`。
-  取最快档 ⇒ 容错从 120 步**砍半到 60 步**。
-- 而 `is_obj_stopped_onto` 的距离阈值是 `cube_half_size*3 = 0.06`，一趟 0.6 m / 60 步 = 0.01 m/step
-  ⇒ **方块只在约 ±6 步内落在阈值内**。
-- `interval` 恒为 30（按按钮的提前量），最快档下"提前 30 步去按"= 半趟，`solve_button` 的实际耗时若超 30 步
-  就会错过窗口。
+- **`for segment in range(5)` 不改就必然全部失败。** 方块只往返 5 趟，而 `stop_time` 现取值域
+  `[2,5]` 与之精确耦合；`number [6,15]` 后第 6 次起的"经过目标"**根本不存在**。
+  改时注意 `start_pos/end_pos` 的 `segment % 2` 交替逻辑。
+- **速度与判定阈值必须一起看**（C4 已授权自行调整）：停止窗口宽度恒等于 `move_interval`，
+  取 60 ⇒ 容错从 120 步**砍半**；而 `is_obj_stopped_onto` 的阈值 `cube_half_size*3 = 0.06`
+  配 0.01 m/step ⇒ **方块只在约 ±6 步内落在阈值内**；`interval` 恒 30 的按钮提前量 = 半趟。
+- **三处随 number 线性膨胀**：`static_checkpoints = range(100, steps_press-interval, 100)`
+  在 `60 × 15` 下变成 **9 条** "remain static" 任务（现 hard 上限 6 条）；
+  `evaluate` 的超时判据 `current_step > move_interval*stop_time` ⇒ 900 步；上游 `MAX_STEPS` 要跟上。
+- **`utils/vqa_options.py::_options_stopcube` 复刻了同一套 checkpoint 公式** ⇒ 改环境侧必须同步改它，
+  否则 VQA 选项与实际子目标错位。
 
-**还有三处会随 number 线性膨胀**：`static_checkpoints = range(100, int(steps_press - interval), 100)`
-在 `move_interval=60, stop_time=15` 时变成 **9 条 "remain static" 任务**（现 hard 上限是 6 条）；
-`evaluate` 的超时判据 `current_step > move_interval * stop_time` ⇒ 900 步；上游 `MAX_STEPS` 要跟上。
-**并且 `utils/vqa_options.py::_options_stopcube` 复刻了同一套 checkpoint 公式**——改环境侧不同步改它，
-VQA 选项就与实际子目标错位。
+### 2.7 四个 Unmask 环境的共用事项
 
-#### 本族的四条「先修再改」
+**① 干扰容器怎么放**（B3/B13 已定）：做成**额外容器**，放在现 region 之外、相机可见处，
+3 个里 1~2 个内含 cube，**一律不参与 swap**。落实的关键是——
 
-1. `get_subgoal_with_index` 的 idx ≥ 10 上限（卡 PickXtimes 的 15）。
-2. `PickXtimes::_load_scene` 的 `target` 未绑定（`UnboundLocalError`）与 `BinFill` 的静默吞 `RuntimeError`
-   + `cube_collection[i]`（`IndexError`）——两处都是**场景一变拥挤才暴露**的既有缺陷。
-3. 目标候选集合：PickXtimes / SwingXtimes 的 `randint(0, len(all_cubes))` 与三色 `in` 回填，是 distractor 的必经改造点。
-4. `assert_native_decision` 等值守卫（全族）＋ `SAMPLING_OPERAND_PATHS` 基线比对（仅 BinFill 受影响）。
+| 要点 | 怎么做 |
+|---|---|
+| 不被选成交换搭档 | 干扰容器**单独存 `distractor_bins`，不进 `self.spawned_bins`**。两个 Swap 环境的最近邻搜索遍历的就是 `spawned_bins` ⇒ 天然排除，**不用改搜索逻辑** |
+| 不进碰撞证据与绑定核验 | `_verify_swap_binding` / `_object_states_for_collision` / `_check_swap_sweep_from_actual` 同样只认 `spawned_bins` ⇒ 一并排除 |
+| 不进揭示动画 | `step` 的 `for i in range(step_bin_scan)` + `hasattr(self, f"bin_{i}")` 只扫 `bin_<i>` ⇒ 干扰容器**不要用这个命名** |
+| 采样区域 | 外环 `max(|x|,|y|) ∈ [0.2675, 0.45]`，见下方 B13 实测 |
+| 随机流 | 干扰容器的位置抽样**必须追加在全部既有取值点之后**（红线 N5） |
 
-### 2.2 Permanence 族（VideoUnmask / ButtonUnmask / VideoUnmaskSwap / ButtonUnmaskSwap）
-
-**头号阻碍：`ButtonUnmaskSwap::_refresh_swap_schedule` 是写死的三分支**，只处理 `swap_times` 等于 1/2/3；
-`swap_times >= 4` 时**三个分支全不命中 ⇒ `self.swap_schedule` 从未被赋值 ⇒ `step` 里的
-`len(self.swap_schedule)` 直接 `AttributeError`**。而 `_load_scene` 也只建了 `swap_pair1/2/3_idx1` 三套槽位。
-做 swap `[6,8]` 必须**同时**改这两处，漏一处就是运行时崩。参照物现成：`VideoUnmaskSwap::_refresh_swap_schedule`
-已经是通式（`64 + 50*k`），且带 `for k in range(3, self.swap_times)` 的槽位循环。
-
-#### pick=3：四个环境全都挡，但挡法不同
-
-| 环境 | 任务构造里的分支 | 设 pick=3 的实际结果 | 索引取法 |
-|---|---|---|---|
-| VideoUnmask | `if pick_count[难度] > 1:` | **只生成 2 抓**（不是 1 抓） | 写死 `self.bin_0` / `self.bin_1`、`color_names[0]` / `[1]` |
-| ButtonUnmask | 同上 | **只生成 2 抓** | 同上；但 `failure_func`/`solve` 被包成单元素列表，照抄时要保持形态 |
-| VideoUnmaskSwap | `if self.pick_times == 2:` **严格相等** | **只生成 1 抓 ⇒ 反而更简单** | `pickup_selected_indices = [0, 1]`，在 `NATIVE_SAMPLING.parameters.object_selection` 里 |
-| ButtonUnmaskSwap | `if self.pick_times == 2:` **严格相等** | **只生成 1 抓** | 写死 `selected_bins[0]` / `[1]`；**没有** `pickup_selected_indices` 这个键 |
-
-对象层面都够抓：四个环境的 `selected_bins` / `bin_2` 与 `color_names[2]` 都存在（各档 `bin >= 3`）。
-
-**同一个坑在指令文本里复现一遍**：`utils/task_goal.py::get_language_goal` 里，两个 Swap 用
-`self.pick_times == 2`、两个非 Swap 用 `configs[难度]['pick'] > 1`，pick=3 会产出**与实际子目标序列不一致的
-指令文本**，而这个文本还会进视频文件名与 HDF5 metadata。`tests/lightweight/test_TaskGoal.py` 的
-`test_videounmask_pick_one/two`、`test_videounmaskswap_pick_one/two` 需同步。
-
-**`evaluate()` 都不用改**——四个环境的成功判定完全交给 `sequential_task_check` 按 `task_list` 顺推，
-任务多了自然顺延；`is_bin_pickup` 只看 `z > 0.15`，**不看颜色**。
-
-⚠ `VideoUnmaskSwap::_resolve_sampling_config` 末尾有一道额外铁闸：对 `parameters.object_selection` 与
-`parameters.swap_selection` 做 `json.dumps` 全等比对，不等就 `ValueError`。**所以不能通过 `sampling_config`
-把 `pickup_selected_indices` 改成 `[0,1,2]`**，必须直接改源码里的 `NATIVE_SAMPLING` 字面量。
-
-#### decision 块的读写不对称——改错一边就"看起来改了其实没生效"
-
-| 环境 | swap/pick 真正从哪读 | bin 从哪读 | decision 里的死键 |
-|---|---|---|---|
-| VideoUnmask / ButtonUnmask | `_load_scene` 读 `decision.pick_count`；但 `task_goal` 读**类属性** `configs[...]['pick']` | `decision.bin_layout_policy.count` | `distractor` |
-| VideoUnmaskSwap | **`parameters.configs`**（由 `_resolve_sampling_config` 的 `setdefault` 从 `cls.configs` 拷来） | 同上 | **`swap_count_range`、`pick_count_range`、`swap_speed_multiplier`、`distractor` 全是死键** |
-| ButtonUnmaskSwap | **`decision.swap_count_range` / `pick_count_range`**（与上一行相反） | **`parameters.bin_count`**（native） | `swap_speed_multiplier`、`distractor` |
-
-#### swap 次数：窗口、步数与预算
-
-窗口通式 `[64 + 50k, 64 + 50(k+1))`，起点 64、每段 50 步。`step` 的遍历没有写死上限。实测历史总步数
-（取自 `artifacts/train-parity/**` 的 `timestep_count`）与外推：
-
-| 环境 | 现 hard 中位/最大 | 目标 swap 次数 | 估计总步（含第三抓 +155） |
-|---|---|---|---|
-| VideoUnmaskSwap | 457 / 586 | 8 | ≈862 / ≈991 |
-| VideoUnmaskSwap | — | 12 | ≈1062 / ≈1191 |
-| ButtonUnmaskSwap | 461 / 555 | 6 | ≈766 / ≈860 |
-| ButtonUnmaskSwap | — | 8 | ≈866 / ≈960 |
-
-对照三条上限：`RecordWrapper` 的 `fail_safe_limit = 2000` 都不超；评测侧 `max_steps=1300`
-（实际 `max_steps_without_demonstration = 1302`，**只统计非 demonstration 段**）——这里有个关键差异：
-
-- **VideoUnmaskSwap 的第一个任务是 `static` 且 `demonstration=True`**，观看交换的 `64+50n` 步**不计入**配额
-  ⇒ 12 次 swap 的实际非演示步只有约 527，余量极大。
-- **ButtonUnmaskSwap 所有任务 `demonstration` 都是 `False`**（第一项就是"按第一个按钮"），
-  **那段观看交换的步数计入配额** ⇒ 8 swap + 3 pick 的最大估计 ≈960 对 1302，**余量只剩约 25%**。
-  速度 ×1.5（50→33 步）能把这段从 464 压到 328，正好是有效对冲。
-
-**真正的风险不在步数上限，而在单条墙钟**：`generate_dataset_newseed.py` 的单条超时（600 秒）；
-且 VideoUnmaskSwap 在注入态的子步 SAT 检查只在 `_in_swap_window()` 内跑，swap 窗口总长从 150 步涨到 600 步
-⇒ 检查量 ×4（注释里实测该环境从 ~47 秒涨到分钟级）。
-
-#### swap 速度 ×1.5：50 是分散的字面量，还有外部常量与测试绑着
-
-`50/1.5 = 33.33`，取整规则**待决**。要同步的引用点（确认过的）：
-
-1. 两个 `_refresh_swap_schedule` 里的字面量（VideoUnmaskSwap 一处通式、ButtonUnmaskSwap **六处**分散在三分支）；
-2. `step` 里预交换锁定的 `end_step=32*2`（VideoUnmaskSwap）与 `start_step=64`（ButtonUnmaskSwap）——
-   **必须等于首段 swap 的 start**，否则出现空窗或重叠；
-3. `scripts/injection/rollout/windows.py` 的模块级常量 `SWAP_START, SWAP_LEN = 64, 50` 与 `unmask_swaps`；
-4. `tests/lightweight/test_swap_schedule_generic.py`（硬断言 `base + 50*k`）与
-   `test_window_timeline.py`（硬断言 `64+50*k`，以及 demo 段长按 **6 帧对齐** `6*ceil((64+50n)/6)`——取整会改变对齐量）；
-5. `windows.py::MAX_SEGMENT_FRAMES = 400` 的"单 subgoal 超 400 帧判慢"，在 swap ≥ 8 时
-   static 段 = `64+50n` ≥ 464 **会把正常样本误判为"磨"**。
-
-`ButtonUnmaskSwap` 那边有个现成挂钩位：`NATIVE_SAMPLING.parameters.swap_window = {start_step: 64,
-duration_steps: 50}` **声明了但一处都没被消费**——改造时应让 `_refresh_swap_schedule` 真的去读它，
-而不是在六处字面量上手改。同理 `parameters.swap_path`（`lane_offset` / `smooth` / `keep_upright`）也未被消费，
-`step` 里是内联字面量。
-
-顺带一条：`swap_flat_two_lane` 的 `keep_upright` 与 `lock_cube_offset` 两个形参**在函数体内一次都没被引用**，
-四元数混合是无条件执行的——所以"keep_upright 会不会受取整影响"这个问题不存在，它根本没生效。
-
-#### clutter bin（只 VideoUnmask / ButtonUnmask 要做）
-
-现值：region 中心 `[0,0]`、`region_half_size=0.2`、`min_gap = cube_half_size * min_gap_factor(=2) = 0.04`、
-`max_trials=256`、`yaw_scale_deg=90`、bin 数 easy/medium/hard = 3/5/15、失败时 `except RuntimeError: break`。
-
-**现在的 hard 本来就放不满。** 按 `spawn_random_bin` 的判据做等价数值模拟（20 组种子）：
+**② 现有容器区域已接近饱和**：region 中心 `[0,0]`、`region_half_size=0.2`、
+`min_gap = cube_half_size × min_gap_factor(2) = 0.04`、`max_trials=256`，失败时 `except RuntimeError: break`。
+按 `spawn_random_bin` 判据做等价模拟（20 组种子）：
 
 | 请求容器数 | 3 | 5 | 8 | 10 | **15** |
 |---|---|---|---|---|---|
 | 实际放下（均值/最小/最大） | 3.0/3/3 | 5.0/5/5 | 8.0/8/8 | 9.75/9/10 | **10.25/9/12** |
 
-也就是说 `bin=15` 实际只放下 9~12 个，**而且因为 `break` 完全无声**。ButtonUnmask 还更小一点——它的按钮
-区（中心 `[-0.2,0]` ± `[0.1,0.1]`）与容器 region（x∈[-0.2,0.2]）重叠。
-
-要加密必须动三者之一并同时抬 `step_bin_scan`：放大 `region_half_size`（受机器人基座可达性约束）、
-降 `min_gap_factor`（2→1 可显著提容量，但 `solve_pickup_bin` 的抓取通道会变窄）、提 `max_trials`（收益最小，已近饱和）。
-**`step_bin_scan = 15` 是真上限**：`step` 里 `for i in range(step_bin_scan)` + `hasattr(self, f"bin_{i}")`，
-**第 16 个及以后的容器不会被揭示动画处理**，画面语义会不一致。
-
-另：两个 Swap 环境**不做 clutter**，但它们的 `for i in range(bin)` 直接取 `region[i]`，
-**bin 超过锚点数（三点/四点）会 `IndexError`**，不是静默 break。
-
-#### distractor：放桌面远比放容器安全
-
-四个环境的颜色都可以任意 RGBA（`spawn_fixed_cube` / `spawn_random_cube` 的 `color` 直通
-`RenderMaterial.set_base_color`，无白名单），颜色**不参与 `evaluate()`**，只进 `name` / `subgoal_segment` /
-`task_goal` 文本。`decision["distractor"]` 现值 `None` 且**全仓无消费点**。
-
-**但"做成额外容器"会污染交换搭档**：两个 Swap 环境的最近邻搜索都遍历 `self.spawned_bins` **全体**
-（VideoUnmaskSwap 读 `partner.position_axes`，ButtonUnmaskSwap 硬编码 `[:2]`）。干扰容器一旦进
-`spawned_bins` 就**会被选为 partner**；VideoUnmaskSwap 在注入态还会用 `_verify_swap_binding` 逐段核验，
-直接 `SpecBindingError`；ButtonUnmaskSwap 没有这个核验，于是**静默改变交换对**。
-**放桌面散块（`spawn_random_cube`）完全绕开这条链路**，是风险低得多的方案。**待决**。
-
-还有一条：藏物容器的选择是 `torch.randperm(hidden_bin_permutation_size=3)[:…]`，
-**结构上只会挑 bin_0..bin_2**；想把干扰块塞进 bin_3 必须另写路径——**不要动那个 `randperm(3)`**，
-它在随机流里的位置是冻结的（红线 R8），改了会平移其后所有取值。
-
-#### B3／B4 的落实要点（用户已拍板，这里写清怎么做）
-
-**B3：干扰做成额外容器，不是桌面散块。** 用户定的形态是——放在**目前生成区间之外、但相机能看到的位置**，
-**部分容器内有 cube**，**一律不参与 swap**。这否掉了我原先"桌面散块最安全"的建议，所以之前指出的
-partner 污染必须正面解决：
-
-| 要点 | 怎么做 |
-|---|---|
-| 不被选成交换搭档 | 干扰容器**单独存一个列表**（如 `distractor_bins`），**不进 `self.spawned_bins`**。两个 Swap 环境的最近邻搜索遍历的就是 `spawned_bins`，天然排除 ⇒ 不用改搜索逻辑本身，只要别把它们混进去 |
-| 不进碰撞证据与绑定核验 | `_verify_swap_binding` / `_object_states_for_collision` / `_check_swap_sweep_from_actual` 同样只认 `spawned_bins` ⇒ 一并天然排除 |
-| 不进揭示动画 | `step` 的 `for i in range(step_bin_scan)` + `hasattr(self, f"bin_{i}")` 只扫 `bin_<i>` 命名 ⇒ 干扰容器**不要**用这个命名 |
-| 位置区域 | 现 region 是中心 `[0,0]`、`region_half_size=0.2`。干扰容器要在它**之外**且相机可见 ⇒ **具体区域坐标待定**（新开放项 B13），需按前视相机视野反推 |
-| 部分内含 cube | 哪几个有、哪几个空，按固定比例还是随机？⇒ 一并在 B13 定 |
-| 随机流位置 | 干扰容器的位置抽样**必须追加在全部既有取值点之后**（红线 N5），否则平移随机流 |
-
-**B4：`SWAP_WINDOW_STEPS = round(50 / 1.5) = 33`。** 窗口变为 `[64 + 33k, 64 + 33(k+1))`。
-做法是把 50 提成**类级具名常量**再乘倍率取整，**不在六处分散字面量上手改**。要同步的下游：
-
-- `step` 里预交换锁定的 `end_step=32*2`（VideoUnmaskSwap）与 `start_step=64`（ButtonUnmaskSwap）——
-  它们必须继续等于**首段 swap 的 start**，即仍是 64（起点不变，只改段长）；
-- `scripts/injection/rollout/windows.py` 的 `SWAP_START, SWAP_LEN = 64, 50` —— ⚠ 这是**甲的链路**，
-  按红线 N6 不动；若 V4 要复用窗口工具则另起一份；
-- `tests/lightweight/test_swap_schedule_generic.py`（硬断言 `base + 50*k`）与
-  `test_window_timeline.py`（硬断言 `64+50*k`、demo 段按 6 帧对齐 `6*ceil((64+50n)/6)`）——
-  **取整后对齐量会变**，须同步改；
-- `windows.py::MAX_SEGMENT_FRAMES = 400` 的"单 subgoal 超 400 帧判慢"：33 步窗口下
-  static 段 = `64+33n`，n=12 时 460 仍 > 400 ⇒ 该阈值仍会误判，需在 V4 侧另定。
+⇒ **现在的 hard（`bin=15`）本来就放不满**，实际只有 9~12 个，而且 `break` 完全无声。
+`step_bin_scan = 15` 还是真上限：**第 16 个及以后的容器不参与揭示动画**。
 
 #### B13 实测：相机可见范围与干扰容器容量
 
@@ -597,202 +515,364 @@ partner 污染必须正面解决：
 （保证与现 region 内的容器不干涉），上界 0.45 保证容器在画面里仍有约 10 px、位置明显。
 **含 cube 比例按用户定的「3 个里 1~2 个有」**，建议实现为"随机取 1 或 2 个装 cube"。
 
-**一个正向副作用**：`ButtonUnmaskSwap` 的步数余量原本只剩约 25%（8 swap + 3 pick ≈960 对 1302，
-且它所有任务 `demonstration=False` ⇒ 观看交换那段计入配额）。33 步窗口把这段从 464 压到 **328**，
-正好对冲掉大部分风险。
+**③ swap 速度 ×1.5 的取整**（B4 已定）：`SWAP_WINDOW_STEPS = round(50/1.5) = 33`，
+窗口变 `[64 + 33k, 64 + 33(k+1))`，**起点 64 不变**。做法是把 50 提成类级具名常量再乘倍率取整，
+**不在分散字面量上手改**（`ButtonUnmaskSwap` 有六处）。要同步的下游：`step` 里预交换锁定的
+`end_step=32*2`（VideoUnmaskSwap）与 `start_step=64`（ButtonUnmaskSwap）须继续等于首段 start；
+`test_swap_schedule_generic.py` 与 `test_window_timeline.py` 的硬断言（含 demo 段按 6 帧对齐）。
+`scripts/injection/rollout/windows.py` 的 `SWAP_START/SWAP_LEN` 属**甲的链路、按 N6 不动**。
 
-#### 本族的两条连带
+**正向副作用**：`ButtonUnmaskSwap` 的步数余量原本只剩约 25%（它所有任务 `demonstration=False`
+⇒ 观看交换那段**计入** 1302 配额），33 步窗口把这段从 464 压到 **328**，正好对冲。
+对照 `VideoUnmaskSwap`：它第一个任务是 `static` 且 `demonstration=True` ⇒ 那段**不计入**配额，余量极大。
 
-- **`inject_fail_grasp` 的抽样空间随 pick 数变化。** `utils/task4recovery.py::task4recovery` 自动扫描含
-  `solve_pickup_bin` 的任务，pick 从 2→3 会把候选从 2 个变成 3 个，那次 `randint` 的结果分布随之改变；
-  VideoUnmask / ButtonUnmask 还把结果记进 `actions.recovery.selected_action_index`，**旧规格回注会不匹配**。
-- **颜色下标语义。** 干扰色若与目标三色共用 `color_names`，下标会被挤位——必须把"目标三色"与"干扰色"
-  分成两个列表。
+**④ `inject_fail_grasp` 的抽样空间随 pick 数变化**：`task4recovery` 自动扫描含 `solve_pickup_bin` 的任务，
+pick 2→3 会把候选从 2 个变 3 个，那次 `randint` 的分布随之改变；`VideoUnmask`/`ButtonUnmask` 还把结果记进
+`actions.recovery.selected_action_index` ⇒ **旧规格回注会不匹配**。
 
-### 2.3 Imitation 族（MoveCube / InsertPeg / PatternLock / RouteStick）
+### 2.8 VideoUnmask（派生自 hard）
 
-**先说两件会改变需求本身的事实。**
+**要做**：加其他颜色 distractor、clutter bin、pick 3。
 
-**① MoveCube 与 InsertPeg 根本没有难度分档。** 两个类里**没有** `configs` / `config_*`；`__init__` 算出
-`self.difficulty`（`seed % 3`）之后，**全文件再无任何读取点**。而 `env_metadata/train/` 里这两个任务的每条
-record 都带 `difficulty` 字段——**环境不读它**。所以这两个任务的"加大难度"等于**全局改参数**，
-不是"改某一档"。计划与配置都要按这个事实写。
-
-**②「stick 的转角更大，可以和桌面平行」原是重言式——杆现在已经与桌面平行；用户已澄清为「yaw 放宽到 ±180°」。** 证据链三段：
-`utils/object_generation.py::build_peg` 里长轴是 link 局部 x 轴；两个环境构造四元数都用
-`euler_angles_to_matrix(torch.tensor([[0.0, 0.0, yaw]]), convention="XYZ")`，**前两位恒为 0，只绕世界 z**；
-位置 `p=[x, y, 0.0]`，z 分量从头到尾没被改过。所以这句话**不可能**指 yaw 带来的"平行与否"变化。
-**用户 2026-09-22 澄清（开放项 A1）：yaw 从 ±45° 放宽到 ±180°，不引入 pitch/roll。**
-⇒ 杆仍在水平面内，**不需要 z 补偿**（否则会撞上"杆半厚 0.01 而中心在 z=0、下半截本来就埋在桌面下"这个问题）。
-
-**但 ±180° 与 Panda joint7 的 ±166° 限位直接冲突**（开放项 B11）：`grasp_and_lift_peg_side` 让夹爪
-q = `Rz(yaw)·Rx(π)`，yaw 直接透传腕关节。可行的解法是利用杆的长轴对称性做**朝向归约**（加 ±180° 使其落进限位内），
-但**两个环境不能同等处理**：`MoveCube` 的杆头尾同色（`peg_color` 的 head/tail 都是 `#EC7357`），归约安全；
-**`InsertPeg` 的杆头尾异色**（`head_rgb` 抽一次、`tail = 1 - head`）且 subgoal 文本是"grasp the **near/far** end"，
-归约会**改变抓的是哪一端**、改变任务语义。这条须在实施前定死。
-
-#### MoveCube：cube 与 stick 推向边角、转角更大、更难抓
-
-现值（全部在 `_load_scene`，`_initialize_episode` 只做复位与 `way_idx` 抽样）：
-peg 根点 `x ∈ [-0.05, 0.05]`、`y ∈ [±0.15, ±0.25]`、`z = 0`，yaw `[-45°, +45°]`；
-cube 候选中心 `x, y ∈ [-0.1, 0.1]`，拒绝判据"离 goal > `cube_half_size*5`"，`max_trials=128`；
-goal 区域 demo `region_half_size=0.15` / execution `0.1`。demo 与 execution **各抽一套**，代码是两段近乎复制的块。
-
-**边角推移的直接崩溃点**：局部函数 `_sample_cube_center` 在 128 次拒绝采样失败后 `return None`，
-而调用处紧接着 `float(cube_center[0])` ⇒ **`TypeError`，没有任何兜底**。推向边角 = 可行域变窄 + 更难满足
-与 goal 的距离判据 ⇒ **触发概率大增**。其后的 `spawn_random_cube` 还会在内部 256 次失败后 `raise RuntimeError`。
-
-**"更难抓"的失败是静默的，不会报错。** 抓取走求解器不是预置 pose，且分三条路
-（`self.ways = ["peg_push", "gripper_push", "grasp_putdown"]` 每局三选一，**三条都必须活着**，
-V3 已禁止"为了更难只留 peg_push"）。`grasp_and_lift_peg_side` 让夹爪 q = `Rz(yaw)·Rx(π)`，yaw 直接透传到腕关节，
-而 Panda 的 joint7 限位约 ±166° ⇒ **yaw 接近 ±180° 时 IK/`plan_screw` 大概率失败**；失败后走
-screw（1 次）→ RRT\* 重试，再失败则该段演示**被静默跳过、episode 继续跑完、最后判 fail**。
-表现是"成功率悄悄掉"而不是"报错"。**所以边角强度必须做成可调标量并先跑成功率扫描**，不能只看有没有异常。
-
-旁证：`record_dataset_MoveCube_metadata.json` 里已有 `seed 14602`（不是整百），InsertPeg 里有
-`13101 / 13201 / 13403 / 13602`——推测是原版遇到演示失败后 seed+1 重试留下的痕迹，**说明当前参数下就已经有失败率**。
-
-另一条：`spawn_random_cube` / `spawn_random_target` 的避让列表里**没有 peg** ⇒ 大 yaw 的杆与 cube/goal
-**现在就可以重叠生成，没人拦**。
-
-#### InsertPeg：多一根杆且离 target 更近、转角更大、更难抓
-
-现值：杆数实际由 `decision.peg_offsets = [0.1, 0, -0.1]` 的**长度**决定（`peg_count=3` 只在一次
-`randint(0, peg_count)` 里用过，且结果立刻被 `overridden_to=0` 覆盖）；目标杆**恒为 `peg_0`**；
-孔板 xy `[-0.1, 0.1]`、yaw `90°±20°`；杆 `x ∈ [-0.2, 0.2]`、`y ∈ [-0.3, 0.3]`、yaw `±45°`，
-拒绝判据"离孔板 > `radius*6` = 0.06"与"杆间 > `length*1.5` = 0.075"，`max_attempts=512` **耗尽直接 `raise RuntimeError`**（硬崩，不是软降级）。
-
-**"更近"与现有拒绝判据直接冲突**：`build_peg` 的几何是 head 占 `[-0.025, +0.025]`、tail 中心在 `x=-0.05`
-处占 `[-0.075, -0.025]` ⇒ **整根杆跨度 0.1 m，而最小间距只有 0.075 m** ⇒ **现行参数下两根杆本来就可能互相穿插**，
-靠物理弹开。再对第 4 根放松必然重叠。V3 明确写了"不擅自放松碰撞间距"⇒ **必须先问用户**：
-是放松间距、缩短 `length`、还是把"更近"定义为"落在 0.075~0.12 m 这个带内"。
-
-**目标识别可能从"更难"变成"不可判"**：`peg_head_color` 是 `torch.rand(3)` **在循环外只抽一次**，
-`tail = 1 - head` ⇒ **所有杆头尾同色、外观完全一致**；目标恒为 `peg_0`；subgoal 文本只有
-`"grasping the {near|far} end"`，语言目标只说 "the same peg you've picked before" ⇒
-**文本里没有任何区分"哪一根"的信息，全靠演示视频里的位置**。干扰杆越近，视觉依据越弱。
-建议定一个明确的下限距离并配一次人工看片验收。
-
-改动清单另有三处连带：`peg_count` 参与 `randint(0, peg_count)` 的**取值域**，改它会平移其后随机流（须按 R8 显式归因）；
-`initializations.{idx}.pegs.{i}` 会多出 `i=3`，G4 的 `missing`/`unused` 要同步；
-`vqa_options.py::_options_insertpeg` 的候选从 6 个涨到 8 个。
-还有个既有失败判据会更容易触发：执行段的 `failure_func` 里"**碰起任何一根非目标杆 = 立即判失败**"。
-
-#### PatternLock / RouteStick：最难情形 video 20~30 秒
-
-**这一条的结论完全取决于按哪个 fps 算，而两个口径给出的答案是相反的。** 三个数字都核实过：
-录像器 `RecordWrapper._video_write_mp4` 写死 **30 fps**；回放工具 `save_robomme_video` 默认 **20 fps**；
-仿真 `control_freq = 20 Hz`（1 个 env.step = 1 帧 = 0.05 s 仿真时间）。V3 已指定**按交付录像器的 30 fps 算**
-⇒ 20~30 秒 = **600~900 帧**。
-
-**RouteStick：实测演示帧数 = L × 50，整齐到没有例外。**（L 为段数；50 帧/段来自
-`solve_swingonto_withDirection` 的"贝塞尔 45 点 + 末端保持 5 点"，`follow_path` 一个位置一步。）
-
-| 难度 | L | 实测演示帧数 | @30 fps | @20 fps |
-|---|---|---|---|---|
-| easy | 2~3 | 100 / 150 | 3.3 / 5.0 s | 5.0 / 7.5 s |
-| medium | 4~5 | 200 / 250 | 6.7 / 8.3 s | 10.0 / 12.5 s |
-| hard | 4~7 | 200 / 350 | 6.7 / 11.7 s | 10.0 / 17.5 s |
-| xhard | 8~10 | 400~500 | **13.3 / 16.7 s** | **20.0 / 25.0 s** |
-
-⇒ **按 30 fps 要 L ∈ [12, 18]；按 20 fps 则现有 `xhard = [8,10]` 恰好已经达标、什么都不用改。**
-**用户 2026-09-22 已拍板按 30 fps（开放项 A2）** ⇒ RouteStick 取 `L ∈ [12,18]`（建议 `[12,15]` 留步数余量，见 B9），
-PatternLock 必须改 `grid` 或换搜索策略（B8）。
-结构上撑得住：`generate_dynamic_walk` 在 5 个节点的线性图上随机游走、**允许重复访问**，`steps` 任意大都合法。
-但要注意**执行段也是 L×50 帧**，加上 `solve_strong_reset(timestep=200)` 的 200 步，
-L=18 ⇒ 执行段 900 + 200 ≈ 1100，**逼近 `evaluation.py` 的 1300 与 `phase1_eval.py` 的 1500**
-（`max_steps_without_demonstration` 只数非演示步，演示段不受限）⇒ **推测 L > 约 22 必然被截断**。
-
-**PatternLock：现有结构几乎够不到。** 实测（62 个 episode）hard 演示帧数 93 / 157 / 257
-（3.1 / 5.2 / 8.6 s @30fps），而目标是 600~900 帧 ⇒ **差 4~6 倍**。
-路径搜索 `find_path_0_to_8` → `utils/adjacent.py::dfs_path` 是**简单路径 DFS**（`visited` 集合，不许重复节点）
-⇒ **段数硬上限 = R×C − 1**，hard 的 5×5 = 24 段 ≈ 744 帧 ≈ 24.8 s，**刚好摸到下沿**；
-但搜索是"随机起终点 + 随机邻居取第一条解"、不是长度定向搜索，`max_attempts=1000` 内命中这种近乎遍历全图的
-超长路径**概率极低**。要达标只能改 `grid`（如 6×6=36 节点）或换搜索策略——**两者都属 native 规则**，
-V3 明写"演示时长不自动授权改路径长度"⇒ **待决**。
-
-**顺带纠正一处过时信息**：V3 记载的"RouteStick 白球尾迹现为 10 步、官方 40 步"**已经不成立**——
-源码现在就是 40（`positions.tcp_trail.end_offset_steps = 40`，`step` 里消费），
-`tests/lightweight/test_native_restore_step2.py::test_tcp_trail_is_official_forty_steps` 断言必须等于 40。
-要切回 10 步得显式传 `sampling_config`。另注：`PatternLock::step` 的尾迹与按钮高亮是**写死的 `cur_step + 40`**，
-没有外提到 `_sampling`；若要统一两个环境的高亮口径，这两处要一并外提。
-尾迹不是纯装饰——它是会渲进 `front/wrist` 的 rgb 与 depth 的场景物体，属于进对拍的观测输入。
-
-**PatternLock 的其余现状**（V3 字段表未展开，这里补齐）：难度字典
-`config_easy {grid:3, length:[2,4]}` / `medium {4, [3,5]}` / `hard {5, [4,8]}`，**无 xhard**（传了会 KeyError）；
-`length` 语义是**节点数**不是段数；演示段与执行段**复用同一条路径**，中间用两个 `NO RECORD` reset 分隔；
-成功要同时过两道闸——`sequential_task_check` 全完成，且 `evaluate` 里 `recent_achieved == selected_labels`
-的字符串匹配；失败判据是"碰到任何既不是当前期望、也不是上一个的节点"；
-触碰阈值用默认的水平 0.01 m、z < 0.1（RouteStick 那边是 0.03 与 0.15）。
-
-`RouteStick::_resolve_sampling_config` 还有一道额外硬校验：`parameters.walk` 除 `direction.threshold`
-一个键外**必须完整保留原版**，否则 `ValueError`；改 `configs` 不受此约束。
-另记一个易踩陷阱：`RouteStick::__init__` 在**不传 `difficulty` kwarg** 时会无条件
-`self.difficulty = "easy"`（覆盖掉上面 `seed % 3` 的结果）。数据生成链路走 metadata 的 difficulty，实际不受影响。
-
-### 2.1 Reference 族（PickHighlight / VideoRepick / VideoPlaceButton / VideoPlaceOrder）
-
-#### PickHighlight：clutter、highlight [5,7]、block 颜色任意
-
-| 改什么 | 落到哪个键 | 现值 | 硬限制与风险 |
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
 |---|---|---|---|
-| highlight 数 | `decision.highlight_count[难度]`（源自 `config_*['pickup']`） | easy/medium/hard = 1/2/3 | **`randperm(len(all_cubes))[:k]` 在 `k > len` 时静默截断，没有任何断言**；必须同步抬 `spawn_count` 并加硬断言 |
-| 场上总块数 | `decision.spawn_count[难度]`（源自 `config_*['spawn']`） | 3/4/6 | highlight [5,7] ⇒ **spawn 必须 ≥ 7**；见下方容量估算 |
-| clutter 可行域 | `decision.cube_region` + `native` 的 `positions.cubes.min_gap_factor` | 中心 `[-0.1,0]`、`region_half_size=0.2`、`min_gap_factor=2`（⇒ `min_gap=0.04`）、`max_trials` 默认 256 | 估算：中心可行矩形约 0.36×0.36 m²，按 RSA 饱和密度估上限约 14 块，**256 次 trial 下实际稳放 8~10 块**，还要扣掉按钮占位（约 0.075×0.075 m，且 `randomize_range=(0.1,0.4)` 会漂）。**要真 clutter 需把 `min_gap_factor` 降到 1 或 0.5 并抬 `max_trials`**——该键在 `native` 块，不触发守卫 ① |
-| 颜色任意 | `native` 的 `parameters.color_pool` + `color_draw` | 红/蓝/绿三色，**逐块独立抽、可重复** | PickHighlight 是四个环境里**唯一 `task_goal` 不含颜色词**的（文案是 "all highlighted cubes"），`evaluate()` 也不看颜色。唯一要处理的是 subgoal 文案里的 `, which is {color}` 后缀 |
+| `decision.pick_count.xhard` | 要抓起几个容器 | `2` | **`3`**；注入 `objects.n_picks` 与 `objects.pick_order` |
+| `decision.bin_layout_policy.count.xhard` | 容器数 | `15`（**实际只放下 9~12**） | **clutter：具体数待实现时按容量定**；注入 `layout.bins[]` |
+| `decision.bin_layout_policy.region_*` | 容器区域 | 中心 `[0,0]`、半边长 `0.2` | 加密需同时调 `min_gap_factor` 与 `step_bin_scan`；注入逐容器 `xy/yaw` |
+| `decision.distractor` | 干扰物 | `None`（无消费点） | **3 个额外容器**（外环、1~2 个含 cube、不参与揭示）；注入 `objects.distractors[]` |
+| `native.bins.min_gap_factor` / `max_trials` | 间距与重试预算 | `2`（⇒ 0.04）/ `256` | 视 clutter 密度调；进 `sampling_trace` |
+| `native.step_bin_scan` | `step` 里遍历容器的上限 | **`15`** | **随容器数同步抬**；进 `sampling_trace` |
+| `native.color_order` | 藏物颜色排列 | `randperm(3)`，`_load_scene` 用**本地字面量**而非 `color_pool` | 规则不改；注入 `objects.color_order` |
+| `native.reveal_window` | 揭示窗口 | `[0, 64]` | 不动；注入 `actions.reveal` |
 
-**两条必须先决定的**：
+**实施要点**
 
-- **高亮视觉会连片。** 高亮实现是 `utils/statechange.py::highlight_obj` 在方块**正下方**加一个白色圆盘 actor，
-  `disk_radius=0.05` ⇒ 直径 0.10 m，是方块边长 0.04 m 的 **2.5 倍**；而现 `min_gap=0.04`、典型中心距 0.06~0.08 m，
-  **现在 3 个目标时白盘就可能相切**。5~7 块同时高亮（`highlight_window.simultaneous=True`，共用 `[10,100]` 窗口，
-  `step` 里没有任何按序号偏移）必然大面积连片，人眼与模型都分不出"哪几块被高亮"。要么缩 `disk_radius`
-  （现在 `step` 没给 `highlight_obj` 传这个参数），要么改用 `use_target_style=True` 的同心环。**待决。**
-- **误抓失败会激增。** 每个 pick 的 `failure_func` 是"抓起任何一块非目标即失败"，clutter 下这个概率直接上升。
+- **pick=3 现在只会生成 2 抓**：任务构造是 `if pick_count[难度] > 1:` 追加一次 putdown + 一次 pickup，
+  索引**写死** `self.bin_0` / `self.bin_1`、`color_names[0]` / `[1]` ⇒ 要改成按 `pick_count` 的循环。
+  对象层面够用（`bin_2` 与 `color_names[2]` 都存在）。
+- **`task_goal.py` 里同一个坑再来一遍**：它读的是**类属性** `configs[难度]['pick'] > 1`，
+  只有"1 抓 / >1 抓"两支 ⇒ pick=3 会输出"两个容器"的错误文本，而该文本还进视频文件名与 HDF5 metadata。
+  `tests/lightweight/test_TaskGoal.py::test_videounmask_pick_one/two` 要同步。
+- **`evaluate()` 不用改**：完全交给 `sequential_task_check` 顺推，`is_bin_pickup` 只看 `z > 0.15`、不看颜色。
+- 步数估算：hard 中位 329 → 加一抓约 **+155 ⇒ ≈485**，最大 399 → ≈555，远低于 1302 与失败保护 2000。
 
-**顺手发现的既有 bug（不在本轮范围，但改动时会被误认为新引入）**：首个 press-button 任务的
-`"failure_func": is_any_obj_pickup(self, [...])` **缺 lambda**，加载期就被求值成 `False`，而
-`sequential_task_check` 用 `task_entry.get("failure_func") or task_entry.get("failure")` 取值，`False` 被 `or`
-吞成 `None` ⇒ **这条失败判据从来没生效过**。要不要顺手修，需用户决定——修了会突然多出大量失败样本。
+### 2.9 ButtonUnmask（派生自 hard）
 
-#### VideoRepick：clutter、pick times [4,6]、颜色任意、swap 若启用则 [8,12]
+**要做**：与 VideoUnmask 完全相同（加 distractor、clutter bin、pick 3）。
 
-| 改什么 | 落到哪个键 | 现值 | 硬限制与风险 |
+字段表与 2.8 同构，差异只有三处：
+
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
 |---|---|---|---|
-| 重复抓放次数 | **`native` 的 `parameters.num_repeats`**（不是 `decision.num_repeats_range`，那是死键） | `low=1, high_exclusive=4` ⇒ 实取 1/2/3 | **半开区间**：[4,6] 要写 `low=4, high_exclusive=7`。另外 `generate_dataset_newseed.py::SAMPLING_OPERAND_PATHS` 冻结了这三个操作元，`--check-config` 会报"与原版操作元不一致"，须同步更新快照 |
-| swap 次数（**已定启用 `[8,12]`**，A3） | `parameters.configs[难度].swap_min/swap_max`（闭区间） | easy 1~2、medium 2~3、**hard 0**、xhard 4~5 | **发起者池写死 3 个**（⇒ 开放项 B12）：`_load_scene` 只建 `swap_pair1..3`，`for k in range(3, swap_times)` 靠 `swap_indices[k % 3]` 循环复用。swap 抬到 8~12 能跑但语义单调（反复是同 3 块发起）。窗口 `[start+50k, start+50(k+1))` 每段固定 50 步，12 次 ⇒ 600 步静止段，episode 显著变长 |
-| clutter | hard 用 `positions.hard_cubes`（中心 `[-0.1,0]`、`region_half_size=[0.2,0.25]`、`min_gap=cube_half_size=0.02`）；easy/medium 用 `positions.easy_medium_cubes` 的**三组锚点**（每块围绕一个锚点、`region_half_size=0.07`） | hard 5 轮 × 红蓝绿 = 15 块；easy/medium 3 块 | hard 区域估算饱和上限约 30 块，**现放 15 块，抬到 18~20 有余量**；**easy/medium 要 clutter 必须放弃锚点结构**，否则 3 个 0.07 半宽的小格各自最多塞 2~3 块 |
-| 颜色任意 | `_load_scene` 里的**局部字面量** `options`（`NATIVE_SAMPLING` 里没有 color_pool） | 红/蓝/绿 | 注入分支有 `idx = [item["name"] for item in options].index(spec["objects"]["color"])`，**依赖 name 字符串**，颜色连续化会打断这条路径 |
+| `native.button` | 按钮位姿 | 中心 `[-0.2,0]`、`randomize_range [0.1,0.1]`、`scale 1.5` | 不动；注入 `layout.button_xy` |
+| `native.constructor_rng` | 构造期一次 `randint(1,6)` | **不决定任何行为、只占随机流位置**（红线 R8） | **原样保留、不得删改**；进 `sampling_trace` |
+| 任务表结构 | — | **没有 `static` 任务**，第一项就是"按按钮"；揭示窗口 `[0,64]` 与"去按按钮"在时间上重叠 | 扩 pick 时保持这个结构 |
 
-**一条反直觉的代价**：easy/medium 现在是**三块同色**，目标靠"视频里被抓过"识别。若颜色任意导致三块异色，
-记忆任务会从"靠位置记忆"退化成"靠颜色记忆"，**反而更简单**。这一条要请用户确认是否接受。
+**实施要点**
 
-**hard 改 clutter 的连带**（⚠ **口径 12 之后这段不再适用**——xhard 从 medium 派生，不碰 hard；
-保留此段只为说明"为什么不从 hard 派生"）：hard 分支用 `name_prefix=f"cube_{group['name']}_{idx}"`，而 easy/medium 用
-`bin_{i}` 并 `setattr(self, f"bin_{i}", actor)`；`_cube_index_of`、`_object_states_for_collision`、
-`_verify_swap_binding` **全部假设 `bin_<i>` 命名**。hard 统一成扁平 clutter 时必须一并统一命名，
-且 `objects.hard_round_order.{idx}` 这个规格路径随之作废。另外 `scripts/injection/candidates/specs.py::_repick_group`
-里有一句 `raise SpecGenerationError("VideoRepick hard 已由用户排除，不生成规格")`——**那是甲的代码，本轮废弃，
-不必改**，但说明 hard 从未进过注入链路。
+- pick 分支同样是 `> 1`、索引同样写死 `bin_0`/`bin_1` ⇒ 同样只生成 2 抓。
+- 第一个 pickup 任务的 `failure_func` 与 `solve` 被包成**单元素列表** ⇒ 照抄循环时要保持这个形态。
+- 容器区域比 VideoUnmask **更小**：按钮区（中心 `[-0.2,0]` ± `[0.1,0.1]`）与容器 region（x∈[-0.2,0.2]）**重叠**。
+- 步数：hard 中位 373 → ≈530，最大 452 → ≈610。
 
-#### VideoPlaceButton / VideoPlaceOrder：video 里完成 2 个 block、各自放回原位
+### 2.10 VideoUnmaskSwap（派生自 hard）
 
-这两个是本轮**改动面最大**的，因为现有结构是"单演示对象"硬编码，不是"数量可配"。
+**要做**：swap `[8,12]`、pick 3、加 distractor、swap 速度 ×1.5。
 
-| 阻碍 | 锚点 | 现状 | 后果 |
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
 |---|---|---|---|
-| ~~**easy 场上只有 1 块**~~ | `config_easy['color'] = 1`、`cubes_per_color = 1` 写死 | 方块数 = color 值 | ~~硬阻塞~~ **已因口径 12 消解**：只做 xhard、从 hard 派生，hard 的 `color=3` ⇒ 场上 3 块，够演示 2 块。easy 不动 |
-| **演示模板是内联硬编码** | `VideoPlaceButton::_load_scene` 末段（不在 `_initialize_episode`）；`VideoPlaceOrder::_initialize_episode` | 没有 `demo_by_object` 这类函数，是一串 `tasks.append` | 扩 2 对象要重写整段序列，不是加个循环 |
-| **目标选择是单值** | `objects.target_cube_idx = randint(0, len(all_cubes))` | 单块 | 改成 `randperm(...)[:2]` ⇒ **平移其后全部随机流**（swap 的 randperm、`task_flag`、`which_in_subset`、`button_after_pair_index` 都在其后） |
-| **按钮插入位置公式失效** | `VideoPlaceOrder` 的 `button_task_index = k * 2 + 2` | `*2` 是"每个 visit 贡献 pick+drop 两条"的硬编码 | 2 个对象后 `pair_tasks` 结构变化，按钮会插进 pick 与 drop 之间，**直接毁掉"按钮前/后第 n 次放置"的可判定性**，公式必须重推 |
-| **before/after 答案映射** | `VideoPlaceButton` 的 `task_flag` / `target_target = target_0 if task_flag else target_1` | 单块的二选一 | 2 块后"按钮前最后一次放置""按钮后第一次放置"对应哪一块、哪个 target，要重新定义 |
-| **放回原位没有落点** | `solve_putonto_whenhold(target=...)` 与 `is_obj_dropped_onto(obj, target)` **都要 actor**（内部取 `target.pose.p`） | 演示末尾放的是**随机** `goal_site`（`_initialize_episode` 把它 z 压到 −0.05 隐藏），全仓**没有任何地方保存方块初始位姿** | 必须新建 home-site actor。**唯一安全的插入方式是 `spawn_random_target(randomize=False, region_center=<该方块 xy>)`——它不抽随机数，不会平移随机流**；且要放在所有其他 spawn 之后、`include_existing=False, include_goal=False, avoid=None` |
-| **颜色进指令文本** | `target_color_name` 由 `if target_cube in self.red_cubes / blue_cubes / green_cubes` 三分支反查，直接 f-string 进 `task_goal` | 三个按色分组的列表写死 | 颜色任意后三分支全不命中，`target_color_name` **保持 `color_groups[0]["name"]` 的残值**（不是 None，更隐蔽，会指向错误颜色）。本轮这两个环境用户没要求改颜色，但若 2 块演示要分别指代，指令文本必须换一套指代方式（如"视频里第一个被移动的方块"） |
-| **choice-action 候选表** | `utils/vqa_options.py::_options_videoplacebutton` / `_options_videoplaceorder` 的 `"available": env.targets` | home site 不在 `env.targets` 里 | 演示的"回原位"步若要走 choice-action 匹配会选不到，需扩 `available` |
-| **审计豁免要撤** | `scripts/parity/train_split_audit.py::NEUTRAL_KEYS` 里两条 `demo_object_count` 豁免 | 明文写"扩到 2 块时才会出现消费点" | 新增消费点后必须删豁免，否则审计把它当未声明偏差 |
+| **`native.configs.xhard.swap_min/max`** | 交换次数 | `[2,3]`（闭） | **`[8,12]`**；注入 `objects.n_swaps` |
+| **`native.configs.xhard.pick_min/max`** | 抓取个数 | `[2,2]` | **`[3,3]`**；注入 `objects.n_picks` |
+| `native.configs.xhard.bin` | 容器数 | `4` | 不变（本环境不做 clutter）；注入 `layout.bins[]` |
+| `native.object_selection.pickup_selected_indices` | 抓哪几个 | **`[0,1]`** | **`[0,1,2]`**；注入 `objects.pick_order` |
+| `decision.swap_speed_multiplier` | 交换速度倍率 | `1`（**死键，无消费点**） | **`1.5`，并真正接上消费点**；注入 `actions.swap_windows[]` |
+| `decision.distractor` | 干扰物 | `None`（**死键**） | **3 个额外容器**；注入 `objects.distractors[]` |
+| `native.containers` | 容器锚点与旋转 | 三角/直线/四点，局部半边长 `0.07`、整体旋转 `[0,180]` **弧度**、`min_gap` 内联 `0.02` | 不动；注入 `layout.type/theta_rad/bins[]` |
+| `native.swap_path` | 交换轨迹 | `lane_offset 0.07`、`smooth=True`、`keep_upright=True` | 不动（⚠ `keep_upright` 与 `lock_cube_offset` **在函数体内一次都没被引用**）；注入 `actions.swap_pairs[]` |
 
-另记：`additional_place` 三档全 `False` ⇒ `pre_flag`/`post_flag` 恒 0，`target_2`/`target_3` 分支**永不执行**
-（easy 只有 3 个 target，`target_3` 根本不存在）。这块死代码在重写演示模板时要一并处理。
+**实施要点**
+
+- **swap/pick 读的是 `parameters.configs`（native），不是 decision** —— `decision.swap_count_range` /
+  `pick_count_range` / `swap_speed_multiplier` **全是死键**。改错一边就"看起来改了其实没生效"。
+- **pick=3 现在只生成 1 抓、反而更简单**：分支是 `if self.pick_times == 2:` **严格相等**，3 会落到 else。
+- ⚠ **额外铁闸**：`_resolve_sampling_config` 对 `parameters.object_selection` 与 `swap_selection` 做
+  `json.dumps` 全等比对 ⇒ **不能从外部改 `pickup_selected_indices`**，必须改源码里的 `NATIVE_SAMPLING` 字面量。
+- **swap 8~12 结构上通得过**：`_refresh_swap_schedule` 已是通式，且有 `for k in range(3, swap_times)`
+  的槽位循环（发起者按 a,b,c 循环复用）。
+- 步数：8 次 ⇒ ≈862/991，12 次 ⇒ ≈1062/1191（含第三抓 +155）。**对 1302 配额安全**——
+  它第一个任务 `demonstration=True`，观看交换那段不计入。真正的风险是**单条墙钟**：
+  注入态的子步 SAT 检查只在 `_in_swap_window()` 内跑，窗口总长从 150 步涨到 600 步 ⇒ 检查量 ×4。
+- `bin` 超过锚点数会 **`IndexError`**（`for i in range(bin)` 直接取 `region[i]`），不是静默 break。
+
+### 2.11 ButtonUnmaskSwap（派生自 hard）
+
+**要做**：swap `[6,8]`、pick 3、加 distractor、swap 速度 ×1.5。
+
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
+|---|---|---|---|
+| **`decision.swap_count_range.xhard`** | 交换次数 | `[2,3]`（闭，**读 decision**） | **`[6,8]`**；注入 `objects.n_swaps` |
+| **`decision.pick_count_range.xhard`** | 抓取个数 | `[2,2]` | **`[3,3]`**；注入 `objects.n_picks` |
+| `native.bin_count.xhard` | 容器数 | `4`（**读 native**） | 不变；注入 `layout.bins[]` |
+| `decision.swap_speed_multiplier` | 交换速度倍率 | `1`（死键） | **`1.5`，接上消费点**；注入 `actions.swap_windows[]` |
+| `decision.distractor` | 干扰物 | `None`（死键） | **3 个额外容器**；注入 `objects.distractors[]` |
+| `native.swap_window` | 交换窗口 | `{start_step:64, duration_steps:50}`（**声明了但一处都没被消费**） | **改成真正被消费**，值取 `{64, 33}`；注入 `actions.swap_windows[]` |
+| `native.buttons` | 两个按钮 | 左 `[-0.2,-0.1]`、右 `[-0.2,0.1]`、range 各 `[0.05,0.05]` | 不动；注入 `layout.buttons[]` |
+| `native.anchors` | 容器锚点 | 四点/三角/直线 + `offset_scale 0.1`；**未被选中的分支仍照常消费随机数**（R8） | 不动，**不得省略未选中分支的抽样** |
+
+**实施要点**
+
+- **头号阻碍：`_refresh_swap_schedule` 是写死的三分支**（只认 1/2/3）。`swap_times >= 4` 时
+  **三个分支全不命中 ⇒ `self.swap_schedule` 从未被赋值 ⇒ `step` 里 `len(self.swap_schedule)` 直接
+  `AttributeError`**；`_load_scene` 也只建了三套发起者槽位。**必须同时改这两处**，
+  参照 `VideoUnmaskSwap` 的通式 + `for k in range(3, swap_times)` 循环。
+- **task_list 在 `_initialize_episode` 里构造**，不在 `_load_scene`（另外三个都在 `_load_scene`）。
+  pick 分支同样是 `== 2` 严格相等 ⇒ pick=3 只生成 1 抓；索引写死 `selected_bins[0]`/`[1]`，
+  本环境**没有** `pickup_selected_indices` 这个键。
+- **步数余量最紧**：本环境**所有任务 `demonstration=False`** ⇒ 观看交换那段**计入** 1302 配额。
+  8 swap + 3 pick 最大估计 ≈960，余量约 25%；速度 ×1.5 把这段压到 328 是有效对冲。
+- `_initialize_episode` 每次 reset 重建 task_list 并重跑 `inject_fail_grasp` ⇒ 见 2.7 ④。
+- partner 的最近邻是**硬编码 `[:2]`**（不像 VideoUnmaskSwap 读 `partner.position_axes`）；
+  本环境**没有** `_verify_swap_binding` ⇒ 干扰容器若混进 `spawned_bins` 会**静默改变交换对**、不报错。
+
+### 2.12 PickHighlight（派生自 hard）
+
+**要做**：clutter、highlight number `[5,7]`、block 颜色任意。
+
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
+|---|---|---|---|
+| `decision.highlight_count.xhard` | 同时高亮并要抓的目标数 | `3` | **`[5,7]`**；注入 `objects.highlight_ids` |
+| `decision.spawn_count.xhard` | 场上方块总数 | `6` | **`[8,10]`**（B5：实测只稳放 8~10）；注入 `objects.n_cubes` 与实际生成数 |
+| `decision.cube_region` | 方块采样区域 | 中心 `[-0.1,0]`、半边长 `0.2` | **不动**（B1）；注入 `layout.cubes[].xy/yaw` |
+| `native.cubes.min_gap_factor` | 间距系数 | `2` ⇒ `min_gap=0.04` | **不动**（B5 选了降 spawn 而非降间距） |
+| `decision.block_color_policy` / `native.color_pool` | 逐块颜色 | 红/蓝/绿，**逐块独立抽、可重复** | **颜色任意**；注入逐块 `color` |
+| `native.highlight_window` | 高亮时序 | `{start 10, end 100, simultaneous: True}`，所有目标**共用同一窗口、同时高亮** | 不动；注入 `actions.highlight_windows` |
+| `native.button` | 按钮位姿 | 中心 `[-0.2,0]`、range `[0.1,0.4]` | 不动；注入 `layout.button_xy` |
+
+**实施要点**
+
+- spawn `[8,10]` 的下界 8 ≥ highlight 上界 7 ⇒ 恒有余量。但仍要加硬断言：
+  `randperm(len(all_cubes))[:k]` 在 `k > len` 时**静默截断**，而 `except RuntimeError: break`
+  会保存已生成数量、不补抽 ⇒ 没有任何报错。
+- **高亮会连片（C3 已同意处理）**：高亮是在方块**正下方**加白色圆盘，`disk_radius=0.05`
+  ⇒ 直径 0.10 m 是方块边长 0.04 m 的 **2.5 倍**，而现 `min_gap=0.04`、典型中心距 0.06~0.08 m
+  ⇒ **3 块时就可能相切**，5~7 块必然糊成一片 ⇒ 缩小 `disk_radius` 或改用同心环。
+  ⚠ 现在 `step` 调 `highlight_obj` 时**没传 `disk_radius`** ⇒ 要先把参数接出来。
+- **误抓失败会激增**：每个 pick 的 `failure_func` 是"抓起任何一块非目标即失败"。
+- `task_goal` **不含颜色词**、`evaluate()` **也不看颜色** ⇒ 颜色任意对本环境几乎无代价，
+  唯一要处理的是 subgoal 里的 `, which is {color}` 后缀。
+- **D4 已定修复**：首个按钮任务 `failure_func` 缺 lambda ⇒ 这条判据从来没生效过。
+  补上后**原三档失败率可能上升**，V1 回归时单独观察。
+
+### 2.13 VideoRepick（**派生自 medium**）
+
+**要做**：clutter、pick times `[4,6]`、block 颜色任意、swap `[8,12]`（A3 已定启用）。
+
+> **为什么从 medium 派生**：hard 是 5 轮 × 红蓝绿 = 15 块的特殊结构、`swap=0`、连 `cube` 键都没有；
+> medium 才是"3 块 + swap `[2,3]`"的常规结构，`swap [8,12]` 接得上。
+
+| 字段 | 含义 | medium 现值 | xhard 新值 / 注入什么 |
+|---|---|---|---|
+| **`native.parameters.num_repeats`** | 同一目标重复抓放次数 | `low=1, high_exclusive=4` ⇒ **实取 1/2/3** | **`[4,6]` ⇒ 写 `low=4, high_exclusive=7`**（半开！）；注入 `objects.num_repeats` |
+| `decision.num_repeats_range` | 同上 | 有键但**无消费点（死键）** | **要么接上消费点、要么删**，不能只改它 |
+| `native.configs.xhard.swap_min/max` | 交换次数 | `[2,3]`（闭） | **`[8,12]`**；注入 `objects.n_swaps` |
+| `native.configs.xhard.cube` | 方块数 | `3` | **clutter：按容量定**（hard 那套区域可放 30+）；注入 `layout.cubes[]` |
+| `decision.layout_mode` | 摆放模式 | medium 用**三组锚点**（每块围绕一个锚点、局部半边长 `0.07`） | **clutter 必须放弃锚点结构**，改用整片区域（中心 `[-0.1,0]`、半边长 `[0.2,0.25]`） |
+| `decision.block_color_policy` | 逐块颜色 | 整局**三块同色** | **保持同色语义、色值任意**（C2）；注入 `objects.color` |
+| `native.swap_selection` | 发起者与搭档 | 发起者池**写死 3 个**（`swap_indices[k % 3]` 循环复用）；搭档为运行时 XY 最近邻 | **保持 3 个发起者**（B12）；注入 `actions.swap_pairs[]` |
+| `native.swap_timing` | 交换窗口 | 第 k 次 `[start+50k, start+50(k+1))`，每段固定 50 步 | 次数提到 8~12，**本环境不做速度 ×1.5**；注入 `actions.swap_windows[]` |
+| `native.button` | 按钮位姿 | 中心 `[-0.2,0]`、range `[0.1,0.1]` | 不动；注入 `layout.button_xy` |
+
+**实施要点**
+
+- **`num_repeats` 改错地方是最容易踩的坑**：`__init__` 读的是 **native** 的 `parameters.num_repeats`，
+  而 `decision.num_repeats_range` **没有消费点** ⇒ 只改 decision 会**静默沿用 1/2/3**。
+  另外 `SAMPLING_OPERAND_PATHS` 冻结了这三个操作元 ⇒ E3 重导快照。
+- **swap 12 次 × 50 步 = 600 步静止段**，episode 显著变长。
+- **clutter + swap 的穿模风险**：`swap_flat_two_lane` 的 `other_cube` 传的是"其余所有方块"，
+  `lane_offset=0.07` 的绕行车道极可能扫过旁观块；而 **D5 未修之前几何检查一次都不跑**
+  ⇒ **D5 是本环境的前置**。
+- **注入分支依赖颜色名字符串**：`idx = [item["name"] for item in options].index(spec["objects"]["color"])`
+  ⇒ 颜色连续化会打断这条路径。
+- easy/medium/hard 本身不动（口径 12），hard 那套 `cube_{color}_{idx}` 命名与 `hard_round_order`
+  规格路径**都不受影响**。
+
+### 2.14 VideoPlaceButton（派生自 hard）
+
+**要做**：video 里完成 2 个 block、各自放回原位，其余不变。
+
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
+|---|---|---|---|
+| `decision.demo_object_count` | 演示几个方块 | `1`（**死键**，审计里明文豁免） | **`2`**，并**新建消费点**；注入 `objects.demo_ids[]` |
+| `decision.demo_return_policy` | 演示完放哪 | `"native_random_goal_site"` ⇒ 放到随机 `goal_site`（z 被压到 −0.05 隐藏） | **`"return_to_origin"`**；注入 `actions.return_pose_by_object_id` |
+| `native.color.xhard` | 场上方块数（= color 值，`cubes_per_color=1`） | `3` | 不变 ⇒ **3 块够演示 2 块**（原 easy 只有 1 块的硬阻塞已因口径 12 消解） |
+| `decision.targets.xhard` | 目标台数 | `4` | 不变；注入 `layout.targets[]` |
+| `decision.swap.xhard` | 是否交换目标台 | `True` | 不变；注入 `objects.swap_pair_ids` |
+| `decision.additional_place.xhard` | 额外放置 | `False` ⇒ `pre_flag`/`post_flag` 恒 0，**`target_2`/`target_3` 分支永不执行** | 保持 `False`；这块死代码在重写模板时一并处理 |
+| `native.task_mapping` | before/after 答案映射 | `before→target_0`、`after→target_1` | **2 个对象后须重新定义**；注入 `objects.task_flag`、`actions.target_target_id` |
+
+**实施要点**
+
+- **演示模板是内联硬编码**（在 `_load_scene` 末段），不是"数量可配"的循环 ⇒ 要**重写整段序列**。
+- **目标选择改动会平移随机流**：`randint(0, len(all_cubes))` 改成 `randperm(...)[:2]`
+  ⇒ 其后的 swap randperm、`task_flag` 等全部平移。xhard 是新档、可接受，**但不得影响原三档**。
+- **"放回原位"需要一个 actor 作落点**：`solve_putonto_whenhold(target=…)` 与
+  `is_obj_dropped_onto(obj, target)` 内部都取 `target.pose.p`。全仓**没有任何地方保存方块初始位姿**。
+  **唯一不平移随机流的插入方式是 `spawn_random_target(randomize=False, region_center=<该方块 xy>)`**
+  （`randomize=False` 时不抽随机数），且放在所有其他 spawn **之后**、`include_existing=False`、
+  `include_goal=False`、`avoid=None`。
+- **`vqa_options.py::_options_videoplacebutton` 的 `"available": env.targets`** 不含 home site
+  ⇒ "回原位"步若走 choice-action 匹配会选不到，需扩 `available`。
+- **撤销审计豁免**：`train_split_audit.py::NEUTRAL_KEYS` 里 `demo_object_count` 那条。
+- `target_color_name` 由三分支反查后直接进 `task_goal` ⇒ 2 个对象要分别指代时指令文本要重新设计
+  （本轮不改颜色，风险较低）。
+
+### 2.15 VideoPlaceOrder（派生自 hard）
+
+**要做**：与 2.14 相同（video 里完成 2 个 block、各自放回原位，其余不变）。
+
+字段表与 2.14 同构，差异与**额外阻碍**：
+
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
+|---|---|---|---|
+| `native.visit_selection` | 访问哪几个目标台、顺序 | 抽 2~4 个有序台 | 不变；注入 `objects.visit_ids` |
+| `native.answer_selection` | 任务答案 | `which_in_subset` 取 1~序列长度 | 不变；注入 `objects.which_in_subset` |
+| **`native.button_insertion`** | 按钮插在第几步 | **`button_task_index = k*2 + 2`** | **公式必须重推**；注入 `actions.button_task_index` |
+| `decision.targets.xhard` | 目标台数 | `4` | 不变 |
+
+**实施要点**
+
+- **`button_task_index = k*2+2` 在 2 个对象下直接失效**：`*2` 是"每个 visit 贡献 pick+drop 两条"的硬编码；
+  两个对象后按钮会被插进 **pick 与 drop 之间**，**毁掉"按钮前/后第 n 次放置"的可判定性**。
+- 演示模板在 **`_initialize_episode`**（与 2.14 在 `_load_scene` 不同），改的位置不一样。
+- 其余（home site、随机流平移、`vqa_options`、审计豁免）与 2.14 相同。
+
+### 2.16 Imitation 族的两条前提
+
+**① MoveCube 与 InsertPeg 本来没有难度分档**：两个类都无 `configs` / `config_*`，`self.difficulty`
+算出来后**全文件无读取点**；`env_metadata/train/` 里它们每条 record 都带 `difficulty` 字段但**环境不读**。
+按 A6 建 `configs = {easy/medium/hard: 现值, xhard: 新值}`。
+
+**②「转角更大、可以和桌面平行」已澄清为「yaw 放宽到 ±180°」**（A1）。杆的长轴**现在就与桌面平行**
+（`build_peg` 的长轴是 link 局部 x 轴；两个环境构造四元数都用
+`euler_angles_to_matrix(torch.tensor([[0.0, 0.0, yaw]]), convention="XYZ")`，**前两位恒 0、只绕世界 z**；
+位置 `p=[x, y, 0.0]`）⇒ 不引入 pitch/roll、**不需要 z 补偿**。
+
+**±180° 与 Panda joint7 的 ±166° 限位冲突，按等价朝向归约解决**（B11）：
+`grasp_and_lift_peg_side` 构造的是 `grasp_pose_q = peg_q ⊗ Rx(π)`（**夹爪目标姿态**），
+而 `grasp_pose_p = pose.p` **原样不动**。推导
+`R_grasp(yaw+π) = Rz(yaw)·Rx(π)·Rz(π) = R_grasp(yaw)·Rz(π)` ⇒ 两者只差一个绕夹爪自身 approach 轴的 180°，
+对平行两指夹爪**夹持几何完全等价**。所以归约**只改夹爪姿态、不碰杆位姿**，
+head/tail 空间位置不变，`InsertPeg` 的 near/far 判定不受影响，**两个环境同等处理**。
+
+### 2.17 MoveCube（派生自"现值即 hard"，A6）
+
+**要做**：cube 与 stick 位置推向边角、stick 转角更大、更难抓。
+
+| 字段 | 含义 | 现值（= 新建的 hard） | xhard 新值 / 注入什么 |
+|---|---|---|---|
+| `decision.demo_layout.peg_position_policy` | 演示段杆位置 | `base_y_abs 0.2`、`jitter_span 0.1` ⇒ 根点 `x ∈ [-0.05,0.05]`、`y ∈ [±0.15,±0.25]` | **加 `corner_bias`**；注入 `layout.demo.peg_offsets` |
+| `decision.demo_layout.cube_position_policy` | 演示段方块位置 | `center_span 0.2`、`center_offset -0.1`、`region_half_size 0.05` | **加 `corner_bias`**；注入 `layout.demo.cube_xy` |
+| `decision.execution_layout.*` | 执行段布局 | **与 demo 逐键同值、但各抽一套** | 同样加 `corner_bias`，**两套不可合并**；注入 `layout.execution.*` |
+| `decision.peg_yaw_range` | 杆转角 | `span π/2`、`offset π/4` ⇒ **±45°** | **±180°**；注入 `layout.demo/execution.peg_yaw` |
+| `native.cube_rejection` | 方块拒绝采样 | `max_trials 128`、`min_distance_factor 5`（离 goal > `cube_half_size*5`） | 不动；进 `sampling_trace` |
+| `native.goal_regions` | 目标圆盘区域 | demo 半边长 `0.15`、execution `0.1` | 不动；注入 `layout.*.goal` |
+| `native.way_selection` | 每次初始化用哪种操作 | `["peg_push","gripper_push","grasp_putdown"]` 三选一 | **三条都必须活着**（V3 已禁"只留 peg_push"）；注入 `initializations[].way` |
+| `native.peg_size` | 杆尺寸 | `length 0.1`、`radius 0.01`（两次 rand 乘 0） | 不动，**两次抽样必须保留**（R8） |
+
+**实施要点**
+
+- **D3 必须先修**：局部函数 `_sample_cube_center` 在 128 次失败后 `return None`，
+  调用处紧接 `float(cube_center[0])` ⇒ **`TypeError`，没有兜底**。边角推移会让触发概率大增。
+  其后的 `spawn_random_cube` 还会在内部 256 次失败后 `raise RuntimeError`。
+- **"更难抓"的失败是静默的**：抓取走求解器（`grasp_and_lift_peg_side` 用 link 位姿、
+  `solve_pickup` 用 OBB 求解），失败后 screw（1 次）→ RRT\* 重试，再失败则该段演示
+  **被静默跳过、episode 继续跑完、最后判 fail** ⇒ **必须跑成功率扫描**，不能只看有没有异常。
+- `spawn_random_cube` / `spawn_random_target` 的避让列表里**没有 peg**
+  ⇒ 大 yaw 的杆与 cube/goal **现在就可以重叠生成，没人拦**。
+- 旁证：metadata 里已有 `seed 14602` 这种非整百 seed，推测是原版遇演示失败后 seed+1 重试的痕迹
+  ⇒ **当前参数下就已经有失败率**。
+
+### 2.18 InsertPeg（派生自"现值即 hard"，A6）
+
+**要做**：多生成一根 stick 且离 target stick 更近、stick 转角更大、更难抓。
+
+| 字段 | 含义 | 现值（= 新建的 hard） | xhard 新值 / 注入什么 |
+|---|---|---|---|
+| `decision.peg_offsets` | 杆数（**实际由它的长度决定**） | `[0.1, 0, -0.1]` ⇒ 3 根 | **4 个元素 ⇒ 4 根**；注入 `initializations[].pegs[]` |
+| `decision.peg_count` | 杆数（名义） | `3`，只在一次 `randint(0, peg_count)` 用过、**结果立刻被 `overridden_to=0` 覆盖** | 同步改为 `4`，⚠ 这会**改变那次抽样的取值域**、平移随机流（xhard 可接受） |
+| `decision.near_target_distractor` | 新杆相对目标杆的约束 | `None`（**无消费点**，V3 预留键） | **接上消费点**：第 4 根在现判据允许范围内**尽量贴近下限 0.075 m**（B6：间距判据不动） |
+| `decision.peg_yaw_range` | 杆转角 | `half_span_deg 45` ⇒ **±45°** | **±180°**（配 2.16 的等价朝向归约）；注入 `initializations[].pegs[].yaw` |
+| `native.peg_sampling` | 杆位拒绝采样 | `x ∈ [-0.2,0.2]`、`y ∈ [-0.3,0.3]`、离孔板 > `radius*6`(0.06)、杆间 > `length*1.5`(0.075)、`max_attempts 512` | **判据不动**（B6）；注入每根杆的 `xy` |
+| `native.box_pose` | 孔板位姿 | xy 各 `±0.1`、yaw `90°±20°` | 不动；注入 `initializations[].box_pose` |
+| `native.color` | 杆头颜色 | `head_rgb = rand(3)` **循环外只抽一次**，`tail = 1 - head` ⇒ **所有杆外观完全一致** | 不动；注入 `objects.head_rgb` |
+| `native.target_peg` | 目标杆 | `randint(0,3)` 抽完**立刻被 `overridden_to=0` 覆盖** ⇒ 恒为 `peg_0` | 不动；注入 `objects.target_peg_id` |
+
+**实施要点**
+
+- **"更近"与现有判据的张力**：`build_peg` 的几何是 head 占 `[-0.025,+0.025]`、tail 中心在 `x=-0.05`
+  占 `[-0.075,-0.025]` ⇒ **整根杆跨度 0.1 m，而最小间距只有 0.075 m**
+  ⇒ **现行参数下两根杆本来就可能互相穿插**，靠物理弹开。B6 已定**不放松间距**
+  ⇒ "更近"的幅度因此有限（最近就是 0.075 m），且这个既有穿插风险**保持原样、不修复**。
+- **`max_attempts=512` 耗尽会 `raise RuntimeError`**（硬崩，不是软降级）；加第 4 根会让预算更紧。
+- **目标识别**：4 根杆外观完全相同、目标恒 `peg_0`、subgoal 只说 `grasp the near/far end`
+  ⇒ **靠 video demo 判断**（C5 已确认这是既有设计，不是本轮引入的问题）。
+- 执行段 `failure_func` 里有"**碰起任何一根非目标杆 = 立即判失败**" ⇒ 干扰杆越近误抓率越高。
+- `initializations.{idx}.pegs.{i}` 会多出 `i=3` ⇒ G4 的 `missing`/`unused` 要同步；
+  `vqa_options.py::_options_insertpeg` 的候选从 6 个涨到 8 个。
+
+### 2.19 PatternLock（派生自 hard）
+
+**要做**：最难情形 video 演示 20~30 秒。**不改布局、只增加步骤长度**（B8）。
+
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
+|---|---|---|---|
+| `decision.grid.xhard` | 网格边长 | `5`（⇒ 25 个节点） | **不动**（B8：不改布局） |
+| `decision.length.xhard` | **节点数**（不是段数） | `[4,8]` | **`[20,25]`**；注入 `actions.path_nodes` |
+| `native.path_selection.max_attempts` | 路径搜索预算 | `1000`，**耗尽不报错、用最后一条** | **搜索策略改为长度定向**（否则随机 DFS 命中不了超长路径） |
+| `native.grid_geometry` | 网格几何 | 中心 `[-0.1,0]`、间距 `0.1` | 不动；注入 `layout.nodes[]` |
+| `native.motion_template` | 每段动作 | 每目标 `solve_swingonto` 两次 screw + `close_gripper` | 不动；注入 `actions.demo_actions` |
+| 运行记录 | 实际演示帧数 | 实测 hard 93 / 157 / 257 帧 ⇒ **3.1 / 5.2 / 8.6 s @30fps** | 目标 600~900 帧；记 `demo_frames/fps/duration_s` |
+
+**实施要点**
+
+- **不改布局时有物理上限**：`utils/adjacent.py::dfs_path` 是**简单路径 DFS**（`visited` 集合、不许重复节点）
+  ⇒ 段数上限 = `R×C − 1` = **24 段 ≈ 744 帧 ≈ 24.8 s** ⇒ **30 s 够不到**，实际只能落在 **20~24.8 s**。
+- **"只增加长度"必须配合改搜法**：现在是"随机起终点 + 随机邻居取第一条解"，
+  `max_attempts=1000` 内命中近乎遍历全图的超长路径**概率极低**。
+- **成功要过两道闸**：`sequential_task_check` 全完成，且 `evaluate` 里
+  `recent_achieved == selected_labels` 的字符串匹配。
+- 触碰阈值是**默认值**（水平 0.01 m、z < 0.1），比 RouteStick（0.03 / 0.15）严得多。
+- 失败判据：碰到任何既不是当前期望、也不是上一个的节点 ⇒ 路径越长，误触概率越高。
+- `step` 里的尾迹与按钮高亮是**写死的 `cur_step + 40`**、没有外提到 `_sampling`
+  （RouteStick 那边外提了）⇒ 若要统一口径需一并外提。
+
+### 2.20 RouteStick（派生自 hard）
+
+**要做**：最难情形 video 演示 20~30 秒。**不改布局、只增加步骤长度**（B9）。
+
+| 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
+|---|---|---|---|
+| `decision.configs.xhard.length` | **段数 L**（节点数 = L+1） | `[4,7]` | **`[12,15]`**；注入 `objects.L` |
+| `decision.configs.xhard.backtrack` | 是否允许立即回头 | `True` | 不变；注入 `objects.allow_backtracking` |
+| `native.walk` | 游走规则 | 节点 `[0,2,4,6,8]`、邻居 `[-1,1]`、端点强制反向 | **不动**（⚠ 受铁闸保护：除 `direction.threshold` 外改动即 `ValueError`）；注入 `actions.nodes` |
+| `native.yaw_deg` | 整排旋转 | `rand*60 − 30` ⇒ ±30° | 不动；注入 `layout.rotation_deg` |
+| `native.grid_geometry` | 网格与障碍柱 | 1×9、间距 `0.07`；柱位 1/3/5/7、半径 `0.015` 高 `0.1` | 不动；注入 `layout.node_poses/obstacle_poses` |
+| `native.tcp_trail.end_offset_steps` | 白球尾迹存活步数 | **`40`**（官方原值，已恢复） | 不动（`test_native_restore_step2.py` 锁死 40） |
+| 运行记录 | 实际演示帧数 | **实测 = L × 50，整齐无例外** | L=12~15 ⇒ 600~750 帧 ⇒ **20~25 s @30fps** |
+
+**实施要点**
+
+- **本环境天然支持"只增加长度"**：`generate_dynamic_walk` 在 5 个节点的线性图上随机游走、
+  **允许重复访问**，`steps` 任意大都合法 ⇒ 无需改搜法（与 PatternLock 相反）。
+- **50 帧/段的来源**：`solve_swingonto_withDirection` 的"贝塞尔 45 点 + 末端保持 5 点"，
+  `follow_path` 一个位置一步 ⇒ 实测正好 50，说明 IK 没失败过。
+- **执行段也是 L×50 帧**，加 `solve_strong_reset(timestep=200)` 的 200 步
+  ⇒ L=15 时执行段 750+200=950，**对 `evaluation.py` 的 1300 尚有余量**；
+  **L > 约 22 必然被截断** ⇒ 这是取 `[12,15]` 而非 `[12,18]` 的原因。
+- 尾迹**不是纯装饰**：它是会渲进 `front/wrist` 的 rgb 与 depth 的场景物体，属于进对拍的观测输入
+  ⇒ 演示变长会成比例增加尾迹累积渲染量。
+- 易踩陷阱：`__init__` 在**不传 `difficulty` kwarg** 时会无条件 `self.difficulty = "easy"`
+  （覆盖 `seed % 3`）。数据生成链路走 metadata 的 difficulty，实际不受影响。
 
 ## 三、新值规格怎么造、怎么冻
 
@@ -819,23 +899,24 @@ G4 的 `missing` / `unused`。
    「`mismatches` 数量与被 `decision` 覆盖的取值点数量一致」，并把每条 mismatch 归因到是哪个
    `decision` 键导致的——归不了因的 mismatch 仍然判失败（这才是新值模式下的 RNG 漂移检测）。
 
-### 3.2 造值走哪条路：两条路线，推荐 C
+### 3.2 新值规格由谁算出来：已定为「环境自己抽 + 导出」
 
-新值规格的 path 集合**必须与环境代码的取值点一一对应**，否则 G4 的 `missing` / `unused` 不可能为 0。
-这决定了造值器不能凭空写。两条可行路线：
+**问题是什么。** 每局要用的具体值（这局 spawn 几块、各在哪个 xy、swap 哪两个、第几步交换……）
+总得有人算出来。有两条路，**用户 2026-09-22 已选第 ① 条**：
 
-| | 路线 A：离线纯 CPU 造值器（甲的做法） | 路线 C：环境按新范围自抽 + 导出（**推荐**） |
+| | **① 环境自己抽 + 导出（已选）** | ② 另写一套离线造值器（甲的做法） |
 |---|---|---|
-| 怎么造 | 单独写一套 specs 生成器，逐环境复刻每个取值点的抽法与顺序 | 把新值写进 `sampling_config.decision`，**让环境自己按新范围抽**，`SpecRecorder` 导出模式把结果记下来 |
-| path 一致性 | 靠人工对齐，环境改了就得跟着改 | 天然一致，改环境不用改造值器 |
-| 双真值风险 | **有**——甲只覆盖四环境就写了一千多行 | **无** |
-| 要不要起仿真 | 不用，纯 CPU | 要，但只做 `gym.make` → `reset` → 导出 → `close`，不建 h5、不录像、不 step |
-| 可行性筛查 | 冻结前用独立 OBB 判据筛（与环境是两套判据） | reset 成功即布局可行（用的就是环境自己的判据）；「任务能否完成」仍要实跑才知道 |
+| 怎么做 | 把新值**范围**（如 `spawn 8~10`、`swap 8~12`）写进 `sampling_config` 传给环境，**环境按自己原有的抽样逻辑在新范围里抽**，抽完由 `SpecRecorder` 导出模式把结果记下来，写成 `specs.jsonl` | 单独写一个纯 CPU 程序，把十六个环境的取值逻辑**再实现一遍**，算出每局的值写进 jsonl，环境只负责读 |
+| 取值逻辑有几份 | **一份**（就在环境里） | **两份**（环境里一份、造值器里一份） |
+| 会不会和环境对不上 | 不会——规格的每个取值点就是环境跑出来的 | **会**。环境一改、造值器没跟上，产出的规格 `missing`/`unused` 立刻不为 0；甲只覆盖四个环境就写了一千多行 |
+| 占不占 GPU | **占**。但只做 `gym.make → reset → 导出 → close`，**不建 h5、不录像、不 step** | 不占 |
+| 复用现成骨架 | `scripts/injection/rollout/reset_check.py` 已经在做 make/reset/close，照搬即可 | 甲的 `candidates/specs.py`（但要从 4 个环境扩到 16 个） |
 
-**推荐路线 C**，理由是它消灭了双真值——这正是 V3 红线 R6 禁止继承甲的采样器的原因。
-代价是造值这一步要占 GPU（可复用 `scripts/injection/rollout/reset_check.py` 的骨架，它已经在做
-make/reset/close 且不套录像器）。**用户原话「jsonl 生成机制参考甲」，本方案理解为继承甲的 jsonl
-封套契约（见 3.3），而不是继承「纯 CPU 造值」这一实现细节**——这一条如果理解错了，请在实施前纠正。
+选 ① 的理由就是"取值逻辑只有一份"。V3 的红线 R6 之所以禁止继承甲的采样器，正是同一个道理。
+
+⚠ **这条路有一个必须注意的点**：环境"按新范围抽"本身就是在跑新值，所以**抽签段的产物已经是新值局**；
+冻结之后的实跑段是拿同一份规格**再跑一遍**。两次跑的随机种子相同、规格相同 ⇒ 理论上应逐位一致，
+这正好就是 V2 `NEWVALUE_REPLAY` 的判据。换句话说**抽签段与实跑段互为对照**，不需要额外造对照组。
 
 ### 3.3 从甲继承的 jsonl 封套契约
 
