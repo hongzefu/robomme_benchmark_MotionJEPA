@@ -53,9 +53,10 @@ VideoPlaceOrder），当时承诺「跑完再复验」。已补：用 `git workt
 216 次生成零失败、108 对比较零差异。两个 Video 环境的 C／D 两路是**用各自结构不同的配置文件**
 跑的（`color` 旧在 decision、新在 native），仍逐位相同。
 
-详见 [四环境同步复验](20260922-step6b-four-env-resync.md)。同一份报告里还记了一件事：
-**greatlakes 全分区 GPU 在 09-22 00:17～01:13 之间转为 `Exclusive_Process`，sapien 渲染器
-自此起不来**，在恢复前挡住一切集群上的生成（包括可选的步 7）。
+详见 [四环境同步复验](20260922-step6b-four-env-resync.md)。同一份报告里还记了一个坑：
+greatlakes 的 GPU compute mode 默认是 `exclusive`，sapien 的渲染器在该模式下起不来。
+**提交时显式带 `--gpu_cmode=shared` 即可恢复 `Default`**，5a／5c／5d 当时跑的就是这个状态，
+不影响逐位可比。
 
 ## 三、三条必须写进结论、不能淡化的边界
 

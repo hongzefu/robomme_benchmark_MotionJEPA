@@ -75,30 +75,49 @@ C／D 两路下逐位不变。
 产物：`artifacts/train-parity/local-recheck/{old,new}/<环境>/`，
 比较明细 `artifacts/train-parity/local-recheck/compare/<环境>/h5_pairs.jsonl`。
 
-## 四、顺带查出的阻塞：greatlakes 全分区 GPU 转为 Exclusive_Process
+## 四、顺带踩到的坑：GPU compute mode 与 `--gpu_cmode`
 
-集群路线第一步就失败了：B 路九条全部报
+集群路线第一步失败：B 路九条全部报
 `vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed`，日志里新出现
 `CUDA device 0 is in EXCLUSIVE or EXCLUSIVE_PROCESS mode` 警告。
 
-日志能把时间点卡死：
+### 原因与解法
 
-| 批次 | 含 EXCLUSIVE 警告 | 日志最后写入 |
-|---|---|---|
-| gl-5a / 5c / 5d / 5d-w4 | **0 / 152** | 09-21 19:08 ～ 09-22 00:17 |
-| gl-recheck | 6 / 12 | 09-22 01:14 |
-| gl-vktest（新 job，spgpu A40） | 1 / 1 | 09-22 01:17 |
+greatlakes 的 sbatch／srun 有一个选项：
 
-152 份日志一次没出现过，01:13 之后写的每份都有。**变更发生在 09-22 00:17～01:13 之间。**
+```
+--gpu_cmode=<shared|exclusive|prohibited>
+        Set the GPU compute mode on the allocated GPUs to
+        shared, exclusive or prohibited. Default is exclusive
+```
 
-排查过的（都不是原因）：
+**默认是 `exclusive`。** 而本链路在一个进程里需要两个独立的 GPU context——torch 的 CUDA
+context，加上 svulkan2 建 Vulkan logical device 时为 CUDA-Vulkan 互操作开的那个。
+`Exclusive_Process` 只给一个名额，torch 先拿到，Vulkan 再要就被拒。
 
-- 不是占位 job 的问题——新提交的独立 job 61705841（gl1508）同样失败。
-- 不是分区的问题——`gpu` 分区的 V100（job 61705900）同样 `Exclusive_Process`、同样失败。
-- 不是 srun 参数的问题——加 `--gres=gpu:1`、去掉 `--exact` 都试过。
-- 不是残留进程——`nvidia-smi` 显存 0 MiB、无任何 compute app。
-- 不是驱动变更——前后都是 595.71.05。
+**解法是提交时显式写 `--gpu_cmode=shared`。** 实测在既有的占位 job 上：
 
-唯一已知绕法是 `SAPIEN_DISABLE_RAY_TRACING=1`，但它换的是渲染路径，产物必然不再逐位相同，
-**对拍任务不能用**。这条在恢复前挡住一切集群上的生成，包括可选的步 7 全集 1600 条。
-四个占位 job 仍在跑（约剩 40 h），暂时留着；NFS 克隆已同步到 `460c996`。
+```
+srun --jobid=<hold> --overlap --exact --ntasks=1 --cpus-per-task=4 --gpu_cmode=shared ...
+MODE=Default
+RUN_PATH path=B identities=1 ok=1 failed=0 exit=0 elapsed_s=35.336
+VULKAN_FAILS=0
+```
+
+compute mode 变回 `Default`，生成正常。5a／5c／5d 当时跑的就是 `Default`，所以加这个参数是
+**回到原状态**，不影响逐位可比。
+
+### 仍未解释清楚的部分
+
+日志能把时间点卡死：gl-5a／5c／5d／5d-w4 共 152 份日志（09-21 19:08 ～ 09-22 00:17）零警告，
+01:13 之后写的每一份都有。也就是说**同样不带 `--gpu_cmode` 的提交，00:17 之前是 `Default`、
+01:13 之后是 `Exclusive_Process`**——这个开关是什么时候、因为什么生效的，从用户侧查不出来
+（`Prolog` 脚本与 `gres.conf` 在登录节点不可读，节点 BootTime 都是一两个月前、期间没重启）。
+结论上不重要：**以后所有提交都显式带 `--gpu_cmode=shared` 即可**，不要依赖默认值。
+
+### 记一笔教训
+
+我一度据此判断「全集群阻塞、只能报 ARC-TS」，并按这个判断往 `gpu`／`gpu-rtx6000`／`gpu_mig40`
+几个分区提了探针 job。这个判断是错的——**`sbatch --help` 里就写着解法**，代价是几个不该提交的
+job。排查外部环境问题时应先把命令自带的帮助与选项读完，再下"无解"的结论。
+（另：用户已明令 greatlakes 上只许用 `spgpu` 分区。）
