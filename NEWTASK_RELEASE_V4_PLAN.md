@@ -89,9 +89,9 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 
 | # | 项 | 问题 | 建议 |
 |---|---|---|---|
-| A1 | **「stick 可以和桌面平行」** | **杆现在已经与桌面平行**（四元数只绕世界 z、z 恒 0），这句话是重言式 | 请确认是 (a) yaw 从 ±45° 放到 ±180°，还是 (b) 加 pitch/roll 让杆立起。**若是 (b) 必须同步补 z 补偿**（现在下半截 1 cm 埋在桌面下）并重估抓取策略 |
-| A2 | **20~30 秒按哪个 fps 算** | 30 fps（录像器）⇒ 600~900 帧；20 fps（replay 工具）⇒ 400~600 帧。**RouteStick 现有 xhard `[8,10]` 在 20 fps 口径下已达标、什么都不用改；在 30 fps 口径下还差近一倍** | 按 V3 已定的 **30 fps**，即 RouteStick `L ∈ [12,18]`。请确认 |
-| A3 | **VideoRepick 要不要启用 swap** | 用户原文是"**如果是** swap [8,12]"，是条件句 | 请明确启用与否 |
+| A1 ✅ | **「stick 可以和桌面平行」** | **杆现在已经与桌面平行**（四元数只绕世界 z、z 恒 0），原话是重言式 | **已答复（2026-09-22）：yaw 从 ±45° 放宽到 ±180°，不引入 pitch/roll。** ⇒ 不需要 z 补偿；但引出与 Panda joint7 限位的新冲突，见 B11 |
+| A2 ✅ | **20~30 秒按哪个 fps 算** | 两个口径结论相反 | **已答复：按 30 fps（录像器，V3 口径）** ⇒ 需 600~900 帧；RouteStick `L ∈ [12,18]`，PatternLock 必须改 grid 或搜索策略（B8 仍待定具体做法） |
+| A3 ✅ | **VideoRepick 要不要启用 swap** | 用户原文是"**如果是** swap [8,12]"，条件句 | **已答复：启用，swap `[8,12]`** ⇒ 发起者池只有 3 个的问题成为必须处理项，见 B12 |
 | A4 | **MoveCube / InsertPeg 没有难度分档** | 两个类无 `configs`，`self.difficulty` 全文件无消费点 | 建议**全局改参数**（不新增分档），与现状一致 |
 | A5 | **「其他颜色 distractor」的"其他"相对谁** | 相对目标三色（红蓝绿）？还是相对本局出现的颜色？ | 建议定义为"不在本局目标色池内的颜色"，并给出固定的干扰色池 |
 
@@ -109,6 +109,8 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | B8 | **PatternLock 怎么够到 20~30 s** | 实测 hard 只有 3.1~8.6 s，差 4~6 倍；5×5 简单路径段数上限 24 ≈ 24.8 s，但随机 DFS 命中超长路径概率极低 | 建议 `grid` 提到 6×6 **并**把路径搜索改成长度定向。**两者都属 native 规则，需额外授权** |
 | B9 | **RouteStick 的 L 目标值** | 按 30 fps 需 `L ∈ [12,18]`；但执行段也是 L×50，**L > 约 22 会被评估入口截断** | 建议 `[12,15]`，留步数余量 |
 | B10 | **VideoPlace\* 的 easy `color`** | easy 场上只有 1 块，**演示 2 块是硬阻塞**；`color` 在 native 块 | 建议 easy 的 `color` 提到 2，或本轮只在 medium/hard 启用双演示 |
+| **B11** | **yaw ±180° 撞 Panda joint7 限位**（A1 的连带） | 夹爪姿态 `Rz(yaw)·Rx(π)`，yaw 直接透传腕关节，而 **joint7 限位约 ±166°** ⇒ yaw 接近 ±180° 时 IK/`plan_screw` 大概率失败，且失败是**静默跳过演示段** | 杆是长轴对称的，可在抓取时把 yaw **归约到等价朝向**（加 ±180° 使其落进限位内）。⚠ **两个环境不能同等处理**：`MoveCube` 的杆头尾同色（都是 `#EC7357`），归约安全；**`InsertPeg` 的杆头尾异色**（`tail = 1 - head`）且 subgoal 是"grasp the **near/far** end"，归约会**改变抓的是哪一端**、改变任务语义。请定：(a) 只对 MoveCube 归约、InsertPeg 限到 ±166°；(b) 两个都限到 ±166°；(c) 两个都归约并接受 InsertPeg 的语义变化 |
+| **B12** | **VideoRepick 发起者池写死 3 个**（A3 的连带） | `_load_scene` 只建 `swap_pair1..3`，`for k in range(3, swap_times)` 靠 `swap_indices[k % 3]` 循环复用 ⇒ swap 8~12 次会**反复是同 3 块发起**，语义单调；且 12 次 × 50 步 = 600 步静止段 | 请定：(a) 接受循环复用（改动最小）；(b) 扩大发起者池到 `min(swap_times, len(spawned_cubes))`（要同步改 `swap_remaining_count=2` 与 `object_selection` 的校验） |
 
 #### C 组：方向性取舍（改了可能适得其反）
 
@@ -435,14 +437,18 @@ duration_steps: 50}` **声明了但一处都没被消费**——改造时应让 
 record 都带 `difficulty` 字段——**环境不读它**。所以这两个任务的"加大难度"等于**全局改参数**，
 不是"改某一档"。计划与配置都要按这个事实写。
 
-**②「stick 的转角更大，可以和桌面平行」是重言式——杆现在已经与桌面平行。** 证据链三段：
+**②「stick 的转角更大，可以和桌面平行」原是重言式——杆现在已经与桌面平行；用户已澄清为「yaw 放宽到 ±180°」。** 证据链三段：
 `utils/object_generation.py::build_peg` 里长轴是 link 局部 x 轴；两个环境构造四元数都用
 `euler_angles_to_matrix(torch.tensor([[0.0, 0.0, yaw]]), convention="XYZ")`，**前两位恒为 0，只绕世界 z**；
-位置 `p=[x, y, 0.0]`，z 分量从头到尾没被改过。所以这句话**不可能**指 yaw（yaw 多大都保持平行）。
-**必须请用户澄清**它指的是：(a) yaw 从 ±45° 放宽到 ±180°，还是 (b) 引入 pitch/roll 让杆立起或斜放。
-若是 (b)，必须同步补 z——杆半厚 `radius=0.01` 而中心在 z=0，**现在下半截 1 cm 本来就埋在桌面下靠物理弹出**，
-加了俯仰会直接穿桌；而且 `grasp_and_lift_peg_side` 是**直接用 link 位姿抓、不做 z 抬升补偿**的，
-抓取策略是否还成立要重新评估。
+位置 `p=[x, y, 0.0]`，z 分量从头到尾没被改过。所以这句话**不可能**指 yaw 带来的"平行与否"变化。
+**用户 2026-09-22 澄清（开放项 A1）：yaw 从 ±45° 放宽到 ±180°，不引入 pitch/roll。**
+⇒ 杆仍在水平面内，**不需要 z 补偿**（否则会撞上"杆半厚 0.01 而中心在 z=0、下半截本来就埋在桌面下"这个问题）。
+
+**但 ±180° 与 Panda joint7 的 ±166° 限位直接冲突**（开放项 B11）：`grasp_and_lift_peg_side` 让夹爪
+q = `Rz(yaw)·Rx(π)`，yaw 直接透传腕关节。可行的解法是利用杆的长轴对称性做**朝向归约**（加 ±180° 使其落进限位内），
+但**两个环境不能同等处理**：`MoveCube` 的杆头尾同色（`peg_color` 的 head/tail 都是 `#EC7357`），归约安全；
+**`InsertPeg` 的杆头尾异色**（`head_rgb` 抽一次、`tail = 1 - head`）且 subgoal 文本是"grasp the **near/far** end"，
+归约会**改变抓的是哪一端**、改变任务语义。这条须在实施前定死。
 
 #### MoveCube：cube 与 stick 推向边角、转角更大、更难抓
 
@@ -509,7 +515,8 @@ screw（1 次）→ RRT\* 重试，再失败则该段演示**被静默跳过、e
 | xhard | 8~10 | 400~500 | **13.3 / 16.7 s** | **20.0 / 25.0 s** |
 
 ⇒ **按 30 fps 要 L ∈ [12, 18]；按 20 fps 则现有 `xhard = [8,10]` 恰好已经达标、什么都不用改。**
-同一句需求在两个 fps 下结论相反，**必须在计划里锁死口径**（本方案按 V3 的 30 fps 写）。
+**用户 2026-09-22 已拍板按 30 fps（开放项 A2）** ⇒ RouteStick 取 `L ∈ [12,18]`（建议 `[12,15]` 留步数余量，见 B9），
+PatternLock 必须改 `grid` 或换搜索策略（B8）。
 结构上撑得住：`generate_dynamic_walk` 在 5 个节点的线性图上随机游走、**允许重复访问**，`steps` 任意大都合法。
 但要注意**执行段也是 L×50 帧**，加上 `solve_strong_reset(timestep=200)` 的 200 步，
 L=18 ⇒ 执行段 900 + 200 ≈ 1100，**逼近 `evaluation.py` 的 1300 与 `phase1_eval.py` 的 1500**
@@ -572,7 +579,7 @@ V3 明写"演示时长不自动授权改路径长度"⇒ **待决**。
 | 改什么 | 落到哪个键 | 现值 | 硬限制与风险 |
 |---|---|---|---|
 | 重复抓放次数 | **`native` 的 `parameters.num_repeats`**（不是 `decision.num_repeats_range`，那是死键） | `low=1, high_exclusive=4` ⇒ 实取 1/2/3 | **半开区间**：[4,6] 要写 `low=4, high_exclusive=7`。另外 `generate_dataset_newseed.py::SAMPLING_OPERAND_PATHS` 冻结了这三个操作元，`--check-config` 会报"与原版操作元不一致"，须同步更新快照 |
-| swap 次数 | `parameters.configs[难度].swap_min/swap_max`（闭区间） | easy 1~2、medium 2~3、**hard 0**、xhard 4~5 | **发起者池写死 3 个**：`_load_scene` 只建 `swap_pair1..3`，`for k in range(3, swap_times)` 靠 `swap_indices[k % 3]` 循环复用。swap 抬到 8~12 能跑但语义单调（反复是同 3 块发起）。窗口 `[start+50k, start+50(k+1))` 每段固定 50 步，12 次 ⇒ 600 步静止段，episode 显著变长 |
+| swap 次数（**已定启用 `[8,12]`**，A3） | `parameters.configs[难度].swap_min/swap_max`（闭区间） | easy 1~2、medium 2~3、**hard 0**、xhard 4~5 | **发起者池写死 3 个**（⇒ 开放项 B12）：`_load_scene` 只建 `swap_pair1..3`，`for k in range(3, swap_times)` 靠 `swap_indices[k % 3]` 循环复用。swap 抬到 8~12 能跑但语义单调（反复是同 3 块发起）。窗口 `[start+50k, start+50(k+1))` 每段固定 50 步，12 次 ⇒ 600 步静止段，episode 显著变长 |
 | clutter | hard 用 `positions.hard_cubes`（中心 `[-0.1,0]`、`region_half_size=[0.2,0.25]`、`min_gap=cube_half_size=0.02`）；easy/medium 用 `positions.easy_medium_cubes` 的**三组锚点**（每块围绕一个锚点、`region_half_size=0.07`） | hard 5 轮 × 红蓝绿 = 15 块；easy/medium 3 块 | hard 区域估算饱和上限约 30 块，**现放 15 块，抬到 18~20 有余量**；**easy/medium 要 clutter 必须放弃锚点结构**，否则 3 个 0.07 半宽的小格各自最多塞 2~3 块 |
 | 颜色任意 | `_load_scene` 里的**局部字面量** `options`（`NATIVE_SAMPLING` 里没有 color_pool） | 红/蓝/绿 | 注入分支有 `idx = [item["name"] for item in options].index(spec["objects"]["color"])`，**依赖 name 字符串**，颜色连续化会打断这条路径 |
 
