@@ -39,6 +39,7 @@
 | 11 | **未定的量一律保留为待决，不编造默认值** | V3 8.3 的纪律 |
 | 12 | **录像器全程冻结**；`src/robomme/` 改动免逐项事前批准但每步须出 md 报告 | 题注；红线 N1/N2 |
 | 13 | **规模定死**：每环境 10 条 `reset` 成功候选（尝试上限 30）⇒ 全局 160 条；按 index `0/3/6` 选 3 条为正式局 ⇒ 全局 48 条；落选候选一并冻进快照、只标 `selected=false` | 用户 2026-09-22 决策；3.2 |
+| 14 | **传入即可生成**：每个环境 xhard 声明的参数，其**所有排列组合**（离散量逐值、连续量取端点，与其他参数交叉）都必须**实测出生成成功率且实际能生成成功**；任一组合生成不出来，**必须回报用户、重新定传入参数**，不许出现「传入了但实际不可能生成」的值，也不许实施方自行收窄范围了事 | 用户 2026-09-22 约定；红线 N11 |
 
 ### 1.2 十六环境的改动内容（用户原文，逐字保留）
 
@@ -66,7 +67,7 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 
 ### 1.3 用户决策速查
 
-实施前的全部待决项**已在 2026-09-22 逐条闭环**。下表只记结论与落点，原始的"问题与建议"不再保留。
+实施前的待决项已在 2026-09-22 逐条答复；其中 **G2 / G3 是「先实测再定」**，实测结果须交用户定数后才算闭环。下表只记结论与落点，原始的"问题与建议"不再保留。
 
 | 编号 | 决策结论 | 落在哪 |
 |---|---|---|
@@ -84,14 +85,14 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | B5 | PickHighlight `spawn = [8,10]`（实测只稳放 8~10），间距不动 | 2.12 |
 | B6 | InsertPeg 杆间距判据**不动**，新杆贴近 0.075 下限 | 2.18 |
 | B7 | MoveCube 边角做成 `corner_bias ∈ [0,1]` + 先跑成功率扫描 | 2.17 |
-| B8 | PatternLock **不改布局、只增加步骤长度**（须配合改搜索策略） | 2.19 |
+| B8 | PatternLock **不改布局、只增加步骤长度**；**不改搜索策略**（实测现有随机 DFS 在 1000 次预算内 100% 命中 `[20,25]`，见 2.19） | 2.19 |
 | B9 | RouteStick **不改布局**，`L = [12,15]` | 2.20 |
 | B11 | yaw ±180° 撞 joint7 限位 ⇒ **按等价朝向归约**（只改夹爪姿态，不碰杆位姿） | 2.16 |
 | B12 | VideoRepick **发起者仍 3 个**，只把次数提到 8~12 | 2.13 |
 | B13 | 干扰容器外环 `max(\|x\|,\|y\|) ∈ [0.2675, 0.45]`；**3 个里 1~2 个含 cube** | 2.7① / 2.21 |
 | C1 | PickXtimes **圆盘可以出现在中间**（两套区域参数仍要拆开） | 2.4 |
 | C2 | VideoRepick「颜色任意」= 每局 3 块**仍同色**、只是色值任意 | 2.13 |
-| C3 | PickHighlight 缩小 `disk_radius` 或改同心环 | 2.12 |
+| C3 | PickHighlight 高亮连片**先不动**：`disk_radius` 保持 0.05、不改同心环 | 2.12 |
 | C4 | StopCube **只锁速度最快档与 number `[6,15]`**，其余阈值由实施方按实测调 | 2.6 |
 | C5 | InsertPeg 目标识别**本来就靠 video demo**，不是本轮引入的问题 | 2.18 |
 | D1~D5 | 五个既有缺陷**全部修复** | 2.0① / 2.3 / 2.4 / 2.12 / 2.17 |
@@ -102,6 +103,10 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | F1 | 候选规模＝**每环境 10 条 `reset` 成功**；正式局＝**每环境 3 条**（全局 160 / 48） | 3.2 |
 | F2 | `reset` 失败**补抽到 10 条成功为止**，每环境尝试上限 30；凑不满如实记 `candidate_shortfall`，不降难度 | 3.2 |
 | F3 | 挑选规则＝在成功候选序列里**按固定步长取 index `0/3/6`**（确定性、可复现） | 3.2 |
+| G1 | PickXtimes 圆盘放不下 ⇒ **改成先放圆盘再放方块**（不放大圆盘区域） | 2.4 |
+| G2 | clutter 具体数量（Unmask 容器数、VideoRepick 方块数）**先实测再定**：实施方跑容量／成功率实测，结果交用户定数，不自填 | 2.8 / 2.13 |
+| G3 | 成功率扫描的样本量与 MoveCube `corner_bias` 取值**先实测再定**：实施方先跑一轮实测，结果交用户定口径与取值 | 2.17 / 第二部分五 |
+| G4 | **重要约定：传入即可生成**（口径 14 / N11） | 1.1 |
 | F4 | 落选候选**一并写进 `specs.jsonl`**，用 `selected` 真假标记；`selected` 属可变字段、不改 `identity_sha256` | 3.2 |
 
 ## 二、逐环境改动
@@ -314,7 +319,8 @@ V4 走的是 `native_episode_spec`（乙的通道），所以**这些检查一�
   `setattr(self, "target", target)` ⇒ **`UnboundLocalError`**。
 - **真正的瓶颈是后生成的圆盘**，不是方块。方块 3~12 块都 100% 放得下，但圆盘（`radius=0.04`、
   `min_gap=0.04`、避让全部方块）成功率随方块数急剧下降：3 块 100%、**8 块 66%**、10 块 27%、**12 块 6%**
-  ⇒ 加 3 个 distractor 后必须**放大 `goal_position_policy` 区域，或把生成顺序改成"先放圆盘再放方块"**。
+  ⇒ 加 3 个 distractor 后**把生成顺序改成「先放圆盘再放方块」**（G1，不放大圆盘区域）。
+  ⚠ 改顺序会平移随机流：只允许在 xhard 分支里换序，原三档仍按原顺序（N5）；换序后方块能否全部放下同样须过口径 14 的实测。
 - **distractor 的三处污染**：①`target_cube_idx = randint(0, len(all_cubes))` 会把干扰物抽成目标
   ⇒ 改为从显式候选列表抽；②`target_color_name` 靠 `in self.red_cubes/blue_cubes/green_cubes` 三分支回填，
   新颜色全不命中 ⇒ **保留前一次的残值**（不是 None，更隐蔽）；③`non_target_cubes` 被 `failure_func` 用
@@ -451,7 +457,7 @@ pick 2→3 会把候选从 2 个变 3 个，那次 `randint` 的分布随之改�
 | 字段 | 含义 | hard 现值 | xhard 新值 / 注入什么 |
 |---|---|---|---|
 | `decision.pick_count.xhard` | 要抓起几个容器 | `2` | **`3`**；注入 `objects.n_picks` 与 `objects.pick_order` |
-| `decision.bin_layout_policy.count.xhard` | 容器数 | `15`（**实际只放下 9~12**） | **clutter：具体数待实现时按容量定**；注入 `layout.bins[]` |
+| `decision.bin_layout_policy.count.xhard` | 容器数 | `15`（**实际只放下 9~12**） | **clutter：先实测容量与成功率，结果交用户定数**（G2）；注入 `layout.bins[]` |
 | `decision.bin_layout_policy.region_*` | 容器区域 | 中心 `[0,0]`、半边长 `0.2` | 加密需同时调 `min_gap_factor` 与 `step_bin_scan`；注入逐容器 `xy/yaw` |
 | `decision.distractor` | 干扰物 | `None`（无消费点） | **3 个额外容器**（外环、1~2 个含 cube、不参与揭示）；注入 `objects.distractors[]` |
 | `native.bins.min_gap_factor` / `max_trials` | 间距与重试预算 | `2`（⇒ 0.04）/ `256` | 视 clutter 密度调；进 `sampling_trace` |
@@ -569,8 +575,8 @@ pick 2→3 会把候选从 2 个变 3 个，那次 `randint` 的分布随之改�
   会保存已生成数量、不补抽 ⇒ 没有任何报错。
 - **高亮会连片（C3）**：高亮是在方块**正下方**加白色圆盘，`disk_radius=0.05`
   ⇒ 直径 0.10 m 是方块边长 0.04 m 的 **2.5 倍**，而现 `min_gap=0.04`、典型中心距 0.06~0.08 m
-  ⇒ **3 块时就可能相切**，5~7 块必然糊成一片 ⇒ 缩小 `disk_radius` 或改用同心环。
-  ⚠ 现在 `step` 调 `highlight_obj` 时**没传 `disk_radius`** ⇒ 要先把参数接出来。
+  ⇒ **3 块时就可能相切**，5~7 块必然糊成一片。**用户决定先不动**（C3）：`disk_radius` 保持 0.05、
+  不改同心环、不外提参数；若之后人工看片判为不可判，再作为新的用户决策处理。
 - **误抓失败会激增**：每个 pick 的 `failure_func` 是"抓起任何一块非目标即失败"。
 - `task_goal` **不含颜色词**、`evaluate()` **也不看颜色** ⇒ 颜色任意对本环境几乎无代价，
   唯一要处理的是 subgoal 里的 `, which is {color}` 后缀。
@@ -589,7 +595,7 @@ pick 2→3 会把候选从 2 个变 3 个，那次 `randint` 的分布随之改�
 | **`native.parameters.num_repeats`** | 同一目标重复抓放次数 | `low=1, high_exclusive=4` ⇒ **实取 1/2/3** | **`[4,6]` ⇒ 写 `low=4, high_exclusive=7`**（半开！）；注入 `objects.num_repeats` |
 | `decision.num_repeats_range` | 同上 | 有键但**无消费点（死键）** | **要么接上消费点、要么删**，不能只改它 |
 | `native.configs.xhard.swap_min/max` | 交换次数 | `[2,3]`（闭） | **`[8,12]`**；注入 `objects.n_swaps` |
-| `native.configs.xhard.cube` | 方块数 | `3` | **clutter：按容量定**（hard 那套区域可放 30+）；注入 `layout.cubes[]` |
+| `native.configs.xhard.cube` | 方块数 | `3` | **clutter：先实测再交用户定数**（G2；hard 那套区域理论可放 30+）；注入 `layout.cubes[]` |
 | `decision.layout_mode` | 摆放模式 | medium 用**三组锚点**（每块围绕一个锚点、局部半边长 `0.07`） | **clutter 必须放弃锚点结构**，改用整片区域（中心 `[-0.1,0]`、半边长 `[0.2,0.25]`） |
 | `decision.block_color_policy` | 逐块颜色 | 整局**三块同色** | **保持同色语义、色值任意**（C2）；注入 `objects.color` |
 | `native.swap_selection` | 发起者与搭档 | 发起者池**写死 3 个**（`swap_indices[k % 3]` 循环复用）；搭档为运行时 XY 最近邻 | **保持 3 个发起者**（B12）；注入 `actions.swap_pairs[]` |
@@ -742,7 +748,7 @@ head/tail 空间位置不变，`InsertPeg` 的 near/far 判定不受影响，**�
 |---|---|---|---|
 | `decision.grid.xhard` | 网格边长 | `5`（⇒ 25 个节点） | **不动**（B8：不改布局） |
 | `decision.length.xhard` | **节点数**（不是段数） | `[4,8]` | **`[20,25]`**；注入 `actions.path_nodes` |
-| `native.path_selection.max_attempts` | 路径搜索预算 | `1000`，**耗尽不报错、用最后一条** | **搜索策略改为长度定向**（否则随机 DFS 命中不了超长路径） |
+| `native.path_selection.max_attempts` | 路径搜索预算 | `1000`，**耗尽不报错、用最后一条** | **不动**（B8）。实测单次命中 `[20,25]` 约 9%，1000 次预算内全失败概率 ≈1.6e-41；2000 个种子全部命中，尝试次数中位 8、最大 89 |
 | `native.grid_geometry` | 网格几何 | 中心 `[-0.1,0]`、间距 `0.1` | 不动；注入 `layout.nodes[]` |
 | `native.motion_template` | 每段动作 | 每目标 `solve_swingonto` 两次 screw + `close_gripper` | 不动；注入 `actions.demo_actions` |
 | 运行记录 | 实际演示帧数 | 实测 hard 93 / 157 / 257 帧 ⇒ **3.1 / 5.2 / 8.6 s @30fps** | 目标 600~900 帧；记 `demo_frames/fps/duration_s` |
@@ -751,8 +757,12 @@ head/tail 空间位置不变，`InsertPeg` 的 near/far 判定不受影响，**�
 
 - **不改布局时有物理上限**：`utils/adjacent.py::dfs_path` 是**简单路径 DFS**（`visited` 集合、不许重复节点）
   ⇒ 段数上限 = `R×C − 1` = **24 段 ≈ 744 帧 ≈ 24.8 s** ⇒ **30 s 够不到**，实际只能落在 **20~24.8 s**。
-- **"只增加长度"必须配合改搜法**：现在是"随机起终点 + 随机邻居取第一条解"，
-  `max_attempts=1000` 内命中近乎遍历全图的超长路径**概率极低**。
+- **现有搜法够用，不改**（2026-09-22 实测，直接调真实的 `find_path_0_to_8`，5×5、`diagonals=True`）：
+  网格是 **8 邻接**，随机 DFS 取到的第一条解本身就长——20000 次单次尝试的节点数分布里 `[20,25]` 占 8.96%
+  （20:734 / 21:549 / 22:314 / 23:137 / 24:52 / 25:7）⇒ 期望约 11 次尝试即命中，`max_attempts=1000` 绰绰有余。
+  原计划「命中概率极低、须改长度定向搜索」的推断是按 4 邻接想当然，**作废**。
+- ⚠ **长度分布偏短端**：命中的路径约 71% 落在 20~21 节点、25 节点极罕见；而 20 节点 = 19 段 ≈ 19.6 s，
+  **略低于 20 s 下限**。实际演示帧数须按口径 14 实测，若 20 节点够不到 20 s 则回报用户重定 `length` 下界。
 - **成功要过两道闸**：`sequential_task_check` 全完成，且 `evaluate` 里
   `recent_achieved == selected_labels` 的字符串匹配。
 - 触碰阈值是**默认值**（水平 0.01 m、z < 0.1），比 RouteStick（0.03 / 0.15）严得多。
@@ -777,7 +787,7 @@ head/tail 空间位置不变，`InsertPeg` 的 near/far 判定不受影响，**�
 **实施要点**
 
 - **本环境天然支持"只增加长度"**：`generate_dynamic_walk` 在 5 个节点的线性图上随机游走、
-  **允许重复访问**，`steps` 任意大都合法 ⇒ 无需改搜法（与 PatternLock 相反）。
+  **允许重复访问**，`steps` 任意大都合法 ⇒ 无需改搜法（PatternLock 同样不改，见 2.19）。
 - **50 帧/段的来源**：`solve_swingonto_withDirection` 的"贝塞尔 45 点 + 末端保持 5 点"，
   `follow_path` 一个位置一步 ⇒ 实测正好 50，说明 IK 没失败过。
 - **执行段也是 L×50 帧**，加 `solve_strong_reset(timestep=200)` 的 200 步
@@ -837,7 +847,7 @@ head/tail 空间位置不变，`InsertPeg` 的 near/far 判定不受影响，**�
    x=-0.2  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⊕ 按钮          │      推向四角
    x=-0.3  │      ●目标                      ◇干扰            │
    改动：num [4,5] → [6,15]；target 位置加 corner_bias；圆盘区域拆成独立参数；+3 个干扰块（黄/青/品红）
-   ⚠ 圆盘成功率随方块数急降（3 块 100% → 8 块 66% → 12 块 6%）⇒ 需放大圆盘区域或改成"先放圆盘"
+   ⚠ 圆盘成功率随方块数急降（3 块 100% → 8 块 66% → 12 块 6%）⇒ G1：改成先放圆盘
 ```
 
 #### 四个 Unmask：干扰容器放在外环（B3 / B13 实测）
@@ -872,7 +882,7 @@ head/tail 空间位置不变，`InsertPeg` 的 near/far 判定不受影响，**�
         现在（3 块）        xhard（5~7 块）
          ◯ ◯  ◯             ◯◯◯◯◯◯◯     ← 白盘糊成一片，看不出"哪几块被高亮"
         （已可能相切）        （必然重叠）
-      ⇒ C3：缩小 disk_radius 或改用同心环
+      ⇒ C3：用户决定先不动
 ```
 
 #### VideoRepick：三组锚点 → clutter
@@ -1080,7 +1090,7 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
    汇总另落 `eval_summary.json`：`per_task[env] = {avg_success, success_count, num_episodes}` + `overall`，
    字段名与 `challenge_interface` 的 `metrics.json` 对齐，便于两边比对。
 
-### 4.3 ⚠ 待批准：新入口放哪
+### 4.3 新入口放哪（E1 已批：`scripts/eval/`）
 
 `AGENTS.md` 规则 12 规定顶层只允许五个入口、**新建子目录须先与用户沟通获准**。三个候选：
 
@@ -1090,7 +1100,7 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 | 放 `scripts/parity/` | 复用现有子目录，不用批准 | 语义不对：那是对拍链路，不是策略评估 |
 | 改 `scripts/evaluation.py` | 不新增任何文件 | **破坏口径 8**，它与上游 main 的 blob SHA 将不再相同 |
 
-本方案按「新建 `scripts/eval/`」写，实施前须获批。
+用户已批准新建 `scripts/eval/`（E1）。
 
 ## 五、改完怎么对拍
 
@@ -1110,6 +1120,7 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 
 1. **V4f 不设通过门槛。** 新值是故意加难度的，成功率下降是预期结果；把它写成 PASS/FAIL 会诱导
    「调低难度换通过」。它只如实报告，由用户看完数字再决定哪些环境的难度要回调——**回调属于新的用户决策**。
+   但它**不豁免口径 14**：只要某个参数组合实际生成不出来（成功数为 0），就必须单独回报用户重定参数，不能只混在总成功率里。
 2. **V1 是硬闸门。** 只要 `NATIVE_REGRESSION` 不通过，说明为了做新值把原路径改坏了，必须停下修，
    不允许以「反正新值模式用不到原路径」为由放过。
 3. **单 worker、A40。** 口径 9。V2 尤其敏感：多 worker 下 `mplib` 的 RRT 墙钟预算会让同一规格搜出不同路径，
@@ -1119,7 +1130,7 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 
 | 步 | 内容 | 闸门 |
 |---|---|---|
-| 0 | 从当前 HEAD 切分支；把 1.3 的开放项逐条问过用户并把答复写回本文第二节 | 开放项全部有答复，无「待决」残留 |
+| 0 | 从当前 HEAD 切分支；先跑 G2 / G3 与口径 14 要求的实测，把结果交用户定数后写回第二节 | G2 / G3 有用户定数；口径 14 实测无「生成不出来」的组合 |
 | 1 | 链路甲退役：停用 `scripts/injection/candidates` 与 `rollout` 的新增运行，产物与代码原样留档；`hf_release.py` 维持现状 | 退役说明入 `scripts/README.md`；已进 Git 的产物零改动 |
 | 2 | `SpecRecorder` 升版：加 `native-newvalue/1`，核验口径按 3.3③ 分叉；mismatch 归因到 `decision` 键 | 原值模式行为零变化（V1 的前置） |
 | 3a | 按 2.0 的派生基准总表建 `xhard` 档：十三个新建、三个覆盖；`StopCube`/`MoveCube`/`InsertPeg` 先建分档机制（A6） | `NATIVE_DEFS_UNCHANGED`（V0） |
@@ -1144,7 +1155,9 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 - **N1 改动须留证。** `src/robomme/` 免逐项事前批准，但每步收尾必须在 `docs/validation/newtask-v4/` 出 md 报告，
   逐条写「文件／锚点／改什么／为什么／怎么验的」。
 - **N2 录像器冻结。** `RecordWrapper.py` 不改不覆盖；验证 `git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py`。
-- **N3 开放项不许自填默认值。** 1.3 里 19 项在未获答复前不得实施；实施中新发现的待决项同样追加进 1.3 再问。
+- **N3 开放项不许自填默认值。** 1.3 的 G2 / G3「先实测再定」项在用户定数前不得落值；实施中新发现的待决项同样追加进 1.3 再问。
+- **N11 传入即可生成。** 见口径 14：xhard 参数的所有排列组合都要有实测生成成功率、都要真能生成成功；生成不出来就停下回报用户重定参数，
+  实施方**不得自行收窄范围或降难度**。实测结果（逐组合的尝试数／成功数）进 `docs/validation/newtask-v4/`。
 - **N4 原值路径不许被改坏。** 任何一步收尾都要能过 `NATIVE_REGRESSION`（V1）；不允许以「新值模式用不到原路径」为由放过。
 - **N5 随机流位置。** 新增的 `torch.rand*` 调用一律**追加在既有取值点之后**；插在中间会平移其后全部取值，
   使既有 `episode_spec` / `native_sampling.json` / parity 产物全部失效。`ButtonUnmask::__init__` 那次
@@ -1169,24 +1182,24 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 | 步 3a 连带 | `tests/lightweight/test_swap_schedule_generic.py`（`test_xhard_四五次首尾相接每段五十帧` 锁 4/5 次；另一处遍历 `config_xhard`）、`test_episode_action_sampling.py`（xhard 参数化，注释锁"Unmask 4、Repick 3"）、`test_window_timeline.py`（`test_unmask_xhard_四五次调度` 与 GROUPS 断言） | 旧 xhard 作废后这些断言必然失配，**须同步改成 V4 新值的语义**，不得为了让它们过而保留旧值 | 原三档相关断言不动 |
 | 步 3a 不动 | `tests/_shared/contract_builder_fixture.py` 的 `XHARD_GROUPS` / `GROUPS_V3` 与 xhard 文案、`test_injection_delivery.py` 的 RouteStick xhard 配额 | 这些属**甲的契约链路**，甲已废弃但代码与产物按 N6 原样保留 ⇒ **不改** | — |
 | 步 3 | `BinFill.py::_resolve_sampling_config` / `_load_scene` / `_initialize_episode` | 放开 `layout_mode` 守卫并**新写 clutter 摆放**（现不存在）；`min_gap` 从调用点字面量外提；修 D1 的静默截断＋`IndexError` | `native_dynamic` 分支与原三档逐字不变 |
-| 步 3 | `PickXtimes.py::_load_scene`、`utils/subgoal_language.py::get_subgoal_with_index` | 边角采样模式（**新增**）；目标候选池与 `all_cubes` 解耦；`target_color_name` 回填改为按对象查；修 D2 未绑定分支；序数表扩容或改兜底（E2） | 不传新值时走原均匀采样与原三色回填 |
+| 步 3 | `PickXtimes.py::_load_scene`、`utils/subgoal_language.py::get_subgoal_with_index` | 边角采样模式（**新增**）；xhard 下先放圆盘再放方块（G1）；目标候选池与 `all_cubes` 解耦；`target_color_name` 回填改为按对象查；修 D2 未绑定分支；序数表扩容或改兜底（E2） | 不传新值时走原均匀采样与原三色回填 |
 | 步 3 | `SwingXtimes.py::_load_scene` | `_color_lists` 改动态建表（否则第四色 `KeyError`）；目标候选池解耦 | 三色路径不变 |
 | 步 3 | `StopCube.py::step` / `_initialize_episode`、`utils/vqa_options.py::_options_stopcube` | `range(5)` 改为按实际停止序号展开；`static_checkpoints` 与 VQA 侧公式**同步**改 | 5 趟以内行为不变 |
 | 步 3 | 四个 Unmask 的 `_load_scene` / `_initialize_episode` | pick 分支循环化（两个用 `>1`、两个用 `==2`）；`ButtonUnmaskSwap::_refresh_swap_schedule` 三分支换成通式＋补槽位循环；`swap_window` 真正被消费 | pick ≤ 2、swap ≤ 3 的行为不变 |
-| 步 3 | `PickHighlight.py::_load_scene` / `step`、`utils/statechange.py::highlight_obj` | spawn≥highlight 硬断言；`disk_radius` 可传参（C3）；subgoal 的 `, which is {color}` 后缀处理 | 现值下断言恒真、视觉不变 |
+| 步 3 | `PickHighlight.py::_load_scene` / `step`、`utils/statechange.py::highlight_obj` | spawn≥highlight 硬断言；`disk_radius` 不动（C3）；subgoal 的 `, which is {color}` 后缀处理 | 现值下断言恒真、视觉不变 |
 | 步 3 | `VideoRepick.py::_load_scene` | hard 统一成扁平 clutter 并统一 `bin_{i}` 命名；`num_repeats` 改 native 块的 `low`/`high_exclusive` | 不启用 clutter 时保留 5 轮 15 块 |
 | 步 3 | `VideoPlaceButton.py` / `VideoPlaceOrder.py` 的 `_load_scene` / `_initialize_episode` | 演示模板从内联硬编码改为按对象循环；`button_task_index` 公式重推；新建 home-site actor（`spawn_random_target(randomize=False)`，不抽随机数） | `demo_object_count=1` 时序列逐字不变 |
-| 步 3 | `MoveCube.py::_load_scene` | 边角偏置（**新增采样模式**）；yaw 域放宽（待 A1）；修 D3 的 `None` 返回 | 原均匀采样与 ±45° 不变 |
+| 步 3 | `MoveCube.py::_load_scene` | 边角偏置（**新增采样模式**）；yaw 域放宽到 ±180°（A1）；修 D3 的 `None` 返回 | 原均匀采样与 ±45° 不变 |
 | 步 3 | `InsertPeg.py::_initialize_episode` | 第 4 根杆的独立采样分支与距离带判据；`peg_offsets` 扩容 | 三根杆路径不变 |
-| 步 3 | `PatternLock.py::_load_scene` | `grid` 扩容与长度定向路径搜索（待 B8） | 现 grid 与随机 DFS 不变 |
-| 步 3 | `RouteStick.py::configs` | 新增更难档的 `length`（待 B9）；`VALID_DIFFICULTIES` 白名单同步 | 四档不变 |
+| 步 3 | `PatternLock.py::configs` | 只加 xhard 的 `length=[20,25]`；**grid 与路径搜索都不改**（B8） | 原三档不变 |
+| 步 3 | `RouteStick.py::configs` | xhard 的 `length` 覆盖为 `[12,15]`（B9）；`VALID_DIFFICULTIES` 白名单同步 | 四档不变 |
 | 步 3 | `VideoRepick.py` 的扫掠检查四处 | 开关条件从 `self._episode_spec is None` 改为「两条通道任一」（D5） | 甲通道行为不变 |
 | 步 4 | `scripts/parity/`（新增模块） | 抽签段：按新 `decision` 跑 make/reset/导出，产出 `drafts.jsonl`；冻结段：复用 `scripts/injection/candidates/io.py` 的 `canonical_json` / `digest` / `record_sha256` / `identity_sha256` 产出 `specs.jsonl` | 不影响既有 `train_split_*` 子命令 |
 | 步 5 | `scripts/parity/train_split_parity.py` | `run` 增加读 `specs.jsonl` 的分片模式；结果落 `results.jsonl` | 原五路模式不变 |
 | 步 5 | `scripts/parity/train_split_runner.py` 的身份复核（`official.read_train_metadata()`） | 按 header 的 `identity_source` **分叉**：`formula` 改用 `scripts/seed_layout.py` 的公式复核，**仍是硬校验**（算出来对不上照样拒绝）；否则 xhard 身份不在官方 metadata 里，必然 `SystemExit`（3.5） | `identity_source=train_metadata` 分支逐字不变 |
 | 步 5 | `scripts/parity/train_split_runner.py::_submit` 的两个 dict | 只改"**从哪来**"：`sampling_by_task` 改从 `specs.jsonl` header 的内嵌配置取、`specs_by_identity` 改从数据行筛 `selected=true` 取；`_submit` 往下的 worker／`gym.make`／`SpecRecorder`／取值点**不改消费方式**（3.3③） | 传 `--sampling-config` / `--episode-specs` 的老用法不变 |
 | 步 6 | `src/robomme/env_record_wrapper/episode_config_resolver.py::BenchmarkEnvBuilder` | 并列的 from-spec 构建路径；`runtime` 四项逐字校验 | `dataset="train"/"test"/"val"` 路径**逐字不变** |
-| 步 6 | `scripts/eval/`（**新建子目录，待 E1 批准**） | 新值评估入口 + `eval_results.jsonl` + `eval_summary.json` | 不改 `scripts/evaluation.py` |
+| 步 6 | `scripts/eval/`（**新建子目录，E1 已批**） | 新值评估入口 + `eval_results.jsonl` + `eval_summary.json` | 不改 `scripts/evaluation.py` |
 | 全程 | `tests/lightweight/` | 新增：decision 消费点检查、新值 mismatch 归因、`specs.jsonl` 封套反例、pick=3 / swap≥4 的任务条数断言；同步 `test_TaskGoal.py`、`test_swap_schedule_generic.py`、`test_window_timeline.py` 的硬断言 | 原有断言不放宽 |
 
 `utils/object_generation.py`、`utils/route.py`、`utils/task4recovery.py` 与求解器若确需改动，**必须再列出具体函数与理由**，
@@ -1244,8 +1257,8 @@ tmux new-session -d -s v4-draft \
 
 - **新值局没有官方原版可比**，V2 只能证明"同一规格两次生成一致"，**不能证明"值是对的"**；"对不对"只能靠
   第二节的容量估算、成功率扫描与人工看片。
-- **成功率扫描的样本量未定**，本方案未给出统计显著性口径。
-- **PatternLock 能否真到 20~30 s 未经实跑验证**，只有"5×5 简单路径上限 ≈24.8 s"的理论估算与"随机 DFS 命中概率极低"的推断。
+- **成功率扫描的样本量未定**（G3：先实测再交用户定）。
+- **PatternLock 演示时长未经实跑验证**：路径长度已实测可达（2.19），但 20 节点是否 ≥20 s、上限 ≈24.8 s 都只是按 31 帧／段的估算。
 - **InsertPeg 四根同色杆的可判性未经人工验收**，存在"更难"变"不可判"的风险。
 - **当前分支 `tests/lightweight` 既有 46 项失败**（v2 采样快照指纹与已改源码不符），V4 不承诺消解，属独立事项。
 - **本机与 A40 产物不同**已由 V3 证实，本方案的一切数值结论都以 A40 为准。
