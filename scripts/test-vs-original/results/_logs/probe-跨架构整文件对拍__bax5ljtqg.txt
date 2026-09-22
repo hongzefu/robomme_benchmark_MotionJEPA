@@ -1,0 +1,18 @@
+### SwingXtimes
+H5_PARITY pair=ada.B|a40.B compared=9 sha_equal=0 field_mismatch=38560
+H5_PARITY pair=ada.C|a40.C compared=9 sha_equal=0 field_mismatch=38560
+H5_PARITY pair=ada.D|a40.D compared=9 sha_equal=0 field_mismatch=38560
+### PickHighlight
+H5_PARITY pair=ada.B|a40.B compared=9 sha_equal=0 field_mismatch=39370
+H5_PARITY pair=ada.C|a40.C compared=9 sha_equal=0 field_mismatch=39370
+H5_PARITY pair=ada.D|a40.D compared=9 sha_equal=0 field_mismatch=39370
+### VideoPlaceButton
+H5_PARITY pair=ada.B|a40.B compared=9 sha_equal=0 field_mismatch=91490
+H5_PARITY pair=ada.C|a40.C compared=9 sha_equal=0 field_mismatch=91490
+H5_PARITY pair=ada.D|a40.D compared=9 sha_equal=0 field_mismatch=91490
+### VideoPlaceOrder
+H5_PARITY pair=ada.B|a40.B compared=9 sha_equal=0 field_mismatch=124654
+H5_PARITY pair=ada.C|a40.C compared=9 sha_equal=0 field_mismatch=124654
+H5_PARITY pair=ada.D|a40.D compared=9 sha_equal=0 field_mismatch=124654
+
+[exited with code 0]

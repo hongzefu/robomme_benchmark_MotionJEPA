@@ -1,0 +1,5 @@
+RUN_PATH path=B identities=12 ok=12 failed=0 exit=0 elapsed_s=360.576
+RUN_DONE paths=1 identities=12 failed=0
+EXIT_CODE=0
+
+[killed]

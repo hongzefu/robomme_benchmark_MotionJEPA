@@ -1,0 +1,5 @@
+# 合并 RouteStick：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_RouteStick.h5
+MERGE_DONE tasks=16 path=A1 output=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1
+Traceback (most recent call last):
+
+[killed]

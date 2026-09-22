@@ -1,0 +1,24 @@
+{
+  "env_id": "InsertPeg",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "InsertPeg",
+      "episode": 0,
+      "seed": 13000,
+      "difficulty": "easy"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 2,
+      "seed": 13201,
+      "difficulty": "medium"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 3,
+      "seed": 13300,
+      "difficulty": "hard"
+    }
+  ]
+}

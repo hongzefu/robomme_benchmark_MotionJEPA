@@ -1,0 +1,17 @@
+InsertPeg 0 IDENTICAL {'generated': 475, 'reference': 475} [] {'joint_action': 0.0, 'eef_action': 0.0, 'joint_state': 0.0, 'eef_state': 0.0}
+InsertPeg 2 IDENTICAL {'generated': 478, 'reference': 478} [] {'joint_action': 0.0, 'eef_action': 0.0, 'joint_state': 0.0, 'eef_state': 0.0}
+InsertPeg 3 IDENTICAL {'generated': 434, 'reference': 434} [] {'joint_action': 0.0, 'eef_action': 0.0, 'joint_state': 0.0, 'eef_state': 0.0}
+MoveCube 0 IDENTICAL {'generated': 425, 'reference': 425} [] {'joint_action': 0.0, 'eef_action': 0.0, 'joint_state': 0.0, 'eef_state': 0.0}
+MoveCube 2 IDENTICAL {'generated': 478, 'reference': 478} [] {'joint_action': 0.0, 'eef_action': 0.0, 'joint_state': 0.0, 'eef_state': 0.0}
+PickHighlight 3 REPLAN {'generated': 648, 'reference': 652} ['replan:frames:648vs652,arm:joint_action,arm:eef_action,arm:joint_state,arm:eef_state,boundary_shift=2,gripper:flip_shift=2'] {'joint_action': 0.2795, 'eef_action': 0.0171, 'joint_state': 0.2772, 'eef_state': 0.0176}
+=== 标定 ada 档（两份同架构单 worker 样本：48 局 + 36 局）===
+CALIBRATION_DONE tier=ada samples=2 episodes=84 replan_rate=0.0119 arm_p99_obs=[joint_action=6.66e-16 eef_action=0 joint_state=0 eef_state=0] write=1
+# 已写回 /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/tolerance.json
+EXIT_CODE=0
+ada 标定后: {"frame_delta_max": 0, "px_tol": 0, "boundary_shift_max": 0, "flip_shift_max": 0, "replan_max": 0.0357, "arm": {"joint_action": {"p99": 1e-06, "max": 1e-06}, "eef_action": {"p99": 1e-06, "max": 1e-06}, "joint_state": {"p99": 1e-06, "max": 1e-06}, "eef_state": {"p99": 1e-06, "max": 1e-06}}, "ts0_image": {"px_diff_ratio": 0.0, "depth_max": 0}}
+=== 用标定后的 ada 档重比 vail 48 局 ===
+VS_ORIGINAL=PASS tier=ada compared=48 identical=5 drift=42 replan=1 fail=0 replan_rate=0.0208 replan_max=0.0357
+REFERENCE_AUDIT_COMPLETE=PASS compared=48 contract_errors=0 missing=0
+EXIT_CODE=0
+
+[exited with code 0]

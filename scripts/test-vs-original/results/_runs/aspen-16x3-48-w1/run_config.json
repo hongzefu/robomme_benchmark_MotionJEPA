@@ -1,0 +1,379 @@
+{
+  "schema": "train-parity-run-config/1",
+  "started_at": "2026-09-22T15:54:38.493291+00:00",
+  "argv": [
+    "run",
+    "--sequence",
+    "PickXtimes/0,PickXtimes/2,PickXtimes/3,StopCube/0,StopCube/2,StopCube/3,SwingXtimes/0,SwingXtimes/2,SwingXtimes/3,BinFill/0,BinFill/2,BinFill/3,VideoUnmaskSwap/0,VideoUnmaskSwap/2,VideoUnmaskSwap/3,VideoUnmask/0,VideoUnmask/2,VideoUnmask/3,ButtonUnmaskSwap/0,ButtonUnmaskSwap/2,ButtonUnmaskSwap/3,ButtonUnmask/0,ButtonUnmask/2,ButtonUnmask/3,VideoRepick/0,VideoRepick/2,VideoRepick/3,VideoPlaceButton/0,VideoPlaceButton/2,VideoPlaceButton/3,VideoPlaceOrder/0,VideoPlaceOrder/2,VideoPlaceOrder/3,PickHighlight/0,PickHighlight/2,PickHighlight/3,InsertPeg/0,InsertPeg/2,InsertPeg/3,MoveCube/0,MoveCube/2,MoveCube/3,PatternLock/0,PatternLock/2,PatternLock/3,RouteStick/0,RouteStick/2,RouteStick/3",
+    "--paths",
+    "B",
+    "--workers",
+    "1",
+    "--gpus",
+    "0",
+    "--official-root",
+    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5d/shard1/official-src",
+    "--output",
+    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3"
+  ],
+  "manifest": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/configs/newtask-v3/subset_manifest.json",
+  "manifest_sha256": "035d3405126d0e4aad3ba026e4d08392d8d269091300bf38c04cd2a372a6b9cd",
+  "source_ref": "d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa",
+  "official_tree": "1d4c13697f0c5fbd7a8b05e01c196c984a07406c",
+  "official_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5d/shard1/official-src",
+  "paths": [
+    "B"
+  ],
+  "workers": 1,
+  "gpus": "0",
+  "shard": null,
+  "identities": [
+    {
+      "task": "PickXtimes",
+      "episode": 0,
+      "seed": 1000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 2,
+      "seed": 1200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 3,
+      "seed": 1300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "StopCube",
+      "episode": 0,
+      "seed": 2000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "StopCube",
+      "episode": 2,
+      "seed": 2200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "StopCube",
+      "episode": 3,
+      "seed": 2300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 0,
+      "seed": 3000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 2,
+      "seed": 3200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 3,
+      "seed": 3301,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "BinFill",
+      "episode": 0,
+      "seed": 4000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "BinFill",
+      "episode": 2,
+      "seed": 4200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "BinFill",
+      "episode": 3,
+      "seed": 4301,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 0,
+      "seed": 5000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 2,
+      "seed": 5200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 3,
+      "seed": 5300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 0,
+      "seed": 6000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 2,
+      "seed": 6200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 3,
+      "seed": 6300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 0,
+      "seed": 7000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 2,
+      "seed": 7200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 3,
+      "seed": 7300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 0,
+      "seed": 8000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 2,
+      "seed": 8200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 3,
+      "seed": 8300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 0,
+      "seed": 9000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 2,
+      "seed": 9200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 3,
+      "seed": 9301,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 0,
+      "seed": 10000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 2,
+      "seed": 10202,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 3,
+      "seed": 10301,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 0,
+      "seed": 11003,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 2,
+      "seed": 11206,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 3,
+      "seed": 11305,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 0,
+      "seed": 12000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 2,
+      "seed": 12200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 3,
+      "seed": 12300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 0,
+      "seed": 13000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 2,
+      "seed": 13201,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 3,
+      "seed": 13300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "MoveCube",
+      "episode": 0,
+      "seed": 14000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "MoveCube",
+      "episode": 2,
+      "seed": 14200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "MoveCube",
+      "episode": 3,
+      "seed": 14300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "PatternLock",
+      "episode": 0,
+      "seed": 15001,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "PatternLock",
+      "episode": 2,
+      "seed": 15200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "PatternLock",
+      "episode": 3,
+      "seed": 15300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 0,
+      "seed": 16000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 2,
+      "seed": 16200,
+      "difficulty": "medium",
+      "recovery_mode": "z"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 3,
+      "seed": 16300,
+      "difficulty": "hard",
+      "recovery_mode": "xy"
+    }
+  ],
+  "environment": {
+    "hostname": "sled-aspen.eecs.umich.edu",
+    "platform": "Linux-5.15.0-133-generic-x86_64-with-glibc2.35",
+    "python": "3.11.14",
+    "nvidia_smi": "0, NVIDIA RTX A6000, 570.195.03\n1, NVIDIA RTX A6000, 570.195.03",
+    "cuda_visible_devices": "0",
+    "slurm_job_id": null,
+    "slurm_nodelist": null,
+    "uv_lock_sha256": "ff0ffd847a55f77d61c3d11efe4ad11e8776534e044f0ddb2b22396d838fa5f3",
+    "pyproject_sha256": "d03537d6c77a8d8213bc881da6ac470b2d8a80cf5f883df587d9df634374db36"
+  }
+}

@@ -1,0 +1,10 @@
+=== vail 48 ===
+VS_ORIGINAL=PASS tier=ada compared=48 identical=5 drift=42 replan=1 fail=0 replan_rate=0.0208 replan_max=0.0357
+REFERENCE_AUDIT_COMPLETE=PASS compared=48 contract_errors=0 missing=0
+EXIT_CODE=0
+=== vail local-recheck 36 ===
+VS_ORIGINAL=PASS tier=ada compared=36 identical=0 drift=36 replan=0 fail=0 replan_rate=0.0000 replan_max=0.0357
+REFERENCE_AUDIT_COMPLETE=PASS compared=36 contract_errors=0 missing=0
+EXIT_CODE=0
+
+[exited with code 0]

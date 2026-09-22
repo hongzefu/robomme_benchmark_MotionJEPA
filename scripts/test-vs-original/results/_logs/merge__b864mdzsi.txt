@@ -1,0 +1,10 @@
+# 合并 SwingXtimes：9 条 → artifacts/train-parity/tvo-localrecheck/merged-B/record_dataset_SwingXtimes.h5
+# 合并 VideoPlaceButton：9 条 → artifacts/train-parity/tvo-localrecheck/merged-B/record_dataset_VideoPlaceButton.h5
+# 合并 VideoPlaceOrder：9 条 → artifacts/train-parity/tvo-localrecheck/merged-B/record_dataset_VideoPlaceOrder.h5
+# 合并 PickHighlight：9 条 → artifacts/train-parity/tvo-localrecheck/merged-B/record_dataset_PickHighlight.h5
+MERGE_DONE tasks=4 path=B output=artifacts/train-parity/tvo-localrecheck/merged-B
+record_dataset_PickHighlight.h5
+record_dataset_PickHighlight_metadata.json
+record_dataset_SwingXtimes.h5
+
+[exited with code 0]

@@ -1,0 +1,11 @@
+MERGE_DONE tasks=16 path=B output=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-tvo-w4/merged-B
+=== GL 144 局 4worker 对原版（a40 档，初值）===
+VS_ORIGINAL=FAIL tier=a40 compared=144 identical=0 drift=126 replan=15 fail=3 replan_rate=0.1042 replan_max=0.4
+# 手臂通道 DRIFT 局 p99 最大值：joint_action=0.0186 eef_action=0.017 joint_state=0.0181 eef_state=0.017（阈值 joint_action=0.02 eef_action=0.02 joint_state=0.02 eef_state=0.02）
+# 布局层：ts0 grounded 相同=141/144；ts0 图像最大像素差比例=0.0253，深度 max=65；边界坐标最大像素差=90；边界帧号最大偏移=90；夹爪翻转最大偏移=139；帧数最大差=194
+# 指令文本仅标点/连字符差异（归一化后相同、不判 FAIL）的局数=42
+REFERENCE_AUDIT_COMPLETE=PASS compared=144 contract_errors=0 missing=0
+# 逐局明细 scripts/test-vs-original/results/gl-w4-144/episodes.jsonl；汇总 scripts/test-vs-original/results/gl-w4-144/summary.json
+EXIT_CODE=1
+
+[exited with code 0]

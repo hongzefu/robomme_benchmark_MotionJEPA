@@ -208,3 +208,16 @@ engin1       QOS=normal
 - `/nfs/turbo/coe-chaijy-unreplicated/hongzefu` 已挂载（与 sled-vail、greatlakes 同一份）；`/data` 14 T 余 5.8 T，`/data/hongzefu` 已存在。
 - **NFS 克隆的 `.venv` 可直接用**：`python 3.11.14 / torch 2.9.1+cu128 / cuda.is_available()=True`，torch 走 NFS 导入约 32 s。零环境搭建即可跑 `train_split_parity.py run`，输出写 NFS，本机直读。
 - 用法：`tmux` 在 aspen 上起，`CUDA_VISIBLE_DEVICES=0` 锁单卡；用户定为**只当算力、只测单 worker**，不进容差标定。
+
+---
+
+## 九、教训清单（2026-09-22 复盘，按"下次怎么做"写）
+
+1. **遇到 GPU/驱动类"不可能"的报错，先把 `sbatch --help` / `srun --help` 读完再下"无解"的结论。** `--gpu_cmode=shared` 就写在帮助里，而且 [AgentMetaRules](https://github.com/hongzefu/AgentMetaRules-hongzefu) 的 greatlakes 正本早已有"同卡多进程需 `--gpu_cmode=shared`"一条——本次的坑是**单进程**（torch 的 CUDA context + svulkan2 的 CUDA-Vulkan 互操作）同样需要，规则要按"需要第二个 CUDA context 的任何情形"理解，不限于多进程。
+2. **分区只用被授权的那个**（本仓库：`spgpu`）。排查问题时也不要往别的分区提探针 job——已被用户明令禁止，且换分区对 compute mode 这类全局设置无效。
+3. **占位 job 里起步骤的固定写法**：`srun --jobid=<hold> --overlap --exact --ntasks=1 --cpus-per-task=4 --gpu_cmode=shared <脚本>`，每个 job 一条 tmux 会话，每份日志一个 Monitor（续挂用 `tail -n 0`）。
+4. **单 worker 的可复现只在同一次运行内成立**；`NODE_PARITY` 只验过一条身份，撑不起"任意身份跨节点可复现"。跨运行复核要预期时序临界身份（`PickHighlight/ep3`）不同，判据必须建立在同一次运行的五路对拍上。
+5. **删测试目录前先抠小文件**：`run.log`、`run_config.json`、`results/*.json`、`jobs/`、`logs/`、合并 metadata 归到仓库 `results/_runs/` 再 `rm -rf`。
+6. **NFS 读大文件的比较任务要串成链、分批起**，不要期待并行加速；一条 144 局的全字段比较约 10～15 分钟。
+7. **本机、aspen 都能直读集群 NFS**：产物落在 NFS，比较在本机跑，不搬数据；aspen 连 venv 都直接用 NFS 克隆的。
+8. **aspen 是原版发布集的"同机器"**（47/48 逐位复现，含图像）；需要与原版逐位对拍的验证优先排到 aspen，sled-vail 次之（1e-16），A40 只能做容差校验。

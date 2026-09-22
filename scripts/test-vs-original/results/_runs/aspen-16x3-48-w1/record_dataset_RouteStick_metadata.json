@@ -1,0 +1,24 @@
+{
+  "env_id": "RouteStick",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "RouteStick",
+      "episode": 0,
+      "seed": 16000,
+      "difficulty": "easy"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 2,
+      "seed": 16200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 3,
+      "seed": 16300,
+      "difficulty": "hard"
+    }
+  ]
+}

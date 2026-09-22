@@ -1,0 +1,24 @@
+{
+  "env_id": "PatternLock",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "PatternLock",
+      "episode": 0,
+      "seed": 15001,
+      "difficulty": "easy"
+    },
+    {
+      "task": "PatternLock",
+      "episode": 2,
+      "seed": 15200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "PatternLock",
+      "episode": 3,
+      "seed": 15300,
+      "difficulty": "hard"
+    }
+  ]
+}

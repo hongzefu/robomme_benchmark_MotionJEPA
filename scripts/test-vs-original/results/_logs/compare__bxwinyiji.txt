@@ -1,0 +1,29 @@
+MERGE_DONE tasks=16 path=B output=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/merged-B
+=== aspen 48 局对原版（a40 档）===
+# SwingXtimes/ep0: DRIFT bitwise:other_fields_differ
+# SwingXtimes/ep2: IDENTICAL 
+# SwingXtimes/ep3: DRIFT bitwise:other_fields_differ
+# VideoPlaceButton/ep0: DRIFT bitwise:other_fields_differ
+# VideoPlaceButton/ep2: DRIFT bitwise:other_fields_differ
+# VideoPlaceButton/ep3: DRIFT bitwise:other_fields_differ
+# VideoPlaceOrder/ep0: IDENTICAL 
+# VideoPlaceOrder/ep2: IDENTICAL 
+# VideoPlaceOrder/ep3: IDENTICAL 
+# VideoRepick/ep0: DRIFT bitwise:other_fields_differ
+# VideoRepick/ep2: DRIFT bitwise:other_fields_differ
+# VideoRepick/ep3: DRIFT bitwise:other_fields_differ
+# VideoUnmask/ep0: IDENTICAL 
+# VideoUnmask/ep2: IDENTICAL 
+# VideoUnmask/ep3: IDENTICAL 
+# VideoUnmaskSwap/ep0: IDENTICAL 
+# VideoUnmaskSwap/ep2: IDENTICAL 
+# VideoUnmaskSwap/ep3: IDENTICAL 
+VS_ORIGINAL=PASS tier=a40 compared=48 identical=33 drift=14 replan=1 fail=0 replan_rate=0.0208 replan_max=0.4
+# 手臂通道 DRIFT 局 p99 最大值：joint_action=0 eef_action=0 joint_state=0 eef_state=0（阈值 joint_action=0.02 eef_action=0.02 joint_state=0.02 eef_state=0.02）
+# 布局层：ts0 grounded 相同=48/48；ts0 图像最大像素差比例=0.0000，深度 max=0；边界坐标最大像素差=0；边界帧号最大偏移=1；夹爪翻转最大偏移=1；帧数最大差=1
+# 指令文本仅标点/连字符差异（归一化后相同、不判 FAIL）的局数=14
+REFERENCE_AUDIT_COMPLETE=PASS compared=48 contract_errors=0 missing=0
+# 逐局明细 scripts/test-vs-original/results/aspen-16x3-48-w1/episodes.jsonl；汇总 scripts/test-vs-original/results/aspen-16x3-48-w1/summary.json
+EXIT_CODE=0
+
+[exited with code 0]

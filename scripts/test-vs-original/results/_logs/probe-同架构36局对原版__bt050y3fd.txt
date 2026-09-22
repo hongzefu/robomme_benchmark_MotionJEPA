@@ -1,0 +1,42 @@
+env                ep    帧 gen/off     max|Δ|        p99   首帧>1e-8 ts0同
+SwingXtimes         0   482/482      4.99e-18          0        -1 True
+SwingXtimes         1   608/608      1.87e-17          0        -1 True
+SwingXtimes        10   380/380      1.04e-17          0        -1 True
+SwingXtimes        11   486/486       8.1e-19          0        -1 True
+SwingXtimes         2   396/396      2.71e-18          0        -1 True
+SwingXtimes         3   535/535      2.97e-18          0        -1 True
+SwingXtimes         4   488/488         3e-18          0        -1 True
+SwingXtimes         6   392/392       6.8e-18          0        -1 True
+SwingXtimes         7   504/504      9.81e-18          0        -1 True
+PickHighlight       0   308/308      3.92e-18          0        -1 True
+PickHighlight       1   276/276      4.08e-18          0        -1 True
+PickHighlight      10   415/415      1.52e-18          0        -1 True
+PickHighlight      11   583/583      1.76e-18          0        -1 True
+PickHighlight       2   435/435      2.06e-18          0        -1 True
+PickHighlight       3   652/652      9.93e-19          0        -1 True
+PickHighlight       4   320/320      5.74e-19          0        -1 True
+PickHighlight       6   387/387      2.82e-18          0        -1 True
+PickHighlight       7   530/530      3.25e-19          0        -1 True
+VideoPlaceButton    0  1048/1048        5e-18          0        -1 True
+VideoPlaceButton    1  1002/1002     1.12e-17          0        -1 True
+VideoPlaceButton   10   980/980      6.46e-18          0        -1 True
+VideoPlaceButton   11   946/946      7.56e-18          0        -1 True
+VideoPlaceButton    2  1001/1001     8.25e-18          0        -1 True
+VideoPlaceButton    3  1041/1041     2.45e-18          0        -1 True
+VideoPlaceButton    4  1089/1089     1.16e-17          0        -1 True
+VideoPlaceButton    6   921/921      2.12e-18          0        -1 True
+VideoPlaceButton    7   958/958      2.53e-18          0        -1 True
+VideoPlaceOrder     0  1200/1200     1.37e-17          0        -1 True
+VideoPlaceOrder     1  1367/1367     2.42e-18          0        -1 True
+VideoPlaceOrder    10  1342/1342     1.77e-17          0        -1 True
+VideoPlaceOrder    11  1311/1311     1.36e-17          0        -1 True
+VideoPlaceOrder     2  1222/1222     3.87e-19          0        -1 True
+VideoPlaceOrder     3  1408/1408     6.98e-18          0        -1 True
+VideoPlaceOrder     4  1411/1411     1.05e-17          0        -1 True
+VideoPlaceOrder     6   917/917      2.88e-18          0        -1 True
+VideoPlaceOrder     7  1131/1131     4.18e-18          0        -1 True
+
+同架构汇总：36 局，帧数相同 36 局，帧数不同 0 局
+帧数相同局的 max|Δ| 分布：max=1.87e-17 p90=1.26e-17 中位=4e-18；逐位全同(max==0) 0 局
+
+[exited with code 0]

@@ -1,0 +1,24 @@
+{
+  "env_id": "BinFill",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "BinFill",
+      "episode": 0,
+      "seed": 4000,
+      "difficulty": "easy"
+    },
+    {
+      "task": "BinFill",
+      "episode": 2,
+      "seed": 4200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "BinFill",
+      "episode": 3,
+      "seed": 4301,
+      "difficulty": "hard"
+    }
+  ]
+}

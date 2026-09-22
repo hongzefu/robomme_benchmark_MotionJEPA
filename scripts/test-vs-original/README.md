@@ -236,6 +236,9 @@ VS_ORIGINAL=FAIL tier=ada compared=1 identical=0 drift=0 replan=0 fail=1
 
 ## 五、边界与注意
 
+- 多进程/多 worker 的实测经验（`mplib` 墙钟预算、跨架构不变量、夹爪与末段错位陷阱、吞吐）汇总在 [`docs/maniskill-robomme-multiprocess.md`](../../docs/maniskill-robomme-multiprocess.md)；集群与 aspen 的操作教训在 [`docs/greatlakes.md`](../../docs/greatlakes.md) 第八、九节；两者已同步到 [AgentMetaRules-hongzefu](https://github.com/hongzefu/AgentMetaRules-hongzefu)。
+- 原始证据索引见 [`results/_logs/README.md`](results/_logs/README.md)。
+
 - 紧档只做了单 worker 标定（用户决定本地两台只测单 worker）；若日后在 sled-vail 用多 worker 生成，须先补标定。
 - aspen 产物按 `a6000` 档判；松档（a40）标定不含 aspen 数据。
 - 测试产生的 h5/mp4（本机 52 G、NFS 126 G）已在 commit、汇报、用户确认后删除；只保留 `results/` 下的 JSON/JSONL。

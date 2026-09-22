@@ -1,0 +1,24 @@
+{
+  "env_id": "VideoUnmaskSwap",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 0,
+      "seed": 5000,
+      "difficulty": "easy"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 2,
+      "seed": 5200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 3,
+      "seed": 5300,
+      "difficulty": "hard"
+    }
+  ]
+}

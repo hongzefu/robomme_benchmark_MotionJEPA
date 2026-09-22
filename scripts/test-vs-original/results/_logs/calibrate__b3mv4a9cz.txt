@@ -1,0 +1,8 @@
+=== 标定 a6000 ===
+CALIBRATION_DONE tier=a6000 samples=1 episodes=48 replan_rate=0.0208 arm_p99_obs=[joint_action=0 eef_action=0 joint_state=0 eef_state=0] write=1
+# 已写回 /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/tolerance.json
+EXIT_CODE=0
+a6000 标定后: {"frame_delta_max": 0, "px_tol": 0, "boundary_shift_max": 0, "flip_shift_max": 0, "replan_max": 0.0625, "arm": {"joint_action": {"p99": 1e-06, "max": 1e-06}, "eef_action": {"p99": 1e-06, "max": 1e-06}, "joint_state": {"p99": 1e-06, "max": 1e-06}, "eef_state": {"p99": 1e-06, "max": 1e-06}}, "ts0_image": {"px_diff_ratio": 0.0, "depth_max": 0}}
+=== aspen 48 局用 a6000 档重比 ===
+
+[killed]

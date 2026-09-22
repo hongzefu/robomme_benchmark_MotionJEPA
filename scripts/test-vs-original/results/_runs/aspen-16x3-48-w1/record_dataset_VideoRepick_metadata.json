@@ -1,0 +1,24 @@
+{
+  "env_id": "VideoRepick",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "VideoRepick",
+      "episode": 0,
+      "seed": 9000,
+      "difficulty": "easy"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 2,
+      "seed": 9200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 3,
+      "seed": 9301,
+      "difficulty": "hard"
+    }
+  ]
+}

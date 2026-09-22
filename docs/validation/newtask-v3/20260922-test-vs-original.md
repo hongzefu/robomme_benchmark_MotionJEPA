@@ -74,3 +74,9 @@ VS_ORIGINAL=FAIL tier=ada compared=144 identical=0 drift=11 replan=122 fail=11 r
 
 - 比较结果（JSON/JSONL，824 KB）随本次提交入库：`scripts/test-vs-original/results/`。
 - 生成的 h5/mp4：本机 `artifacts/train-parity/tvo-*`（52 G）、NFS `gl-tvo-16x3`、`gl-tvo-w4`、`aspen-tvo-16x3`（126 G）及各自 `merged-B`，已在汇报并获用户确认后删除；`gl-5e`、`gl-5e-w4` 等既有验收产物与发布集不动。
+
+## 五、经验固化
+
+- 仿真侧：[`docs/maniskill-robomme-multiprocess.md`](../../maniskill-robomme-multiprocess.md)；集群/aspen 侧：[`docs/greatlakes.md`](../../greatlakes.md) 第八、九节。
+- 已同步到 [AgentMetaRules-hongzefu](https://github.com/hongzefu/AgentMetaRules-hongzefu)（`greatlakes.md` 的 `--gpu_cmode` 条目扩为"任何第二个 CUDA context"、分区授权与占位 job、aspen 一节；`AGENTS.md` 第 23 条同步；新增 `docs/maniskill-multiprocess.md`）。
+- 原始证据：[`scripts/test-vs-original/results/_logs/README.md`](../../../scripts/test-vs-original/results/_logs/README.md)、[`results/_runs/`](../../../scripts/test-vs-original/results/_runs/)、计划文件 [`20260922-test-vs-original-plan.md`](20260922-test-vs-original-plan.md)。

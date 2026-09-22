@@ -1,0 +1,24 @@
+MERGE_DONE tasks=16 path=B output=artifacts/train-parity/tvo-vail-16x3/merged-B
+=== vail 48 局对原版（ada 档，auto 选档）===
+# VideoPlaceButton/ep3: DRIFT 
+# VideoPlaceOrder/ep0: DRIFT 
+# VideoPlaceOrder/ep2: DRIFT 
+# VideoPlaceOrder/ep3: DRIFT 
+# VideoRepick/ep0: DRIFT 
+# VideoRepick/ep2: DRIFT 
+# VideoRepick/ep3: DRIFT 
+# VideoUnmask/ep0: DRIFT 
+# VideoUnmask/ep2: DRIFT 
+# VideoUnmask/ep3: DRIFT 
+# VideoUnmaskSwap/ep0: DRIFT 
+# VideoUnmaskSwap/ep2: DRIFT 
+# VideoUnmaskSwap/ep3: DRIFT 
+VS_ORIGINAL=FAIL tier=ada compared=48 identical=5 drift=42 replan=1 fail=0 replan_rate=0.0208 replan_max=0.02
+# 手臂通道 DRIFT 局 p99 最大值：joint_action=6.66e-16 eef_action=0 joint_state=0 eef_state=0（阈值 joint_action=1e-06 eef_action=1e-06 joint_state=1e-06 eef_state=1e-06）
+# 布局层：ts0 grounded 相同=48/48；ts0 图像最大像素差比例=0.0000，深度 max=0；边界坐标最大像素差=0；边界帧号最大偏移=2；夹爪翻转最大偏移=2；帧数最大差=4
+# 指令文本仅标点/连字符差异（归一化后相同、不判 FAIL）的局数=14
+REFERENCE_AUDIT_COMPLETE=PASS compared=48 contract_errors=0 missing=0
+# 逐局明细 scripts/test-vs-original/results/vail-16x3-48-w1/episodes.jsonl；汇总 scripts/test-vs-original/results/vail-16x3-48-w1/summary.json
+EXIT_CODE=1
+
+[exited with code 0]

@@ -1,0 +1,9 @@
+=== 待删测试目录体积 ===
+34G	/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/tvo-vail-16x3
+18G	/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/tvo-localrecheck
+354M	/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/tvo-negative
+26G	/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-tvo-16x3
+74G	/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-tvo-w4
+26G	/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3
+
+[exited with code 0]

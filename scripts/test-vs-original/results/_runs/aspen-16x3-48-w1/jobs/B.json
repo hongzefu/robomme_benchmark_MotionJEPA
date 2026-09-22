@@ -1,0 +1,338 @@
+[
+  {
+    "task": "PickXtimes",
+    "episode": 0,
+    "seed": 1000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/PickXtimes_episode_0"
+  },
+  {
+    "task": "PickXtimes",
+    "episode": 2,
+    "seed": 1200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/PickXtimes_episode_2"
+  },
+  {
+    "task": "PickXtimes",
+    "episode": 3,
+    "seed": 1300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/PickXtimes_episode_3"
+  },
+  {
+    "task": "StopCube",
+    "episode": 0,
+    "seed": 2000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/StopCube_episode_0"
+  },
+  {
+    "task": "StopCube",
+    "episode": 2,
+    "seed": 2200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/StopCube_episode_2"
+  },
+  {
+    "task": "StopCube",
+    "episode": 3,
+    "seed": 2300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/StopCube_episode_3"
+  },
+  {
+    "task": "SwingXtimes",
+    "episode": 0,
+    "seed": 3000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/SwingXtimes_episode_0"
+  },
+  {
+    "task": "SwingXtimes",
+    "episode": 2,
+    "seed": 3200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/SwingXtimes_episode_2"
+  },
+  {
+    "task": "SwingXtimes",
+    "episode": 3,
+    "seed": 3301,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/SwingXtimes_episode_3"
+  },
+  {
+    "task": "BinFill",
+    "episode": 0,
+    "seed": 4000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/BinFill_episode_0"
+  },
+  {
+    "task": "BinFill",
+    "episode": 2,
+    "seed": 4200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/BinFill_episode_2"
+  },
+  {
+    "task": "BinFill",
+    "episode": 3,
+    "seed": 4301,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/BinFill_episode_3"
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "episode": 0,
+    "seed": 5000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoUnmaskSwap_episode_0"
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "episode": 2,
+    "seed": 5200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoUnmaskSwap_episode_2"
+  },
+  {
+    "task": "VideoUnmaskSwap",
+    "episode": 3,
+    "seed": 5300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoUnmaskSwap_episode_3"
+  },
+  {
+    "task": "VideoUnmask",
+    "episode": 0,
+    "seed": 6000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoUnmask_episode_0"
+  },
+  {
+    "task": "VideoUnmask",
+    "episode": 2,
+    "seed": 6200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoUnmask_episode_2"
+  },
+  {
+    "task": "VideoUnmask",
+    "episode": 3,
+    "seed": 6300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoUnmask_episode_3"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "episode": 0,
+    "seed": 7000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/ButtonUnmaskSwap_episode_0"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "episode": 2,
+    "seed": 7200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/ButtonUnmaskSwap_episode_2"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "episode": 3,
+    "seed": 7300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/ButtonUnmaskSwap_episode_3"
+  },
+  {
+    "task": "ButtonUnmask",
+    "episode": 0,
+    "seed": 8000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/ButtonUnmask_episode_0"
+  },
+  {
+    "task": "ButtonUnmask",
+    "episode": 2,
+    "seed": 8200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/ButtonUnmask_episode_2"
+  },
+  {
+    "task": "ButtonUnmask",
+    "episode": 3,
+    "seed": 8300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/ButtonUnmask_episode_3"
+  },
+  {
+    "task": "VideoRepick",
+    "episode": 0,
+    "seed": 9000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoRepick_episode_0"
+  },
+  {
+    "task": "VideoRepick",
+    "episode": 2,
+    "seed": 9200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoRepick_episode_2"
+  },
+  {
+    "task": "VideoRepick",
+    "episode": 3,
+    "seed": 9301,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoRepick_episode_3"
+  },
+  {
+    "task": "VideoPlaceButton",
+    "episode": 0,
+    "seed": 10000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoPlaceButton_episode_0"
+  },
+  {
+    "task": "VideoPlaceButton",
+    "episode": 2,
+    "seed": 10202,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoPlaceButton_episode_2"
+  },
+  {
+    "task": "VideoPlaceButton",
+    "episode": 3,
+    "seed": 10301,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoPlaceButton_episode_3"
+  },
+  {
+    "task": "VideoPlaceOrder",
+    "episode": 0,
+    "seed": 11003,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoPlaceOrder_episode_0"
+  },
+  {
+    "task": "VideoPlaceOrder",
+    "episode": 2,
+    "seed": 11206,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoPlaceOrder_episode_2"
+  },
+  {
+    "task": "VideoPlaceOrder",
+    "episode": 3,
+    "seed": 11305,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/VideoPlaceOrder_episode_3"
+  },
+  {
+    "task": "PickHighlight",
+    "episode": 0,
+    "seed": 12000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/PickHighlight_episode_0"
+  },
+  {
+    "task": "PickHighlight",
+    "episode": 2,
+    "seed": 12200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/PickHighlight_episode_2"
+  },
+  {
+    "task": "PickHighlight",
+    "episode": 3,
+    "seed": 12300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/PickHighlight_episode_3"
+  },
+  {
+    "task": "InsertPeg",
+    "episode": 0,
+    "seed": 13000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/InsertPeg_episode_0"
+  },
+  {
+    "task": "InsertPeg",
+    "episode": 2,
+    "seed": 13201,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/InsertPeg_episode_2"
+  },
+  {
+    "task": "InsertPeg",
+    "episode": 3,
+    "seed": 13300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/InsertPeg_episode_3"
+  },
+  {
+    "task": "MoveCube",
+    "episode": 0,
+    "seed": 14000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/MoveCube_episode_0"
+  },
+  {
+    "task": "MoveCube",
+    "episode": 2,
+    "seed": 14200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/MoveCube_episode_2"
+  },
+  {
+    "task": "MoveCube",
+    "episode": 3,
+    "seed": 14300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/MoveCube_episode_3"
+  },
+  {
+    "task": "PatternLock",
+    "episode": 0,
+    "seed": 15001,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/PatternLock_episode_0"
+  },
+  {
+    "task": "PatternLock",
+    "episode": 2,
+    "seed": 15200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/PatternLock_episode_2"
+  },
+  {
+    "task": "PatternLock",
+    "episode": 3,
+    "seed": 15300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/PatternLock_episode_3"
+  },
+  {
+    "task": "RouteStick",
+    "episode": 0,
+    "seed": 16000,
+    "difficulty": "easy",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/RouteStick_episode_0"
+  },
+  {
+    "task": "RouteStick",
+    "episode": 2,
+    "seed": 16200,
+    "difficulty": "medium",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/RouteStick_episode_2"
+  },
+  {
+    "task": "RouteStick",
+    "episode": 3,
+    "seed": 16300,
+    "difficulty": "hard",
+    "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/B/RouteStick_episode_3"
+  }
+]

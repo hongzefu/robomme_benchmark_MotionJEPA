@@ -1,0 +1,20 @@
+# 合并 PickXtimes：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_PickXtimes.h5
+# 合并 StopCube：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_StopCube.h5
+# 合并 SwingXtimes：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_SwingXtimes.h5
+# 合并 BinFill：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_BinFill.h5
+# 合并 VideoUnmaskSwap：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_VideoUnmaskSwap.h5
+# 合并 VideoUnmask：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_VideoUnmask.h5
+# 合并 ButtonUnmaskSwap：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_ButtonUnmaskSwap.h5
+# 合并 ButtonUnmask：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_ButtonUnmask.h5
+# 合并 VideoRepick：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_VideoRepick.h5
+# 合并 VideoPlaceButton：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_VideoPlaceButton.h5
+# 合并 VideoPlaceOrder：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_VideoPlaceOrder.h5
+# 合并 PickHighlight：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_PickHighlight.h5
+# 合并 InsertPeg：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_InsertPeg.h5
+# 合并 MoveCube：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_MoveCube.h5
+# 合并 PatternLock：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_PatternLock.h5
+# 合并 RouteStick：9 条 → /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1/record_dataset_RouteStick.h5
+MERGE_DONE tasks=16 path=A1 output=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/gl-5e-w4/merged-A1
+Traceback (most recent call last):
+
+[killed]

@@ -1,0 +1,24 @@
+=== gl-16x3-48-w1 ===
+VS_ORIGINAL=PASS tier=a40 compared=48 identical=0 drift=43 replan=5 fail=0 replan_rate=0.1042 replan_max=0.2188
+# 手臂通道 DRIFT 局 p99 最大值：joint_action=0.0189 eef_action=0.0227 joint_state=0.0185 eef_state=0.0226（阈值 joint_action=0.04 eef_action=0.04 joint_state=0.04 eef_state=0.04）
+# 布局层：ts0 grounded 相同=47/48；ts0 图像最大像素差比例=0.0120，深度 max=10；边界坐标最大像素差=90；边界帧号最大偏移=90；夹爪翻转最大偏移=139；帧数最大差=194
+# 指令文本仅标点/连字符差异（归一化后相同、不判 FAIL）的局数=15
+REFERENCE_AUDIT_COMPLETE=PASS compared=48 contract_errors=0 missing=0
+EXIT_CODE=0
+=== aspen-16x3-48-w1 ===
+VS_ORIGINAL=PASS tier=a40 compared=48 identical=47 drift=0 replan=1 fail=0 replan_rate=0.0208 replan_max=0.2188
+# 手臂通道 DRIFT 局 p99 最大值：joint_action=n/a eef_action=n/a joint_state=n/a eef_state=n/a（阈值 joint_action=0.04 eef_action=0.04 joint_state=0.04 eef_state=0.04）
+# 布局层：ts0 grounded 相同=48/48；ts0 图像最大像素差比例=0.0000，深度 max=0；边界坐标最大像素差=0；边界帧号最大偏移=1；夹爪翻转最大偏移=1；帧数最大差=1
+# 指令文本仅标点/连字符差异（归一化后相同、不判 FAIL）的局数=14
+REFERENCE_AUDIT_COMPLETE=PASS compared=48 contract_errors=0 missing=0
+EXIT_CODE=0
+=== negative a40 ===
+# BinFill/ep0: REPLAN replan:frames:558vs550,arm:joint_action,arm:eef_action,arm:joint_state,arm:eef_state,subgoal:px=8,boundary_shift=13,gripper:flip_shift=13
+VS_ORIGINAL=FAIL tier=a40 compared=1 identical=0 drift=0 replan=1 fail=0 replan_rate=1.0000 replan_max=0.2188
+EXIT_CODE=1
+=== negative ada ===
+# BinFill/ep0: FAIL layout:ts0_depth_over_tol,ts0_rgb_over_tol
+VS_ORIGINAL=FAIL tier=ada compared=1 identical=0 drift=0 replan=0 fail=1 replan_rate=0.0000 replan_max=0.0357
+EXIT_CODE=1
+
+[exited with code 0]

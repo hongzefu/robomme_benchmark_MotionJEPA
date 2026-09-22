@@ -1,0 +1,6 @@
+VS_ORIGINAL=PASS tier=a6000 compared=48 identical=47 drift=0 replan=1 fail=0 replan_rate=0.0208 replan_max=0.0625
+# 布局层：ts0 grounded 相同=48/48；ts0 图像最大像素差比例=0.0000，深度 max=0；边界坐标最大像素差=0；边界帧号最大偏移=1；夹爪翻转最大偏移=1；帧数最大差=1
+REFERENCE_AUDIT_COMPLETE=PASS compared=48 contract_errors=0 missing=0
+EXIT_CODE=0
+
+[exited with code 0]

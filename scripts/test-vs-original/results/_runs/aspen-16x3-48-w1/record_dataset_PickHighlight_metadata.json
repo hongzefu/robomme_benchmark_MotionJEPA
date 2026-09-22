@@ -1,0 +1,24 @@
+{
+  "env_id": "PickHighlight",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "PickHighlight",
+      "episode": 0,
+      "seed": 12000,
+      "difficulty": "easy"
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 2,
+      "seed": 12200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 3,
+      "seed": 12300,
+      "difficulty": "hard"
+    }
+  ]
+}

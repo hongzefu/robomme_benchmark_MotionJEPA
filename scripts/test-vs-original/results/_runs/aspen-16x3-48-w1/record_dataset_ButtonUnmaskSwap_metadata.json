@@ -1,0 +1,24 @@
+{
+  "env_id": "ButtonUnmaskSwap",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 0,
+      "seed": 7000,
+      "difficulty": "easy"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 2,
+      "seed": 7200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 3,
+      "seed": 7300,
+      "difficulty": "hard"
+    }
+  ]
+}

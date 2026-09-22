@@ -1,0 +1,24 @@
+{
+  "env_id": "VideoUnmask",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "VideoUnmask",
+      "episode": 0,
+      "seed": 6000,
+      "difficulty": "easy"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 2,
+      "seed": 6200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 3,
+      "seed": 6300,
+      "difficulty": "hard"
+    }
+  ]
+}

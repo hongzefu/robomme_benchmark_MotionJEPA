@@ -1,0 +1,14 @@
+--- NFS 克隆的 venv 在 aspen 上能否直接用（torch 导入走 NFS，可能慢）---
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+3.11.14 2.9.1+cu128 12.8 True
+--- uv 可装的 3.11 ---
+
+real	0m32.686s
+user	0m1.251s
+sys	0m1.622s
+cpython-3.11.14-linux-x86_64-gnu                  .local/share/uv/python/cpython-3.11-linux-x86_64-gnu/bin/python3.11
+pypy-3.11.13-linux-x86_64-gnu                     <download available>
+graalpy-3.11.0-linux-x86_64-gnu                   <download available>
+
+[exited with code 0]

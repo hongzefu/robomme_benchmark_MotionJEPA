@@ -1,0 +1,27 @@
+跨架构 36 局：帧数相同 20，不同 16（[('SwingXtimes', 10, 380, 379), ('SwingXtimes', 6, 392, 391), ('PickHighlight', 1, 276, 277), ('PickHighlight', 11, 583, 584), ('PickHighlight', 2, 435, 434), ('PickHighlight', 3, 652, 641), ('PickHighlight', 4, 320, 311), ('PickHighlight', 6, 387, 386), ('PickHighlight', 7, 530, 568), ('VideoPlaceButton', 0, 1048, 1054), ('VideoPlaceButton', 10, 980, 981), ('VideoPlaceButton', 3, 1041, 1042), ('VideoPlaceButton', 4, 1089, 1093), ('VideoPlaceOrder', 0, 1200, 1006), ('VideoPlaceOrder', 11, 1311, 1315), ('VideoPlaceOrder', 2, 1222, 1223)]）
+ts0 grounded 相同 36/36；边界文本序列相同 31/36；边界帧号偏移 max=10
+帧数相同局（DRIFT 体制）各字段 max|Δ| 的分布：
+  action/joint_action    n=20 max=0.01408 p90=0.009725 中位=0.002387
+  action/eef_action      n=20 max=0.01371 p90=0.006958 中位=0.002029
+  obs/joint_state        n=20 max=0.01408 p90=0.01007 中位=0.002771
+  obs/eef_state          n=20 max=0.01372 p90=0.008037 中位=0.002975
+  obs/gripper_state      n=20 max=0.001279 p90=0.001185 中位=5.052e-05
+帧数相同局 is_gripper_close 翻转次数一致 20/20，翻转帧号偏移 max=0
+  重规划局明细: SwingXtimes 10 {'action/joint_action': (0.0172, 0.0102), 'action/eef_action': (0.0049, 0.0027), 'obs/joint_state': (0.0163, 0.0106), 'obs/eef_state': (0.0047, 0.0031), 'obs/gripper_state': (0.0006, 0.0)} 边界 (8, 8) 翻转 (3, 3, 0)
+  重规划局明细: SwingXtimes 6 {'action/joint_action': (0.0065, 0.0027), 'action/eef_action': (0.0053, 0.0028), 'obs/joint_state': (0.0083, 0.0032), 'obs/eef_state': (0.0068, 0.0037), 'obs/gripper_state': (0.0003, 0.0)} 边界 (8, 8) 翻转 (3, 3, 0)
+  重规划局明细: PickHighlight 1 {'action/joint_action': (2.0, 0.0284), 'action/eef_action': (2.0, 0.0109), 'obs/joint_state': (0.0332, 0.0271), 'obs/eef_state': (0.0118, 0.0104), 'obs/gripper_state': (0.0196, 0.0157)} 边界 (3, 3) 翻转 (5, 5, 1)
+  重规划局明细: PickHighlight 11 {'action/joint_action': (2.0, 0.0299), 'action/eef_action': (2.0, 0.0112), 'obs/joint_state': (0.0403, 0.029), 'obs/eef_state': (0.0459, 0.0109), 'obs/gripper_state': (0.0195, 0.0086)} 边界 (7, 7) 翻转 (7, 7, 1)
+  重规划局明细: PickHighlight 2 {'action/joint_action': (0.0148, 0.0033), 'action/eef_action': (0.0047, 0.001), 'obs/joint_state': (0.0139, 0.005), 'obs/eef_state': (0.0045, 0.0017), 'obs/gripper_state': (0.0008, 0.0002)} 边界 (5, 5) 翻转 (7, 7, 0)
+  重规划局明细: PickHighlight 3 {'action/joint_action': (2.0, 0.3346), 'action/eef_action': (2.0, 0.2109), 'obs/joint_state': (0.3576, 0.238), 'obs/eef_state': (0.2258, 0.1089), 'obs/gripper_state': (0.0217, 0.0217)} 边界 (7, 7) 翻转 (9, 9, 10)
+  重规划局明细: PickHighlight 4 {'action/joint_action': (2.0, 0.1176), 'action/eef_action': (2.0, 0.0242), 'obs/joint_state': (0.1632, 0.1068), 'obs/eef_state': (0.0518, 0.016), 'obs/gripper_state': (0.0217, 0.0217)} 边界 (3, 3) 翻转 (5, 5, 6)
+  重规划局明细: PickHighlight 6 {'action/joint_action': (2.0, 0.0291), 'action/eef_action': (2.0, 0.0144), 'obs/joint_state': (0.0448, 0.0279), 'obs/eef_state': (0.0268, 0.0139), 'obs/gripper_state': (0.0195, 0.0089)} 边界 (5, 5) 翻转 (5, 5, 1)
+  重规划局明细: PickHighlight 7 {'action/joint_action': (2.0, 2.0), 'action/eef_action': (2.0, 2.0), 'obs/joint_state': (1.226, 1.1806), 'obs/eef_state': (1.2029, 1.1996), 'obs/gripper_state': (0.0217, 0.0217)} 边界 (7, 7) 翻转 (7, 7, 34)
+  重规划局明细: VideoPlaceButton 0 {'action/joint_action': (2.0, 0.27), 'action/eef_action': (2.0, 0.0878), 'obs/joint_state': (0.7345, 0.2038), 'obs/eef_state': (0.3207, 0.0664), 'obs/gripper_state': (0.04, 0.0315)} 边界 (12, 12) 翻转 (12, 12, 6)
+  重规划局明细: VideoPlaceButton 10 {'action/joint_action': (2.0, 0.0295), 'action/eef_action': (2.0, 0.0115), 'obs/joint_state': (0.7324, 0.0293), 'obs/eef_state': (0.3232, 0.0111), 'obs/gripper_state': (0.0196, 0.0051)} 边界 (12, 12) 翻转 (10, 10, 1)
+  重规划局明细: VideoPlaceButton 3 {'action/joint_action': (2.0, 0.0269), 'action/eef_action': (2.0, 0.0112), 'obs/joint_state': (0.737, 0.0261), 'obs/eef_state': (0.3207, 0.0108), 'obs/gripper_state': (0.0196, 0.0086)} 边界 (12, 12) 翻转 (12, 12, 1)
+  重规划局明细: VideoPlaceButton 4 {'action/joint_action': (2.0, 0.0259), 'action/eef_action': (2.0, 0.0211), 'obs/joint_state': (0.1005, 0.0249), 'obs/eef_state': (0.0529, 0.021), 'obs/gripper_state': (0.0195, 0.006)} 边界 (12, 12) 翻转 (12, 12, 4)
+  重规划局明细: VideoPlaceOrder 0 {'action/joint_action': (2.0, 2.0), 'action/eef_action': (2.0, 2.0), 'obs/joint_state': (1.3653, 1.2909), 'obs/eef_state': (0.486, 0.3906), 'obs/gripper_state': (0.04, 0.04)} 边界 (14, 12) 翻转 (14, 12, 139)
+  重规划局明细: VideoPlaceOrder 11 {'action/joint_action': (2.0, 0.0694), 'action/eef_action': (2.0, 0.028), 'obs/joint_state': (0.7216, 0.0693), 'obs/eef_state': (0.7496, 0.0283), 'obs/gripper_state': (0.0217, 0.0025)} 边界 (16, 16) 翻转 (14, 14, 4)
+  重规划局明细: VideoPlaceOrder 2 {'action/joint_action': (2.0, 0.0313), 'action/eef_action': (2.0, 0.0112), 'obs/joint_state': (0.7331, 0.0307), 'obs/eef_state': (0.3209, 0.0109), 'obs/gripper_state': (0.0196, 0.0087)} 边界 (14, 14) 翻转 (14, 14, 1)
+
+[exited with code 0]

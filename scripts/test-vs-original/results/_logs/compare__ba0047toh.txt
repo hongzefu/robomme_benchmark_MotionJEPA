@@ -1,0 +1,23 @@
+=== gl-w4-144 ===
+VS_ORIGINAL=PASS tier=a40 compared=144 identical=0 drift=130 replan=14 fail=0 replan_rate=0.0972 replan_max=0.2188
+# 手臂通道 DRIFT 局 p99 最大值：joint_action=0.0197 eef_action=0.0227 joint_state=0.0198 eef_state=0.0226（阈值 joint_action=0.04 eef_action=0.04 joint_state=0.04 eef_state=0.04）
+# 布局层：ts0 grounded 相同=141/144；ts0 图像最大像素差比例=0.0253，深度 max=65；边界坐标最大像素差=90；边界帧号最大偏移=90；夹爪翻转最大偏移=139；帧数最大差=194
+# 指令文本仅标点/连字符差异（归一化后相同、不判 FAIL）的局数=42
+REFERENCE_AUDIT_COMPLETE=PASS compared=144 contract_errors=0 missing=0
+EXIT_CODE=0
+=== gl-5e-144-w1-tier-a40 ===
+VS_ORIGINAL=PASS tier=a40 compared=144 identical=0 drift=130 replan=14 fail=0 replan_rate=0.0972 replan_max=0.2188
+# 手臂通道 DRIFT 局 p99 最大值：joint_action=0.0197 eef_action=0.0227 joint_state=0.0198 eef_state=0.0226（阈值 joint_action=0.04 eef_action=0.04 joint_state=0.04 eef_state=0.04）
+# 布局层：ts0 grounded 相同=141/144；ts0 图像最大像素差比例=0.0253，深度 max=65；边界坐标最大像素差=90；边界帧号最大偏移=90；夹爪翻转最大偏移=139；帧数最大差=194
+# 指令文本仅标点/连字符差异（归一化后相同、不判 FAIL）的局数=42
+REFERENCE_AUDIT_COMPLETE=PASS compared=144 contract_errors=0 missing=0
+EXIT_CODE=0
+=== gl-5e-w4-144-w4 ===
+VS_ORIGINAL=PASS tier=a40 compared=144 identical=0 drift=130 replan=14 fail=0 replan_rate=0.0972 replan_max=0.2188
+# 手臂通道 DRIFT 局 p99 最大值：joint_action=0.0197 eef_action=0.0227 joint_state=0.0198 eef_state=0.0226（阈值 joint_action=0.04 eef_action=0.04 joint_state=0.04 eef_state=0.04）
+# 布局层：ts0 grounded 相同=141/144；ts0 图像最大像素差比例=0.0253，深度 max=65；边界坐标最大像素差=90；边界帧号最大偏移=90；夹爪翻转最大偏移=139；帧数最大差=194
+# 指令文本仅标点/连字符差异（归一化后相同、不判 FAIL）的局数=42
+REFERENCE_AUDIT_COMPLETE=PASS compared=144 contract_errors=0 missing=0
+EXIT_CODE=0
+
+[exited with code 0]

@@ -1,0 +1,24 @@
+{
+  "env_id": "VideoPlaceOrder",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 0,
+      "seed": 11003,
+      "difficulty": "easy"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 2,
+      "seed": 11206,
+      "difficulty": "medium"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 3,
+      "seed": 11305,
+      "difficulty": "hard"
+    }
+  ]
+}

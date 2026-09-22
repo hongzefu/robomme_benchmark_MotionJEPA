@@ -1,0 +1,27 @@
+# SwingXtimes/ep0: DRIFT 
+# SwingXtimes/ep2: DRIFT 
+# SwingXtimes/ep3: DRIFT 
+# VideoPlaceButton/ep0: REPLAN replan:frames:1054vs1048,arm:joint_action,arm:eef_action,arm:joint_state,arm:eef_state,gripper:flip_shift=6
+# VideoPlaceButton/ep2: DRIFT 
+# VideoPlaceButton/ep3: DRIFT 
+# VideoPlaceOrder/ep0: REPLAN replan:text:task_goal,frames:1006vs1200,arm:joint_action,arm:eef_action,arm:joint_state,arm:eef_state,subgoal:text_sequence,subgoal:px=90,boundary_shift=90,gripper:flip_count,gripper:flip_shift=139
+# VideoPlaceOrder/ep2: DRIFT 
+# VideoPlaceOrder/ep3: DRIFT 
+# VideoRepick/ep0: DRIFT 
+# VideoRepick/ep2: DRIFT 
+# VideoRepick/ep3: REPLAN replan:frames:1031vs1027,arm:joint_action,arm:eef_action,arm:joint_state,arm:eef_state,gripper:flip_shift=4
+# VideoUnmask/ep0: DRIFT 
+# VideoUnmask/ep2: DRIFT 
+# VideoUnmask/ep3: REPLAN replan:arm:eef_action,arm:eef_state
+# VideoUnmaskSwap/ep0: DRIFT 
+# VideoUnmaskSwap/ep2: DRIFT 
+# VideoUnmaskSwap/ep3: DRIFT 
+VS_ORIGINAL=PASS tier=a40 compared=48 identical=0 drift=41 replan=7 fail=0 replan_rate=0.1458 replan_max=0.4
+# 手臂通道 DRIFT 局 p99 最大值：joint_action=0.0186 eef_action=0.017 joint_state=0.0181 eef_state=0.017（阈值 joint_action=0.02 eef_action=0.02 joint_state=0.02 eef_state=0.02）
+# 布局层：ts0 grounded 相同=47/48；ts0 图像最大像素差比例=0.0120，深度 max=10；边界坐标最大像素差=90；边界帧号最大偏移=90；夹爪翻转最大偏移=139；帧数最大差=194
+# 指令文本仅标点/连字符差异（归一化后相同、不判 FAIL）的局数=15
+REFERENCE_AUDIT_COMPLETE=PASS compared=48 contract_errors=0 missing=0
+# 逐局明细 scripts/test-vs-original/results/gl-16x3-48-w1/episodes.jsonl；汇总 scripts/test-vs-original/results/gl-16x3-48-w1/summary.json
+EXIT_CODE=0
+
+[exited with code 0]

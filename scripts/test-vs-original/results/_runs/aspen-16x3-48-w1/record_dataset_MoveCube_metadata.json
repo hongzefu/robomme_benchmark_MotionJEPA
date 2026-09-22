@@ -1,0 +1,24 @@
+{
+  "env_id": "MoveCube",
+  "record_count": 3,
+  "records": [
+    {
+      "task": "MoveCube",
+      "episode": 0,
+      "seed": 14000,
+      "difficulty": "easy"
+    },
+    {
+      "task": "MoveCube",
+      "episode": 2,
+      "seed": 14200,
+      "difficulty": "medium"
+    },
+    {
+      "task": "MoveCube",
+      "episode": 3,
+      "seed": 14300,
+      "difficulty": "hard"
+    }
+  ]
+}
