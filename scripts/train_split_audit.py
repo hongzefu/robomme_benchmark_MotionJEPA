@@ -381,6 +381,86 @@ def cmd_coverage(args: argparse.Namespace) -> int:
     return 0 if status == "PASS" else 1
 
 
+def cmd_branch_coverage(args: argparse.Namespace) -> int:
+    """5b：144 条子集实际覆盖了哪些分支；未出现的列为缺口，不含糊带过。
+
+    只读两处证据，不重跑仿真：
+    * 冻结的 144 条 manifest（task／难度／恢复模式）；
+    * C 路导出的 episode_spec（本局真实取到的值，如 dynamic、交换次数、拾取数）。
+    """
+    manifest = json.loads(
+        (REPO_ROOT / "scripts" / "configs" / "newtask-v3" / "subset_manifest.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    rows = manifest["rows"]
+    cells = {(row["task"], row["difficulty"]) for row in rows}
+    recovery = {"z": 0, "xy": 0, "off": 0}
+    for row in rows:
+        mode = row["recovery_mode"]
+        recovery["off" if mode is None else str(mode)] += 1
+
+    # 从 C 路规格里读本局真实取值
+    branch: dict[str, set] = {}
+    specs_read = 0
+    for run in args.run:
+        run_dir = Path(run)
+        for identity_dir in sorted((run_dir / "C").glob("*_episode_*")) if (run_dir / "C").is_dir() else []:
+            spec_file = identity_dir / "episode_spec.json"
+            if not spec_file.exists():
+                continue
+            specs_read += 1
+            spec = json.loads(spec_file.read_text(encoding="utf-8"))
+            task = spec.get("identity", {}).get("task") or spec.get("task")
+            layout = spec.get("layout", {})
+            objects = spec.get("objects", {})
+            if "dynamic" in layout:
+                branch.setdefault(f"{task}.dynamic", set()).add(bool(layout["dynamic"]))
+            for key in ("n_swaps", "n_picks", "num_repeats", "put_in_color", "target_choice"):
+                if key in objects and isinstance(objects[key], (int, float, bool)):
+                    branch.setdefault(f"{task}.{key}", set()).add(objects[key])
+            if "type_choice" in layout:
+                branch.setdefault(f"{task}.layout_type", set()).add(layout["type_choice"])
+
+    missing_cells = sorted(
+        {(task, difficulty) for task in ALL_TASKS for difficulty in ("easy", "medium", "hard")}
+        - cells
+    )
+    gaps: list[str] = []
+    # 方案点名要覆盖的分支：BinFill 两种 dynamic、零／非零交换、单双拾取
+    for name, values in sorted(branch.items()):
+        if name.endswith(".dynamic") and len(values) < 2:
+            gaps.append(f"{name} 只出现 {sorted(values)}（缺另一种）")
+        if name.endswith(".n_swaps"):
+            # 「零／非零交换都要覆盖」只对**原配置允许零交换**的环境成立：
+            # VideoRepick/hard 是 swap_min=swap_max=0；两个 Swap 环境各档 swap_min 都 ≥1，
+            # 原值下零交换不可能出现，把它们也算缺口是套错了规则。
+            task_name = name.split(".")[0]
+            allows_zero = any(
+                int(cfg.get("swap_min", 1)) == 0
+                for cfg in getattr(
+                    importlib.import_module(f"robomme.robomme_env.{task_name}"), task_name
+                ).configs.values()
+            )
+            if allows_zero and not ({0} & values and {v for v in values if v}):
+                gaps.append(f"{name} 只出现 {sorted(values)}（该环境允许零交换却未覆盖）")
+        if name.endswith(".n_picks") and len(values) < 2:
+            gaps.append(f"{name} 只出现 {sorted(values)}（单双拾取未同时覆盖）")
+    status = "PASS" if not missing_cells else "FAIL"
+    print(
+        f"SUBSET_BRANCH_COVERAGE={status} cells={len(cells)}/48 "
+        f"recovery_z={recovery['z']} recovery_xy={recovery['xy']} recovery_off={recovery['off']} "
+        f"specs_read={specs_read} gaps={len(gaps)}"
+    )
+    for task, difficulty in missing_cells[:10]:
+        print(f"# 缺格：{task}/{difficulty}")
+    for gap in gaps[: args.show]:
+        print(f"# 覆盖缺口：{gap}")
+    if not gaps and specs_read:
+        print("# 方案点名的分支（dynamic 两种、零／非零交换、单双拾取）在已读规格里均已出现")
+    return 0 if status == "PASS" else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="G2／G3／C1 离线核对器")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -392,6 +472,10 @@ def main(argv: list[str] | None = None) -> int:
     cov.add_argument("--run", action="append", required=True, help="运行目录，可重复")
     cov.add_argument("--paths", default=None, help="要求齐备的路径，如 A1,A2,B,C,D")
     cov.set_defaults(func=cmd_coverage)
+    branch = sub.add_parser("branch-coverage", help="5b：144 条子集的分支覆盖清单")
+    branch.add_argument("--run", action="append", required=True, help="运行目录，可重复")
+    branch.add_argument("--show", type=int, default=20)
+    branch.set_defaults(func=cmd_branch_coverage)
     args = parser.parse_args(argv)
     return int(args.func(args))
 
