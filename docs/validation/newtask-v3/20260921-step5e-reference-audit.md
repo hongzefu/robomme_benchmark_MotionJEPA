@@ -1,7 +1,8 @@
-# 步 5e 预演：发布集审计 R1b（2026-09-21）
+# 步 5e：发布集审计 R1b（2026-09-21 预演 / 2026-09-22 正式）
 
 对应 [NEWTASK_RELEASE_V3_PLAN.md](../../../NEWTASK_RELEASE_V3_PLAN.md) 第五节步 5e、闸门 R1b。
-**本文是用 4 worker 那批数据做的预演**，用来验证链路并拿到数量级；正式结论以单 worker 的 5d 产物重跑为准。
+本文同时记录两次运行：先用 4 worker 那批做预演验证链路，再用单 worker 的 5d 正式产物重跑。
+**两次的统计量逐位相同**（见第五节），下文数字即正式结果。
 
 ## 一、前置：发布集在本机且已核验
 
@@ -59,7 +60,23 @@ errors=39（全部是 timestep sets do not match）
 与发布集的差异属于「A40 基线 vs 官方 sm_89 发布集」这条外部对照线。方案对 R1b 的要求正是
 「审计完整 ≠ 数值相等，原 `1e-8` 失败照记、不改写成 PASS」，本文照此执行。
 
-## 五、待办
+## 五、正式运行（单 worker 的 5d 产物）与预演的交叉验证
 
-- 正式 R1b：用单 worker 的 5d 产物重跑合并与审计，替换本文数字。
-- 逐条差异明细已落 `artifacts/train-parity/r1b-w4-audit.json`（含每个 task 的审计段与动作比较段）。
+用 `gl-5d`（单 worker）的 A1 路重跑合并与审计，结果与预演**逐位相同**：
+
+| 统计量 | 预演（4 worker） | 正式（单 worker） |
+|---|---|---|
+| `joint_vector_count` | 50228 | 50228 |
+| `joint_element_count` | 401824 | 401824 |
+| `different_element_count` | 291961 | 291961 |
+| `max_abs_diff` | 0.019696838469699163 | 0.019696838469699163 |
+| `error_count` | 39 | 39 |
+| 最大差位置 | InsertPeg/ep1/timestep486/element5 | 同左 |
+| 合同 | `contract_errors=0 expected=144 completed=144` | 同左 |
+
+这本身是一次有用的交叉验证：4 worker 那批里 `PickHighlight/episode_3` 是不稳定的，
+但两批与发布集比较的统计量完全一致，说明那条身份的抖动没有落进动作比较的差异贡献里
+（它两次运行的帧数虽不同，但都与发布集不同）。
+
+逐条明细：`artifacts/train-parity/r1b-final-audit.json`（正式）、`r1b-w4-audit.json`（预演），
+含每个 task 的审计段与动作比较段。
