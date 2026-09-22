@@ -358,6 +358,41 @@ def scope_diff(contract, comparison) -> str:
     return "\n\n".join(chunks)
 
 
+def run_audit(
+    generated_root: str | Path,
+    reference_root: str | Path,
+    manifest_path: str | Path,
+    official_root: str | Path,
+    max_abs_diff: float = 1e-8,
+) -> dict[str, Any]:
+    """步 5e／R1b：按 144 条原身份跑官方合同校验与动作比较。
+
+    两件事分开报（方案明确要求）：
+    * **审计完整**：合同无错、身份无漏 → `REFERENCE_AUDIT_COMPLETE`；
+    * **动作数值**：原 `1e-8` 阈值下的比较结果原样记录，**失败照记，不改写成 PASS**。
+    """
+    contract, comparison = load_official(official_root)
+    manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    rows = manifest["rows"]
+    records_by_task = contract.read_train_metadata(
+        Path(official_root) / "src" / "robomme" / "env_metadata" / "train"
+    )
+    episodes_by_task = validate_manifest_scope(rows, records_by_task, contract.ALL_TASKS)
+
+    contract_result = validate_generated_subset(
+        generated_root, episodes_by_task, records_by_task, reference_root, contract
+    )
+    action_result = compare_joint_actions_subset(
+        generated_root, reference_root, episodes_by_task, contract, comparison, max_abs_diff
+    )
+    return {
+        "scope": {task: list(eps) for task, eps in episodes_by_task.items()},
+        "rows": len(rows),
+        "contract": contract_result,
+        "joint_action": action_result,
+    }
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="官方比较器的稀疏范围适配")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -366,7 +401,50 @@ def main(argv: Sequence[str] | None = None) -> int:
     check.add_argument("--output", default=None, help="夹具与结果留档目录")
     diff = sub.add_parser("diff", help="打印逐函数最小 diff")
     diff.add_argument("--official-root", required=True)
+    audit = sub.add_parser("audit", help="步 5e／R1b：按 144 条身份跑合同与动作比较")
+    audit.add_argument("--official-root", required=True)
+    audit.add_argument("--generated", required=True, help="合并后的生成数据目录")
+    audit.add_argument("--reference", required=True, help="官方发布集目录")
+    audit.add_argument("--manifest", required=True, help="144 条子集 manifest")
+    audit.add_argument("--max-abs-diff", type=float, default=1e-8)
+    audit.add_argument("--output", default=None, help="结果 JSON 落点")
     args = parser.parse_args(argv)
+
+    if args.command == "audit":
+        result = run_audit(
+            args.generated, args.reference, args.manifest, args.official_root, args.max_abs_diff
+        )
+        contract_result = result["contract"]
+        action = result["joint_action"]
+        contract_errors = (
+            contract_result["metadata"]["error_count"]
+            + contract_result["generated"]["error_count"]
+            + contract_result["official"]["error_count"]
+        )
+        expected = contract_result["acceptance"]["expected_final_completed"]
+        missing = expected - contract_result["acceptance"]["generated_final_completed"]
+        status = "PASS" if contract_errors == 0 and missing == 0 else "FAIL"
+        print(
+            f"REFERENCE_AUDIT_COMPLETE={status} compared={result['rows']} "
+            f"contract_errors={contract_errors} missing={missing}"
+        )
+        # 动作数值单列：审计完整 ≠ 数值相等，原 1e-8 的结果原样记录
+        print(
+            f"# 动作比较（原阈值 {action['max_allowed_abs_diff']}）："
+            f"passed={action['passed']} vectors={action['joint_vector_count']} "
+            f"elements={action['joint_element_count']} "
+            f"different_elements={action['different_element_count']} "
+            f"max_abs_diff={action['max_abs_diff']} errors={action['error_count']}"
+        )
+        if action["max_abs_diff_location"]:
+            print(f"# 最大差位置：{action['max_abs_diff_location']}")
+        for message in action["errors"][:10]:
+            print(f"# 动作比较错误：{message}")
+        if args.output:
+            Path(args.output).write_text(
+                json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+            )
+        return 0 if status == "PASS" else 1
 
     contract, comparison = load_official(args.official_root)
     if args.command == "diff":

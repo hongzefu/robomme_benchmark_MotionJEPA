@@ -1268,6 +1268,62 @@ def _resolve_side(spec: str, runs: dict[str, Path]) -> tuple[str, Path]:
     return f"{label}/{path_name}", runs[label] / path_name
 
 
+def cmd_merge(args: argparse.Namespace) -> int:
+    """把某一路的逐 episode 产物合并成官方比较器吃的 record_dataset_<task>.h5（步 5e）。
+
+    合并与元数据写出**直接调用官方 `_merge` / `_write_metadata`**，不另写一套；元数据按
+    144 条子集投影（只含所选 episode），这正是 9.6 适配器要求的「预期集合恰为所选集合」。
+    """
+    official_root = Path(args.official_root)
+    script_dir = official_root / "scripts" / "data-generation"
+    if not (script_dir / "generate_dataset.py").exists():
+        raise IdentityFreezeError(f"官方源码不存在：{script_dir}")
+    if str(script_dir) not in sys.path:
+        sys.path.insert(0, str(script_dir))
+    import generate_dataset as official  # noqa: PLC0415 官方固定源码
+
+    manifest = _load_subset_manifest(Path(args.manifest))
+    rows_by_task: dict[str, list[dict[str, object]]] = {}
+    for row in manifest["rows"]:  # type: ignore[union-attr]
+        rows_by_task.setdefault(str(row["task"]), []).append(row)
+
+    output = Path(args.output)
+    output.mkdir(parents=True, exist_ok=True)
+    merged_tasks = 0
+    missing: list[str] = []
+    for task, rows in rows_by_task.items():
+        results = []
+        for row in rows:
+            worker_dir = Path(args.run) / args.path / f"{task}_episode_{row['episode']}"
+            files = sorted((worker_dir / "hdf5_files").glob("*.h5"))
+            if len(files) != 1:
+                missing.append(f"{task}/{row['episode']}")
+                continue
+            results.append({"episode": int(row["episode"]), "raw_h5_path": str(files[0])})
+        if missing:
+            continue
+        official._merge(output, task, results)
+        official._write_metadata(
+            output,
+            task,
+            [
+                {
+                    "task": task,
+                    "episode": int(row["episode"]),
+                    "seed": int(row["seed"]),
+                    "difficulty": str(row["difficulty"]),
+                }
+                for row in sorted(rows, key=lambda item: int(item["episode"]))
+            ],
+        )
+        merged_tasks += 1
+        print(f"# 合并 {task}：{len(results)} 条 → {output / f'record_dataset_{task}.h5'}")
+    if missing:
+        raise IdentityFreezeError("缺少这些身份的产物，不合并：" + ", ".join(missing[:10]))
+    print(f"MERGE_DONE tasks={merged_tasks} path={args.path} output={output}")
+    return 0
+
+
 def cmd_compare(args: argparse.Namespace) -> int:
     runs: dict[str, Path] = {}
     for item in args.run:
@@ -1615,6 +1671,14 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--episode-specs", default=None, help="D 路的每局规格 JSON")
     run.add_argument("--output", required=True)
     run.set_defaults(func=cmd_run)
+
+    merge = sub.add_parser("merge", help="把某一路的逐 episode 产物合并成官方格式（步 5e 前置）")
+    merge.add_argument("--run", required=True, help="运行目录")
+    merge.add_argument("--path", default="A1", help="要合并的路径名")
+    merge.add_argument("--manifest", default=str(DEFAULT_FROZEN_DIR / "subset_manifest.json"))
+    merge.add_argument("--official-root", required=True, help="官方隔离源码目录")
+    merge.add_argument("--output", required=True, help="合并产物落点")
+    merge.set_defaults(func=cmd_merge)
 
     compare = sub.add_parser("compare", help="只读比较五路产物：HDF5 全字段逐位对拍")
     compare.add_argument(
