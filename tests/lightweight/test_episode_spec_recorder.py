@@ -23,8 +23,10 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 from robomme.robomme_env.utils.episode_spec import (  # noqa: E402
     SPEC_KIND,
+    SPEC_KIND_NEWVALUE,
     EpisodeSpecError,
     SpecRecorder,
+    spec_kind_for,
 )
 
 IDENTITY = {"task": "BinFill", "episode": 0, "seed": 4000, "difficulty": "easy"}
@@ -102,3 +104,62 @@ def test_recorded_paths_count_as_consumed() -> None:
         path == item or path.startswith(item + ".") for item in consumed
     )]
     assert unused == []
+
+
+# ── V4 步 2：新值规格类别与 mismatch 归因 ──────────────────────────────────────
+
+
+def test_spec_kind_follows_difficulty() -> None:
+    assert spec_kind_for(None) == SPEC_KIND
+    for difficulty in ("easy", "medium", "hard"):
+        assert spec_kind_for(difficulty) == SPEC_KIND
+    assert spec_kind_for("xhard") == SPEC_KIND_NEWVALUE
+    assert spec_kind_for(" XHard ") == SPEC_KIND_NEWVALUE
+
+
+def test_newvalue_export_is_tagged_and_parity_unchanged() -> None:
+    parity = _export().to_dict()
+    assert parity["spec_kind"] == SPEC_KIND
+    # 原值模式的 provenance 形态与 V3 逐字一致，不多出归因计数
+    assert "unattributed_mismatches" not in parity["provenance"]
+    recorder = SpecRecorder(None, "BinFill", {**IDENTITY, "difficulty": "xhard"}, difficulty="xhard")
+    recorder.value("objects.put_in_total", 6, decision_key="configs.xhard.put_in_numbers")
+    document = recorder.to_dict()
+    assert document["spec_kind"] == SPEC_KIND_NEWVALUE
+    assert document["provenance"]["unattributed_mismatches"] == 0
+
+
+def test_kinds_cannot_be_cross_fed() -> None:
+    """原值规格不能喂给 xhard，新值规格也不能喂给原三档。"""
+    parity = _export().to_dict()
+    with pytest.raises(EpisodeSpecError):
+        SpecRecorder(parity, "BinFill", IDENTITY, difficulty="xhard")
+    recorder = SpecRecorder(None, "BinFill", IDENTITY, difficulty="xhard")
+    recorder.value("layout.dynamic", False)
+    newvalue = recorder.to_dict()
+    with pytest.raises(EpisodeSpecError):
+        SpecRecorder(newvalue, "BinFill", IDENTITY, difficulty="hard")
+    with pytest.raises(EpisodeSpecError):
+        SpecRecorder(newvalue, "BinFill", IDENTITY)
+
+
+def test_newvalue_mismatch_attribution() -> None:
+    recorder = SpecRecorder(None, "BinFill", IDENTITY, difficulty="xhard")
+    recorder.value("objects.put_in_total", 6, decision_key="configs.xhard.put_in_numbers")
+    recorder.value("layout.board.x_var", 0.5)
+    replay = SpecRecorder(recorder.to_dict(), "BinFill", IDENTITY, difficulty="xhard")
+    # 归因到 decision 键的不等不算漂移；没有归因的算
+    assert replay.value("objects.put_in_total", 7, decision_key="configs.xhard.put_in_numbers") == 6
+    assert replay.value("layout.board.x_var", 0.25) == 0.5
+    assert len(replay.mismatches) == 2
+    assert replay.mismatches[0]["decision_key"] == "configs.xhard.put_in_numbers"
+    assert [item["path"] for item in replay.unattributed_mismatches()] == ["layout.board.x_var"]
+    assert replay.to_dict()["provenance"]["unattributed_mismatches"] == 1
+
+
+def test_parity_mismatch_shape_unchanged() -> None:
+    """原值模式的 mismatch 仍只有 path/drawn/frozen 三键，且全部算未归因。"""
+    replay = SpecRecorder(_export().to_dict(), "BinFill", IDENTITY)
+    replay.value("objects.color_order", [0, 1, 2], decision_key="ignored")
+    assert replay.mismatches == [{"path": "objects.color_order", "drawn": [0, 1, 2], "frozen": [2, 0, 1]}]
+    assert replay.unattributed_mismatches() == replay.mismatches

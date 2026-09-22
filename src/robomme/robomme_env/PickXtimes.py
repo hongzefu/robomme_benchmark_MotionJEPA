@@ -174,7 +174,8 @@ class PickXtimes(BaseEnv):
         # 必须落在任何随机数调用与 super().__init__() 之前：这里多抽或少抽一次会平移其后全部取值
         self._sampling = _resolve_sampling_config(type(self), sampling_config)
         # 步 4：只读导出（不传规格）或原值回注（传冻结规格）
-        self._spec = SpecRecorder(native_episode_spec, "PickXtimes", {"seed": seed})
+        self._spec = SpecRecorder(native_episode_spec, "PickXtimes", {"seed": seed},
+                                  difficulty=kwargs.get("difficulty"))
         # 初始化序号从 -1 起，_initialize_episode 每次进来先加一；
         # _load_scene 里的取值点用不带序号的路径，所以这里只作兜底。
         self._native_init_index = -1

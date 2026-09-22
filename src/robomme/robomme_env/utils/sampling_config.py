@@ -69,15 +69,51 @@ def split_sampling_config(override, native_default, decision_default):
     return decision, native
 
 
-def assert_native_decision(decision, decision_default, task):
-    """原值模式的守卫：``decision`` 必须与原值逐键相同（红线 R7）。
+XHARD_KEY = "xhard"
 
-    第一轮只做原值导出／消费，第二节「拟修改」列的值全部不启用；任何偏差都必须是
-    显式的新用户决策，不能混在「仅随机外移」里悄悄生效。
+
+def _strip_xhard(node):
+    """去掉任意深度上键名为 ``xhard`` 的条目，得到原三档可见的那部分 decision。"""
+    if isinstance(node, dict):
+        return {key: _strip_xhard(value) for key, value in node.items() if key != XHARD_KEY}
+    if isinstance(node, list):
+        return [_strip_xhard(item) for item in node]
+    return node
+
+
+def _xhard_shape(node, prefix="", inside=False):
+    """列出 xhard 子树的全部键路径（只看结构不看值），用于拒绝申报外的新键或缺键。"""
+    out = set()
+    if isinstance(node, dict):
+        for key, value in node.items():
+            path = f"{prefix}.{key}" if prefix else key
+            here = inside or key == XHARD_KEY
+            if here:
+                out.add(path)
+            out |= _xhard_shape(value, path, here)
+    return out
+
+
+def assert_native_decision(decision, decision_default, task):
+    """``decision`` 守卫（红线 R7；V4 步 2 分叉）。
+
+    * **原值部分**（去掉所有 ``xhard`` 键之后）必须与原值快照逐键相同——原三档可见的
+      任何偏差都必须是显式的新用户决策，不能混在「仅随机外移」里悄悄生效。
+    * **新值部分**（V4）：只允许偏离本环境源码里**已申报**的 ``xhard`` 条目（组合覆盖扫描等
+      用它收窄 xhard 范围），不许新增申报外的 ``xhard`` 键。旧快照（v2/v3 导出时还没有
+      ``xhard`` 条目）去掉 ``xhard`` 后与原值相同，照旧放行。
     """
-    left = json.dumps(decision, sort_keys=True, ensure_ascii=False)
-    right = json.dumps(decision_default, sort_keys=True, ensure_ascii=False)
+    left = json.dumps(_strip_xhard(decision), sort_keys=True, ensure_ascii=False)
+    right = json.dumps(_strip_xhard(decision_default), sort_keys=True, ensure_ascii=False)
     if left != right:
         raise SamplingConfigError(
             f"{task}: 原值对拍模式下 decision 必须等于原值快照；收到的与原值不同"
+        )
+    shape = _xhard_shape(decision)
+    if shape and shape != _xhard_shape(decision_default):
+        # 键结构必须与源码申报的逐一相同（值可以不同）；完全没有 xhard 条目的旧快照除外
+        declared = _xhard_shape(decision_default)
+        raise SamplingConfigError(
+            f"{task}: decision 的 xhard 条目与源码申报不符："
+            f"多出 {sorted(shape - declared)}，缺少 {sorted(declared - shape)}"
         )

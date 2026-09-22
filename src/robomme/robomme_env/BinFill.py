@@ -265,7 +265,8 @@ class BinFill(BaseEnv):
         self._episode_spec = _resolve_episode_spec(episode_spec, "BinFill")
         # 步 4：只读导出（native_episode_spec=None）或原值回注（传入冻结规格）。
         # 与上面的旧注入通道相互独立：本记录器只挂在原随机分支上（红线 R9）。
-        self._spec = SpecRecorder(native_episode_spec, "BinFill", {"seed": seed})
+        self._spec = SpecRecorder(native_episode_spec, "BinFill", {"seed": seed},
+                                  difficulty=kwargs.get("difficulty"))
         # 初始化序号从 -1 起，_initialize_episode 每次进来先加一；
         # _load_scene 里的取值点用不带序号的路径，所以这里只作兜底。
         self._native_init_index = -1

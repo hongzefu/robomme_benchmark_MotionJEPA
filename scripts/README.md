@@ -48,6 +48,14 @@
 > **链路甲已决定废弃**（2026-09-22 用户拍板）。后续的新值注入在链路乙上实现，
 > 并沿用甲的 jsonl 封套契约（见 1.2～1.4）；甲的代码与已进 Git 的产物作为历史证据原样保留、不删不改。
 > 方案见 [NEWTASK_RELEASE_V4_PLAN.md](../NEWTASK_RELEASE_V4_PLAN.md)。本节描述的是**当前代码的实际状态**。
+>
+> **退役口径（V4 步 1，2026-09-22 起生效）**：
+> - `scripts.injection.candidates` 与 `scripts.injection.rollout` **不再发起任何新运行**（不造新候选、不跑新 rollout），
+>   新值一律走链路乙的 xhard 档（V4 第三节的抽签／冻结／实跑三步）；
+> - 甲的代码、`artifacts/injection/**`、已进 Git 的 `candidates.jsonl` / `results.jsonl` **原样保留、不删不改**（红线 N6），
+>   相关测试（`tests/_shared/contract_builder_fixture.py`、`test_injection_delivery.py` 等）也不改；
+> - `injection/hf_release.py` 维持现状；
+> - 环境里甲的旧通道（`episode_spec` kwarg 与"传了规格就跳过抽样"的分支）保留不动，V4 不复用。
 
 | | 链路甲：新值注入 | 链路乙：原始 train 五路对拍 |
 | --- | --- | --- |

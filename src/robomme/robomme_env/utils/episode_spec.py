@@ -13,6 +13,11 @@
 与既有注入通道的关系：四个早接了 ``episode_spec`` 的环境里，那条「传了规格就跳过抽样」的
 分支属于旧注入模式，按红线 R9 原样保留、不复用为 D 路；本模块只挂在原随机分支上，
 由新的 ``native_episode_spec`` 开关驱动。
+
+V4 新值模式（NEWTASK_RELEASE_V4_PLAN 步 2）：xhard 档导出的规格标 ``native-newvalue/1``，
+原三档仍标 ``native-parity/1``；两类**不许互喂**（回注时 kind 与本局难度不符即拒绝）。
+新值规格回注时的每条不等都要尽量归因到某个 ``decision`` 键（``value(..., decision_key=...)``），
+归不了因的才算 RNG 漂移；原值规格仍要求零不等。
 """
 
 from __future__ import annotations
@@ -21,6 +26,16 @@ import copy
 from typing import Any
 
 SPEC_KIND = "native-parity/1"
+# V4：xhard 档的规格类别；与 SPEC_KIND 互斥。
+SPEC_KIND_NEWVALUE = "native-newvalue/1"
+SPEC_KINDS = (SPEC_KIND, SPEC_KIND_NEWVALUE)
+
+
+def spec_kind_for(difficulty: str | None) -> str:
+    """按本局难度决定规格类别：只有显式的 xhard 走新值类别，其余（含不传）一律原值类别。"""
+    if isinstance(difficulty, str) and difficulty.strip().lower() == "xhard":
+        return SPEC_KIND_NEWVALUE
+    return SPEC_KIND
 
 
 class EpisodeSpecError(ValueError):
@@ -60,22 +75,29 @@ def _plain(value: Any):
 class SpecRecorder:
     """一个环境实例一份；``spec=None`` 为导出模式，否则为原值回注模式。"""
 
-    def __init__(self, spec: dict | None, task: str, identity: dict | None = None):
+    def __init__(self, spec: dict | None, task: str, identity: dict | None = None,
+                 difficulty: str | None = None):
         self.task = task
         self.identity = dict(identity or {})
         self.mismatches: list[dict] = []
         self.trace: list[dict] = []
+        # 本局规格类别由难度决定（spec_kind_for）；不传 difficulty 时与 V3 行为逐字一致。
+        self.spec_kind = spec_kind_for(difficulty)
         if spec is None:
             self.mode = "export"
             self._frozen: dict = {}
             self._document: dict = {
-                "spec_kind": SPEC_KIND,
+                "spec_kind": self.spec_kind,
                 "task": task,
                 "identity": self.identity,
             }
         else:
-            if not isinstance(spec, dict) or spec.get("spec_kind") != SPEC_KIND:
-                raise EpisodeSpecError(f"native_episode_spec 需要 spec_kind={SPEC_KIND}")
+            if not isinstance(spec, dict) or spec.get("spec_kind") != self.spec_kind:
+                raise EpisodeSpecError(
+                    f"native_episode_spec 需要 spec_kind={self.spec_kind}"
+                    f"（收到 {spec.get('spec_kind') if isinstance(spec, dict) else type(spec).__name__}；"
+                    "原值与新值规格不许互喂）"
+                )
             if spec.get("task") != task:
                 raise EpisodeSpecError(f"规格属于 {spec.get('task')}，不能用于 {task}")
             self.mode = "replay"
@@ -87,11 +109,18 @@ class SpecRecorder:
     def replaying(self) -> bool:
         return self.mode == "replay"
 
-    def value(self, path: str, drawn: Any):
+    @property
+    def newvalue(self) -> bool:
+        return self.spec_kind == SPEC_KIND_NEWVALUE
+
+    def value(self, path: str, drawn: Any, decision_key: str | None = None):
         """原调用点：导出模式返回抽样值并记录；回注模式返回冻结值并把抽样值记为兼容核验。
 
         ⚠ 回注模式**一定**返回冻结值——即便原抽样恰好抽出同样的数，也不允许用抽样值，
         否则就成了方案点名拒绝的「重抽相同却绕过规格」。
+
+        ``decision_key``：新值模式下该取值点受哪个 ``decision`` 键控制（如 ``number_range.xhard``）；
+        回注不等时记进 mismatch 供归因，原值模式忽略。
         """
         plain = _plain(drawn)
         if self.mode == "export":
@@ -102,8 +131,21 @@ class SpecRecorder:
         self.trace.append({"path": path, "drawn": plain, "frozen": frozen, "source": "spec"})
         if plain != frozen:
             # 兼容核验不通过只记录，不改变「用冻结值」这一事实；上层据此判 RNG 是否漂移。
-            self.mismatches.append({"path": path, "drawn": plain, "frozen": frozen})
+            self.mismatches.append(self._mismatch(path, plain, frozen, decision_key))
         return frozen
+
+    def _mismatch(self, path, drawn, frozen, decision_key):
+        entry = {"path": path, "drawn": drawn, "frozen": frozen}
+        if self.newvalue:
+            # 新值模式才带归因字段；原值模式的 mismatch 形态与 V3 逐字一致。
+            entry["decision_key"] = decision_key
+        return entry
+
+    def unattributed_mismatches(self) -> list[dict]:
+        """归不了因的不等：原值模式下是全部 mismatch，新值模式下是没有 decision_key 的那些。"""
+        if not self.newvalue:
+            return list(self.mismatches)
+        return [item for item in self.mismatches if not item.get("decision_key")]
 
     def record(self, path: str, value: Any) -> None:
         """只读记录派生量或运行观测；回注模式下同样核验。
@@ -122,7 +164,7 @@ class SpecRecorder:
             _set_path(self._document, path, plain)
             return
         if plain != frozen:
-            self.mismatches.append({"path": path, "drawn": plain, "frozen": frozen})
+            self.mismatches.append(self._mismatch(path, plain, frozen, None))
 
     def leaf_paths(self) -> list[str]:
         """规格里全部取值点路径（回注模式用于算「有记录却没被消费」的 unused）。"""
@@ -146,7 +188,7 @@ class SpecRecorder:
 
     def to_dict(self) -> dict:
         document = copy.deepcopy(self._document)
-        document.setdefault("spec_kind", SPEC_KIND)
+        document.setdefault("spec_kind", self.spec_kind)
         document["task"] = self.task
         document["identity"] = self.identity
         document["provenance"] = {
@@ -154,4 +196,6 @@ class SpecRecorder:
             "value_points": len([item for item in self.trace if item["source"] in ("draw", "spec")]),
             "mismatches": len(self.mismatches),
         }
+        if self.newvalue:
+            document["provenance"]["unattributed_mismatches"] = len(self.unattributed_mismatches())
         return document
