@@ -705,6 +705,14 @@ def _load_subset_manifest(path: Path) -> dict[str, object]:
     return payload
 
 
+def _parse_env_list(value: str) -> list[str]:
+    names = [item.strip() for item in value.split(",") if item.strip()]
+    unknown = sorted(set(names) - set(ALL_TASKS))
+    if unknown:
+        raise IdentityFreezeError("未知环境名：" + ", ".join(unknown))
+    return names
+
+
 def _parse_paths(value: str) -> list[str]:
     names = [item.strip() for item in value.split(",") if item.strip()]
     if not names or len(names) != len(set(names)):
@@ -1302,9 +1310,13 @@ def cmd_merge(args: argparse.Namespace) -> int:
     import generate_dataset as official  # noqa: PLC0415 官方固定源码
 
     manifest = _load_subset_manifest(Path(args.manifest))
+    wanted = set(_parse_env_list(args.env)) if args.env else None
     rows_by_task: dict[str, list[dict[str, object]]] = {}
     for row in manifest["rows"]:  # type: ignore[union-attr]
-        rows_by_task.setdefault(str(row["task"]), []).append(row)
+        task_name = str(row["task"])
+        if wanted is not None and task_name not in wanted:
+            continue
+        rows_by_task.setdefault(task_name, []).append(row)
 
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
@@ -1324,7 +1336,20 @@ def cmd_merge(args: argparse.Namespace) -> int:
             results.append({"episode": int(row["episode"]), "raw_h5_path": str(found[0])})
         if missing:
             continue
-        official._merge(output, task, results)
+        # 官方 _merge 用固定的 .<name>.h5.tmp，多个进程并发合并同一个 task 会互相踩
+        # （本轮实测过一次：先完成的 rename 走了文件，后一个 rename 扑空报 FileNotFoundError）。
+        # 这里先合到本进程专属的临时目录，再原子改名到目标位置。
+        staging = output / f".merge-{os.getpid()}"
+        staging.mkdir(parents=True, exist_ok=True)
+        try:
+            official._merge(staging, task, results)
+            (staging / f"record_dataset_{task}.h5").replace(
+                output / f"record_dataset_{task}.h5"
+            )
+        finally:
+            for leftover in staging.glob("*"):
+                leftover.unlink(missing_ok=True)
+            staging.rmdir()
         official._write_metadata(
             output,
             task,
@@ -1756,6 +1781,7 @@ def build_parser() -> argparse.ArgumentParser:
     merge = sub.add_parser("merge", help="把某一路的逐 episode 产物合并成官方格式（步 5e 前置）")
     merge.add_argument("--run", action="append", required=True, help="运行目录，可重复（分片）")
     merge.add_argument("--path", default="A1", help="要合并的路径名")
+    merge.add_argument("--env", default=None, help="只合并这些环境（逗号分隔），默认全部")
     merge.add_argument("--manifest", default=str(DEFAULT_FROZEN_DIR / "subset_manifest.json"))
     merge.add_argument("--official-root", required=True, help="官方隔离源码目录")
     merge.add_argument("--output", required=True, help="合并产物落点")
