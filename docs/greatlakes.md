@@ -196,3 +196,15 @@ engin1       QOS=normal
 `ssh -o BatchMode=yes` 可直接用、不触发认证——**先用 BatchMode 探一下，通了就不必打扰用户。**
 
 `--qos=interactive` 在 chaijy2/spgpu 实测报 `Invalid qos specification`，别用。
+
+---
+
+## 八、aspen（sled 组自有机器，2026-09-22 打通）
+
+- 主机 `sled-aspen.eecs.umich.edu`；登录**必须显式带密钥**：
+  `ssh -i ~/.ssh/id_ed25519_umich hongzefu@sled-aspen.eecs.umich.edu`
+  （公钥由用户在 sled-vail 上 `ssh-copy-id -i ~/.ssh/id_ed25519_umich.pub` 装上；文件名非默认，不带 `-i` 会被拒 `Permission denied (publickey,password)`——这就是第一次复测失败的原因。）
+- 2× RTX A6000 48 GB（Ampere GA102，与 A40 同代，容差档位归 **a40**）、compute_mode `Default`（无 exclusive 问题）、驱动 570.195.03（CUDA 12.8）、16 核 / 251 GB、无 Slurm。
+- `/nfs/turbo/coe-chaijy-unreplicated/hongzefu` 已挂载（与 sled-vail、greatlakes 同一份）；`/data` 14 T 余 5.8 T，`/data/hongzefu` 已存在。
+- **NFS 克隆的 `.venv` 可直接用**：`python 3.11.14 / torch 2.9.1+cu128 / cuda.is_available()=True`，torch 走 NFS 导入约 32 s。零环境搭建即可跑 `train_split_parity.py run`，输出写 NFS，本机直读。
+- 用法：`tmux` 在 aspen 上起，`CUDA_VISIBLE_DEVICES=0` 锁单卡；用户定为**只当算力、只测单 worker**，不进容差标定。

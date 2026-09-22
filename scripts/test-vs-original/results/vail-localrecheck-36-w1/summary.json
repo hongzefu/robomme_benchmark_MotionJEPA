@@ -1,0 +1,92 @@
+{
+  "schema": "test-vs-original-summary/1",
+  "compared_at": "2026-09-22T17:03:35.214033+00:00",
+  "label": "sled-vail local-recheck 36局 单worker",
+  "tier": "ada",
+  "tier_source": "auto:NVIDIA RTX 6000 Ada Generation",
+  "tolerance_file": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/tolerance.json",
+  "tier_config": {
+    "match": [
+      "RTX 6000 Ada"
+    ],
+    "description": "同架构紧档：sled-vail RTX 6000 Ada（与原版同架构），应精确复现原版",
+    "frame_delta_max": 0,
+    "px_tol": 0,
+    "boundary_shift_max": 0,
+    "flip_shift_max": 0,
+    "replan_max": 0.0357,
+    "arm": {
+      "joint_action": {
+        "p99": 1e-06,
+        "max": 1e-06
+      },
+      "eef_action": {
+        "p99": 1e-06,
+        "max": 1e-06
+      },
+      "joint_state": {
+        "p99": 1e-06,
+        "max": 1e-06
+      },
+      "eef_state": {
+        "p99": 1e-06,
+        "max": 1e-06
+      }
+    },
+    "ts0_image": {
+      "px_diff_ratio": 0.0,
+      "depth_max": 0
+    },
+    "strict_text": true,
+    "strict_ts0_grounded": true
+  },
+  "generated": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/tvo-localrecheck/merged-B",
+  "reference": "/data/hongzefu/robomme_data_h5",
+  "compared": 36,
+  "counts": {
+    "IDENTICAL": 0,
+    "DRIFT": 36,
+    "REPLAN": 0,
+    "FAIL": 0
+  },
+  "replan_rate": 0.0,
+  "status": "PASS",
+  "ts0_grounded_same": 36,
+  "text_raw_mismatch_episodes": 17,
+  "ts0_image": {
+    "px_diff_ratio_max": 0.0,
+    "depth_max": 0
+  },
+  "subgoal_px_max": 0,
+  "boundary_shift_max": 0,
+  "flip_shift_max": 0,
+  "frame_delta_max": 0,
+  "replan_frame_deltas": [],
+  "drift_arm_stats": {
+    "joint_action": {
+      "n": 36,
+      "p99_max": 0.0,
+      "max_max": 1.8683852750535357e-17
+    },
+    "eef_action": {
+      "n": 36,
+      "p99_max": 0.0,
+      "max_max": 0.0
+    },
+    "joint_state": {
+      "n": 36,
+      "p99_max": 0.0,
+      "max_max": 0.0
+    },
+    "eef_state": {
+      "n": 36,
+      "p99_max": 0.0,
+      "max_max": 0.0
+    }
+  },
+  "contract_audit": {
+    "status": "PASS",
+    "compared": 36,
+    "errors": 0
+  }
+}

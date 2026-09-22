@@ -1,0 +1,645 @@
+{
+ "schema": "train-parity-manifest/1",
+ "kind": "subset-16x3",
+ "source_repo": "https://github.com/RoboMME/robomme_benchmark.git",
+ "source_ref": "d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa",
+ "selection_rule": "子集 manifest 每 (task, difficulty) 取第一条，共 16×3=48 条",
+ "per_cell": 3,
+ "records_sha256": "a57655d601c7e974c688b2b5c3602e7eb8606e2bd312dcc4ba00a1abb29d73bf",
+ "tasks": [
+  "PickXtimes",
+  "StopCube",
+  "SwingXtimes",
+  "BinFill",
+  "VideoUnmaskSwap",
+  "VideoUnmask",
+  "ButtonUnmaskSwap",
+  "ButtonUnmask",
+  "VideoRepick",
+  "VideoPlaceButton",
+  "VideoPlaceOrder",
+  "PickHighlight",
+  "InsertPeg",
+  "MoveCube",
+  "PatternLock",
+  "RouteStick"
+ ],
+ "rows_total": 48,
+ "episodes_by_task": {
+  "PickXtimes": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "StopCube": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "SwingXtimes": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "BinFill": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "VideoUnmaskSwap": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "VideoUnmask": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "ButtonUnmaskSwap": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "ButtonUnmask": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "VideoRepick": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "VideoPlaceButton": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "VideoPlaceOrder": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "PickHighlight": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "InsertPeg": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "MoveCube": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "PatternLock": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ],
+  "RouteStick": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   6,
+   7,
+   10,
+   11
+  ]
+ },
+ "recovery_config_counts": {
+  "z": 48,
+  "xy": 32,
+  "off": 64
+ },
+ "rows": [
+  {
+   "task": "PickXtimes",
+   "episode": 0,
+   "seed": 1000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 1000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "PickXtimes",
+   "episode": 2,
+   "seed": 1200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 1200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "PickXtimes",
+   "episode": 3,
+   "seed": 1300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 1300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "StopCube",
+   "episode": 0,
+   "seed": 2000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 2000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "StopCube",
+   "episode": 2,
+   "seed": 2200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 2200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "StopCube",
+   "episode": 3,
+   "seed": 2300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 2300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "SwingXtimes",
+   "episode": 0,
+   "seed": 3000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 3000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "SwingXtimes",
+   "episode": 2,
+   "seed": 3200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 3200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "SwingXtimes",
+   "episode": 3,
+   "seed": 3301,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 3300,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "BinFill",
+   "episode": 0,
+   "seed": 4000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 4000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "BinFill",
+   "episode": 2,
+   "seed": 4200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 4200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "BinFill",
+   "episode": 3,
+   "seed": 4301,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 4300,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "VideoUnmaskSwap",
+   "episode": 0,
+   "seed": 5000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 5000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "VideoUnmaskSwap",
+   "episode": 2,
+   "seed": 5200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 5200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "VideoUnmaskSwap",
+   "episode": 3,
+   "seed": 5300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 5300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "VideoUnmask",
+   "episode": 0,
+   "seed": 6000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 6000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "VideoUnmask",
+   "episode": 2,
+   "seed": 6200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 6200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "VideoUnmask",
+   "episode": 3,
+   "seed": 6300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 6300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "ButtonUnmaskSwap",
+   "episode": 0,
+   "seed": 7000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 7000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "ButtonUnmaskSwap",
+   "episode": 2,
+   "seed": 7200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 7200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "ButtonUnmaskSwap",
+   "episode": 3,
+   "seed": 7300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 7300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "ButtonUnmask",
+   "episode": 0,
+   "seed": 8000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 8000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "ButtonUnmask",
+   "episode": 2,
+   "seed": 8200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 8200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "ButtonUnmask",
+   "episode": 3,
+   "seed": 8300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 8300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "VideoRepick",
+   "episode": 0,
+   "seed": 9000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 9000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "VideoRepick",
+   "episode": 2,
+   "seed": 9200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 9200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "VideoRepick",
+   "episode": 3,
+   "seed": 9301,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 9300,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "VideoPlaceButton",
+   "episode": 0,
+   "seed": 10000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 10000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "VideoPlaceButton",
+   "episode": 2,
+   "seed": 10202,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 10200,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "VideoPlaceButton",
+   "episode": 3,
+   "seed": 10301,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 10300,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "episode": 0,
+   "seed": 11003,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 11000,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "episode": 2,
+   "seed": 11206,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 11200,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "episode": 3,
+   "seed": 11305,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 11300,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "PickHighlight",
+   "episode": 0,
+   "seed": 12000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 12000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "PickHighlight",
+   "episode": 2,
+   "seed": 12200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 12200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "PickHighlight",
+   "episode": 3,
+   "seed": 12300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 12300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "InsertPeg",
+   "episode": 0,
+   "seed": 13000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 13000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "InsertPeg",
+   "episode": 2,
+   "seed": 13201,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 13200,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "InsertPeg",
+   "episode": 3,
+   "seed": 13300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 13300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "MoveCube",
+   "episode": 0,
+   "seed": 14000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 14000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "MoveCube",
+   "episode": 2,
+   "seed": 14200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 14200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "MoveCube",
+   "episode": 3,
+   "seed": 14300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 14300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "PatternLock",
+   "episode": 0,
+   "seed": 15001,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 15000,
+   "seed_matches_formula": false
+  },
+  {
+   "task": "PatternLock",
+   "episode": 2,
+   "seed": 15200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 15200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "PatternLock",
+   "episode": 3,
+   "seed": 15300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 15300,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "RouteStick",
+   "episode": 0,
+   "seed": 16000,
+   "difficulty": "easy",
+   "recovery_mode": "z",
+   "formula_base_seed": 16000,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "RouteStick",
+   "episode": 2,
+   "seed": 16200,
+   "difficulty": "medium",
+   "recovery_mode": "z",
+   "formula_base_seed": 16200,
+   "seed_matches_formula": true
+  },
+  {
+   "task": "RouteStick",
+   "episode": 3,
+   "seed": 16300,
+   "difficulty": "hard",
+   "recovery_mode": "xy",
+   "formula_base_seed": 16300,
+   "seed_matches_formula": true
+  }
+ ]
+}

@@ -1,0 +1,199 @@
+{
+  "schema": "test-vs-original-tolerance/1",
+  "_note": "初值（未标定）。所有阈值只由『产物 vs 原版发布集』的实测经 calibrate.py 标定后覆盖；不使用产物互比的数字。ada 档 ts0_image 与帧号/像素类上限固定为 0。strict_text / strict_ts0_grounded：紧档 true（指令语义或首个目标物不同即 FAIL），松档 false（示范/规划阶段重规划导致的指令或首目标变化记 REPLAN，布局层仍靠 ts0 图像判 FAIL）。",
+  "tiers": {
+    "ada": {
+      "match": [
+        "RTX 6000 Ada"
+      ],
+      "description": "同架构紧档：sled-vail RTX 6000 Ada（与原版同架构），应精确复现原版",
+      "frame_delta_max": 0,
+      "px_tol": 0,
+      "boundary_shift_max": 0,
+      "flip_shift_max": 0,
+      "replan_max": 0.0357,
+      "arm": {
+        "joint_action": {
+          "p99": 1e-06,
+          "max": 1e-06
+        },
+        "eef_action": {
+          "p99": 1e-06,
+          "max": 1e-06
+        },
+        "joint_state": {
+          "p99": 1e-06,
+          "max": 1e-06
+        },
+        "eef_state": {
+          "p99": 1e-06,
+          "max": 1e-06
+        }
+      },
+      "ts0_image": {
+        "px_diff_ratio": 0.0,
+        "depth_max": 0
+      },
+      "strict_text": true,
+      "strict_ts0_grounded": true
+    },
+    "a40": {
+      "match": [
+        "A40",
+        "A6000"
+      ],
+      "description": "跨架构松档：greatlakes A40 / aspen A6000（Ampere GA102），只保证布局与任务结构一致，轨迹允许漂移与重规划",
+      "frame_delta_max": 4,
+      "px_tol": 2,
+      "boundary_shift_max": 4,
+      "flip_shift_max": 2,
+      "replan_max": 0.2188,
+      "arm": {
+        "joint_action": {
+          "p99": 0.04,
+          "max": 0.06
+        },
+        "eef_action": {
+          "p99": 0.04,
+          "max": 0.04
+        },
+        "joint_state": {
+          "p99": 0.04,
+          "max": 0.06
+        },
+        "eef_state": {
+          "p99": 0.04,
+          "max": 0.04
+        }
+      },
+      "ts0_image": {
+        "px_diff_ratio": 0.0506,
+        "depth_max": 130
+      },
+      "strict_text": false,
+      "strict_ts0_grounded": false
+    }
+  },
+  "calibrated_from": [
+    {
+      "tier": "ada",
+      "date": "2026-09-22T16:46:32.369854+00:00",
+      "note": "sled-vail RTX 6000 Ada 单 worker：16x3 48 局 + local-recheck 36 局，均对原版发布集",
+      "results": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/results/vail-16x3-48-w1",
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/results/vail-localrecheck-36-w1"
+      ],
+      "margin": 2.0,
+      "observed": {
+        "episodes": 84,
+        "counts": {
+          "IDENTICAL": 5,
+          "DRIFT": 78,
+          "REPLAN": 1,
+          "FAIL": 0
+        },
+        "arm": {
+          "joint_action": {
+            "p99_max": 6.661338147750939e-16,
+            "max_max": 1.3322676295501878e-15,
+            "n": 78
+          },
+          "eef_action": {
+            "p99_max": 0.0,
+            "max_max": 0.0,
+            "n": 78
+          },
+          "joint_state": {
+            "p99_max": 0.0,
+            "max_max": 0.0,
+            "n": 78
+          },
+          "eef_state": {
+            "p99_max": 0.0,
+            "max_max": 0.0,
+            "n": 78
+          }
+        },
+        "replan_rate": 0.011904761904761904,
+        "frame_delta_max_drift": 0,
+        "boundary_shift_max_drift": 0,
+        "px_max_drift": 0,
+        "flip_shift_max_drift": 0,
+        "ts0_px_diff_ratio_max": 0.0,
+        "ts0_depth_max": 0,
+        "text_raw_mismatch_episodes": 31,
+        "replan_reasons": {
+          "frames": 1,
+          "arm": 4,
+          "boundary_shift": 1,
+          "gripper": 1
+        },
+        "fail_reasons": {}
+      }
+    },
+    {
+      "tier": "a40",
+      "date": "2026-09-22T17:09:48.940836+00:00",
+      "note": "greatlakes A40 对原版：16x3 48 局单 worker + 144 局 4 worker（新跑）+ gl-5e 144 局单 worker + gl-5e-w4 144 局 4 worker；aspen 不进标定",
+      "results": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/results/gl-16x3-48-w1",
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/results/gl-w4-144",
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/results/gl-5e-144-w1-tier-a40",
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/results/gl-5e-w4-144-w4"
+      ],
+      "margin": 2.0,
+      "observed": {
+        "episodes": 480,
+        "counts": {
+          "IDENTICAL": 0,
+          "DRIFT": 419,
+          "REPLAN": 52,
+          "FAIL": 9
+        },
+        "arm": {
+          "joint_action": {
+            "p99_max": 0.018603044311934876,
+            "max_max": 0.02818368759290585,
+            "n": 419
+          },
+          "eef_action": {
+            "p99_max": 0.017001972939645116,
+            "max_max": 0.018735155806814507,
+            "n": 419
+          },
+          "joint_state": {
+            "p99_max": 0.018075219392776457,
+            "max_max": 0.026810690760612488,
+            "n": 419
+          },
+          "eef_state": {
+            "p99_max": 0.017027392387390136,
+            "max_max": 0.0195467472076416,
+            "n": 419
+          }
+        },
+        "replan_rate": 0.10833333333333334,
+        "frame_delta_max_drift": 2,
+        "boundary_shift_max_drift": 2,
+        "px_max_drift": 1,
+        "flip_shift_max_drift": 1,
+        "ts0_px_diff_ratio_max": 0.025288899739583332,
+        "ts0_depth_max": 65,
+        "text_raw_mismatch_episodes": 141,
+        "replan_reasons": {
+          "arm": 176,
+          "ts0_grounded_mismatch": 7,
+          "frames": 41,
+          "subgoal": 22,
+          "boundary_shift": 11,
+          "gripper": 45,
+          "text": 4
+        },
+        "fail_reasons": {
+          "layout:ts0_depth_over_tol": 6,
+          "layout:ts0_depth_over_tol,ts0_rgb_over_tol": 3
+        }
+      }
+    }
+  ]
+}

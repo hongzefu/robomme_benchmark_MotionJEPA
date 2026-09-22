@@ -1,0 +1,95 @@
+{
+  "schema": "test-vs-original-summary/1",
+  "compared_at": "2026-09-22T17:25:33.245620+00:00",
+  "label": "aspen A6000 16x3 48局 单worker",
+  "tier": "a40",
+  "tier_source": "explicit",
+  "tolerance_file": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/tolerance.json",
+  "tier_config": {
+    "match": [
+      "A40",
+      "A6000"
+    ],
+    "description": "跨架构松档：greatlakes A40 / aspen A6000（Ampere GA102），只保证布局与任务结构一致，轨迹允许漂移与重规划",
+    "frame_delta_max": 4,
+    "px_tol": 2,
+    "boundary_shift_max": 4,
+    "flip_shift_max": 2,
+    "replan_max": 0.2188,
+    "arm": {
+      "joint_action": {
+        "p99": 0.04,
+        "max": 0.06
+      },
+      "eef_action": {
+        "p99": 0.04,
+        "max": 0.04
+      },
+      "joint_state": {
+        "p99": 0.04,
+        "max": 0.06
+      },
+      "eef_state": {
+        "p99": 0.04,
+        "max": 0.04
+      }
+    },
+    "ts0_image": {
+      "px_diff_ratio": 0.0506,
+      "depth_max": 130
+    },
+    "strict_text": false,
+    "strict_ts0_grounded": false
+  },
+  "generated": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/aspen-tvo-16x3/merged-B",
+  "reference": "/data/hongzefu/robomme_data_h5",
+  "compared": 48,
+  "counts": {
+    "IDENTICAL": 47,
+    "DRIFT": 0,
+    "REPLAN": 1,
+    "FAIL": 0
+  },
+  "replan_rate": 0.020833333333333332,
+  "status": "PASS",
+  "ts0_grounded_same": 48,
+  "text_raw_mismatch_episodes": 14,
+  "ts0_image": {
+    "px_diff_ratio_max": 0.0,
+    "depth_max": 0
+  },
+  "subgoal_px_max": 0,
+  "boundary_shift_max": 1,
+  "flip_shift_max": 1,
+  "frame_delta_max": 1,
+  "replan_frame_deltas": [
+    1
+  ],
+  "drift_arm_stats": {
+    "joint_action": {
+      "n": 0,
+      "p99_max": null,
+      "max_max": null
+    },
+    "eef_action": {
+      "n": 0,
+      "p99_max": null,
+      "max_max": null
+    },
+    "joint_state": {
+      "n": 0,
+      "p99_max": null,
+      "max_max": null
+    },
+    "eef_state": {
+      "n": 0,
+      "p99_max": null,
+      "max_max": null
+    }
+  },
+  "contract_audit": {
+    "status": "PASS",
+    "compared": 48,
+    "errors": 0
+  }
+}
