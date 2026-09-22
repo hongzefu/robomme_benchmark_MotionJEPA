@@ -346,6 +346,37 @@ episode_spec  layout / objects / actions / initializations
 
 集群侧：开工时第 4 个占位 job 61673586 已调度上，4 个 job 全部 RUNNING，故 P0 直接按 `jobs=4` 完成，未使用 3 job 回退。A40 实测 `BASELINE_REPEAT=PASS compared=1 different=0`、`NODE_PARITY=PASS identities=1 jobs=4 mismatch=0`、`DATASET_GEN_REPORT_PARITY=PASS compared=4 … outcome_mismatch=0 detail_mismatch=0`，**允许按 task 分片**。同一身份本机（sm_89）与 A40（sm_86）散列不同，证实本机结果不能进判据。实测口径：单条单 worker 约 50 s、单次生成产物约 283 MB（HDF5 270 MB + 视频 13 MB），720 次生成估约 200 GB 起，Turbo 余量 5.5T。留档见 [20260921-step1b-cluster-p0-p1.md](docs/validation/newtask-v3/20260921-step1b-cluster-p0-p1.md)。
 
+### 12.2～12.31 步 1b～5d 全线完成（2026-09-21～22）
+
+**核心结果**：144 条身份 × 五路 = 720 次生成全部成功，**720 对逐位比较零差异**——
+`A1↔A2`／`A1↔B`／`B↔C`／`C↔D`／`A1↔D` 各 144 条，整文件 SHA-256 全部相同，含 MP4。
+其中 `A1↔D` 是端到端：官方原链路的产物与「显式传原值配置 + 回注冻结规格」的产物逐字节相同。
+
+**十六环境两个接口全部就位**：步 3 切出 `sampling_config` 的 decision／native（报告见
+[20260921-step3-sampling-config.md](docs/validation/newtask-v3/20260921-step3-sampling-config.md)），
+步 4 接上 `episode_spec` 的只读导出与原值回注（报告见
+[20260921-step4-episode-spec.md](docs/validation/newtask-v3/20260921-step4-episode-spec.md)）。
+回注模式下 `value()` **一定返回冻结值**，哪怕原抽样恰好抽出同样的数，从结构上堵死方案点名拒绝的
+「重抽相同却绕过规格」；G4 反例实测：改坏规格里一个值 → 6352 处字段差异、帧数 550→558。
+
+**判定行齐备**（均可一行命令复现）：G1／G2／G3／G4／G5、P0(jobs=4)／P1／P2／P3／P4／P5／P6／P7、
+C1、`SUBSET_BRANCH_COVERAGE`（48/48 格、z48/xy32/off64）、R1b 的 `REFERENCE_AUDIT_COMPLETE`。
+
+**两条必须如实记录的结论**：
+
+1. **多 worker 会破坏逐位可复现**。`mplib` 的 RRT 用墙钟时间预算（`planning_time=1`），
+   并行争抢下同样 1 秒内迭代次数不同 → 搜出不同路径。同一片 36 条身份，4 worker 时
+   `BASELINE_REPEAT=FAIL(different=3064)`，换单 worker 后 PASS。正式验收全部改用单 worker；
+   专题见 [20260921-worker-nondeterminism.md](docs/validation/newtask-v3/20260921-worker-nondeterminism.md)。
+   与之互补的是 P6：**进程复用（甲→乙→甲 同 PID）没问题**，`WORKER_ISOLATION=PASS`。
+2. **R1a 有 38 条帧数与历史不符**（四片 10/9/16/3，`outcome_mismatch=0`）。历史那轮跑在
+   `sled-vail`（sm_89），本轮基线在 A40（sm_86）；本轮 `A1↔A2`／`A1↔D` 在 A40 上全部逐字节相同，
+   证明差异不来自接口改动。按用户 2026-09-21 决定「保留判据，逐条登记为硬件差异」。
+
+**发布集就位**：`/data/hongzefu/robomme_data_h5` 经核验为 revision `a5e4e25f`（16/16 文件大小与
+SHA-256 与历史报告清单一致），R1b 前置解除。审计完整性通过；动作数值在原 `1e-8` 下 `passed=False`，
+与历史那轮自身对发布集的 `failed` 同源同量级，按方案要求原样记录、不改写成 PASS。
+
 # 第二部分（技术细节，供 agent 追踪）
 
 ## 〇、前置声明与红线
