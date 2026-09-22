@@ -28,7 +28,7 @@
 |---|---|---|
 | 1 | **废弃链路甲**。`candidates`/`rollout` 不再新增运行；已进 Git 的产物与代码**原样保留、不删不改** | 用户原话「废弃原来链路甲」；红线 N6 |
 | 2 | **在链路乙上实现**，用 `sampling_config` + `native_episode_spec`，**不复活甲的 `episode_spec` 旧通道** | 用户原话「在乙的基础上实现」 |
-| 3 | **jsonl 继承甲的封套契约**（header 内嵌配置全文与来源指纹、逐行 `spec_sha256`、`identity_sha256`、字段集合精确比对、冻结进 Git 禁覆盖）；**不继承**甲的采样器、配额、分层与方向平衡 | 用户原话「jsonl 生成机制 参考甲的实现」；3.3 |
+| 3 | **jsonl 继承甲的封套契约**（header 内嵌配置全文与来源指纹、逐行 `spec_sha256`、`identity_sha256`、字段集合精确比对、冻结进 Git 禁覆盖）；**不继承**甲的采样器、配额、分层与方向平衡 | 用户原话「jsonl 生成机制 参考甲的实现」；3.5 |
 | 4 | **推理必须兼容**。现状是完全没实现，要补出读 V4 快照起环境的路径与落 `eval_results.jsonl` 的入口 | 用户原话「推理也要兼容」；第四节 |
 | 5 | **改完跑对拍**，换成五条判据（原值回归 / 新值重放 / 规格绑定 / 可完成性报告 / 推理链路） | 用户原话「改完后还需要跑对拍」；第五节 |
 | 6 | **改动内容以 1.2 的用户原文为准** | 1.2 |
@@ -38,7 +38,7 @@
 | 10 | **正式验收单 worker、判据只认 A40**（`mplib` 的 RRT 用墙钟预算；本机 sm_89 与 A40 sm_86 产物不同） | V3 实测；第五节 |
 | 11 | **未定的量一律保留为待决，不编造默认值** | V3 8.3 的纪律 |
 | 12 | **录像器全程冻结**；`src/robomme/` 改动免逐项事前批准但每步须出 md 报告 | 题注；红线 N1/N2 |
-| 13 | **规模定死**：每环境 10 条 `reset` 成功候选（尝试上限 30）⇒ 全局 160 条；按 index `0/3/6` 选 3 条为正式局 ⇒ 全局 48 条；落选候选一并冻进快照、只标 `selected=false` | 用户 2026-09-22 决策；3.5 |
+| 13 | **规模定死**：每环境 10 条 `reset` 成功候选（尝试上限 30）⇒ 全局 160 条；按 index `0/3/6` 选 3 条为正式局 ⇒ 全局 48 条；落选候选一并冻进快照、只标 `selected=false` | 用户 2026-09-22 决策；3.2 |
 
 ### 1.2 十六环境的改动内容（用户原文，逐字保留）
 
@@ -99,10 +99,10 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | E1 | **批准新建 `scripts/eval/`** | 2.0④ |
 | E2 | 序数表**扩到 20 + 规范英文序数兜底**（前十项逐字不变） | 2.0① / E2 方案 |
 | E3 | **批准重导 v2 快照**（可能一并消解当前 46 项既有失败 ⇒ 须重测基线） | 2.0⑤ |
-| F1 | 候选规模＝**每环境 10 条 `reset` 成功**；正式局＝**每环境 3 条**（全局 160 / 48） | 3.5 |
-| F2 | `reset` 失败**补抽到 10 条成功为止**，每环境尝试上限 30；凑不满如实记 `candidate_shortfall`，不降难度 | 3.5 |
-| F3 | 挑选规则＝在成功候选序列里**按固定步长取 index `0/3/6`**（确定性、可复现） | 3.5 |
-| F4 | 落选候选**一并写进 `specs.jsonl`**，用 `selected` 真假标记；`selected` 属可变字段、不改 `identity_sha256` | 3.5 |
+| F1 | 候选规模＝**每环境 10 条 `reset` 成功**；正式局＝**每环境 3 条**（全局 160 / 48） | 3.2 |
+| F2 | `reset` 失败**补抽到 10 条成功为止**，每环境尝试上限 30；凑不满如实记 `candidate_shortfall`，不降难度 | 3.2 |
+| F3 | 挑选规则＝在成功候选序列里**按固定步长取 index `0/3/6`**（确定性、可复现） | 3.2 |
+| F4 | 落选候选**一并写进 `specs.jsonl`**，用 `selected` 真假标记；`selected` 属可变字段、不改 `identity_sha256` | 3.2 |
 
 ## 二、逐环境改动
 
@@ -933,199 +933,95 @@ head/tail 空间位置不变，`InsertPeg` 的 near/far 判定不受影响，**�
 
 ## 三、新值规格怎么造、怎么冻
 
-### 3.1 先看清乙这条链路的回注机制
+### 3.1 一句话
 
-`src/robomme/robomme_env/utils/episode_spec.py::SpecRecorder` 是乙的核心，一个环境实例一份，两种模式：
+xhard 每一局要用到的具体数字（这局几块、各在哪、swap 哪两个、第几步换……）叫这局的**规格**。
+规格必须**先抽出来、写进文件、再拿文件去生成**——不能生成时现抽，否则同一局跑两次结果不一样，
+既没法复现、也没法对拍。
 
-- **导出模式**（`native_episode_spec=None`）：在**原调用点**调 `value(path, drawn)`，把抽到的值按点路径
-  （`layout.board.xy` 这种）记进文档，返回抽样值，不多抽不少抽。
-- **回注模式**（传入规格）：同一调用点**照常执行原抽样**（红线 R8，随机流不漂移），但 `value()`
-  **一定返回冻结值**——源码注释写死了「即便原抽样恰好抽出同样的数，也不允许用抽样值，否则就成了
-  方案点名拒绝的『重抽相同却绕过规格』」。抽样值只进 `mismatches` 作兼容核验。
+### 3.2 三步走
 
-规格文档的形状：`{spec_kind, task, identity, layout / objects / actions / initializations, provenance}`，
-`leaf_paths()` 只遍历中间那四个 section，`consumed_paths()` 给本局真正被消费的路径，两者之差就是
-G4 的 `missing` / `unused`。
+| 步 | 干什么 | GPU | 产物 |
+|---|---|---|---|
+| ① 抽签 | 拿 xhard 的范围开环境，**只 `reset`、不 step、不录像**；环境里的记录器把这局抽到的每个数记下来，就是一条规格。每个环境反复做，**直到攒够 10 条 `reset` 成功的**（最多试 30 次） | 占 | `drafts.jsonl`：全部尝试，含失败 |
+| ② 冻结 | 每个环境的 10 条里按 index `0/3/6` 挑 3 条标 `selected=true`；**10 条全写入**，加校验和，进 Git，之后禁止覆盖 | 不占 | `specs.jsonl`：160 行，其中 48 行 selected |
+| ③ 实跑 | 读 `specs.jsonl`，只跑 selected 的 48 条：把规格塞回环境，环境**按规格里的数**建场景、跑演示、录 h5 和视频 | 占 | h5 + 视频 + `results.jsonl` |
 
-**这里有一个必须在 V4 处理掉的语义冲突**：V3 原值模式下 `mismatches` 非空意味着 RNG 漂移、判失败；
-**新值模式下 `mismatches` 必然大量非空**——新值本来就和原抽样不同。所以 V4 必须：
+然后把 ③ **原样再跑一遍**，两遍 h5 逐位比 ⇒ V2「可重放」。抽签那一遍只 `reset`、没有 h5，不能当其中一遍。
+①③ 都必须单 worker、A40（口径 10）。
 
-1. **规格升版**：`SPEC_KIND` 从 `native-parity/1` 增加一个并列值 `native-newvalue/1`，
-   `SpecRecorder.__init__` 按 `spec_kind` 区分两类，**不接受把新值规格当原值规格喂进来**；
-2. **核验口径分叉**：`native-parity/1` 保持「`mismatches` 必须为 0」；`native-newvalue/1` 改为
-   「`mismatches` 数量与被 `decision` 覆盖的取值点数量一致」，并把每条 mismatch 归因到是哪个
-   `decision` 键导致的——归不了因的 mismatch 仍然判失败（这才是新值模式下的 RNG 漂移检测）。
+规模是用户定的（1.3 F1~F4）：每环境 10 候选 → 3 正式，全局 160 → 48；攒不够 10 条就如实记 `candidate_shortfall`，
+**不降难度去凑**。落选的 7 条也留在文件里，以后要扩规模只改 `selected`，不必重开 GPU。
 
-### 3.2 新值规格由谁算出来：环境自己抽 + 导出
+身份：`difficulty` 恒为 `"xhard"`；`episode` = 候选序号 0~9（选中的就是 0/3/6）；`seed` 用 `scripts/seed_layout.py`
+的公式算（`offset + env_code × env_block + episode × 100 + attempt`）；header 记 `identity_source=formula`，
+与 V3 的 `train_metadata` 区分。
 
-每局要用的具体值（这局 spawn 几块、各在哪个 xy、swap 哪两个、第几步交换……）总得有人算出来。
-**本方案的算法只有一条**：**让环境自己抽，抽完导出**。
+### 3.3 规格怎么进环境、怎么被用
 
-怎么做：把新值的**范围**（如 `spawn 8~10`、`swap 8~12`）写进 `sampling_config` 的 `decision` 块传给环境，
-**环境按它自己原有的抽样逻辑在新范围里抽**，抽完由 `SpecRecorder` 的导出模式在**原调用点**把结果记下来。
+环境构造时多传三个参数：
 
-由此得到三条性质，实施中必须一直成立：
-
-1. **取值逻辑只有一份，就在环境里。** 规格里的每个取值点都是环境跑出来的，
-   不存在"另一套实现跟环境对不上"这种可能；环境改了，导出的规格自动跟着改。
-   **不得另写离线造值器**（红线 R6 禁止继承甲的采样器，同一个道理）。
-2. **抽签要占 GPU。** 每条候选都得真的 `gym.make → reset → 导出 → close`，
-   但**不建 h5、不录像、不 step**，骨架照搬 `scripts/injection/rollout/reset_check.py` 已有的 make/reset/close。
-3. **范围进 `decision`、规则留在 `native`。** `native` 块的键名、取值域、单位、dtype 与拒绝条件一律不动，
-   新值只经 `decision` 进入；这保证了"改的是范围、不是抽样规则"。
-
-⚠ **这条路有一个必须注意的点**：环境"按新范围抽"本身就是在跑新值，所以**抽签段的产物已经是新值局**，
-冻结之后的实跑段是拿同一份规格**再跑一遍**。但抽签段**只做 reset、不 step、不建 h5**，拿不出可比的轨迹产物，
-因此**它不能充当 V2 的对照组**：`NEWVALUE_REPLAY` 一律靠**两次实跑**同一份 `specs.jsonl` 逐位比（第五节口径）。
-抽签段与实跑段之间只核得到 reset 后的规格一致性（`missing` / `unused` / mismatch 归因，即 V3g），核不到轨迹。
-
-### 3.3 `specs.jsonl` 的封套契约
-
-封套＝文件格式与防篡改规矩，八条如下（实现直接复用 `scripts/injection/candidates/io.py` 的纯函数
-`canonical_json` / `digest` / `record_sha256` / `identity_sha256`，**只复用这四个纯函数，不碰其余部分**）：
-
-| 机制 | 怎么用到 V4 |
-|---|---|
-| 一行 header + 每行一条规格 | `specs.jsonl` 同样两段式 |
-| header 内嵌配置全文 | 内嵌 `sampling_config` 全文（十六环境的 `decision` + `native`），实跑时**从快照取、不再读磁盘** |
-| 来源指纹 | 环境源码 SHA-256（十六个任务文件 + 被改到的 utils）、`pyproject.toml` / `uv.lock`、抽签器自身实现散列 |
-| `runtime` 常量逐字校验 | 沿用四项 env kwargs（`obs_mode` / `control_mode` / `render_mode` / `reward_mode`），实跑与评估两侧都要比对 |
-| `identity_sha256` | 「去掉可变字段的 header + 排序后同样去可变字段的全部行」的摘要；角色回填、换 `run_id` 不改它，改任一规格值必改 |
-| 字段集合**精确比对** | 缺字段、多出未知字段一律报错，读写两端共用一个校验入口 |
-| 冻结后进 Git、禁止覆盖 | 已存在 `specs.jsonl` / `results.jsonl` 直接拒绝，重试换新运行编号 |
-| 逐行身份散列 | 每行 `spec_sha256` 须同时等于行内字段与 `record_sha256(spec)` |
-
-**只到此为止**：采样器、配额、分层、方向平衡、"碰撞筛查必须 PASS"这类业务逻辑一律不引入（红线 R6）——
-新值局的可行性由 `reset` 自己说了算（3.5 的补抽口径）。
-
-### 3.4 三段式流程与产物
-
-```text
-scripts/configs/newtask-v4/sampling_config.json      ← 十六环境 decision（新值）+ native（原规则）
-        │  ① 抽签段：gym.make → reset → SpecRecorder 导出 → close（占 GPU，不建 h5、不录像）
-        ▼
-artifacts/newtask-v4/<run-id>/draft/drafts.jsonl     ← 每行一条候选规格 + reset 是否成功 + 失败分类
-                                                       每环境 10 条成功 + 失败尝试，尝试上限 30 ⇒ 160～480 行
-        │  ② 冻结段：纯 CPU，挑通过的、算指纹与 identity、精确键集校验
-        ▼
-scripts/configs/newtask-v4/<run-id>/specs.jsonl      ← 冻结快照，进 Git，唯一环境输入
-                                                       160 行（16×10），其中 selected=true 恰 48 行
-        │  ③ 实跑段：回注规格 → 出 h5 + 视频（只跑 selected=true）
-        ▼
-artifacts/newtask-v4/<run-id>/rollout/results.jsonl  ← 唯一结果表，进 Git；48 行 × 两次实跑（V2 用）
+```python
+gym.make(task,
+         sampling_config=<xhard 的范围>,        # 告诉环境往哪个范围抽
+         native_episode_spec=<这一局的规格>,     # 抽签时传 None，实跑时传规格
+         difficulty="xhard")
 ```
 
-段①与段③都必须**单 worker**（口径 9）。段②纯 CPU，可在登录节点跑。
-`identity` 块沿用官方身份体例 `(task, episode, seed, difficulty)`，其中 **`difficulty` 恒为 `"xhard"`**（口径 12）——
-`--difficulty` 那个三位循环配额只管 easy/medium/hard，xhard 只经每条规格的 `difficulty` 字段显式进入。
-**新值局不再绑定官方 metadata**：
-episode 与 seed 由 `seed_layout.py` 的公式现算（`offset + env_code × env_block + episode × 100 + attempt`），
-header 里用 `identity_source=formula` 与 V3 的 `identity_source=train_metadata` 区分开。
+环境内部每个抽随机数的地方都长这样（记录器是 `utils/episode_spec.py::SpecRecorder`，一个环境实例一份）：
 
-### 3.5 规模与挑选口径
-
-**2026-09-22 用户定，实施中不得自行更改。**
-
-| 项 | 口径 | 说明 |
-|---|---|---|
-| 每环境候选数 | **10 条 `reset` 成功的候选** | 全局 16×10 = **160 条**；失败尝试不占名额 |
-| 补抽 | **补抽到 10 条成功为止**，每环境 `reset` 尝试**上限 30 次** | 到顶仍凑不满就如实记 `candidate_shortfall` 并继续，**不得调低难度去凑**（N10）；失败尝试照样写进 `drafts.jsonl` 作 V4f 的分母 |
-| 每环境正式局 | **3 条** | 全局 16×3 = **48 条** |
-| 挑选规则 | 在「成功候选」序列（按 `attempt` 升序编号 `0…9`）里**按固定步长取第 1 / 4 / 7 条**，即 index `0 / 3 / 6` | 纯确定性、可复现；比「取前三条」多样性略好。候选不足 7 条时**不回退取别的**，缺几条记几条 |
-| 落选候选 | **同样写进 `specs.jsonl`**，标 `selected=false` | 以后想把每环境扩到 5 / 10 局，只改 `selected` 即可，**不必重开 GPU 重抽** |
-| 身份编号 | **候选序号 `0…9` 直接作 `episode` 号**，`attempt` 只记重抽次数；选中的即 `episode 0 / 3 / 6` | 身份在抽签时就定死、冻结后不变。若选中后重编号为 `0/1/2`，`seed` 会随公式改变，规格就和「它是在哪一局抽出来的」对不上了 |
-| 实跑规模 | **48 条 × 两次**（V2 全量重放，不取子集） | 体积按 V3 实测（144 局一路约 12.6 GB 量级）外推：两路合计约 **25 GB** |
-
-两条配套约定：
-
-- **`selected` 列为「可变字段」**，与角色回填同级：改 `selected` **不改** `identity_sha256`，
-  改任一规格值**必改**。这正是「扩规模不必重抽」能成立的前提。
-- **只有 `reset` 成功的候选进 `specs.jsonl`**；失败尝试只留在 `drafts.jsonl`，
-  两者的条数差就是 V4f 报告里 `reset` 那一档的分母与分子。
-
-### 3.6 `specs.jsonl` 怎么注入、怎么被消费
-
-这一小节是实施 3.4 段③的唯一依据：**规格从文件走到环境里的哪个取值点、又怎么证明它真的被用了**。
-
-#### ① 注入链路（自上而下，全部是既有符号）
-
-```text
-scripts/configs/newtask-v4/<run-id>/specs.jsonl
-  │   一行 header（内嵌 sampling_config 全文 + 来源指纹 + runtime 四项）
-  │   + 160 行规格（每行含 identity / selected / spec / spec_sha256）
-  ▼
-scripts/parity/<实跑入口>          ← V4 新增，负责"读 jsonl → 变成两个 dict"
-  ├ 读 header：封套校验（键集、identity_sha256、runtime 四项逐字）
-  │            → sampling_by_task[task]      ＝ header 内嵌的配置全文，**不再读磁盘 config**
-  └ 读数据行：筛 selected=true（48 条）
-               → specs_by_identity[f"{task}/{episode}"] ＝ 该行的 spec
-  ▼
-scripts/parity/train_split_runner.py          ← 形态与 V3 完全相同，不改消费方式
-  └ _submit()：config = sampling_by_task.get(job.task)
-               spec   = specs_by_identity.get(f"{job.task}/{job.episode}")
-               executor.submit(train_split_worker.run_one, (job, config, spec))
-  ▼
-scripts/parity/train_split_worker.py::run_one
-  └ kwargs["sampling_config"]      = config
-    kwargs["native_episode_spec"]  = spec
-    kwargs["difficulty"]           = "xhard"
-    gym.make(job.task, **kwargs)
-  ▼
-环境 __init__（十六个环境同构，以 BinFill 为例）
-  ├ self._sampling = _resolve_sampling_config(type(self), sampling_config)
-  │     → split_sampling_config() 拆成 (decision, native) 两份 deepcopy
-  │     ⚠ 必须落在 torch.Generator() 之前，且全程不抽随机数
-  └ self._spec     = SpecRecorder(native_episode_spec, "BinFill", {"seed": seed})
-  ▼
-_load_scene / _initialize_episode 的每个取值点
-  self.dynamic = self._spec.value("layout.dynamic", <原抽样表达式>)
-                                   ↑ 原抽样表达式**照常求值**（随机流不漂移，R8）
-                                   ↑ 但返回的是规格里的冻结值，不是刚抽出来的那个
+```python
+self.dynamic = self._spec.value("layout.dynamic", torch.randint(...))
 ```
 
-**注入面只有三个参数**：`sampling_config`、`native_episode_spec`、`difficulty`。
-`runner` 及其以下（worker、`gym.make`、`SpecRecorder`、各取值点）**沿用 V3 的现成实现不改消费方式**，
-V4 新增的代码只负责"把 jsonl 读成 `specs_by_identity` 这个形状"。
+- **抽签时**（`native_episode_spec=None`）：`value()` 把抽到的数按路径 `layout.dynamic` 记进规格，原样返回。
+- **实跑时**（传了规格）：`torch.randint(...)` **照样执行**，但 `value()` **返回规格里那个数**；当场抽到的数只记下来做对账。
 
-#### ② 链路上必须先改掉的三处硬拒绝
+为什么还要照样抽：后面的随机数取决于前面抽了几次，少抽一次就全平移了（红线 R8）。
+为什么不能"抽到相同就用抽的"：那样规格没被真用，只是碰巧一样，对拍就失去意义。
 
-V3 的这条链路是为**原值**写的，xhard 规格现在喂进去会被挡在三个地方，步 2／步 3／步 5 各修一处：
+### 3.4 怎么知道规格真被用了
 
-| 拦在哪 | 现在的行为 | V4 怎么改 |
+| 检查 | 意思 | 判 |
 |---|---|---|
-| `train_split_runner.py` 的身份复核（`official.read_train_metadata()`，逐条比 `seed` 与 `difficulty`） | xhard **根本不在官方 train metadata 里** ⇒ 必然 `SystemExit` | 按 header 的 `identity_source` 分叉：`train_metadata` 走现有复核；`formula` 改用 `scripts/seed_layout.py` 的公式复核。**仍是硬校验，不是放行**——算出来对不上照样拒绝 |
-| `utils/sampling_config.py::assert_native_decision`（各环境 `_resolve_sampling_config` 里调用） | 要求 `decision` **逐键等于原值**（R7 的原值阶段口径），新值必然不等 ⇒ 抛 `SamplingConfigError` | 按难度分叉：`xhard` 允许 `decision` 偏离原值，**但偏离的键必须在该环境申报过的 `decision` 白名单内**；原三档口径逐字不变。`BinFill` 那句 `layout_mode != "native_dynamic"` 的硬拒绝一并放开（2.0） |
-| `episode_spec.py::SpecRecorder.__init__` 的 `spec_kind` 校验 | 只认 `native-parity/1`，新值规格进不来 | 增开 `native-newvalue/1` 并按 kind 分叉核验口径（3.1）；两类**不得互喂** |
+| `missing` | 环境要 `layout.xxx`，规格里没有 | 直接报错 |
+| `unused` | 规格里有，这局没走到 | 失败 |
+| `mismatches` | 规格里的数 ≠ 当场抽到的数 | 见下 |
 
-#### ③ 消费的证据链：怎么证明规格真被用了
+`mismatches` 在两种模式下意义相反：
 
-四条证据都由 `SpecRecorder` 在 reset 过程中自然产生，worker 在 reset 后从
-`record_env.unwrapped._spec` 取出落盘，对应判据 V3g：
+- **原值模式**（V3，`spec_kind=native-parity/1`）：规格就是当初抽的，不等 = RNG 漂了 = 失败。
+- **新值模式**（V4，新增 `spec_kind=native-newvalue/1`）：规格是新范围抽的，跟旧范围当场抽的**本来就不等**。
+  改判为：**每条不等都要能对上某个 `decision` 键**（"因为我把 spawn 范围改了"）；对不上的仍算漂移、失败。
 
-| 证据 | 产生方式 | 不满足意味着 |
+两种 `spec_kind` 不许互喂。以上是步 2 要改的全部内容。
+
+### 3.5 文件格式
+
+`specs.jsonl`：第一行 header，之后每行一条规格。
+
+- **header**：内嵌 `sampling_config` 全文（实跑从这里取，不再读磁盘）、源码指纹（16 个环境文件 + 改过的 utils +
+  `pyproject.toml`/`uv.lock` + 抽签器本身）、runtime 四项（`obs_mode`/`control_mode`/`render_mode`/`reward_mode`，实跑与评估都要逐字比）。
+- **每行**：`identity`、`selected`、`spec`、`spec_sha256`。
+- **整文件 `identity_sha256`**：去掉可变字段后的摘要；改任何一个规格值必变，改 `selected` 不变。
+- 字段缺一个、多一个都报错；文件已存在就拒绝写，换 run_id。
+
+散列函数直接复用 `scripts/injection/candidates/io.py` 的 `canonical_json` / `digest` / `record_sha256` / `identity_sha256`；
+甲的其余东西（采样器、配额、分层、方向平衡、碰撞筛查硬规则）一概不用（红线 R6）。
+
+### 3.6 现有链路要拆的三道闸
+
+现在的代码是为原值写的，xhard 喂进去会在三处被拒。实施时逐一分叉，**原值分支逐字不动**：
+
+| 在哪 | 为什么拒 | 改法 |
 |---|---|---|
-| **结构性保证** | `value()` 在回注模式下**一定返回冻结值**，即便原抽样恰好抽出同一个数 | ——（这条是设计，不是检查项；它排除了"重抽相同却绕过规格") |
-| **`missing`** | 取值点向规格要一个不存在的路径时，`_get_path` 直接抛 `EpisodeSpecError` | 规格比环境少一个取值点：环境改了而规格没重抽 |
-| **`unused`** | `leaf_paths()`（规格里的全部叶子，只遍历 `layout` / `objects` / `actions` / `initializations` 四个 section）减去 `consumed_paths()`（本局真正走到的路径） | 规格里存了值但这一局没走到那个调用点 |
-| **`mismatches`** | 冻结值与当场抽样值不等时逐条记录 | 原值模式：RNG 漂移，判失败。**新值模式：必然大量非空**，须逐条归因到某个 `decision` 键；归不了因的仍判漂移失败（3.1） |
+| `train_split_runner.py` 用 `official.read_train_metadata()` 复核 seed / difficulty | xhard 不在官方 metadata 里，必然 `SystemExit` | 按 `identity_source` 分叉：`formula` 走 `seed_layout.py` 公式复核（**仍是硬校验**，对不上照样拒） |
+| `sampling_config.py::assert_native_decision` | 要求 `decision` 逐键等于原值 | xhard 允许偏离，但**只能偏离该环境申报过的 `decision` 键**；BinFill 的 `layout_mode` 硬拒绝一并放开 |
+| `SpecRecorder.__init__` 校验 `spec_kind` | 只认 `native-parity/1` | 增开 `native-newvalue/1`（3.4） |
 
-落盘位置沿用 V3 的三个文件（在每局的 `worker_dir` 下）：导出模式落 `episode_spec.json`、
-回注模式落 `spec_replay.json`（`mismatches` / `value_points` / `consumed` / `unused`），
-两种模式都落 `rng_trace.json`（调用序号 + 取值点路径 + 抽样结果 + 最终 generator 状态散列）。
-
-#### ④ 抽签段的导出侧：一行 draft 是怎么来的
-
-段① 与段③ 走的是同一条链路，只有两处不同：`native_episode_spec` 传 `None`（导出模式）、
-reset 完就 `close`（不 step、不建 h5、不录像）。每条候选落 `drafts.jsonl` 一行：
-
-- `spec`：`SpecRecorder.to_dict()` 的产物，形状 `{spec_kind, task, identity, layout / objects / actions / initializations, provenance}`；
-- `identity`：`(task, episode, seed, difficulty="xhard")`，`episode` 即候选序号、`seed` 由 `seed_layout.py` 公式算（3.5）；
-- `reset_ok` 与失败分类；失败行**不进** `specs.jsonl`，只作 V4f 抽签档的分母。
-
-段② 冻结时不再碰环境：只是把成功行按 index `0/3/6` 标 `selected`、算指纹与 `identity_sha256`、
-做键集精确比对，然后写成 `specs.jsonl`。**V3 里那个把逐局 `episode_spec.json` 汇成
-`episode_specs.json` 的 `collect_episode_specs()` 不再使用**——V4 的中转形态是 jsonl，
-但"缺一条就报错、不得用重抽补位"这条规矩照搬。
+runner 往下（worker → `gym.make` → `SpecRecorder` → 取值点）**不改消费方式**；
+V4 新写的代码只做一件事：把 `specs.jsonl` 读成 runner 本来就要的两个 dict——
+`sampling_by_task[task]`（来自 header）和 `specs_by_identity["task/episode"]`（来自 selected 的行）。
 
 ## 四、推理侧怎么兼容
 
@@ -1182,7 +1078,7 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 |---|---|---|---|
 | **V1** | **原值回归**：加了新值能力之后，原三档一个数都没改 | 重跑 V3 的 144 条子集（全在 easy/medium/hard），与 V3 留档的 B／C／D 产物逐位比。**口径 12 之后这条更强**：新值只落 xhard，原三档在结构上就不该有任何差异，任何非零差异都是明确的 bug | `NATIVE_REGRESSION=PASS compared=144 sha_equal=k field_mismatch=0` |
 | **V0** | **原三档的定义没被动过**（静态，V1 的前置） | `git diff` 只看 `config_easy` / `config_medium` / `config_hard` 三个类属性与 `NATIVE_SAMPLING` 里被原三档消费的键，应全部无改动；三个新建分档的环境（A6）另按"三档同值"逐项核对 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
-| **V2** | **新值可重放**：同一份冻结规格跑两次完全一致 | 同一 `specs.jsonl`、同一机型（A40）、**单 worker**，两次实跑的 HDF5 全字段零容差比较（复用 `compare_h5_pair`，不设容差、不跳字段）。**跑 `selected=true` 的 48 条全量，不取子集**（3.5）；抽签段只 reset、拿不出 h5，**不能充当这里的一路**（3.2） | `NEWVALUE_REPLAY=PASS compared=48 sha_equal=k field_mismatch=0` |
+| **V2** | **新值可重放**：同一份冻结规格跑两次完全一致 | 同一 `specs.jsonl`、同一机型（A40）、**单 worker**，两次实跑的 HDF5 全字段零容差比较（复用 `compare_h5_pair`，不设容差、不跳字段）。**跑 `selected=true` 的 48 条全量，不取子集**；抽签段只 reset、拿不出 h5，**不能充当这里的一路**（3.2） | `NEWVALUE_REPLAY=PASS compared=48 sha_equal=k field_mismatch=0` |
 | **V3g** | **规格真被消费**：改坏规格必须产生差异 | 取若干局，逐个改坏规格里的一个叶子值，重跑必须出现字段差异；同时 `missing=0`、`unused=0`、mismatch 全部可归因到 `decision` 键 | `SPEC_BINDING=PASS missing=0 unused=0 unattributed_mismatch=0` ＋ `SPEC_NEGATIVE=PASS cases=M diff_zero=0` |
 | **V4f** | **新值可完成性**：新值局到底跑不跑得通 | **分两档、各按环境报告**：①**抽签档**＝`reset` 成功率（分母是 `drafts.jsonl` 的全部尝试，含补抽；另报 `candidate_shortfall`）；②**实跑档**＝48 条正式局的演示成功率与失败分类（规格拒绝／碰撞／绑定不符／规划失败／超时） | `NEWVALUE_FEASIBILITY=REPORT tasks=16 draft_attempted=A draft_ok=160-s shortfall=s rollout_attempted=48 rollout_ok=M by_class=…`（**不设通过门槛**，见下） |
 | **V5e** | **推理链路通**：新值数据能起环境、能评、能落表 | 用新入口跑一个小分片，核验 `runtime_ok` 全真、`eval_results.jsonl` 行数与分片一致、能按身份 join 上 `results.jsonl` | `EVAL_PIPELINE=PASS episodes=N runtime_ok=N join_missing=0` |
@@ -1202,10 +1098,10 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 |---|---|---|
 | 0 | 从当前 HEAD 切分支；把 1.3 的开放项逐条问过用户并把答复写回本文第二节 | 开放项全部有答复，无「待决」残留 |
 | 1 | 链路甲退役：停用 `scripts/injection/candidates` 与 `rollout` 的新增运行，产物与代码原样留档；`hf_release.py` 维持现状 | 退役说明入 `scripts/README.md`；已进 Git 的产物零改动 |
-| 2 | `SpecRecorder` 升版：加 `native-newvalue/1`，核验口径按 3.1 分叉；mismatch 归因到 `decision` 键 | 原值模式行为零变化（V1 的前置） |
+| 2 | `SpecRecorder` 升版：加 `native-newvalue/1`，核验口径按 3.4 分叉；mismatch 归因到 `decision` 键 | 原值模式行为零变化（V1 的前置） |
 | 3a | 按 2.0 的派生基准总表建 `xhard` 档：十三个新建、三个覆盖；`StopCube`/`MoveCube`/`InsertPeg` 先建分档机制（A6） | `NATIVE_DEFS_UNCHANGED`（V0） |
 | 3b | 十六环境逐个在 xhard 档开新值（按第二节分组推进，每组先过 V0+V1 再进下一组） | 每组 `NATIVE_REGRESSION` 局部通过 |
-| 4 | 抽签段＋冻结段：**每环境抽到 10 条 `reset` 成功**（尝试上限 30）→ `drafts.jsonl`；按 index `0/3/6` 标 `selected=true`，**160 条全部**冻进 `specs.jsonl`（复用甲的 io 纯函数做封套）（3.5） | 键集精确比对、`identity_sha256` 自洽、禁覆盖生效；**自检 `per_env_candidates=10`、`selected_total=48`**，`candidate_shortfall` 如实记录 |
+| 4 | 抽签段＋冻结段：**每环境抽到 10 条 `reset` 成功**（尝试上限 30）→ `drafts.jsonl`；按 index `0/3/6` 标 `selected=true`，**160 条全部**冻进 `specs.jsonl`（复用甲的 io 纯函数做封套）（3.2） | 键集精确比对、`identity_sha256` 自洽、禁覆盖生效；**自检 `per_env_candidates=10`、`selected_total=48`**，`candidate_shortfall` 如实记录 |
 | 5 | 实跑段打通：回注规格出 h5 + 视频、落 `results.jsonl`，并**同一份规格再跑一遍**供 V2 比对。**试点规模由实施方定**（建议先取 2～3 个环境的 selected 局），48 条全量放步 7 | V2、V3g（试点规模上先过） |
 | 6 | 推理侧：`BenchmarkEnvBuilder` 新路径 + `scripts/eval/` 入口 + `eval_results.jsonl` | V5e |
 | 7 | 全量新值生成与报告：`selected=true` 的 **48 条 × 两次实跑** | V1、V2（`compared=48`）、V3g 全过；V4f 两档报告交用户 |
@@ -1264,8 +1160,8 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 | 步 3 | `VideoRepick.py` 的扫掠检查四处 | 开关条件从 `self._episode_spec is None` 改为「两条通道任一」（D5） | 甲通道行为不变 |
 | 步 4 | `scripts/parity/`（新增模块） | 抽签段：按新 `decision` 跑 make/reset/导出，产出 `drafts.jsonl`；冻结段：复用 `scripts/injection/candidates/io.py` 的 `canonical_json` / `digest` / `record_sha256` / `identity_sha256` 产出 `specs.jsonl` | 不影响既有 `train_split_*` 子命令 |
 | 步 5 | `scripts/parity/train_split_parity.py` | `run` 增加读 `specs.jsonl` 的分片模式；结果落 `results.jsonl` | 原五路模式不变 |
-| 步 5 | `scripts/parity/train_split_runner.py` 的身份复核（`official.read_train_metadata()`） | 按 header 的 `identity_source` **分叉**：`formula` 改用 `scripts/seed_layout.py` 的公式复核，**仍是硬校验**（算出来对不上照样拒绝）；否则 xhard 身份不在官方 metadata 里，必然 `SystemExit`（3.6②） | `identity_source=train_metadata` 分支逐字不变 |
-| 步 5 | `scripts/parity/train_split_runner.py::_submit` 的两个 dict | 只改"**从哪来**"：`sampling_by_task` 改从 `specs.jsonl` header 的内嵌配置取、`specs_by_identity` 改从数据行筛 `selected=true` 取；`_submit` 往下的 worker／`gym.make`／`SpecRecorder`／取值点**不改消费方式**（3.6①） | 传 `--sampling-config` / `--episode-specs` 的老用法不变 |
+| 步 5 | `scripts/parity/train_split_runner.py` 的身份复核（`official.read_train_metadata()`） | 按 header 的 `identity_source` **分叉**：`formula` 改用 `scripts/seed_layout.py` 的公式复核，**仍是硬校验**（算出来对不上照样拒绝）；否则 xhard 身份不在官方 metadata 里，必然 `SystemExit`（3.6） | `identity_source=train_metadata` 分支逐字不变 |
+| 步 5 | `scripts/parity/train_split_runner.py::_submit` 的两个 dict | 只改"**从哪来**"：`sampling_by_task` 改从 `specs.jsonl` header 的内嵌配置取、`specs_by_identity` 改从数据行筛 `selected=true` 取；`_submit` 往下的 worker／`gym.make`／`SpecRecorder`／取值点**不改消费方式**（3.6） | 传 `--sampling-config` / `--episode-specs` 的老用法不变 |
 | 步 6 | `src/robomme/env_record_wrapper/episode_config_resolver.py::BenchmarkEnvBuilder` | 并列的 from-spec 构建路径；`runtime` 四项逐字校验 | `dataset="train"/"test"/"val"` 路径**逐字不变** |
 | 步 6 | `scripts/eval/`（**新建子目录，待 E1 批准**） | 新值评估入口 + `eval_results.jsonl` + `eval_summary.json` | 不改 `scripts/evaluation.py` |
 | 全程 | `tests/lightweight/` | 新增：decision 消费点检查、新值 mismatch 归因、`specs.jsonl` 封套反例、pick=3 / swap≥4 的任务条数断言；同步 `test_TaskGoal.py`、`test_swap_schedule_generic.py`、`test_window_timeline.py` 的硬断言 | 原有断言不放宽 |
@@ -1298,7 +1194,7 @@ ls -1 scripts/*.py    # 应恰好五个
 timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q
 
 # 抽签段 / 实跑段（长任务，detached tmux）
-# 规模参数按 3.5：每环境 10 条成功候选、尝试上限 30、步长 3 取 3 条（参数名以实现为准）
+# 规模参数按 3.2：每环境 10 条成功候选、尝试上限 30、步长 3 取 3 条（参数名以实现为准）
 tmux new-session -d -s v4-draft \
   "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.parity.<抽签入口> --run-id <编号> \
    --difficulty xhard --workers 1 --candidates-per-env 10 --max-reset-attempts 30 --select-stride 3 --select-count 3 2>&1 \
