@@ -86,9 +86,12 @@
 
 - **十三个环境要新建 `config_xhard`**，其中三个还**根本没有难度分档机制**：`StopCube`、`MoveCube`、`InsertPeg`
   的类里没有 `configs` / `config_*`，`self.difficulty` 算出来之后全文件无消费点。
-  ⇒ 这三个必须**先建分档机制**（把现有的全局常量改成按难度查表），才谈得上"加一档 xhard"。见开放项 A6。
-- **已有 xhard 的三个环境要覆盖**：现有值是 2026-09-11 加的、V3 记为"不属原 train"。V4 要把它们改成新值
-  （如 `VideoUnmaskSwap` 的 swap `4~5 → 8~12`、`RouteStick` 的 `[8,10] → [12,18]`）。见开放项 A7。
+  **用户已定（A6）：把现在的参数作为 `hard`，在此基础上派生 `xhard`** ⇒ 取
+  `configs = {easy: X, medium: X, hard: X, xhard: 新值}`（`X` = 现有全局常量原值）。三档同值保证
+  "不管传哪档行为都与现状一致"——现状本就如此，因为 difficulty 无消费点。
+- **已有 xhard 的三个环境：旧值全部作废。** **用户原话（A7）：「我不需要兼容任何上一版本选择的额外 task，
+  全部作废！」** ⇒ 直接覆盖成 V4 新值，不保留、不另起档名、不扩白名单。
+  **这会打掉若干现有测试断言**（它们锁的是旧 xhard 的 4~5 次语义），清单见第二部分「一」的步 3a 行。
 - **生成入口的难度配额**：`--difficulty` 是 easy/medium/hard 的三位循环配额，**xhard 不进这个配额**
   （V3 已定：只经清单里每组的 `difficulty` 字段显式指定）。V4 的 `specs.jsonl` 每行都带 `difficulty`，
   天然走显式路径，但抽签段的入口要确保传的是 `difficulty="xhard"`。
@@ -129,17 +132,17 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | A1 ✅ | **「stick 可以和桌面平行」** | **杆现在已经与桌面平行**（四元数只绕世界 z、z 恒 0），原话是重言式 | **已答复（2026-09-22）：yaw 从 ±45° 放宽到 ±180°，不引入 pitch/roll。** ⇒ 不需要 z 补偿；但引出与 Panda joint7 限位的新冲突，见 B11 |
 | A2 ✅ | **20~30 秒按哪个 fps 算** | 两个口径结论相反 | **已答复：按 30 fps（录像器，V3 口径）** ⇒ 需 600~900 帧；RouteStick `L ∈ [12,18]`，PatternLock 必须改 grid 或搜索策略（B8 仍待定具体做法） |
 | A3 ✅ | **VideoRepick 要不要启用 swap** | 用户原文是"**如果是** swap [8,12]"，条件句 | **已答复：启用，swap `[8,12]`** ⇒ 发起者池只有 3 个的问题成为必须处理项，见 B12 |
-| A4 | **MoveCube / InsertPeg 没有难度分档** | 两个类无 `configs`，`self.difficulty` 全文件无消费点 | 建议**全局改参数**（不新增分档），与现状一致 |
-| A5 | **「其他颜色 distractor」的"其他"相对谁** | 相对目标三色（红蓝绿）？还是相对本局出现的颜色？ | 建议定义为"不在本局目标色池内的颜色"，并给出固定的干扰色池 |
-| **A6** | **三个环境根本没有难度分档，怎么加 xhard**（口径 12 的连带） | `StopCube`、`MoveCube`、`InsertPeg` 的类里没有 `configs` / `config_*`，`self.difficulty` 全文件无消费点；现在的参数是全局常量 | 建议把这三个环境现有的全局常量**原样搬进 `config_easy/medium/hard` 三档同值**（保证原行为逐字不变），再加 `config_xhard` 放新值。代价是这三个环境的 `_native_decision` 结构要改 |
-| **A7** | **已有 xhard 的三个环境怎么处理** | `VideoUnmaskSwap` / `RouteStick` / `VideoRepick` 已有 xhard（2026-09-11 加、V3 记为"不属原 train"），派生基准与口径 12 一致但**值是旧的** | 建议**直接覆盖**成 V4 新值（swap `4~5 → 8~12`、`L [8,10] → [12,18]`、VideoRepick swap `4~5 → 8~12`）。若要保留旧 xhard 作对照，则需另起档名并扩 `VALID_DIFFICULTIES` 白名单 |
+| A4 ✅ | **MoveCube / InsertPeg 没有难度分档** | 两个类无 `configs`，`self.difficulty` 全文件无消费点 | **已答复：同意**（认定现状就是全局参数、无分档）。具体建档方式以 A6 为准 |
+| A5 ✅ | **「其他颜色 distractor」的"其他"相对谁** | 相对目标三色（红蓝绿）？还是相对本局出现的颜色？ | **已答复：固定加入 3 个颜色。** ⇒ 干扰色池固定为 **3 种新颜色**（不在红/蓝/绿目标池内），每个需要 distractor 的环境按此池取色。**具体 RGB 值待定**（建议黄 `(1,1,0,1)`、青 `(0,1,1,1)`、品红 `(1,0,1,1)`，与红蓝绿区分度最大），数量默认每色 1 个 ⇒ 共 3 个 |
+| **A6** ✅ | **三个环境根本没有难度分档，怎么加 xhard**（口径 12 的连带） | `StopCube`、`MoveCube`、`InsertPeg` 的类里没有 `configs` / `config_*`，现在的参数是全局常量 | **已答复：把现在的参数作为 `hard`，在此基础上派生 `xhard`。** 实现取 `configs = {easy: X, medium: X, hard: X, xhard: 新值}`，其中 `X` = 现有全局常量原值——**三档同值保证"不管传哪档行为都与现状一致"**（现状本就如此，因为 difficulty 无消费点），只有 xhard 走新值 |
+| **A7** ✅ | **已有 xhard 的三个环境怎么处理** | `VideoUnmaskSwap` / `RouteStick` / `VideoRepick` 已有 xhard（2026-09-11 加、V3 记为"不属原 train"） | **已答复：不需要兼容任何上一版本选择的额外 task，全部作废。** ⇒ 直接覆盖成 V4 新值，不保留旧 xhard、不另起档名、不扩白名单。**连带要改的测试断言见第二部分「一」的步 3a 行** |
 
 #### B 组：数值待定（方向明确但没给具体值）
 
 | # | 项 | 现值与约束 | 建议 |
 |---|---|---|---|
 | B1 | **clutter 的密度／区域／间距** | BinFill 12 块在现区域 **100% 放得下**（饱和点 16~20）；PickHighlight 现 `min_gap_factor=2` 只稳放 8~10 块而 highlight [5,7] 要 spawn ≥ 7；VideoRepick hard 区域可放 30+ | 逐环境给 `region_half_size` 与 `min_gap_factor`；**PickHighlight 必须把 `min_gap_factor` 降到 1** |
-| B2 | **distractor 数量与颜色池** | 六个环境都要加 | 建议每环境 2~4 个、共用一个固定干扰色池 |
+| B2 ◐ | **distractor 数量与颜色池** | 六个环境都要加 | **A5 已定"固定加入 3 个颜色"** ⇒ 色池固定 3 种新颜色、每色 1 个共 3 个 distractor。**剩两件小事待定**：①三种颜色的具体 RGB（建议黄 `(1,1,0,1)` / 青 `(0,1,1,1)` / 品红 `(1,0,1,1)`）；②是否所有六个环境都用同一组 3 色（建议是，便于跨任务一致） |
 | B3 | **distractor 放哪** | 四个 Unmask 可放容器内或桌面 | **强烈建议桌面散块**——做成额外容器会被选成交换搭档，`VideoUnmaskSwap` 直接 `SpecBindingError`、`ButtonUnmaskSwap` 静默改变交换对 |
 | B4 | **swap 速度 ×1.5 的取整** | `50/1.5 = 33.33` | 建议 `round` 到 **33**，并把 50 提成具名常量再乘倍率（现在是分散字面量，ButtonUnmaskSwap 有六处） |
 | B5 | **PickHighlight 的 spawn 总数** | highlight [5,7] ⇒ spawn ≥ 7 | 建议 `[10,12]` 并配 `min_gap_factor=1` |
@@ -191,19 +194,19 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | BinFill | hard `{color 3, spawn [10,12], put_in [3,5]}` | 无 xhard | 加 `config_xhard` |
 | PickXtimes | hard `{color 3, number [4,5]}` | 无 xhard | 加 `config_xhard` |
 | SwingXtimes | hard `{color 3, number [3,3]}` | 无 xhard | 加 `config_xhard` |
-| **StopCube** | — | **无 `configs`，difficulty 无消费点** | **先建分档机制**（A6） |
+| **StopCube** | 现值即 hard（A6） | **无 `configs`，difficulty 无消费点** | `configs = {easy/medium/hard: 现值, xhard: 新值}` |
 | VideoUnmask | hard `{bin 15, pick 2}` | 无 xhard | 加 `config_xhard` |
 | ButtonUnmask | hard `{bin 15, pick 2}` | 无 xhard | 加 `config_xhard` |
-| **VideoUnmaskSwap** | hard `{bin 4, swap [2,3], pick [2,2]}` | **已有 xhard** `{bin 4, swap [4,5], pick [2,2]}` | **覆盖**成新值（A7） |
+| **VideoUnmaskSwap** | hard `{bin 4, swap [2,3], pick [2,2]}` | **已有 xhard** `{bin 4, swap [4,5], pick [2,2]}` | **旧 xhard 作废、直接覆盖**（A7） |
 | ButtonUnmaskSwap | hard `{bin 4, swap [2,3], pick [2,2]}` | 无 xhard | 加 `config_xhard` |
 | PickHighlight | hard `{spawn 6, pickup 3}` | 无 xhard | 加 `config_xhard` |
-| **VideoRepick** | **medium** `{cube 3, swap [2,3]}` | **已有 xhard** `{cube 3, swap [4,5]}`，恰好就是 medium 派生 | **覆盖**成新值（A7） |
+| **VideoRepick** | **medium** `{cube 3, swap [2,3]}` | **已有 xhard** `{cube 3, swap [4,5]}`，恰好就是 medium 派生 | **旧 xhard 作废、直接覆盖**（A7） |
 | VideoPlaceButton | hard `{color 3, targets 4, swap True}` | 无 xhard | 加 `config_xhard` |
 | VideoPlaceOrder | hard `{color 3, targets 4, swap True}` | 无 xhard | 加 `config_xhard` |
-| **MoveCube** | — | **无 `configs`** | **先建分档机制**（A6） |
-| **InsertPeg** | — | **无 `configs`** | **先建分档机制**（A6） |
+| **MoveCube** | 现值即 hard（A6） | **无 `configs`** | `configs = {easy/medium/hard: 现值, xhard: 新值}` |
+| **InsertPeg** | 现值即 hard（A6） | **无 `configs`** | `configs = {easy/medium/hard: 现值, xhard: 新值}` |
 | PatternLock | hard `{grid 5, length [4,8]}` | 无 xhard（传了会 KeyError） | 加 `config_xhard` |
-| **RouteStick** | hard `{length [4,7], backtrack True}` | **已有 xhard** `{length [8,10], backtrack True}` | **覆盖**成新值（A7） |
+| **RouteStick** | hard `{length [4,7], backtrack True}` | **已有 xhard** `{length [8,10], backtrack True}` | **旧 xhard 作废、直接覆盖**（A7） |
 
 > **为什么 VideoRepick 走 medium**：它的 hard 是 5 轮 × 红蓝绿 = 15 块的特殊结构、且 `swap=0`、
 > 连 `cube` 键都没有；medium 才是"3 块 + swap `[2,3]`"的常规结构，`swap [8,12]` 接得上。
@@ -881,7 +884,9 @@ grep `sampling_config` / `native_episode_spec` / `candidates` / `jsonl` **零命
 | 步 2 | `utils/episode_spec.py::SpecRecorder.__init__` / `SPEC_KIND` | 增开 `native-newvalue/1`，按 `spec_kind` 分叉核验口径；新增 mismatch 的 `decision` 归因字段 | `native-parity/1` 的行为逐字不变，`mismatches` 仍须为 0 |
 | 步 2 | `utils/sampling_config.py::assert_native_decision` | 新值模式下改为「与本次 `sampling_config` 声明的 decision 一致」，而不是与 `_native_decision()` 全等 | 原值模式仍走全等比对 |
 | 步 2 | `scripts/parity/train_split_audit.py::NEUTRAL_KEYS` | 撤销 `VideoPlace*.decision.demo_object_count` 两条豁免；新增「每个 decision 叶子键必须在 trace 里有消费」的检查 | 原值审计结论不变 |
-| 步 3a | 十三个环境的 `config_xhard`（新建）＋ `StopCube` / `MoveCube` / `InsertPeg` 的分档机制（A6）＋ 三个已有 xhard 的覆盖（A7） | 按 2.0 的派生基准总表建档：从 hard（VideoRepick 从 medium）拷一份再改新值 | **原三档定义逐字不变**（V0 判据） |
+| 步 3a | 十三个环境的 `config_xhard`（新建）＋ `StopCube` / `MoveCube` / `InsertPeg` 按 A6 建 `configs`（三档同值 + xhard）＋ 三个已有 xhard 按 A7 **直接覆盖** | 按 2.0 的派生基准总表建档：从 hard（VideoRepick 从 medium）拷一份再改新值 | **原三档定义逐字不变**（V0 判据） |
+| 步 3a 连带 | `tests/lightweight/test_swap_schedule_generic.py`（`test_xhard_四五次首尾相接每段五十帧` 锁 4/5 次；另一处遍历 `config_xhard`）、`test_episode_action_sampling.py`（xhard 参数化，注释锁"Unmask 4、Repick 3"）、`test_window_timeline.py`（`test_unmask_xhard_四五次调度` 与 GROUPS 断言） | 旧 xhard 作废后这些断言必然失配，**须同步改成 V4 新值的语义**，不得为了让它们过而保留旧值 | 原三档相关断言不动 |
+| 步 3a 不动 | `tests/_shared/contract_builder_fixture.py` 的 `XHARD_GROUPS` / `GROUPS_V3` 与 xhard 文案、`test_injection_delivery.py` 的 RouteStick xhard 配额 | 这些属**甲的契约链路**，甲已废弃但代码与产物按 N6 原样保留 ⇒ **不改** | — |
 | 步 3 | `BinFill.py::_resolve_sampling_config` / `_load_scene` / `_initialize_episode` | 放开 `layout_mode` 守卫并**新写 clutter 摆放**（现不存在）；`min_gap` 从调用点字面量外提；修 D1 的静默截断＋`IndexError` | `native_dynamic` 分支与原三档逐字不变 |
 | 步 3 | `PickXtimes.py::_load_scene`、`utils/subgoal_language.py::get_subgoal_with_index` | 边角采样模式（**新增**）；目标候选池与 `all_cubes` 解耦；`target_color_name` 回填改为按对象查；修 D2 未绑定分支；序数表扩容或改兜底（E2） | 不传新值时走原均匀采样与原三色回填 |
 | 步 3 | `SwingXtimes.py::_load_scene` | `_color_lists` 改动态建表（否则第四色 `KeyError`）；目标候选池解耦 | 三色路径不变 |
