@@ -1,7 +1,42 @@
 {
   "schema": "test-vs-original-tolerance/1",
-  "_note": "初值（未标定）。所有阈值只由『产物 vs 原版发布集』的实测经 calibrate.py 标定后覆盖；不使用产物互比的数字。ada 档 ts0_image 与帧号/像素类上限固定为 0。strict_text / strict_ts0_grounded：紧档 true（指令语义或首个目标物不同即 FAIL），松档 false（示范/规划阶段重规划导致的指令或首目标变化记 REPLAN，布局层仍靠 ts0 图像判 FAIL）。",
+  "_note": "初值（未标定）。所有阈值只由『产物 vs 原版发布集』的实测经 calibrate.py 标定后覆盖；不使用产物互比的数字。ada / a6000 档 ts0_image 与帧号/像素类上限固定为 0。strict_text / strict_ts0_grounded：紧档 true（指令语义或首个目标物不同即 FAIL），松档 false（示范/规划阶段重规划导致的指令或首目标变化记 REPLAN，布局层仍靠 ts0 图像判 FAIL）。",
   "tiers": {
+    "a6000": {
+      "match": [
+        "A6000"
+      ],
+      "description": "aspen RTX A6000：实测对原版 47/48 逐位复现（含图像），原版发布集应产自此机；最紧档，逐位为主",
+      "frame_delta_max": 0,
+      "px_tol": 0,
+      "boundary_shift_max": 0,
+      "flip_shift_max": 0,
+      "replan_max": 0.0625,
+      "arm": {
+        "joint_action": {
+          "p99": 1e-06,
+          "max": 1e-06
+        },
+        "eef_action": {
+          "p99": 1e-06,
+          "max": 1e-06
+        },
+        "joint_state": {
+          "p99": 1e-06,
+          "max": 1e-06
+        },
+        "eef_state": {
+          "p99": 1e-06,
+          "max": 1e-06
+        }
+      },
+      "ts0_image": {
+        "px_diff_ratio": 0.0,
+        "depth_max": 0
+      },
+      "strict_text": true,
+      "strict_ts0_grounded": true
+    },
     "ada": {
       "match": [
         "RTX 6000 Ada"
@@ -39,10 +74,9 @@
     },
     "a40": {
       "match": [
-        "A40",
-        "A6000"
+        "A40"
       ],
-      "description": "跨架构松档：greatlakes A40 / aspen A6000（Ampere GA102），只保证布局与任务结构一致，轨迹允许漂移与重规划",
+      "description": "跨架构松档：greatlakes A40（Ampere GA102），只保证布局与任务结构一致，轨迹允许漂移与重规划",
       "frame_delta_max": 4,
       "px_tol": 2,
       "boundary_shift_max": 4,
@@ -193,6 +227,58 @@
           "layout:ts0_depth_over_tol": 6,
           "layout:ts0_depth_over_tol,ts0_rgb_over_tol": 3
         }
+      }
+    },
+    {
+      "tier": "a6000",
+      "date": "2026-09-22T18:02:58.619703+00:00",
+      "note": "aspen RTX A6000 单 worker 16x3 48 局对原版；原版发布集应产自此机",
+      "results": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/test-vs-original/results/aspen-16x3-48-w1"
+      ],
+      "margin": 2.0,
+      "observed": {
+        "episodes": 48,
+        "counts": {
+          "IDENTICAL": 47,
+          "DRIFT": 0,
+          "REPLAN": 1,
+          "FAIL": 0
+        },
+        "arm": {
+          "joint_action": {
+            "p99_max": 0.0,
+            "max_max": 0.0,
+            "n": 0
+          },
+          "eef_action": {
+            "p99_max": 0.0,
+            "max_max": 0.0,
+            "n": 0
+          },
+          "joint_state": {
+            "p99_max": 0.0,
+            "max_max": 0.0,
+            "n": 0
+          },
+          "eef_state": {
+            "p99_max": 0.0,
+            "max_max": 0.0,
+            "n": 0
+          }
+        },
+        "replan_rate": 0.020833333333333332,
+        "frame_delta_max_drift": 0,
+        "boundary_shift_max_drift": 0,
+        "px_max_drift": 0,
+        "flip_shift_max_drift": 0,
+        "ts0_px_diff_ratio_max": 0.0,
+        "ts0_depth_max": 0,
+        "text_raw_mismatch_episodes": 14,
+        "replan_reasons": {
+          "arm": 2
+        },
+        "fail_reasons": {}
       }
     }
   ]

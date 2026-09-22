@@ -94,13 +94,14 @@ def observe(rows: list[dict[str, Any]]) -> dict[str, Any]:
 def propose(tier: str, obs: dict[str, Any], margin: float, tier_cfg: dict[str, Any]) -> dict[str, Any]:
     new = json.loads(json.dumps(tier_cfg))
     n = obs["episodes"]
+    strict = bool(tier_cfg.get("strict_text", False))  # 紧档（ada / a6000）：帧号/像素类全 0，手臂给 1e-6 下限
     for k in ARM_FIELDS:
         p99 = _ceil_sig(obs["arm"][k]["p99_max"] * margin)
         mx = _ceil_sig(obs["arm"][k]["max_max"] * margin)
-        floor = 1e-6 if tier == "ada" else 0.0  # 同架构也有 1e-17 级舍入噪声，给个下限
+        floor = 1e-6 if strict else 0.0  # 同架构也有 1e-17 级舍入噪声，给个下限
         new["arm"][k] = {"p99": max(p99, floor), "max": max(mx, floor)}
     new["replan_max"] = round(obs["replan_rate"] * margin + (1.0 / n if n else 0.0), 4)
-    if tier == "ada":
+    if strict:
         new.update({"frame_delta_max": 0, "px_tol": 0, "boundary_shift_max": 0, "flip_shift_max": 0})
         new["ts0_image"] = {"px_diff_ratio": 0.0, "depth_max": 0}
     else:

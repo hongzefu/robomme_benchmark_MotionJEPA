@@ -10,9 +10,10 @@
 
 ## 一、结论
 
-1. **容差按硬件分两档**，判定行必须标档位：
+1. **容差按硬件分三档**（用户在汇报后决定 A6000 单独成档），判定行必须标档位：
+   - `a6000` 最紧档（aspen RTX A6000，原版发布集应产自此机）：逐位为主，手臂 1e-6、帧号/像素类全 0、`replan_max=0.0625`；
    - `ada` 紧档（sled-vail RTX 6000 Ada）：手臂通道 1e-6、帧号/像素类全 0、`replan_max=0.0357`；
-   - `a40` 松档（greatlakes A40 / aspen A6000）：手臂 p99 0.04 / max 0.04～0.06、帧差 ≤ 4、边界坐标 ≤ 2 px、边界帧号 ≤ 4、夹爪翻转 ≤ 2、ts0 图像 ≤ 5.06% / 深度 130、`replan_max=0.2188`。
+   - `a40` 松档（greatlakes A40）：手臂 p99 0.04 / max 0.04～0.06、帧差 ≤ 4、边界坐标 ≤ 2 px、边界帧号 ≤ 4、夹爪翻转 ≤ 2、ts0 图像 ≤ 5.06% / 深度 130、`replan_max=0.2188`。
 2. **每局四类**（IDENTICAL / DRIFT / REPLAN / FAIL）+ 数据集级 `FAIL=0 且 REPLAN 率 ≤ 上限`。FAIL 只来自合同层（seed/difficulty/结局/主指令）与布局层（ts0 目标中心、ts0 深度/rgb 图像）；规划层差异一律 REPLAN。
 3. **同架构单 worker 对原版是精确复现**：sled-vail 48 局 5 局全字段按位相同、42 局只剩 1e-16 舍入；**aspen 48 局 47 局按位相同**——原版发布集几乎可以确定产自 aspen（A6000）。
 4. **跨架构（A40）**：无一局按位相同；同一条规划下手臂 p99 ≤ 0.019；REPLAN 率 10～15%；三局 reset 前物理沉降有微小差异（ts0 图像差 0.13%～2.5%）。
@@ -30,10 +31,10 @@ REFERENCE_AUDIT_COMPLETE=PASS compared=48 contract_errors=0 missing=0
 VS_ORIGINAL=PASS tier=ada compared=36 identical=0 drift=36 replan=0 fail=0 replan_rate=0.0000 replan_max=0.0357   ← local-recheck 36 局
 ```
 
-### aspen（A6000，按松档判，旁证）
+### aspen（A6000，`a6000` 档）
 
 ```text
-VS_ORIGINAL=PASS tier=a40 compared=48 identical=47 drift=0 replan=1 fail=0 replan_rate=0.0208 replan_max=0.2188
+VS_ORIGINAL=PASS tier=a6000 compared=48 identical=47 drift=0 replan=1 fail=0 replan_rate=0.0208 replan_max=0.0625
 # 布局层：ts0 grounded 相同=48/48；ts0 图像最大像素差比例=0.0000，深度 max=0；边界帧号最大偏移=1；夹爪翻转最大偏移=1；帧数最大差=1
 ```
 唯一例外 `PickHighlight/ep3` 653 vs 652 帧。
@@ -66,10 +67,10 @@ VS_ORIGINAL=FAIL tier=ada compared=144 identical=0 drift=11 replan=122 fail=11 r
 3. **"帧数差 1 可以直接逐帧比"**——末段多/少 1 帧让后续整段错位一帧，p99 被抬到 0.03 误判 REPLAN。手臂比较改为允许 ±`frame_delta_max` 帧错位取最小差。
 4. **"ts0 目标中心不同就是布局错"**——A40 上 BinFill/ep2 的 ts0 图像与原版逐像素相同，但首目标物是 red 而非 green；VideoPlaceOrder/ep0 的主指令由示范执行结果生成（first→second target）。这两类是规划层差异：松档记 REPLAN、紧档 FAIL（`strict_*` 字段）。
 5. **"夹爪元素可与手臂一起逐元素比"**——`joint_action[7]` 取 ±1，翻 1 帧就是 2.0 的差；改为按翻转事件比。
-6. **"sled-vail 是原版的同机器"**——aspen 47/48 按位复现，比 vail 更紧；原版应产自 aspen。本轮按用户决定仍两档交付，建议后续给 A6000 单独成档。
+6. **"sled-vail 是原版的同机器"**——aspen 47/48 按位复现，比 vail 更紧；原版应产自 aspen。用户在汇报后决定 A6000 单独成档（`a6000`），已实施。
 7. **"松档 ts0 图像能抓布局扰动"**——跨架构 reset 前物理沉降差异（InsertPeg/1、PickHighlight/7、VideoRepick/11）把阈值推到 5%/130，超过负例量级。已在 README 写明局限。
 
 ## 四、产物与清理
 
 - 比较结果（JSON/JSONL，824 KB）随本次提交入库：`scripts/test-vs-original/results/`。
-- 生成的 h5/mp4：本机 `artifacts/train-parity/tvo-*`、NFS `gl-tvo-16x3`、`gl-tvo-w4`、`aspen-tvo-16x3` 及各自 `merged-B`，按用户要求在汇报并确认后删除；`gl-5e`、`gl-5e-w4` 等既有验收产物与发布集不动。
+- 生成的 h5/mp4：本机 `artifacts/train-parity/tvo-*`（52 G）、NFS `gl-tvo-16x3`、`gl-tvo-w4`、`aspen-tvo-16x3`（126 G）及各自 `merged-B`，已在汇报并获用户确认后删除；`gl-5e`、`gl-5e-w4` 等既有验收产物与发布集不动。

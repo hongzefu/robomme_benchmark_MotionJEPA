@@ -1,6 +1,6 @@
 # 生成产物 vs 官方原始发布集：容差校验（test-vs-original）
 
-一句话：**官方发布集本身是 20 worker 生成的，逐位复现不可能；本目录给出"按硬件分两档"的容差判据，
+一句话：**官方发布集本身是 20 worker 生成的，逐位复现不可能；本目录给出"按硬件分三档"的容差判据，
 让以后多 worker 生成的数据集能对原版做"在差距内"的校验，同时仍能抓住真正的改动（布局、seed、指令）。**
 
 生成仍走现有 `scripts/train_split_parity.py run` 流水线（不改）；本目录只放比较与标定脚本。
@@ -14,17 +14,20 @@ merge（train_split_parity.py merge --path B ...）
 compare_vs_original.py --generated <merged> --reference /data/hongzefu/robomme_data_h5 --tier auto
    └─ episodes.jsonl（逐局四类分类 + 各层度量）+ summary.json + 判定行
 calibrate.py --tier <档> --results <多份 episodes.jsonl> --write
-   └─ tolerance.json（两档阈值 + calibrated_from 留档）
+   └─ tolerance.json（三档阈值 + calibrated_from 留档）
 ```
 
 ---
 
-## 一、两个档位，各看什么
+## 一、三个档位，各看什么
 
 | 档位 | 机器 | 定位 |
 |---|---|---|
-| `ada` 紧档 | sled-vail（RTX 6000 Ada，与原版同架构） | 应精确复现原版；只容忍多 worker 争抢带来的少量重规划 |
-| `a40` 松档 | greatlakes A40、aspen A6000（Ampere GA102） | 跨架构只保证布局与任务结构一致，轨迹允许漂移与重规划 |
+| `a6000` 最紧档 | aspen（RTX A6000）——实测 47/48 逐位复现原版，原版发布集应产自此机 | 逐位复现；只容忍时序临界身份的个别重规划 |
+| `ada` 紧档 | sled-vail（RTX 6000 Ada） | 1e-16 级舍入内复现；只容忍少量重规划 |
+| `a40` 松档 | greatlakes A40（Ampere GA102） | 跨架构只保证布局与任务结构一致，轨迹允许漂移与重规划 |
+
+（用户 2026-09-22 决定：A6000 单独成档，从 a40 的 `match` 移出。）
 
 `--tier auto` 用 `nvidia-smi --query-gpu=name` 匹配 `tolerance.json` 里各档的 `match` 列表；判定行必须标明档位，
 防止拿松档冒充通过。无 GPU 的机器上必须显式 `--tier`。
@@ -72,6 +75,15 @@ calibrate.py --tier <档> --results <多份 episodes.jsonl> --write
 紧档下 48 局里 **5 局连图像在内全字段按位相同**（InsertPeg 0/2/3、MoveCube 0/2），42 局只剩 1e-16 级舍入；
 `PickHighlight/ep3` 是全集里对时序最敏感的身份（已见过 641/643/647/648/652 五个帧数），同架构单 worker 也会偶尔与原版不同。
 
+### `a6000` 最紧档（已标定，2026-09-22；样本：aspen 单 worker 16×3 48 局对原版）
+
+| 项 | 实测观测值 | 最终阈值 |
+|---|---|---|
+| 手臂四通道 p99、max | 0（47 局全字段按位相同，无 DRIFT 局） | **1e-6**（下限） |
+| 帧数差、边界坐标 px、边界帧号偏移、夹爪翻转偏移、ts0 图像 | 0 | **0** |
+| REPLAN 率 `replan_max` | 1/48 = 0.0208（`PickHighlight/ep3` 653 vs 652） | **0.0625**（×2 + 1/48） |
+| `strict_text` / `strict_ts0_grounded` | — | **true** |
+
 ### `a40` 松档（已标定，2026-09-22；样本：greatlakes A40 对原版共 480 局 = 16×3 48 局单 worker + 144 局 4 worker（新跑）+ gl-5e 144 局单 worker + gl-5e-w4 144 局 4 worker；aspen 不进标定）
 
 | 项 | 实测观测值（DRIFT 局最大，或全体最大） | 最终阈值（×2 余量） |
@@ -89,7 +101,7 @@ calibrate.py --tier <档> --results <多份 episodes.jsonl> --write
 **松档的已知局限（必须知道）**：跨架构下 reset 前的物理沉降有微小差异，InsertPeg/1、PickHighlight/7、VideoRepick/11 的 ts0 图像与原版差 0.13%～2.5% 像素（深度 max 53～65），阈值因此放到 5%/130；而负例（`layout.board.offsets` 改 3 cm/5°）在 ts0 图像上只差 2.1%/62——**松档对这个量级的布局扰动没有检出力**。松档能保证的是 seed/difficulty 合同、reset 后目标中心、任务结构与轨迹形态一致；**布局级回归请用紧档（sled-vail，或 aspen）查**，那里 ts0 图像逐像素相同、任何扰动都会被抓到。
 
 余量规则（`calibrate.py`，`--margin` 默认 2）：手臂阈值 = 观测 DRIFT 局该统计量最大值 × 2 向上取 1 位有效数字；
-`replan_max` = 观测 REPLAN 率 × 2 + 1/compared；帧号/像素类上限 = 观测 max × 2；`ada` 档的 `ts0_image` 与帧号/像素类上限固定 0，手臂阈值下限 1e-6。
+`replan_max` = 观测 REPLAN 率 × 2 + 1/compared；帧号/像素类上限 = 观测 max × 2；紧档（`strict_text=true` 的 `a6000` / `ada`）的 `ts0_image` 与帧号/像素类上限固定 0，手臂阈值下限 1e-6。
 
 ---
 
@@ -175,16 +187,17 @@ VS_ORIGINAL=PASS tier=ada compared=36 identical=0 drift=36 replan=0 fail=0 repla
 
 5 局连图像在内全字段按位相同（InsertPeg 0/2/3、MoveCube 0/2）；唯一 REPLAN 是 `PickHighlight/ep3`（648 vs 652 帧）。
 
-### 4.2 aspen（A6000，单 worker，按松档判；旁证，不进标定）
+### 4.2 aspen（A6000，单 worker，`a6000` 档）
 
 ```text
-VS_ORIGINAL=PASS tier=a40 compared=48 identical=47 drift=0 replan=1 fail=0   ← 见下表最终数字
+VS_ORIGINAL=PASS tier=a6000 compared=48 identical=47 drift=0 replan=1 fail=0 replan_rate=0.0208 replan_max=0.0625
+# 布局层：ts0 grounded 相同=48/48；ts0 图像最大像素差比例=0.0000，深度 max=0；边界帧号最大偏移=1；夹爪翻转最大偏移=1；帧数最大差=1
 ```
 
 **47/48 逐位复现原版**（含四路图像；14 局仅 `task_goal` 标点/改写条目不同，归一化后计 IDENTICAL），
 唯一例外 `PickHighlight/ep3`（653 vs 652）。aspen 上存有 2026-03-06 的 `robomme_benchmark-v0.5` 克隆，与发布集文件日期一致——
-**原版发布集几乎可以确定就产自 aspen**。按此数据 A6000 才是原版的"同机器"，比 sled-vail（5/48 逐位、其余 1e-16）还紧；
-把它归在 a40 松档是"用最松的尺子量最准的机器"，建议单独成档（待用户定，本轮按两档交付）。
+**原版发布集几乎可以确定就产自 aspen**。按此数据 A6000 才是原版的"同机器"，比 sled-vail（5/48 逐位、其余 1e-16）还紧，
+因此单独成档（用户 2026-09-22 决定）。松档标定不含 aspen 数据。
 
 ### 4.3 松档（`a40`，greatlakes A40，定稿阈值）
 
@@ -224,5 +237,5 @@ VS_ORIGINAL=FAIL tier=ada compared=1 identical=0 drift=0 replan=0 fail=1
 ## 五、边界与注意
 
 - 紧档只做了单 worker 标定（用户决定本地两台只测单 worker）；若日后在 sled-vail 用多 worker 生成，须先补标定。
-- aspen 产物按 `a40` 档判，只作旁证，不进容差表。
-- 测试产生的 h5/mp4 在 commit、汇报、用户确认后删除；只保留 `results/` 下的 JSON/JSONL。
+- aspen 产物按 `a6000` 档判；松档（a40）标定不含 aspen 数据。
+- 测试产生的 h5/mp4（本机 52 G、NFS 126 G）已在 commit、汇报、用户确认后删除；只保留 `results/` 下的 JSON/JSONL。
