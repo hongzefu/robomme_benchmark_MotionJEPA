@@ -90,6 +90,11 @@ def main(argv: list[str] | None = None) -> int:
         "--episode-specs", default=None,
         help="D 路：每局规格 JSON（形如 {\"specs\": {<task>/<episode>: {...}}}）",
     )
+    parser.add_argument(
+        "--identity-source", choices=("train_metadata", "formula"), default="train_metadata",
+        help="身份复核来源：train_metadata＝官方 metadata 逐字比（原值五路，默认）；"
+             "formula＝V4 xhard 身份按 scripts/parity/v4_specs.py 的 seed 公式硬校验（3.5）",
+    )
     args = parser.parse_args(argv)
 
     official_root = Path(args.official_root).resolve()
@@ -123,18 +128,33 @@ def main(argv: list[str] | None = None) -> int:
             sys.path.insert(0, scripts_dir)
 
     jobs_payload = json.loads(Path(args.jobs_json).read_text(encoding="utf-8"))
-    # 用官方自己的 metadata 读取器复核每条身份，seed 与难度必须逐字相同。
-    records_by_task = official.read_train_metadata()
     jobs = []
+    if args.identity_source == "train_metadata":
+        # 用官方自己的 metadata 读取器复核每条身份，seed 与难度必须逐字相同。
+        records_by_task = official.read_train_metadata()
+    else:
+        # V4：xhard 身份不在官方 metadata 里；改按 V4 seed 公式复核，仍是硬校验。
+        repo_root = Path(__file__).resolve().parents[2]
+        if str(repo_root) not in sys.path:
+            sys.path.insert(0, str(repo_root))
+        from scripts.parity.v4_specs import DIFFICULTY as V4_DIFFICULTY, seed_for as v4_seed_for  # noqa: PLC0415
     for item in jobs_payload:
         task, episode = str(item["task"]), int(item["episode"])
-        record = records_by_task[task][episode]
-        if int(record["seed"]) != int(item["seed"]) or str(record["difficulty"]) != str(item["difficulty"]):
-            raise SystemExit(
-                f"{task}/episode_{episode} 身份与官方 metadata 不符："
-                f"manifest=({item['seed']}, {item['difficulty']}) "
-                f"official=({record['seed']}, {record['difficulty']})"
-            )
+        if args.identity_source == "train_metadata":
+            record = records_by_task[task][episode]
+            if int(record["seed"]) != int(item["seed"]) or str(record["difficulty"]) != str(item["difficulty"]):
+                raise SystemExit(
+                    f"{task}/episode_{episode} 身份与官方 metadata 不符："
+                    f"manifest=({item['seed']}, {item['difficulty']}) "
+                    f"official=({record['seed']}, {record['difficulty']})"
+                )
+        else:
+            expected = v4_seed_for(task, episode, int(item["attempt"]))
+            if int(item["seed"]) != expected or str(item["difficulty"]) != V4_DIFFICULTY:
+                raise SystemExit(
+                    f"{task}/episode_{episode} 身份与 V4 公式不符：jobs=({item['seed']}, {item['difficulty']}) "
+                    f"formula=({expected}, {V4_DIFFICULTY})"
+                )
         jobs.append(
             official.EpisodeJob(
                 task=task,

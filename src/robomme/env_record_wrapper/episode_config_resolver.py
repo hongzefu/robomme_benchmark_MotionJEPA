@@ -123,6 +123,77 @@ class BenchmarkEnvBuilder:
 
         metadata_path = self._resolve_metadata_path()
         self.metadata_index = load_episode_metadata(metadata_path)
+        # V4 新值快照路径（from_v4_specs 开启）；为 None 时本类行为与改动前逐字相同
+        self._v4 = None
+
+    # ── V4：从冻结的 specs.jsonl 起环境（并列路径，NEWTASK_RELEASE_V4_PLAN 第四节）──────────
+    # 本类不读文件：调用方（scripts/eval/）用 scripts/parity/v4_specs.py::load_specs 校验封套后
+    # 把 header 与 specs_by_identity 传进来，src 不反向依赖 scripts。
+    _V4_RUNTIME_KEYS = ("obs_mode", "control_mode", "render_mode", "reward_mode")
+
+    @classmethod
+    def from_v4_specs(
+        cls,
+        env_id: str,
+        header: Dict[str, object],
+        specs_by_identity: Dict[str, Dict[str, object]],
+        action_space: str = "joint_angle",
+        gui_render: bool = False,
+        max_steps: int = 10000,
+    ) -> "BenchmarkEnvBuilder":
+        """按 V4 快照构建：episode 号＝候选序号，seed/difficulty/sampling_config/规格全部取自快照。
+
+        ``runtime`` 四项必须与本类起环境用的参数逐字相等，否则直接拒绝（第四节 4.2）。
+        """
+        if action_space not in _ALLOWED_ACTION_SPACES:
+            raise ValueError(f"Unsupported action_space '{action_space}'.")
+        builder = cls.__new__(cls)
+        builder.env_id = env_id
+        builder.dataset = "v4-specs"
+        builder.action_space = action_space
+        builder.gui_render = gui_render
+        builder.override_metadata_path = None
+        builder.render_mode = "human" if gui_render else "rgb_array"
+        builder.max_steps_without_demonstration = max_steps + 2
+        builder.metadata_index = {}
+        expected = {"obs_mode": "rgb+depth+segmentation", "control_mode": "pd_joint_pos",
+                    "render_mode": builder.render_mode, "reward_mode": "dense"}
+        runtime = dict(header.get("runtime") or {})
+        if runtime != expected:
+            raise ValueError(f"V4 快照 runtime 与本构建器参数不符：快照 {runtime}，构建器 {expected}")
+        rows = {int(row["episode"]): row for key, row in specs_by_identity.items()
+                if key.split("/")[0] == env_id}
+        if env_id not in header.get("sampling_config", {}):
+            raise ValueError(f"V4 快照不含环境 {env_id}")
+        builder._v4 = {
+            "sampling_config": header["sampling_config"][env_id],
+            "recovery_rule": header.get("recovery_rule"),
+            "rows": rows,
+        }
+        return builder
+
+    def v4_episodes(self) -> List[int]:
+        """V4 路径下可评的 episode 号（快照里 selected 的候选序号）。"""
+        return sorted(self._v4["rows"]) if self._v4 is not None else []
+
+    def _v4_kwargs(self, episode: int) -> Dict[str, object]:
+        row = self._v4["rows"].get(int(episode))
+        if row is None:
+            raise KeyError(f"V4 快照里没有 {self.env_id}/{episode}（只含 selected 的候选）")
+        kwargs: Dict[str, object] = {
+            "seed": int(row["seed"]),
+            "difficulty": row["difficulty"],
+            "sampling_config": self._v4["sampling_config"],
+            "native_episode_spec": row["spec"],
+        }
+        rule = self._v4["recovery_rule"] or {}
+        for mode in ("z", "xy"):
+            low, high = rule.get(mode, (None, None))
+            if low is not None and low <= int(episode) <= high:
+                kwargs["robomme_failure_recovery"] = True
+                kwargs["robomme_failure_recovery_mode"] = mode
+                break
+        return kwargs
 
     @classmethod
     def get_task_list(cls) -> List[str]:
@@ -144,6 +215,9 @@ class BenchmarkEnvBuilder:
 
     def resolve_episode(self, episode: int):
         """Parse episode configuration based on metadata."""
+        if getattr(self, "_v4", None) is not None:
+            kwargs = self._v4_kwargs(episode)
+            return kwargs["seed"], kwargs["difficulty"]
         seed = None
         difficulty_hint = None
 
@@ -164,6 +238,8 @@ class BenchmarkEnvBuilder:
         Return number of episodes for current env_id in metadata.
         Note: By convention, this method returns count (int) instead of list.
         """
+        if getattr(self, "_v4", None) is not None:
+            return len(self._v4["rows"])
         if not self.metadata_index:
             return 0
         episode_set = {episode for (task, episode) in self.metadata_index if task == self.env_id}
@@ -200,6 +276,9 @@ class BenchmarkEnvBuilder:
             env_kwargs["seed"] = seed
         if difficulty_hint:
             env_kwargs["difficulty"] = difficulty_hint
+        if getattr(self, "_v4", None) is not None:
+            # V4：规格、采样配置与 recover 分档与生成侧完全相同，保证回注零不等
+            env_kwargs.update(self._v4_kwargs(episode_idx))
         seed_desc = seed if seed is not None else "default"
         difficulty_str = f", difficulty={difficulty_hint}" if difficulty_hint else ""
         logger.debug(f"[{self.env_id}] Episode {episode_idx}: seed={seed_desc}{difficulty_str}")
