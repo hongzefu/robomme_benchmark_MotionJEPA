@@ -52,6 +52,7 @@ from .utils.unmask_swap_xhard import (
     predict_swap_sweeps,
     sample_distractors,
     scaled_window_steps,
+    solve_hold_obj_xhard,
 )
 from ..logging_utils import logger
 
@@ -725,6 +726,11 @@ class VideoUnmaskSwap(BaseEnv):
                     "solve": lambda env, planner, cur_bin=cur_bin: solve_pickup_bin(env, planner, obj=cur_bin),
                     "segment": cur_bin,
                 })
+        if self._is_xhard:
+            # V4 xhard：交换全部发生在首个「static」任务的等待里。xhard 乙通道打开了扫掠检查（H1），
+            # 原 solve_hold_obj 的裸 except 会吞掉 step 抛出的 BinCollisionError 并死循环；
+            # 这里整体替换为只吞 AttributeError 的专用等待（solve_hold_obj_xhard），原三档仍用原函数。
+            tasks[0]["solve"] = lambda env, planner: solve_hold_obj_xhard(env, planner, static_steps=self.swap_schedule[-1][3])
 
         # Store task list for RecordWrapper use
         self.task_list = tasks

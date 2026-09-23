@@ -107,6 +107,25 @@ def distractor_generator(seed: int) -> torch.Generator:
     return generator
 
 
+def solve_hold_obj_xhard(env, planner, static_steps: int) -> None:
+    """xhard 专用的原地等待：与 ``solve_hold_obj(close=False)`` 同语义，只吞 ``AttributeError``。
+
+    共享函数 ``utils/subgoal_planner_func.py::solve_hold_obj`` 用裸 ``except:`` 包住
+    ``planner.open_gripper()``：xhard 打开运行时碰撞检查（H1）后，``env.step`` 在交换开始时抛出的
+    ``BinCollisionError`` 会被吞掉，``elapsed_steps`` 不前进，等待循环永不结束（本机实测挂满外部超时）。
+    这里让碰撞拒绝（及其他一切非 ``AttributeError`` 异常）原样上抛，由 ``_worker`` 归为任务性失败。
+    共享函数按 N12 不就地修；原三档继续用原函数，本函数只在 ``difficulty == "xhard"`` 分支被引用。
+    """
+    start_step = int(getattr(env, "elapsed_steps", 0))
+    target_step = start_step + static_steps
+    while int(getattr(env, "elapsed_steps", 0)) < target_step:
+        try:
+            planner.open_gripper()
+        except AttributeError:
+            pass
+    return None
+
+
 def predict_swap_sweeps(env, partner_axes: Sequence[int]) -> list[tuple[ObjectState, ObjectState]]:
     """按 ``step`` 的同一语义预演全部交换段，返回每段起态 ``(发起者, 搭档)``。
 
