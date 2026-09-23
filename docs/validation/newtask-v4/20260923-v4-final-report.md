@@ -369,7 +369,7 @@ StopCube/MoveCube/InsertPeg 由「无 configs」变为「三档同值 configs」
 另：reset 级探针在每次合并后对 144 条复核，全部 `RESET_REGRESSION=PASS diff=0`。
 
 ### V2
-- 冒烟 smoke-01（PatternLock+RouteStick）、smoke-02（StopCube+SwingXtimes，无 recover）单 worker：均 `NEWVALUE_REPLAY=PASS identities=4 sha_equal=4`。
+- 冒烟 smoke-01（PatternLock+RouteStick）、smoke-02（StopCube+SwingXtimes，无 recover）单 worker：均 `NEWVALUE_REPLAY=PASS identities=4 sha_equal=4`。（冒烟产物已于 2026-09-23 清理）
 - 正式全量两遍（12 worker，K5）：第二遍严格重放第一遍跑过的 56 个身份（48 selected ＋ 8 条递补候选）。
   `NEWVALUE_REPLAY=REPORT identities=56 terminal_mismatch=0 compared_success=47 sha_equal=47 field_mismatch=0 empty_or_invalid=0`——
   终态与失败类别 56/56 一致，47 条成功局 HDF5 整文件逐位相同。多 worker 负载下也没有出现分叉（K5 允许的「少量不同」本轮为零）。

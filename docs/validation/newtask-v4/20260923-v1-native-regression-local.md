@@ -25,5 +25,5 @@
 ## 三、产物
 
 - 基线：`artifacts/newtask-v4/v1-base-13e/`；改动后：`v1-after-6cc/`；补跑：`v1-sup-00a94de/`；
-  对照：`v1-ph3-r1/`、`v1-ph3-r2/`、`ph3-6cc-idle/`、`ph3-13e-idle/`、`bisect-3a7caaa/`、`bisect-76e0fcd/`。
+  对照：`v1-ph3-r1/`、`v1-ph3-r2/`、`ph3-6cc-idle/`、`ph3-13e-idle/`、`bisect-3a7caaa/`、`bisect-76e0fcd/`。（2026-09-23 按用户「清理」删除，结论与散列已记录在本报告与提交 12.85 中）
 - 比较明细：`artifacts/newtask-v4/v1-compare/`、`v1-compare-sup/`、`v1-compare-ph3-r*/`。
