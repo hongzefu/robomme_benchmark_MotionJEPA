@@ -70,7 +70,7 @@
               0
             ],
             "region_half_size": 0.2,
-            "corner_bias": 1.0
+            "corner_bias": 0.5
           },
           "goal_position_policy": {
             "region_center": [

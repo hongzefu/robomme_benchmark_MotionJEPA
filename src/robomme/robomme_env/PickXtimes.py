@@ -100,11 +100,11 @@ NATIVE_SAMPLING = {
 
 # ── V4 xhard 专属 decision（计划 2.4 / 2.21，C1 / G1 / A5 / B2）────────────────
 # * target_cube_position_policy：目标候选方块（三个有色方块）的区域与边角偏置。区域沿用原值，
-#   corner_bias 取 1.0 依据用户原文「尽可能推向边角」，**待用户确认**（见 step3b 报告）。
+#   corner_bias 取 0.5：用户 2026-09-22 定「0.5，推全部 3 块」（本机 4 seed 下 0.5 与 1.0 演示成败相同）。
 # * goal_position_policy：放置圆盘独立一套区域参数（C1：圆盘可以留在中间，值沿用原区域）。
 # * distractor：三个干扰方块，黄／青／品红各一（DISTRACTOR_COLORS），在方块区域内均匀放置。
 XHARD_DECISION = {
-    "target_cube_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2, "corner_bias": 1.0},
+    "target_cube_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2, "corner_bias": 0.5},
     "goal_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2},
     "distractor": {
         "colors": [entry["name"] for entry in DISTRACTOR_COLORS],
