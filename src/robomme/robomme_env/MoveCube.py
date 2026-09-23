@@ -149,8 +149,9 @@ class MoveCube(BaseEnv):
     config_xhard = {
         # ±180°：u*2π - π（A1）
         "peg_yaw_range": {"span_rad": 2 * np.pi, "offset_rad": np.pi},
-        # G3 未定：取值须由用户按成功率扫描定数；None 时 xhard reset 抛 SamplingConfigError
-        "corner_bias": None,
+        # G3 已定（2026-09-22 用户按本机扫描选 0.5：0→8/8、0.25→7/8、0.5→6/8、0.75→6/8、1.0→5/8）；
+        # 设成 None 时 xhard reset 仍会抛 SamplingConfigError（留给外部配置显式置空的反例测试）
+        "corner_bias": 0.5,
     }
     configs = {
         "easy": config_native,

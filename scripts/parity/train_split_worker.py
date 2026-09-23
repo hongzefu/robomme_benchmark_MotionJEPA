@@ -35,7 +35,9 @@ def _digest(payload: Any) -> str | None:
 
 def run_one(payload: tuple) -> dict[str, Any]:
     """在 spawn 子进程里跑一条身份；``payload=(job, sampling_config, episode_spec)``。"""
-    job, sampling_config, episode_spec = payload
+    # V4：payload 可带第 4 项 disable_recovery（runner --no-recovery）；三元组时行为与改动前逐字相同
+    job, sampling_config, episode_spec = payload[:3]
+    disable_recovery = bool(payload[3]) if len(payload) > 3 else False
     import generate_dataset as official  # 官方固定源码，父进程已把其目录放进 sys.path
 
     os.environ["CUDA_VISIBLE_DEVICES"] = job.gpu
@@ -73,7 +75,7 @@ def run_one(payload: tuple) -> dict[str, Any]:
             "seed": job.seed,
             "difficulty": job.difficulty,
         }
-        if job.recovery_mode is not None:
+        if job.recovery_mode is not None and not disable_recovery:
             kwargs["robomme_failure_recovery"] = True
             kwargs["robomme_failure_recovery_mode"] = job.recovery_mode
         # ── 与官方 _worker 的唯一参数差异 ──────────────────────────────────────

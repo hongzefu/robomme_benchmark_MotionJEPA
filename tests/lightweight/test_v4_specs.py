@@ -140,10 +140,9 @@ def test_seed_rule_disjoint_from_existing_layouts() -> None:
         assert not (v4 & old)
 
 
-def test_recovery_rule_matches_official_episode_job() -> None:
-    """分档规则须与主入口 EpisodeJob.recovery_mode 逐条相同。"""
-    import generate_dataset_newseed as gen
+def test_v4_never_enables_recovery() -> None:
+    """用户 2026-09-22 定：V4 全部不开 recover，抽签 kwargs 里不得出现 recover 开关。"""
     for episode in range(12):
-        job = gen.EpisodeJob(task="BinFill", episode=episode, attempt=0, seed=0, difficulty="xhard",
-                             output_root="/tmp", repo_root="/tmp")
-        assert V.recovery_mode(episode) == job.recovery_mode
+        assert V.recovery_mode(episode) is None
+        assert "robomme_failure_recovery" not in V.env_kwargs(V.seed_for("BinFill", episode, 0), episode)
+    assert set(V.RECOVERY_RULE) == {"rule"}

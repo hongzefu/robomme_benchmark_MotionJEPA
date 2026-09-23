@@ -1769,7 +1769,7 @@
             "region_half_size": 0.05
           },
           "xhard": {
-            "corner_bias": null
+            "corner_bias": 0.5
           }
         },
         "execution_layout": {
@@ -1784,7 +1784,7 @@
             "region_half_size": 0.05
           },
           "xhard": {
-            "corner_bias": null
+            "corner_bias": 0.5
           }
         },
         "peg_yaw_range": {

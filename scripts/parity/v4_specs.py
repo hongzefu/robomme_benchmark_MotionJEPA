@@ -58,9 +58,10 @@ RUNTIME = {
 # V4 专用 seed 布局：与 train/test/val/heldout 四代都不重叠（heldout 最大约 1.5e6+16e5）。
 # seed = offset + env_code × env_block + episode × 100 + attempt
 SEED_RULE = {"offset": 4_000_000, "env_block": 100_000, "episode_stride": 100, "formula": "offset + env_code*env_block + episode*100 + attempt"}
-# fail recover 分档与官方 EpisodeJob.recovery_mode 逐字同规则（按 episode 号，与 seed/attempt 无关）。
-# ⚠ recover 会改变 reset 期的抽样（inject_fail_grasp），抽签与实跑必须用同一分档，否则回注对不上。
-RECOVERY_RULE = {"z": [0, 2], "xy": [3, 5], "rule": "episode<=2 → z；episode<=5 → xy；其余不开"}
+# fail recover：用户 2026-09-22 定「V4 全部不开 recover」——抽签、实跑、推理三处一律不开。
+# ⚠ recover 会改变 reset 期的抽样（inject_fail_grasp），三处必须同口径，否则回注对不上；
+# 规则写进 header 封存，实跑侧（runner --no-recovery）与推理侧（from_v4_specs）按它执行。
+RECOVERY_RULE = {"rule": "V4 全部不开 fail recover（用户 2026-09-22）"}
 DEFAULT_SELECT = (0, 3, 6)
 # 管理字段：可变、不进身份散列（改 selected 不改身份；改任一规格值必改身份）
 MANAGEMENT_KEYS = {"selected", "identity_sha256", "run_id", "notes"}
@@ -95,10 +96,7 @@ def source_fingerprint(root: Path = SOURCE_ROOT) -> dict[str, Any]:
 
 
 def recovery_mode(episode: int) -> str | None:
-    if episode <= 2:
-        return "z"
-    if episode <= 5:
-        return "xy"
+    """V4 一律不开 recover（RECOVERY_RULE）；保留函数形态供实跑/推理侧统一调用。"""
     return None
 
 

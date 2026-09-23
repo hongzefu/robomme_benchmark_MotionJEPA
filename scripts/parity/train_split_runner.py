@@ -95,6 +95,10 @@ def main(argv: list[str] | None = None) -> int:
         help="身份复核来源：train_metadata＝官方 metadata 逐字比（原值五路，默认）；"
              "formula＝V4 xhard 身份按 scripts/parity/v4_specs.py 的 seed 公式硬校验（3.5）",
     )
+    parser.add_argument(
+        "--no-recovery", action="store_true",
+        help="V4：一律不开 fail recover（官方按 episode 号分档的规则不生效）；只对镜像 worker 有效",
+    )
     args = parser.parse_args(argv)
 
     official_root = Path(args.official_root).resolve()
@@ -187,6 +191,8 @@ def main(argv: list[str] | None = None) -> int:
             raise SystemExit(f"采样配置缺少环境 {job.task}")
         if specs_by_identity and spec is None:
             raise SystemExit(f"每局规格缺少身份 {job.task}/{job.episode}")
+        if args.no_recovery:
+            return executor.submit(train_split_worker.run_one, (job, config, spec, True))
         return executor.submit(train_split_worker.run_one, (job, config, spec))
 
     with ProcessPoolExecutor(

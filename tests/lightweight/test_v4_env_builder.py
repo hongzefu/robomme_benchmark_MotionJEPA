@@ -48,7 +48,7 @@ def test_episodes_and_kwargs_come_from_snapshot() -> None:
         kwargs = builder._v4_kwargs(episode)
         assert kwargs["seed"] == SPECS[f"RouteStick/{episode}"]["seed"]
         assert kwargs["native_episode_spec"] == {"k": episode}
-        assert kwargs.get("robomme_failure_recovery_mode") == V.recovery_mode(episode)
+        assert "robomme_failure_recovery" not in kwargs  # V4 全部不开 recover
     assert builder.resolve_episode(3) == (SPECS["RouteStick/3"]["seed"], "xhard")
     with pytest.raises(KeyError):
         builder._v4_kwargs(1)  # 落选候选不可评

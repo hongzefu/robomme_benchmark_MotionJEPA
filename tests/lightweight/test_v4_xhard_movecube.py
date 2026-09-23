@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """轻量测试：V4 MoveCube 的 xhard 档（计划 2.16 / 2.17），纯 CPU、不起 sapien 场景。
 
-* A6：``configs`` 三档同值且等于原全局常量；xhard 为 ±180° 与待定的 ``corner_bias``（G3，默认 None）；
+* A6：``configs`` 三档同值且等于原全局常量；xhard 为 ±180° 与 G3 已定的 ``corner_bias=0.5``；
 * ``_native_decision`` 去掉 ``xhard`` 子键后与 V3 原值逐字相同；守卫放行 xhard 取新值；
   演示段与执行段的 ``corner_bias`` 各自声明（两套不可合并）；
 * ``corner_bias`` 为 None / 越界时 xhard 取值拒绝（不许静默当 0 用）；
@@ -69,14 +69,14 @@ def test_configs_three_tiers_identical_and_xhard_values() -> None:
     assert x["peg_yaw_range"]["span_rad"] == pytest.approx(2 * np.pi)
     assert x["peg_yaw_range"]["offset_rad"] == pytest.approx(np.pi)
     # G3 未定数：默认必须是 None，不许实施方自填
-    assert x["corner_bias"] is None
+    assert x["corner_bias"] == 0.5  # G3 用户定数
 
 
 def test_decision_visible_part_unchanged_and_guard() -> None:
     decision, _native = movecube_mod.native_blocks(CLS)
     assert _strip(decision) == V3_DECISION
-    assert decision["demo_layout"]["xhard"] == {"corner_bias": None}
-    assert decision["execution_layout"]["xhard"] == {"corner_bias": None}
+    assert decision["demo_layout"]["xhard"] == {"corner_bias": 0.5}
+    assert decision["execution_layout"]["xhard"] == {"corner_bias": 0.5}
     assert decision["peg_yaw_range"]["xhard"] == CLS.configs["xhard"]["peg_yaw_range"]
     # 演示段与执行段各自一份（可取不同值）
     tuned = copy.deepcopy(decision)

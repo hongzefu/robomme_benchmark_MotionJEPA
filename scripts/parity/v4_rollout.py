@@ -72,7 +72,7 @@ def _run_batch(batch: list[dict], header: dict, out_dir: Path, args, round_index
         "--src-root", str(REPO_ROOT), "--jobs-json", str(work / "jobs.json"),
         "--results-json", str(work / "results.json"), "--workers", "1", "--gpu", "0",
         "--sampling-config", str(work / "sampling.json"), "--episode-specs", str(work / "specs.json"),
-        "--identity-source", "formula",
+        "--identity-source", "formula", "--no-recovery",  # V4 全部不开 recover（与抽签同口径）
     ]
     started = time.time()
     proc = subprocess.run(command, text=True, capture_output=True)
