@@ -162,6 +162,7 @@ def _write_jsonl(path: Path, records: list[dict[str, Any]]) -> None:
     with os.fdopen(fd, "w", encoding="utf-8") as stream:
         for record in records:
             stream.write(canonical_json(record) + "\n")
+    os.chmod(name, 0o644)  # mkstemp 默认 0600；冻结文件要进 Git、供他人读取
     os.link(name, path)  # link 在目标已存在时失败，比 rename 更能防并发覆盖
     os.unlink(name)
 
