@@ -1,10 +1,11 @@
 # scripts/ 说明
 
-本文只讲三件事：
+本文只讲四件事：
 
 1. **生成数据的两阶段**——用到哪些 jsonl，值是怎么注入进环境的（第一节）；
 2. **控制哪些**——十六个环境各自能调什么参数、现值多少、在哪被消费（第二节）；
-3. **eval 怎么传入**——评估侧怎么把身份与配置喂进环境、指标落哪，以及新值数据目前**传不进去**的缺口（第三节）。
+3. **eval 怎么传入**——评估侧怎么把身份与配置喂进环境、指标落哪（第三节）；
+4. **V4 xhard 档**——逐环境改动、全局改动、推理侧怎么兼容、抽签／实跑／推理三步怎么调用（第四节）。
 
 > 原 `scripts/INJECTION.md` 已并入本文第一节，文件已删除；历史文档里指向它的链接对应本文第一节。
 > 旧版本 README 里的十五份难度字典表、A/B/C 四路历史对拍五项结论、schema 3 多 GPU 并行校准五轮报告不再收录，
@@ -579,36 +580,122 @@ uv run --no-sync python challenge_interface/scripts/phase1_eval.py \
 `--extract-config` 核对导出原值快照 / `--merge-only` 按需合并），seed 由 [seed_layout.py](seed_layout.py) 的公式
 `offset + env_code × env_block + episode × 100 + attempt` 现算、不读表；这条链路与本节的评估入口互不影响。
 
-### 3.5 新值数据目前传不进去：缺口与 V4 的接法
+### 3.5 新值数据怎么传入
 
-上面四个入口**只能评官方那套固定身份**。第一节的两条注入链路产出的数据（新值规格、`specs.jsonl`）
-**现在没有任何办法喂进评估侧**——这不是"实现了但没写 jsonl"，是整条路都没接。三条实据：
+V4 之前这里是个缺口：`BenchmarkEnvBuilder` 只认 `env_metadata/{train,test,val}`，新值规格喂不进评估侧。
+V4 已补上一条**并列**路径（`from_v4_specs` ＋ `scripts/eval/v4_eval.py`），上面四个入口与 metadata 路径的行为逐字不变。
+接法见第四节 4.3。
 
-1. **`BenchmarkEnvBuilder` 不认注入参数。** 在
-   [episode_config_resolver.py](../src/robomme/env_record_wrapper/episode_config_resolver.py) 里 grep
-   `sampling_config` / `episode_spec` / `native_episode_spec` / `candidates` / `jsonl`——**零命中**。
-   它只会从 `env_metadata/{train,test,val}` 读 `(seed, difficulty)` 建环境。生成侧靠
-   `generate_dataset_newseed` 转发这几个 kwarg，**评估侧没有这个转发点**。
-2. **评估侧一个 jsonl 都不写。** 全仓写 jsonl 的文件都在生成/对拍侧（`scripts/injection/`、`scripts/parity/`、
-   `generate_dataset_newseed.py`）。`evaluation.py` 只有 stdout，`phase1_eval.py` 写的是 json 不是 jsonl，
-   而且读的也是官方 test 分片。
-3. **账本里写明是故意留空的。** 注入重构阶段 0~9 的收尾记录原话：
-   「策略侧第三处只定义消费契约，本仓库未新增策略实现。」
+---
 
-留了半截口子：`candidates.jsonl` 里确实按设计切了 test 分片（14 组 × 50 = 700 条 `test/primary`，
-另有 858 条 `test/spare`），行上还带 `role` / `counted` / `delivered` 三个为评估预留的字段。
-但这批 test 候选**唯一的消费者是 [reset_check.py](injection/rollout/reset_check.py)**，
-而它的 docstring 第一行就把边界划死了：只做 `gym.make → reset → 读证据 → close`，
-**不套录像器、不建 planner、不 step**。它证明的是"这些规格能产生环境"，跟"策略在这些局上成功率多少"
-是两回事。
+## 第四节　V4：xhard 档
 
-**[NEWTASK_RELEASE_V4_PLAN.md](../NEWTASK_RELEASE_V4_PLAN.md) 第四节规划的接法**（尚未实施）：
+> 这一节整理自 [V4 总报告](../docs/validation/newtask-v4/20260923-v4-final-report.md)（验证数字、决策来由、风险都在那里），
+> 这里只讲四件事：逐环境改了什么、全局改了什么、推理侧怎么兼容、三步各自怎么调用。
+> 新值**只挂在 `self.difficulty == "xhard"` 分支上**，原三档（easy/medium/hard）的定义、reset 取值、完整演示产物都与改动前逐位相同（V0/V1 已验）。
 
-| 要补的 | 怎么接 |
+### 4.1 逐环境改动
+
+参数写在 [configs/newtask-v4/sampling_config.json](configs/newtask-v4/sampling_config.json) 各任务的 `decision` / `native` 块里。
+「基准」一列表示 xhard 是从哪一档派生出来的；标 A6 的三个环境原来没有 `configs`，这次新建了 easy/medium/hard 三档，三档取值相同，都等于原来的全局常量。
+
+| 环境 | 基准 | xhard 取值（相对基准） | 行为改动（只在 xhard 生效） |
+|---|---|---|---|
+| **BinFill** | hard | `spawn_cubes` `[10,12]`→`[12,12]`；`put_in_numbers` `[3,5]`→`[5,7]`；`layout_mode=clutter`；`put_in_color` `[2,3]`；`dynamic` 固定 False | 12 块开局就全部在场，放不满或某个颜色不够时抛 `SceneGenerationError`（J6）；layout_mode 守卫只对 xhard 的 clutter 放行 |
+| **PickXtimes** | hard | `number_range` `[4,5]`→`[6,15]`；方块 `corner_bias=0.5`，3 个有色方块都往边角推；目标盘单独用一套位置策略；加 3 个干扰方块（黄/青/品红） | 先放圆盘再放方块，圆盘按外接正方形参与避让；抓到干扰方块即失败；num=15 时演示约 2206 步，依赖录像器上限改成 5000 |
+| **SwingXtimes** | hard | `number_range` `[3,3]`→`[4,10]`；加黄/青/品红干扰方块，区域 ±0.25 | `_color_lists` 改成动态建表；干扰色单列在 `decision.xhard.distractor`，没有并进 `color_pool`（否则会改原三档的随机流） |
+| **StopCube** | A6 | `move_interval_choices` `[60,80,120]`→`[60]`；`stop_time` 2～5→6～15 | 往返段数 xhard 取 `max(5, stop_time)` |
+| **VideoUnmask** | hard | `pick_count` 2→3；容器 15→8；`min_gap_factor` 2→0.75；外环加 3 个干扰容器，其中 1～2 个扣着黄/青/品红方块 | pick 改成按次数循环；干扰容器和区域容器在同一窗口 [0,64) 揭示，误抓（z>0.15）即失败（J1）；容器放不满时抛错 |
+| **ButtonUnmask** | hard | 同 VideoUnmask | 同上；构造期那次 `randint(1,6)` 占位抽样原样保留 |
+| **VideoUnmaskSwap** | hard | swap `[2,3]`→`[8,12]`（旧 xhard `[4,5]` 作废）；pick 2→3；交换速度 ×1.5，每段 33 步；加外环干扰容器 | 新开交换碰撞检查，干扰容器也并入检查；交换期等待改用 `solve_hold_obj_xhard`，原先共享函数的裸 except 会把碰撞拒绝吞掉，导致死循环；揭示规则与误抓即失败同 VideoUnmask |
+| **ButtonUnmaskSwap** | hard | swap `[2,3]`→`[6,8]`；pick 2→3；交换速度 ×1.5；加干扰容器 | 交换排程改成通式；按完第二个按钮后原地等交换结束再去抓；碰撞检查、揭示、误抓即失败同上 |
+| **VideoRepick** | medium | clutter 布局、6 块；`num_repeats` 4～6；swap `[8,12]`；三块同色，颜色在 HSV 限定色域内任取（S≥0.5、V≥0.4） | 新增 `_load_cubes_xhard`；xhard 走碰撞检查的乙通道；约 45% 的局在演示期被碰撞检查拒绝，按用户决定接受、靠递补补足（J2） |
+| **VideoPlaceButton** | hard | 演示里放 2 个方块，放完各自放回原位 | 演示模板改成按对象循环；原位落点由 `utils/xhard_home_site.py` 在方块初始位姿上建；提问时随机挑一块来问（J7） |
+| **VideoPlaceOrder** | hard | 同 VideoPlaceButton | 两块依次各走一遍访问序列；重推了按钮插入点公式；`SceneGenerationError` 被同名模块遮蔽成 TypeError 的问题只在 xhard 修了（K2） |
+| **PickHighlight** | hard | 高亮数 3→`[5,7]`；生成数 6→`[8,10]`；颜色在 HSV 限定色域内任取 | 子目标文本去掉颜色后缀（J4）；放不满时抛错；首个按钮任务补上 failure_func |
+| **MoveCube** | A6 | 演示段与执行段各自 `corner_bias=0.5`；杆的偏航从 ±45° 放宽到 ±180° | 等价朝向归约：夹爪方位角超过 ±90° 时右乘 Rz(π)，`subgoal_planner_func` 里由开关 `_xhard_peg_yaw_reduction` 守着 |
+| **InsertPeg** | A6 | 杆 3→4 根；第 4 根放在目标杆周围，中心距 (0.075, 0.085] m；杆偏航 ±180° | 第 4 根的采样排在既有抽样之后；`insert_peg` 在朝向翻转时把平移的 xy 取反 |
+| **PatternLock** | hard | 路径长度 `[4,8]`→`[20,24]`（原定 25，因会被静默兜底，K1 改为 24） | 只加了 `config_xhard` |
+| **RouteStick** | hard | `length` `[4,7]`→`[12,15]`（旧 xhard `[8,10]` 作废） | 只改了 `config_xhard` |
+
+每个环境在规格里记了哪些字段，见总报告第三节。
+
+### 4.2 全局改动
+
+| 位置 | 改了什么 |
 |---|---|
-| 环境构建侧 | `BenchmarkEnvBuilder` 增加一条**并列**的构建路径：给定一份 `specs.jsonl` 与一条身份，取出该局规格与 header 里的 `sampling_config`，连同 `seed` / `difficulty` 一起进 `gym.make`。**现有 metadata 路径的行为逐字不变**，新路径由显式参数开启；`runtime` 四项 env kwargs 必须与快照 header 逐字相等，不等直接拒绝起环境 |
-| 评估入口 | 另起入口按 `specs.jsonl` 的分片逐局跑策略，边跑边写 `eval_results.jsonl`。**不改 `scripts/evaluation.py`**——它与上游逐字节相同这个性质要保住（见 3.4） |
-| 结果表 | `eval_results.jsonl` 每行的字段与生成侧 `results.jsonl` 对齐，能按 `(task, difficulty, episode, seed, spec_sha256)` 直接 join：身份 / `status`（取自 `info["status"]`）/ `steps` / `demo_steps` / 策略指纹 / `runtime_ok` / `spec_binding` / 产物路径。汇总另落 `eval_summary.json`，字段名与 `challenge_interface` 的 `metrics.json` 对齐 |
+| `utils/episode_spec.py::SpecRecorder` | xhard 局标 `native-newvalue/1`，原三档标 `native-parity/1`，两类规格不许互喂 |
+| `utils/sampling_config.py::assert_native_decision` | 守卫：去掉所有 `xhard` 键之后，其余部分必须与原值全等；xhard 子树只能改值，键结构必须与源码里申报的一致 |
+| `utils/xhard.py`（新增） | 干扰色池 `DISTRACTOR_COLORS`、推边角 `corner_push`、HSV 限定色 `hsv_floor_rgb` |
+| `utils/object_generation.py` | 新增 `corner_bias` 参数，默认 0，此时行为与原来逐字相同 |
+| `utils/subgoal_language.py` | 序数表扩到 20 |
+| `utils/unmask_distractors.py`、`unmask_swap_xhard.py`、`xhard_home_site.py`（新增） | Unmask 的干扰容器、Swap 的 xhard 等待与碰撞检查、VideoPlace 的原位落点 |
+| `RecordWrapper.py` | `fail_safe_limit` 2000→5000（I1）。录像器只有这一处改动，其余仍冻结 |
+| 随机流 | 新增的随机抽样一律排在既有抽样之后（N5），因此原三档的随机流不受影响 |
+| fail recover | V4 的抽签、实跑、推理全部**不开** recover（I3） |
+| seed | `4_000_000 + env_code×100_000 + episode×100 + attempt` |
 
-⚠ 新入口要放进一个新建的子目录，而 [AGENTS.md](../AGENTS.md) 强制规则第 12 条要求新建子目录**先与用户沟通获准**，
-该项在 V4 计划的开放项 E1 里待批。
+### 4.3 推理侧怎么兼容
+
+1. **构建器加了一条并列路径。** [episode_config_resolver.py](../src/robomme/env_record_wrapper/episode_config_resolver.py) 里的
+   `BenchmarkEnvBuilder.from_v4_specs(env_id, header, specs_by_identity, ...)`：episode 号就是候选序号，
+   seed、difficulty、`sampling_config`、`native_episode_spec` 全部取自快照，统一经 `gym.make` 传进环境。
+   `self._v4 is None` 时（也就是走原来的 metadata 路径）行为逐字不变；`scripts/evaluation.py` 一行没改。
+2. **runtime 必须一致。** 快照 header 里的 `runtime`（`obs_mode` / `control_mode` / `render_mode` / `reward_mode` 四项）
+   与构建器参数有一项不相等，就直接拒绝起环境。
+3. **构建器本身不读文件。** 调用方先用 `scripts/parity/v4_specs.py::load_specs` 校验封套（header 来源、每行的 `spec_sha256`、
+   整文件的 `identity_sha256`），拿到 `(header, sampling_by_task, specs_by_identity)`（只含 `selected=true` 的行）再交给构建器。
+4. **每局结束都核验规格绑定。** 读 `env.unwrapped._spec` 统计 `missing` / `unused` / `mismatch`，写进 `eval_results.jsonl`；
+   每一行都能按 `(task, difficulty, episode, seed, spec_sha256)` 与生成侧的 `results.jsonl` 直接 join。
+5. **推理要用重标后的快照 `specs.selected.jsonl`，不要用 `specs.jsonl`。** 冻结时初选的局可能在实跑中演示失败，
+   被递补替换（如 InsertPeg 初选的 0/3/6 全部失败）；用原快照评这类局时，reset 期重放示范会卡死。
+   `reselect` 只改 `selected` 标记，header 与规格值一字不动，`identity_sha256` 也不变。
+
+### 4.4 三步各自怎么调用
+
+正式快照 `v4-01` 的文件在 [configs/newtask-v4/v4-01/](configs/newtask-v4/v4-01/)，已进 Git。以下命令都在仓库根目录执行。
+
+**第一步：抽签与冻结**（[parity/v4_specs.py](parity/v4_specs.py)）
+
+```bash
+uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v4-01 --candidates-per-env 10 --max-reset-attempts 30 --out artifacts/newtask-v4/v4-01/draft/drafts.jsonl
+```
+
+```bash
+uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v4/v4-01/draft/drafts.jsonl --out scripts/configs/newtask-v4/v4-01/specs.jsonl
+```
+
+- `draw` 占 GPU，只做 reset、不 step、不录像。每个环境攒够 `--candidates-per-env` 条成功，或者试满 `--max-reset-attempts` 次为止；
+  每次尝试（包括失败的）都写进 `drafts.jsonl`。header 会在抽签时封存 `sampling_config` 全文、源码指纹、runtime、seed 规则和 recover 规则。
+  可以用 `--tasks` 限定环境。
+- `freeze` 只用 CPU：先核验 header 封存的来源与当前磁盘逐项一致，不一致就拒绝；然后只保留 reset 成功的行，
+  每个环境按 `--select`（默认 `0,3,6`）标 `selected=true`，写出 `specs.jsonl`。目标文件已存在时拒绝覆盖。
+
+**第二步：实跑**（[parity/v4_rollout.py](parity/v4_rollout.py)）
+
+```bash
+uv run --no-sync python -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v4/v4-01/specs.jsonl --label run1 --workers 12 --official-root artifacts/train-parity/local-smoke-01/official-src --output artifacts/newtask-v4/v4-01/rollout
+```
+
+```bash
+uv run --no-sync python -m scripts.parity.v4_specs reselect --specs scripts/configs/newtask-v4/v4-01/specs.jsonl --results artifacts/newtask-v4/v4-01/rollout/run1/results.jsonl --out scripts/configs/newtask-v4/v4-01/specs.selected.jsonl
+```
+
+- `run` 先跑每个环境 `selected=true` 的正式局。某局演示失败时，按 H4 在本环境剩下的候选里依序递补（`1,2,4,5,7,8,9`），
+  直到凑满或者候选用完；不追加抽签，失败局照样保留在分母里。每局的 h5 和视频落在 `<output>/<label>/episodes/`，
+  汇总在 `results.jsonl` 和 `summary.json`。调用链是 `train_split_runner.py --identity-source formula --no-recovery`
+  → `train_split_worker.run_one`。
+- 实跑完成后用 `reselect` 按成功局重标 `selected`，推理用它输出的这份快照。
+- 可选的重放检查（V2）：`run --label run2 --identities-from <run1/results.jsonl>` 严格重放第一遍跑过的全部身份，
+  再用 `compare <run1> <run2> --report-only` 对比。多 worker 下 RRT 的墙钟预算会随负载变化，两遍之间允许少量不同，所以结果只作报告。
+
+**第三步：推理**（[eval/v4_eval.py](eval/v4_eval.py)）
+
+```bash
+uv run --no-sync python -m scripts.eval.v4_eval --specs scripts/configs/newtask-v4/v4-01/specs.selected.jsonl --max-steps 1300 --join-results artifacts/newtask-v4/v4-01/rollout/run1/results.jsonl --out artifacts/newtask-v4/v4-01/eval-all
+```
+
+- 逐局边跑边写 `eval_results.jsonl`，全部跑完写 `eval_summary.json`。给了 `--join-results` 时，收尾会按身份与生成侧 join，
+  并打印 `EVAL_PIPELINE=...` 判定行。
+- 可选参数：`--tasks` 限定环境，`--limit-per-task` 限定每个环境评几局，`--action-space` 默认 `joint_angle`。
+- 默认策略是 `DummyModel`，与 `scripts/evaluation.py` 里的同构，只用来验证链路；换成真实策略时替换 `v4_eval.py` 里的模型类即可。
