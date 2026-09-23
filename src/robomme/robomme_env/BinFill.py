@@ -35,6 +35,7 @@ from .utils.sampling_config import (
     assert_native_decision,
     split_sampling_config,
 )
+from .utils.SceneGenerationError import SceneGenerationError
 
 from ..logging_utils import logger
 
@@ -59,20 +60,37 @@ def native_blocks(cls):
 
 
 def _native_decision(cls):
-    """从类属性的难度配置里切出 decision 块：色数、生成总数、投入总数。"""
+    """从类属性的难度配置里切出 decision 块：色数、生成总数、投入总数。
+
+    V4：xhard 档另带 ``layout_mode``（``"clutter"``），落在 ``configs.xhard`` 之下——
+    守卫 ``assert_native_decision`` 会把任意深度名为 ``xhard`` 的子树剥掉再与原值比，
+    所以原三档可见的部分（含顶层 ``layout_mode``）逐字不变。
+    """
+    def _entry(cfg):
+        entry = {
+            "color": cfg["color"],
+            "spawn_cubes": list(cfg["spawn_cubes"]),
+            "put_in_numbers": list(cfg["put_in_numbers"]),
+        }
+        if "layout_mode" in cfg:
+            # 只有 config_xhard 带这个键；原三档的字典里没有，输出与改动前逐字相同。
+            entry["layout_mode"] = cfg["layout_mode"]
+        return entry
+
     return {
-        # 方块摆放模式：原值＝由 native.parameters.dynamic 的 randint 决定，
-        # 第二节的 clutter 等新模式本轮不启用。
+        # 方块摆放模式（原三档）：原值＝由 native.parameters.dynamic 的 randint 决定。
+        # xhard 的摆放模式单独写在 configs.xhard.layout_mode（V4 新增 clutter）。
         "layout_mode": "native_dynamic",
         "configs": {
-            difficulty: {
-                "color": cfg["color"],
-                "spawn_cubes": list(cfg["spawn_cubes"]),
-                "put_in_numbers": list(cfg["put_in_numbers"]),
-            }
+            difficulty: _entry(cfg)
             for difficulty, cfg in cls.configs.items()
         },
     }
+
+
+# V4 xhard 支持的摆放模式 → 是否动态出现（D6：clutter＝全部方块开局即在场，dynamic 固定 False）。
+# 这里只列已实现的模式；外部配置给出表外的值直接拒绝，不静默回退。
+XHARD_LAYOUT_DYNAMIC = {"clutter": False}
 
 
 NATIVE_SAMPLING = {
@@ -140,6 +158,13 @@ def _resolve_sampling_config(cls, override):
     assert_native_decision(decision, decision_default, "BinFill")
     if decision.get("layout_mode") != "native_dynamic":
         raise SamplingConfigError("BinFill: 本轮只支持原布局模式 native_dynamic")
+    # V4：硬守卫只对 xhard 放开，且只放行已实现的模式（clutter）；原三档仍只认顶层 native_dynamic。
+    xhard_decision = decision.get("configs", {}).get("xhard")
+    if xhard_decision is not None and xhard_decision.get("layout_mode") not in XHARD_LAYOUT_DYNAMIC:
+        raise SamplingConfigError(
+            f"BinFill: xhard 的 layout_mode 只支持 {sorted(XHARD_LAYOUT_DYNAMIC)}，"
+            f"收到 {xhard_decision.get('layout_mode')!r}"
+        )
     native["parameters"].setdefault("put_in_color", native_default["parameters"]["put_in_color"])
     # 消费侧仍按难度读一份合并后的配置：decision 出色数／生成数／投入数，
     # native 出投入颜色数范围，合并结果与改动前的 cls.configs[difficulty] 逐键相同。
@@ -249,10 +274,23 @@ class BinFill(BaseEnv):
 
 
     # Combine into a dictionary
+    # V4 xhard（派生自 hard，计划 2.3）：全部 clutter（D6：dynamic 固定 False，12 块开局即在场）、
+    # 12 块、3 色、投入总数 [5,7]；投入颜色数沿用 hard 的 [2,3]（native 规则不改）。
+    # 方块区域与间距不动（B1）。put_in 单色最多 7，序数表已扩到 20（E2）。
+    config_xhard = {
+    'color': 3,
+    'spawn_cubes':[12,12],
+    "put_in_color":[2,3],
+    "put_in_numbers":[5,7],
+    "layout_mode": "clutter",
+    }
+
+    # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard,
     }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
@@ -318,7 +356,18 @@ class BinFill(BaseEnv):
         self.generator = torch.Generator()
         self.generator.manual_seed(seed)
         dynamic_cfg = self._sampling["parameters"]["dynamic"]
-        if self._episode_spec is None:
+        if self._episode_spec is None and self.difficulty == "xhard":
+            # V4 xhard（D6）：摆放模式由 decision.configs.xhard.layout_mode 决定，clutter ⇒ dynamic 固定
+            # False。**不抽**原来那次 randint：xhard 是新档，其自身随机流整体前移一位可接受；
+            # 原三档走下面的 else 分支，随机调用序列逐字不变（N5/H2）。
+            layout_mode = self._sampling["parameters"]["configs"]["xhard"]["layout_mode"]
+            self._spec.record("layout.mode", layout_mode)
+            self.dynamic = bool(self._spec.value(
+                "layout.dynamic", XHARD_LAYOUT_DYNAMIC[layout_mode],
+                decision_key="configs.xhard.layout_mode",
+            ))
+            self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
+        elif self._episode_spec is None:
             self.dynamic=bool(self._spec.value("layout.dynamic", bool(torch.randint(dynamic_cfg["low"], dynamic_cfg["high_exclusive"], tuple(dynamic_cfg["shape"]), generator=self.generator).item())))
             self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
         else:
@@ -517,8 +566,11 @@ class BinFill(BaseEnv):
                 spawn_numbers[color_pool[idx]] += 1
 
         if spec is None:
-            spawn_numbers = self._spec.value("objects.spawn_numbers", spawn_numbers)
-            target_numbers = self._spec.value("objects.target_numbers", target_numbers)
+            # decision_key 只在新值（xhard）回注出现不等时写进 mismatch 供归因，原值模式忽略、行为不变
+            spawn_numbers = self._spec.value("objects.spawn_numbers", spawn_numbers,
+                                             decision_key=f"configs.{self.difficulty}.spawn_cubes")
+            target_numbers = self._spec.value("objects.target_numbers", target_numbers,
+                                              decision_key=f"configs.{self.difficulty}.put_in_numbers")
         self.red_cubes_spawn_number = spawn_numbers[0]
         self.blue_cubes_spawn_number = spawn_numbers[1]
         self.green_cubes_spawn_number = spawn_numbers[2]
@@ -573,13 +625,16 @@ class BinFill(BaseEnv):
 
         # Spawn cubes in shuffled order
         cubes_cfg = self._sampling["positions"]["cubes"]
+        # V4 xhard：min_gap 从调用点字面量外提到 positions.cubes.min_gap_value（值同为 0.02，B1 不动）；
+        # 原三档仍用调用点原来的 self.cube_half_size，逐字不变。
+        min_gap = float(cubes_cfg["min_gap_value"]) if self.difficulty == "xhard" else self.cube_half_size
         for task in cube_tasks:
             try:
                 cube = spawn_random_cube(
                     self, color=task["color"], avoid=avoid,
                     include_existing=cubes_cfg["include_existing"], include_goal=cubes_cfg["include_goal"],
                     region_center=list(cubes_cfg["region_center"]), region_half_size=list(cubes_cfg["region_half_size"]),
-                    half_size=self.cube_half_size, min_gap=self.cube_half_size,
+                    half_size=self.cube_half_size, min_gap=min_gap,
                     random_yaw=cubes_cfg["random_yaw"], name_prefix=f"cube_{task['name']}_{task['idx']}",
                     generator=generator,
                     fixed_xy=task.get("fixed_xy"), fixed_yaw=task.get("fixed_yaw"),
@@ -593,6 +648,20 @@ class BinFill(BaseEnv):
                 logger.debug(f"Failed to spawn {task['name']} cube {task['idx']}: {e}")
 
         logger.debug(f"Generated {len(self.all_cubes)} cubes total (red: {len(self.red_cubes)}, blue: {len(self.blue_cubes)}, green: {len(self.green_cubes)})")
+
+        if self.difficulty == "xhard":
+            # V4 D1（只在 xhard 修，H2）：原三档上面的 except RuntimeError 只记日志、不补生成，
+            # 实际块数可能静默少于请求数（2.2④）。xhard 记「请求数 vs 实际数」，不等直接判本局失败。
+            requested, actual = len(cube_tasks), len(self.all_cubes)
+            self._spec.record("objects.spawn_requested", requested)
+            self._spec.record("objects.spawn_actual", actual)
+            if actual != requested:
+                raise SceneGenerationError(
+                    f"BinFill xhard: 方块只放下 {actual}/{requested} 块"
+                    f"（red {len(self.red_cubes)}/{self.red_cubes_spawn_number}，"
+                    f"blue {len(self.blue_cubes)}/{self.blue_cubes_spawn_number}，"
+                    f"green {len(self.green_cubes)}/{self.green_cubes_spawn_number}）"
+                )
 
         if spec is not None:
             # 只读证据：记录「创建输入 vs 创建后 actor 实际位姿」，供 INJECTION_BINDING 核对。
@@ -653,6 +722,11 @@ class BinFill(BaseEnv):
                 color_name, cube_collection, target_number = color_task_definitions[color_idx]
                 if target_number <= 0:
                     continue
+                if self.difficulty == "xhard" and len(cube_collection) < target_number:
+                    # V4 D1：原三档这里缺块会在 cube_collection[i] 处 IndexError；xhard 改为明确的场景失败
+                    raise SceneGenerationError(
+                        f"BinFill xhard: {color_name} 只有 {len(cube_collection)} 块，目标要投 {target_number} 块"
+                    )
                 self.binfill_language_sequence.append((color_name, target_number))
                 for i in range(target_number):
                     cube = cube_collection[i]

@@ -359,6 +359,18 @@
               2,
               4
             ]
+          },
+          "xhard": {
+            "color": 3,
+            "spawn_cubes": [
+              12,
+              12
+            ],
+            "put_in_numbers": [
+              5,
+              7
+            ],
+            "layout_mode": "clutter"
           }
         }
       },
@@ -376,6 +388,10 @@
             "medium": [
               1,
               2
+            ],
+            "xhard": [
+              2,
+              3
             ]
           },
           "dynamic": {

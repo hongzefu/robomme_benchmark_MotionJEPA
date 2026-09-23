@@ -218,7 +218,7 @@ SAMPLING_SOURCES: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
         "BinFill",
         "src/robomme/robomme_env/BinFill.py",
-        ("config_easy", "config_medium", "config_hard", "__init__", "_load_scene", "_initialize_episode"),
+        ("config_easy", "config_medium", "config_hard", "config_xhard", "__init__", "_load_scene", "_initialize_episode"),
     ),
     (
         "RouteStick",
@@ -260,9 +260,11 @@ SAMPLING_EXTRACTED_BLOCKS = ("parameters", "positions", "sources")
 # 说明性字段（*_expression、*_origin、min_gap 文本等）不在其中。
 # ⚠ RouteStick／VideoUnmaskSwap／VideoRepick 的 configs 按难度逐条列出，不列整块：
 # 固定基线 94449db 只有三档，2026-09-11 起这三个任务多了 config_xhard，整块比对会把新增档误判成「原版操作元不一致」。
-# 基线只担保原三档一字未动；BinFill 没有 xhard，仍整块比对。
+# 基线只担保原三档一字未动；BinFill 自 V4 起也有 config_xhard，同样按三档逐条列出。
 SAMPLING_OPERAND_PATHS: tuple[str, ...] = (
-    "parameters.BinFill.configs",
+    "parameters.BinFill.configs.easy",
+    "parameters.BinFill.configs.medium",
+    "parameters.BinFill.configs.hard",
     "parameters.BinFill.dynamic.low",
     "parameters.BinFill.dynamic.high_exclusive",
     "parameters.BinFill.dynamic.shape",
@@ -564,8 +566,8 @@ def extract_native_sampling(
                 "hard": _assigned_literal(class_def, "config_hard"),
             }
         }
-        # 第四档 xhard（2026-09-11）只有 RouteStick／VideoUnmaskSwap／VideoRepick 有，类里存在才写入；
-        # BinFill 没有，保持三键。legacy 分支（旧式源码）永远没有该属性，不改。
+        # 第四档 xhard：类里存在才写入（2026-09-11 起 RouteStick／VideoUnmaskSwap／VideoRepick，
+        # V4 起 BinFill 等也有）。legacy 分支（旧式源码）永远没有该属性，不改。
         if _has_assigned(class_def, "config_xhard"):
             task_parameters["configs"]["xhard"] = _assigned_literal(class_def, "config_xhard")
         task_parameters.update(copy.deepcopy(native["parameters"]))
