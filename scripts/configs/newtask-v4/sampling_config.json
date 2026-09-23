@@ -1147,7 +1147,11 @@
         "layout_mode": "native_by_difficulty",
         "num_repeats_range": {
           "low": 1,
-          "high_exclusive": 4
+          "high_exclusive": 4,
+          "xhard": {
+            "low": 4,
+            "high_exclusive": 7
+          }
         },
         "block_color_policy": "native_by_difficulty",
         "swap": {
@@ -1164,8 +1168,36 @@
             "swap_max": 3
           },
           "xhard": {
-            "swap_min": 4,
-            "swap_max": 5
+            "swap_min": 8,
+            "swap_max": 12
+          }
+        },
+        "xhard": {
+          "layout": {
+            "mode": "clutter",
+            "cube_count": 6,
+            "region_center": [
+              -0.1,
+              0.0
+            ],
+            "region_half_size": [
+              0.2,
+              0.25
+            ]
+          },
+          "block_color": {
+            "policy": "same_color_any_value",
+            "sampler": "torch.rand",
+            "rgb_low": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rgb_high": [
+              1.0,
+              1.0,
+              1.0
+            ]
           }
         }
       },

@@ -161,6 +161,11 @@ def test_real_swap_resolution_matches_baseline_and_preserves_ties(task, points):
         setattr(env, "spawned_bins" if task == "VideoUnmaskSwap" else "spawned_cubes", actors)
         env._get_actor_position = lambda actor: actor.position
         env._refresh_swap_schedule = lambda *args: None
+        if task == "VideoRepick":
+            # V4 D5：VideoRepick 的扫掠检查开关改为 _sweep_checks_enabled（甲通道或 xhard 乙通道）；
+            # 这里模拟原三档乙通道的关闭态（easy、无甲规格 ⇒ 开关为假），语义与改动前相同
+            env.difficulty = "easy"
+            env._sweep_checks_enabled = lambda: False
         namespace = {"self": env, "np": np, "timestep": 0}
         exec(compile(ast.Module(body=loops, type_ignores=[]), task, "exec"), namespace)
         index = next(i for i, actor in enumerate(actors) if actor is env.swap_pair1_idx2)

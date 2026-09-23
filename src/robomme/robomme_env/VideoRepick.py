@@ -137,6 +137,18 @@ NATIVE_SAMPLING = {
 }
 
 
+# V4 xhard「block 颜色任意」（C2：每局全部方块仍同色，只是色值任意）。
+# 口径未细化到色域，这里取最字面的实现：RGB 三通道各自在 [rgb_low, rgb_high] 上均匀抽，alpha 固定 1。
+# ⚠ 是否要避开桌面/按钮色、设饱和度下限等属待用户决策项；可经 sampling_config 的
+# decision.xhard.block_color 覆盖 rgb_low / rgb_high，不改源码。
+XHARD_BLOCK_COLOR = {
+    "policy": "same_color_any_value",
+    "sampler": "torch.rand",
+    "rgb_low": [0.0, 0.0, 0.0],
+    "rgb_high": [1.0, 1.0, 1.0],
+}
+
+
 def _resolve_episode_spec(spec, task):
     """准备本实例专属的固定规格副本（新值注入）；详见 BinFill 同名函数。
 
@@ -150,6 +162,24 @@ def _resolve_episode_spec(spec, task):
     if spec.get("task") != task:
         raise ValueError(f"episode_spec 是 {spec.get('task')} 的规格，不能用于 {task}")
     return copy.deepcopy(spec)
+
+
+def _solve_hold_obj_xhard(env, planner, static_steps):
+    """V4 xhard 专用的原地等待：与 ``solve_hold_obj(close=False)`` 同语义，只把裸 ``except`` 收窄为 ``AttributeError``。
+
+    原函数 ``utils/subgoal_planner_func.py::solve_hold_obj`` 用裸 ``except:`` 包住 ``planner.open_gripper()``，
+    会吞掉 step 里抛出的 ``BinCollisionError``；此时 ``elapsed_steps`` 不前进，循环永不结束，且每轮都往
+    ``_runtime_checks`` 追加一条拒绝证据，最终内存暴涨崩溃（本机实测 rc=139）。共享工具函数的既有缺陷
+    按 N12 不就地修，这里另写 xhard 专用路径。
+    """
+    start_step = int(getattr(env, "elapsed_steps", 0))
+    target_step = start_step + static_steps
+    while int(getattr(env, "elapsed_steps", 0)) < target_step:
+        try:
+            planner.open_gripper()
+        except AttributeError:
+            pass
+    return None
 
 
 def _cube_index_of(name):
@@ -166,7 +196,9 @@ def _native_decision(cls):
     """按方案第二节字段表切出 decision 块（原值阶段等于原值）。"""
     # 第二节 2.10：decision 为布局模式、重复抓放次数范围、逐块颜色策略与是否交换／交换次数。
     # 原值阶段全部取原规则：布局模式沿用难度自带的锚点／区域，次数与交换次数取自 configs。
-    return {
+    # V4：xhard 专属的新值一律挂在名为 ``xhard`` 的子键下（守卫 assert_native_decision 只放行这些键
+    # 偏离原值），去掉 xhard 子键后与改动前逐字相同，原三档可见部分不变。
+    decision = {
         "layout_mode": "native_by_difficulty",
         "num_repeats_range": {
             "low": NATIVE_SAMPLING["parameters"]["num_repeats"]["low"],
@@ -178,6 +210,24 @@ def _native_decision(cls):
             for difficulty, cfg in cls.configs.items()
         },
     }
+    xhard = cls.configs.get("xhard")
+    if xhard is not None:
+        # num_repeats_range 在原三档仍是死键（__init__ 读 native.parameters.num_repeats）；
+        # 它的 xhard 子键**有消费点**：xhard 分支从这里取 pick times 的半开区间。
+        decision["num_repeats_range"]["xhard"] = {
+            "low": xhard["num_repeats_low"],
+            "high_exclusive": xhard["num_repeats_high_exclusive"],
+        }
+        decision["xhard"] = {
+            "layout": {
+                "mode": xhard["layout_mode"],
+                "cube_count": xhard["cube"],
+                "region_center": list(xhard["region_center"]),
+                "region_half_size": list(xhard["region_half_size"]),
+            },
+            "block_color": copy.deepcopy(XHARD_BLOCK_COLOR),
+        }
+    return decision
 
 
 def _resolve_sampling_config(cls, override):
@@ -226,11 +276,20 @@ class VideoRepick(BaseEnv):
         "swap_min":0,
         "swap_max":0,
     }
-    # xhard（2026-09-11 用户决定）：与 medium 一致（3 块方块），只把 swap 次数提到 4～5
+    # V4 xhard（派生自 medium，口径 7；A7 作废 2026-09-11 的旧值 {cube 3, swap [4,5]}）：
+    # 整片区域 clutter 6 块（G2 用户定数）、每局同色且色值任意（C2）、pick times [4,6]、swap [8,12]（A3），
+    # 发起者仍 3 个（B12），不做速度 ×1.5。xhard 分支**只读 decision**（见 _native_decision 的 xhard 条目），
+    # 本字典经 native.parameters.configs.xhard 留一份同形副本，xhard 分支不从那里取值。
     config_xhard = {
-        "cube":3,
-        "swap_min":4,
-        "swap_max":5,
+        "cube": 6,
+        "swap_min": 8,
+        "swap_max": 12,
+        # pick times [4,6] ⇒ torch.randint 半开区间 [4,7)
+        "num_repeats_low": 4,
+        "num_repeats_high_exclusive": 7,
+        "layout_mode": "clutter",
+        "region_center": [-0.1, 0.0],
+        "region_half_size": [0.2, 0.25],
     }
 
 
@@ -305,15 +364,35 @@ class VideoRepick(BaseEnv):
         # Use seed to randomly determine number of repetitions (1-5)
         self.generator = torch.Generator()
         self.generator.manual_seed(seed)
+        if self.difficulty == "xhard" and self._episode_spec is not None:
+            # V4：旧 xhard 已作废（A7），链路甲已退役（口径 1）；甲的规格只有 3 块、颜色按名字存，
+            # 与 6 块 clutter + 任意色值的新 xhard 结构不兼容，直接拒绝而不是半截消费。
+            raise ValueError("VideoRepick xhard 不接受链路甲的 episode_spec；新值规格请走 native_episode_spec")
         repeats_cfg = self._sampling["parameters"]["num_repeats"]
-        if self._episode_spec is None:
+        if self._episode_spec is None and self.difficulty == "xhard":
+            # V4 xhard：pick times 取 decision.num_repeats_range.xhard（半开区间），抽样形态与原值相同
+            xhard_repeats = self._sampling["decision"]["num_repeats_range"]["xhard"]
+            self.num_repeats = self._spec.value(
+                "objects.num_repeats",
+                torch.randint(xhard_repeats["low"], xhard_repeats["high_exclusive"], tuple(repeats_cfg["shape"]), generator=self.generator).item(),
+                decision_key="num_repeats_range.xhard",
+            )
+        elif self._episode_spec is None:
             self.num_repeats = torch.randint(repeats_cfg["low"], repeats_cfg["high_exclusive"], tuple(repeats_cfg["shape"]), generator=self.generator).item()
         else:
             self.num_repeats = int(self._episode_spec["objects"]["num_repeats"])
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
 
         difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
-        if self._episode_spec is None:
+        if self._episode_spec is None and self.difficulty == "xhard":
+            # V4 xhard：交换次数取 decision.swap.xhard（闭区间 [8,12]），与原值同一取值点路径
+            xhard_swap = self._sampling["decision"]["swap"]["xhard"]
+            self.swap_times = self._spec.value(
+                "objects.n_swaps",
+                torch.randint(xhard_swap["swap_min"], xhard_swap["swap_max"] + 1, (1,), generator=self.generator).item(),
+                decision_key="swap.xhard",
+            )
+        elif self._episode_spec is None:
             self.swap_times = self._spec.value(
                 "objects.n_swaps",
                 torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=self.generator).item(),
@@ -382,7 +461,10 @@ class VideoRepick(BaseEnv):
                 {"color": (0, 0, 1, 1), "name": "blue"},
                 {"color": (0, 1, 0, 1), "name": "green"},
             ]
-            if self.difficulty == "hard":
+            if self.difficulty == "xhard":
+                # V4 xhard 走独立方法：原三档的分支与取值点一行不动（H2/N12）
+                self._load_cubes_xhard(avoid)
+            elif self.difficulty == "hard":
                 self.spawned_cubes = []
 
                 hard_cfg = self._sampling["positions"]["hard_cubes"]
@@ -582,6 +664,89 @@ class VideoRepick(BaseEnv):
                 f"Failed to load VideoRepick scene for seed {self.seed}"
             ) from exc
 
+    def _load_cubes_xhard(self, avoid):
+        """V4 xhard 的方块生成：整片区域 clutter、每局同色任意色值、3 个交换发起者。
+
+        取值顺序（xhard 专属，原三档不经过这里）：颜色 → 逐块位姿 → 目标 → 其余两个发起者。
+        新值一律从 ``decision`` 取（``decision.xhard.layout`` / ``decision.xhard.block_color``），
+        判据参数（``include_existing`` / ``include_goal`` / ``random_yaw``）沿用 hard 整片区域那套原值；
+        ``min_gap`` 与原三档一样取 ``self.cube_half_size``。
+        每个取值点都经 ``self._spec``，「请求块数 vs 实际块数」不等直接判本局失败（计划 2.2④）。
+        """
+        xhard_cfg = self._sampling["decision"]["xhard"]
+        layout = xhard_cfg["layout"]
+        if layout["mode"] != "clutter":
+            raise ValueError(f"VideoRepick xhard 只实现了 clutter 布局，收到 {layout['mode']!r}")
+        region_cfg = self._sampling["positions"]["hard_cubes"]
+
+        color_cfg = xhard_cfg["block_color"]
+        low = [float(v) for v in color_cfg["rgb_low"]]
+        high = [float(v) for v in color_cfg["rgb_high"]]
+        u = torch.rand(3, generator=self.generator).tolist()
+        rgb = self._spec.value(
+            "objects.color_rgb",
+            [low[c] + u[c] * (high[c] - low[c]) for c in range(3)],
+            decision_key="xhard.block_color",
+        )
+        chosen_color = (float(rgb[0]), float(rgb[1]), float(rgb[2]), 1.0)
+
+        requested = int(layout["cube_count"])
+        self.spawned_cubes = []
+        for i in range(requested):
+            try:
+                cube_actor = spawn_random_cube(
+                    self,
+                    avoid=avoid,
+                    region_center=list(layout["region_center"]),
+                    region_half_size=list(layout["region_half_size"]),
+                    min_gap=self.cube_half_size,
+                    half_size=self.cube_half_size,
+                    name_prefix=f"bin_{i}",
+                    max_trials=256,
+                    color=chosen_color,
+                    random_yaw=region_cfg["random_yaw"],
+                    include_existing=region_cfg["include_existing"],
+                    include_goal=region_cfg["include_goal"],
+                    generator=self.generator,
+                    recorder=self._spec,
+                    spec_path=f"layout.cubes.{i}.xy_yaw",
+                )
+            except RuntimeError as e:
+                raise SceneGenerationError(f"xhard: failed to generate bin_{i} of {requested}") from e
+            self.spawned_cubes.append(cube_actor)
+            setattr(self, f"bin_{i}", cube_actor)
+            avoid.append(cube_actor)
+        self._spec.record("objects.cube_count.requested", requested)
+        self._spec.record("objects.cube_count.actual", len(self.spawned_cubes))
+        if len(self.spawned_cubes) != requested:
+            raise SceneGenerationError(
+                f"xhard: requested {requested} cubes but spawned {len(self.spawned_cubes)}"
+            )
+
+        selection_cfg = self._sampling["parameters"]["object_selection"]
+        target_index = self._spec.value(
+            "objects.target",
+            int(torch.randint(0, len(self.spawned_cubes), (1,), generator=self.generator).item()),
+        )
+        self.target_cube_1 = self.spawned_cubes[target_index]
+        remaining_indices = [i for i in range(len(self.spawned_cubes)) if i != target_index]
+        if len(remaining_indices) < selection_cfg["swap_remaining_count"]:
+            raise SceneGenerationError("Not enough cubes for swapping")
+        # B12：发起者仍 3 个 = 目标 + 其余块中随机取 2 块，第 k 次交换循环复用 swap_indices[k % 3]
+        selected_remaining = self._spec.value(
+            "objects.swap_initiators_remaining",
+            torch.randperm(len(remaining_indices), generator=self.generator)[:selection_cfg["swap_remaining_count"]].tolist(),
+        )
+        swap_indices = [target_index] + [remaining_indices[i] for i in selected_remaining]
+        self._spec.record("objects.swap_initiators", [f"bin_{i}" for i in swap_indices])
+        for k in range(self.swap_times):
+            setattr(self, f"swap_pair{k+1}_idx1", self.spawned_cubes[swap_indices[k % 3]])
+            setattr(self, f"swap_pair{k+1}_idx2", None)
+        self._refresh_swap_schedule()
+
+    def _sweep_checks_enabled(self):
+        """D5（H2）：几何检查只在「甲通道」或「xhard 的乙通道」开启；原三档乙通道仍不检查。"""
+        return self._episode_spec is not None or self.difficulty == "xhard"
 
 
 
@@ -591,8 +756,9 @@ class VideoRepick(BaseEnv):
             self.table_scene.initialize(env_idx)
             qpos=reset_panda.get_reset_panda_param("qpos")
             self.agent.reset(qpos)
-            if self._episode_spec is not None:
-                # 初始化复核：读实际碰撞盒查三个方块两两之间；构造期与正式 reset 各走一次
+            if self._sweep_checks_enabled():
+                # 初始化复核：读实际碰撞盒查方块两两之间；构造期与正式 reset 各走一次
+                # （V4 D5：甲通道或 xhard 乙通道开启，原三档乙通道仍不跑）
                 gap, rejection = self._check_state_readonly("initial")
                 self._runtime_checks.append(
                     {
@@ -603,6 +769,9 @@ class VideoRepick(BaseEnv):
                 )
                 if rejection is not None:
                     raise BinCollisionError(rejection)
+            # V4 xhard：静止/交换段改用只吞 AttributeError 的等待函数（见 _solve_hold_obj_xhard），
+            # 否则 D5 抛出的 BinCollisionError 会被 solve_hold_obj 的裸 except 吞掉并死循环；原三档仍用原函数
+            hold_fn = _solve_hold_obj_xhard if self.difficulty == "xhard" else solve_hold_obj
             tasks = [
             {
                 "func": (lambda: is_obj_pickup(self, obj=self.target_cube_1)),
@@ -630,7 +799,7 @@ class VideoRepick(BaseEnv):
                                 "subgoal_segment":"static",
                                 "demonstration": True,
                                 "failure_func": None,
-                                "solve": lambda env, planner: [solve_reset(env,planner),solve_hold_obj(env, planner, static_steps=20)],
+                                "solve": lambda env, planner: [solve_reset(env,planner),hold_fn(env, planner, static_steps=20)],
                                 },)
             if self.swap_times>=1:
                 for count in range(self.swap_times):
@@ -641,7 +810,7 @@ class VideoRepick(BaseEnv):
                                 "demonstration": True,
                                 "failure_func": None,
                                 "specialflag":"swap",
-                                "solve": lambda env, planner: [solve_hold_obj(env, planner, static_steps=self.swap_schedule[-1][3]-self.swap_schedule[-1][2])],
+                                "solve": lambda env, planner: [hold_fn(env, planner, static_steps=self.swap_schedule[-1][3]-self.swap_schedule[-1][2])],
                                 },)
                 
             tasks.append(             {
@@ -955,7 +1124,7 @@ class VideoRepick(BaseEnv):
 
     def _before_simulation_step(self):
         super()._before_simulation_step()
-        if self._episode_spec is None or not self._in_swap_window():
+        if not self._sweep_checks_enabled() or not self._in_swap_window():
             return
         gap, rejection = self._check_state_readonly("substep_before")
         if rejection is not None:
@@ -966,7 +1135,7 @@ class VideoRepick(BaseEnv):
 
     def _after_simulation_step(self):
         super()._after_simulation_step()
-        if self._episode_spec is None or not self._in_swap_window():
+        if not self._sweep_checks_enabled() or not self._in_swap_window():
             return
         gap, rejection = self._check_state_readonly("substep_after")
         if rejection is not None:
@@ -1023,7 +1192,19 @@ class VideoRepick(BaseEnv):
                             # 再从**实际**起态做整段连续几何检查。关闭态两项都不跑。
                             if self._episode_spec is not None:
                                 self._verify_swap_binding(i, pair_idx1, closest_actor)
+                            # V4 D5（H2）：扫掠检查改为「甲通道，或 xhard 的乙通道」；原三档乙通道仍不跑。
+                            # 搭档身份核验只有甲的规格里预写了搭档，乙通道改为只读记录（见下）。
+                            if self._sweep_checks_enabled():
                                 self._check_swap_sweep_from_actual(i, pair_idx1, closest_actor)
+                            if self.difficulty == "xhard":
+                                self._spec.record(
+                                    f"actions.swap_pairs.{i}",
+                                    {"initiator": f"bin_{self.spawned_cubes.index(pair_idx1)}",
+                                     "partner": f"bin_{self.spawned_cubes.index(closest_actor)}"},
+                                )
+                                self._spec.record(
+                                    f"actions.swap_windows.{i}", [int(start), int(end)]
+                                )
                             setattr(self, f'swap_pair{i+1}_idx2', closest_actor)
                             self._refresh_swap_schedule(self.start_step)
 
