@@ -97,13 +97,34 @@ def native_blocks(cls):
     return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
 
 
+# ── 难度分档（V4 计划 2.6，用户决策 A6）──────────────────────────────────────
+# 本环境原本没有难度分档：easy/medium/hard 三档**同值**，都等于原有的全局常量，
+# 所以不管传哪档，行为都与改动前逐字一致；只有 xhard 取 V4 新值。
+# move_interval_choices：方块单程步数候选（越小越快）；stop_time_range：第几次经过目标时停（半开区间）。
+_CONFIG_CURRENT = {
+    # 原值三档；randint 等概率抽下标
+    "move_interval_choices": [60, 80, 120],
+    # 原 randint(2, 6) 即闭区间 [2, 5]
+    "stop_time_range": {"low": 2, "high_exclusive": 6},
+}
+# xhard（C4 只锁这两项）：速度最快档 [60]、停止序号闭区间 [6, 15]（半开写 low=6, high_exclusive=16）。
+_CONFIG_XHARD = {
+    "move_interval_choices": [60],
+    "stop_time_range": {"low": 6, "high_exclusive": 16},
+}
+
+
 def _native_decision(cls):
-    """按方案第二节 2.4 切出 decision 块（原值阶段等于原值）。"""
+    """按方案第二节 2.4 切出 decision 块。
+
+    顶层两键是原三档共用的原值（三档同值，取 ``configs["hard"]``），与 V3 快照逐字相同；
+    V4 新值只放在 ``xhard`` 子键下，``assert_native_decision`` 按键名放行。
+    """
+    hard = cls.configs["hard"]
     return {
-        # 速度候选档位：原值三档；第二节的「只留 [60]」本轮不启用。
-        "move_interval_choices": [60, 80, 120],
-        # 第几次经过目标时停止：原 randint(2, 6) 即闭区间 [2, 5]。
-        "stop_time_range": {"low": 2, "high_exclusive": 6},
+        "move_interval_choices": list(hard["move_interval_choices"]),
+        "stop_time_range": dict(hard["stop_time_range"]),
+        "xhard": copy.deepcopy(cls.configs["xhard"]),
     }
 
 
@@ -112,6 +133,10 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    # 旧快照（v2/v3 导出时还没有 xhard 条目）守卫照旧放行；这里补上源码申报的 xhard 默认值，
+    # 只影响 xhard 局，原三档不读这个键。
+    if "xhard" not in decision:
+        decision["xhard"] = copy.deepcopy(decision_default["xhard"])
     native["decision"] = decision
     return native
 
@@ -132,6 +157,13 @@ class StopCube(BaseEnv):
     cube_spawn_half_size = 0.05
     cube_spawn_center = (0, 0)
 
+    # A6：三档同值（深拷贝各一份，防止互相串改），xhard 取新值
+    configs = {
+        "easy": copy.deepcopy(_CONFIG_CURRENT),
+        "medium": copy.deepcopy(_CONFIG_CURRENT),
+        "hard": copy.deepcopy(_CONFIG_CURRENT),
+        "xhard": copy.deepcopy(_CONFIG_XHARD),
+    }
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
@@ -298,17 +330,25 @@ class StopCube(BaseEnv):
             self.interval = interval
 
 
-            move_interval_list = list(self._sampling["decision"]["move_interval_choices"])
+            # 难度真正被消费的唯一位置：xhard 读 decision.xhard 子键，原三档读顶层原值（三档同值）。
+            # 两个分支的随机调用次数、顺序、区间形式完全相同，只是区间端点不同（红线 N5）。
+            xhard = self.difficulty == "xhard"
+            decision_cfg = self._sampling["decision"]["xhard"] if xhard else self._sampling["decision"]
+            key_prefix = "xhard." if xhard else ""
+
+            move_interval_list = list(decision_cfg["move_interval_choices"])
             idx = self._spec.value(
                 "actions.move_interval_idx",
                 torch.randint(0, len(move_interval_list), (1,), generator=generator).item(),
+                decision_key=f"{key_prefix}move_interval_choices",
             )
             self.move_interval = move_interval_list[idx]
 
-            stop_cfg = self._sampling["decision"]["stop_time_range"]
+            stop_cfg = decision_cfg["stop_time_range"]
             stop_time=self._spec.value(
                 "actions.stop_time",
                 torch.randint(stop_cfg["low"], stop_cfg["high_exclusive"], (1,), generator=generator).item(),
+                decision_key=f"{key_prefix}stop_time_range",
             )
 
             self.steps_press=self.move_interval*(stop_time)-self.move_interval/2
@@ -317,6 +357,16 @@ class StopCube(BaseEnv):
                 self.move_interval * (stop_time ),
             )
             self.stop_time=stop_time
+            # 方块往返段数：原三档在 step 里写死 5 趟（stop_time ≤ 5 恰好够用），这里只作记录不改原路径；
+            # xhard 的 stop_time 可达 15，必须按实际停止序号展开，否则第 6 次起的「经过目标」根本不存在。
+            # 第 n 次经过目标发生在第 n 段的中点 move_interval*(n-0.5)，所以段数 = max(5, stop_time) 恰好覆盖。
+            self.motion_segments = max(5, int(stop_time)) if xhard else 5
+            if xhard:
+                # 派生量只在 xhard 记进规格（原三档规格文档逐字不变）
+                self._spec.record("actions.move_interval", int(self.move_interval))
+                self._spec.record("actions.motion_segments", int(self.motion_segments))
+                self._spec.record("actions.steps_press", float(self.steps_press))
+                self._spec.record("actions.stop_window", [float(v) for v in self.stop_time_range])
             # Get target xy coordinates (already randomized in _load_scene)
             target_pose = self.target.pose
             if isinstance(target_pose.p, torch.Tensor):
@@ -501,7 +551,13 @@ class StopCube(BaseEnv):
         end_pos = [self.end_pos_xy[0], self.end_pos_xy[1], self.cube_half_size / 2]
 
         # Alternate between the two waypoints so the cube makes five passes
-        for segment in range(5):
+        # （原三档逐字保持 range(5)；xhard 按 _initialize_episode 算出的实际段数展开，
+        #   segment % 2 的起终点交替规则不变）
+        if getattr(self, "difficulty", None) == "xhard":
+            segments = range(self.motion_segments)
+        else:
+            segments = range(5)
+        for segment in segments:
             move_straight_line(
                 self,
                 cube=self.cube,

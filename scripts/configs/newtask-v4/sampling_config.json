@@ -136,6 +136,15 @@
         "stop_time_range": {
           "low": 2,
           "high_exclusive": 6
+        },
+        "xhard": {
+          "move_interval_choices": [
+            60
+          ],
+          "stop_time_range": {
+            "low": 6,
+            "high_exclusive": 16
+          }
         }
       },
       "native": {
