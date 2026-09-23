@@ -33,6 +33,8 @@ from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.SceneGenerationError import SceneGenerationError
+from .utils.xhard import DISTRACTOR_COLORS
 
 from ..logging_utils import logger
 
@@ -96,6 +98,40 @@ NATIVE_SAMPLING = {
 }
 
 
+# ── V4 xhard 专属 decision（计划 2.4 / 2.21，C1 / G1 / A5 / B2）────────────────
+# * target_cube_position_policy：目标候选方块（三个有色方块）的区域与边角偏置。区域沿用原值，
+#   corner_bias 取 1.0 依据用户原文「尽可能推向边角」，**待用户确认**（见 step3b 报告）。
+# * goal_position_policy：放置圆盘独立一套区域参数（C1：圆盘可以留在中间，值沿用原区域）。
+# * distractor：三个干扰方块，黄／青／品红各一（DISTRACTOR_COLORS），在方块区域内均匀放置。
+XHARD_DECISION = {
+    "target_cube_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2, "corner_bias": 1.0},
+    "goal_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2},
+    "distractor": {
+        "colors": [entry["name"] for entry in DISTRACTOR_COLORS],
+        "region_center": [-0.1, 0],
+        "region_half_size": 0.2,
+    },
+}
+
+
+def _disk_avoid_obb(target, clearance):
+    """把放置圆盘换算成方块拒绝采样可用的预制 OBB ``(中心, 轴, 半边长)``。
+
+    圆盘是 ``add_collision=False`` 的纯视觉 actor，``get_actor_obb`` 取不到网格，直接放进
+    ``avoid`` 会被 ``spawn_random_cube`` 静默忽略（2026-09-22 实测）。xhard 先放圆盘后放方块（G1），
+    必须显式给出它的外接正方形：半边长 = 圆盘半径 + 圆盘间距 − 方块自带间距，
+    使轴向判据与原「圆盘避让方块」的圆–盒距离判据一致、对角方向更保守。
+    """
+    p = target.pose.p
+    if isinstance(p, torch.Tensor):
+        p = p[0].detach().cpu().numpy()
+    return (
+        np.array(p[:2], dtype=np.float64),
+        np.eye(2, dtype=np.float64),
+        np.array([clearance, clearance], dtype=np.float64),
+    )
+
+
 def native_blocks(cls):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
     return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
@@ -112,8 +148,10 @@ def _native_decision(cls):
         # 目标方块与放置圆盘各自的位置采样区域；原值即两者同区域。
         "target_cube_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2},
         "goal_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2},
-        # 第二节的「增加其他颜色 distractor」本轮不启用。
+        # 第二节的「增加其他颜色 distractor」原三档不启用（原值保持 None）。
         "distractor": None,
+        # V4 xhard 专属（计划 2.4）：键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
+        "xhard": copy.deepcopy(XHARD_DECISION),
     }
 
 
@@ -160,11 +198,19 @@ class PickXtimes(BaseEnv):
     'number_max':3
     }
 
+    # V4 xhard（派生自 hard，计划 2.4）：颜色 3 不变，重复抓放次数 [6,15]。
+    config_xhard = {
+        'color': 3,
+        'number_min': 6,
+        'number_max': 15,
+    }
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard,
     }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
@@ -229,6 +275,7 @@ class PickXtimes(BaseEnv):
         self.num_repeats = self._spec.value(
             "objects.num_repeats",
             torch.randint(number_range[0], number_range[1]+1, (1,), generator=generator).item(),
+            decision_key=f"number_range.{self.difficulty}",
         )
         self._spec.identity.setdefault("difficulty", self.difficulty)
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
@@ -284,6 +331,75 @@ class PickXtimes(BaseEnv):
 
        
 
+        # V4：xhard 走独立的生成路径（G1 先放圆盘、目标候选池解耦、D2 修复、按对象回填颜色），
+        # 原三档仍走原代码（整段原样搬进 _spawn_scene_objects_native，一行未改，H2/N12）。
+        if self.difficulty == "xhard":
+            self._spawn_scene_objects_xhard(generator, avoid)
+        else:
+            self._spawn_scene_objects_native(generator, avoid)
+
+                # Dynamically generate task list for N pickup-drop cycles
+        tasks = []
+        for i in range(self.num_repeats):
+
+            tasks.append({
+                "func": (lambda i=i: is_obj_pickup(self, obj=self.target_cube)),
+                "name": subgoal_language.get_subgoal_with_index(i, "pick up the {color} cube for the {idx} time", color=self.target_color_name),
+                 "subgoal_segment": subgoal_language.get_subgoal_with_index(i, "pick up the {color} cube at <> for the {idx} time", color=self.target_color_name),
+                "choice_label": "pick up the cube",
+                "demonstration": False,
+                "failure_func": lambda: [is_any_obj_pickup(self, self.non_target_cubes),is_button_pressed(self, obj=self.button)],
+                "solve": lambda env, planner: solve_pickup(env,planner,self.target_cube),
+                "segment":self.target_cube
+            })
+            tasks.append({
+                "func": (lambda: is_obj_dropped_onto(self,obj=self.target_cube,target=self.target)),
+                "name": f"place the {self.target_color_name} cube onto the target",
+                "subgoal_segment": f"place the {self.target_color_name} cube onto the target at <>",
+                "choice_label": "place the cube onto the target",
+                "demonstration": False,
+                "failure_func": lambda: [is_any_obj_pickup(self, self.non_target_cubes),is_button_pressed(self, obj=self.button)],
+                "solve": lambda env, planner: solve_putonto_whenhold(env, planner, target=self.target),
+                "segment":self.target
+            })
+
+        tasks.append( {
+                "func": lambda:is_button_pressed(self, obj=self.button),
+                "name": "press the button to stop",
+                "subgoal_segment": "press the button at <> to stop",
+                "choice_label": "press the button to stop",
+                "demonstration": False,
+                "failure_func":lambda:is_any_obj_pickup(self, self.all_cubes),
+                "solve": lambda env, planner: solve_button(env, planner, obj=self.button),
+                "segment":self.cap_link 
+            })
+
+
+        # Store task list for RecordWrapper use
+        self.task_list = tasks
+
+                # Record pickup related task indices and items for recovery
+        self.recovery_pickup_indices, self.recovery_pickup_tasks = task4recovery(self.task_list)
+        if self.robomme_failure_recovery:
+            # Only inject an intentional failed grasp when recovery mode is enabled
+            # 恢复动作的选择是一次真实抽样：原位置照常抽，回注模式下用冻结的索引
+            self.fail_grasp_task_index = self._spec.value(
+                "actions.recovery.selected_action_index",
+                inject_fail_grasp(
+                self.task_list,
+                generator=generator,
+                mode=self.robomme_failure_recovery_mode,
+            ),
+            )
+        else:
+            self.fail_grasp_task_index = None
+
+        # V4 xhard：干扰方块是新增的随机取值，追加在本函数全部既有取值点（含恢复动作抽样）之后（N5）。
+        if self.difficulty == "xhard":
+            self._spawn_distractors_xhard(generator, avoid)
+
+    def _spawn_scene_objects_native(self, generator, avoid):
+        """原三档的方块／圆盘／目标方块生成（原 ``_load_scene`` 中段，逐字搬出，行为不变）。"""
         self.all_cubes = []  # Save all cube objects
 
         # Initialize storage for each color group
@@ -407,62 +523,186 @@ class PickXtimes(BaseEnv):
         self.non_target_cubes = [cube for cube in self.all_cubes if cube != self.target_cube]
         logger.debug(f"Non-target cubes: {len(self.non_target_cubes)}")
 
-                # Dynamically generate task list for N pickup-drop cycles
-        tasks = []
-        for i in range(self.num_repeats):
+    def _spawn_scene_objects_xhard(self, generator, avoid):
+        """V4 xhard 的方块／圆盘／目标方块生成（计划 2.4）。
 
-            tasks.append({
-                "func": (lambda i=i: is_obj_pickup(self, obj=self.target_cube)),
-                "name": subgoal_language.get_subgoal_with_index(i, "pick up the {color} cube for the {idx} time", color=self.target_color_name),
-                 "subgoal_segment": subgoal_language.get_subgoal_with_index(i, "pick up the {color} cube at <> for the {idx} time", color=self.target_color_name),
-                "choice_label": "pick up the cube",
-                "demonstration": False,
-                "failure_func": lambda: [is_any_obj_pickup(self, self.non_target_cubes),is_button_pressed(self, obj=self.button)],
-                "solve": lambda env, planner: solve_pickup(env,planner,self.target_cube),
-                "segment":self.target_cube
-            })
-            tasks.append({
-                "func": (lambda: is_obj_dropped_onto(self,obj=self.target_cube,target=self.target)),
-                "name": f"place the {self.target_color_name} cube onto the target",
-                "subgoal_segment": f"place the {self.target_color_name} cube onto the target at <>",
-                "choice_label": "place the cube onto the target",
-                "demonstration": False,
-                "failure_func": lambda: [is_any_obj_pickup(self, self.non_target_cubes),is_button_pressed(self, obj=self.button)],
-                "solve": lambda env, planner: solve_putonto_whenhold(env, planner, target=self.target),
-                "segment":self.target
-            })
+        与原路径的差别（全部只在 xhard 生效，H2）：
+        * G1：**先放圆盘再放方块**，方块经 ``_disk_avoid_obb`` 显式避让圆盘；
+        * 颜色取自 ``NATIVE_SAMPLING.parameters.color_pool``（xhard 路径的单一真值，不再读硬编码字面量）；
+        * 三个有色方块（目标候选）加 ``corner_bias`` 推向边角；
+        * D2：圆盘或方块放不下直接抛 ``SceneGenerationError``，不再静默截断或落到未绑定变量；
+        * 目标方块从显式候选列表 ``self.target_candidates`` 抽（与 ``all_cubes`` 解耦，干扰物不会被抽中）；
+        * ``target_color_name`` 按对象查表回填，不再走三色 if 链（新颜色不命中时会残留旧值）。
+        随机调用的相对顺序：color_order → target_color_idx → 圆盘 → 方块 → target_cube_idx，
+        其后才是恢复动作与干扰方块（N5）。
+        """
+        xcfg = self._sampling["decision"]["xhard"]
+        cube_region = xcfg["target_cube_position_policy"]
+        goal_region = xcfg["goal_position_policy"]
+        corner_bias = float(cube_region["corner_bias"])
+        cube_pose_cfg = self._sampling["positions"]["cube_pose"]
+        target_pose_cfg = self._sampling["positions"]["target_pose"]
+        cubes_per_color = self._sampling["parameters"]["cubes_per_color"]
+        n_colors = self._sampling["decision"]["color"][self.difficulty]
+        self._spec.record("layout.cube_corner_bias", corner_bias)
 
-        tasks.append( {
-                "func": lambda:is_button_pressed(self, obj=self.button),
-                "name": "press the button to stop",
-                "subgoal_segment": "press the button at <> to stop",
-                "choice_label": "press the button to stop",
-                "demonstration": False,
-                "failure_func":lambda:is_any_obj_pickup(self, self.all_cubes),
-                "solve": lambda env, planner: solve_button(env, planner, obj=self.button),
-                "segment":self.cap_link 
-            })
+        self.all_cubes = []
+        self.distractor_cubes = []
+        self._cube_color_of = []  # [(actor, 颜色名)]，按对象回填 target_color_name 用
+        color_groups = []
+        for entry in self._sampling["parameters"]["color_pool"]:
+            name = entry["name"]
+            cube_list, name_list = [], []
+            # 保留 red_cubes / red_cube_names 这类属性名，下游按颜色取列表的代码照常可用
+            setattr(self, f"{name}_cubes", cube_list)
+            setattr(self, f"{name}_cube_names", name_list)
+            color_groups.append({"color": tuple(entry["rgba"]), "name": name,
+                                 "list": cube_list, "name_list": name_list})
 
+        shuffle_indices = self._spec.value(
+            "objects.color_order", torch.randperm(len(color_groups), generator=generator).tolist()
+        )
+        color_groups = [color_groups[i] for i in shuffle_indices]
+        # 与原路径同一次抽样（其值随后被目标方块的颜色覆盖），保留以对齐取值点集合
+        target_color_idx = self._spec.value(
+            "objects.target_color_idx",
+            torch.randint(0, len(color_groups), (1,), generator=generator).item(),
+        )
+        self.target_color_name = color_groups[target_color_idx]["name"]
 
-        # Store task list for RecordWrapper use
-        self.task_list = tasks
-
-                # Record pickup related task indices and items for recovery
-        self.recovery_pickup_indices, self.recovery_pickup_tasks = task4recovery(self.task_list)
-        if self.robomme_failure_recovery:
-            # Only inject an intentional failed grasp when recovery mode is enabled
-            # 恢复动作的选择是一次真实抽样：原位置照常抽，回注模式下用冻结的索引
-            self.fail_grasp_task_index = self._spec.value(
-                "actions.recovery.selected_action_index",
-                inject_fail_grasp(
-                self.task_list,
+        # G1：先放圆盘。此时 avoid 里只有按钮。
+        disk_radius = self.cube_half_size * target_pose_cfg["radius_factor"]
+        disk_gap = self.cube_half_size * target_pose_cfg["min_gap_factor"]
+        try:
+            target = spawn_random_target(
+                self,
+                avoid=avoid,
+                include_existing=False,
+                include_goal=False,
+                region_center=list(goal_region["region_center"]),
+                region_half_size=goal_region["region_half_size"],
+                radius=disk_radius,
+                thickness=target_pose_cfg["thickness"],
+                min_gap=disk_gap,
+                name_prefix="target",
                 generator=generator,
-                mode=self.robomme_failure_recovery_mode,
-            ),
+                recorder=self._spec,
+                spec_path="layout.goal_xy",
             )
-        else:
-            self.fail_grasp_task_index = None
+        except RuntimeError as exc:
+            # D2（xhard 专用修复）：原路径失败后会落到未绑定的 target 上抛 UnboundLocalError
+            raise SceneGenerationError(f"PickXtimes xhard: 放置圆盘采样失败: {exc}") from exc
+        self.target = target
+        avoid.append(target)
+        # 圆盘本身取不到 OBB（纯视觉 actor），方块避让靠这个预制外接正方形
+        avoid.append(_disk_avoid_obb(target, disk_radius + disk_gap - self.cube_half_size))
 
+        requested = min(n_colors, len(color_groups)) * cubes_per_color
+        for group in color_groups[:n_colors]:
+            for cube_idx in range(cubes_per_color):
+                cube_name = f"cube_{group['name']}_{cube_idx}"
+                try:
+                    cube = spawn_random_cube(
+                        self,
+                        color=group["color"],
+                        avoid=avoid,
+                        include_existing=False,
+                        include_goal=False,
+                        region_center=list(cube_region["region_center"]),
+                        region_half_size=cube_region["region_half_size"],
+                        half_size=self.cube_half_size,
+                        min_gap=self.cube_half_size,
+                        random_yaw=cube_pose_cfg["random_yaw"],
+                        name_prefix=cube_name,
+                        generator=generator,
+                        recorder=self._spec,
+                        spec_path=f"layout.cubes.{group['name']}_{cube_idx}",
+                        corner_bias=corner_bias,
+                    )
+                except RuntimeError as exc:
+                    raise SceneGenerationError(f"PickXtimes xhard: 方块 {cube_name} 放不下: {exc}") from exc
+                self.all_cubes.append(cube)
+                group["list"].append(cube)
+                group["name_list"].append(cube_name)
+                self._cube_color_of.append((cube, group["name"]))
+                setattr(self, cube_name, cube)
+                avoid.append(cube)
+        # 2.2④：请求数 vs 实际数，不等即本局失败（上面的 raise 已保证，这里再显式记录与核对）
+        self._spec.record("objects.cube_count", {"requested": requested, "actual": len(self.all_cubes)})
+        if len(self.all_cubes) != requested or requested == 0:
+            raise SceneGenerationError(
+                f"PickXtimes xhard: 有色方块请求 {requested} 实际 {len(self.all_cubes)}"
+            )
+
+        # 目标候选池与 all_cubes 解耦：只含有色方块，之后追加的干扰方块永远不会被抽成目标
+        self.target_candidates = list(self.all_cubes)
+        self._spec.record(
+            "objects.target_candidates", [self._color_name_of(cube) for cube in self.target_candidates]
+        )
+        target_cube_idx = self._spec.value(
+            "objects.target_cube_idx",
+            torch.randint(0, len(self.target_candidates), (1,), generator=generator).item(),
+        )
+        self.target_cube = self.target_candidates[target_cube_idx]
+        self.target_color_name = self._color_name_of(self.target_cube)
+        self.non_target_cubes = [cube for cube in self.all_cubes if cube is not self.target_cube]
+
+    def _color_name_of(self, cube):
+        """按对象查颜色名（xhard 路径用）；查不到说明登记漏了，直接报错而不是残留旧值。"""
+        for actor, name in self._cube_color_of:
+            if actor is cube:
+                return name
+        raise SceneGenerationError("PickXtimes xhard: 目标方块不在颜色登记表里")
+
+    def _spawn_distractors_xhard(self, generator, avoid):
+        """V4 xhard：放三个「其他颜色」干扰方块（A5/B2：黄／青／品红各一）。
+
+        干扰方块进 ``all_cubes`` 与 ``non_target_cubes``（抓错即触发 failure_func 判失败），
+        不进 ``target_candidates``。放不下直接抛 ``SceneGenerationError``（2.2④，不许静默截断）。
+        """
+        dcfg = self._sampling["decision"]["xhard"]["distractor"]
+        palette = {entry["name"]: entry["rgba"] for entry in DISTRACTOR_COLORS}
+        names = list(dcfg["colors"])
+        unknown = [name for name in names if name not in palette]
+        if unknown:
+            raise SceneGenerationError(f"PickXtimes xhard: 干扰色不在 DISTRACTOR_COLORS 里: {unknown}")
+        self._spec.record("objects.distractors", [{"name": f"cube_{n}_0", "color": n} for n in names])
+        for name in names:
+            cube_name = f"cube_{name}_0"
+            try:
+                cube = spawn_random_cube(
+                    self,
+                    color=tuple(palette[name]),
+                    avoid=avoid,
+                    include_existing=False,
+                    include_goal=False,
+                    region_center=list(dcfg["region_center"]),
+                    region_half_size=dcfg["region_half_size"],
+                    half_size=self.cube_half_size,
+                    min_gap=self.cube_half_size,
+                    random_yaw=self._sampling["positions"]["cube_pose"]["random_yaw"],
+                    name_prefix=cube_name,
+                    generator=generator,
+                    recorder=self._spec,
+                    spec_path=f"layout.distractors.{name}_0",
+                )
+            except RuntimeError as exc:
+                raise SceneGenerationError(f"PickXtimes xhard: 干扰方块 {cube_name} 放不下: {exc}") from exc
+            self.all_cubes.append(cube)
+            self.distractor_cubes.append(cube)
+            self._cube_color_of.append((cube, name))
+            setattr(self, f"{name}_cubes", [cube])
+            setattr(self, f"{name}_cube_names", [cube_name])
+            setattr(self, cube_name, cube)
+            avoid.append(cube)
+        self._spec.record("objects.distractor_count",
+                          {"requested": len(names), "actual": len(self.distractor_cubes)})
+        if len(self.distractor_cubes) != len(names):
+            raise SceneGenerationError(
+                f"PickXtimes xhard: 干扰方块请求 {len(names)} 实际 {len(self.distractor_cubes)}"
+            )
+        # failure_func 在调用时才读 self.non_target_cubes，这里重建即可让干扰方块参与判失败
+        self.non_target_cubes = [cube for cube in self.all_cubes if cube is not self.target_cube]
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         # 每次初始化各自记一份规格，不复用上一次的结果

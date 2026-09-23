@@ -33,6 +33,7 @@ from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.xhard import DISTRACTOR_COLORS
 
 from ..logging_utils import logger
 
@@ -89,6 +90,36 @@ NATIVE_SAMPLING = {
 }
 
 
+# ── V4 xhard 专属 decision（计划 2.5，A5 / B2）─────────────────────────────────
+# distractor：三个「其他颜色」干扰方块，黄／青／品红各一（DISTRACTOR_COLORS），
+# 区域沿用原方块区域（中心 [-0.1,0]、半边长 0.25，容量宽松）。
+# 干扰色**不并入** native.color_pool：并入会改变 randperm(len(color_groups)) 的长度，平移原三档随机流。
+XHARD_DECISION = {
+    "distractor": {
+        "colors": [entry["name"] for entry in DISTRACTOR_COLORS],
+        "region_center": [-0.1, 0],
+        "region_half_size": 0.25,
+    },
+}
+
+
+def _disk_avoid_obb(target, clearance):
+    """把圆盘换算成方块拒绝采样可用的预制 OBB ``(中心, 轴, 半边长)``。
+
+    圆盘是 ``add_collision=False`` 的纯视觉 actor，``get_actor_obb`` 取不到网格，直接放进
+    ``avoid`` 会被 ``spawn_random_cube`` 静默忽略（2026-09-22 实测）。干扰方块在圆盘之后放，
+    必须显式给出外接正方形：半边长 = 圆盘半径 + 圆盘间距 − 方块自带间距。
+    """
+    p = target.pose.p
+    if isinstance(p, torch.Tensor):
+        p = p[0].detach().cpu().numpy()
+    return (
+        np.array(p[:2], dtype=np.float64),
+        np.eye(2, dtype=np.float64),
+        np.array([clearance, clearance], dtype=np.float64),
+    )
+
+
 def native_blocks(cls):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
     return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
@@ -104,6 +135,8 @@ def _native_decision(cls):
         },
         "color": {difficulty: cfg["color"] for difficulty, cfg in cls.configs.items()},
         "distractor": None,
+        # V4 xhard 专属（计划 2.5）：键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
+        "xhard": copy.deepcopy(XHARD_DECISION),
     }
 
 
@@ -150,11 +183,19 @@ class SwingXtimes(BaseEnv):
     'number_max':2
     }
 
+    # V4 xhard（派生自 hard，计划 2.5）：颜色 3 不变，摆动轮数 [4,10]。
+    config_xhard = {
+        'color': 3,
+        'number_min': 4,
+        'number_max': 10,
+    }
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard,
     }
 
 
@@ -219,6 +260,7 @@ class SwingXtimes(BaseEnv):
         self.num_repeats = self._spec.value(
             "objects.num_repeats",
             torch.randint(number_range[0], number_range[1]+1, (1,), generator=generator).item(),
+            decision_key=f"number_range.{self.difficulty}",
         )
         self._spec.identity.setdefault("difficulty", self.difficulty)
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
@@ -288,6 +330,16 @@ class SwingXtimes(BaseEnv):
                 "blue": (self.blue_cubes, self.blue_cube_names),
                 "green": (self.green_cubes, self.green_cube_names),
             }
+            # V4（计划 2.5）：颜色池里出现红蓝绿以外的名字时按名动态建表，不再 KeyError；
+            # 原快照只含红蓝绿，这段一次都不进，原三档行为不变。
+            for entry in self._sampling["parameters"]["color_pool"]:
+                if entry["name"] not in _color_lists:
+                    extra_cubes, extra_names = [], []
+                    setattr(self, f"{entry['name']}_cubes", extra_cubes)
+                    setattr(self, f"{entry['name']}_cube_names", extra_names)
+                    _color_lists[entry["name"]] = (extra_cubes, extra_names)
+            # 按对象回填颜色名用（xhard 路径读；原三档只写不读）
+            self._cube_color_of = []
             # 颜色池取自快照（顺序与原字面量一致：红、蓝、绿）
             color_groups = [
                 {
@@ -341,6 +393,7 @@ class SwingXtimes(BaseEnv):
                         group["list"].append(cube)
                         cube_name = f"cube_{group['name']}_{cube_idx}"
                         group["name_list"].append(cube_name)
+                        self._cube_color_of.append((cube, group["name"]))
                         setattr(self, cube_name, cube)
                         avoid.append(cube)
 
@@ -409,8 +462,11 @@ class SwingXtimes(BaseEnv):
                 self.target_left = temp_target_0
                 logger.debug(f"Swapped: target_0 y={temp_1_y:.3f}, target_1 y={temp_0_y:.3f} (swapped to ensure target_0.y < target_1.y)")
 
+            if self.difficulty == "xhard":
+                # V4 xhard：目标候选池与 all_cubes 解耦、颜色按对象回填（计划 2.5，与 PickXtimes 同构）
+                self._select_target_xhard(generator)
             # Randomly select one cube from all available cubes as the target
-            if len(self.all_cubes) > 0:
+            elif len(self.all_cubes) > 0:
                 target_cube_idx = self._spec.value(
                     "objects.target_cube_idx",
                     torch.randint(0, len(self.all_cubes), (1,), generator=generator).item(),
@@ -529,6 +585,99 @@ class SwingXtimes(BaseEnv):
             )
         else:
             self.fail_grasp_task_index = None
+
+        # V4 xhard：干扰方块是新增的随机取值，追加在本函数全部既有取值点（含恢复动作抽样）之后（N5）。
+        if self.difficulty == "xhard":
+            self._spawn_distractors_xhard(generator, avoid)
+
+    def _color_name_of(self, cube):
+        """按对象查颜色名（xhard 路径用）；查不到说明登记漏了，直接报错而不是残留旧值。"""
+        for actor, name in self._cube_color_of:
+            if actor is cube:
+                return name
+        raise SceneGenerationError("SwingXtimes xhard: 目标方块不在颜色登记表里")
+
+    def _select_target_xhard(self, generator):
+        """V4 xhard 的目标方块选择：从显式候选列表抽，颜色按对象回填。
+
+        抽样位置与原路径的 ``objects.target_cube_idx`` 相同（一次 randint），只是上界取候选池长度；
+        候选池只含有色方块，之后追加的干扰方块永远不会被抽成目标。
+        """
+        self._spec.record("objects.cube_count", {
+            "requested": min(self._sampling["decision"]["color"][self.difficulty],
+                             len(self._sampling["parameters"]["color_pool"]))
+            * self._sampling["parameters"]["cubes_per_color"],
+            "actual": len(self.all_cubes),
+        })
+        self.target_candidates = list(self.all_cubes)
+        if not self.target_candidates:
+            raise SceneGenerationError("SwingXtimes xhard: 没有可选的目标候选方块")
+        self._spec.record(
+            "objects.target_candidates", [self._color_name_of(cube) for cube in self.target_candidates]
+        )
+        target_cube_idx = self._spec.value(
+            "objects.target_cube_idx",
+            torch.randint(0, len(self.target_candidates), (1,), generator=generator).item(),
+        )
+        self.target_cube = self.target_candidates[target_cube_idx]
+        self.target_color_name = self._color_name_of(self.target_cube)
+        self.distractor_cubes = []
+        self.non_target_cubes = [cube for cube in self.all_cubes if cube is not self.target_cube]
+
+    def _spawn_distractors_xhard(self, generator, avoid):
+        """V4 xhard：放三个「其他颜色」干扰方块（A5/B2：黄／青／品红各一）。
+
+        干扰方块进 ``all_cubes`` 与 ``non_target_cubes``（抓错即触发 failure_func 判失败），
+        不进 ``target_candidates``；两个圆盘经 ``_disk_avoid_obb`` 显式避让。
+        放不下直接抛 ``SceneGenerationError``（2.2④，不许静默截断）。
+        """
+        dcfg = self._sampling["decision"]["xhard"]["distractor"]
+        palette = {entry["name"]: entry["rgba"] for entry in DISTRACTOR_COLORS}
+        names = list(dcfg["colors"])
+        unknown = [name for name in names if name not in palette]
+        if unknown:
+            raise SceneGenerationError(f"SwingXtimes xhard: 干扰色不在 DISTRACTOR_COLORS 里: {unknown}")
+        target_geom = self._sampling["positions"]["target_geometry"]
+        clearance = self.cube_half_size * (target_geom["radius_factor"] + target_geom["min_gap_factor"]) \
+            - self.cube_half_size
+        avoid = list(avoid) + [_disk_avoid_obb(disk, clearance) for disk in (self.target_right, self.target_left)]
+        self._spec.record("objects.distractors", [{"name": f"cube_{n}_0", "color": n} for n in names])
+        for name in names:
+            cube_name = f"cube_{name}_0"
+            try:
+                cube = spawn_random_cube(
+                    self,
+                    color=tuple(palette[name]),
+                    avoid=avoid,
+                    include_existing=False,
+                    include_goal=False,
+                    region_center=list(dcfg["region_center"]),
+                    region_half_size=dcfg["region_half_size"],
+                    half_size=self.cube_half_size,
+                    min_gap=self.cube_half_size,
+                    random_yaw=self._sampling["positions"]["cubes"]["random_yaw"],
+                    name_prefix=cube_name,
+                    generator=generator,
+                    recorder=self._spec,
+                    spec_path=f"layout.distractors.{name}_0",
+                )
+            except RuntimeError as exc:
+                raise SceneGenerationError(f"SwingXtimes xhard: 干扰方块 {cube_name} 放不下: {exc}") from exc
+            self.all_cubes.append(cube)
+            self.distractor_cubes.append(cube)
+            self._cube_color_of.append((cube, name))
+            setattr(self, f"{name}_cubes", [cube])
+            setattr(self, f"{name}_cube_names", [cube_name])
+            setattr(self, cube_name, cube)
+            avoid.append(cube)
+        self._spec.record("objects.distractor_count",
+                          {"requested": len(names), "actual": len(self.distractor_cubes)})
+        if len(self.distractor_cubes) != len(names):
+            raise SceneGenerationError(
+                f"SwingXtimes xhard: 干扰方块请求 {len(names)} 实际 {len(self.distractor_cubes)}"
+            )
+        # failure_func 在调用时才读 self.non_target_cubes，这里重建即可让干扰方块参与判失败
+        self.non_target_cubes = [cube for cube in self.all_cubes if cube is not self.target_cube]
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         # 每次初始化各自记一份规格，不复用上一次的结果
