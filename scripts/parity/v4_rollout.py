@@ -14,7 +14,9 @@
   HDF5 全字段零容差比较（复用 ``train_split_parity.compare_h5_pair``），比较前先查文件有效非空、
   并补比根属性（``compare_h5_pair`` 用 ``visititems`` 不访问根节点，两个空 HDF5 会被误判相同）。
 
-⚠ 进入判据的运行必须单 worker、A40（口径 10）；本机结果只作调试。
+⚠ 用户 2026-09-23 定（K4/K5）：全量在本机跑、实跑用多 worker（``--workers``），允许两遍之间有少量不同——
+多 worker 下 mplib RRT 的墙钟预算随负载变化，部分局轨迹会分叉；因此 ``compare`` 的 V2 结论只作报告
+（``--report-only``），不作硬闸门。
 
     uv run --no-sync python -m scripts.parity.v4_rollout run --specs <specs.jsonl> --label run1 \
         --official-root artifacts/train-parity/local-smoke-01/official-src --output artifacts/newtask-v4/<id>/rollout
@@ -70,7 +72,7 @@ def _run_batch(batch: list[dict], header: dict, out_dir: Path, args, round_index
     command = [
         sys.executable, str(RUNNER), "--official-root", str(Path(args.official_root).resolve()),
         "--src-root", str(REPO_ROOT), "--jobs-json", str(work / "jobs.json"),
-        "--results-json", str(work / "results.json"), "--workers", "1", "--gpu", "0",
+        "--results-json", str(work / "results.json"), "--workers", str(args.workers), "--gpu", "0",
         "--sampling-config", str(work / "sampling.json"), "--episode-specs", str(work / "specs.json"),
         "--identity-source", "formula", "--no-recovery",  # V4 全部不开 recover（与抽签同口径）
     ]
@@ -217,12 +219,13 @@ def cmd_compare(args: argparse.Namespace) -> int:
             field_mismatch += 1
             notes.append(f"字段不同 {ident}：{result['field_mismatch']}")
     ok = terminal_mismatch == 0 and field_mismatch == 0 and empty_or_invalid == 0
-    print(f"NEWVALUE_REPLAY={'PASS' if ok else 'FAIL'} identities={len(identities)} "
+    verdict = ("REPORT" if args.report_only else ("PASS" if ok else "FAIL"))
+    print(f"NEWVALUE_REPLAY={verdict} identities={len(identities)} "
           f"terminal_mismatch={terminal_mismatch} compared_success={compared} sha_equal={sha_equal} "
           f"field_mismatch={field_mismatch} empty_or_invalid={empty_or_invalid}")
     for note in notes[:30]:
         print(f"# {note}")
-    return 0 if ok else 1
+    return 0 if (ok or args.report_only) else 1
 
 
 def main() -> int:
@@ -234,11 +237,14 @@ def main() -> int:
     run.add_argument("--tasks", default="all")
     run.add_argument("--official-root", required=True, help="官方隔离源码树（提供编排代码）")
     run.add_argument("--identities-from", default=None, help="严格重放另一轮 results.jsonl 的全部身份")
+    run.add_argument("--workers", type=int, default=1, help="runner 并行 worker 数（K5：本机多 worker）")
     run.add_argument("--output", required=True)
     run.set_defaults(func=cmd_run)
     cmp_ = sub.add_parser("compare", help="V2：两轮终态一致 + 成功局 HDF5 逐位")
     cmp_.add_argument("left")
     cmp_.add_argument("right")
+    cmp_.add_argument("--report-only", action="store_true",
+                      help="K5：多 worker 实跑允许少量不同，只报告差异、不作硬闸门")
     cmp_.set_defaults(func=cmd_compare)
     args = parser.parse_args()
     return args.func(args)

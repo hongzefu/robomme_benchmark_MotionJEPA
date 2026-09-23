@@ -128,6 +128,7 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | K2 | VideoPlaceOrder 的 `SceneGenerationError` 被 `from .utils import *` 遮蔽成 TypeError ⇒ **只在 xhard 修**（原三档仍 TypeError，H2） | 2.15 |
 | K3 | InsertPeg 第 4 根杆中心距带上限 **0.085 m 确认**（下限沿用 0.075） | 2.18 |
 | K4 | **步 7 的 48 条全量在本机跑**（口径 10 对步 7 放宽为本机单 worker；V2 两遍须同机、相近负载） | 口径 10 / 步 7 |
+| K5 | **抽签与实跑都用多 worker，允许两遍之间有少量不同**（用户 2026-09-23「抽签 实际跑都用多worker 可以有一点不同」）⇒ V2 由硬闸门改为报告（`v4_rollout compare --report-only` 打印 `NEWVALUE_REPLAY=REPORT …`），差异如实列出；原因是 mplib RRT 墙钟预算随负载变化（见 V1 报告 PickHighlight/3） | V2 / N7 / 步 7 |
 
 ## 二、逐环境改动
 
