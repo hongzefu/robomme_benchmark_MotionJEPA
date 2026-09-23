@@ -28,7 +28,8 @@ from .utils import *
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.subgoal_evaluate_func import static_check
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import SamplingConfigError, assert_native_decision, split_sampling_config
+from .utils.SceneGenerationError import SceneGenerationError
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
@@ -101,7 +102,11 @@ def native_blocks(cls):
 
 
 def _native_decision(cls):
-    """按方案第二节 2.14 切出 decision 块（原值阶段等于原值）。"""
+    """按方案第二节 2.14 切出 decision 块（原值阶段等于原值）。
+
+    V4（计划 2.18）：xhard 新值整体挂在顶层 ``xhard`` 子键下（守卫只放行这些键偏离），
+    默认值取自 ``cls.configs["xhard"]``；原三档可见的四个键与 V3 逐字相同。
+    """
     return {
         # 场上杆的总数：原值 3 根（offsets 决定构造期的排布）。
         "peg_count": 3,
@@ -110,6 +115,8 @@ def _native_decision(cls):
         "near_target_distractor": None,
         # 杆在桌面内的转角范围：原值 ±45°（表达式 (u*2-1)*radians(45)）。
         "peg_yaw_range": {"half_span_deg": 45},
+        # V4 xhard：4 根杆、第 4 根贴近目标杆、±180°（A1/B6/B11）
+        "xhard": copy.deepcopy(cls.configs["xhard"]),
     }
 
 
@@ -138,6 +145,34 @@ class InsertPeg(BaseEnv):
     cube_spawn_half_size = 0.05
     cube_spawn_center = (0, 0)
     _clearance = 0.01
+
+    # V4（A4/A6）：本环境原本没有难度分档，现有全局常量即 hard；三档同值，
+    # difficulty 只在 xhard 生效。消费点读 decision（可被 sampling_config 覆盖），这里是默认值来源。
+    config_native = {
+        "peg_count": 3,
+        "peg_offsets": [0.1, 0, -0.1],
+        "near_target_distractor": None,
+        "peg_yaw_range": {"half_span_deg": 45},
+    }
+    config_xhard = {
+        # peg_offsets 的长度决定杆数（构造期临时排布，第 4 根放在 y_base+0.2 处，随后被重采样覆盖）；
+        # peg_count 同步为 4：会改变 _load_scene 里那次 randint 的取值域（结果仍被 overridden_to=0 覆盖）
+        "peg_count": 4,
+        "peg_offsets": [0.1, 0, -0.1, -0.2],
+        # B6：杆间判据（> length*1.5 = 0.075 m）不动；最后一根杆改为在目标杆周围的距离带里采样，
+        # 带宽上限是实施方取值（尽量贴近下限），可经 sampling_config 覆盖
+        "near_target_distractor": {
+            "anchor_peg_index": 0,
+            "max_center_distance_m": 0.085,
+        },
+        "peg_yaw_range": {"half_span_deg": 180},
+    }
+    configs = {
+        "easy": config_native,
+        "medium": config_native,
+        "hard": config_native,
+        "xhard": config_xhard,
+    }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
@@ -194,6 +229,9 @@ class InsertPeg(BaseEnv):
                 self.difficulty = "medium"
             else:
                 self.difficulty = "hard"
+        if self.difficulty == "xhard":
+            # V4 B11：抓杆按等价朝向归约，并同步补偿 insert_peg 的局部平移；原三档不设此属性
+            self._xhard_peg_yaw_reduction = True
 
         self.restore_flag=False
         super().__init__(*args, robot_uids=robot_uids, **kwargs)
@@ -242,6 +280,9 @@ class InsertPeg(BaseEnv):
         self._peg_initial_poses = []
 
         decision_cfg = self._sampling["decision"]
+        if self.difficulty == "xhard":
+            # V4：xhard 的 peg_count / peg_offsets / near_target_distractor / peg_yaw_range 全部改读 xhard 子键
+            decision_cfg = decision_cfg["xhard"]
         native_pos = self._sampling["positions"]
         offsets = list(decision_cfg["peg_offsets"])  # X-axis differences for the 3 pegs
         # Sample a single pair of colors so all pegs share the same appearance per seed.
@@ -286,6 +327,7 @@ class InsertPeg(BaseEnv):
         random_peg_idx = self._spec.value(
             "objects.sampling_trace.random_peg_idx",
             int(torch.randint(0, decision_cfg["peg_count"], (1,), generator=self._hb_generator).item()),
+            decision_key="xhard.peg_count" if self.difficulty == "xhard" else None,
         )
         random_peg_idx=target_cfg["overridden_to"]
         self.peg = self.pegs[random_peg_idx]
@@ -336,8 +378,20 @@ class InsertPeg(BaseEnv):
             sampled_xy_positions = []
             max_sampling_attempts = peg_sampling["max_attempts"]
 
+            xhard = self.difficulty == "xhard"
+            if xhard:
+                xhard_cfg = self._sampling["decision"]["xhard"]
+                yaw_half_span_deg = xhard_cfg["peg_yaw_range"]["half_span_deg"]
+                # 最后一根杆（近目标干扰杆）排到全部既有取值点之后单独采样（N5）
+                uniform_pegs = self.pegs[:-1]
+                yaw_dk = "xhard.peg_yaw_range"
+            else:
+                yaw_half_span_deg = self._sampling["decision"]["peg_yaw_range"]["half_span_deg"]
+                uniform_pegs = self.pegs
+                yaw_dk = None
+
             #Initialize all 3 pegs with constrained random placements
-            for i, peg in enumerate(self.pegs):
+            for i, peg in enumerate(uniform_pegs):
                 candidate_xy = None
                 for _ in range(max_sampling_attempts):
                     x_sample = (torch.rand(1, generator=self._hb_generator).item() * peg_sampling["x_span"]) + peg_sampling["x_offset"]
@@ -354,14 +408,19 @@ class InsertPeg(BaseEnv):
                     break
 
                 if candidate_xy is None:
+                    if xhard:
+                        # 2.2④：xhard 放不下即判该局失败（任务性失败，可换 seed），不静默截断
+                        raise SceneGenerationError(
+                            f"InsertPeg xhard：peg_{i} 在 {max_sampling_attempts} 次内找不到满足判据的位置")
                     raise RuntimeError("Failed to sample peg positions satisfying placement constraints.")
 
-                yaw_value = (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(self._sampling["decision"]["peg_yaw_range"]["half_span_deg"])
+                yaw_value = (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(yaw_half_span_deg)
 
                 # 拒绝采样的失败尝试照常发生；这里冻结被接受的位姿
                 candidate_xy_list, yaw_value = self._spec.value(
                     f"initializations.{self._native_init_index}.pegs.{i}",
                     [[float(candidate_xy[0]), float(candidate_xy[1])], yaw_value],
+                    decision_key=yaw_dk,
                 )
                 candidate_xy = np.array(candidate_xy_list, dtype=np.float32)
                 yaw_angles = torch.tensor([[0.0, 0.0, yaw_value]], dtype=torch.float32)
@@ -403,6 +462,12 @@ class InsertPeg(BaseEnv):
             # 两个采样值现在是规格里的整数（原为张量），映射语义不变
             self.obj_flag = -1 if obj_sample == 0 else 1
             self.direction = -1 if dir_sample == 0 else 1
+
+            if xhard:
+                # V4 xhard：第 4 根杆贴近目标杆（排在全部既有取值点之后，N5）
+                self._xhard_place_near_target_peg(box_xy, sampled_xy_positions, xhard_cfg)
+                self._peg_grasp_flipped = False
+                self._peg_grasp_flip_log = []
             
             # if self.seed<30:
             #     self.obj_flag=-1
@@ -530,6 +595,71 @@ class InsertPeg(BaseEnv):
 
             # Store task list for RecordWrapper use
             self.task_list = tasks
+
+    def _xhard_place_near_target_peg(self, box_xy, sampled_xy_positions, xhard_cfg):
+        """V4 xhard（计划 2.18 / B6）：最后一根杆在锚点杆（目标杆 peg_0）周围的距离带里采样。
+
+        判据与原三档完全相同（离孔板 > radius*6、与任何已放杆 > length*1.5、落在原杆位区域内），
+        只把候选分布从「全区域均匀」换成「以锚点为圆心、半径 ∈ (length*1.5, max_center_distance_m]、
+        方位角均匀」⇒ 在现判据允许的范围内尽量贴近 0.075 m 下限。尝试上限沿用 max_attempts，
+        耗尽抛 SceneGenerationError（不静默少放）。抽样顺序：每次尝试 半径 u、方位 u 各一次，
+        接受后 yaw 一次。
+        """
+        peg_sampling = self._sampling["positions"]["peg_sampling"]
+        near_cfg = xhard_cfg["near_target_distractor"]
+        idx = len(self.pegs) - 1
+        anchor_idx = int(near_cfg["anchor_peg_index"])
+        anchor_xy = np.asarray(sampled_xy_positions[anchor_idx], dtype=np.float32)
+        d_min = self.length * peg_sampling["min_distance_between_pegs_factor"]
+        d_max = float(near_cfg["max_center_distance_m"])
+        if not d_max > d_min:
+            raise SamplingConfigError(
+                f"InsertPeg xhard：max_center_distance_m={d_max} 必须大于杆间下限 {d_min}")
+        x_lo, x_hi = peg_sampling["x_offset"], peg_sampling["x_offset"] + peg_sampling["x_span"]
+        y_lo, y_hi = peg_sampling["y_offset"], peg_sampling["y_offset"] + peg_sampling["y_span"]
+        max_attempts = peg_sampling["max_attempts"]
+        candidate_xy = None
+        attempts = 0
+        for attempts in range(1, max_attempts + 1):
+            radius = d_min + torch.rand(1, generator=self._hb_generator).item() * (d_max - d_min)
+            theta = torch.rand(1, generator=self._hb_generator).item() * 2 * np.pi
+            sampled_xy = anchor_xy + np.array([radius * np.cos(theta), radius * np.sin(theta)], dtype=np.float32)
+            if not (x_lo <= sampled_xy[0] <= x_hi and y_lo <= sampled_xy[1] <= y_hi):
+                continue
+            if np.linalg.norm(sampled_xy - box_xy) <= self.radius * peg_sampling["min_distance_to_box_factor"]:
+                continue
+            if any(np.linalg.norm(sampled_xy - prev_xy) <= d_min for prev_xy in sampled_xy_positions):
+                continue
+            candidate_xy = sampled_xy
+            break
+        prefix = f"initializations.{self._native_init_index}"
+        placed = len(sampled_xy_positions) + (1 if candidate_xy is not None else 0)
+        self._spec.record(f"{prefix}.peg_placement", {"requested": len(self.pegs), "placed": placed})
+        if candidate_xy is None:
+            raise SceneGenerationError(
+                f"InsertPeg xhard：近目标干扰杆 peg_{idx} 在 {max_attempts} 次内找不到满足判据的位置")
+        yaw_value = (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(
+            xhard_cfg["peg_yaw_range"]["half_span_deg"])
+        candidate_xy_list, yaw_value = self._spec.value(
+            f"{prefix}.pegs.{idx}",
+            [[float(candidate_xy[0]), float(candidate_xy[1])], yaw_value],
+            decision_key="xhard.near_target_distractor",
+        )
+        candidate_xy = np.array(candidate_xy_list, dtype=np.float32)
+        self._spec.record(f"{prefix}.near_target_distance",
+                          float(np.linalg.norm(candidate_xy - anchor_xy)))
+        self._spec.record(f"{prefix}.near_target_attempts", attempts)
+        yaw_angles = torch.tensor([[0.0, 0.0, yaw_value]], dtype=torch.float32)
+        yaw_quat = matrix_to_quaternion(euler_angles_to_matrix(yaw_angles, convention="XYZ"))[0].detach().cpu().numpy().tolist()
+        peg = self.pegs[idx]
+        peg.set_pose(sapien.Pose(p=[float(candidate_xy[0]), float(candidate_xy[1]), 0.0], q=yaw_quat))
+        sampled_xy_positions.append(candidate_xy)
+        # peg_init_poses 在前面已按全部杆存过一次（此时新杆还在构造期位姿），这里按下标覆盖成真实初始位姿
+        # （step 的复位循环按下标读）
+        pose = peg.pose
+        self.peg_init_poses[idx] = (sapien.Pose(
+            p=np.asarray(pose.p, dtype=np.float32).reshape(-1).copy(),
+            q=np.asarray(pose.q, dtype=np.float32).reshape(-1).copy()))
 
     def evaluate(self,solve_complete_eval=False):
         timestep = self.elapsed_steps

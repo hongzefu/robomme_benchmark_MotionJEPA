@@ -78,6 +78,78 @@ def _sample_fail_recover_xy_signs(env) -> tuple[np.ndarray, int]:
     return signs.detach().cpu().numpy().astype(np.int32), seed_anchor
 
 
+# ── V4 xhard：杆抓取的等价朝向归约（NEWTASK_RELEASE_V4_PLAN 2.16 / B11）────────────────
+# 杆 yaw 放宽到 ±180° 后，``grasp_pose_q = peg_q ⊗ Rx(π)`` 会让 Panda joint7（±166°）越限。
+# 推导 ``R_grasp(yaw+π) = R_grasp(yaw)·Rz(π)``：两种夹爪姿态只差绕夹爪自身 approach 轴（局部 z）
+# 的 180°，对平行两指夹爪夹持几何完全等价 ⇒ 只改夹爪姿态、不碰杆位姿。
+# ⚠ 夹持等价 ≠ 整段动作等价：抓杆之后凡是「在夹爪局部系里表达」的路点都要同步补偿，
+# 否则杆在世界系里的轨迹会变（insert_peg 的局部平移取反 xy；推杆姿态右乘 Rz(π)）。
+# 这里所有函数只被带 ``_xhard_peg_yaw_reduction`` 开关的环境（MoveCube/InsertPeg 的 xhard）调用。
+_RZ_PI_WXYZ = np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float64)
+
+
+def _quat_wxyz_mul(a, b):
+    """Hamilton 积（wxyz 约定，与 sapien / ManiSkill 一致）。"""
+    aw, ax, ay, az = [float(v) for v in np.asarray(a, dtype=np.float64).reshape(-1)[:4]]
+    bw, bx, by, bz = [float(v) for v in np.asarray(b, dtype=np.float64).reshape(-1)[:4]]
+    return np.array([
+        aw * bw - ax * bx - ay * by - az * bz,
+        aw * bx + ax * bw + ay * bz - az * by,
+        aw * by - ax * bz + ay * bw + az * bx,
+        aw * bz + ax * by - ay * bx + az * bw,
+    ], dtype=np.float64)
+
+
+def _quat_x_axis_heading(q):
+    """夹爪局部 x 轴（抓杆时沿杆长轴）在世界水平面上的朝向角。"""
+    w, x, y, z = [float(v) for v in np.asarray(q, dtype=np.float64).reshape(-1)[:4]]
+    axis_x = 1.0 - 2.0 * (y * y + z * z)
+    axis_y = 2.0 * (x * y + w * z)
+    return float(np.arctan2(axis_y, axis_x))
+
+
+def peg_grasp_needs_flip(grasp_pose_p, grasp_pose_q, base_xy):
+    """归约判据：夹爪 x 轴朝向相对「基座→抓取点」方位角超过 ±90° 时翻 Rz(π)。
+
+    home 姿态（q7=π/4）时夹爪 x 轴沿基座径向朝外，相对角 0；joint7 近似随相对角线性变化，
+    把相对角限制在 ±90° 内 ⇒ q7 ∈ [π/4-π/2, π/4+π/2] = [-45°, 135°]，距 ±166° 限位至少 31°。
+    原三档（±45° 杆 + 基座方位 ±18° 左右）相对角最多约 63°，本判据下本来就不会翻。
+    """
+    p = np.asarray(grasp_pose_p, dtype=np.float64).reshape(-1)
+    bearing = float(np.arctan2(p[1] - float(base_xy[1]), p[0] - float(base_xy[0])))
+    rel = _quat_x_axis_heading(grasp_pose_q) - bearing
+    rel = (rel + np.pi) % (2.0 * np.pi) - np.pi
+    return bool(abs(rel) > np.pi / 2)
+
+
+def flip_grasp_q(grasp_pose_q):
+    """夹爪姿态右乘 Rz(π)（绕夹爪自身 approach 轴转 180°），返回归一化 float32。"""
+    q = _quat_wxyz_mul(grasp_pose_q, _RZ_PI_WXYZ)
+    q /= np.linalg.norm(q)
+    return q.astype(np.float32)
+
+
+def _xhard_reduce_peg_grasp_q(env, grasp_pose_p, grasp_pose_q):
+    """按判据决定是否翻转，并把结果记在环境上供抓杆之后的求解器补偿路点。"""
+    base = getattr(env, "unwrapped", env)
+    base_p = base.agent.robot.pose.p
+    if hasattr(base_p, "detach"):
+        base_p = base_p.detach().cpu().numpy()
+    base_p = np.asarray(base_p, dtype=np.float64).reshape(-1)
+    flipped = peg_grasp_needs_flip(grasp_pose_p, grasp_pose_q, base_p[:2])
+    base._peg_grasp_flipped = flipped
+    # 诊断用：每次抓杆的归约结果按顺序留底（不进规格、不抽随机数）
+    base.__dict__.setdefault("_peg_grasp_flip_log", []).append(flipped)
+    return flip_grasp_q(grasp_pose_q) if flipped else grasp_pose_q
+
+
+def _xhard_peg_grasp_flipped(env) -> bool:
+    """当前手里这根杆是否按归约翻过；非 xhard 环境恒为 False。"""
+    base = getattr(env, "unwrapped", env)
+    return bool(getattr(base, "_xhard_peg_yaw_reduction", False)
+                and getattr(base, "_peg_grasp_flipped", False))
+
+
 def grasp_and_lift_peg_side(env, planner,obj):
     planner.open_gripper()
     """Move to the peg tail, close gripper, lift, and keep holding."""
@@ -108,6 +180,11 @@ def grasp_and_lift_peg_side(env, planner,obj):
     norm = np.linalg.norm(grasp_pose_q)
     if norm > 0:
         grasp_pose_q /= norm
+
+    # V4 xhard（B11）：杆 yaw 放宽到 ±180° 后按等价朝向归约；开关只在 xhard 环境上存在，
+    # 原三档不进这个分支、grasp_pose_q 逐字不变
+    if getattr(getattr(env, "unwrapped", env), "_xhard_peg_yaw_reduction", False):
+        grasp_pose_q = _xhard_reduce_peg_grasp_q(env, grasp_pose_p, grasp_pose_q)
 
     lifted_pose_p = grasp_pose_p.copy()
     lifted_pose_p[2] = lift_height
@@ -311,6 +388,11 @@ def insert_peg(env, planner,direction,obj,insert_obj=None,cut_retreat=False):
             relative_pose = insert_obj.pose.inv() * env.agent.tcp.pose
             relative_p = np.asarray(relative_pose.p, dtype=np.float32).reshape(-1)
             offset_vec[0] += relative_p[0]
+        if _xhard_peg_grasp_flipped(env):
+            # V4 xhard（B11）：夹爪相对杆多转了 Rz(π) ⇒ _compute_insert_pose 也右乘了 Rz(π)，
+            # 局部平移 (x,y,z) 须换成 Rz(π)·(x,y,z) = (-x,-y,z)，世界系路点与杆位姿才与未归约时一致
+            offset_vec[0] = -offset_vec[0]
+            offset_vec[1] = -offset_vec[1]
         return current_pose * sapien.Pose(offset_vec.tolist())
 
     def _record_target_waypoint(target_pose, waypoint_type="close"):
@@ -827,6 +909,10 @@ def solve_push_to_target_with_peg(env, planner, obj=None, target=None, direction
 
     # Get quaternion list format
     reach_pose_q = push_pose.q.tolist() if hasattr(push_pose.q, "tolist") else list(push_pose.q)
+    if _xhard_peg_grasp_flipped(env):
+        # V4 xhard（B11）：手里的杆相对夹爪多转了 Rz(π)；推杆姿态同样右乘 Rz(π)，
+        # 杆在世界系里的朝向与伸出方向才与未归约时一致（路点位置本就在世界系，不变）
+        reach_pose_q = flip_grasp_q(reach_pose_q).astype(np.float64).tolist()
 
     # -------------------------------------------------------------------------- #
     # 7. Execute motion planning:

@@ -1672,6 +1672,22 @@
         "near_target_distractor": null,
         "peg_yaw_range": {
           "half_span_deg": 45
+        },
+        "xhard": {
+          "peg_count": 4,
+          "peg_offsets": [
+            0.1,
+            0,
+            -0.1,
+            -0.2
+          ],
+          "near_target_distractor": {
+            "anchor_peg_index": 0,
+            "max_center_distance_m": 0.085
+          },
+          "peg_yaw_range": {
+            "half_span_deg": 180
+          }
         }
       },
       "native": {
@@ -1751,6 +1767,9 @@
             "center_span": 0.2,
             "center_offset": -0.1,
             "region_half_size": 0.05
+          },
+          "xhard": {
+            "corner_bias": null
           }
         },
         "execution_layout": {
@@ -1763,11 +1782,18 @@
             "center_span": 0.2,
             "center_offset": -0.1,
             "region_half_size": 0.05
+          },
+          "xhard": {
+            "corner_bias": null
           }
         },
         "peg_yaw_range": {
           "span_rad": 1.5707963267948966,
-          "offset_rad": 0.7853981633974483
+          "offset_rad": 0.7853981633974483,
+          "xhard": {
+            "span_rad": 6.283185307179586,
+            "offset_rad": 3.141592653589793
+          }
         }
       },
       "native": {

@@ -27,7 +27,9 @@ from .utils import *
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.subgoal_evaluate_func import static_check
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import SamplingConfigError, assert_native_decision, split_sampling_config
+from .utils.SceneGenerationError import SceneGenerationError
+from .utils.xhard import corner_push
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
@@ -82,21 +84,32 @@ def native_blocks(cls):
 
 
 def _native_decision(cls):
-    """按方案第二节 2.13 切出 decision 块（原值阶段等于原值）。"""
+    """按方案第二节 2.13 切出 decision 块（原值阶段等于原值）。
+
+    V4（计划 2.17）：xhard 新值一律挂在名为 ``xhard`` 的子键下（守卫只放行这些键偏离），
+    默认值取自 ``cls.configs["xhard"]``；原三档可见部分与 V3 逐字相同。
+    """
+    xhard = cls.configs["xhard"]
     return {
         # 演示阶段的方块与杆位置采样规则（原值：杆基位 y=±0.2、xy 各抖动 ±0.05；
         # 方块候选中心 xy 各 ±0.1，再在 half_size 0.05 的小区里生成）。
         "demo_layout": {
             "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
             "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
+            # V4 xhard：杆与方块的边角偏置（B7/G3；None = 待用户定数，xhard reset 时拒绝）
+            "xhard": {"corner_bias": xhard["corner_bias"]},
         },
         # 执行阶段另抽一套，原规则与演示相同但必须分开，不能误合并。
         "execution_layout": {
             "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
             "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
+            # V4 xhard：执行段的边角偏置，与演示段各自声明、各自消费（两套不可合并）
+            "xhard": {"corner_bias": xhard["corner_bias"]},
         },
         # 杆在桌面内的转角范围：原值 ±π/4（表达式为 u*span - offset）。
-        "peg_yaw_range": {"span_rad": np.pi / 2, "offset_rad": np.pi / 4},
+        # V4 xhard：±π（A1，仍只绕世界 z；joint7 冲突按等价朝向归约，见 B11）。
+        "peg_yaw_range": {"span_rad": np.pi / 2, "offset_rad": np.pi / 4,
+                          "xhard": dict(xhard["peg_yaw_range"])},
     }
 
 
@@ -125,6 +138,26 @@ class MoveCube(BaseEnv):
     cube_spawn_half_size = 0.05
     cube_spawn_center = (0, 0)
     _clearance = 0.01
+
+    # V4（A4/A6）：本环境原本没有难度分档，现有全局常量即 hard；三档同值，
+    # difficulty 只在 xhard 生效。消费点读的是 decision（可被 sampling_config 覆盖），
+    # 这里是 decision 的默认值来源。
+    config_native = {
+        "peg_yaw_range": {"span_rad": np.pi / 2, "offset_rad": np.pi / 4},
+        "corner_bias": 0.0,
+    }
+    config_xhard = {
+        # ±180°：u*2π - π（A1）
+        "peg_yaw_range": {"span_rad": 2 * np.pi, "offset_rad": np.pi},
+        # G3 未定：取值须由用户按成功率扫描定数；None 时 xhard reset 抛 SamplingConfigError
+        "corner_bias": None,
+    }
+    configs = {
+        "easy": config_native,
+        "medium": config_native,
+        "hard": config_native,
+        "xhard": config_xhard,
+    }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
                      sampling_config=None,
@@ -180,6 +213,10 @@ class MoveCube(BaseEnv):
                 self.difficulty = "medium"
             else:
                 self.difficulty = "hard"
+        if self.difficulty == "xhard":
+            # V4 B11：抓杆时按等价朝向归约（只改夹爪姿态，并同步补偿抓杆后的推杆路点）；
+            # 求解器按这个开关分叉，原三档不设此属性、走原路径
+            self._xhard_peg_yaw_reduction = True
 
         self.restore_flag=False
         self.use_demonstrationwrapper=False
@@ -227,26 +264,39 @@ class MoveCube(BaseEnv):
         exec_layout = self._sampling["decision"]["execution_layout"]
         peg_yaw_range = self._sampling["decision"]["peg_yaw_range"]
         native_pos = self._sampling["positions"]
+        # V4 xhard（计划 2.17）：边角偏置与 ±180° 转角只在 xhard 生效；原三档 bias=0、
+        # corner_push 原样返回抽样值，转角仍读 decision 顶层的 span/offset，随机调用序列逐字不变
+        xhard = self.difficulty == "xhard"
+        if xhard:
+            demo_bias = self._xhard_corner_bias(demo_layout, "demo_layout")
+            exec_bias = self._xhard_corner_bias(exec_layout, "execution_layout")
+            yaw_policy = peg_yaw_range["xhard"]
+            dk_demo, dk_exec, dk_yaw = ("demo_layout.xhard.corner_bias",
+                                        "execution_layout.xhard.corner_bias", "peg_yaw_range.xhard")
+        else:
+            demo_bias = exec_bias = 0.0
+            yaw_policy = peg_yaw_range
+            dk_demo = dk_exec = dk_yaw = None
         demo_peg = demo_layout["peg_position_policy"]
         base_y = -demo_peg["base_y_abs"] if torch.rand(1, generator=self._hb_generator).item() < demo_peg["base_y_threshold"] else demo_peg["base_y_abs"]
 
         peg_spawn_translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
 
         # Generate [-0.05, 0.05] random offset (using torch generator)
-        x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
-        y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
+        x_jitter = (corner_push(torch.rand(1, generator=self._hb_generator).item(), demo_bias) - 0.5) * demo_peg["jitter_span"]
+        y_jitter = (corner_push(torch.rand(1, generator=self._hb_generator).item(), demo_bias) - 0.5) * demo_peg["jitter_span"]
 
         # Apply offset
         base_y, x_jitter, y_jitter = self._spec.value(
-            "layout.demo.peg_offsets", [base_y, x_jitter, y_jitter]
+            "layout.demo.peg_offsets", [base_y, x_jitter, y_jitter], decision_key=dk_demo
         )
         peg_spawn_translation[1] = base_y
         peg_spawn_translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
         self.peg1_basex=peg_spawn_translation[0]
         self.peg1_basey=peg_spawn_translation[1]
 
-        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (peg_yaw_range["span_rad"]) - (peg_yaw_range["offset_rad"])
-        initial_yaw = self._spec.value("layout.demo.peg_yaw", initial_yaw)
+        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
+        initial_yaw = self._spec.value("layout.demo.peg_yaw", initial_yaw, decision_key=dk_yaw)
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -282,16 +332,16 @@ class MoveCube(BaseEnv):
         base_y = -exec_peg["base_y_abs"] if torch.rand(1, generator=self._hb_generator).item() < exec_peg["base_y_threshold"] else exec_peg["base_y_abs"]
 
         peg_spawn_translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
-        x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
-        y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
+        x_jitter = (corner_push(torch.rand(1, generator=self._hb_generator).item(), exec_bias) - 0.5) * exec_peg["jitter_span"]
+        y_jitter = (corner_push(torch.rand(1, generator=self._hb_generator).item(), exec_bias) - 0.5) * exec_peg["jitter_span"]
         base_y, x_jitter, y_jitter = self._spec.value(
-            "layout.execution.peg_offsets", [base_y, x_jitter, y_jitter]
+            "layout.execution.peg_offsets", [base_y, x_jitter, y_jitter], decision_key=dk_exec
         )
         peg_spawn_translation[1] = base_y
         peg_spawn_translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
 
-        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (peg_yaw_range["span_rad"]) - (peg_yaw_range["offset_rad"])
-        initial_yaw = self._spec.value("layout.execution.peg_yaw", initial_yaw)
+        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
+        initial_yaw = self._spec.value("layout.execution.peg_yaw", initial_yaw, decision_key=dk_yaw)
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -362,20 +412,27 @@ class MoveCube(BaseEnv):
         def _sample_cube_center(required_distance: float):
             for _ in range(max_cube_spawn_trials):
                 demo_cube = demo_layout["cube_position_policy"]
-                sampled_x = torch.rand(1, generator=self._hb_generator).item() * demo_cube["center_span"] + demo_cube["center_offset"]
+                sampled_x = corner_push(torch.rand(1, generator=self._hb_generator).item(), demo_bias) * demo_cube["center_span"] + demo_cube["center_offset"]
                 #direction = -1.0 if -self.peg1_basey < 0 else 1.0
                 #sampled_y = torch.rand(1, generator=self._hb_generator).item() * 0.2 * direction
-                sampled_y = torch.rand(1, generator=self._hb_generator).item() * demo_cube["center_span"] + demo_cube["center_offset"]
+                sampled_y = corner_push(torch.rand(1, generator=self._hb_generator).item(), demo_bias) * demo_cube["center_span"] + demo_cube["center_offset"]
                 candidate_xy = np.array([sampled_x, sampled_y], dtype=np.float64)
                 if np.linalg.norm(candidate_xy - goal_xy) > required_distance:
                     return candidate_xy
             return None
 
         cube_center = _sample_cube_center(self.cube_half_size*native_pos["cube_rejection"]["min_distance_factor"])
+        if xhard and cube_center is None:
+            # D3（只在 xhard 修，H2）：原三档此处 None 会在下一行触发 TypeError，保持原样
+            raise SceneGenerationError(
+                f"MoveCube xhard：演示段方块中心 {max_cube_spawn_trials} 次拒绝采样全部失败")
 
         cube_x, cube_y = float(cube_center[0]), float(cube_center[1])
 
-        self.cube = spawn_random_cube(
+        # xhard 才多传 corner_bias；原三档调用参数逐字不变
+        demo_cube_extra = {"corner_bias": demo_bias} if xhard else {}
+        try:
+            self.cube = spawn_random_cube(
                             self,
                             region_center=[cube_x, cube_y],
                             color=(1, 0, 0, 1),
@@ -385,7 +442,12 @@ class MoveCube(BaseEnv):
                             region_half_size=demo_layout["cube_position_policy"]["region_half_size"],
                             generator=self._hb_generator,
                             half_size=self.cube_half_size,
+                            **demo_cube_extra,
                         )
+        except RuntimeError as exc:
+            if xhard and not isinstance(exc, SceneGenerationError):
+                raise SceneGenerationError(f"MoveCube xhard：演示段方块生成失败：{exc}") from exc
+            raise
         
         self.cube_init_pose=self.cube.pose
 
@@ -397,19 +459,25 @@ class MoveCube(BaseEnv):
         def _sample_cube_center(required_distance: float):
             for _ in range(max_cube_spawn_trials):
                 exec_cube = exec_layout["cube_position_policy"]
-                sampled_x = torch.rand(1, generator=self._hb_generator).item() * exec_cube["center_span"] + exec_cube["center_offset"]
+                sampled_x = corner_push(torch.rand(1, generator=self._hb_generator).item(), exec_bias) * exec_cube["center_span"] + exec_cube["center_offset"]
                 #direction = -1.0 if -self.peg2_basey < 0 else 1.0
                 #sampled_y = torch.rand(1, generator=self._hb_generator).item() * 0.2 * direction
-                sampled_y = torch.rand(1, generator=self._hb_generator).item()  * exec_cube["center_span"] + exec_cube["center_offset"]
+                sampled_y = corner_push(torch.rand(1, generator=self._hb_generator).item(), exec_bias)  * exec_cube["center_span"] + exec_cube["center_offset"]
                 candidate_xy = np.array([sampled_x, sampled_y], dtype=np.float64)
                 if np.linalg.norm(candidate_xy - goal_xy) > required_distance:
                     return candidate_xy
             return None
 
         cube_center = _sample_cube_center(self.cube_half_size*native_pos["cube_rejection"]["min_distance_factor"])
+        if xhard and cube_center is None:
+            # D3（只在 xhard 修，H2）：执行段同样修
+            raise SceneGenerationError(
+                f"MoveCube xhard：执行段方块中心 {max_cube_spawn_trials} 次拒绝采样全部失败")
 
         cube_x, cube_y = float(cube_center[0]), float(cube_center[1])
-        self.cube_2 = spawn_random_cube(
+        exec_cube_extra = {"corner_bias": exec_bias} if xhard else {}
+        try:
+            self.cube_2 = spawn_random_cube(
                             self,
                             region_center=[cube_x, cube_y],
                             color=(1, 0, 0, 1),
@@ -419,7 +487,12 @@ class MoveCube(BaseEnv):
                             region_half_size=exec_layout["cube_position_policy"]["region_half_size"],
                             generator=self._hb_generator,
                             half_size=self.cube_half_size,
+                            **exec_cube_extra,
                         )
+        except RuntimeError as exc:
+            if xhard and not isinstance(exc, SceneGenerationError):
+                raise SceneGenerationError(f"MoveCube xhard：执行段方块生成失败：{exc}") from exc
+            raise
         
         self.cube_init_pose_2=self.cube_2.pose
         #only need the pose! teleport away in 
@@ -435,6 +508,23 @@ class MoveCube(BaseEnv):
 
         goal1_q = np.array(self.goal_site.pose.q.detach().cpu().numpy(), dtype=np.float64, copy=True)
         self.goal_site_1_pose_q = goal1_q
+
+        if xhard:
+            # 只读记录本局实际生效的边角偏置（不抽随机数，排在全部取值点之后）
+            self._spec.record("layout.demo.corner_bias", float(demo_bias))
+            self._spec.record("layout.execution.corner_bias", float(exec_bias))
+
+    def _xhard_corner_bias(self, layout, key):
+        """取 xhard 的边角偏置；G3 未定数（None）时拒绝，不许静默当 0 用。"""
+        bias = layout["xhard"]["corner_bias"]
+        if bias is None:
+            raise SamplingConfigError(
+                f"MoveCube xhard：decision.{key}.xhard.corner_bias 待用户定数（G3），"
+                "请经 sampling_config 显式传入 [0,1] 内的值")
+        bias = float(bias)
+        if not 0.0 <= bias <= 1.0:
+            raise SamplingConfigError(f"MoveCube xhard：corner_bias 必须在 [0,1]，收到 {bias}")
+        return bias
 
 
 
@@ -472,6 +562,10 @@ class MoveCube(BaseEnv):
             #self.way="gripper_push"
 
             self.agent.reset(qpos)            
+            if self.difficulty == "xhard":
+                # B11：每次初始化清掉上一次抓杆的归约标记（由 grasp_and_lift_peg_side 重新设置）
+                self._peg_grasp_flipped = False
+                self._peg_grasp_flip_log = []
             self.cube_2.set_pose(sapien.Pose(p=[10,10,1]))#only need the pose!
             self.goal_site_2.set_pose(sapien.Pose(p=[10, -10, 1]))
 
