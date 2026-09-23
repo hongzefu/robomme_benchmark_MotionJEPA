@@ -146,3 +146,23 @@ def test_v4_never_enables_recovery() -> None:
         assert V.recovery_mode(episode) is None
         assert "robomme_failure_recovery" not in V.env_kwargs(V.seed_for("BinFill", episode, 0), episode)
     assert set(V.RECOVERY_RULE) == {"rule"}
+
+
+def test_reselect_keeps_identity_and_follows_results(tmp_path: Path) -> None:
+    """H4 递补后按实跑结果重标 selected：身份散列不变、原文件不改、只标成功局。"""
+    out = _freeze(tmp_path)
+    before = out.read_bytes()
+    results = tmp_path / "results.jsonl"
+    rows = [{"task": "PatternLock", "episode": e, "ok": e in (0, 4, 5)} for e in (0, 3, 6, 1, 2, 4, 5)]
+    rows += [{"task": "RouteStick", "episode": e, "ok": True} for e in (0, 3, 6)]
+    results.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    new = tmp_path / "specs.selected.jsonl"
+    result = V.reselect(out, results, new)
+    assert out.read_bytes() == before
+    header, _, specs = V.load_specs(new)
+    assert header["identity_sha256"] == V.load_specs(out)[0]["identity_sha256"]
+    assert sorted(specs) == ["PatternLock/0", "PatternLock/4", "PatternLock/5",
+                             "RouteStick/0", "RouteStick/3", "RouteStick/6"]
+    assert result["per_env"]["PatternLock"] == [0, 4, 5]
+    with pytest.raises(V.SpecsError, match="禁止覆盖"):
+        V.reselect(out, results, new)

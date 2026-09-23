@@ -18,10 +18,10 @@ xhard 的每条规格可冻结、可回注、回注零偏差；抽签→冻结�
 |---|---|---|---|
 | **V0** | 原三档定义没被动过（静态） | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0`（另：StopCube/MoveCube/InsertPeg 按 A6 新建三档同值 configs） | 通过 |
 | **V1** | 原值回归（本机，改动前 `13e5151` vs 改动后） | `H5_PARITY compared=144 sha_equal=144 field_mismatch=0`；补跑 7 环境 63 条 62 相同，差的 1 条（PickHighlight/3）查实为 RRT 墙钟预算随负载变化，同负载下前后逐位相同 | 通过 |
-| **V2** | 新值可重放（同一规格两遍） | 冒烟两份快照：`NEWVALUE_REPLAY=PASS identities=4 sha_equal=4`（单 worker）；正式全量两遍（12 worker，K5 只报告）：**见第五节 V2（运行中，待补）** | 冒烟通过；全量待补 |
-| **V3g** | 规格真被消费 | 正式全量第一遍 47 条成功局 `mismatch=0 unused=0`；反例检验 **见第五节 V3g（运行中，待补）** | 绑定通过；反例待补 |
+| **V2** | 新值可重放（同一规格两遍） | 正式全量两遍（12 worker，K5 只报告）：`NEWVALUE_REPLAY=REPORT identities=56 terminal_mismatch=0 compared_success=47 sha_equal=47 field_mismatch=0 empty_or_invalid=0`；冒烟两份快照单 worker 同样全等 | 两遍逐位相同 |
+| **V3g** | 规格真被消费 | `SPEC_BINDING=PASS specs=48 bad=0`；`SPEC_NEGATIVE=PASS cases=93 diff_zero=0`；全量第一遍 47 条成功局 `mismatch=0 unused=0` | 通过 |
 | **V4f** | 新值可完成性（只报告） | 抽签：尝试 172、reset 成功 160、`candidate_shortfall=0`；实跑第一遍：`rollout_attempted=56 rollout_ok=47 backfilled=3 selected_shortfall=1` | 报告（不设门槛） |
-| **V5e** | 推理链路通 | 冒烟快照 `EVAL_PIPELINE=PASS episodes=4 runtime_ok=4 join_missing=0`；正式快照 **见第五节 V5e（待补）** | 冒烟通过 |
+| **V5e** | 推理链路通 | 正式快照（每环境 1 局，共 16 局）：`EVAL_PIPELINE=PASS episodes=16 runtime_ok=16 join_missing=0`，规格绑定 16/16 零偏差 | 通过 |
 | **V6** | 组合覆盖（口径 14） | `COMBO_COVERAGE=PASS combos=91 missing_combinations=0 zero_success_combinations=0`（455 条：reset 452、演示 402）；PatternLock 长度 25 被静默兜底掩盖，已按 K1 把上界改为 24 | 通过（K1 修正后） |
 
 ---
@@ -351,7 +351,7 @@ V6 1 组合 5/5。开局目标杆与他杆重叠率 31.6%（I2 维持现状）�
 | 规格记录器 | `utils/episode_spec.py::SpecRecorder`、`spec_kind_for` | xhard 局标 `native-newvalue/1`，原三档 `native-parity/1`，两类不许互喂；`value(..., decision_key=)` 归因 |
 | decision 守卫 | `utils/sampling_config.py::assert_native_decision` | 去掉所有 `xhard` 键后须与原值全等；xhard 子树只许改值、键结构须与源码申报一致 |
 | 共用件 | `utils/xhard.py`（干扰色池、`corner_push`、`hsv_floor_rgb`）、`subgoal_language.py`（序数表 20） | 默认参数下与原行为逐字等价 |
-| 抽签/冻结 | `scripts/parity/v4_specs.py`（draw / freeze / `load_specs`） | 来源（配置全文、源码指纹、runtime、seed 规则、recover 规则）抽签时封存、冻结时逐项核；身份散列剔除 `selected`；seed 段 `4_000_000+env_code×100_000+episode×100+attempt` |
+| 抽签/冻结 | `scripts/parity/v4_specs.py`（draw / freeze / reselect / `load_specs`） | 来源（配置全文、源码指纹、runtime、seed 规则、recover 规则）抽签时封存、冻结时逐项核；身份散列剔除 `selected`；seed 段 `4_000_000+env_code×100_000+episode×100+attempt` |
 | 实跑 | `scripts/parity/v4_rollout.py`（run / compare）→ `train_split_runner.py --identity-source formula --no-recovery` → `train_split_worker.run_one` | H4 递补；V2 两层（终态＋HDF5 逐位，前置有效性与根属性检查）；K5 多 worker ＋ `--report-only` |
 | 推理 | `env_record_wrapper/episode_config_resolver.py::BenchmarkEnvBuilder.from_v4_specs`、`scripts/eval/v4_eval.py` | runtime 四项不等即拒；`eval_results.jsonl` / `eval_summary.json`；`--join-results` 打印 V5e |
 | 探针与覆盖 | `scripts/parity/v4_reset_probe.py`、`v4_demo_probe.py`、`v4_combos.py`、`v4_spec_negative.py` | reset 级回归、演示摸底、V6 分片并行、V3g 反例 |
@@ -370,11 +370,20 @@ StopCube/MoveCube/InsertPeg 由「无 configs」变为「三档同值 configs」
 
 ### V2
 - 冒烟 smoke-01（PatternLock+RouteStick）、smoke-02（StopCube+SwingXtimes，无 recover）单 worker：均 `NEWVALUE_REPLAY=PASS identities=4 sha_equal=4`。
-- 正式全量两遍（12 worker）：**待补**。
+- 正式全量两遍（12 worker，K5）：第二遍严格重放第一遍跑过的 56 个身份（48 selected ＋ 8 条递补候选）。
+  `NEWVALUE_REPLAY=REPORT identities=56 terminal_mismatch=0 compared_success=47 sha_equal=47 field_mismatch=0 empty_or_invalid=0`——
+  终态与失败类别 56/56 一致，47 条成功局 HDF5 整文件逐位相同。多 worker 负载下也没有出现分叉（K5 允许的「少量不同」本轮为零）。
+  命令：`v4_rollout compare artifacts/newtask-v4/v4-01/rollout/run1 …/run2 --report-only`；第二遍 `ROLLOUT_DONE rollout_attempted=56 rollout_ok=47`，墙钟 1078 s。
 
 ### V3g
 - 绑定：正式全量第一遍 47 条成功局 `mismatch=0 unattributed_mismatch=0 unused=0`；冒烟回注同样零偏差。
-- 反例：**待补**（`v4_spec_negative`：48 条规格各改坏 2 个叶子，要求场景全部改变）。
+- 反例（`scripts/parity/v4_spec_negative.py`，reset 级）：48 条 selected 规格各取 2 个取值点改坏（数值 +0.037／+1，0/1 取反，整数列表倒序）再回注，
+  比较 actor 与关节体位姿、渲染颜色、任务表与任务指令文本、环境上的数值/位姿/整数属性：`SPEC_NEGATIVE=PASS cases=93 diff_zero=0`；
+  原样回注 `SPEC_BINDING=PASS specs=48 bad=0`。
+- 检验本身迭代过三轮（首轮 `diff_zero=51` 全部查实为检验盲区而非规格未被消费）：①只抓 actor 位姿，看不到按钮（关节体）、颜色、reset 后被藏起的目标原位姿；
+  ②把 `record()` 记的派生量（如 `bin_count.placed`、`path_attempts`）也拿去改——它们回注时只核对不建场景，应排除；
+  ③ManiSkill 在 `gym.make` 构造期先初始化一次、`reset` 再初始化一次，非最后一次 `initializations.<k>` 的取值会被覆盖，只改最后一次；
+  另把 0/1 整数的改法由 +1 改为取反（InsertPeg 的 `obj_sample` 只判是否为 0，1→2 语义不变）。
 
 ### V4f（只报告）
 - 抽签：尝试 172、成功 160；VideoPlaceButton 13 次、VideoPlaceOrder 19 次攒满，其余 10 次攒满。
@@ -383,7 +392,13 @@ StopCube/MoveCube/InsertPeg 由「无 configs」变为「三档同值 configs」
 
 ### V5e
 - 冒烟：`EVAL_PIPELINE=PASS episodes=4 runtime_ok=4 join_missing=0`，规格绑定零偏差（dummy 策略全部 timeout 属预期）。
-- 正式快照：**待补**。
+- 正式快照（每环境取 1 条 selected，dummy 策略、`max_steps=1300`）：`EVAL_PIPELINE=PASS episodes=16 runtime_ok=16 join_missing=0`；
+  16 局规格绑定全部 `mismatch=0 unused=0`；结果 15 timeout、1 fail（dummy 策略的预期结果，只验链路）。产物 `artifacts/newtask-v4/v4-01/eval-all/eval_results.jsonl`。
+- **发现：推理应评「按实跑结果重标」的快照。** 冻结时 InsertPeg 的初选 0/3/6 在实跑中演示全部失败（H4 递补上来的是候选 4、5），
+  用原快照评 InsertPeg/0 时，推理入口在 reset 期重放示范、规划器反复失败，进程卡死（连续两次各 15～34 分钟无进展，进程处于 D 状态）。
+  于是新增 `v4_specs reselect`：按 `results.jsonl` 的成功局重标 `selected`，header 与规格值一字不动、`identity_sha256` 不变（`2e3766c9…`），
+  另写 `scripts/configs/newtask-v4/v4-01/specs.selected.jsonl`（47 条正式局，InsertPeg 为 4/5、VideoUnmaskSwap 为 0/1/6）。
+  前 12 局用原快照（这 12 个环境的初选第 0 条都演示成功），后 4 局（InsertPeg、MoveCube、PatternLock、RouteStick）用重标快照。
 
 ### V6（见 [20260923-step3c-v6-combo-coverage.md](20260923-step3c-v6-combo-coverage.md)）
 `COMBO_COVERAGE=PASS combos=91 zero_success_combinations=0`；K1 后清单重建为 90 个组合（PatternLock 去掉长度 25）。
@@ -402,7 +417,7 @@ StopCube/MoveCube/InsertPeg 由「无 configs」变为「三档同值 configs」
 | 4 | 正式抽签与冻结 | 完成（`v4-01`，160 行、48 selected） |
 | 5 | 实跑编排 | 完成（冒烟两次通过） |
 | 6 | 推理侧 | 完成（冒烟通过） |
-| 7 | 全量两遍 + V2/V3g/V4f/V5e | 第一遍完成；第二遍与 V3g 反例运行中；V5e 待跑 |
+| 7 | 全量两遍 + V2/V3g/V4f/V5e | 全部完成：V2 两遍逐位相同、V3g 通过、V4f 报告、V5e 通过 |
 | 8 | 留档 | 本报告＋`docs/validation/newtask-v4/` 下各步报告 |
 
 ---
@@ -425,16 +440,17 @@ StopCube/MoveCube/InsertPeg 由「无 configs」变为「三档同值 configs」
 
 **提交**（均已推送 `origin/newtaskRelease-v4`）：12.64 步 1～2 → 12.65 共用底座与两个长度环境 → 12.66 G2 定数与演示探针 →
 12.67 链路层（抽签/冻结/实跑/推理/V6 工具）→ 12.68～12.75 十四个环境 xhard 合并 → 12.76～12.79 用户决策落地 → 12.80～12.81 Swap 死循环修复与干扰容器揭示 →
-12.82～12.84 V6 → 12.85 V1 报告 → 12.86～12.87 K1～K5 → 12.88 正式快照冻结。
+12.82～12.84 V6 → 12.85 V1 报告 → 12.86～12.87 K1～K5 → 12.88 正式快照冻结 → 12.89 报告初稿 → 12.90 全量两遍、V2/V3g/V5e 与重标快照。
 
 **产物**（仓库内，`artifacts/` 不入 Git）：
 
 | 内容 | 位置 |
 |---|---|
-| 正式规格快照（入 Git） | `scripts/configs/newtask-v4/v4-01/specs.jsonl`（identity `2e3766c9…`） |
+| 正式规格快照（入 Git） | `scripts/configs/newtask-v4/v4-01/specs.jsonl`（冻结初选 48 条，identity `2e3766c9…`）；`specs.selected.jsonl`（按实跑重标，47 条，身份相同，**推理用这份**） |
 | V4 采样快照 / V6 组合清单（入 Git） | `scripts/configs/newtask-v4/sampling_config.json`、`combos.json` |
 | 抽签原始记录 | `artifacts/newtask-v4/v4-01/draft/drafts.jsonl` |
 | 全量第一遍 / 第二遍（h5＋视频，J9） | `artifacts/newtask-v4/v4-01/rollout/run1/`、`run2/`（每局 `episodes/<task>_episode_<i>/{hdf5_files,videos}`，汇总 `results.jsonl`、`summary.json`） |
 | V1 | `artifacts/newtask-v4/v1-base-13e/`、`v1-after-6cc/`、`v1-sup-00a94de/`、`v1-compare*/` |
 | V6 | `artifacts/newtask-v4/combos/v6-01/`（`samples-*.jsonl`、`summary.json`） |
+| V3g / V5e | `artifacts/newtask-v4/v4-01/v3g-v3.json`；`artifacts/newtask-v4/v4-01/eval-all/eval_results.jsonl` |
 | 各步报告 | `docs/validation/newtask-v4/`（step1-2、step0-g2、step3、step3b-*、step3c-v6、step4-6、v1、本报告） |

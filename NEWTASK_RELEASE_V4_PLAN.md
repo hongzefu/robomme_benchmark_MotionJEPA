@@ -1192,6 +1192,26 @@ V0~V3g、V5e、V6 是硬判据，V4f 是统计报告：
 注意当前分支该命令的既有基线是 **46 failed / 502 passed / 22 skipped / 12 errors**（`configs/newtask-v2/native_sampling.json`
 的来源指纹与已改源码不符所致），V4 实施中若要让它归零，须单独重新导出 v2 快照，属独立事项。
 
+### 6.1 实施后实测结果（2026-09-23 追加，原计划不改写）
+
+完整报告见 [docs/validation/newtask-v4/20260923-v4-final-report.md](docs/validation/newtask-v4/20260923-v4-final-report.md)（逐 task 的变化与字段、链路、验证、决策汇总）。
+
+| 步 | 实测 | 判定行 |
+|---|---|---|
+| 0 | G2 容量实测（hard `bin=15` 实际只放下 4～8）、G3 扫描 | G2/G3 已定（1.3） |
+| 1～2 | 甲退役口径、`native-newvalue/1`、守卫分叉 | 轻量全量失败集合与基线相同 |
+| 3a/3b | 十六环境 xhard 全部落地（12.65～12.81） | `RESET_REGRESSION=PASS compared=144 diff=0`（每次合并后复核） |
+| 3c | V6 组合覆盖 91 组合×5 条（K1 后清单重建为 90 个） | `COMBO_COVERAGE=PASS combos=91 zero_success_combinations=0` |
+| 4 | 正式抽签 `v4-01`：尝试 172、成功 160 | `FREEZE_DONE rows=160 selected=48 candidate_shortfall=0` |
+| 7 | 全量第一遍（12 worker）：56 局 47 成功，递补 3，InsertPeg 缺 1（维持现状） | `ROLLOUT_DONE rollout_attempted=56 rollout_ok=47 backfilled=3 selected_shortfall=1` |
+| 7 | 全量第二遍 + V2 | `NEWVALUE_REPLAY=REPORT identities=56 terminal_mismatch=0 compared_success=47 sha_equal=47 field_mismatch=0` |
+| 7 | V3g | `SPEC_BINDING=PASS specs=48 bad=0`；`SPEC_NEGATIVE=PASS cases=93 diff_zero=0` |
+| V0 | 原三档定义静态核对 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0`（A6 三环境按设计新建三档同值 configs） |
+| V1 | 本机前后 144 条 | `H5_PARITY compared=144 sha_equal=144 field_mismatch=0` |
+| 6/7 | V5e（每环境 1 局；推理用按实跑结果重标的快照 `specs.selected.jsonl`，47 条正式局、身份散列不变） | `EVAL_PIPELINE=PASS episodes=16 runtime_ok=16 join_missing=0` |
+
+实施中新增的用户决策 I1～I3、J1～J9、K1～K5 已写入 1.3。
+
 # 第二部分（技术细节，供 agent 追踪）
 
 ## 〇、前置声明与红线

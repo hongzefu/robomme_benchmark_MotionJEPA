@@ -347,6 +347,37 @@ def load_specs(path: str | Path, *, check_disk: bool = True):
     return header, sampling_by_task, specs_by_identity
 
 
+def reselect(specs_path: Path, results_path: Path, out: Path) -> dict[str, Any]:
+    """H4 递补后按实跑结果重标 ``selected``：只把演示成功的局标为正式局，写出新快照。
+
+    规格值与来源一字不动 ⇒ ``identity_sha256`` 必须不变（``selected`` 是管理字段）；原冻结文件不改。
+    推理侧应评这份快照：演示本身失败的局（如规划器找不到路径）在推理路径上可能卡在示范重放里。
+    """
+    records = _read_jsonl(Path(specs_path))
+    header, rows = records[0], records[1:]
+    validate_specs(header, rows, check_disk=True)
+    ok = {(r["task"], int(r["episode"]))
+          for r in (json.loads(line) for line in Path(results_path).read_text(encoding="utf-8").splitlines() if line.strip())
+          if r["ok"]}
+    new_rows = [{**row, "selected": (row["task"], row["episode"]) in ok} for row in rows]
+    # header 一字不动（per_env 在冻结时已进身份散列，其中的 selected 记的是冻结时 0/3/6 的初选）；
+    # 以数据行上的 selected 为准
+    new_header = copy.deepcopy(header)
+    if identity_sha256(new_header, new_rows) != header["identity_sha256"]:
+        raise SpecsError("重标 selected 后身份散列变了——只允许改管理字段")
+    validate_specs(new_header, new_rows)
+    _write_jsonl(Path(out), [new_header, *new_rows])
+    per_env = {task: sorted(r["episode"] for r in new_rows if r["task"] == task and r["selected"])
+               for task in header["tasks"]}
+    return {"selected": sum(r["selected"] for r in new_rows), "per_env": per_env}
+
+
+def cmd_reselect(args: argparse.Namespace) -> int:
+    result = reselect(Path(args.specs), Path(args.results), Path(args.out))
+    print(f"RESELECT_DONE selected={result['selected']} out={args.out}")
+    return 0
+
+
 def cmd_freeze(args: argparse.Namespace) -> int:
     select = tuple(int(x) for x in args.select.split(","))
     result = freeze(Path(args.drafts), Path(args.sampling_config), Path(args.out), select, args.candidates_per_env)
@@ -374,6 +405,11 @@ def main() -> int:
     fr.add_argument("--candidates-per-env", type=int, default=10)
     fr.add_argument("--out", required=True)
     fr.set_defaults(func=cmd_freeze)
+    rs = sub.add_parser("reselect", help="H4 递补后按实跑结果重标 selected（身份散列不变，另写新文件）")
+    rs.add_argument("--specs", required=True)
+    rs.add_argument("--results", required=True, help="v4_rollout 的 results.jsonl")
+    rs.add_argument("--out", required=True)
+    rs.set_defaults(func=cmd_reselect)
     args = parser.parse_args()
     return args.func(args)
 
