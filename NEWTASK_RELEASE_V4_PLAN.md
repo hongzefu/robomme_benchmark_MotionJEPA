@@ -123,6 +123,7 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | J6 | BinFill「全部 clutter」＝**12 块开局全在场（dynamic=False）、原区域原间距散布、放不满即判失败**；投入颜色数沿用 hard 的 `[2,3]` | 2.3 |
 | J7 | VideoPlaceButton / VideoPlaceOrder 演示 2 块后的问法＝**随机挑一块来问**：Button 两块各在按钮前、后各放一个台，问「某块按钮前/后放的台」；Order 两块依次各走一遍访问序列再放回原位，问「某块放过的第 N 个台」 | 2.14 / 2.15 |
 | J8 | V6 组合覆盖**每组合 5 条演示，多 worker 并行、用满本机**（V6 只判可生成性、不做逐位比较，本机结果可用；口径 10 对 V6 不适用） | V6 / G3 |
+| J9 | **步 7 的 48 条全量（含 H4 递补局、两遍实跑）必须保存视频与 h5**，产物落 `artifacts/newtask-v4/<run-id>/rollout/<label>/episodes/`；V6 组合覆盖只留成败、不留回放（用户 2026-09-22「最后生成的48 条全量要保存视频」） | 步 7 |
 
 ## 二、逐环境改动
 
