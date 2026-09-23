@@ -6,7 +6,7 @@
 提取过程**不创建环境、不抽随机数**，只读类属性与模块级常量。
 
     uv run --no-sync python scripts/parity/train_split_config.py extract \
-        --output scripts/configs/newtask-v3/native_sampling.json
+        --output scripts/configs/newtask-v4/sampling_config.json
     uv run --no-sync python scripts/parity/train_split_config.py extract --verify
 """
 
@@ -25,7 +25,7 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from seed_layout import ALL_TASKS  # noqa: E402
 
-DEFAULT_OUTPUT = REPO_ROOT / "scripts" / "configs" / "newtask-v3" / "native_sampling.json"
+DEFAULT_OUTPUT = REPO_ROOT / "scripts" / "configs" / "newtask-v4" / "sampling_config.json"
 
 
 def extract_task(task: str):
@@ -65,7 +65,7 @@ def main(argv: list[str] | None = None) -> int:
 
     document = {
         "schema": "train-parity-sampling-config/1",
-        "note": "原值快照：decision 与 native 两块都等于原值，第一轮不启用任何拟修改值",
+        "note": "V4 快照：原三档部分等于原值（v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），xhard 条目为 V4 新值",
         "tasks_total": len(ALL_TASKS),
         "tasks_ready": sorted(payload),
         "tasks_pending": pending,

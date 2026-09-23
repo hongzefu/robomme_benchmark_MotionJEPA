@@ -25,6 +25,8 @@ from mani_skill.utils.structs.pose import Pose
 from mani_skill.utils.structs.types import Array
 from typing import Optional, Union
 
+from .xhard import corner_push
+
 def _color_to_rgba(color: Union[str, Sequence[float]]) -> Tuple[float, float, float, float]:
     """Convert a hex string or RGB/RGBA tuple to an RGBA tuple accepted by SAPIEN."""
     if isinstance(color, str):
@@ -237,6 +239,7 @@ def spawn_random_cube(
         fixed_yaw=None,
         recorder=None,  # newtaskRelease-v3 步 4：只读导出／原值回注的记录器
         spec_path=None,  # 该取值点在 episode_spec 里的路径
+        corner_bias=0.0,  # V4 xhard：边角偏置 ∈[0,1]，0 ⇒ 与原均匀采样逐字等价（见 utils/xhard.py::corner_push）
     ):
     """
     Drop a cube (onto table) in rectangular region using rejection sampling, and return the cube actor.
@@ -419,6 +422,10 @@ def spawn_random_cube(
 
         u1 = torch.rand(1, generator=generator).item()
         u2 = torch.rand(1, generator=generator).item()
+        if corner_bias:
+            # V4：只做确定性映射、不多抽随机数；corner_bias=0 时整段跳过
+            u1 = corner_push(u1, corner_bias)
+            u2 = corner_push(u2, corner_bias)
 
         # Map directly to sampling region - Uniform distribution provides best spatial coverage
         x = float(x_low + u1 * (x_high - x_low))

@@ -202,9 +202,10 @@ class RouteStick(BaseEnv):
     'length':[4,7],
     'backtrack':True,
     }
-    # xhard（2026-09-11 用户决定）：与 hard 一致，只把段数提到 8～10
+    # V4 xhard（派生自 hard，B9；A7 作废 2026-09-11 的旧值 [8,10]）：布局不动，段数提到 12～15，
+    # 演示 L×50 帧 ⇒ 600～750 帧 ⇒ 20～25 s @30fps；L>约 22 会被评估上限截断，故不取更长。
     config_xhard = {
-    'length':[8,10],
+    'length':[12,15],
     'backtrack':True,
     }
 
@@ -495,6 +496,7 @@ class RouteStick(BaseEnv):
             steps = self._spec.value(
                 "objects.L",
                 int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item()),
+                decision_key=f"configs.{getattr(self, 'difficulty', 'easy')}.length",
             )
             # 游走函数内部的抽样照常发生；这里只冻结最终节点序列
             traj = self._spec.value(

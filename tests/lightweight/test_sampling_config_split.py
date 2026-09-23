@@ -29,7 +29,7 @@ for extra in (REPO_ROOT / "src", REPO_ROOT / "scripts", REPO_ROOT / "scripts" / 
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-SNAPSHOT = REPO_ROOT / "scripts" / "configs" / "newtask-v3" / "native_sampling.json"
+SNAPSHOT = REPO_ROOT / "scripts" / "configs" / "newtask-v4" / "sampling_config.json"  # V4 起源码快照改看 v4；v3 快照冻结留档
 
 
 def _ready_tasks() -> tuple[str, ...]:

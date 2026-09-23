@@ -35,7 +35,7 @@
 | 7 | **新值一律落新增的 `xhard` 档，从 `hard` 派生；`VideoRepick` 从 `medium` 派生。原三档一个数都不动** | 用户原话「v4派生的任务 都是基于hard来派生的 作为xhard，但是对于videorepick是以medium派生」；2.1 |
 | 8 | **`scripts/` 顶层只允许五个入口**，新增顶层文件或子目录须先获批 | AGENTS.md 强制规则第 12 条；2.0④ |
 | 9 | **`evaluation.py` / `run_example.py` / `dataset_replay.py` 与上游 main 逐字节相同这一性质要保住**，新值评估另起入口 | 2.0④ |
-| 10 | **正式验收单 worker、判据只认 A40**（`mplib` 的 RRT 用墙钟预算；本机 sm_89 与 A40 sm_86 产物不同） | V3 实测；第五节 |
+| 10 | **正式验收单 worker、判据只认 A40**（`mplib` 的 RRT 用墙钟预算；本机 sm_89 与 A40 sm_86 产物不同）。**例外：V1 原值回归只在本机跑**——对照改为本机改动前基线（`13e5151`）与改动后逐位比，不再对 A40 的 V3 留档 | V3 实测；用户 2026-09-22「原值回归只需要在本机器跑」；第五节 |
 | 11 | **未定的量一律保留为待决，不编造默认值** | V3 8.3 的纪律 |
 | 12 | **录像器全程冻结**；`src/robomme/` 改动免逐项事前批准但每步须出 md 报告 | 题注；红线 N1/N2 |
 | 13 | **规模定死**：每环境 10 条 `reset` 成功候选（尝试上限 30）⇒ 全局 160 条；按 index `0/3/6` 选 3 条为正式局 ⇒ 全局 48 条；落选候选一并冻进快照、只标 `selected=false` | 用户 2026-09-22 决策；3.2 |
@@ -1136,7 +1136,7 @@ V0~V3g、V5e、V6 是硬判据，V4f 是统计报告：
 
 | 编号 | 查什么 | 怎么查 | 判定行 |
 |---|---|---|---|
-| **V1** | **原值回归**：加了新值能力之后，原三档一个数都没改 | 重跑 V3 的 144 条子集（全在 easy/medium/hard），与 V3 留档的 B／C／D 产物逐位比。**口径 12 之后这条更强**：新值只落 xhard，原三档在结构上就不该有任何差异，任何非零差异都是明确的 bug | `NATIVE_REGRESSION=PASS compared=144 sha_equal=k field_mismatch=0` |
+| **V1** | **原值回归**：加了新值能力之后，原三档一个数都没改 **只在本机跑**（口径 10 例外）：同一台机器、单 worker，用改动前基线提交 `13e5151` 与改动后代码各跑一遍 V3 的 144 条子集（全在 easy/medium/hard），两边 HDF5 逐位比；实施中每改一组环境先用 `scripts/parity/v4_reset_probe.py` 做 reset 级快速比对（`RESET_REGRESSION=PASS`），V1 全量放在收尾。**口径 12 之后这条更强**：新值只落 xhard，原三档在结构上就不该有任何差异，任何非零差异都是明确的 bug | `NATIVE_REGRESSION=PASS compared=144 sha_equal=k field_mismatch=0` |
 | **V0** | **原三档的定义没被动过**（静态，V1 的前置） | `git diff` 只看 `config_easy` / `config_medium` / `config_hard` 三个类属性与 `NATIVE_SAMPLING` 里被原三档消费的键，应全部无改动；三个新建分档的环境（A6）另按"三档同值"逐项核对 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
 | **V2** | **新值可重放**：同一份冻结规格跑两次完全一致 | 同一 `specs.jsonl`、同一机型（A40）、**单 worker**，分两层：**V2a** 本轮实跑过的**全部身份**（48 条正式局＋H4 递补中跑过的候选，含失败局）两次的**终态与失败类别**逐条一致；**V2b** 两次都成功的局做 HDF5 全字段零容差比较。比较前先查：episode 有效、HDF5 非空、终态为成功；并**补比根属性**——现有 `compare_h5_pair` 用 `visititems` 不访问根节点，**两个空 HDF5 会被判通过**，V4 层包一层前置检查＋根属性比较（不改 V3 用的比较器，以免影响 V1）。抽签段只 reset、拿不出 h5，**不能充当这里的一路**（3.2） | `NEWVALUE_REPLAY=PASS identities=N terminal_mismatch=0 compared_success=k sha_equal=j field_mismatch=0 empty_or_invalid=0` |
 | **V3g** | **规格真被消费**：改坏规格必须产生差异 | 取若干局，逐个改坏规格里的一个叶子值，重跑必须出现字段差异；同时 `missing=0`、`unused=0`、mismatch 全部可归因到 `decision` 键 | `SPEC_BINDING=PASS missing=0 unused=0 unattributed_mismatch=0` ＋ `SPEC_NEGATIVE=PASS cases=M diff_zero=0` |
@@ -1195,7 +1195,7 @@ V0~V3g、V5e、V6 是硬判据，V4f 是统计报告：
   `randint(1,6)`（不决定行为、只占位）与 `ButtonUnmaskSwap::_load_scene` 未被选中分支的偏移抽样是明确样本，**不得删改**。
 - **N6 甲的产物只读。** `artifacts/injection/**` 与已进 Git 的 `candidates.jsonl` / `results.jsonl` 不删不改；
   甲的代码保留，只停止新增运行。
-- **N7 单 worker、A40。** 进入判据的生成一律 `--workers 1`，跑在 greatlakes `spgpu`；本机（sm_89）只用于调试，结果不进判据。
+- **N7 单 worker、A40。** 进入判据的生成一律 `--workers 1`，跑在 greatlakes `spgpu`；本机（sm_89）只用于调试，结果不进判据；**唯一例外是 V1 原值回归只在本机跑**（口径 10）。
 - **N8 测试预算。** 每次提交前 ≤5 分钟；长任务用 detached tmux（`PYTHONUNBUFFERED=1` + `set -o pipefail` + `tee` + `EXIT_CODE=`）。
 - **N9 文档禁硬编码行号。** 只用函数／类／配置键锚点。
 - **N10 状态如实。** 新值局跑不通就如实记失败分类，不得靠调低难度换通过；`NEWVALUE_FEASIBILITY` 只报告、不设门槛。
@@ -1241,7 +1241,7 @@ V0~V3g、V5e、V6 是硬判据，V4f 是统计报告：
 | 闸门 | 前置条件 | 判定行 |
 |---|---|---|
 | V0 `NATIVE_DEFS_UNCHANGED` | 无（静态检查，可在每步收尾跑） | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
-| V1 `NATIVE_REGRESSION` | V3 的 144 条基线产物可读；V0 已过 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=k field_mismatch=0` |
+| V1 `NATIVE_REGRESSION` | 本机 `13e5151` 基线产物已跑出；V0 已过 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=k field_mismatch=0` |
 | V2 `NEWVALUE_REPLAY` | `specs.jsonl` 已冻结；同机型 A40、单 worker；正式局与递补局**两次实跑**均完成 | `NEWVALUE_REPLAY=PASS identities=N terminal_mismatch=0 compared_success=k sha_equal=j field_mismatch=0 empty_or_invalid=0` |
 | V6 `COMBO_COVERAGE` | xhard 实现完成；组合清单已冻结；每组合样本量用户已定（G3） | `COMBO_COVERAGE=PASS combos=C missing_combinations=0 zero_success_combinations=0` |
 | V3g `SPEC_BINDING` ＋ `SPEC_NEGATIVE` | 步 2 的归因字段已落地 | `SPEC_BINDING=PASS missing=0 unused=0 unattributed_mismatch=0`；`SPEC_NEGATIVE=PASS cases=M diff_zero=0` |
@@ -1293,7 +1293,7 @@ tmux new-session -d -s v4-draft \
 - **PatternLock 演示时长未经实跑验证**：路径长度已实测可达（2.19），但 20 节点是否 ≥20 s、上限 ≈24.8 s 都只是按 31 帧／段的估算。
 - **InsertPeg 四根同色杆的可判性未经人工验收**，存在"更难"变"不可判"的风险。
 - **当前分支 `tests/lightweight` 既有 46 项失败**（v2 采样快照指纹与已改源码不符），V4 不承诺消解，属独立事项。
-- **本机与 A40 产物不同**已由 V3 证实，本方案的一切数值结论都以 A40 为准。
+- **本机与 A40 产物不同**已由 V3 证实，本方案的一切数值结论都以 A40 为准（V1 除外：它比的是本机改动前后，与机型无关）。
 
 ## 六、留档与 commit 纪律
 

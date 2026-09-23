@@ -129,11 +129,19 @@ class PatternLock(BaseEnv):
         "length":[3,5]
     }
 
+    # V4 xhard（派生自 hard，B8）：布局与搜法都不动，只把节点数提到 [20,25]。
+    # 5×5 简单路径上限 25 节点＝24 段；现有随机 DFS 在 1000 次预算内实测 100% 命中（计划 2.19）。
+    config_xhard = {
+        "grid": 5,
+        "length": [20, 25]
+    }
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard,
     }
 
 
@@ -348,7 +356,8 @@ class PatternLock(BaseEnv):
             logger.debug(f"Warning: Could not find path after {max_attempts} attempts")
 
         # 搜索循环里每次尝试都照常抽随机数；这里只冻结最终被采用的那条路径
-        path_nodes = self._spec.value("actions.path_nodes", list(path_nodes))
+        path_nodes = self._spec.value("actions.path_nodes", list(path_nodes),
+                                      decision_key=f"path_length_range.{self.difficulty}")
         self._spec.record("actions.path_attempts", attempt + 1)
         self.selected_buttons = [self.buttons_grid[i] for i in path_nodes]
         current_target=self.selected_buttons[0]
