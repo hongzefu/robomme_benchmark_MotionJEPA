@@ -709,6 +709,19 @@ def _options_swingxtimes(env, planner, require_target, base) -> List[dict]:
 
     return options
 
+def _videoplace_drop_available(env, base):
+    """VideoPlace* 「drop onto」的候选落点（V4 计划 2.14 / 2.15）。
+
+    原三档：原样返回 ``env.targets``（同一个列表对象，输出逐字不变）。
+    xhard：演示里多了「放回原位」这一步，其落点 actor（``xhard_home_sites``）不在 ``targets`` 里，
+    不扩进来的话 choice-action 匹配会选不到 ⇒ 追加在 ``targets`` 之后。
+    """
+    home_sites = getattr(base, "xhard_home_sites", None)
+    if not home_sites:
+        return env.targets
+    return list(env.targets) + list(home_sites)
+
+
 def _options_videoplaceorder(env, planner, require_target, base) -> List[dict]:
     options: List[dict] = [
         {
@@ -730,7 +743,7 @@ def _options_videoplaceorder(env, planner, require_target, base) -> List[dict]:
                 "solve": lambda require_target=require_target, target_cube=target_cube: solve_putonto_whenhold(
                     env, planner, target=require_target()
                 ),
-                "available": env.targets,
+                "available": _videoplace_drop_available(env, base),
             }
         )
 
@@ -768,7 +781,7 @@ def _options_videoplacebutton(env, planner, require_target, base) -> List[dict]:
                 "solve": lambda target_cube=target_cube: solve_putonto_whenhold(
                     env, planner, target=require_target()
                 ),
-                "available": env.targets,
+                "available": _videoplace_drop_available(env, base),
             }
         )
 

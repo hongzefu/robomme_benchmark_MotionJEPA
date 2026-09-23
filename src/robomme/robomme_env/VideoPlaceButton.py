@@ -33,6 +33,7 @@ from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.xhard_home_site import build_home_sites, home_pose_record, validate_demo_plan
 
 from ..logging_utils import logger
 
@@ -90,6 +91,11 @@ def native_blocks(cls):
     return _native_decision(cls), native
 
 
+# V4 xhard 的演示决策（计划 2.14）：原值 demo_object_count=1 / native_random_goal_site 两键保持不动，
+# xhard 值放在名为 xhard 的子键下（守卫去掉 xhard 后原三档可见部分与原值逐字相同）。
+XHARD_DEMO_DECISION = {"demo_object_count": 2, "demo_return_policy": "return_to_origin"}
+
+
 def _native_decision(cls):
     """按方案第二节 2.11 切出 decision 块（原值阶段等于原值）。"""
     return {
@@ -100,6 +106,8 @@ def _native_decision(cls):
         "targets": {difficulty: cfg["targets"] for difficulty, cfg in cls.configs.items()},
         "swap": {difficulty: cfg["swap"] for difficulty, cfg in cls.configs.items()},
         "additional_place": {difficulty: cfg["additional_place"] for difficulty, cfg in cls.configs.items()},
+        # 消费点见 _load_scene_xhard_tail
+        "xhard": dict(XHARD_DEMO_DECISION),
     }
 
 
@@ -150,11 +158,21 @@ class VideoPlaceButton(BaseEnv):
     }
 
 
+    # V4 xhard（派生自 hard，计划 2.14）：color 3、targets 4、swap True 全部不变；
+    # 变的是「演示几个方块、演示完放哪」，见 decision 的 xhard 子键（XHARD_DEMO_DECISION）。
+    config_xhard = {
+        'color': 3,
+        "additional_place":False,
+        "swap":True,
+        "targets":4
+    }
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard,
     }
 
 
@@ -380,6 +398,14 @@ class VideoPlaceButton(BaseEnv):
                     self.targets.append(target)
                     setattr(self, f"target_{i}", target)
                     avoid.append(target)
+
+            if self.difficulty == "xhard":
+                # V4 xhard：目标选择及其后的全部抽样与演示模板另走一条路径；原三档下面的代码一行不改
+                self._load_scene_xhard_tail(generator)
+                return
+            # 原三档：演示 1 个方块、放随机 goal_site（守卫已保证取原值）；这里读一次作真实消费点，不抽随机数
+            validate_demo_plan(decision_cfg["demo_object_count"], decision_cfg["demo_return_policy"],
+                               self.difficulty, len(self.all_cubes))
 
             if len(self.all_cubes) > 0:
                 target_cube_idx = self._spec.value(
@@ -723,6 +749,216 @@ class VideoPlaceButton(BaseEnv):
             raise SceneGenerationError(
                 f"Failed to load VideoPlaceButton scene for seed {self.seed}"
             ) from exc
+
+    # ------------------------------------------------------------------
+    # V4 xhard（计划 2.14）：演示 2 个方块、各自放回原位，其余不变
+    # ------------------------------------------------------------------
+    def _load_scene_xhard_tail(self, generator):
+        """xhard 专属：从「选目标方块」起接管 _load_scene 的后半段（只在 xhard 调用）。
+
+        演示模板（按对象循环；原三档的内联序列逐字保留在 _load_scene 里）::
+
+            对每个演示方块 k：pick(k) → drop(targets[2k])        ← 按钮前
+            press button
+            对每个演示方块 k：pick(k) → drop(targets[2k+1])      ← 按钮后
+            对每个演示方块 k：pick(k) → drop(home_k)             ← 放回原位
+            static20 → static60(swap) → NO RECORD → pick(答案方块) → drop(target_target)
+
+        「按钮前 / 后」的答案（task_mapping 的 2 对象推广，⚠ 计划未定、可被用户推翻）：
+        先按原规则抽 task_flag 定 before/after，再新抽「问哪一个演示方块」；
+        before → 该方块在按钮前放上的台（targets[2k]），after → 按钮后放上的台（targets[2k+1]）。
+
+        随机流（N5，只平移 xhard 自己）：randperm[:count] 取代原 randint 选目标 → swap randperm
+        （原样）→ task_flag（原样）→ 新增 answer_demo_index；落点 actor 不抽随机数、放在所有 spawn 之后。
+        """
+        decision_cfg = self._sampling["decision"]
+        xhard_cfg = decision_cfg["xhard"]
+        demo_count, _ = validate_demo_plan(
+            xhard_cfg["demo_object_count"], xhard_cfg["demo_return_policy"],
+            self.difficulty, len(self.all_cubes),
+        )
+        if decision_cfg["additional_place"][self.difficulty] == True:
+            # 原 target_2/target_3 的额外放置与「每方块两台」互斥；xhard 声明为 False，传 True 直接拒绝
+            raise SceneGenerationError("VideoPlaceButton xhard 不支持 additional_place=True")
+        if len(self.targets) < 2 * demo_count:
+            raise SceneGenerationError(
+                f"VideoPlaceButton xhard 需要 targets ≥ 2×demo_object_count={2 * demo_count}，实际 {len(self.targets)}"
+            )
+
+        demo_ids = self._spec.value(
+            "objects.demo_ids",
+            torch.randperm(len(self.all_cubes), generator=generator)[:demo_count].tolist(),
+            decision_key="xhard.demo_object_count",
+        )
+        demo_ids = [int(i) for i in demo_ids]
+        if len(demo_ids) != demo_count:
+            raise SceneGenerationError(f"演示方块请求 {demo_count} 个，实际 {len(demo_ids)} 个")
+        self.demo_cubes = [self.all_cubes[i] for i in demo_ids]
+
+        self.swap_target_a = None
+        self.swap_target_b = None
+        self.swap_target_other = []
+        if decision_cfg["swap"][self.difficulty] == True and len(self.targets) >= 2:
+            perm = self._spec.value(
+                "objects.swap_pair_ids",
+                torch.randperm(len(self.targets), generator=generator).tolist(),
+                decision_key="swap.xhard",
+            )
+            swap_idx_a, swap_idx_b = int(perm[0]), int(perm[1])
+            self.swap_target_a = self.targets[swap_idx_a]
+            self.swap_target_b = self.targets[swap_idx_b]
+            self.swap_target_other = [
+                target for idx, target in enumerate(self.targets) if idx not in (swap_idx_a, swap_idx_b)
+            ]
+        self.pre_flag = 0
+        self.post_flag = 0
+        self.task_flag = bool(self._spec.value(
+            "objects.task_flag", torch.rand(1, generator=generator).item() < 0.5,
+        ))
+        answer_index = int(self._spec.value(
+            "objects.answer_demo_index",
+            torch.randint(0, demo_count, (1,), generator=generator).item(),
+            decision_key="xhard.demo_object_count",
+        ))
+
+        # 每个演示方块：按钮前放 targets[2k]，按钮后放 targets[2k+1]
+        self.demo_before_targets = [self.targets[2 * k] for k in range(demo_count)]
+        self.demo_after_targets = [self.targets[2 * k + 1] for k in range(demo_count)]
+        self.target_cube = self.demo_cubes[answer_index]
+        for color_name, group in (("red", self.red_cubes), ("blue", self.blue_cubes), ("green", self.green_cubes)):
+            if self.target_cube in group:
+                self.target_color_name = color_name
+        if self.task_flag == 1:
+            self.target_target = self.demo_before_targets[answer_index]
+            self.target_target_language = "before"
+        else:
+            self.target_target = self.demo_after_targets[answer_index]
+            self.target_target_language = "after"
+        self.non_target_cubes = [cube for cube in self.all_cubes if cube != self.target_cube]
+        self.targets_not_true = [t for t in self.targets if t != self.target_target]
+        self._spec.record("actions.target_target_id", self.targets.index(self.target_target))
+
+        # 放回原位的落点：所有 spawn 之后、按方块初始位姿直接调 target builder（不用 spawn_random_target）
+        self.xhard_home_sites, self._xhard_home_checks = build_home_sites(self, self.demo_cubes, generator)
+        self._spec.record("actions.return_pose_by_object_id", home_pose_record(self.demo_cubes, self.xhard_home_sites))
+
+        tasks = []
+        for cube, target in zip(self.demo_cubes, self.demo_before_targets):
+            tasks.extend(self._xhard_pick_place(cube, target))
+        tasks.append(
+            {
+                "func": (lambda: is_button_pressed(self, obj=self.button)),
+                "name": "press the button",
+                "subgoal_segment": f"press the button at <>",
+                "choice_label": "press the button",
+                "demonstration": True,
+                "failure_func": None,
+                "solve": lambda env, planner: solve_button(env, planner, self.button),
+                "segment": self.cap_link,
+            }
+        )
+        for cube, target in zip(self.demo_cubes, self.demo_after_targets):
+            tasks.extend(self._xhard_pick_place(cube, target))
+        for cube, home in zip(self.demo_cubes, self.xhard_home_sites):
+            tasks.extend(self._xhard_pick_place(cube, home, home=True))
+        tasks.extend(self._xhard_closing_tasks())
+
+        self.task_list = tasks
+        self.recovery_pickup_indices, self.recovery_pickup_tasks = task4recovery(self.task_list)
+        if self.robomme_failure_recovery:
+            self.fail_grasp_task_index = inject_fail_grasp(
+                self.task_list,
+                generator=generator,
+                mode=self.robomme_failure_recovery_mode,
+            )
+        else:
+            self.fail_grasp_task_index = None
+
+    def _xhard_pick_place(self, cube, target, home=False):
+        """演示段的一对 pick + drop（闭包按默认参数绑定当前方块与落点）。"""
+        if home:
+            name = "put the cube back to its original position"
+            segment_text = "put the cube back to its original position at <>"
+        else:
+            name = "drop the cube onto target"
+            segment_text = "drop the cube onto target at <>"
+        return [
+            {
+                "func": (lambda cube=cube: is_obj_pickup(self, obj=cube)),
+                "name": f"pick up the cube",
+                "subgoal_segment": f"pick up the cube at <>",
+                "choice_label": "pick up the cube",
+                "demonstration": True,
+                "failure_func": None,
+                "solve": lambda env, planner, cube=cube: solve_pickup(env, planner, obj=cube),
+                "segment": cube,
+            },
+            {
+                "func": (lambda cube=cube, target=target: is_obj_dropped_onto(self, obj=cube, target=target)),
+                "name": name,
+                "subgoal_segment": segment_text,
+                "choice_label": "drop onto",
+                "demonstration": True,
+                "failure_func": None,
+                "solve": lambda env, planner, target=target: solve_putonto_whenhold(env, planner, target=target),
+                "segment": target,
+            },
+        ]
+
+    def _xhard_closing_tasks(self):
+        """演示收尾 + 执行段：与原三档同构（static20 → swap → NO RECORD → 取答案方块放正确台）。"""
+        return [
+            {
+                "func": lambda: static_check(self, timestep=int(self.elapsed_steps), static_steps=20),
+                "name": "static",
+                "subgoal_segment": f"static",
+                "demonstration": True,
+                "failure_func": None,
+                "solve": lambda env, planner: [
+                    solve_reset(env, planner),
+                    solve_hold_obj(env, planner, static_steps=20),
+                ],
+            },
+            {
+                "func": lambda: static_check(self, timestep=int(self.elapsed_steps), static_steps=60),
+                "name": "static",
+                "subgoal_segment": f"static",
+                "specialflag": "swap",
+                "demonstration": True,
+                "failure_func": None,
+                "solve": lambda env, planner: [solve_hold_obj(env, planner, static_steps=60)],
+            },
+            {
+                "func": lambda: reset_check(self),
+                "name": "NO RECORD",
+                "subgoal_segment": f"NO RECORD",
+                "demonstration": True,
+                "failure_func": None,
+                "solve": lambda env, planner: [solve_strong_reset(env, planner)],
+            },
+            {
+                "func": (lambda: is_obj_pickup(self, obj=self.target_cube)),
+                "name": f"pick up the cube",
+                "subgoal_segment": f"pick up the cube at <>",
+                "choice_label": "pick up the cube",
+                "demonstration": False,
+                "failure_func": lambda: is_any_obj_pickup(self, self.non_target_cubes),
+                "solve": lambda env, planner: [solve_pickup(env, planner, obj=self.target_cube)],
+                "segment": self.target_cube,
+            },
+            {
+                "func": (lambda: is_obj_dropped_onto(self, obj=self.target_cube, target=self.target_target)),
+                "name": "place the cube onto the correct target",
+                "subgoal_segment": f"place the cube onto the correct target at <>",
+                "choice_label": "drop onto",
+                "demonstration": False,
+                "failure_func": (
+                    lambda: is_obj_dropped_onto_any(self, obj=self.target_cube, target=self.targets_not_true)
+                ),
+                "solve": lambda env, planner: [solve_putonto_whenhold(env, planner, target=self.target_target)],
+                "segment": self.target_target,
+            },
+        ]
 
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):

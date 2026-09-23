@@ -1323,17 +1323,24 @@
         "targets": {
           "hard": 4,
           "easy": 3,
-          "medium": 4
+          "medium": 4,
+          "xhard": 4
         },
         "swap": {
           "hard": true,
           "easy": false,
-          "medium": false
+          "medium": false,
+          "xhard": true
         },
         "additional_place": {
           "hard": false,
           "easy": false,
-          "medium": false
+          "medium": false,
+          "xhard": false
+        },
+        "xhard": {
+          "demo_object_count": 2,
+          "demo_return_policy": "return_to_origin"
         }
       },
       "native": {
@@ -1381,7 +1388,8 @@
           "color": {
             "hard": 3,
             "easy": 1,
-            "medium": 3
+            "medium": 3,
+            "xhard": 3
           }
         },
         "positions": {
@@ -1433,12 +1441,18 @@
         "targets": {
           "hard": 4,
           "easy": 4,
-          "medium": 4
+          "medium": 4,
+          "xhard": 4
         },
         "swap": {
           "hard": true,
           "easy": false,
-          "medium": false
+          "medium": false,
+          "xhard": true
+        },
+        "xhard": {
+          "demo_object_count": 2,
+          "demo_return_policy": "return_to_origin"
         }
       },
       "native": {
@@ -1500,7 +1514,8 @@
           "color": {
             "hard": 3,
             "easy": 1,
-            "medium": 3
+            "medium": 3,
+            "xhard": 3
           }
         },
         "positions": {

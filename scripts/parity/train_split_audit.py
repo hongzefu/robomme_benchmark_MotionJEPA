@@ -143,10 +143,8 @@ FIELD_ALIASES: dict[str, dict[str, str]] = {
 # G2 的显式豁免：快照里记了数值、但本轮**确实没有消费点**的键，逐条写明理由。
 # 与别名表同样纪律——不允许无理由放行；启用相应功能时这些键就会长出消费点。
 NEUTRAL_KEYS: dict[str, str] = {
-    "VideoPlaceButton.decision.demo_object_count":
-        "原值 1＝只演示一个 target_cube，原代码没有按数量循环的结构；扩到 2 块时才会出现消费点",
-    "VideoPlaceOrder.decision.demo_object_count":
-        "同上",
+    # V4 步 3b：两个 Swap 环境的 swap_speed_multiplier、VideoPlace* 的 demo_object_count 共四条豁免已撤销——
+    # xhard 下它们都有真实消费点（swap 窗口按倍率取整；_load_scene_xhard_tail 读 demo_object_count / demo_return_policy）。
     "MoveCube.native.parameters.dir_sample.consumed":
         "记录型元数据：标明这次 randint 抽了但未被消费（抽样本身按红线 R8 保留，落 sampling_trace）",
     "MoveCube.native.parameters.obj_selection.mapping[0]":
