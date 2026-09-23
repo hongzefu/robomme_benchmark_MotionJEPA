@@ -1,0 +1,1129 @@
+{
+ "schema": "v4-combos/1",
+ "rule": "离散量逐值、连续量取端点、与其他参数交叉（口径 14）",
+ "tasks": {
+  "PickXtimes": [
+   {
+    "name": "num=6",
+    "set": {
+     "decision.number_range.xhard": [
+      6,
+      6
+     ]
+    }
+   },
+   {
+    "name": "num=7",
+    "set": {
+     "decision.number_range.xhard": [
+      7,
+      7
+     ]
+    }
+   },
+   {
+    "name": "num=8",
+    "set": {
+     "decision.number_range.xhard": [
+      8,
+      8
+     ]
+    }
+   },
+   {
+    "name": "num=9",
+    "set": {
+     "decision.number_range.xhard": [
+      9,
+      9
+     ]
+    }
+   },
+   {
+    "name": "num=10",
+    "set": {
+     "decision.number_range.xhard": [
+      10,
+      10
+     ]
+    }
+   },
+   {
+    "name": "num=11",
+    "set": {
+     "decision.number_range.xhard": [
+      11,
+      11
+     ]
+    }
+   },
+   {
+    "name": "num=12",
+    "set": {
+     "decision.number_range.xhard": [
+      12,
+      12
+     ]
+    }
+   },
+   {
+    "name": "num=13",
+    "set": {
+     "decision.number_range.xhard": [
+      13,
+      13
+     ]
+    }
+   },
+   {
+    "name": "num=14",
+    "set": {
+     "decision.number_range.xhard": [
+      14,
+      14
+     ]
+    }
+   },
+   {
+    "name": "num=15",
+    "set": {
+     "decision.number_range.xhard": [
+      15,
+      15
+     ]
+    }
+   }
+  ],
+  "StopCube": [
+   {
+    "name": "stop_time=6",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 6,
+      "high_exclusive": 7
+     }
+    }
+   },
+   {
+    "name": "stop_time=7",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 7,
+      "high_exclusive": 8
+     }
+    }
+   },
+   {
+    "name": "stop_time=8",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 8,
+      "high_exclusive": 9
+     }
+    }
+   },
+   {
+    "name": "stop_time=9",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 9,
+      "high_exclusive": 10
+     }
+    }
+   },
+   {
+    "name": "stop_time=10",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 10,
+      "high_exclusive": 11
+     }
+    }
+   },
+   {
+    "name": "stop_time=11",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 11,
+      "high_exclusive": 12
+     }
+    }
+   },
+   {
+    "name": "stop_time=12",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 12,
+      "high_exclusive": 13
+     }
+    }
+   },
+   {
+    "name": "stop_time=13",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 13,
+      "high_exclusive": 14
+     }
+    }
+   },
+   {
+    "name": "stop_time=14",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 14,
+      "high_exclusive": 15
+     }
+    }
+   },
+   {
+    "name": "stop_time=15",
+    "set": {
+     "decision.xhard.stop_time_range": {
+      "low": 15,
+      "high_exclusive": 16
+     }
+    }
+   }
+  ],
+  "SwingXtimes": [
+   {
+    "name": "num=4",
+    "set": {
+     "decision.number_range.xhard": [
+      4,
+      4
+     ]
+    }
+   },
+   {
+    "name": "num=5",
+    "set": {
+     "decision.number_range.xhard": [
+      5,
+      5
+     ]
+    }
+   },
+   {
+    "name": "num=6",
+    "set": {
+     "decision.number_range.xhard": [
+      6,
+      6
+     ]
+    }
+   },
+   {
+    "name": "num=7",
+    "set": {
+     "decision.number_range.xhard": [
+      7,
+      7
+     ]
+    }
+   },
+   {
+    "name": "num=8",
+    "set": {
+     "decision.number_range.xhard": [
+      8,
+      8
+     ]
+    }
+   },
+   {
+    "name": "num=9",
+    "set": {
+     "decision.number_range.xhard": [
+      9,
+      9
+     ]
+    }
+   },
+   {
+    "name": "num=10",
+    "set": {
+     "decision.number_range.xhard": [
+      10,
+      10
+     ]
+    }
+   }
+  ],
+  "BinFill": [
+   {
+    "name": "put_in=5,put_in_color=2",
+    "set": {
+     "decision.configs.xhard.put_in_numbers": [
+      5,
+      5
+     ],
+     "native.parameters.put_in_color.xhard": [
+      2,
+      2
+     ]
+    }
+   },
+   {
+    "name": "put_in=5,put_in_color=3",
+    "set": {
+     "decision.configs.xhard.put_in_numbers": [
+      5,
+      5
+     ],
+     "native.parameters.put_in_color.xhard": [
+      3,
+      3
+     ]
+    }
+   },
+   {
+    "name": "put_in=6,put_in_color=2",
+    "set": {
+     "decision.configs.xhard.put_in_numbers": [
+      6,
+      6
+     ],
+     "native.parameters.put_in_color.xhard": [
+      2,
+      2
+     ]
+    }
+   },
+   {
+    "name": "put_in=6,put_in_color=3",
+    "set": {
+     "decision.configs.xhard.put_in_numbers": [
+      6,
+      6
+     ],
+     "native.parameters.put_in_color.xhard": [
+      3,
+      3
+     ]
+    }
+   },
+   {
+    "name": "put_in=7,put_in_color=2",
+    "set": {
+     "decision.configs.xhard.put_in_numbers": [
+      7,
+      7
+     ],
+     "native.parameters.put_in_color.xhard": [
+      2,
+      2
+     ]
+    }
+   },
+   {
+    "name": "put_in=7,put_in_color=3",
+    "set": {
+     "decision.configs.xhard.put_in_numbers": [
+      7,
+      7
+     ],
+     "native.parameters.put_in_color.xhard": [
+      3,
+      3
+     ]
+    }
+   }
+  ],
+  "VideoUnmaskSwap": [
+   {
+    "name": "swap=8,distractor_cubes=1",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      8,
+      8
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "swap=8,distractor_cubes=2",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      8,
+      8
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      2,
+      2
+     ]
+    }
+   },
+   {
+    "name": "swap=9,distractor_cubes=1",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      9,
+      9
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "swap=9,distractor_cubes=2",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      9,
+      9
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      2,
+      2
+     ]
+    }
+   },
+   {
+    "name": "swap=10,distractor_cubes=1",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      10,
+      10
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "swap=10,distractor_cubes=2",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      10,
+      10
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      2,
+      2
+     ]
+    }
+   },
+   {
+    "name": "swap=11,distractor_cubes=1",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      11,
+      11
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "swap=11,distractor_cubes=2",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      11,
+      11
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      2,
+      2
+     ]
+    }
+   },
+   {
+    "name": "swap=12,distractor_cubes=1",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      12,
+      12
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "swap=12,distractor_cubes=2",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      12,
+      12
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      2,
+      2
+     ]
+    }
+   }
+  ],
+  "ButtonUnmaskSwap": [
+   {
+    "name": "swap=6,distractor_cubes=1",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      6,
+      6
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "swap=6,distractor_cubes=2",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      6,
+      6
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      2,
+      2
+     ]
+    }
+   },
+   {
+    "name": "swap=7,distractor_cubes=1",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      7,
+      7
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "swap=7,distractor_cubes=2",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      7,
+      7
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      2,
+      2
+     ]
+    }
+   },
+   {
+    "name": "swap=8,distractor_cubes=1",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      8,
+      8
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "swap=8,distractor_cubes=2",
+    "set": {
+     "decision.swap_count_range.xhard": [
+      8,
+      8
+     ],
+     "decision.xhard.distractor.with_cube_range": [
+      2,
+      2
+     ]
+    }
+   }
+  ],
+  "VideoUnmask": [
+   {
+    "name": "distractor_cubes=1",
+    "set": {
+     "decision.xhard.distractor.cube_count_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "distractor_cubes=2",
+    "set": {
+     "decision.xhard.distractor.cube_count_range": [
+      2,
+      2
+     ]
+    }
+   }
+  ],
+  "ButtonUnmask": [
+   {
+    "name": "distractor_cubes=1",
+    "set": {
+     "decision.xhard.distractor.cube_count_range": [
+      1,
+      1
+     ]
+    }
+   },
+   {
+    "name": "distractor_cubes=2",
+    "set": {
+     "decision.xhard.distractor.cube_count_range": [
+      2,
+      2
+     ]
+    }
+   }
+  ],
+  "VideoRepick": [
+   {
+    "name": "swap=8,repeats=4",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 8,
+      "swap_max": 8
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 4,
+      "high_exclusive": 5
+     }
+    }
+   },
+   {
+    "name": "swap=8,repeats=5",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 8,
+      "swap_max": 8
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 5,
+      "high_exclusive": 6
+     }
+    }
+   },
+   {
+    "name": "swap=8,repeats=6",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 8,
+      "swap_max": 8
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 6,
+      "high_exclusive": 7
+     }
+    }
+   },
+   {
+    "name": "swap=9,repeats=4",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 9,
+      "swap_max": 9
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 4,
+      "high_exclusive": 5
+     }
+    }
+   },
+   {
+    "name": "swap=9,repeats=5",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 9,
+      "swap_max": 9
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 5,
+      "high_exclusive": 6
+     }
+    }
+   },
+   {
+    "name": "swap=9,repeats=6",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 9,
+      "swap_max": 9
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 6,
+      "high_exclusive": 7
+     }
+    }
+   },
+   {
+    "name": "swap=10,repeats=4",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 10,
+      "swap_max": 10
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 4,
+      "high_exclusive": 5
+     }
+    }
+   },
+   {
+    "name": "swap=10,repeats=5",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 10,
+      "swap_max": 10
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 5,
+      "high_exclusive": 6
+     }
+    }
+   },
+   {
+    "name": "swap=10,repeats=6",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 10,
+      "swap_max": 10
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 6,
+      "high_exclusive": 7
+     }
+    }
+   },
+   {
+    "name": "swap=11,repeats=4",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 11,
+      "swap_max": 11
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 4,
+      "high_exclusive": 5
+     }
+    }
+   },
+   {
+    "name": "swap=11,repeats=5",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 11,
+      "swap_max": 11
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 5,
+      "high_exclusive": 6
+     }
+    }
+   },
+   {
+    "name": "swap=11,repeats=6",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 11,
+      "swap_max": 11
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 6,
+      "high_exclusive": 7
+     }
+    }
+   },
+   {
+    "name": "swap=12,repeats=4",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 12,
+      "swap_max": 12
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 4,
+      "high_exclusive": 5
+     }
+    }
+   },
+   {
+    "name": "swap=12,repeats=5",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 12,
+      "swap_max": 12
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 5,
+      "high_exclusive": 6
+     }
+    }
+   },
+   {
+    "name": "swap=12,repeats=6",
+    "set": {
+     "decision.swap.xhard": {
+      "swap_min": 12,
+      "swap_max": 12
+     },
+     "decision.num_repeats_range.xhard": {
+      "low": 6,
+      "high_exclusive": 7
+     }
+    }
+   }
+  ],
+  "PickHighlight": [
+   {
+    "name": "highlight=5,spawn=8",
+    "set": {
+     "decision.highlight_count.xhard": [
+      5,
+      5
+     ],
+     "decision.spawn_count.xhard": [
+      8,
+      8
+     ]
+    }
+   },
+   {
+    "name": "highlight=5,spawn=9",
+    "set": {
+     "decision.highlight_count.xhard": [
+      5,
+      5
+     ],
+     "decision.spawn_count.xhard": [
+      9,
+      9
+     ]
+    }
+   },
+   {
+    "name": "highlight=5,spawn=10",
+    "set": {
+     "decision.highlight_count.xhard": [
+      5,
+      5
+     ],
+     "decision.spawn_count.xhard": [
+      10,
+      10
+     ]
+    }
+   },
+   {
+    "name": "highlight=6,spawn=8",
+    "set": {
+     "decision.highlight_count.xhard": [
+      6,
+      6
+     ],
+     "decision.spawn_count.xhard": [
+      8,
+      8
+     ]
+    }
+   },
+   {
+    "name": "highlight=6,spawn=9",
+    "set": {
+     "decision.highlight_count.xhard": [
+      6,
+      6
+     ],
+     "decision.spawn_count.xhard": [
+      9,
+      9
+     ]
+    }
+   },
+   {
+    "name": "highlight=6,spawn=10",
+    "set": {
+     "decision.highlight_count.xhard": [
+      6,
+      6
+     ],
+     "decision.spawn_count.xhard": [
+      10,
+      10
+     ]
+    }
+   },
+   {
+    "name": "highlight=7,spawn=8",
+    "set": {
+     "decision.highlight_count.xhard": [
+      7,
+      7
+     ],
+     "decision.spawn_count.xhard": [
+      8,
+      8
+     ]
+    }
+   },
+   {
+    "name": "highlight=7,spawn=9",
+    "set": {
+     "decision.highlight_count.xhard": [
+      7,
+      7
+     ],
+     "decision.spawn_count.xhard": [
+      9,
+      9
+     ]
+    }
+   },
+   {
+    "name": "highlight=7,spawn=10",
+    "set": {
+     "decision.highlight_count.xhard": [
+      7,
+      7
+     ],
+     "decision.spawn_count.xhard": [
+      10,
+      10
+     ]
+    }
+   }
+  ],
+  "PatternLock": [
+   {
+    "name": "length=20",
+    "set": {
+     "decision.path_length_range.xhard": [
+      20,
+      20
+     ]
+    }
+   },
+   {
+    "name": "length=21",
+    "set": {
+     "decision.path_length_range.xhard": [
+      21,
+      21
+     ]
+    }
+   },
+   {
+    "name": "length=22",
+    "set": {
+     "decision.path_length_range.xhard": [
+      22,
+      22
+     ]
+    }
+   },
+   {
+    "name": "length=23",
+    "set": {
+     "decision.path_length_range.xhard": [
+      23,
+      23
+     ]
+    }
+   },
+   {
+    "name": "length=24",
+    "set": {
+     "decision.path_length_range.xhard": [
+      24,
+      24
+     ]
+    }
+   },
+   {
+    "name": "length=25",
+    "set": {
+     "decision.path_length_range.xhard": [
+      25,
+      25
+     ]
+    }
+   }
+  ],
+  "RouteStick": [
+   {
+    "name": "L=12",
+    "set": {},
+    "add": {
+     "native.parameters.configs": {
+      "hard": {
+       "length": [
+        4,
+        7
+       ],
+       "backtrack": true
+      },
+      "easy": {
+       "length": [
+        2,
+        3
+       ],
+       "backtrack": false
+      },
+      "medium": {
+       "length": [
+        4,
+        5
+       ],
+       "backtrack": false
+      },
+      "xhard": {
+       "length": [
+        12,
+        12
+       ],
+       "backtrack": true
+      }
+     }
+    }
+   },
+   {
+    "name": "L=13",
+    "set": {},
+    "add": {
+     "native.parameters.configs": {
+      "hard": {
+       "length": [
+        4,
+        7
+       ],
+       "backtrack": true
+      },
+      "easy": {
+       "length": [
+        2,
+        3
+       ],
+       "backtrack": false
+      },
+      "medium": {
+       "length": [
+        4,
+        5
+       ],
+       "backtrack": false
+      },
+      "xhard": {
+       "length": [
+        13,
+        13
+       ],
+       "backtrack": true
+      }
+     }
+    }
+   },
+   {
+    "name": "L=14",
+    "set": {},
+    "add": {
+     "native.parameters.configs": {
+      "hard": {
+       "length": [
+        4,
+        7
+       ],
+       "backtrack": true
+      },
+      "easy": {
+       "length": [
+        2,
+        3
+       ],
+       "backtrack": false
+      },
+      "medium": {
+       "length": [
+        4,
+        5
+       ],
+       "backtrack": false
+      },
+      "xhard": {
+       "length": [
+        14,
+        14
+       ],
+       "backtrack": true
+      }
+     }
+    }
+   },
+   {
+    "name": "L=15",
+    "set": {},
+    "add": {
+     "native.parameters.configs": {
+      "hard": {
+       "length": [
+        4,
+        7
+       ],
+       "backtrack": true
+      },
+      "easy": {
+       "length": [
+        2,
+        3
+       ],
+       "backtrack": false
+      },
+      "medium": {
+       "length": [
+        4,
+        5
+       ],
+       "backtrack": false
+      },
+      "xhard": {
+       "length": [
+        15,
+        15
+       ],
+       "backtrack": true
+      }
+     }
+    }
+   }
+  ],
+  "VideoPlaceButton": [
+   {
+    "name": "default",
+    "set": {}
+   }
+  ],
+  "VideoPlaceOrder": [
+   {
+    "name": "default",
+    "set": {}
+   }
+  ],
+  "InsertPeg": [
+   {
+    "name": "default",
+    "set": {}
+   }
+  ],
+  "MoveCube": [
+   {
+    "name": "default",
+    "set": {}
+   }
+  ]
+ }
+}
