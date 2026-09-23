@@ -90,12 +90,15 @@ def native_blocks(cls):
 
 # V4 xhard 专属的 decision 条目（NEWTASK_RELEASE_V4_PLAN 2.12）；放在名为 ``xhard`` 的子键下，
 # 守卫（assert_native_decision）去掉 xhard 后原三档可见部分与原值逐字相同。
-#   block_color_policy：「block 颜色任意」＝逐块独立抽 [0,1]^3 均匀 RGB（alpha 固定 1）。
+#   block_color_policy：「block 颜色任意」＝逐块独立抽色，色域按用户 2026-09-22 决定设饱和度/亮度下限
+#     （"hsv_floor"：色相任意、S≥0.5、V≥0.4，见 utils/xhard.py::HSV_FLOOR_COLOR；alpha 固定 1）。
 #   subgoal_color_suffix：任意 RGB 没有颜色名，subgoal 的 ``, which is {color}`` 后缀如何写。
-#     ⚠ 待用户决策：先取最保守的 "omit"（整段后缀去掉，不输出任何可能错误的颜色词）；
-#     可经外部 sampling_config 覆盖该值，但目前只实现 "omit" 一种，其余取值直接拒绝。
+#     用户 2026-09-22 定「整段去掉」（"omit"）；目前只实现这一种，其余取值直接拒绝。
+from .utils.xhard import HSV_FLOOR_COLOR, hsv_floor_rgb
+
 XHARD_DECISION = {
-    "block_color_policy": "uniform_rgb",
+    "block_color_policy": "hsv_floor",
+    "block_color_hsv": copy.deepcopy(HSV_FLOOR_COLOR),
     "subgoal_color_suffix": "omit",
 }
 
@@ -303,9 +306,9 @@ class PickHighlight(BaseEnv):
         xhard = self.difficulty == "xhard"
         if xhard:
             xhard_cfg = decision_cfg["xhard"]
-            if xhard_cfg["block_color_policy"] != "uniform_rgb":
+            if xhard_cfg["block_color_policy"] != "hsv_floor":
                 raise SamplingConfigError(
-                    "PickHighlight: decision.xhard.block_color_policy 只支持 'uniform_rgb'，"
+                    "PickHighlight: decision.xhard.block_color_policy 只支持 'hsv_floor'，"
                     f"收到 {xhard_cfg['block_color_policy']!r}"
                 )
             if xhard_cfg["subgoal_color_suffix"] != "omit":
@@ -336,11 +339,12 @@ class PickHighlight(BaseEnv):
         # Spawn specified number of cubes, each with random color
         for cube_idx in range(num_cubes_to_spawn):
             if xhard:
-                # 颜色任意：逐块独立抽均匀 RGB（替换原三色 randint，只在 xhard 生效）。
+                # 颜色任意：逐块独立抽色（HSV 限定色域；替换原三色 randint，只在 xhard 生效）。
                 # 没有颜色名 ⇒ label 置 None、actor 名用 "rgb"；subgoal 后缀按 subgoal_color_suffix 处理。
                 rgba = self._spec.value(
                     f"objects.color_rgba.{cube_idx}",
-                    torch.rand(3, generator=self.generator).tolist() + [1.0],
+                    hsv_floor_rgb(torch.rand(3, generator=self.generator).tolist(),
+                                  xhard_cfg["block_color_hsv"]) + [1.0],
                     decision_key="xhard.block_color_policy",
                 )
                 chosen_color = {"color": tuple(float(c) for c in rgba), "name": "rgb", "label": None}

@@ -85,8 +85,8 @@ def test_xhard_新值只挂在xhard子键下():
     layout = decision["xhard"]["layout"]
     assert layout == {"mode": "clutter", "cube_count": 6, "region_center": [-0.1, 0.0], "region_half_size": [0.2, 0.25]}
     color = decision["xhard"]["block_color"]
-    assert color["policy"] == "same_color_any_value"
-    assert color["rgb_low"] == [0.0, 0.0, 0.0] and color["rgb_high"] == [1.0, 1.0, 1.0]
+    assert color["policy"] == "same_color_hsv_floor"
+    assert (color["h_range"], color["s_range"], color["v_range"]) == ([0.0, 1.0], [0.5, 1.0], [0.4, 1.0])
     # A7：旧 xhard {cube 3, swap [4,5]} 已被覆盖
     assert CLS.configs["xhard"]["cube"] == 6
     assert (CLS.configs["xhard"]["swap_min"], CLS.configs["xhard"]["swap_max"]) == (8, 12)

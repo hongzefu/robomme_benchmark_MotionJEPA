@@ -1186,16 +1186,18 @@
             ]
           },
           "block_color": {
-            "policy": "same_color_any_value",
+            "policy": "same_color_hsv_floor",
             "sampler": "torch.rand",
-            "rgb_low": [
+            "h_range": [
               0.0,
-              0.0,
-              0.0
+              1.0
             ],
-            "rgb_high": [
-              1.0,
-              1.0,
+            "s_range": [
+              0.5,
+              1.0
+            ],
+            "v_range": [
+              0.4,
               1.0
             ]
           }
@@ -1620,7 +1622,21 @@
         },
         "block_color_policy": "native_per_cube_uniform",
         "xhard": {
-          "block_color_policy": "uniform_rgb",
+          "block_color_policy": "hsv_floor",
+          "block_color_hsv": {
+            "h_range": [
+              0.0,
+              1.0
+            ],
+            "s_range": [
+              0.5,
+              1.0
+            ],
+            "v_range": [
+              0.4,
+              1.0
+            ]
+          },
           "subgoal_color_suffix": "omit"
         }
       },

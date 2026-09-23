@@ -9,12 +9,30 @@
 
 from __future__ import annotations
 
+import colorsys
+
 # 顺序固定：黄、青、品红。名字用于任务文本与规格记录，rgba 与 B2 决策逐字一致。
 DISTRACTOR_COLORS = (
     {"name": "yellow", "rgba": (1, 1, 0, 1)},
     {"name": "cyan", "rgba": (0, 1, 1, 1)},
     {"name": "magenta", "rgba": (1, 0, 1, 1)},
 )
+
+# 「方块颜色任意」的色域（用户 2026-09-22 定「设饱和度/亮度下限」）：色相任意，
+# 饱和度 ≥0.5、亮度 ≥0.4，排除近白（会与白色高亮圆盘混淆）、近黑、近灰。
+# 仍然只抽 3 个 [0,1) 均匀数（与原 RGB 均匀抽法的随机调用次数相同），再做确定性映射。
+HSV_FLOOR_COLOR = {"h_range": [0.0, 1.0], "s_range": [0.5, 1.0], "v_range": [0.4, 1.0]}
+
+
+def hsv_floor_rgb(u, cfg=None):
+    """3 个 [0,1) 均匀数 → 限定色域内的 RGB（浮点三元组）。"""
+    cfg = HSV_FLOOR_COLOR if cfg is None else cfg
+    (h0, h1), (s0, s1), (v0, v1) = cfg["h_range"], cfg["s_range"], cfg["v_range"]
+    h = h0 + float(u[0]) * (h1 - h0)
+    s = s0 + float(u[1]) * (s1 - s0)
+    v = v0 + float(u[2]) * (v1 - v0)
+    return list(colorsys.hsv_to_rgb(h % 1.0, s, v))
+
 
 # corner_bias=1 时的幂指数 1/(1+CORNER_GAIN)；4 ⇒ 指数 0.2，t=0.5 被推到约 0.87。
 CORNER_GAIN = 4.0

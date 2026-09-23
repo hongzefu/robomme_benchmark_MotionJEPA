@@ -137,15 +137,15 @@ NATIVE_SAMPLING = {
 }
 
 
+from .utils.xhard import HSV_FLOOR_COLOR, hsv_floor_rgb
+
 # V4 xhard「block 颜色任意」（C2：每局全部方块仍同色，只是色值任意）。
-# 口径未细化到色域，这里取最字面的实现：RGB 三通道各自在 [rgb_low, rgb_high] 上均匀抽，alpha 固定 1。
-# ⚠ 是否要避开桌面/按钮色、设饱和度下限等属待用户决策项；可经 sampling_config 的
-# decision.xhard.block_color 覆盖 rgb_low / rgb_high，不改源码。
+# 色域按用户 2026-09-22 决定设饱和度/亮度下限：色相任意、S≥0.5、V≥0.4（utils/xhard.py::HSV_FLOOR_COLOR），
+# alpha 固定 1；可经 sampling_config 的 decision.xhard.block_color 覆盖三个区间，不改源码。
 XHARD_BLOCK_COLOR = {
-    "policy": "same_color_any_value",
+    "policy": "same_color_hsv_floor",
     "sampler": "torch.rand",
-    "rgb_low": [0.0, 0.0, 0.0],
-    "rgb_high": [1.0, 1.0, 1.0],
+    **copy.deepcopy(HSV_FLOOR_COLOR),
 }
 
 
@@ -680,12 +680,10 @@ class VideoRepick(BaseEnv):
         region_cfg = self._sampling["positions"]["hard_cubes"]
 
         color_cfg = xhard_cfg["block_color"]
-        low = [float(v) for v in color_cfg["rgb_low"]]
-        high = [float(v) for v in color_cfg["rgb_high"]]
         u = torch.rand(3, generator=self.generator).tolist()
         rgb = self._spec.value(
             "objects.color_rgb",
-            [low[c] + u[c] * (high[c] - low[c]) for c in range(3)],
+            hsv_floor_rgb(u, color_cfg),
             decision_key="xhard.block_color",
         )
         chosen_color = (float(rgb[0]), float(rgb[1]), float(rgb[2]), 1.0)

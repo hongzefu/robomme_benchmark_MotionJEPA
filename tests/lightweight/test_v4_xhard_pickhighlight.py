@@ -75,7 +75,9 @@ def test_decision的xhard条目结构() -> None:
     decision, _native = module.native_blocks(CLS)
     assert decision["highlight_count"]["xhard"] == [5, 7]
     assert decision["spawn_count"]["xhard"] == [8, 10]
-    assert decision["xhard"] == {"block_color_policy": "uniform_rgb", "subgoal_color_suffix": "omit"}
+    assert decision["xhard"] == {"block_color_policy": "hsv_floor",
+                                 "block_color_hsv": {"h_range": [0.0, 1.0], "s_range": [0.5, 1.0], "v_range": [0.4, 1.0]},
+                                 "subgoal_color_suffix": "omit"}
     # 导出副本互不共享可变对象（外部改 decision 不能回写类属性）
     decision["spawn_count"]["xhard"][0] = 99
     assert CLS.configs["xhard"]["spawn"] == [8, 10]
@@ -104,7 +106,7 @@ def test_守卫拒绝原三档改值与申报外新键() -> None:
     default, _ = module.native_blocks(CLS)
     for mutate in (
         lambda d: d["highlight_count"].__setitem__("hard", 4),
-        lambda d: d.__setitem__("block_color_policy", "uniform_rgb"),
+        lambda d: d.__setitem__("block_color_policy", "hsv_floor"),
         lambda d: d["xhard"].__setitem__("distractor", {"count": 3}),
     ):
         decision = copy.deepcopy(default)

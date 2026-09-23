@@ -22,7 +22,7 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils.xhard import DISTRACTOR_COLORS, corner_push  # noqa: E402
+from robomme.robomme_env.utils.xhard import DISTRACTOR_COLORS, corner_push, hsv_floor_rgb  # noqa: E402
 
 
 def test_zero_bias_is_identity_object() -> None:
@@ -60,3 +60,16 @@ def test_distractor_palette_matches_b2() -> None:
     assert [(c["name"], c["rgba"]) for c in DISTRACTOR_COLORS] == [
         ("yellow", (1, 1, 0, 1)), ("cyan", (0, 1, 1, 1)), ("magenta", (1, 0, 1, 1)),
     ]
+
+
+def test_hsv_floor_color_gamut() -> None:
+    """用户 2026-09-22 定：色相任意、饱和度 ≥0.5、亮度 ≥0.4——排除近白/近黑/近灰。"""
+    import colorsys
+    import itertools
+    grid = [0.0, 0.25, 0.5, 0.75, 0.999]
+    for u in itertools.product(grid, repeat=3):
+        rgb = hsv_floor_rgb(list(u))
+        assert all(0.0 <= c <= 1.0 for c in rgb)
+        h, s, v = colorsys.rgb_to_hsv(*rgb)
+        assert s >= 0.5 - 1e-9 and v >= 0.4 - 1e-9
+        assert min(rgb) <= 0.5 * max(rgb) + 1e-9  # 不会近白/近灰

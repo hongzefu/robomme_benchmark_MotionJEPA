@@ -115,6 +115,10 @@ PatternLock RouteStick, 最难情形 video 部分生成 20-30s
 | I1 | PickXtimes num=14/15 演示必超原 2000 步失败保护（实测≈136+138×num）⇒ **录像器 `RecordWrapper.py` 的 `fail_safe_limit` 由 2000 放到 5000**，保持 `[6,15]`（2026-09-22 用户原话「录像放开2000步 改为5000步」；N2 唯一例外） | 2.4 / N2 |
 | I2 | InsertPeg 第 4 根杆贴近目标杆致开局重叠 2.4%→31.6% ⇒ **维持现状**（按 B6 字面执行，不加新判据） | 2.18 |
 | I3 | **V4 全部不开 fail recover**：抽签、实跑（runner `--no-recovery`）、推理（`from_v4_specs`）三处同口径，规则封存进 specs header | 3.3 / 第四节 |
+| J1 | 四个 Unmask 环境的干扰容器**参与前 64 步揭示**（里面的黄/青/品红 cube 在视频里可见）、**误抓干扰容器即判失败**；仍不参与 swap（2026-09-22 用户决定） | 2.7① |
+| J2 | VideoRepick xhard 演示期约 45% 局被 D5 扫掠检查拒绝 ⇒ **接受，靠 H4 递补**，不改机制 | 2.13 / H4 |
+| J3 | 「方块颜色任意」（PickHighlight 逐块、VideoRepick 每局同色）**设饱和度/亮度下限**：色相任意、S≥0.5、V≥0.4（`utils/xhard.py::HSV_FLOOR_COLOR`） | 2.12 / 2.13 |
+| J4 | PickHighlight subgoal 的 `, which is {color}` 后缀**整段去掉** | 2.12 |
 
 ## 二、逐环境改动
 
