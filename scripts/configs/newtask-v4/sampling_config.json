@@ -659,21 +659,46 @@
         "pick_count": {
           "hard": 2,
           "easy": 1,
-          "medium": 1
+          "medium": 1,
+          "xhard": 3
         },
         "bin_layout_policy": {
           "count": {
             "hard": 15,
             "easy": 3,
-            "medium": 5
+            "medium": 5,
+            "xhard": 8
           },
           "region_center": [
             0,
             0
           ],
-          "region_half_size": 0.2
+          "region_half_size": 0.2,
+          "xhard": {
+            "min_gap_factor": 0.75
+          }
         },
-        "distractor": null
+        "distractor": null,
+        "xhard": {
+          "distractor": {
+            "count": 3,
+            "ring_max_abs_xy": [
+              0.2675,
+              0.45
+            ],
+            "cube_count_range": [
+              1,
+              2
+            ],
+            "color_pool": [
+              "yellow",
+              "cyan",
+              "magenta"
+            ],
+            "min_gap_factor": 0.75,
+            "max_trials": 256
+          }
+        }
       },
       "native": {
         "parameters": {
@@ -948,21 +973,46 @@
         "pick_count": {
           "hard": 2,
           "easy": 1,
-          "medium": 1
+          "medium": 1,
+          "xhard": 3
         },
         "bin_layout_policy": {
           "count": {
             "hard": 15,
             "easy": 3,
-            "medium": 5
+            "medium": 5,
+            "xhard": 8
           },
           "region_center": [
             0,
             0
           ],
-          "region_half_size": 0.2
+          "region_half_size": 0.2,
+          "xhard": {
+            "min_gap_factor": 0.75
+          }
         },
-        "distractor": null
+        "distractor": null,
+        "xhard": {
+          "distractor": {
+            "count": 3,
+            "ring_max_abs_xy": [
+              0.2675,
+              0.45
+            ],
+            "cube_count_range": [
+              1,
+              2
+            ],
+            "color_pool": [
+              "yellow",
+              "cyan",
+              "magenta"
+            ],
+            "min_gap_factor": 0.75,
+            "max_trials": 256
+          }
+        }
       },
       "native": {
         "parameters": {

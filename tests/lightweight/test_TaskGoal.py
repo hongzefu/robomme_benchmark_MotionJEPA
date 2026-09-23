@@ -264,6 +264,57 @@ def test_buttonunmask_pick_two():
     assert "another container hiding the red cube" in g
 
 
+# ── V4 xhard：VideoUnmask / ButtonUnmask 的 pick=3 分支（原三档断言不动）──
+
+def test_videounmask_pick_three_xhard():
+    """xhard pick=3：三个颜色依次出现，且不再是 hard 的两抓文本。"""
+    s = _make_self(
+        unwrapped_attrs=dict(
+            color_names=["red", "blue", "green"],
+            configs={"xhard": {"pick": 3}},
+        ),
+        difficulty="xhard",
+    )
+    result = _call("VideoUnmask", s)
+    assert result[0] == (
+        "watch the video carefully, then pick up the container hiding the red cube, "
+        "next pick up another container hiding the blue cube, "
+        "finally pick up another container hiding the green cube"
+    )
+
+
+def test_buttonunmask_pick_three_xhard():
+    """xhard pick=3：先按按钮，再依次抓三个容器。"""
+    s = _make_self(
+        unwrapped_attrs=dict(
+            color_names=["green", "red", "blue"],
+            configs={"xhard": {"pick": 3}},
+        ),
+        difficulty="xhard",
+    )
+    result = _call("ButtonUnmask", s)
+    assert result[0] == (
+        "first press the button, then pick up the container hiding the green cube, "
+        "next pick up another container hiding the red cube, "
+        "finally pick up another container hiding the blue cube"
+    )
+
+
+def test_unmask_xhard_prefers_actual_pick_count():
+    """xhard 下外部配置改了抓取次数时，文本跟环境实际建任务表的次数走（xhard_pick_count）。"""
+    s = _make_self(
+        unwrapped_attrs=dict(
+            color_names=["red", "blue", "green"],
+            configs={"xhard": {"pick": 3}},
+            xhard_pick_count=2,
+        ),
+        difficulty="xhard",
+    )
+    result = _call("VideoUnmask", s)
+    assert "another container hiding the blue cube" in result[0]
+    assert "green" not in result[0]
+
+
 # ── ButtonUnmaskSwap: 2 branches ──
 
 def test_buttonunmaskswap_pick_one():

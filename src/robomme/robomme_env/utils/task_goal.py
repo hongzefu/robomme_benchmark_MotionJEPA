@@ -44,9 +44,30 @@ num2words_2 = {
     20: "twentieth"
 }
 
+def _unmask_pick_count(self):
+    """VideoUnmask / ButtonUnmask 的抓取次数。
+
+    原三档沿用原口径（类属性 ``configs[难度]['pick']``）；xhard 优先读环境实际用来建任务表的次数
+    ``xhard_pick_count``（外部 sampling_config 可改 decision 的 xhard 值，类属性不会跟着变）。
+    """
+    pick = self.env.unwrapped.configs[self.difficulty]['pick']
+    if self.difficulty == "xhard":
+        pick = getattr(self.env.unwrapped, "xhard_pick_count", pick)
+    return pick
+
+
+def _unmask_multi_pick_clause(color_names, pick):
+    """V4 xhard（pick ≥ 3）专用：逐个列出要抓的容器；原三档（pick ≤ 2）不经过这里，文本逐字不变。"""
+    parts = [f"pick up the container hiding the {color_names[0]} cube"]
+    for k in range(1, pick - 1):
+        parts.append(f"next pick up another container hiding the {color_names[k]} cube")
+    parts.append(f"finally pick up another container hiding the {color_names[pick - 1]} cube")
+    return ", ".join(parts)
+
+
 def get_language_goal(self, env):
     language_goals = []
-    
+
     if env == "BinFill":
         color_counts = {
             "red": getattr(self.env.unwrapped, "red_cubes_target_number", 0),
@@ -99,7 +120,10 @@ def get_language_goal(self, env):
         color_names = getattr(self.env.unwrapped, "color_names", ["unknown", "unknown", "unknown"])
         cube_0_color = color_names[0]
         cube_1_color = color_names[1]
-        if self.env.unwrapped.configs[self.difficulty]['pick'] > 1:
+        unmask_pick = _unmask_pick_count(self)
+        if unmask_pick > 2:
+            language_goals.append(f"watch the video carefully, then {_unmask_multi_pick_clause(color_names, unmask_pick)}")
+        elif unmask_pick > 1:
             language_goals.append(f"watch the video carefully, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube")
         else:
             language_goals.append(f"watch the video carefully, then pick up the container hiding the {cube_0_color} cube")
@@ -121,7 +145,10 @@ def get_language_goal(self, env):
         color_names = getattr(self.env.unwrapped, "color_names", ["unknown", "unknown", "unknown"])
         cube_0_color = color_names[0]
         cube_1_color = color_names[1]
-        if self.env.unwrapped.configs[self.difficulty]['pick'] > 1:
+        unmask_pick = _unmask_pick_count(self)
+        if unmask_pick > 2:
+            language_goals.append(f"first press the button, then {_unmask_multi_pick_clause(color_names, unmask_pick)}")
+        elif unmask_pick > 1:
             language_goals.append(f"first press the button, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube")
         else:
             language_goals.append(f"first press the button, then pick up the container hiding the {cube_0_color} cube")

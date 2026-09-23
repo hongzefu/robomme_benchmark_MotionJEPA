@@ -32,6 +32,8 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
+from .utils.SceneGenerationError import SceneGenerationError
+from .utils.unmask_distractors import spawn_ring_distractor_bins
 from ..logging_utils import logger
 
 
@@ -84,6 +86,24 @@ NATIVE_SAMPLING = {
 }
 
 
+# ── V4 xhard 专属的 decision 条目（NEWTASK_RELEASE_V4_PLAN 2.7 / 2.9；G2、B3、B13 均为用户已定数）──
+# 原三档不读这些键；守卫对名为 xhard 的子键只校验结构、放行取值（sampling_config.assert_native_decision）。
+XHARD_BIN_LAYOUT = {
+    # G2（2026-09-22）：区域不动，间距系数 2 → 0.75，容器数 8；放不满直接判该局失败
+    "min_gap_factor": 0.75,
+}
+XHARD_DISTRACTOR = {
+    # B3 / B13：3 个额外容器放外环 max(|x|,|y|) ∈ [0.2675, 0.45]、相机可见，其中随机 1~2 个内含干扰色 cube
+    "count": 3,
+    "ring_max_abs_xy": [0.2675, 0.45],
+    "cube_count_range": [1, 2],
+    "color_pool": ["yellow", "cyan", "magenta"],
+    # 以下两项计划未单列：间距沿用 xhard 容器同一系数（G2 的 0.75），重试预算与容器相同（256）
+    "min_gap_factor": 0.75,
+    "max_trials": 256,
+}
+
+
 def native_blocks(cls):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
     return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
@@ -97,8 +117,11 @@ def _native_decision(cls):
             "count": {difficulty: cfg["bin"] for difficulty, cfg in cls.configs.items()},
             "region_center": [0, 0],
             "region_half_size": 0.2,
+            "xhard": copy.deepcopy(XHARD_BIN_LAYOUT),
         },
+        # 原三档可见部分保持 None；V4 的干扰容器放在 xhard 子键下
         "distractor": None,
+        "xhard": {"distractor": copy.deepcopy(XHARD_DISTRACTOR)},
     }
 
 
@@ -141,11 +164,19 @@ class ButtonUnmask(BaseEnv):
     "pick":1,
     }
 
+    # V4 xhard（派生自 hard，计划 2.9）：pick 2 → 3；容器数 15 → 8（G2：配 min_gap_factor 0.75，
+    # 见 XHARD_BIN_LAYOUT）。另有 3 个外环干扰容器（XHARD_DISTRACTOR），不计入 bin。
+    config_xhard = {
+    'bin':8,
+    "pick":3,
+    }
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard,
     }
 
 
@@ -274,6 +305,18 @@ class ButtonUnmask(BaseEnv):
         bin_layout = decision_cfg["bin_layout_policy"]
         bins_cfg = self._sampling["positions"]["bins"]
         hidden_cfg = self._sampling["positions"]["hidden_cube"]
+        xhard = self.difficulty == "xhard"
+        # V4 xhard：间距系数取 decision 的 xhard 条目（G2 0.75）；原三档仍读 native 的原值，表达式不变
+        gap_factor = (bin_layout["xhard"]["min_gap_factor"] if xhard
+                      else bins_cfg["min_gap_factor"])
+        if xhard:
+            requested_bins = bin_layout["count"][self.difficulty]
+            # 揭示动画只扫 bin_0..bin_{scan-1}：容器数超过它的部分不会被揭示（计划 2.8/2.9）
+            if self._sampling["parameters"]["step_bin_scan"] < requested_bins:
+                raise ValueError(
+                    f"step_bin_scan={self._sampling['parameters']['step_bin_scan']} 小于容器数 {requested_bins}"
+                )
+            self._spec.record("layout.bin_count.requested", requested_bins)
         for i in range(bin_layout["count"][self.difficulty]):
             try:
                 bin_actor = spawn_random_bin(
@@ -281,7 +324,7 @@ class ButtonUnmask(BaseEnv):
                     avoid=avoid,  # Use current avoidance list, containing all spawned objects
                     region_center=list(bin_layout["region_center"]),
                     region_half_size=bin_layout["region_half_size"],
-                    min_gap=self.cube_half_size*bins_cfg["min_gap_factor"],  # bins need larger gap, increased to 6x to avoid collision
+                    min_gap=self.cube_half_size*gap_factor,  # bins need larger gap, increased to 6x to avoid collision
                     name_prefix=f"bin_{i}",
                     max_trials=bins_cfg["max_trials"],
                     generator=generator,
@@ -289,6 +332,12 @@ class ButtonUnmask(BaseEnv):
                     spec_path=f"layout.bins.{i}",
                 )
             except RuntimeError as e:
+                if xhard:
+                    # 2.2④：xhard 下放不满即该局失败，不许静默截断
+                    self._spec.record("layout.bin_count.placed", len(self.spawned_bins))
+                    raise SceneGenerationError(
+                        f"ButtonUnmask xhard 容器放不满：请求 {requested_bins} 个，只放下 {len(self.spawned_bins)} 个"
+                    ) from e
                 break
 
             self.spawned_bins.append(bin_actor)
@@ -296,6 +345,8 @@ class ButtonUnmask(BaseEnv):
             setattr(self, f"bin_{i}", bin_actor)
             # Add newly generated bin to avoidance list
             avoid.append(bin_actor)
+        if xhard:
+            self._spec.record("layout.bin_count.placed", len(self.spawned_bins))
 
 
         # Generate 3 dynamic cubes under each bin (using fixed position, colors red, green, blue)
@@ -367,7 +418,11 @@ class ButtonUnmask(BaseEnv):
                         "solve": lambda env, planner: [solve_pickup_bin(env, planner, obj=self.bin_0)],
                          "segment":self.bin_0,
                     })
-        if decision_cfg["pick_count"][self.difficulty]>1:
+        if xhard:
+            # V4 xhard：按 pick_count 循环追加「放下上一个 → 抓第 k 个」（原分支写死 bin_0/bin_1，只能 2 抓）；
+            # 上面第一个 pickup 的单元素列表形态原样保留
+            self._append_xhard_pick_tasks(tasks, decision_cfg["pick_count"][self.difficulty])
+        elif decision_cfg["pick_count"][self.difficulty]>1:
             tasks.append({
                     "func": (lambda: is_bin_putdown(self, obj=self.bin_0)),
                     "name": "put down the container",
@@ -405,6 +460,57 @@ class ButtonUnmask(BaseEnv):
             )
         else:
             self.fail_grasp_task_index = None
+
+        if xhard:
+            # V4 xhard 干扰容器：必须在全部既有取值点之后（红线 N5）。场景局部 generator 的最后一次既有抽样
+            # 是 color_order；恢复抽样走构造器的 self.generator，两条流互不影响。按钮 OBB 在 avoid 里一并避让。
+            self.distractor_bins, self.distractor_cubes = spawn_ring_distractor_bins(
+                self,
+                cfg=decision_cfg["xhard"]["distractor"],
+                avoid=avoid,
+                generator=generator,
+                recorder=self._spec,
+                hidden_half_size=self.cube_half_size/hidden_cfg["half_size_divisor"],
+            )
+
+    def _append_xhard_pick_tasks(self, tasks, pick_total):
+        """xhard 专用：把第 2..pick_total 次抓取按「放下上一个容器 → 抓下一个」追加进任务表。
+
+        各条目与原 hard 分支的第 2 抓逐项同构，只把写死的 bin_0/bin_1、color_names[0]/[1] 换成按 k 取；
+        lambda 用默认参数绑定当次的容器，避免循环变量晚绑定。
+        """
+        if pick_total > min(len(self.spawned_bins), len(self.color_names)):
+            raise SceneGenerationError(
+                f"pick_count={pick_total} 超过可抓的藏物容器数 {min(len(self.spawned_bins), len(self.color_names))}"
+            )
+        # 任务目标文本（utils/task_goal.py）在 xhard 下读这个实际次数
+        self.xhard_pick_count = pick_total
+        self._spec.record("objects.n_picks", pick_total)
+        self._spec.record("objects.pick_order", list(range(pick_total)))
+        for k in range(1, pick_total):
+            prev_bin = getattr(self, f"bin_{k-1}")
+            cur_bin = getattr(self, f"bin_{k}")
+            color = self.color_names[k]
+            tasks.append({
+                    "func": (lambda b=prev_bin: is_bin_putdown(self, obj=b)),
+                    "name": "put down the container",
+                    "subgoal_segment":"put down the container",
+                    "choice_label": "put down the container",
+                    "demonstration": False,
+                    "failure_func": lambda b=prev_bin: is_any_bin_pickup(self,[bin for bin in self.spawned_bins if bin != b]),
+                    "solve": lambda env, planner: solve_putdown_whenhold(env, planner),
+                })
+            tasks.append(
+                {
+                    "func": (lambda b=cur_bin: is_bin_pickup(self, obj=b)),
+                    "name": f"pick up the container that hides the {color} cube",
+                    "subgoal_segment":f"pick up the container at <> that hides the {color} cube",
+                    "choice_label": "pick up the container",
+                    "demonstration": False,
+                    "failure_func": lambda b=cur_bin: is_any_bin_pickup(self,[bin for bin in self.spawned_bins if bin != b]),
+                    "solve": lambda env, planner, b=cur_bin: solve_pickup_bin(env, planner, obj=b),
+                    "segment":cur_bin,
+                })
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         # 每次初始化各自记一份规格，不复用上一次的结果
