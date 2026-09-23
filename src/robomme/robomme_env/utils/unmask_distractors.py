@@ -214,3 +214,59 @@ def spawn_ring_distractor_bins(env, *, cfg: dict, avoid: list, generator: torch.
         )
         cubes.append(cube)
     return bins, cubes
+
+
+# ── 干扰容器的揭示与误抓判失败（用户 2026-09-22 决策「参与揭示+误抓即失败」）──────────────
+# 四个 Unmask 环境（VideoUnmask / ButtonUnmask / VideoUnmaskSwap / ButtonUnmaskSwap）的 xhard 共用；
+# 两个 Swap 环境的干扰容器由 unmask_swap_xhard.build_distractors 生成，同样挂在 env.distractor_bins 上。
+# 只在 difficulty == "xhard" 分支被调用，原三档从不进入。
+
+
+def reveal_distractor_bins(env, *, start_step: int, end_step: int, cur_step: int) -> None:
+    """让干扰容器与区域内容器走**同一揭示机制、同一时段**：逐个调用
+    ``statechange.lift_and_drop_objects_back_to_original``（窗口前半段移到远处露出内容、半窗那一步放回原位）。
+
+    空的干扰容器同样抬起（露出无物）。只做揭示，不进 ``spawned_bins``、不参与 swap / 最近邻。
+    """
+    from .statechange import lift_and_drop_objects_back_to_original
+
+    for actor in list(getattr(env, "distractor_bins", None) or []):
+        if actor is None:
+            continue
+        lift_and_drop_objects_back_to_original(
+            env, obj=actor, start_step=start_step, end_step=end_step, cur_step=cur_step,
+        )
+
+
+def any_distractor_bin_lifted(env):
+    """任一干扰容器被抬起即真；判据与区域内容器相同（``subgoal_evaluate_func.is_bin_pickup``：z > 0.15）。"""
+    from .subgoal_evaluate_func import is_any_bin_pickup
+
+    return is_any_bin_pickup(env, [a for a in (getattr(env, "distractor_bins", None) or []) if a is not None])
+
+
+def add_distractor_misgrasp_failure(env, tasks) -> int:
+    """给任务表里每个**已有** ``failure_func`` 的条目追加「任一干扰容器被抬起即失败」，返回改动条数。
+
+    * 只包装 ``failure_func`` 非 None 的条目（即抓取 / 放下两类；static、按钮等原本不判失败的条目不动）；
+    * 新的 ``failure_func`` 返回 ``[原结果, 干扰判据]`` 列表，由 ``_coerce_failure_result`` 取 any——
+      原结果的形态（如 ButtonUnmask 首个抓取任务返回的单元素列表）原样保留在列表第一项里；
+    * 原 ``failure_func`` 不是可调用对象时（预先算好的值）原样作为第一项；
+    * 只改 ``failure_func`` 一个键，``solve``（``inject_fail_grasp`` 替换的对象）与其余键不动，调用先后均可。
+    """
+    changed = 0
+    for task in tasks:
+        if not isinstance(task, dict):
+            continue
+        original = task.get("failure_func")
+        if original is None:
+            continue
+
+        def _combined(original=original):
+            first = original() if callable(original) else original
+            return [first, any_distractor_bin_lifted(env)]
+
+        _combined.__name__ = "xhard_distractor_misgrasp_failure"
+        task["failure_func"] = _combined
+        changed += 1
+    return changed

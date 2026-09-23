@@ -33,7 +33,11 @@ from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.SceneGenerationError import SceneGenerationError
-from .utils.unmask_distractors import spawn_ring_distractor_bins
+from .utils.unmask_distractors import (
+    add_distractor_misgrasp_failure,
+    reveal_distractor_bins,
+    spawn_ring_distractor_bins,
+)
 
 from ..logging_utils import logger
 
@@ -443,6 +447,9 @@ class VideoUnmask(BaseEnv):
                 recorder=self._spec,
                 hidden_half_size=self.cube_half_size/hidden_cfg["half_size_divisor"],
             )
+            # V4 xhard（用户 2026-09-22「误抓即失败」）：每个已有 failure_func 的抓取／放下任务追加
+            # 「任一干扰容器被抬起（z>0.15，与区域内容器同一判据）即失败」；原三档不进此分支
+            add_distractor_misgrasp_failure(self, self.task_list)
 
     def _append_xhard_pick_tasks(self, tasks, pick_total):
         """xhard 专用：把第 2..pick_total 次抓取按「放下上一个容器 → 抓下一个」追加进任务表。
@@ -586,6 +593,14 @@ class VideoUnmask(BaseEnv):
                     end_step=self._sampling["positions"]["reveal_window"]["end_step"],
                     cur_step=timestep,
                 ) 
+        if self.difficulty == "xhard":
+            # V4 xhard（用户 2026-09-22「参与揭示」）：外环干扰容器与区域内容器同一揭示窗口、同一机制
+            reveal_distractor_bins(
+                self,
+                start_step=self._sampling["positions"]["reveal_window"]["start_step"],
+                end_step=self._sampling["positions"]["reveal_window"]["end_step"],
+                cur_step=timestep,
+            )
 
 
 

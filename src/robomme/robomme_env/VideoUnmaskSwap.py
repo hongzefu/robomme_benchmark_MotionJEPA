@@ -41,6 +41,7 @@ from .utils.bin_collision import (
     nearest_partner_index,
     object_state_from_actor,
 )
+from .utils.unmask_distractors import add_distractor_misgrasp_failure, reveal_distractor_bins
 from .utils.unmask_swap_xhard import (
     SWAP_WINDOW_START,
     SWAP_WINDOW_STEPS,
@@ -750,6 +751,9 @@ class VideoUnmaskSwap(BaseEnv):
         if self._is_xhard:
             # V4 xhard 干扰容器：放在全部既有取值点之后，且走专用随机流（N5）
             self._spawn_xhard_distractors()
+            # V4 xhard（用户 2026-09-22「误抓即失败」）：每个已有 failure_func 的抓取／放下任务追加
+            # 「任一干扰容器被抬起（z>0.15，与区域内容器同一判据）即失败」
+            add_distractor_misgrasp_failure(self, self.task_list)
 
     def _spawn_xhard_distractors(self):
         """建 3 个外环干扰容器（B3/B13）；候选与预演的任一段交换扫掠相交即重抽（H1）。"""
@@ -1069,6 +1073,10 @@ class VideoUnmaskSwap(BaseEnv):
                 end_step=self.swap_window_start,  # 预交换锁定段终点 = 首段交换起点（64）
                 cur_step=timestep,
             )
+        if self._is_xhard:
+            # V4 xhard（用户 2026-09-22「参与揭示」）：外环干扰容器与区域内容器同一窗口 [0, 64)、同一机制揭示；
+            # 仍不进 spawned_bins、不参与 swap／最近邻
+            reveal_distractor_bins(self, start_step=0, end_step=self.swap_window_start, cur_step=timestep)
 
         for i in range(len(self.swap_schedule)):
             start = self.swap_schedule[i][2]
