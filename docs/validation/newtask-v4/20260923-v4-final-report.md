@@ -449,8 +449,8 @@ StopCube/MoveCube/InsertPeg 由「无 configs」变为「三档同值 configs」
 | 正式规格快照（入 Git） | `scripts/configs/newtask-v4/v4-01/specs.jsonl`（冻结初选 48 条，identity `2e3766c9…`）；`specs.selected.jsonl`（按实跑重标，47 条，身份相同，**推理用这份**） |
 | V4 采样快照 / V6 组合清单（入 Git） | `scripts/configs/newtask-v4/sampling_config.json`、`combos.json` |
 | 抽签原始记录 | `artifacts/newtask-v4/v4-01/draft/drafts.jsonl` |
-| 全量第一遍 / 第二遍（h5＋视频，J9） | `artifacts/newtask-v4/v4-01/rollout/run1/`、`run2/`（每局 `episodes/<task>_episode_<i>/{hdf5_files,videos}`，汇总 `results.jsonl`、`summary.json`） |
-| V1 | `artifacts/newtask-v4/v1-base-13e/`、`v1-after-6cc/`、`v1-sup-00a94de/`、`v1-compare*/` |
+| 全量第一遍 / 第二遍（h5＋视频，J9） | `artifacts/newtask-v4/v4-01/rollout/run1/`（交付物，保留）、`run2/`（与 run1 逐位相同，V2 比完后按用户决定删除）（每局 `episodes/<task>_episode_<i>/{hdf5_files,videos}`，汇总 `results.jsonl`、`summary.json`） |
+| V1 | 比较明细 `artifacts/newtask-v4/v1-compare*/`（三次完整运行约 117 GB 已按用户决定删除） |
 | V6 | `artifacts/newtask-v4/combos/v6-01/`（`samples-*.jsonl`、`summary.json`） |
 | V3g / V5e | `artifacts/newtask-v4/v4-01/v3g-v3.json`；`artifacts/newtask-v4/v4-01/eval-all/eval_results.jsonl` |
 | 各步报告 | `docs/validation/newtask-v4/`（step1-2、step0-g2、step3、step3b-*、step3c-v6、step4-6、v1、本报告） |
