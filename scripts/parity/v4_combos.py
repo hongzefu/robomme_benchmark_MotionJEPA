@@ -96,7 +96,7 @@ def build_combos() -> dict:
         add("PickHighlight", f"highlight={highlight},spawn={spawn}",
             {"decision.highlight_count.xhard": [highlight, highlight],
              "decision.spawn_count.xhard": [spawn, spawn]})
-    for length in _closed(20, 25):
+    for length in _closed(20, 24):  # 用户 2026-09-23 把上界从 25 改为 24
         add("PatternLock", f"length={length}", {"decision.path_length_range.xhard": [length, length]})
     for length in _closed(12, 15):
         add("RouteStick", f"L={length}", add_={"native.parameters.configs": _routestick_configs(length)})

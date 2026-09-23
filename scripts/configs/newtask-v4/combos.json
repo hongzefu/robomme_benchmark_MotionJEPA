@@ -944,15 +944,6 @@
       24
      ]
     }
-   },
-   {
-    "name": "length=25",
-    "set": {
-     "decision.path_length_range.xhard": [
-      25,
-      25
-     ]
-    }
    }
   ],
   "RouteStick": [

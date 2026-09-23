@@ -28,6 +28,10 @@ from mani_skill.utils.geometry.rotation_conversions import (
 
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils import *
+# V4（用户 2026-09-23「修xhard」）：上一行的 `from .utils import *` 会把同名子模块
+# `utils.SceneGenerationError` 盖到名字 `SceneGenerationError` 上，原三档的布局失败因此变成 TypeError
+# （按 H2 原三档保持现状）。xhard 分支改用下面这个别名拿到真正的异常类。
+from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenerationError
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
@@ -270,6 +274,8 @@ class VideoPlaceOrder(BaseEnv):
 
 
     def _load_scene(self, options: dict):
+        # V4 H2：xhard 用真正的异常类（失败归为可重试的任务性失败）；原三档仍是被遮蔽的原名字，行为逐字不变
+        _SceneGenError = _RealSceneGenerationError if self.difficulty == "xhard" else SceneGenerationError
 
         try:
             self.table_scene = TableSceneBuilder(
@@ -300,7 +306,7 @@ class VideoPlaceOrder(BaseEnv):
                     spec_path="layout.goal_xy",
                 )
             except RuntimeError as exc:
-                raise SceneGenerationError("goal_site sampling failed") from exc
+                raise _SceneGenError("goal_site sampling failed") from exc
             avoid = []
             avoid.append(self.goal_site)
             button_cfg = self._sampling["positions"]["button"]
@@ -364,7 +370,7 @@ class VideoPlaceOrder(BaseEnv):
                                 **self._xhard_spec_kwargs(f"layout.cubes.{group['name']}_{cube_idx}"),
                             )
                         except RuntimeError as exc:
-                            raise SceneGenerationError(
+                            raise _SceneGenError(
                                 f"Failed to generate {group['name']} cube {cube_idx}: {exc}"
                             ) from exc
 
@@ -398,7 +404,7 @@ class VideoPlaceOrder(BaseEnv):
                             **self._xhard_spec_kwargs(f"layout.targets.{i}"),
                         )
                     except RuntimeError as exc:
-                        raise SceneGenerationError(f"Target {i + 1} sampling failed: {exc}") from exc
+                        raise _SceneGenError(f"Target {i + 1} sampling failed: {exc}") from exc
 
                     self.targets.append(target)
                     setattr(self, f"target_{i}", target)
@@ -489,10 +495,10 @@ class VideoPlaceOrder(BaseEnv):
             else:
                 self.button_task_index = 0
 
-        except SceneGenerationError:
+        except _SceneGenError:
             raise
         except Exception as exc:
-            raise SceneGenerationError(
+            raise _SceneGenError(
                 f"Failed to load VideoPlaceOrder scene for seed {self.seed}"
             ) from exc
 
@@ -548,7 +554,7 @@ class VideoPlaceOrder(BaseEnv):
             self.difficulty, len(self.all_cubes),
         )
         if len(self.targets) < 2:
-            raise SceneGenerationError(f"VideoPlaceOrder xhard 至少需要 2 个目标台，实际 {len(self.targets)}")
+            raise _RealSceneGenerationError(f"VideoPlaceOrder xhard 至少需要 2 个目标台，实际 {len(self.targets)}")
 
         demo_ids = self._spec.value(
             "objects.demo_ids",
@@ -557,7 +563,7 @@ class VideoPlaceOrder(BaseEnv):
         )
         demo_ids = [int(i) for i in demo_ids]
         if len(demo_ids) != demo_count:
-            raise SceneGenerationError(f"演示方块请求 {demo_count} 个，实际 {len(demo_ids)} 个")
+            raise _RealSceneGenerationError(f"演示方块请求 {demo_count} 个，实际 {len(demo_ids)} 个")
         self.demo_cubes = [self.all_cubes[i] for i in demo_ids]
 
         self.swap_target_a = None
