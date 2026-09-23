@@ -30,7 +30,8 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import SamplingConfigError, assert_native_decision, split_sampling_config
+from .utils.SceneGenerationError import SceneGenerationError
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 from ..logging_utils import logger
@@ -87,15 +88,43 @@ def native_blocks(cls):
     return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
 
 
+# V4 xhard 专属的 decision 条目（NEWTASK_RELEASE_V4_PLAN 2.12）；放在名为 ``xhard`` 的子键下，
+# 守卫（assert_native_decision）去掉 xhard 后原三档可见部分与原值逐字相同。
+#   block_color_policy：「block 颜色任意」＝逐块独立抽 [0,1]^3 均匀 RGB（alpha 固定 1）。
+#   subgoal_color_suffix：任意 RGB 没有颜色名，subgoal 的 ``, which is {color}`` 后缀如何写。
+#     ⚠ 待用户决策：先取最保守的 "omit"（整段后缀去掉，不输出任何可能错误的颜色词）；
+#     可经外部 sampling_config 覆盖该值，但目前只实现 "omit" 一种，其余取值直接拒绝。
+XHARD_DECISION = {
+    "block_color_policy": "uniform_rgb",
+    "subgoal_color_suffix": "omit",
+}
+
+
 def _native_decision(cls):
-    """按方案第二节 2.9 切出 decision 块（原值阶段等于原值）。"""
+    """按方案第二节 2.9 切出 decision 块（原值阶段等于原值）。
+
+    ``highlight_count`` / ``spawn_count`` 按 ``cls.configs`` 逐档展开：原三档是整数，
+    xhard 是闭区间 ``[lo, hi]``（V4 新值，走守卫的 xhard 放行）。
+    """
     return {
         "layout_mode": "native_region",
         "cube_region": {"region_center": [-0.1, 0], "region_half_size": 0.2},
-        "highlight_count": {difficulty: cfg["pickup"] for difficulty, cfg in cls.configs.items()},
-        "spawn_count": {difficulty: cfg["spawn"] for difficulty, cfg in cls.configs.items()},
+        "highlight_count": {difficulty: copy.deepcopy(cfg["pickup"]) for difficulty, cfg in cls.configs.items()},
+        "spawn_count": {difficulty: copy.deepcopy(cfg["spawn"]) for difficulty, cfg in cls.configs.items()},
         "block_color_policy": "native_per_cube_uniform",
+        "xhard": copy.deepcopy(XHARD_DECISION),
     }
+
+
+def _closed_range(value, key):
+    """把 xhard 的闭区间 ``[lo, hi]`` 校验成两个整数；外部配置写坏时直接拒绝。"""
+    if (not isinstance(value, (list, tuple)) or len(value) != 2
+            or not all(isinstance(v, int) and not isinstance(v, bool) for v in value)
+            or value[0] < 1 or value[0] > value[1]):
+        raise SamplingConfigError(
+            f"PickHighlight: decision.{key} 必须是闭区间 [lo, hi]（1≤lo≤hi 的整数），收到 {value!r}"
+        )
+    return int(value[0]), int(value[1])
 
 
 def _resolve_sampling_config(cls, override):
@@ -138,11 +167,20 @@ class PickHighlight(BaseEnv):
         "pickup": 2
     }
 
+    # V4 xhard（派生自 hard，计划 2.12）：闭区间，每局各抽一次。
+    # spawn [8,10]（B5：区域与 min_gap 不动时实测只稳放 8~10）；highlight [5,7]（用户原文）。
+    # 约束 spawn 下界 ≥ highlight 上界，_load_scene 的 xhard 分支对实际生效的区间做硬断言。
+    config_xhard = {
+        'spawn': [8, 10],
+        "pickup": [5, 7]
+    }
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard,
     }
 
 
@@ -261,20 +299,61 @@ class PickHighlight(BaseEnv):
             for entry in self._sampling["parameters"]["color_pool"]
         ]
 
-        # Get number of cubes to spawn based on difficulty
-        num_cubes_to_spawn = decision_cfg["spawn_count"][self.difficulty]
+        # V4 xhard 分支（H2/N12：原三档一行不走这里）。
+        xhard = self.difficulty == "xhard"
+        if xhard:
+            xhard_cfg = decision_cfg["xhard"]
+            if xhard_cfg["block_color_policy"] != "uniform_rgb":
+                raise SamplingConfigError(
+                    "PickHighlight: decision.xhard.block_color_policy 只支持 'uniform_rgb'，"
+                    f"收到 {xhard_cfg['block_color_policy']!r}"
+                )
+            if xhard_cfg["subgoal_color_suffix"] != "omit":
+                raise SamplingConfigError(
+                    "PickHighlight: decision.xhard.subgoal_color_suffix 目前只实现 'omit'，"
+                    f"收到 {xhard_cfg['subgoal_color_suffix']!r}"
+                )
+            spawn_lo, spawn_hi = _closed_range(decision_cfg["spawn_count"]["xhard"], "spawn_count.xhard")
+            highlight_lo, highlight_hi = _closed_range(
+                decision_cfg["highlight_count"]["xhard"], "highlight_count.xhard"
+            )
+            # spawn≥highlight 硬断言（计划 2.12）：按生效区间的最坏情形判，外部收窄写坏时当场拒绝
+            if spawn_lo < highlight_hi:
+                raise SamplingConfigError(
+                    f"PickHighlight: xhard 须 spawn 下界 ≥ highlight 上界，收到 spawn=[{spawn_lo},{spawn_hi}] "
+                    f"highlight=[{highlight_lo},{highlight_hi}]"
+                )
+            # 新增取值点：本局方块数（只在 xhard 抽；它决定下面循环的长度，只能排在方块循环之前）
+            num_cubes_to_spawn = int(self._spec.value(
+                "objects.n_cubes",
+                int(torch.randint(spawn_lo, spawn_hi + 1, (1,), generator=self.generator).item()),
+                decision_key="spawn_count.xhard",
+            ))
+        else:
+            # Get number of cubes to spawn based on difficulty
+            num_cubes_to_spawn = decision_cfg["spawn_count"][self.difficulty]
 
         # Spawn specified number of cubes, each with random color
         for cube_idx in range(num_cubes_to_spawn):
-            # Randomly select a color
-            color_choice_idx = self._spec.value(
-                f"objects.color_choice.{cube_idx}",
-                torch.randint(
-                    self._sampling["parameters"]["color_draw"]["low"],
-                    len(available_colors), (1,), generator=self.generator,
-                ).item(),
-            )
-            chosen_color = available_colors[color_choice_idx]
+            if xhard:
+                # 颜色任意：逐块独立抽均匀 RGB（替换原三色 randint，只在 xhard 生效）。
+                # 没有颜色名 ⇒ label 置 None、actor 名用 "rgb"；subgoal 后缀按 subgoal_color_suffix 处理。
+                rgba = self._spec.value(
+                    f"objects.color_rgba.{cube_idx}",
+                    torch.rand(3, generator=self.generator).tolist() + [1.0],
+                    decision_key="xhard.block_color_policy",
+                )
+                chosen_color = {"color": tuple(float(c) for c in rgba), "name": "rgb", "label": None}
+            else:
+                # Randomly select a color
+                color_choice_idx = self._spec.value(
+                    f"objects.color_choice.{cube_idx}",
+                    torch.randint(
+                        self._sampling["parameters"]["color_draw"]["low"],
+                        len(available_colors), (1,), generator=self.generator,
+                    ).item(),
+                )
+                chosen_color = available_colors[color_choice_idx]
 
             try:
                 cube = spawn_random_cube(
@@ -299,23 +378,47 @@ class PickHighlight(BaseEnv):
                 # Add cube immediately after successful creation
                 self.all_cubes.append(cube)
                 self.all_cube_names.append(cube_name)
-                self.all_cube_colors.append(chosen_color["name"])
+                self.all_cube_colors.append(chosen_color.get("label", chosen_color["name"]))
                 setattr(self, cube_name, cube)
                 avoid.append(cube)
 
             except RuntimeError as e:
+                if xhard:
+                    # 2.2④：xhard 不许静默截断，放不满即判本局生成失败
+                    raise SceneGenerationError(
+                        f"PickHighlight xhard: 方块放不满，请求 {num_cubes_to_spawn} 实际 {len(self.all_cubes)}"
+                        f"（第 {cube_idx} 块失败：{e}）"
+                    ) from e
                 logger.debug(f"Failed to spawn cube {cube_idx} ({chosen_color['name']}): {e}")
                 break
 
         logger.debug(f"Generated {len(self.all_cubes)} cubes total")
 
-
-
-         # Randomly select one cube from all available cubes as the target
-        target_cube_indices = self._spec.value(
-            "objects.highlight_ids",
-            torch.randperm(len(self.all_cubes), generator=self.generator)[:decision_cfg["highlight_count"][self.difficulty]].tolist(),
-        )
+        if xhard:
+            # 请求数 vs 实际数（2.2④）；走到这里二者必相等
+            self._spec.record("objects.n_cubes_spawned", len(self.all_cubes))
+            # 原抽法 randperm(len(all_cubes)) 原位不动；高亮数是新增取值点，追加在 randperm 之后
+            permutation = torch.randperm(len(self.all_cubes), generator=self.generator).tolist()
+            highlight_count = int(self._spec.value(
+                "objects.highlight_count",
+                int(torch.randint(highlight_lo, highlight_hi + 1, (1,), generator=self.generator).item()),
+                decision_key="highlight_count.xhard",
+            ))
+            # randperm(len)[:k] 在 k>len 时会静默截断，这里显式挡住
+            if highlight_count > len(permutation):
+                raise SceneGenerationError(
+                    f"PickHighlight xhard: 高亮数 {highlight_count} 超过实际方块数 {len(permutation)}"
+                )
+            target_cube_indices = self._spec.value(
+                "objects.highlight_ids", permutation[:highlight_count],
+                decision_key="highlight_count.xhard",
+            )
+        else:
+            # Randomly select one cube from all available cubes as the target
+            target_cube_indices = self._spec.value(
+                "objects.highlight_ids",
+                torch.randperm(len(self.all_cubes), generator=self.generator)[:decision_cfg["highlight_count"][self.difficulty]].tolist(),
+            )
 
         self.target_cubes = [self.all_cubes[idx] for idx in target_cube_indices]
         self.target_cube_names = [self.all_cube_names[idx] for idx in target_cube_indices]
@@ -334,13 +437,19 @@ class PickHighlight(BaseEnv):
         ) or getattr(self, "target_label", None) or "target"
         self.target_label = target_label
 
+        if xhard:
+            # D4 只在 xhard 修（H2）：原三档这里传的是构造时刻的求值结果（不是可调用），
+            # 判据从未生效；xhard 包成 lambda，按下按钮之前抓起任何方块即失败。
+            button_failure_func = lambda: is_any_obj_pickup(self, [cube for cube in self.all_cubes])
+        else:
+            button_failure_func = is_any_obj_pickup(self,[cube for cube in self.all_cubes])
         tasks.append({
             "func": lambda: is_button_pressed(self, obj=self.button),
                 "name": "press the button",
                 "subgoal_segment":"press the button at <>",
                 "choice_label": "press button",
                 "demonstration": False,
-                "failure_func":is_any_obj_pickup(self,[cube for cube in self.all_cubes]),
+                "failure_func":button_failure_func,
                 "solve": lambda env, planner:solve_button(env, planner, obj=self.button),
                  "segment":self.cap_link,
             })
@@ -348,7 +457,15 @@ class PickHighlight(BaseEnv):
         num_targets = len(self.target_cubes)
         for cube_idx, cube in enumerate(self.target_cubes):
                 # If only one target cube, do not show index
-                if num_targets == 1:
+                if xhard:
+                    # 任意 RGB 没有颜色名：subgoal_color_suffix="omit" ⇒ 去掉 ", which is {color}" 整段后缀
+                    if num_targets == 1:
+                        task_name = "pick up the highlighted cube"
+                        task_subgoal = "pick up the highlighted cube at <>"
+                    else:
+                        task_name = subgoal_language.get_subgoal_with_index(cube_idx, "pick up the {idx} highlighted cube")
+                        task_subgoal = subgoal_language.get_subgoal_with_index(cube_idx, "pick up the {idx} highlighted cube at <>")
+                elif num_targets == 1:
                     task_name = f"pick up the highlighted cube, which is {self.target_labels[cube_idx]}"
                     task_subgoal = f"pick up the highlighted cube at <>, which is {self.target_labels[cube_idx]}"
                 else:
@@ -530,7 +647,11 @@ class PickHighlight(BaseEnv):
 
       
 
-        highlight_count = min(self._sampling["decision"]["highlight_count"][self.difficulty], len(target_cubes))
+        if self.difficulty == "xhard":
+            # xhard 的 highlight_count 是区间，本局实际高亮数就是已抽定的目标数
+            highlight_count = len(target_cubes)
+        else:
+            highlight_count = min(self._sampling["decision"]["highlight_count"][self.difficulty], len(target_cubes))
         for i in range(highlight_count):
             highlight_obj(
                 self,
