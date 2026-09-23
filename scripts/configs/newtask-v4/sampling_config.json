@@ -473,8 +473,8 @@
             2
           ],
           "xhard": [
-            4,
-            5
+            8,
+            12
           ]
         },
         "pick_count_range": {
@@ -491,12 +491,32 @@
             1
           ],
           "xhard": [
-            2,
-            2
+            3,
+            3
           ]
         },
         "swap_speed_multiplier": 1,
-        "distractor": null
+        "distractor": null,
+        "xhard": {
+          "swap_speed_multiplier": 1.5,
+          "distractor": {
+            "count": 3,
+            "with_cube_range": [
+              1,
+              2
+            ],
+            "ring_half_extent": [
+              0.2675,
+              0.45
+            ],
+            "min_gap": 0.04,
+            "colors": [
+              "yellow",
+              "cyan",
+              "magenta"
+            ]
+          }
+        }
       },
       "native": {
         "parameters": {
@@ -521,6 +541,15 @@
               "resolve_at": "swap_start",
               "exclude_self": true,
               "tie_break": "first_in_spawn_order"
+            }
+          },
+          "xhard": {
+            "object_selection": {
+              "pickup_selected_indices": [
+                0,
+                1,
+                2
+              ]
             }
           }
         },
@@ -692,6 +721,10 @@
           "medium": [
             1,
             2
+          ],
+          "xhard": [
+            6,
+            8
           ]
         },
         "pick_count_range": {
@@ -706,17 +739,42 @@
           "medium": [
             1,
             1
+          ],
+          "xhard": [
+            3,
+            3
           ]
         },
         "swap_speed_multiplier": 1,
-        "distractor": null
+        "distractor": null,
+        "xhard": {
+          "swap_speed_multiplier": 1.5,
+          "distractor": {
+            "count": 3,
+            "with_cube_range": [
+              1,
+              2
+            ],
+            "ring_half_extent": [
+              0.2675,
+              0.45
+            ],
+            "min_gap": 0.04,
+            "colors": [
+              "yellow",
+              "cyan",
+              "magenta"
+            ]
+          }
+        }
       },
       "native": {
         "parameters": {
           "bin_count": {
             "hard": 4,
             "easy": 3,
-            "medium": 4
+            "medium": 4,
+            "xhard": 4
           },
           "color_pool": [
             {

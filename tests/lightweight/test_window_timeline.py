@@ -253,12 +253,25 @@ def test_跑前图的swap颜色扩到五色且前三色不变():
     assert 'SWAP_COLORS = ["#6a1b9a", "#ef6c00", "#00838f", "#ad1457", "#5d4037"]' in source
 
 
-@pytest.mark.parametrize("n", [4, 5])
-def test_unmask_xhard_四五次调度(wt, n):
+@pytest.mark.parametrize("n", [8, 12])
+def test_unmask_xhard_v4调度不走甲链路窗口(wt, n):
+    """A7 作废旧 xhard「4~5 次、每段 50 帧」。V4 xhard：swap [8,12]、速度 ×1.5 ⇒ 每段 round(50/1.5)=33 帧，
+    首段起点仍 64。甲链路 ``windows.py`` 按 N6 冻结不改，仍是 50 帧口径——它只描述原三档，
+    本测试同时锁住「甲的常量与源码原三档一致」和「V4 xhard 的窗口与甲的 50 帧口径不同」。"""
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+    from robomme.robomme_env.utils.unmask_swap_xhard import (
+        SWAP_WINDOW_START, SWAP_WINDOW_STEPS, XHARD_SWAP_SPEED_MULTIPLIER, scaled_window_steps,
+    )
+
+    assert (wt.SWAP_START, wt.SWAP_LEN) == (SWAP_WINDOW_START, SWAP_WINDOW_STEPS) == (64, 50)
+    steps = scaled_window_steps(SWAP_WINDOW_STEPS, XHARD_SWAP_SPEED_MULTIPLIER)
+    assert steps == 33
+    v4 = [[SWAP_WINDOW_START + steps * k, SWAP_WINDOW_START + steps * (k + 1)] for k in range(n)]
+    assert v4[0][0] == 64 and v4[-1][1] == 64 + 33 * n
+    assert all(v4[k][1] == v4[k + 1][0] for k in range(n - 1))
     pairs = [{"initiator": f"bin_{k % 3}", "partner": f"bin_{(k + 1) % 3}"} for k in range(n)]
-    swaps = wt.unmask_swaps(n, pairs)
-    assert len(swaps) == n and swaps[0][0] == 64 and swaps[-1][1] == 64 + 50 * n
-    assert all(swaps[k][1] == swaps[k + 1][0] for k in range(n - 1))
+    legacy = [s[:2] for s in wt.unmask_swaps(n, pairs)]
+    assert legacy[-1][1] == 64 + 50 * n and legacy != v4
 
 
 def _extract(wt, run_id, source):

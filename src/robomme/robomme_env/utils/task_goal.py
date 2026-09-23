@@ -110,6 +110,10 @@ def get_language_goal(self, env):
         cube_1_color = color_names[1]
         if self.pick_times == 2:
             language_goals.append(f"watch the video carefully, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube")
+        elif self.pick_times >= 3:
+            # V4 xhard（pick 3）：原分支只有 1 抓／2 抓两支，3 抓会落到 1 抓文本
+            cube_2_color = color_names[2]
+            language_goals.append(f"watch the video carefully, then pick up the container hiding the {cube_0_color} cube, next pick up another container hiding the {cube_1_color} cube, finally pick up another container hiding the {cube_2_color} cube")
         else:
             language_goals.append(f"watch the video carefully, then pick up the container hiding the {cube_0_color} cube")
 
@@ -128,6 +132,10 @@ def get_language_goal(self, env):
         cube_1_color = color_names[1]
         if self.pick_times == 2:
             language_goals.append(f"first press both buttons on the table, then pick up the container hiding the {cube_0_color} cube, finally pick up another container hiding the {cube_1_color} cube")
+        elif self.pick_times >= 3:
+            # V4 xhard（pick 3）：原分支只有 1 抓／2 抓两支，3 抓会落到 1 抓文本
+            cube_2_color = color_names[2]
+            language_goals.append(f"first press both buttons on the table, then pick up the container hiding the {cube_0_color} cube, next pick up another container hiding the {cube_1_color} cube, finally pick up another container hiding the {cube_2_color} cube")
         else:
             language_goals.append(f"first press both buttons on the table, then pick up the container hiding the {cube_0_color} cube")
 

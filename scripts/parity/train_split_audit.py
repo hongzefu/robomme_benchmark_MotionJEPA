@@ -143,10 +143,6 @@ FIELD_ALIASES: dict[str, dict[str, str]] = {
 # G2 的显式豁免：快照里记了数值、但本轮**确实没有消费点**的键，逐条写明理由。
 # 与别名表同样纪律——不允许无理由放行；启用相应功能时这些键就会长出消费点。
 NEUTRAL_KEYS: dict[str, str] = {
-    "VideoUnmaskSwap.decision.swap_speed_multiplier":
-        "原值 1＝不乘倍率，原代码里没有「乘速度倍率」这一步；启用 1.5 倍时才会出现消费点",
-    "ButtonUnmaskSwap.decision.swap_speed_multiplier":
-        "同上",
     "VideoPlaceButton.decision.demo_object_count":
         "原值 1＝只演示一个 target_cube，原代码没有按数量循环的结构；扩到 2 块时才会出现消费点",
     "VideoPlaceOrder.decision.demo_object_count":

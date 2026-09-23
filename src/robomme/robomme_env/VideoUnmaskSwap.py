@@ -41,6 +41,18 @@ from .utils.bin_collision import (
     nearest_partner_index,
     object_state_from_actor,
 )
+from .utils.unmask_swap_xhard import (
+    SWAP_WINDOW_START,
+    SWAP_WINDOW_STEPS,
+    XHARD_DISTRACTOR,
+    XHARD_SWAP_SPEED_MULTIPLIER,
+    bin_footprint_radius,
+    build_distractors,
+    distractor_generator,
+    predict_swap_sweeps,
+    sample_distractors,
+    scaled_window_steps,
+)
 from ..logging_utils import logger
 
 
@@ -81,6 +93,13 @@ NATIVE_SAMPLING = {
                 "exclude_self": True,
                 "tie_break": "first_in_spawn_order",
             },
+        },
+        # V4 xhard（2.10，pick 3）：抓全部三个藏物容器。与 object_selection 一样受
+        # _resolve_sampling_config 的 JSON 全等铁闸保护，外部配置改不了，只有源码这里能提供该途径；
+        # 单列成 parameters.xhard 而不塞进 object_selection，原三档读的 object_selection
+        # （[0, 1]）与其操作元视图逐字不变。
+        "xhard": {
+            "object_selection": {"pickup_selected_indices": [0, 1, 2]},
         },
     },
     "positions": {
@@ -146,6 +165,12 @@ def _native_decision(cls):
         },
         "swap_speed_multiplier": 1,
         "distractor": None,
+        # V4 xhard 专属（2.10）：速度 ×1.5 ⇒ 每段 round(50/1.5)=33 步；3 个外环干扰容器（B3/B13）。
+        # 放在 xhard 子键下，守卫对原三档可见部分仍逐键全等。
+        "xhard": {
+            "swap_speed_multiplier": XHARD_SWAP_SPEED_MULTIPLIER,
+            "distractor": copy.deepcopy(XHARD_DISTRACTOR),
+        },
     }
 
 
@@ -158,7 +183,10 @@ def _resolve_sampling_config(cls, override):
     resolved = native
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
     resolved["decision"] = decision
-    for key in ("object_selection", "swap_selection"):
+    # V4：旧快照（v2/v3 导出时还没有 parameters.xhard）缺这一项时按源码补齐，再过下面的全等铁闸；
+    # 显式给了就必须与源码逐字相同，外部仍改不了它。
+    resolved["parameters"].setdefault("xhard", copy.deepcopy(NATIVE_SAMPLING["parameters"]["xhard"]))
+    for key in ("object_selection", "swap_selection", "xhard"):
         if json.dumps(resolved["parameters"].get(key), sort_keys=True) != json.dumps(NATIVE_SAMPLING["parameters"][key], sort_keys=True):
             raise ValueError(f"VideoUnmaskSwap.parameters.{key} 必须完整保留原版规则与类型")
     return resolved
@@ -200,14 +228,18 @@ class VideoUnmaskSwap(BaseEnv):
         "pick_min":2,
         "pick_max":2
     }
-    # xhard（2026-09-11 用户决定）：与 hard 一致，只把 swap 次数提到 4～5
+    # V4 xhard（派生自 hard，2.10；A7 作废 2026-09-11 的旧值 swap 4～5）：
+    # swap [8,12]、pick 3，容器数不变（本环境不做 clutter）；速度与干扰容器见 decision.xhard。
     config_xhard = {
         "bin":4,
-        "swap_min":4,
-        "swap_max":5,
-        "pick_min":2,
-        "pick_max":2
+        "swap_min":8,
+        "swap_max":12,
+        "pick_min":3,
+        "pick_max":3
     }
+    # 交换窗口（B4）：首段起点与原三档每段步数；xhard 的每段步数按速度倍率取整（33）
+    SWAP_WINDOW_START = SWAP_WINDOW_START
+    SWAP_WINDOW_STEPS = SWAP_WINDOW_STEPS
 
 
     # Combine into a dictionary
@@ -285,10 +317,12 @@ class VideoUnmaskSwap(BaseEnv):
             self.swap_times = self._spec.value(
                 "objects.n_swaps",
                 torch.randint(difficulty_cfg['swap_min'], difficulty_cfg['swap_max']+1, (1,), generator=generator).item(),
+                decision_key=f"configs.{self.difficulty}.swap_min/swap_max",
             )
             self.pick_times = self._spec.value(
                 "objects.n_picks",
                 torch.randint(difficulty_cfg['pick_min'], difficulty_cfg['pick_max']+1, (1,), generator=generator).item(),
+                decision_key=f"configs.{self.difficulty}.pick_min/pick_max",
             )
         else:
             self.swap_times = int(self._episode_spec["objects"]["n_swaps"])
@@ -297,7 +331,27 @@ class VideoUnmaskSwap(BaseEnv):
 
         logger.debug(f"Task will pick {self.pick_times} times")
 
-
+        # 交换窗口（B4）：首段起点恒为 64；每段步数 = round(50 / 倍率)。原三档消费 decision 顶层的
+        # swap_speed_multiplier（=1 ⇒ 原样 50），xhard 消费 decision.xhard 的 1.5 ⇒ 33。不抽随机数。
+        decision = self._sampling["decision"]
+        self._is_xhard = self.difficulty == "xhard"
+        multiplier = decision["xhard"]["swap_speed_multiplier"] if self._is_xhard else decision["swap_speed_multiplier"]
+        self.swap_window_start = self.SWAP_WINDOW_START
+        self.swap_window_steps = scaled_window_steps(self.SWAP_WINDOW_STEPS, multiplier)
+        # xhard 的乙通道也做运行时碰撞检查（H1：初态＋每段交换的连续扫掠，含干扰容器）；
+        # 原三档仍只在甲通道（传了 episode_spec）时检查，行为不变。
+        self._xhard_collision_checks = self._is_xhard and self._episode_spec is None
+        # 干扰容器单独存放，不进 spawned_bins；原三档恒为空
+        self.distractor_bins = []
+        self.distractor_cubes = []
+        if self._is_xhard:
+            if self._episode_spec is not None:
+                raise ValueError("V4 xhard 不支持链路甲的 episode_spec（链路甲已退役）；请走 native_episode_spec")
+            self._spec.record(
+                "actions.swap_window",
+                {"start_step": self.swap_window_start, "duration_steps": self.swap_window_steps,
+                 "speed_multiplier": multiplier},
+            )
 
         super().__init__(*args, robot_uids=robot_uids, **kwargs)
 
@@ -595,6 +649,9 @@ class VideoUnmaskSwap(BaseEnv):
             }
 
         pickup_indices = selection_cfg["pickup_selected_indices"]
+        if self._is_xhard:
+            # V4 xhard（pick 3）：抓取序号改读源码 parameters.xhard 的 [0, 1, 2]；原三档不进此分支
+            pickup_indices = self._sampling["parameters"]["xhard"]["object_selection"]["pickup_selected_indices"]
         tasks = [
              {
                         "func": lambda: static_check(self, timestep=int(self.elapsed_steps), static_steps=self.swap_schedule[-1][3]),
@@ -640,6 +697,34 @@ class VideoUnmaskSwap(BaseEnv):
                     "solve": lambda env, planner: solve_pickup_bin(env, planner, obj=self.selected_bins[pickup_indices[1]]),
                     "segment":self.selected_bins[pickup_indices[1]],
                 })
+        elif self._is_xhard and self.pick_times > 2:
+            # V4 xhard：原分支是 `== 2` 严格相等，pick=3 会落到只抓一次；这里按 pick_times 循环，
+            # 每一抓前先放下上一个容器。lambda 用默认参数绑定本轮序号，避免闭包晚绑定。
+            if self.pick_times > len(pickup_indices):
+                raise ValueError(f"pick_times={self.pick_times} 超过可抓序号 {pickup_indices}")
+            for j in range(1, self.pick_times):
+                prev_bin = self.selected_bins[pickup_indices[j - 1]]
+                cur_bin = self.selected_bins[pickup_indices[j]]
+                cur_color = self.color_names[pickup_indices[j]]
+                tasks.append({
+                    "func": (lambda prev_bin=prev_bin: is_bin_putdown(self, obj=prev_bin)),
+                    "name": "put down the container",
+                    "subgoal_segment": "put down the container",
+                    "choice_label": "put down the container",
+                    "demonstration": False,
+                    "failure_func": lambda prev_bin=prev_bin: is_any_bin_pickup(self, [bin for bin in self.spawned_bins if bin != prev_bin]),
+                    "solve": lambda env, planner: solve_putdown_whenhold(env, planner,),
+                })
+                tasks.append({
+                    "func": (lambda cur_bin=cur_bin: is_bin_pickup(self, obj=cur_bin)),
+                    "name": f"pick up the container that hides the {cur_color} cube",
+                    "subgoal_segment": f"pick up the container at <> that hides the {cur_color} cube",
+                    "choice_label": "pick up the container",
+                    "demonstration": False,
+                    "failure_func": lambda cur_bin=cur_bin: is_any_bin_pickup(self, [bin for bin in self.spawned_bins if bin != cur_bin]),
+                    "solve": lambda env, planner, cur_bin=cur_bin: solve_pickup_bin(env, planner, obj=cur_bin),
+                    "segment": cur_bin,
+                })
 
         # Store task list for RecordWrapper use
         self.task_list = tasks
@@ -656,6 +741,29 @@ class VideoUnmaskSwap(BaseEnv):
         else:
             self.fail_grasp_task_index = None
 
+        if self._is_xhard:
+            # V4 xhard 干扰容器：放在全部既有取值点之后，且走专用随机流（N5）
+            self._spawn_xhard_distractors()
+
+    def _spawn_xhard_distractors(self):
+        """建 3 个外环干扰容器（B3/B13）；候选与预演的任一段交换扫掠相交即重抽（H1）。"""
+        cfg = self._sampling["decision"]["xhard"]["distractor"]
+        axes = self._sampling["parameters"]["swap_selection"]["partner"]["position_axes"]
+        radius = bin_footprint_radius(self.cube_half_size)
+        obstacles = [(self._get_actor_position(actor)[:2], radius) for actor in self.spawned_bins]
+        layout = sample_distractors(
+            generator=distractor_generator(self.seed),
+            cfg=cfg,
+            obstacles=obstacles,
+            sweeps=predict_swap_sweeps(self, axes),
+            recorder=self._spec,
+            cube_half_size=self.cube_half_size,
+        )
+        self.distractor_bins, self.distractor_cubes = build_distractors(
+            self, layout, build_bin, spawn_fixed_cube,
+        )
+        self.distractor_cube_colors = list(layout["cube_colors"])
+
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         with torch.device(self.device):
             b = len(env_idx)
@@ -665,6 +773,18 @@ class VideoUnmaskSwap(BaseEnv):
             if self._episode_spec is not None:
                 # 初始化复核：读实际碰撞盒查全部容器两两之间。构造期内部 reset 与外层
                 # record_env.reset() 各会走一次，两次都从同一份规格重建，不复用旧 actor。
+                gap, rejection = self._check_state_readonly("initial")
+                self._runtime_checks.append(
+                    {
+                        "kind": "initial",
+                        "min_g_m": None if rejection is not None else gap,
+                        "rejection": None if rejection is None else rejection.as_dict(),
+                    }
+                )
+                if rejection is not None:
+                    raise BinCollisionError(rejection)
+            elif getattr(self, "_xhard_collision_checks", False):
+                # V4 xhard 乙通道的初态复核（H1）：容器＋干扰容器两两读真实碰撞盒
                 gap, rejection = self._check_state_readonly("initial")
                 self._runtime_checks.append(
                     {
@@ -835,10 +955,17 @@ class VideoUnmaskSwap(BaseEnv):
             )
 
     def _object_states_for_collision(self):
-        """把场上全部容器读成碰撞判据用的状态；只读真实碰撞盒，不用中心距或外接圆。"""
+        """把场上全部容器读成碰撞判据用的状态；只读真实碰撞盒，不用中心距或外接圆。
+
+        V4（H1）：干扰容器显式并入；原三档 ``distractor_bins`` 恒为空，结果与改动前相同。
+        """
         return [
             object_state_from_actor(actor, f"bin_{index}")
             for index, actor in enumerate(self.spawned_bins)
+            if actor is not None
+        ] + [
+            object_state_from_actor(actor, f"distractor_bin_{index}")
+            for index, actor in enumerate(getattr(self, "distractor_bins", []))
             if actor is not None
         ]
 
@@ -852,6 +979,12 @@ class VideoUnmaskSwap(BaseEnv):
         a = self.spawned_bins.index(initiator)
         b = self.spawned_bins.index(partner)
         bystanders = [state for index, state in sorted(states.items()) if index not in (a, b)]
+        # V4（H1）：干扰容器作为静止旁观者并入连续扫掠检查；原三档为空列表，行为不变
+        bystanders += [
+            object_state_from_actor(actor, f"distractor_bin_{index}")
+            for index, actor in enumerate(getattr(self, "distractor_bins", []))
+            if actor is not None
+        ]
         gap, rejection = check_swap_sweep(states[a], states[b], bystanders, sweep_index=sweep_index, stage="sweep")
         self._runtime_checks.append(
             {
@@ -904,11 +1037,13 @@ class VideoUnmaskSwap(BaseEnv):
             raise BinCollisionError(rejection)
 
     def _refresh_swap_schedule(self):
-        # 通式：第 k 次 swap 占 [64+50k, 64+50(k+1)]，首尾相接；1/2/3 次时与原三分支逐项相同，0 次时不赋值
+        # 通式：第 k 次 swap 占 [S+Lk, S+L(k+1)]，首尾相接；S = swap_window_start（恒 64），
+        # L = swap_window_steps（原三档 50、xhard 33）。1/2/3 次时与原三分支逐项相同，0 次时不赋值
         if self.swap_times < 1:
             return
+        start, length = self.swap_window_start, self.swap_window_steps
         self.swap_schedule = [
-            (getattr(self, f"swap_pair{k+1}_idx1"), getattr(self, f"swap_pair{k+1}_idx2"), 64 + 50 * k, 64 + 50 * (k + 1))
+            (getattr(self, f"swap_pair{k+1}_idx1"), getattr(self, f"swap_pair{k+1}_idx2"), start + length * k, start + length * (k + 1))
             for k in range(self.swap_times)
         ]
 
@@ -925,7 +1060,7 @@ class VideoUnmaskSwap(BaseEnv):
                 self,
                 obj=bin_actor,
                 start_step=0,
-                end_step=32*2,
+                end_step=self.swap_window_start,  # 预交换锁定段终点 = 首段交换起点（64）
                 cur_step=timestep,
             )
 
@@ -956,6 +1091,9 @@ class VideoUnmaskSwap(BaseEnv):
                         # 不新增几何读取、不新增随机调用。
                         if self._episode_spec is not None:
                             self._verify_swap_binding(i, pair_idx1, closest_actor)
+                            self._check_swap_sweep_from_actual(i, pair_idx1, closest_actor)
+                        elif getattr(self, "_xhard_collision_checks", False):
+                            # V4 xhard 乙通道（H1）：没有预写搭档可核，只做含干扰容器的连续扫掠检查
                             self._check_swap_sweep_from_actual(i, pair_idx1, closest_actor)
                         setattr(self, f'swap_pair{i+1}_idx2', closest_actor)
                         self._refresh_swap_schedule()
@@ -989,7 +1127,7 @@ class VideoUnmaskSwap(BaseEnv):
                 self,
                 obj_a=cube_actor,
                 obj_b=bin_actor,
-                start_step=32*2,
+                start_step=self.swap_window_start,
                 end_step=self.swap_schedule[-1][3],
                 cur_step=timestep,
             )

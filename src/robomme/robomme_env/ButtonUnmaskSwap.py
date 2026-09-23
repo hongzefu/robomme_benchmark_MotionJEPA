@@ -32,6 +32,19 @@ from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.bin_collision import BinCollisionError, check_bin_state, check_swap_sweep, object_state_from_actor
+from .utils.unmask_swap_xhard import (
+    SWAP_WINDOW_START,
+    SWAP_WINDOW_STEPS,
+    XHARD_DISTRACTOR,
+    XHARD_SWAP_SPEED_MULTIPLIER,
+    bin_footprint_radius,
+    build_distractors,
+    distractor_generator,
+    predict_swap_sweeps,
+    sample_distractors,
+    scaled_window_steps,
+)
 from ..logging_utils import logger
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
@@ -62,7 +75,9 @@ NATIVE_SAMPLING = {
         "hidden_rule": "前三容器藏三色，第四个为空",
         "pick_rule": "右按钮→左按钮后，抓 selected_bins[0]，count=2 时再抓 [1]",
         "partner_rule": "交换开始时按实际 XY 取最近邻，不另抽签",
-        "swap_window": {"start_step": 64, "duration_steps": 50},
+        # 交换窗口：首段起点与原三档每段步数（具名常量，六处原字面量都改读这里）；
+        # V4 起真正被消费，xhard 的每段步数 = round(duration_steps / 1.5) = 33（2.11）
+        "swap_window": {"start_step": SWAP_WINDOW_START, "duration_steps": SWAP_WINDOW_STEPS},
         "swap_path": {"lane_offset": 0.07, "smooth": True, "keep_upright": True},
         "button_order": ["right", "left"],
         "recovery": "构造器的 self.generator 用于恢复；场景另建同 seed 局部流，两条流分开",
@@ -108,9 +123,15 @@ def _native_decision(cls):
         "pick_count_range": {
             difficulty: [cfg["pick_min"], cfg["pick_max"]] for difficulty, cfg in cls.configs.items()
         },
-        # 交换速度倍率：原值 1（每段 50 步）；第二节的 1.5 倍本轮不启用。
+        # 交换速度倍率：原值 1（每段 50 步），原三档消费它（=1 ⇒ 原样 50 步）。
         "swap_speed_multiplier": 1,
         "distractor": None,
+        # V4 xhard 专属（2.11）：速度 ×1.5 ⇒ 每段 33 步；3 个外环干扰容器（B3/B13）。
+        # 放在 xhard 子键下，守卫对原三档可见部分仍逐键全等。
+        "xhard": {
+            "swap_speed_multiplier": XHARD_SWAP_SPEED_MULTIPLIER,
+            "distractor": copy.deepcopy(XHARD_DISTRACTOR),
+        },
     }
 
 
@@ -162,12 +183,27 @@ class ButtonUnmaskSwap(BaseEnv):
     }
 
 
+    # V4 xhard（派生自 hard，2.11）：swap [6,8]（读 decision）、pick 3、容器数不变；
+    # 速度与干扰容器见 decision.xhard。
+    config_xhard = {
+        "bin":4,
+        "swap_min":6,
+        "swap_max":8,
+        "pick_min":3,
+        "pick_max":3
+    }
+
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium
+        'medium': config_medium,
+        'xhard': config_xhard
     }
+    # 交换窗口的具名常量（B4）；运行时读 native.swap_window（默认值即这两个常量）
+    SWAP_WINDOW_START = SWAP_WINDOW_START
+    SWAP_WINDOW_STEPS = SWAP_WINDOW_STEPS
     
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
@@ -230,6 +266,7 @@ class ButtonUnmaskSwap(BaseEnv):
         self.swap_times = self._spec.value(
             "objects.n_swaps",
             torch.randint(swap_range[0], swap_range[1]+1, (1,), generator=generator).item(),
+            decision_key=f"swap_count_range.{self.difficulty}",
         )
         logger.debug(f"Task will swap {self.swap_times} times")
 
@@ -238,27 +275,44 @@ class ButtonUnmaskSwap(BaseEnv):
         self.pick_times = self._spec.value(
             "objects.n_picks",
             torch.randint(pick_range[0], pick_range[1]+1, (1,), generator=generator).item(),
+            decision_key=f"pick_count_range.{self.difficulty}",
         )
         logger.debug(f"Task will pick {self.pick_times} times")
+
+        # 交换窗口（2.11）：native.swap_window 真正被消费；原三档倍率取 decision 顶层的 1 ⇒ 原样 {64, 50}，
+        # xhard 取 decision.xhard 的 1.5 ⇒ {64, 33}。不抽随机数。
+        decision = self._sampling["decision"]
+        window = self._sampling["parameters"]["swap_window"]
+        self._is_xhard = self.difficulty == "xhard"
+        multiplier = decision["xhard"]["swap_speed_multiplier"] if self._is_xhard else decision["swap_speed_multiplier"]
+        self.swap_window_start = int(window["start_step"])
+        self.swap_window_steps = scaled_window_steps(int(window["duration_steps"]), multiplier)
+        # xhard 做运行时碰撞检查（H1：初态＋每段交换的连续扫掠，含干扰容器）；原三档不检查，行为不变
+        self._xhard_collision_checks = self._is_xhard
+        self._runtime_checks = []
+        # 干扰容器单独存放，不进 spawned_bins；原三档恒为空
+        self.distractor_bins = []
+        self.distractor_cubes = []
+        if self._is_xhard:
+            self._spec.record(
+                "actions.swap_window",
+                {"start_step": self.swap_window_start, "duration_steps": self.swap_window_steps,
+                 "speed_multiplier": multiplier},
+            )
 
         super().__init__(*args, robot_uids=robot_uids, **kwargs)
     
     def _refresh_swap_schedule(self):
-        if self.swap_times==1:
-                    self.swap_schedule = [
-                            (self.swap_pair1_idx1, self.swap_pair1_idx2, 64, 64 + 50),
-                        ]# Final swap order
-        elif self.swap_times==2:
-            self.swap_schedule = [
-                    (self.swap_pair1_idx1, self.swap_pair1_idx2, 64, 64 + 50),
-                    (self.swap_pair2_idx1, self.swap_pair2_idx2, 64 + 50, 64 + 50 * 2),
-                ]# Final swap order
-        elif self.swap_times==3:
-            self.swap_schedule = [
-                    (self.swap_pair1_idx1, self.swap_pair1_idx2, 64, 64 + 50),
-                    (self.swap_pair2_idx1, self.swap_pair2_idx2, 64 + 50, 64 + 50 * 2),
-                    (self.swap_pair3_idx1, self.swap_pair3_idx2, 64 + 50 * 2, 64 + 50 * 3),
-            ]
+        # 通式（与 VideoUnmaskSwap 同）：第 k 次 swap 占 [S+Lk, S+L(k+1)]，首尾相接；
+        # S = swap_window_start（恒 64），L = swap_window_steps（原三档 50、xhard 33）。
+        # 1/2/3 次时与原三分支逐项相同；原三分支对 ≥4 次不赋值（step 里 AttributeError），通式一并修好。
+        if self.swap_times < 1:
+            return
+        start, length = self.swap_window_start, self.swap_window_steps
+        self.swap_schedule = [
+            (getattr(self, f"swap_pair{k+1}_idx1"), getattr(self, f"swap_pair{k+1}_idx2"), start + length * k, start + length * (k + 1))
+            for k in range(self.swap_times)
+        ]
 
     @property
     def _default_sensor_configs(self):
@@ -532,6 +586,10 @@ class ButtonUnmaskSwap(BaseEnv):
         self.swap_pair1_idx2=None
         self.swap_pair2_idx2=None
         self.swap_pair3_idx2=None
+        # V4 xhard（swap 6～8 次）：第 k 次发起者循环沿用前 3 个（a,b,c,a,b,…）；swap ≤ 3 次时本循环不执行
+        for k in range(3, self.swap_times):
+            setattr(self, f"swap_pair{k+1}_idx1", self.spawned_bins[swap_indices[k % 3]])
+            setattr(self, f"swap_pair{k+1}_idx2", None)
 
 
         self._refresh_swap_schedule()
@@ -539,12 +597,52 @@ class ButtonUnmaskSwap(BaseEnv):
         self.button_list= [self.button_left, self.button_right]
         self.generator=generator
 
+        if self._is_xhard:
+            # V4 xhard 干扰容器：走专用随机流，主流（含 _initialize_episode 里 inject_fail_grasp
+            # 继续消费的 self.generator）一次都不多抽（N5）
+            self._spawn_xhard_distractors([button_obb_1, button_obb_2])
+
+    def _spawn_xhard_distractors(self, button_obbs):
+        """建 3 个外环干扰容器（B3/B13）；避开按钮与容器，候选与预演的任一段交换扫掠相交即重抽（H1）。"""
+        cfg = self._sampling["decision"]["xhard"]["distractor"]
+        radius = bin_footprint_radius(self.cube_half_size)
+        obstacles = [(self._get_actor_position(actor)[:2], radius) for actor in self.spawned_bins]
+        for center, _axes, half in button_obbs:
+            # 按钮的避让 OBB（create_button_obb，已含 1.5 倍安全区）按外接圆处理
+            obstacles.append((np.asarray(center, dtype=np.float64)[:2], float(np.linalg.norm(np.asarray(half)[:2]))))
+        layout = sample_distractors(
+            generator=distractor_generator(self.seed),
+            cfg=cfg,
+            obstacles=obstacles,
+            # 本环境的最近邻是硬编码 [:2]（XY），预演用同一轴
+            sweeps=predict_swap_sweeps(self, [0, 1]),
+            recorder=self._spec,
+            cube_half_size=self.cube_half_size,
+        )
+        self.distractor_bins, self.distractor_cubes = build_distractors(
+            self, layout, build_bin, spawn_fixed_cube,
+            cube_divisor=self._sampling["positions"]["hidden_cube"]["half_size_divisor"],
+        )
+        self.distractor_cube_colors = list(layout["cube_colors"])
+
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         with torch.device(self.device):
             b = len(env_idx)
             self.table_scene.initialize(env_idx)
             qpos=reset_panda.get_reset_panda_param("qpos")
             self.agent.reset(qpos)
+            if getattr(self, "_xhard_collision_checks", False):
+                # V4 xhard 的初态复核（H1）：容器＋干扰容器两两读真实碰撞盒
+                gap, rejection = self._check_state_readonly("initial")
+                self._runtime_checks.append(
+                    {
+                        "kind": "initial",
+                        "min_g_m": None if rejection is not None else gap,
+                        "rejection": None if rejection is None else rejection.as_dict(),
+                    }
+                )
+                if rejection is not None:
+                    raise BinCollisionError(rejection)
         tasks = [
             {
                 "func": lambda: is_any_button_pressed_removelist(self, button_list=self.button_list),
@@ -599,11 +697,40 @@ class ButtonUnmaskSwap(BaseEnv):
                     "solve": lambda env, planner: solve_pickup_bin(env, planner, obj=self.selected_bins[1]),
                     "segment":self.selected_bins[1],
                 })
-
-        
-
-
-
+        if self._is_xhard:
+            # V4 xhard：本环境全部任务 demonstration=False，按完两个按钮通常只到第 200 步上下，
+            # 而 6~8 次交换要到 64+33n（262~328）才结束；原解法会在容器还在交换时就去抓（实测 2/2 失败）。
+            # 在「按第二个按钮」的解法末尾等到最后一段交换结束再交出控制权。放在按钮任务而不放在第一抓，
+            # 是因为 inject_fail_grasp 会整个替换被选中抓取任务的 solve，等待会被一并丢掉。
+            tasks[1]["solve"] = lambda env, planner: self._solve_press_then_wait_swaps(env, planner, self.button_left)
+        if self._is_xhard and self.pick_times > 2:
+            # V4 xhard：原分支是 `== 2` 严格相等，pick=3 会落到只抓一次；这里按 pick_times 循环抓
+            # selected_bins[0..pick_times-1]，每一抓前先放下上一个。lambda 用默认参数绑定本轮对象。
+            if self.pick_times > len(self.selected_bins):
+                raise ValueError(f"pick_times={self.pick_times} 超过藏物容器数 {len(self.selected_bins)}")
+            for j in range(1, self.pick_times):
+                prev_bin = self.selected_bins[j - 1]
+                cur_bin = self.selected_bins[j]
+                cur_color = self.color_names[j]
+                tasks.append({
+                    "func": (lambda prev_bin=prev_bin: is_bin_putdown(self, obj=prev_bin)),
+                    "name": "put down the container",
+                    "subgoal_segment": "put down the container",
+                    "choice_label": "put down the container",
+                    "demonstration": False,
+                    "failure_func": lambda prev_bin=prev_bin: is_any_bin_pickup(self, [bin for bin in self.spawned_bins if bin != prev_bin]),
+                    "solve": lambda env, planner: solve_putdown_whenhold(env, planner),
+                })
+                tasks.append({
+                    "func": (lambda cur_bin=cur_bin: is_bin_pickup(self, obj=cur_bin)),
+                    "name": f"pick up the container that hides the {cur_color} cube",
+                    "subgoal_segment": f"pick up the container at <> that hides the {cur_color} cube",
+                    "choice_label": "pick up the container",
+                    "demonstration": False,
+                    "failure_func": lambda cur_bin=cur_bin: is_any_bin_pickup(self, [bin for bin in self.spawned_bins if bin != cur_bin]),
+                    "solve": lambda env, planner, cur_bin=cur_bin: solve_pickup_bin(env, planner, obj=cur_bin),
+                    "segment": cur_bin,
+                })
 
         # Store task list for RecordWrapper use
         self.task_list = tasks
@@ -705,6 +832,62 @@ class ButtonUnmaskSwap(BaseEnv):
             if i not in (idx_a, idx_b)
         ]
 
+    def _solve_press_then_wait_swaps(self, env, planner, button):
+        """V4 xhard 专用解法：按下按钮后原地等到最后一段交换结束（绝对步 swap_schedule[-1][3]）。
+
+        按钮解法失败（返回 -1）时原样返回，不吞掉失败信号；已过交换结束时刻则立即返回。
+        """
+        result = solve_button(env, planner, obj=button)
+        if isinstance(result, (int, np.integer)) and int(result) == -1:
+            return result
+        solve_hold_obj_absTimestep(env, planner, absTimestep=self.swap_schedule[-1][3])
+        return result
+
+    def _object_states_for_collision(self):
+        """V4 xhard（H1）：全部容器＋干扰容器读成碰撞判据用的状态（真实碰撞盒）。"""
+        return [
+            object_state_from_actor(actor, f"bin_{index}")
+            for index, actor in enumerate(self.spawned_bins)
+            if actor is not None
+        ] + [
+            object_state_from_actor(actor, f"distractor_bin_{index}")
+            for index, actor in enumerate(getattr(self, "distractor_bins", []))
+            if actor is not None
+        ]
+
+    def _check_state_readonly(self, stage):
+        """某一时刻的只读复核；返回拒绝证据，不抛错，由调用方决定怎么处置。"""
+        return check_bin_state(self._object_states_for_collision(), stage=stage)
+
+    def _check_swap_sweep_from_actual(self, sweep_index, initiator, partner):
+        """V4 xhard（H1）：从实际位姿对整段交换路径做连续检查，旁观者含其余容器与全部干扰容器；
+        命中即抛 ``BinCollisionError`` 中止该样本。原三档从不调用。"""
+        states = {
+            index: object_state_from_actor(actor, f"bin_{index}")
+            for index, actor in enumerate(self.spawned_bins)
+            if actor is not None
+        }
+        a = self.spawned_bins.index(initiator)
+        b = self.spawned_bins.index(partner)
+        bystanders = [state for index, state in sorted(states.items()) if index not in (a, b)]
+        bystanders += [
+            object_state_from_actor(actor, f"distractor_bin_{index}")
+            for index, actor in enumerate(getattr(self, "distractor_bins", []))
+            if actor is not None
+        ]
+        gap, rejection = check_swap_sweep(states[a], states[b], bystanders, sweep_index=sweep_index, stage="sweep")
+        self._runtime_checks.append(
+            {
+                "kind": "swap_sweep",
+                "sweep_index": sweep_index,
+                "control_step": int(self.elapsed_steps),
+                "min_g_m": None if rejection is not None else gap,
+                "rejection": None if rejection is None else rejection.as_dict(),
+            }
+        )
+        if rejection is not None:
+            raise BinCollisionError(rejection)
+
     def _get_actor_position(self, actor):
         """Return actor position as a numpy array."""
         if actor is None:
@@ -785,7 +968,7 @@ class ButtonUnmaskSwap(BaseEnv):
                 self,
                 obj=bin_actor,
                 start_step=0,
-                end_step=32*2,
+                end_step=self.swap_window_start,  # 预交换锁定段终点 = 首段交换起点（64）
                 cur_step=timestep,
             )
         for i in range(len(self.swap_schedule)):
@@ -809,6 +992,9 @@ class ButtonUnmaskSwap(BaseEnv):
                             closest_dist = dist
                             closest_actor = candidate
                     if closest_actor is not None:
+                        if getattr(self, "_xhard_collision_checks", False):
+                            # V4 xhard（H1）：定下搭档后、开始移动前，做含干扰容器的连续扫掠检查
+                            self._check_swap_sweep_from_actual(i, pair_idx1, closest_actor)
                         setattr(self, f'swap_pair{i+1}_idx2', closest_actor)
                         self._refresh_swap_schedule()
         
@@ -839,7 +1025,7 @@ class ButtonUnmaskSwap(BaseEnv):
                 self,
                 obj_a=cube_actor,
                 obj_b=bin_actor,
-                start_step=64,
+                start_step=self.swap_window_start,
                 end_step=self.swap_schedule[-1][3],
                 cur_step=timestep,
             )
