@@ -33,10 +33,13 @@ from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.SceneGenerationError import SceneGenerationError
-from .utils.unmask_distractors import (
-    add_distractor_misgrasp_failure,
-    reveal_distractor_bins,
-    spawn_ring_distractor_bins,
+from .utils.unmask_distractors import add_distractor_misgrasp_failure
+# V5 xhard（L13 / L14）：统一干扰采样器与独立停放点；只在 xhard 分支调用，原三档不进该模块
+from .utils.unmask_distractor_sampler import (
+    V5_DISTRACTOR_PRESETS,
+    reveal_actors_parked,
+    reveal_distractor_bins_parked,
+    spawn_distractor_layout,
 )
 
 from ..logging_utils import logger
@@ -89,16 +92,10 @@ XHARD_BIN_LAYOUT = {
     # G2（2026-09-22）：区域不动，间距系数 2 → 0.75，容器数 8；放不满直接判该局失败
     "min_gap_factor": 0.75,
 }
-XHARD_DISTRACTOR = {
-    # B3 / B13：3 个额外容器放外环 max(|x|,|y|) ∈ [0.2675, 0.45]、相机可见，其中随机 1~2 个内含干扰色 cube
-    "count": 3,
-    "ring_max_abs_xy": [0.2675, 0.45],
-    "cube_count_range": [1, 2],
-    "color_pool": ["yellow", "cyan", "magenta"],
-    # 以下两项计划未单列：间距沿用 xhard 容器同一系数（G2 的 0.75），重试预算与容器相同（256）
-    "min_gap_factor": 0.75,
-    "max_trials": 256,
-}
+# V5（NEWTASK_RELEASE_V5_PLAN 2.3；L6～L13）：贴身环带 [0.2425, 0.3289]，按内部密度定数，半数含 cube，
+# 三色平衡轮转，1024 次；统一 7 键 schema（count / ring_max_abs_xy / cube_count_range / color_pool /
+# color_rule / min_gap_factor / max_trials），取值见 unmask_distractor_sampler.V5_DISTRACTOR_PRESETS。
+XHARD_DISTRACTOR = copy.deepcopy(V5_DISTRACTOR_PRESETS["VideoUnmask"])
 
 
 def native_blocks(cls):
@@ -165,7 +162,7 @@ class VideoUnmask(BaseEnv):
     }
 
     # V4 xhard（派生自 hard，计划 2.8）：pick 2 → 3；容器数 15 → 8（G2：配 min_gap_factor 0.75，
-    # 见 XHARD_BIN_LAYOUT）。另有 3 个外环干扰容器（XHARD_DISTRACTOR），不计入 bin。
+    # 见 XHARD_BIN_LAYOUT）。另有贴身环带干扰容器（V5：XHARD_DISTRACTOR，VU 15 个 / BU 14 个），不计入 bin。
     config_xhard = {
     'bin':8,
     "pick":3,
@@ -439,7 +436,8 @@ class VideoUnmask(BaseEnv):
 
         if xhard:
             # V4 xhard 干扰容器：必须在全部既有取值点之后（含上面 inject_fail_grasp 用同一 generator 的抽样），红线 N5
-            self.distractor_bins, self.distractor_cubes = spawn_ring_distractor_bins(
+            # V5（L13）：统一干扰采样器；仍用主场景 generator、仍在全部既有取值点之后，内环取值与 V4 同 seed 逐位相同
+            self.distractor_bins, self.distractor_cubes, self.distractor_layout = spawn_distractor_layout(
                 self,
                 cfg=decision_cfg["xhard"]["distractor"],
                 avoid=avoid,
@@ -583,24 +581,39 @@ class VideoUnmask(BaseEnv):
 
         timestep = self.elapsed_steps        
         #Lift and drop bins (bin_0 to bin_4 if they exist)
-        for i in range(self._sampling["parameters"]["step_bin_scan"]):
-            bin_attr = f"bin_{i}"
-            if hasattr(self, bin_attr):
-                lift_and_drop_objects_back_to_original(
-                    self,
-                    obj=getattr(self, bin_attr),
-                    start_step=self._sampling["positions"]["reveal_window"]["start_step"],
-                    end_step=self._sampling["positions"]["reveal_window"]["end_step"],
-                    cur_step=timestep,
-                ) 
         if self.difficulty == "xhard":
-            # V4 xhard（用户 2026-09-22「参与揭示」）：外环干扰容器与区域内容器同一揭示窗口、同一机制
-            reveal_distractor_bins(
+            # V5 xhard（L14，主会话 2026-09-24 定：内环容器也停独立点）：窗口与半窗落回步与原机制逐步相同，
+            # 只把「远处」从共用的 (10,10,10) 换成每个物体各自的画面外停放点，免得 20 多个容器叠放拖慢物理。
+            # 内环容器与原循环扫同一组 bin_<i>（i < step_bin_scan），第 i 个停在 xhard_park_point("bin", i)；
+            # 被藏 cube 在本环境的揭示里本来就不动，无需停放。
+            reveal_window = self._sampling["positions"]["reveal_window"]
+            reveal_actors_parked(
                 self,
-                start_step=self._sampling["positions"]["reveal_window"]["start_step"],
-                end_step=self._sampling["positions"]["reveal_window"]["end_step"],
+                [getattr(self, f"bin_{i}") for i in range(self._sampling["parameters"]["step_bin_scan"])
+                 if hasattr(self, f"bin_{i}")],
+                group="bin",
+                start_step=reveal_window["start_step"],
+                end_step=reveal_window["end_step"],
                 cur_step=timestep,
             )
+            # 干扰容器（用户 2026-09-22「参与揭示」）：同一窗口，每个一个停放点
+            reveal_distractor_bins_parked(
+                self,
+                start_step=reveal_window["start_step"],
+                end_step=reveal_window["end_step"],
+                cur_step=timestep,
+            )
+        else:
+            for i in range(self._sampling["parameters"]["step_bin_scan"]):
+                bin_attr = f"bin_{i}"
+                if hasattr(self, bin_attr):
+                    lift_and_drop_objects_back_to_original(
+                        self,
+                        obj=getattr(self, bin_attr),
+                        start_step=self._sampling["positions"]["reveal_window"]["start_step"],
+                        end_step=self._sampling["positions"]["reveal_window"]["end_step"],
+                        cur_step=timestep,
+                    ) 
 
 
 

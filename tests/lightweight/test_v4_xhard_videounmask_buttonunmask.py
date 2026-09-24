@@ -7,7 +7,8 @@
 * 守卫放行源码默认与「去掉 xhard 的旧快照」，拒绝申报外的 xhard 键；
 * ``_append_xhard_pick_tasks`` 按 pick_count 循环生成「放下 → 抓下一个」，lambda 绑定正确，
   ``task4recovery`` 能扫到 3 个抓取任务（2.7④ 的抽样空间 2 → 3）；
-* 外环干扰容器工具的纯几何函数（方环判据、相机可见判据、容器尺寸）。
+* 外环干扰容器工具的纯几何函数（方环判据、相机可见判据、容器尺寸）；
+* V5（S3b）：xhard 干扰配置断言改为 V5 语义（15 / 14 个、贴身环带、cube [7,8] / [7,7]、7 键）。
 
     uv run --no-sync python -m pytest tests/lightweight/test_v4_xhard_videounmask_buttonunmask.py -q
 """
@@ -75,9 +76,16 @@ def test_xhard_values_match_user_decisions(task) -> None:
     decision = mod._native_decision(cls)
     assert decision["bin_layout_policy"]["xhard"] == {"min_gap_factor": 0.75}   # G2
     dist = decision["xhard"]["distractor"]
-    assert dist["count"] == 3                                        # B3
-    assert dist["ring_max_abs_xy"] == [0.2675, 0.45]                 # B13
-    assert dist["cube_count_range"] == [1, 2]                        # B13：3 个里 1~2 个含 cube
+    # V5（S3b，NEWTASK_RELEASE_V5_PLAN 2.3 / 2.4）：V4 的 3 个外环 [0.2675, 0.45]、cube [1,2] 作废，
+    # 改为贴身环带 + 按密度定数 + 半数含 cube + 三色平衡轮转，统一 7 键 schema
+    expect_count, expect_cubes = {"VideoUnmask": (15, [7, 8]), "ButtonUnmask": (14, [7, 7])}[task]
+    assert sorted(dist) == sorted(["count", "ring_max_abs_xy", "cube_count_range", "color_pool",
+                                   "color_rule", "min_gap_factor", "max_trials"])
+    assert dist["count"] == expect_count                             # L6 / L10
+    assert dist["ring_max_abs_xy"] == [0.2425, 0.3289]               # L7
+    assert dist["cube_count_range"] == expect_cubes                  # L11
+    assert dist["color_rule"] == "balanced_cycle"                    # L12
+    assert dist["min_gap_factor"] == 0.75 and dist["max_trials"] == 1024
     assert dist["color_pool"] == [c["name"] for c in ud.DISTRACTOR_COLORS]   # B2
     # 揭示动画的扫描上限必须覆盖 xhard 容器数
     assert mod.NATIVE_SAMPLING["parameters"]["step_bin_scan"] >= cls.configs["xhard"]["bin"]
