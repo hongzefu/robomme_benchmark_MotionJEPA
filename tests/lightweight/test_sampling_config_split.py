@@ -29,7 +29,7 @@ for extra in (REPO_ROOT / "src", REPO_ROOT / "scripts", REPO_ROOT / "scripts" / 
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-SNAPSHOT = REPO_ROOT / "scripts" / "configs" / "newtask-v4" / "sampling_config.json"  # V4 起源码快照改看 v4；v3 快照冻结留档
+SNAPSHOT = REPO_ROOT / "scripts" / "configs" / "newtask-v5" / "sampling_config.json"  # V5 起源码快照改看 v5；v3 / v4 快照冻结留档（V4 已作废，其 xhard 键与 V5 源码不再一致）
 
 
 def _ready_tasks() -> tuple[str, ...]:
@@ -77,7 +77,7 @@ def test_snapshot_matches_source() -> None:
     if not SNAPSHOT.exists():
         pytest.skip("快照缺失；先运行 scripts/parity/train_split_config.py extract")
     result = subprocess.run(
-        [sys.executable, str(REPO_ROOT / "scripts" / "parity" / "train_split_config.py"), "extract", "--verify"],
+        [sys.executable, str(REPO_ROOT / "scripts" / "parity" / "train_split_config.py"), "extract", "--release", "newtask-v5", "--verify"],
         capture_output=True,
         text=True,
         cwd=REPO_ROOT,
