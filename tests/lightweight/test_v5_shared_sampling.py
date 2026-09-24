@@ -596,8 +596,9 @@ def test_videorepick_xhard_raise_is_real_class(monkeypatch) -> None:
         cube_half_size=0.02,
         _sampling={
             "decision": {"xhard": {
+                # S3g（V5 2.15）起 xhard 布局多一个 min_center_dist_m（L50），在第一次 spawn 之前就读
                 "layout": {"mode": "clutter", "cube_count": 6, "region_center": [-0.1, 0.0],
-                           "region_half_size": [0.2, 0.25]},
+                           "region_half_size": [0.2, 0.25], "min_center_dist_m": 0.12},
                 "block_color": HSV_FLOOR_COLOR,
             }},
             "positions": {"hard_cubes": {"random_yaw": True, "include_existing": True, "include_goal": True}},

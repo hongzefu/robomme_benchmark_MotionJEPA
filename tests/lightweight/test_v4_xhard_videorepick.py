@@ -5,7 +5,7 @@
 
 * 原三档的 ``config_*``、``NATIVE_SAMPLING.parameters.num_repeats`` 与去掉 ``xhard`` 子键后的 decision
   与 V4 改动前逐字相同；
-* xhard 的新值（6 块 clutter、pick times 半开 [4,7)、swap [8,12]、同色任意色值）只挂在 ``xhard`` 子键下，
+* xhard 的新值（6 块 clutter、pick times 半开 [4,7)、swap [8,12]、同色任意色值；V5 起加最小中心距与搭档规划）只挂在 ``xhard`` 子键下，
   守卫放行收窄、拒绝改动原三档；
 * D5：四处几何检查的开关统一为 ``_sweep_checks_enabled``（甲通道或 xhard 乙通道），原三档乙通道仍关；
 * xhard 不接受链路甲的 ``episode_spec``（在 ``super().__init__`` 之前就拒绝）。
@@ -83,7 +83,15 @@ def test_xhard_新值只挂在xhard子键下():
     assert decision["num_repeats_range"]["xhard"] == {"low": 4, "high_exclusive": 7}  # pick times [4,6] 半开
     assert decision["swap"]["xhard"] == {"swap_min": 8, "swap_max": 12}
     layout = decision["xhard"]["layout"]
-    assert layout == {"mode": "clutter", "cube_count": 6, "region_center": [-0.1, 0.0], "region_half_size": [0.2, 0.25]}
+    # V5（计划 2.15，L50/L51）：区域不动，新增 6 块两两最小中心距 0.12 m
+    assert layout == {"mode": "clutter", "cube_count": 6, "region_center": [-0.1, 0.0], "region_half_size": [0.2, 0.25],
+                      "min_center_dist_m": 0.12}
+    # V5（L47 a'、L48、L49、L54）：发起者 k%6 轮转、reset 规划搭档（3 个最近可行、5 mm 余量、按钮作障碍）
+    assert decision["xhard"]["swap_plan"] == {
+        "initiator_rule": "target_then_randperm_k_mod_cube_count",
+        "partner_rule": "reset_plan_nearest_feasible",
+        "nearest_k": 3, "sweep_margin_m": 0.005, "button_obstacle": True,
+    }
     color = decision["xhard"]["block_color"]
     assert color["policy"] == "same_color_hsv_floor"
     assert (color["h_range"], color["s_range"], color["v_range"]) == ([0.0, 1.0], [0.5, 1.0], [0.4, 1.0])
@@ -162,13 +170,14 @@ def test_xhard_拒绝链路甲的episode_spec():
 def test_xhard_交换调度八到十二次首尾相接(n):
     env = SimpleNamespace(swap_times=n)
     for k in range(n):
-        setattr(env, f"swap_pair{k+1}_idx1", f"init{k % 3}")
+        setattr(env, f"swap_pair{k+1}_idx1", f"init{k % 6}")
         setattr(env, f"swap_pair{k+1}_idx2", None)
     CLS._refresh_swap_schedule(env)
     assert len(env.swap_schedule) == n
     assert [s[2] for s in env.swap_schedule] == [400 + 50 * k for k in range(n)]
     assert all(env.swap_schedule[k][3] == env.swap_schedule[k + 1][2] for k in range(n - 1))
-    assert {s[0] for s in env.swap_schedule} == {"init0", "init1", "init2"}  # B12：发起者仍 3 个
+    # V5 L47 a'（原 V4 B12「发起者 3 个」作废）：6 块按 k%6 轮流发起，n≥8 时 6 块都当过发起者
+    assert {s[0] for s in env.swap_schedule} == {f"init{j}" for j in range(6)}
 
 
 class _FakeEnv:
