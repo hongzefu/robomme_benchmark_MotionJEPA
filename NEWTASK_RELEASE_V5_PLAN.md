@@ -39,7 +39,7 @@
 | VU / BU | 干扰容器从「大外环里 3 个」改成**贴着现生成范围的一圈环带**，数量按内部密度推算（**15 / 14**），一半含 cube |
 | VUS / BUS | 干扰容器仍放 V4 大环带，但从 3 个加到 **10 个**（L16 b），一半含 cube；并且**每一次内环交换都配一次外环交换**，搭档同为 XY 最近邻，纳入两对联合的连续碰撞证明 |
 | InsertPeg | 四根杆改由**同一个采样器**生成，不给第 4 根单设约束，两两**轮廓**间隔 > 3 cm |
-| MoveCube | 方块、目标圆盘、杆都**直接拒绝**落在自身采样框中心 30% 面积区，不再用 bias |
+| MoveCube | 方块、目标圆盘、杆都**直接拒绝**落在桌面中心的共同禁区（R = 0.05 m 圆），不再用 bias |
 | PatternLock / RouteStick | 演示时长校准到 **30 s ± 5 s** |
 | BinFill | 修障碍框缺陷，加同色成团上限 |
 | PickXtimes / SwingXtimes | 修障碍框缺陷，加 8 cm 间距；PickXtimes 三个有色方块各占一个象限 |
@@ -58,7 +58,7 @@
 | 5 | **外环交换规则与内环同构**：搭档是同一度量下的最近邻（XY 两轴欧氏距离），轨迹同为 `swap_flat_two_lane`（lane 0.07）；外环容器**永不与内环容器配对** | 原话「外部swap也要这样」 |
 | 6 | **外环交换必须进碰撞检测**：reset 时做规划期证明，运行时从实际位姿复核 | 原话「也要支持碰撞检测」 |
 | 7 | InsertPeg **四根杆走同一采样逻辑**，**第 4 根不加任何单独约束**，并**保证两两间隔** | 原话 |
-| 8 | MoveCube 的**方块、目标（goal 圆盘）、杆三者都不能生成在中心**，**用直接拒绝，不用 bias** | 原话「不要以bias来设计 而是直接拒绝生成在中心区域」 |
+| 8 | MoveCube 的**方块、目标（goal 圆盘）、杆三者都不能生成在桌面中心**，**用直接拒绝，不用 bias**；禁区是共同的、以 (0,0) 为圆心的圆，半径由实施方定（2.9 定为 0.05 m） | 原话「不要以bias来设计 而是直接拒绝生成在中心区域」「我的意思是桌面中心 尽可能不要出现三个物体 定你觉得合适拒绝率的比例」 |
 | 9 | 演示时长目标 **25～35 s**，按录像器 30 fps 计，即 h5 中 `info/is_video_demo` 为真的帧数在 **750～1050** 之间 | 原话「30s上下浮动5s」；V4 A2 的口径延续 |
 | 10 | VideoRepick **全部方块都能参与交换** | 原话「支持所有的cube都要swap」 |
 | 11 | **不再跑 V6 组合覆盖**，也不再跑任何「完整跑完的对拍」（V2 两遍重放、V3g 规格反例、V5e 推理链路、副本逐位对齐）。可生成性只由正式那一次生成的结果如实报告；某环境攒不够 10 条候选或 3 条正式局就如实记 shortfall 回报用户 | 用户 2026-09-24「其他完整跑完的对拍都放弃 都不用了」（L5 答复）|
@@ -102,7 +102,7 @@ videorepick的生成也要均匀 并且支持所有的cube都要swap
 |---|---|---|
 | 现在内部 swap 的机制是什么？最近 2 邻？ | **不是「最近的 2 个邻居」，而是用 x、y 两个轴量出来的最近 1 个邻居。** 发起者：主流上抽两次定下 3 个发起者 a、b、c，第 k 次交换用 `swap_indices[k % 3]` 轮转，4 个内环容器中恰有 1 个永不发起。搭档：每个窗口第一步按**实际位姿**取离发起者 XY 最近的另一个内环容器，严格 `<`、平局取生成序靠前；VUS 从 `swap_selection.partner.position_axes=[0,1]` 读轴，BUS 写死 `[:2]`。代码里唯一「取最近 2 个」的 `_compute_dynamic_swap_candidates`（`distances[:2]`）与 `_select_swap_pair_from_positions` 在 VUS、BUS、VideoRepick 三处都**没有调用者**，是死代码 | 2.5 |
 | insertpeg 现在怎么生成 4 个？ | 前 3 根走原生均匀拒绝采样（杆根离孔板 > 0.06、离已放杆根 > 0.075，最多 512 次，接受后再抽 yaw ±180°）；中间抽 obj、dir；**第 4 根由另一个采样器** `_xhard_place_near_target_peg` 在目标杆 peg_0 周围 0.075～0.085 m 圆环带里抽半径与方位角，最后覆盖 `peg_init_poses[3]`。**间距失效**：0.075 m 量的是杆头中心距，而单根杆轮廓长 0.10 m，判据挡不住穿插，V4 xhard 有 28.1% 的布局目标杆与别的杆重叠 | 2.8 |
-| movecube 中心区定 30% 是否可以？ | **可以，前提是 30% 指「每个物体自身采样框面积的 30%」**，即中心正方形边长为采样框边长的 √0.3 = 0.548 倍，每次抽样恰好 30% 被拒。离线 2000 局全部生成成功，最坏情况预算耗尽概率 ≤ 2.5e-20，每局平均多抽约 10 个随机数；本机 10 局演示 10/10 成功。**不宜按边长 30% 理解**：那只占面积 9%，中心区 1.5～3.9 cm，比 4 cm 的方块和 8 cm 的圆盘还小 | 2.9 |
+| movecube 中心区定 30% 是否可以？ | 用户随后改口径为「桌面中心共同禁区、三个物体尽可能都不出现、比例由实施方定」。实施方定为 **(0,0) 为圆心、R = 0.05 m 的圆，按物体中心判**。解析拒绝率：demo goal 16%、exec goal 55%（采样框本来只有半宽 0.06）、方块候选 20%、杆 ≈0（杆身几何上离中心 ≥ 5 cm）；128 次预算下 exec goal 耗尽概率约 1e-33。不按轮廓判，否则 exec goal 无解 | 2.9 |
 | PatternLock/RouteStick 长度校准到 30±5 s | **两者现在都偏短**：PatternLock ep0 演示 649 帧（21.6 s），5×5 网格上简单路径最长 25 节点、平均够不到 25 s；RouteStick ep6 演示 600 帧（20.0 s）。改法：RouteStick 段数 L 改为 [15,21]，每段恰好 50 帧，得 25.0～35.0 s、均值 30.0 s；PatternLock 建议改为 6×6 网格、间距 0.08（与 V4 的 5×5@0.1 物理占地相同）、节点 [30,33]，离线 300 局 100% 落带，均值 29.2 s | 2.10 / 2.11 |
 | binfill 生成 cube 的位置均匀吗？为什么一堆红色在一起？ | **单局内均匀，跨局汇总不均匀；颜色与位置独立。** 单局每块在剩余空闲区域里均匀采样；跨局按钮加孔板平均占去区域 34%，各格密度在 0.65～1.38 之间。**ep3 的红色成堆主要是偶然**：12 块里 7 块红色（≥7 的概率 22%）；按钮和板只留出靠机器人一侧一条空带，红色恰好落在那里；多重比较校正后约 4% 的局至少这么极端。**另有真实缺陷把它压得更紧**：障碍框退化使 red_0 与 red_2 只隔 8.4 mm，名义最小间距 20 mm | 2.12 |
 | pickxtimes 为什么扎堆？generator 怎么定位置？有无 bias？ | 顺序拒绝采样：依次放按钮、目标圆盘、3 个有色方块、3 个干扰方块。**有意的 bias**：`corner_push` 以 `corner_bias=0.5` 作用在全部 3 个有色方块上（V4 J5），每个轴单独推向两端，91.3% 的有色方块落在 4 个角格，**44.5% 的局至少 2 块挤在同一角格**（均匀采样下 14.3%）。**无意的问题**：障碍框退化使 15.5% 的局出现中心距 < 6 cm 的方块对；按钮占近机器人一侧，方块被挤向远侧；整个区域在画面里只占 11% | 2.13 |
@@ -162,15 +162,15 @@ videorepick的生成也要均匀 并且支持所有的cube都要swap
 | L28 | 确认放弃 V4「新杆贴近目标杆」的意图，删除 `decision.xhard.near_target_distractor` | 确认 / 以其他形式保留贴近压力 | 确认：目标杆到最近干扰杆的中位距离将由 0.080 m 升到 0.178 m | **确认放弃**，删 `near_target_distractor` |
 | L29 | 回放冻结规格时是否复核间隔 | 是 / 否 | 是 | **是** |
 
-**MoveCube（2.9）**
+**MoveCube（2.9）**（2026-09-24 用户答复原话「l30 3  我的意思是桌面中心 尽可能不要出现三个物体 定你觉得合适拒绝率的比例 可以不是30%的面积」）
 
-| 编号 | 问题 | 选项 | 建议 |
-|---|---|---|---|
-| L30 | 「30%」指什么 | (1) 各物体自身采样框**面积**的 30%，取中心正方形。<br>(2) 边长的 30%（面积 9%）。<br>(3) 面积 30% 的圆。<br>(4) 十字形，只留四角。<br>(5) 共同的绝对中心 | (1) |
-| L31 | 「杆不在中心」的含义 | (A) 杆根不在**自身抖动框**中心（2.74 cm）。<br>(B) 另加：杆身不得进入工作区中心，约多 8.5% 重抽。<br>(C) 不另加（杆根本来就在 \|y\|≥0.15） | (A)；若用户指杆身再加 (B) |
-| L32 | 方块中心区以哪个框为基准 | 候选框（w=0.0548，候选与最终位置都查） / 最终支撑框（w=0.0712） | 候选框，两处都查 |
-| L33 | MoveCube xhard 的 `corner_bias` 键怎么处理 | 保留、取 0.0 并标注废弃 / 删键 | 保留取 0.0 |
-| L34 | xhard 下执行段方块是否不再避让演示段方块（`include_existing=False`） | 是 / 否 | 是：两块从不同时在场；仿真已复现 seed 1000442/1000446 因此 reset 失败 |
+| 编号 | 问题 | 选项 | 建议 | 结论（用户答复） |
+|---|---|---|---|---|
+| L30 | 「30%」指什么 | (1) 各物体自身采样框**面积**的 30%，取中心正方形。<br>(2) 边长的 30%（面积 9%）。<br>(3) 面积 30% 的圆。<br>(4) 十字形，只留四角。<br>(5) 共同的绝对中心 | (1) | **用户改口径：桌面中心一个共同禁区，三个物体都不许出现；比例由实施方定。** 实施方定为：以 (0,0) 为圆心、**R = 0.05 m 的圆**，按物体中心判（杆按轴线最近点）；见 2.9 |
+| L31 | 「杆不在中心」的含义 | (A) 杆根不在**自身抖动框**中心（2.74 cm）。<br>(B) 另加：杆身不得进入工作区中心，约多 8.5% 重抽。<br>(C) 不另加（杆根本来就在 \|y\|≥0.15） | (A)；若用户指杆身再加 (B) | 随 L30 定死：杆按轴线离圆心最近点判；杆根 \|y\|≥0.15、杆长 0.10，杆身几何上进不了 5 cm 圆，实际几乎不拒 |
+| L32 | 方块中心区以哪个框为基准 | 候选框（w=0.0548，候选与最终位置都查） / 最终支撑框（w=0.0712） | 候选框，两处都查 | 随 L30 定死：方块候选中心与最终中心两处都按同一个圆判 |
+| L33 | MoveCube xhard 的 `corner_bias` 键怎么处理 | 保留、取 0.0 并标注废弃 / 删键 | 保留取 0.0 | **删键，删干净**（2026-09-24「l33删除干净」）：`config_xhard.corner_bias` 与 `_xhard_corner_bias`、`corner_push` 在 MoveCube 的调用、相关单测一并删除；`utils/xhard.py::corner_push` 本身保留（PickXtimes 仍用） |
+| L34 | xhard 下执行段方块是否不再避让演示段方块（`include_existing=False`） | 是 / 否 | 是：两块从不同时在场；仿真已复现 seed 1000442/1000446 因此 reset 失败 | **是**（2026-09-24「l34 是」） |
 
 **PatternLock / RouteStick（2.10 / 2.11）**
 
@@ -219,8 +219,8 @@ videorepick的生成也要均匀 并且支持所有的cube都要swap
 | H1 | 干扰容器只作静止旁观者进碰撞检查 | 干扰容器成为外环交换中的移动者；碰撞改为两对联合的连续证明（`check_multi_swap_sweep`），reset 规划与运行时复核都做；内环对内环也改在 reset 预判拒绝（L20） | 2.5 |
 | 实现细节（未编号） | 颜色无放回，因此最多 3 个 cube；Swap 两环境用圆间距 0.04、线性可见性近似、512 次；cube 命名 `distractor_cube_<colour>` | 三色平衡轮转；统一 OBB 间距；精确可见性；1024 次；cube 名带序号 | 2.2 |
 | B6 / I2 / K3 | 杆间距判据不动；第 4 根贴近 0.075～0.085；开局重叠 31.6% 维持现状 | 四根一个采样器；精确轮廓间隔 > 0.03；重叠降为 0；删除贴近目标的圆环带 | 2.8 |
-| B7 / G3 | MoveCube 用 `corner_bias ∈ [0,1]`，定为 0.5 | `corner_bias=0`；各物体自身框中心 30% 面积直接拒绝 | 2.9 |
-| V4 2.17 表「goal 区域不动」（部分） | goal 不受偏置 | 区域尺寸不变，但 goal 也有中心拒绝区 | 2.9 |
+| B7 / G3 | MoveCube 用 `corner_bias ∈ [0,1]`，定为 0.5 | 删掉 `corner_bias`；桌面中心 R=0.05 圆形共同禁区直接拒绝 | 2.9 |
+| V4 2.17 表「goal 区域不动」（部分） | goal 不受偏置 | 区域尺寸不变，但 goal 中心也不得进桌面中心圆 | 2.9 |
 | A2（范围） | 20～30 s（600～900 帧） | 25～35 s（750～1050 帧）；30 fps 与 `is_video_demo` 的计法不变 | 2.10 / 2.11 |
 | B8（布局部分）/ K1 | PatternLock 不改布局；节点 [20,24] | 推荐 6×6@0.08、节点 [30,33]、搜索耗尽即抛错；若选 L35-C 则 B8/K1 保留 | 2.10 |
 | B9 | RouteStick 的 L 为 [12,15] | [15,21] | 2.11 |
@@ -291,7 +291,7 @@ PatternLock 搜索耗尽改为抛错、Unmask 内环预判拒绝），所以必�
 | VideoUnmaskSwap | 改 | 干扰 3 → **10**（环带沿用 V4，L16 b）；**外环随内环同步交换**；两对联合碰撞证明；内环对内环 reset 预判 | 2.6 |
 | ButtonUnmaskSwap | 改 | 干扰 3 → **10**（环带沿用 V4，L16 b）；外环交换加按钮中心距约束；内环静默截断改报错 | 2.7 |
 | InsertPeg | 改 | 删第 4 根的专用采样器与贴近带；四根一个循环；轮廓间隔 > 0.03、离孔板 > 0.01 | 2.8 |
-| MoveCube | 改 | `corner_bias` 0.5 → 0；杆/goal/方块各按自身框中心 30% 面积直接拒绝；执行段方块不避让演示段方块 | 2.9 |
+| MoveCube | 改 | 删掉 `corner_bias`；杆/goal/方块都不得落进桌面中心 R=0.05 圆；执行段方块不避让演示段方块 | 2.9 |
 | PatternLock | 改 | 5×5@0.1 → **6×6@0.08**；节点 [20,24] → **[30,33]**；搜索耗尽即抛错 | 2.10 |
 | RouteStick | 改 | L [12,15] → **[15,21]**；L 范围冻进 decision | 2.11 |
 | BinFill | 改 | 障碍框用精确 OBB；同色成团上限（T=3、0.09 m、最多重排 64 次） | 2.12 |
@@ -595,44 +595,45 @@ for i in 0..3:
 
 ### 2.9 MoveCube（在 V4 xhard 上改）
 
-**要做**：方块、目标圆盘、杆都拒绝落在自身采样框中心 30% 面积区，不再用 bias。
+**要做**：方块、目标圆盘、杆都不得落在**桌面中心的共同禁区**，用直接拒绝，不再用 bias（用户口径：「桌面中心尽可能不要出现三个物体，
+比例由实施方定」）。
 
 | 字段 | 含义 | V4 xhard 现值 | V5 新值 / 注入什么 |
 |---|---|---|---|
-| `config_xhard.corner_bias` | 边角偏置（经 `utils/xhard.py::corner_push`） | `0.5`（作用于杆抖动、方块候选中心与局部偏移；goal 从未被偏置） | **`0.0`**，键保留并标注废弃（L33）；`layout.{demo,execution}.corner_bias` 记 0 |
-| `config_xhard.center_exclusion`（新增） | 中心拒绝区 | 无 | **`{shape: square, area_ratio: 0.3, max_trials: 128}`**（L30）；`_native_decision` 按 segment 暴露 `demo_layout.xhard` / `execution_layout.xhard`；注入 `layout.{demo,execution}.center_exclusion = {area_ratio, shape, w_peg, w_goal, w_cube}` |
-| 杆根抖动（`_load_scene` 的 `x_jitter/y_jitter`） | 杆根相对 `(0, ±0.2)` 的偏移 | `corner_push` 后直接用，`jitter_span 0.1` | 两次抽样后判 `max(\|dx\|,\|dy\|) < w_peg = 0.0274` 即原地重抽（上限 128，超出抛 `SceneGenerationError`）（L31-A） |
-| goal（`spawn_random_target`） | 目标圆盘 xy | 无拒绝（demo 半宽 0.11、exec 0.06 内均匀） | `extra_reject=goal_zone`：`w_goal` = **0.0602（demo）/ 0.0329（exec）**，相对 `region_center` |
-| 方块候选（局部函数 `_sample_cube_center`） | 方块候选中心 | 接受条件 `\|c − g\| > 0.1` | 加「不在中心区」：`w_cube = 0.0548`，相对候选框中心 0（L32） |
-| 方块最终（`spawn_random_cube`） | 方块最终 xy | 默认 `include_existing=True` | `extra_reject=cube_zone`（候选与最终两处都查）；**执行段 `cube_2` 改 `include_existing=False`**（L34） |
+| `config_xhard.corner_bias` | 边角偏置（经 `utils/xhard.py::corner_push`） | `0.5`（作用于杆抖动、方块候选中心与局部偏移；goal 从未被偏置） | **删键、删干净**（L33）：`_native_decision` 的 `demo_layout.xhard.corner_bias` / `execution_layout.xhard.corner_bias`、`_xhard_corner_bias`、`_load_scene` 里对 `corner_push` 的调用、`spawn_random_cube(..., corner_bias=)` 的传参、`layout.*.corner_bias` 记录、对应单测一并删除；`utils/xhard.py::corner_push` 与 `spawn_random_cube` 的 `corner_bias` 形参保留（PickXtimes 仍用） |
+| `config_xhard.center_exclusion`（新增） | 桌面中心禁区 | 无 | **`{shape: circle, center: [0, 0], radius_m: 0.05, judge: object_center, max_trials: 128}`**；`_native_decision` 按 segment 暴露 `demo_layout.xhard` / `execution_layout.xhard`；注入 `layout.{demo,execution}.center_exclusion` |
+| 杆根抖动（`_load_scene` 的 `x_jitter/y_jitter`）与 yaw | 杆的位姿 | `corner_push` 后直接用 | 抖动与 yaw 抽完后，判杆轴线段离 (0,0) 的最近点 `< 0.05` 即原地重抽（上限 128，超出抛 `SceneGenerationError`）；几何上几乎不触发（见要点） |
+| goal（`spawn_random_target`） | 目标圆盘中心 | 无拒绝（demo 半宽 0.11、exec 0.06 内均匀） | 加显式参数（L4 b）：圆盘**中心**离 (0,0) `< 0.05` 即拒绝 |
+| 方块候选（局部函数 `_sample_cube_center`） | 方块候选中心 | 接受条件 `\|c − g\| > 0.1` | 加「候选中心离 (0,0) ≥ 0.05」 |
+| 方块最终（`spawn_random_cube`） | 方块最终中心 | 默认 `include_existing=True` | 加显式参数：最终中心离 (0,0) `< 0.05` 即拒绝；**执行段 `cube_2` 改 `include_existing=False`**（L34 已定：是） |
 
 ```text
-w = √area_ratio × 自身框半宽：
-  杆 0.0274（相对 (0, base_y)，抖动框半宽 0.05）
-  demo goal 0.0602（半宽 0.15 − 0.04 = 0.11）、exec goal 0.0329（半宽 0.10 − 0.04 = 0.06）
-  方块 0.0548（候选框半宽 0.1：center_span 0.2、center_offset -0.1）
-判据：max(|dx|, |dy|) < w 即拒绝，在原取值点原地重抽
+禁区：圆心 (0,0)，R = 0.05 m；判据一律按物体中心（杆按轴线段最近点）
+  goal：  |c_goal| < R  → 重抽
+  方块：  |c_cand| < R 或 |c_final| < R → 重抽
+  杆：    dist(segment(root − 0.075u, root + 0.025u), (0,0)) < R → 重抽
+不按轮廓判：exec goal 只在半宽 0.06 的框里抽、圆盘半径 0.04，要求轮廓不进圆时无解
 ```
 
 **实施要点**
 
-- **偏置不等于排除**：V4 仍落在「30% 面积中心区」的比例——杆根 2.8%、demo goal **29.1%**、exec goal **29.2%**、方块最终位置 4.5%。
-  杆根本来就在 |y| ≥ 0.15，以工作区中心为准的定义不会拒绝它，「杆不在中心」只有相对**自身抖动框**才有意义（L31）。
-- **30% 的定义对比**（每物体 40 万次抽样 + 联合布局 3000 局）：边长 30%（面积 9%）中心区只有 1.5～3.9 cm，13.9% 的方块仍盖住中心；
-  面积 30% 的圆在对角方向留缝（3.2% 方块、4.1% goal 仍在方形区内）；十字形拒绝率 0.51，最接近旧的推向四角意图但不是「不在中心」；
-  共同绝对中心 (0,0)、w=0.045 时各物体不一致（exec goal 0.56、杆 0）。推荐 (b) 面积 30% 中心正方形，边长比 √0.3 = 0.548，
-  每次抽样恰好 30% 被拒。
-- **「30% 是否可以」实测**：2000 局全部成功，每局平均重抽 2.46 次，随机数总数均值 37.08（最少 27，p99 59，最大 84）；
-  各循环最坏接受率候选循环 0.358（demo）/ 0.297（exec），最终循环 0.496，预算耗尽 ≤ 2.5e-20；面积比取到 0.5 仍可行（3e-17）。
-  P(peg_push 起点离基座 > 0.80 m) 4.2%，介于均匀 3.8% 与 V4 6.6% 之间。本机演示 10/10（peg_push 5/5、gripper_push 3/3、
-  grasp_putdown 2/2），Wilson 95% 区间 [0.72, 1.0]，**不是判据级结果**。分布形状：方块 Chebyshev 半径 0～5 cm 为 0，其余较平；V4 堆在最外缘（11～13 cm 占 34.8%）。
-- **既有缺陷（L34）**：执行段 `cube_2` 用默认 `include_existing=True`，把演示段方块的（退化）OBB 当障碍；两块物理上**从不同时在场**
+- **为什么是 R = 0.05**：比方块边长 0.04 与 goal 圆盘半径 0.04 都略大，中心一块直径 10 cm 的空地在 256×256 画面里约 14 px 宽，
+  肉眼可辨「中间是空的」；再大会把执行段 goal 的采样框（半宽 0.06）几乎吃光。
+- **杆物理上本来就进不了中心**：杆根 |y| ≥ 0.15，杆身从根向内最多伸 0.10（`build_peg`：root − 0.075u … root + 0.025u，
+  两端合计 0.10），最近只能到 y = 0.05，恰好与 R 相切；这条规则对杆几乎不拒，写上只为三者同一条规则。
+  若用户要杆离中心更远，只能缩小杆根的 `base_y_abs`/`jitter_span` 采样带，那是另一个决策。
+- **每次抽样的拒绝率**（解析值，采样框内均匀）：demo goal `π·0.05²/0.22²` = 16.2%；exec goal `π·0.05²/0.12²` = 54.5%；
+  方块候选 `π·0.05²/0.2²` = 19.6%；杆 ≈ 0。exec goal 在 128 次预算下耗尽概率 0.545^128 ≈ 1e-33。
+  ⚠ 2.9 原来那套「各物体自身框 30% 面积」的 MC 数字（2000 局全成功、每局多抽约 10 个随机数、本机演示 10/10）**不再适用**，
+  S1 离线复核时按本规则重跑；演示成功率仍要靠 S3c 的本机演示探针。
+- **偏置不等于排除**：V4 的 goal 从未被偏置，demo goal 有 26% 的中心落在 5 cm 圆内、exec goal 约 55%；方块最终位置约 6%。
+- **既有缺陷（L34）**：执行段 `cube_2` 用默认 `include_existing=True`，把演示段方块的（退化）OBB 当障碍；两块在物理上**从不同时在场**
   （`cube_2` 被传送到 (10,10,1)，阶段切换时 `step` 再把 `self.cube` 挪到 `cube_init_pose_2`），但候选落在演示方块附近时 256 次会全部失败。
-  V4 xhard 失败率 0.33～0.60%（seed 1000442、1000446 已在真实模拟器复现）；加中心拒绝后会升到 0.97～1.83%；改 `include_existing=False`
-  后 0/3000，还把 V4 最坏 725 次抽样的长尾砍到 51 次。原三档同样有此缺陷（0.60～1.07%，抛 RuntimeError），H2 下不修。
+  V4 xhard 失败率 0.33～0.60%（seed 1000442、1000446 已在真实模拟器复现）；改 `include_existing=False` 后 0/3000。原三档同样有此缺陷
+  （0.60～1.07%，抛 RuntimeError），H2 下不修。
 - `peg_yaw_range` ±π、三条 way、goal 区域尺寸都不动。
-- 验收：`MOVECUBE_CENTER_EXCLUSION=PASS seeds=5000 zone_violations=0 layout_fail=0`；`MOVECUBE_REJECTION_BUDGET=PASS exhausted=0`；
-  `MOVECUBE_EXEC_SPAWN=PASS seeds=2 ok=2`。
+- 验收（落成单测与单次 reset 检查）：`MOVECUBE_CENTER_EXCLUSION=PASS seeds=5000 zone_violations=0 layout_fail=0`；
+  `MOVECUBE_REJECTION_BUDGET=PASS exhausted=0`；`MOVECUBE_EXEC_SPAWN=PASS seeds=2 ok=2`。
 
 ### 2.10 PatternLock（在 V4 xhard 上改）
 
@@ -846,18 +847,16 @@ w = √area_ratio × 自身框半宽：
    16 个（8 个含 cube）；每个内环窗口同时有一对外环容器沿 ±0.07 的车道对换（2.5）
 ```
 
-#### MoveCube：各物体自身框的 30% 面积中心区（禁区）
+#### MoveCube：桌面中心 R = 0.05 圆形共同禁区
 
 ```text
-   杆根（每侧一个抖动框，半宽 0.05）      goal（demo 半宽 0.11 / exec 半宽 0.06）   方块候选（半宽 0.10）
-   ┌──────────────┐                      ┌──────────────────┐                     ┌────────────────┐
-   │ ░░░░░░░░░░░░ │                      │ ░░░░░░░░░░░░░░░░ │                     │ ░░░░░░░░░░░░░░ │
-   │ ░░ ┌──────┐ ░░ │                    │ ░░ ┌──────────┐ ░░ │                   │ ░ ┌──────────┐ ░ │
-   │ ░░ │ 禁区 │ ░░ │ 半宽 0.0274         │ ░░ │   禁区   │ ░░ │ 0.0602 / 0.0329   │ ░ │   禁区   │ ░ │ 0.0548（候选与最终都查）
-   │ ░░ └──────┘ ░░ │ 中心 (0, ±0.2)      │ ░░ └──────────┘ ░░ │ 中心 (0,0)        │ ░ └──────────┘ ░ │ 中心 (0,0)
-   │ ░░░░░░░░░░░░ │                      │ ░░░░░░░░░░░░░░░░ │                     │ ░░░░░░░░░░░░░░ │
-   └──────────────┘                      └──────────────────┘                     └────────────────┘
-   禁区边长 = 框边长 × √0.3 = 0.548；每次抽样恰有 30% 落进禁区被拒；corner_bias 归零
+                 -0.3   -0.2   -0.1    0.0   +0.1   +0.2   +0.3
+   x=+0.15 │           ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒           │ ▒ = demo goal 区（半宽 0.11，不动）
+   x=+0.05 │  ═══      ▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒▒▒▒      ═══    │ ═ = 杆（根 x∈±0.05，y∈±[0.15,0.25]），杆身最近只到 y=0.05
+   x= 0.0  │           ▒▒▒▒▒▒▒░░ 禁区 ░░▒▒▒▒▒▒▒           │ ░ = 圆心 (0,0)、R 0.05 的圆：goal/方块中心不得进入
+   x=-0.05 │  ═══      ▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒▒▒▒      ═══    │ exec goal 区半宽 0.06 ⇒ 55% 抽样落进禁区被拒
+   x=-0.15 │           ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒           │ 方块候选区半宽 0.10 ⇒ 20% 被拒
+   corner_bias 删除；三个物体同一个圆、同一条按中心判的规则
 ```
 
 #### PickXtimes：3 个有色方块各占一个象限，6 块两两 ≥ 8 cm
@@ -997,7 +996,7 @@ N7～N10、N11 传入即可生成；N12 既有缺陷只在 xhard 修。V5 新增
 | S3a | `PatternLock.py::config_xhard`、`_native_decision`、`_load_scene` | `grid 6`、`length [30,33]`、`spacing 0.08`；`decision['grid_spacing']={'xhard':0.08}`；取间距时回落 native；`for … else` 分支在 xhard 下抛真异常 | 间距 0.1、静默兜底都不变 | 2.10 |
 | S3a | `RouteStick.py::config_xhard`、`_native_decision` / `_resolve_sampling_config` | `length [15,21]`；新增 xhard 的 L 范围 decision 键，由 header 冻结 | 原三档不变 | 2.11 |
 | S3b | `VideoUnmask.py` / `ButtonUnmask.py::XHARD_DISTRACTOR`；`unmask_distractors.py::spawn_ring_distractor_bins` | 配置改为 15 / 14 个、环带 `[0.2425,0.3289]`、cube `[7,8]` / `[7,7]`、`color_rule balanced_cycle`、`max_trials 1024`；校验改为 `0≤lo≤hi≤count`；`reveal_distractor_bins` 接入停放 helper | 原三档不进此模块 | 2.3 / 2.4 |
-| S3c | `MoveCube.py::config_xhard`、`_native_decision`、`_load_scene`（杆抖动、goal、`_sample_cube_center`、`cube_2` 生成）、`_xhard_corner_bias`（或新的校验器） | 按 2.9 的伪码；`corner_bias 0.0`；`center_exclusion`；执行段 `include_existing=False` | 原三档 27 次抽样的路径不变 | 2.9 |
+| S3c | `MoveCube.py::config_xhard`、`_native_decision`、`_load_scene`（杆抖动、goal、`_sample_cube_center`、`cube_2` 生成）、`_xhard_corner_bias`（或新的校验器） | 按 2.9 的伪码；删掉 `corner_bias` 键与 MoveCube 内全部消费点（L33）；桌面中心 R=0.05 圆 `center_exclusion`，按物体中心判；执行段 `include_existing=False` | 原三档 27 次抽样的路径不变（原三档本来就不传 corner_bias） | 2.9 |
 | S3d | `InsertPeg.py::config_xhard`、`_initialize_episode`，新增 `_xhard_sample_pegs`，删除 `_xhard_place_near_target_peg` | 按 2.8 的伪码；新记录与回放守卫 | 原生循环逐字不动 | 2.8 |
 | S3e | `BinFill.py::_load_scene`（xhard clutter 分支）、`_resolve_sampling_config`，新增 `decision.configs.xhard.color_mix` 与 `cube_obstacle_obb` | 槽位 → 配色 → `spawn_random_cube(fixed_xy, fixed_yaw)` 建 actor；配色重排只在末尾追加 `randperm(12)` | `native_dynamic` 分支不动 | 2.12 |
 | S3f | `PickXtimes.py::XHARD_DECISION`、`_spawn_scene_objects_xhard`、`_spawn_distractors_xhard`；`SwingXtimes.py::XHARD_DECISION`、`_load_scene` 有色方块循环、`_spawn_distractors_xhard` | 象限与 8 cm 规则经 `extra_reject`；放下的方块用 `cube_obb2d_exact` 作障碍；`max_trials` 1024（Pick）；新记录 `layout.cube_dispersion`、`layout.cube_min_center_dist` | `_spawn_scene_objects_native` 不动；Swing 共用循环的非 xhard 一支逐字保留 | 2.13 / 2.14 |
