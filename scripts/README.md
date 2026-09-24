@@ -2,7 +2,7 @@
 
 本文只讲四件事：
 
-1. **逐环境改动**：十六个环境各自新增了哪些配置字段、哪些规格字段，改了什么行为（第一节）；
+1. **逐环境改动**：十六个环境各自新增了哪些配置字段、哪些规格字段，改了什么行为，subgoal 执行流程怎么变（第一节）；
 2. **全局改动**：共用代码、快照文件、结果文件里新增了哪些字段（第二节）；
 3. **推理侧怎么兼容**（第三节）；
 4. **三步各自怎么调用**：抽签与冻结、实跑、推理（第四节）。
@@ -22,6 +22,8 @@
   「hard 值」一列是原值，用来对照；键名本来就有、只是新加了 `xhard` 档的，也列在这里。
 - **新增规格字段**：该环境 xhard 局在 `specs.jsonl` 每行的 `spec` 里记录的字段，即 `SpecRecorder` 在 reset 时导出、回注时再读回的值。
   `<i>` 表示按序号展开，`{a,b}` 表示并列的几个字段。原三档的规格（`native-parity/1`）不受影响。
+- **subgoal 流程**：xhard 的任务表（`self.task_list`）与基准档的对照；D 表示演示段（`demonstration=True`），「执行」表示交给策略的段。
+  只有 VideoPlaceButton / VideoPlaceOrder 重写了流程，其余要么顺序不变只改某个 subgoal 的等待、名字或失败判定，要么只是次数变。
 - **基准**：xhard 是从哪一档派生出来的。标 A6 的三个环境（StopCube、MoveCube、InsertPeg）原来没有 `configs`，
   这次在源码里新建了 easy/medium/hard 三档，三档取值相同，都等于原来的全局常量。
 
@@ -49,6 +51,9 @@
 - layout_mode 守卫只对 xhard 的 clutter 放行；
 - `min_gap` 改读 `min_gap_value`，值不变。
 
+**subgoal 流程：** 结构不变，只是次数变。按颜色顺序循环 [`pick up the {序数} {color} cube` → `put it into the bin`]，最后 `press the button`；
+pick/put 对的总数 hard `[3,5]` → xhard `[5,7]`（单色最多 7 个，序数用到扩展后的序数表）。failure_func 与 solve 不变。
+
 ### 1.2 PickXtimes（基准 hard）
 
 | 新增配置字段 | hard 值 | xhard 值 |
@@ -75,6 +80,10 @@
 - 干扰方块进 `non_target_cubes`，抓到即失败；
 - num=15 时演示约 2206 步，依赖录像器上限 5000（见第二节）。
 
+**subgoal 流程：** 结构不变，只是次数变。[`pick up the {color} cube for the {序数} time` → `place the {color} cube onto the target`] ×N，
+最后 `press the button to stop`；N：hard `[4,5]` → xhard `[6,15]`。任务表代码没改，但 failure_func 读的 `non_target_cubes` / `all_cubes`
+在 xhard 下多了 3 个干扰方块，所以抓到干扰方块在每个 pick/place 与按钮 subgoal 上都判失败。
+
 ### 1.3 SwingXtimes（基准 hard）
 
 | 新增配置字段 | hard 值 | xhard 值 |
@@ -90,6 +99,10 @@
 - `_color_lists` 改成动态建表，避免加第四种颜色时 KeyError；
 - 干扰色单列在 `decision.xhard.distractor`，没有并进 `native.color_pool`，否则会改动原三档的随机流；
 - 目标候选池与干扰方块分开，干扰方块进非目标列表；圆盘避让同 PickXtimes。
+
+**subgoal 流程：** 结构不变，只是次数变。`pick up the {color} cube` → [`move to the top of the right-side target for the {序数} time` →
+`move to the top of the left-side target for the {序数} time`] ×N → `put the {color} cube on the table` → `press the button`；
+N：hard 3 → xhard `[4,10]`（总 subgoal 9 → 11～23）。failure_func 不变，干扰方块并入 `non_target_cubes`，抓到即失败。
 
 ### 1.4 StopCube（基准 A6）
 
@@ -108,6 +121,9 @@
 **行为改动：**
 - 往返段数 xhard 取 `max(5, stop_time)`，原三档仍是 5 段；
 - `vqa_options._options_stopcube` 的 checkpoint 公式只依赖 `steps_press`，两边自动一致，代码没改。
+
+**subgoal 流程：** 结构不变，只是次数变。`move to the top of the button to prepare` → `remain static` ×K → `press the button to stop the cube on the target`；
+K 是每 100 步一个检查点再加最终时刻，hard 1～6 个 → xhard 3～8 个（stop_time 6→3 个、7→4、8～9→5、10～11→6、12～13→7、14～15→8）。
 
 ### 1.5 VideoUnmask（基准 hard）
 
@@ -132,6 +148,15 @@
 - 干扰容器与区域容器同一机制、同一窗口 [0,64) 揭示；**误抓（z>0.15）即失败**，加在每个已有 failure_func 上；
 - 容器放不满时抛 `SceneGenerationError`。
 
+**subgoal 流程：** 结构不变，只是次数变。
+
+| 档 | 序列 |
+|---|---|
+| hard | `static`（D，等 64 步）→ `pick up the container that hides the {c0} cube` → `put down the container` → `pick up … {c1} cube` |
+| xhard | `static` → pick c0 → [`put down the container` → `pick up … {c_k} cube`] ×2（k=1,2，由 `_append_xhard_pick_tasks` 生成），共 6 个 |
+
+另外所有带 failure_func 的 subgoal 都被外包一层「抬起任一干扰容器即失败」（`utils/unmask_distractors.py`），`static` 不受影响。
+
 ### 1.6 ButtonUnmask（基准 hard）
 
 新增配置字段与 VideoUnmask 相同（`pick_count.xhard`、`bin_layout_policy.count.xhard`、`bin_layout_policy.xhard.min_gap_factor`、`decision.xhard.distractor`）。
@@ -141,6 +166,9 @@
 - `actions.sampling_trace.constructor_draw`：构造期那次 `randint(1,6)` 占位抽样。
 
 **行为改动：** 同 VideoUnmask；另外构造期的占位抽样原样保留，首个 pickup 任务的单元素列表形态也保留。按钮区与容器区重叠，放置更紧。
+
+**subgoal 流程：** 同 VideoUnmask，只是开头是 `press the button` 而不是 `static`：
+hard `press → pick c0 → put down → pick c1`（4 个）→ xhard `press → pick c0 → [put down → pick c_k] ×2`（6 个）；干扰容器误抓外包同上。
 
 ### 1.7 VideoUnmaskSwap（基准 hard，覆盖旧 xhard）
 
@@ -166,6 +194,15 @@
 - 交换期等待改用 `solve_hold_obj_xhard`：原共享函数 `solve_hold_obj` 的裸 except 会吞掉碰撞拒绝，导致死循环；
 - 揭示规则与误抓即失败同 VideoUnmask。
 
+**subgoal 流程：** 顺序不变，pick 次数 2 → 3，开头 `static` 的等待方式变了。
+
+| 档 | 序列 |
+|---|---|
+| hard | `static`（D，`solve_hold_obj` 等到最后一段交换结束，164 或 214 步）→ pick c0 → `put down the container` → pick c1 |
+| xhard | `static`（D，改用 `solve_hold_obj_xhard`，等 64+33n 步，n∈[8,12] 即 328～460 步）→ pick c0 → [put down → pick c_j] ×2，共 6 个 |
+
+原 hard 分支写死 `pick_times==2`，xhard 另开循环生成；干扰容器误抓外包同 VideoUnmask。
+
 ### 1.8 ButtonUnmaskSwap（基准 hard）
 
 | 新增配置字段 | hard 值 | xhard 值 |
@@ -182,6 +219,15 @@
 - `_refresh_swap_schedule` 的三个分支换成通式，并用 `for k in range(3, swap_times)` 补槽位；六处字面量 50 改成具名常量；
 - 按完第二个按钮后原地等到最后一段交换结束再去抓（原解法会在容器还在交换时去抓）；
 - 碰撞检查、揭示、误抓即失败同 VideoUnmaskSwap。
+
+**subgoal 流程：** 顺序不变，pick 次数 2 → 3，**第二个按钮的 solve 变了**。
+
+| 档 | 序列 |
+|---|---|
+| hard | `press the first button` → `press the second button` → pick c0 → `put down the container` → pick c1（5 个） |
+| xhard | `press the first button` → `press the second button`（solve 换成 `_solve_press_then_wait_swaps`：按完原地等到最后一段交换结束，64+33n 步，n∈[6,8] 即 262～328 步）→ pick c0 → [put down → pick c_j] ×2（7 个） |
+
+等待挂在按钮 subgoal 上而不是 pick 上，是因为 `inject_fail_grasp` 会替换 pick 的 solve。干扰容器误抓外包同 VideoUnmask。
 
 ### 1.9 VideoRepick（基准 medium，覆盖旧 xhard）
 
@@ -204,6 +250,15 @@
 - 四处扫掠检查改为「甲通道，或 xhard 乙通道」；
 - 交换期等待函数同 VideoUnmaskSwap 的死循环修复；xhard 拒收甲通道的 `episode_spec`；
 - 约 45% 的局在演示期被碰撞检查拒绝，按用户决定接受，靠递补补足。
+
+**subgoal 流程：** 结构同 medium，只是次数变、等待函数换了。
+
+| 档 | 序列 |
+|---|---|
+| medium | `pick up the cube`（D）→ `drop the cube on the table`（D）→ `static`（D，复位后等 20 步）→ `static`（D，swap）×[2,3] → `NO RECORD` → [`pick up the correct cube for the {序数} time` → `put it down`] ×[1,3] → `press the button to finish` |
+| xhard | 同上；swap 的 `static` ×[8,12]，repick 对 ×[4,6]；两种 `static` 的等待改用只吞 AttributeError 的修复版（同 VideoUnmaskSwap） |
+
+hard 档没有交换（swap 0），所以没有那组 `static`；failure_func 与名字都不变。
 
 ### 1.10 VideoPlaceButton（基准 hard）
 
@@ -228,6 +283,44 @@
 - 原位落点由 `utils/xhard_home_site.py::build_home_sites` 在方块初始位姿上直接建（不用 `spawn_random_target`，不消耗随机数）；
 - vqa 的 drop 候选追加这两个落点。
 
+**subgoal 流程（重写）：** hard 档 `additional_place=False`，所以原版没有额外放到 target_2/target_3 的那两步。
+
+hard 原流程（1 个方块）：
+
+| # | subgoal | 段 | 做什么 |
+|---|---|---|---|
+| 1–2 | `pick up the cube` → `drop the cube onto target` | D | 放到 target_0（按钮**前**） |
+| 3 | `press the button` | D | 按按钮 |
+| 4–5 | `pick up the cube` → `drop the cube onto target` | D | 放到 target_1（按钮**后**） |
+| 6–7 | `pick up the cube` → `drop the cube onto table` | D | 放到隐藏的随机 goal_site |
+| 8 | `static` | D | 复位后静止 20 步 |
+| 9 | `static`（`specialflag=swap`） | D | 静止 60 步，目标台互换 |
+| 10 | `NO RECORD` | D | 强复位 |
+| 11 | `pick up the cube` | 执行 | 抓目标方块，抓错别的方块即失败 |
+| 12 | `place the cube onto the correct target` | 执行 | before → target_0，after → target_1；放错台即失败 |
+
+xhard 新流程（`_load_scene_xhard_tail`，演示方块 A、B，targets 仍是 4 个台）：
+
+| # | subgoal | 段 | 做什么 |
+|---|---|---|---|
+| 1–2 | `pick up the cube` → `drop the cube onto target` | D | A 放到 targets[0]（按钮前） |
+| 3–4 | `pick up the cube` → `drop the cube onto target` | D | B 放到 targets[2]（按钮前） |
+| 5 | `press the button` | D | 按按钮 |
+| 6–7 | `pick up the cube` → `drop the cube onto target` | D | A 放到 targets[1]（按钮后） |
+| 8–9 | `pick up the cube` → `drop the cube onto target` | D | B 放到 targets[3]（按钮后） |
+| 10–11 | `pick up the cube` → **`put the cube back to its original position`** | D | A 放回初始位置 |
+| 12–13 | `pick up the cube` → **`put the cube back to its original position`** | D | B 放回初始位置 |
+| 14 | `static` | D | 静止 20 步（同原版） |
+| 15 | `static`（swap） | D | 静止 60 步，目标台互换（同原版） |
+| 16 | `NO RECORD` | D | 强复位 |
+| 17 | `pick up the cube` | 执行 | 抓**答案方块**（A、B 中随机一个，`objects.answer_demo_index`），抓其他方块即失败 |
+| 18 | `place the cube onto the correct target` | 执行 | 放到答案方块按钮前（before）或按钮后（after）放过的台 |
+
+与原版的区别：
+- 原来 1 块依次走「按钮前台 → 按钮 → 按钮后台」；现在两块先各放按钮前台，按一次按钮，再各放按钮后台；
+- 演示结尾从放隐藏 goal_site（`drop the cube onto table`）改成两块各自放回原位，subgoal 名换成 `put the cube back to its original position`；
+- 执行段结构不变，先随机抽问哪一块，再由 task_flag 决定问按钮前还是按钮后；任务目标文本没改。
+
 ### 1.11 VideoPlaceOrder（基准 hard）
 
 新增配置字段与 VideoPlaceButton 相同（`demo_object_count: 2`、`demo_return_policy: return_to_origin`，其余不变）。
@@ -242,6 +335,39 @@
 - 两块依次各走一遍访问序列，走完放回原位；提问随机挑一块，问它放过的第 N 个台；
 - 按钮插入点公式重推为 `2×(b+1+此前已完成的放回原位次数)`，单对象时退化为原来的 `k*2+2`；
 - `SceneGenerationError` 被 `from .utils import *` 遮蔽成 TypeError 的问题只在 xhard 修了，原三档仍是 TypeError。
+
+**subgoal 流程（重写）：**
+
+hard 原流程（1 个方块）：
+
+| # | subgoal | 段 | 做什么 |
+|---|---|---|---|
+| 1…2n | [`pick up the cube` → `drop the cube onto target`] ×n | D | n 取 2～4，按随机顺序访问 n 个台 |
+| 插入 | `press the button` | D | 插在第 k 对之后，下标 `k*2+2`，k∈[0,n) 随机 |
+| 接着 | `pick up the cube` → `drop the cube onto table` | D | 放到隐藏的 goal_site |
+| 接着 | `static` 20 → `static`（swap）60 → `NO RECORD` | D | 同 VideoPlaceButton |
+| 最后 | `pick up the cube` → `place the cube onto the correct target` | 执行 | 放到它第 `which_in_subset` 次放过的台 |
+
+xhard 新流程（`_load_scene_xhard_tail` + `_build_xhard_task_list`，演示方块 A、B）：
+
+| # | subgoal | 段 | 做什么 |
+|---|---|---|---|
+| A 段 | [`pick up the cube` → `drop the cube onto target`] ×n_A | D | A 按自己的随机顺序访问 n_A 个台（2～4） |
+| A 回原位 | `pick up the cube` → **`put the cube back to its original position`** | D | A 放回初始位置 |
+| B 段 | [`pick up the cube` → `drop the cube onto target`] ×n_B | D | B 访问自己的 n_B 个台（2～4） |
+| B 回原位 | `pick up the cube` → **`put the cube back to its original position`** | D | B 放回初始位置 |
+| 插入 | `press the button` | D | 插在全局第 b+1 次访问放置之后，b∈[0, n_A+n_B) 随机 |
+| 接着 | `static` 20 → `static`（swap）60 → `NO RECORD` | D | 同原版 |
+| 最后 | `pick up the cube` → `place the cube onto the correct target` | 执行 | 随机问 A 或 B，放到它自己第 N 次放过的台 |
+
+按钮插点：下标 = `2 × (b + 1 + 此前已完成的放回原位次数)`（`xhard_button_task_index`）。每个单元都是一对 pick+drop，按钮永远不会插在
+pick 与 drop 之间；插点恰好是 A 的最后一次访问时，按钮排在 A 放回原位**之前**；只有一个方块时退化为原来的 `k*2+2`。
+
+与原版的区别：
+- 两块**串行**演示：A 走完并放回原位后 B 才开始，台面不会被上一块占着；
+- 按钮插点从「第 k 对之后」推广成两块全局访问序号；
+- 演示结尾从放 goal_site 改成各自放回原位；
+- 执行段先随机抽问哪一块，`which_in_subset` 在该块自己的访问序列里抽；任务目标文本没改。
 
 ### 1.12 PickHighlight（基准 hard）
 
@@ -263,6 +389,16 @@
 - 硬断言生成数不少于高亮数；放不满、以及 `randperm[:k]` 截断时，xhard 抛错；
 - 首个按钮任务补上 failure_func；`disk_radius` 不动。
 
+**subgoal 流程：** 顺序不变，次数变，名字和第一个 subgoal 的失败判定变了。
+
+| 档 | 序列 |
+|---|---|
+| hard | `press the button` → [`pick up the {序数} highlighted cube, which is {color}` → `place the cube onto the table`] ×3（最后一块不放回） |
+| xhard | `press the button` → [`pick up the {序数} highlighted cube` → `place the cube onto the table`] ×[5,7]（最后一块不放回） |
+
+- pick 的名字与 `subgoal_segment` 去掉 `, which is {color}` 后缀（HSV 任意色没有颜色名）；
+- `press the button` 的 failure_func：hard 在构造时就求了值，等于不生效；xhard 包成 lambda，按按钮前抓了任何方块即失败。
+
 ### 1.13 MoveCube（基准 A6）
 
 | 新增配置字段 | hard 值（原全局常量） | xhard 值 |
@@ -281,6 +417,9 @@
 - 等价朝向归约：夹爪 x 轴相对「基座→抓取点」方位角超过 ±90° 时，夹爪姿态右乘 Rz(π)，抓杆后的推杆姿态同步右乘 Rz(π)；
   这段在 `subgoal_planner_func` 里由环境开关 `_xhard_peg_yaw_reduction` 守着，原三档不进这个分支；
 - 三种推法都保留。
+
+**subgoal 流程：** 任务表完全不变，三种推法（peg_push 6 个、gripper_push 4 个、grasp_putdown 6 个 subgoal）照旧。
+只有执行方式变：`Pick up the peg` 的 `grasp_and_lift_peg_side` 与 `Hook the cube …` 的 `solve_push_to_target_with_peg` 在需要时右乘 Rz(π)（见上）。
 
 ### 1.14 InsertPeg（基准 A6）
 
@@ -305,6 +444,10 @@
 - `insert_peg` 在朝向翻转时把夹爪局部系里的平移 xy 取反；
 - vqa 候选随杆数从 6 个变成 8 个。
 
+**subgoal 流程：** 任务表完全不变，仍是 6 个：`Pick up the peg by grasping the {near|far} end` → `Insert the peg from the {left|right} side of the box`
+→ `NO RECORD`（reset pegs）→ `NO RECORD`（静止 100 步）→ 执行段的 pick 与 insert。执行段「抓了别的杆即失败」的判定现在覆盖 3 根非目标杆（原 2 根）；
+朝向翻转时 `insert_peg` 的局部 xy 取反（见上）。
+
 ### 1.15 PatternLock（基准 hard）
 
 | 新增配置字段 | hard 值 | xhard 值 |
@@ -318,6 +461,9 @@
 
 **行为改动：** 只在源码里加了 `config_xhard`，路径搜索不改。20 个节点约 19.6 s 演示。
 
+**subgoal 流程：** 结构不变，只是次数变。`NO RECORD` → `move {方向}` ×(n−1)（演示）→ `NO RECORD` ×2 → `move {方向}` ×(n−1)（执行）；
+n：hard 4～8 → xhard 20～24，总 subgoal 9～17 → 41～49。
+
 ### 1.16 RouteStick（基准 hard，覆盖旧 xhard）
 
 **新增配置字段：** 无。xhard 值写在源码 `RouteStick.py` 的 `config_xhard` 里：`length` `[4,7]`→`[12,15]`（旧 xhard `[8,10]` 作废），`backtrack` 仍为 True。
@@ -328,6 +474,9 @@
 - `layout.rotation_deg`、`layout.obstacle_rgb.<i>`：网格旋转角、障碍物颜色。
 
 **行为改动：** 只改了 `config_xhard`。演示 L×50 帧，即 600～750 帧，约 20～25 s。
+
+**subgoal 流程：** 结构不变，只是次数变。`NO RECORD` → `move to the nearest {left|right} target by circling around the stick {方向}` ×L（演示）
+→ `NO RECORD` ×2 → 同名 move ×L（执行）；L：hard 4～7 → xhard 12～15，总 subgoal 11～17 → 27～33。
 
 ---
 
