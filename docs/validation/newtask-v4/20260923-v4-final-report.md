@@ -454,3 +454,10 @@ StopCube/MoveCube/InsertPeg 由「无 configs」变为「三档同值 configs」
 | V6 | `artifacts/newtask-v4/combos/v6-01/`（`samples-*.jsonl`、`summary.json`） |
 | V3g / V5e | `artifacts/newtask-v4/v4-01/v3g-v3.json`；`artifacts/newtask-v4/v4-01/eval-all/eval_results.jsonl` |
 | 各步报告 | `docs/validation/newtask-v4/`（step1-2、step0-g2、step3、step3b-*、step3c-v6、step4-6、v1、本报告） |
+
+**2026-09-23 中间产物清理**（用户「只保留 V4 xhard 档最后生成结果 48 条正式局和 json 和原值对拍所需要的产物」）：
+`artifacts/` 由约 996 G 降到 31 G，`/data` 可用空间由 1.5T 增至 2.5T。已删：
+`artifacts/injection/` 下全部未跟踪文件（4010 个，主体为已废弃 injection 链路 `20260912-contract-v3-10/rollout/` 的 h5／视频，约 845 G；被 Git 跟踪的元数据保留）；
+`artifacts/train-parity/` 下 19 个 h5 数据目录（`local-recheck/{old,new}` 约 112 G，`local-p6/{ind,seq}`、`local-smoke-01/{A1,A2}`、`local-spec-02/D`、`local-{rng-01,spec-01,spec-03,xy-01}/{B,C,D}` 约 9 G），各轮 `compare/ results/ logs/ run_*.json` 保留；
+`combos/v6-01/` 的 92 个 mp4（`samples-*.jsonl`、`summary.json` 保留）；`artifacts/test-tmp/*`、`.pytest_cache`、`.ruff_cache`。
+保留：`v4-01/` 整体（清理前后 263 个文件 sha256 逐一相同）、原值对拍用的 `train-parity/local-smoke-01/official-src/`、`v1-compare*/`。
