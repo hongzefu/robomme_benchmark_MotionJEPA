@@ -7,6 +7,11 @@
 | 原始 train 五路逐位对拍 | `train_split_parity.py`（主入口，`freeze-identities` / `freeze-history` / `run` / `merge` / `compare`）、`train_split_runner.py`（A 路隔离运行器）、`train_split_worker.py`（C／D 路 worker）、`train_split_config.py`（原值快照提取）、`train_split_comparison.py`（官方比较器的稀疏范围适配）、`train_split_audit.py`（G2／G3／C1 离线核对）、`comparator_fixtures.py`（G5 夹具） | 五路之间**全字段零容差**逐位对拍，证明拆接口与原值回注不改数。判据与口径见 [../README.md](../README.md) 第二节 |
 | vs 原版发布集的容差校验 | `compare_vs_original.py`、`calibrate.py`、`tolerance.json`、`manifest_16x3.json`、`identities_16x3.txt`、`results/`、`gl/` | 按硬件分三档的**容差**判据，见下文 |
 
+> **V5（2026-09-24）**：新值链路仍用 `v4_specs.py`（抽签新增 `--workers`/`--gpus`）、`v4_rollout.py`（实跑新增 `--gpu`），
+> 新增 `v5_generation.py`（`pipeline` 一条命令串起抽签 → 冻结 → 实跑 → 报告；`report` 输出 `V5_GENERATION=REPORT …`）；
+> `train_split_config.py extract` 新增 `--release newtask-v5`。V1 原三档 144 条对拍沿用本目录 `train_split_parity.py run --paths B` 与
+> `compare --pair base/B:v5/B`。完整调用见 [../README.md](../README.md) 第五节。
+
 > 2026-09-22 起本目录由 `scripts/test-vs-original/` 改名而来，并从 `scripts/` 顶层收编了六个
 > `train_split_*.py` 与 `comparator_fixtures.py`；顶层只保留五个入口（见 [../README.md](../README.md)）。
 > 目录内文件名未改，`results/` 下的历史日志与 summary 保留旧路径原文，不回改。

@@ -6,6 +6,7 @@
 2. **全局改动**：共用代码、快照文件、结果文件里新增了哪些字段（第二节）；
 3. **推理侧怎么兼容**（第三节）；
 4. **三步各自怎么调用**：抽签与冻结、实跑、推理（第四节）。
+5. **V5 怎么调用**：快照重导、一条命令串起抽签/冻结/实跑/报告、V1 原三档逐位对拍（第五节；V4 已作废，第一～四节留作 V4 记录）。
 
 验证数字、决策来由和风险见 [V4 总报告](../docs/validation/newtask-v4/20260923-v4-final-report.md)，计划见
 [NEWTASK_RELEASE_V4_PLAN.md](../NEWTASK_RELEASE_V4_PLAN.md)。
@@ -638,3 +639,123 @@ uv run --no-sync python -m scripts.eval.v4_eval --specs scripts/configs/newtask-
   并打印 `EVAL_PIPELINE=...` 判定行。
 - 可选参数：`--tasks` 限定环境，`--limit-per-task` 限定每个环境评几局，`--action-space` 默认 `joint_angle`，`--model-seed` 默认 7。
 - 默认策略是 `DummyModel`，与 `scripts/evaluation.py` 里的同构，只用来验证链路；换成真实策略时替换 `v4_eval.py` 里的模型类即可。
+
+---
+
+## 第五节　V5：生成工具链与 V1 对拍
+
+计划见 [NEWTASK_RELEASE_V5_PLAN.md](../NEWTASK_RELEASE_V5_PLAN.md) 第三节（3.1 链路、3.2 判据、3.3 S4～S6）与第二部分「三、runbook」。
+V5 **沿用 V4 的脚本与封套**（`v4_specs` / `v4_rollout` 的 schema、`SEED_RULE`、不开 recover 的规则都不变），只换快照目录与 run id：
+快照 `scripts/configs/newtask-v5/`，run id `v5-01`，产物一律落 `artifacts/newtask-v5/`。V4 的配置与产物原样留档、不再引用（N15）。
+所有命令在仓库根目录执行；超过 5 分钟的一律用 detached tmux，等待用 Monitor 挂日志（AGENTS.md 规则 4）。
+
+### 5.1 S4：一次性重导快照
+
+```bash
+uv run --no-sync python scripts/parity/train_split_config.py extract --release newtask-v5
+uv run --no-sync python scripts/parity/train_split_config.py extract --release newtask-v5 --verify   # 之后随时核对快照与源码一致
+uv run --no-sync python scripts/parity/train_split_audit.py config-map                               # SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0
+```
+
+`--release` 决定默认落点 `scripts/configs/<release>/sampling_config.json` 与快照里的说明文字；不带时仍是 `newtask-v4`，V4 命令与字节不变。
+
+### 5.2 S6：一条命令串起抽签 → 冻结 → 实跑 → 报告
+
+入口是 [parity/v5_generation.py](parity/v5_generation.py) 的 `pipeline`，它只按 `--release`／`--run-id` 推导落点，然后依次以子进程调用
+`v4_specs draw --workers <抽签并行数>` → `v4_specs freeze` → `v4_rollout run --workers <实跑并行数>` → `v5_generation report`，
+任一步失败即停（`PIPELINE_FAIL step=… exit=…`），全部完成打印 `PIPELINE_DONE`。
+
+```bash
+tmux new-session -d -s v5-gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.parity.v5_generation pipeline \
+  --run-id v5-01 --draw-workers <抽签并行数> --draw-gpus 0,1 --workers <实跑并行数> --rollout-gpu 0 \
+  --official-root artifacts/train-parity/local-smoke-01/official-src \
+  2>&1 | tee artifacts/logs/v5-gen-v5-01.log; echo \"EXIT_CODE=\$?\" >> artifacts/logs/v5-gen-v5-01.log"
+# 等待：tail -n +1 -F artifacts/logs/v5-gen-v5-01.log | stdbuf -oL tr '\r' '\n' \
+#   | grep --line-buffered -E "PIPELINE_|DRAW_DONE|FREEZE_DONE|ROLLOUT_DONE|V5_GENERATION=|EXIT_CODE=|Error|Traceback"
+```
+
+| 参数 | 默认 | 含义 |
+|---|---|---|
+| `--run-id` | 必填 | run id，正式为 `v5-01` |
+| `--release` | `newtask-v5` | 快照与产物的目录名 |
+| `--draw-workers` / `--draw-gpus` | 1 / 沿用环境 | 抽签并行进程数；子进程按轮转领取物理 GPU 号写进 `CUDA_VISIBLE_DEVICES` |
+| `--workers` / `--rollout-gpu` | 1 / `0` | 实跑 runner 的并行 worker 数与 GPU 号（worker 把它写进 `CUDA_VISIBLE_DEVICES`，即物理编号） |
+| `--candidates-per-env` / `--max-reset-attempts` / `--select` | 10 / 30 / `0,3,6` | 口径 12：每环境攒 10 条 reset 成功、最多 30 次；按 index 0/3/6 选 3 条正式局 |
+| `--label` | `run1` | 实跑轮次标签；V5 只跑这一轮 |
+| `--resume` | 关 | 已有产物的步骤跳过（drafts／specs 本来就禁止覆盖；下游 freeze／run 仍会重新核验来源，陈旧产物会被拒） |
+| `--dry-run` | 关 | 只打印四步完整命令，不执行 |
+
+落点：抽签 `artifacts/newtask-v5/v5-01/draft/drafts.jsonl`；冻结 `scripts/configs/newtask-v5/v5-01/specs.jsonl`（进 Git）；
+实跑 `artifacts/newtask-v5/v5-01/rollout/run1/`（`results.jsonl`、`summary.json`、`episodes/<Task>_episode_<n>/` 下的 h5 与视频）；
+报告 `artifacts/newtask-v5/v5-01/report/generation_report.{md,json}`。
+
+等价的分步写法（与 `pipeline --dry-run` 打印的完全一致，可以手工 `&&` 串起来）：
+
+```bash
+uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v5-01 --tasks all \
+  --sampling-config scripts/configs/newtask-v5/sampling_config.json --candidates-per-env 10 --max-reset-attempts 30 \
+  --workers <抽签并行数> --gpus 0,1 --out artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
+&& uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
+  --sampling-config scripts/configs/newtask-v5/sampling_config.json --select 0,3,6 --candidates-per-env 10 \
+  --out scripts/configs/newtask-v5/v5-01/specs.jsonl \
+&& uv run --no-sync python -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v5/v5-01/specs.jsonl \
+  --label run1 --tasks all --official-root artifacts/train-parity/local-smoke-01/official-src --workers <实跑并行数> --gpu 0 \
+  --output artifacts/newtask-v5/v5-01/rollout \
+&& uv run --no-sync python -m scripts.parity.v5_generation report --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
+  --specs scripts/configs/newtask-v5/v5-01/specs.jsonl --rollout artifacts/newtask-v5/v5-01/rollout/run1 \
+  --candidates-per-env 10 --out artifacts/newtask-v5/v5-01/report
+```
+
+- **抽签多 worker**：`v4_specs draw --workers N` 按环境把任务分给 N 个 spawn 子进程（每进程独立 gym 环境）。每个环境的
+  (episode, attempt, seed) 序列只由 `SEED_RULE` 决定，与 worker 数无关；合并时 header 只有一份，行按 header 的任务序、
+  每环境内按抽签先后排列，**与单 worker 的 drafts.jsonl 逐行相同**（只有墙钟 `wall_s` 不同），freeze 直接读。`--workers 1`（默认）
+  与改动前逐字相同。任一环境的子进程崩溃（如段错误）时整体失败、不写 drafts。
+- **实跑**只跑一遍（口径 12），不跑 run2 / compare，H4 递补在本环境剩余候选里按 `1,2,4,5,7,8,9` 进行，不追加抽签。
+
+### 5.3 生成报告（`v5_generation report`）
+
+只读 drafts、specs、`results.jsonl`、各局 h5 与 `rng_trace.json`，打印计划 3.2 的判定行并写 markdown 与 JSON：
+
+```text
+V5_GENERATION=REPORT tasks=16 draft_ok=… rollout_ok=… backfilled=… selected_shortfall=… demo_frames_out_of_band=… outer_swap_mismatch=… bin_collision=… vr_min_participants=…
+```
+
+| 字段 | 怎么算 |
+|---|---|
+| `draft_ok` | 全部环境 reset 成功的候选数；逐环境表另列 `draft_attempted` / `candidate_shortfall`（= max(0, 10 − 成功数)）与抽签失败类别 |
+| `rollout_ok` / `backfilled` / `selected_shortfall` | 与 `v4_rollout run` 的 `summary.json` 同口径；逐环境表另列 `rollout_attempted` 与 `by_class`（失败局的 `error_type` 计数） |
+| `demo_frames_out_of_band` | PatternLock / RouteStick 每个成功局 h5 中 `episode_*/timestep_*/info/is_video_demo` 为真的帧数，落在 750～1050 之外的局数（口径 9） |
+| `outer_swap_mismatch` | VideoUnmaskSwap / ButtonUnmaskSwap 每局：规格 `actions.distractor_swap_pairs` 的窗口数（及 rng_trace 里若有的运行时逐窗记录）≠ `objects.n_swaps` 的局数（口径 4） |
+| `bin_collision` | 实跑失败类别为 `BinCollisionError` 的局数；抽签期的同类失败另记在 JSON 的 `draft_bin_collision` |
+| `vr_min_participants` | VideoRepick 每局参与交换的不同方块数的最小值（口径 10，应为 6）：优先规格 `actions.swap_pairs.<k>`，缺失时用 rng_trace 的运行时记录 |
+
+字段名集中在 `v5_generation.py` 顶部的常量里；规格缺字段或形状认不出时对应项记 `N/A` 并在「提示」里写明，不会崩溃。
+
+### 5.4 S5：V1 原三档 16×9（144 条）逐位对拍
+
+比较器是 [parity/train_split_parity.py](parity/train_split_parity.py) 的既有 `run` / `compare`，不需要新代码。身份取默认的
+`scripts/configs/newtask-v3/subset_manifest.json`（144 行 = 16 任务 × easy/medium/hard × 3 局）。基线侧在基线提交的工作树里、
+V5 侧在 V5 工作树里各跑一遍**同一条命令**（本机、单 worker、相近负载，只跑 B 路）：
+
+```bash
+# <tree> 为该侧的工作树根目录，<side> 为 base 或 v5；两侧的 --output 都写到 V5 工作树下便于比较
+tmux new-session -d -s v5-v1-<side> "set -o pipefail; cd <tree>; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 \
+  uv run --no-sync python scripts/parity/train_split_parity.py run --paths B --workers 1 --gpus 0 \
+  --official-root /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src \
+  --output <V5 工作树>/artifacts/newtask-v5/v1/<side> 2>&1 | tee <V5 工作树>/artifacts/logs/v5-v1-<side>.log; \
+  echo \"EXIT_CODE=\$?\" >> <V5 工作树>/artifacts/logs/v5-v1-<side>.log"
+```
+
+两侧都跑完后逐位比较（`compare_h5_pair`：先整文件 SHA-256，不同再逐路径比 dtype/shape/attribute/`tobytes()`，不设容差）：
+
+```bash
+uv run --no-sync python scripts/parity/train_split_parity.py compare \
+  --run base=artifacts/newtask-v5/v1/base --run v5=artifacts/newtask-v5/v1/v5 --pair base/B:v5/B \
+  --output artifacts/newtask-v5/v1/compare
+# 输出：H5_PARITY pair=base.B|v5.B compared=144 sha_equal=… field_mismatch=…
+#       （另有「仅一侧存在的身份」「伴生文件散列不同」两类提示行；逐局明细在 <output>/h5_pairs.jsonl）
+```
+
+判定：`compared=144 sha_equal=144 field_mismatch=0` 且没有「仅一侧存在」提示行，即计划的 `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`。
+一侧演示失败没有 h5 的身份会计入 `field_mismatch`（记「hdf5 缺失或不唯一」），不会被静默跳过。
+⚠ 计划 runbook 里的 `run --subset 16x9` 与 `compare <dir> <dir>` 两种写法在代码里不存在，以本节为准。

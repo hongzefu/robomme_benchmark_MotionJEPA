@@ -8,6 +8,8 @@
     uv run --no-sync python scripts/parity/train_split_config.py extract \
         --output scripts/configs/newtask-v4/sampling_config.json
     uv run --no-sync python scripts/parity/train_split_config.py extract --verify
+    # V5（NEWTASK_RELEASE_V5_PLAN 3.3 S4）：换快照目录与说明文字，其余逻辑不变
+    uv run --no-sync python scripts/parity/train_split_config.py extract --release newtask-v5
 """
 
 from __future__ import annotations
@@ -25,7 +27,14 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from seed_layout import ALL_TASKS  # noqa: E402
 
-DEFAULT_OUTPUT = REPO_ROOT / "scripts" / "configs" / "newtask-v4" / "sampling_config.json"
+DEFAULT_RELEASE = "newtask-v4"
+DEFAULT_OUTPUT = REPO_ROOT / "scripts" / "configs" / DEFAULT_RELEASE / "sampling_config.json"
+# 每个发布版本快照里的说明文字；V4 那一句逐字保留，保证 V4 的 --verify 照旧字节一致
+RELEASE_NOTES = {
+    "newtask-v4": "V4 快照：原三档部分等于原值（v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），xhard 条目为 V4 新值",
+    "newtask-v5": "V5 快照：原三档部分等于原值（V0 闸门逐字核验；v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），"
+                  "xhard 条目为 V5 新值（NEWTASK_RELEASE_V5_PLAN）；V4 快照 scripts/configs/newtask-v4/ 已作废、原样留档",
+}
 
 
 def extract_task(task: str):
@@ -44,7 +53,9 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     extract = sub.add_parser("extract", help="提取并写出快照")
     extract.add_argument("--env", default="all", help="all 或逗号分隔的环境名")
-    extract.add_argument("--output", default=str(DEFAULT_OUTPUT))
+    extract.add_argument("--release", default=DEFAULT_RELEASE, choices=sorted(RELEASE_NOTES),
+                         help="发布版本：决定默认落点 scripts/configs/<release>/sampling_config.json 与快照说明文字")
+    extract.add_argument("--output", default=None, help="显式落点，缺省按 --release 推导")
     extract.add_argument("--verify", action="store_true", help="只比对既有文件字节，不写盘")
     args = parser.parse_args(argv)
 
@@ -65,14 +76,14 @@ def main(argv: list[str] | None = None) -> int:
 
     document = {
         "schema": "train-parity-sampling-config/1",
-        "note": "V4 快照：原三档部分等于原值（v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），xhard 条目为 V4 新值",
+        "note": RELEASE_NOTES[args.release],
         "tasks_total": len(ALL_TASKS),
         "tasks_ready": sorted(payload),
         "tasks_pending": pending,
         "tasks": {task: payload[task] for task in ALL_TASKS if task in payload},
     }
     data = (json.dumps(document, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
-    out = Path(args.output)
+    out = Path(args.output) if args.output else REPO_ROOT / "scripts" / "configs" / args.release / "sampling_config.json"
     if args.verify:
         if not out.exists():
             print(f"ERROR: {out} 不存在", file=sys.stderr)

@@ -19,6 +19,18 @@
 
     uv run --no-sync python -m scripts.parity.v4_specs draw --run-id <id> --out artifacts/newtask-v4/<id>/draft/drafts.jsonl
     uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts <drafts.jsonl> --out scripts/configs/newtask-v4/<id>/specs.jsonl
+
+V5（NEWTASK_RELEASE_V5_PLAN 3.1②③）沿用同一套封套与 seed 规则，只换配置与落点，并可多 worker 抽签：
+
+    uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v5-01 \
+        --sampling-config scripts/configs/newtask-v5/sampling_config.json --workers 8 \
+        --out artifacts/newtask-v5/v5-01/draft/drafts.jsonl
+    uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
+        --sampling-config scripts/configs/newtask-v5/sampling_config.json --out scripts/configs/newtask-v5/v5-01/specs.jsonl
+
+``--workers N``（默认 1，行为与改动前逐字相同）按环境把抽签分给 N 个 spawn 子进程，各进程独立起 gym 环境；
+每个环境的 (episode, attempt, seed) 序列只由 ``SEED_RULE`` 决定、与 worker 数无关，合并时按 header 的任务序、
+每环境内按抽签先后拼接，因此 drafts.jsonl 的 header 与行序和单 worker 完全一致（只有 ``wall_s`` 这种墙钟量不同）。
 """
 
 from __future__ import annotations
@@ -26,7 +38,9 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import importlib
 import json
+import multiprocessing as mp
 import os
 import sys
 import tempfile
@@ -208,16 +222,12 @@ def _draw_one(task: str, seed: int, episode: int, sampling: dict[str, Any]) -> t
             env.close()
 
 
-def cmd_draw(args: argparse.Namespace) -> int:
-    sys.path.insert(0, str(REPO_ROOT / "src"))
-    import robomme.robomme_env  # noqa: F401 注册环境
-
-    sampling_document = json.loads(Path(args.sampling_config).read_text(encoding="utf-8"))
-    tasks = list(ALL_TASKS) if args.tasks == "all" else args.tasks.split(",")
+def build_draw_header(run_id: str, sampling_document: dict[str, Any], tasks: list[str]) -> dict[str, Any]:
+    """抽签 header：来源在抽签时就封存（单 worker 与多 worker 共用同一份构造）。"""
     header = {
         "record": "header",
         "schema": DRAFT_SCHEMA,
-        "run_id": args.run_id,
+        "run_id": run_id,
         "difficulty": DIFFICULTY,
         "sampling_config": {task: task_sampling(sampling_document, task) for task in tasks},
         "source_fingerprint": source_fingerprint(),
@@ -228,30 +238,149 @@ def cmd_draw(args: argparse.Namespace) -> int:
         "tasks": tasks,
     }
     header["sampling_config_sha256"] = digest(header["sampling_config"])
-    out = Path(args.out)
-    if out.exists():
-        raise SpecsError(f"{out} 已存在，禁止覆盖")
+    return header
+
+
+def draw_task(task: str, sampling: dict[str, Any], candidates_per_env: int, max_reset_attempts: int,
+              draw_one=None) -> list[dict[str, Any]]:
+    """单环境抽签循环：攒够 ``candidates_per_env`` 条 reset 成功或尝试满 ``max_reset_attempts`` 次为止。
+
+    seed 只由 (task, episode, attempt) 经 ``SEED_RULE`` 决定，所以这一环境的行序列与在哪个进程里跑无关。
+    ``draw_one`` 只供单测注入假 reset；缺省为真实的 ``_draw_one``。
+    """
+    draw_one = draw_one or _draw_one
     rows: list[dict[str, Any]] = []
+    episode = attempt = total = 0
+    while episode < candidates_per_env and total < max_reset_attempts:
+        seed = seed_for(task, episode, attempt)
+        started = time.time()
+        ok, spec, fail_class, error = draw_one(task, seed, episode, sampling)
+        row = {
+            "record": "draft", "task": task, "difficulty": DIFFICULTY, "episode": episode,
+            "attempt": attempt, "seed": seed, "reset_ok": ok, "fail_class": fail_class,
+            "error": error, "spec": spec, "spec_sha256": spec_sha256(spec) if spec else None,
+            "wall_s": round(time.time() - started, 2),
+        }
+        rows.append(row)
+        total += 1
+        print(f"DRAW {task} ep={episode} attempt={attempt} seed={seed} ok={ok} {fail_class or ''}", flush=True)
+        if ok:
+            episode, attempt = episode + 1, 0
+        else:
+            attempt += 1
+    print(f"DRAW_TASK {task} ok={episode} attempted={total} shortfall={candidates_per_env - episode}", flush=True)
+    return rows
+
+
+def merge_task_rows(tasks: list[str], rows_by_task: dict[str, list[dict[str, Any]]]) -> list[dict[str, Any]]:
+    """把各环境的行按 header 任务序拼成一份（与单 worker 逐环境顺序抽签的行序相同）。
+
+    每个环境的行必须恰好属于该环境、且 (episode, attempt) 与抽签循环的推进规则一致，否则拒绝合并。
+    """
+    missing = [task for task in tasks if task not in rows_by_task]
+    extra = sorted(set(rows_by_task) - set(tasks))
+    if missing or extra:
+        raise SpecsError(f"多 worker 合并：缺少环境 {missing}，多出环境 {extra}")
+    merged: list[dict[str, Any]] = []
     for task in tasks:
-        episode = attempt = total = 0
-        while episode < args.candidates_per_env and total < args.max_reset_attempts:
-            seed = seed_for(task, episode, attempt)
-            started = time.time()
-            ok, spec, fail_class, error = _draw_one(task, seed, episode, header["sampling_config"][task])
-            row = {
-                "record": "draft", "task": task, "difficulty": DIFFICULTY, "episode": episode,
-                "attempt": attempt, "seed": seed, "reset_ok": ok, "fail_class": fail_class,
-                "error": error, "spec": spec, "spec_sha256": spec_sha256(spec) if spec else None,
-                "wall_s": round(time.time() - started, 2),
-            }
-            rows.append(row)
-            total += 1
-            print(f"DRAW {task} ep={episode} attempt={attempt} seed={seed} ok={ok} {fail_class or ''}", flush=True)
-            if ok:
+        episode = attempt = 0
+        for row in rows_by_task[task]:
+            if row["task"] != task or (row["episode"], row["attempt"]) != (episode, attempt) \
+                    or row["seed"] != seed_for(task, episode, attempt):
+                raise SpecsError(f"多 worker 合并：{task} 的行序与抽签规则不符（期望 ep={episode} attempt={attempt}）")
+            if row["reset_ok"]:
                 episode, attempt = episode + 1, 0
             else:
                 attempt += 1
-        print(f"DRAW_TASK {task} ok={episode} attempted={total} shortfall={args.candidates_per_env - episode}", flush=True)
+            merged.append(row)
+    return merged
+
+
+def _draw_worker_init(gpu_queue, src_root: str) -> None:
+    """spawn 子进程初始化：按轮转领一张 GPU（物理编号写进 CUDA_VISIBLE_DEVICES），再注册环境。"""
+    if gpu_queue is not None:
+        try:
+            gpu = gpu_queue.get(timeout=30)
+        except Exception:  # noqa: BLE001 领不到就沿用父进程环境
+            gpu = None
+        if gpu is not None:
+            os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu)
+    if src_root not in sys.path:
+        sys.path.insert(0, src_root)
+    import robomme.robomme_env  # noqa: F401 注册环境
+
+
+def _parse_gpus(text: str | None) -> list[str] | None:
+    if text is None or not str(text).strip():
+        return None
+    return [item.strip() for item in str(text).split(",") if item.strip()]
+
+
+def draw_rows(tasks: list[str], samplings: dict[str, dict[str, Any]], candidates_per_env: int,
+              max_reset_attempts: int, workers: int = 1, gpus: list[str] | None = None, *,
+              draw_one=None, executor_factory=None) -> list[dict[str, Any]]:
+    """全部环境的抽签行（header 之外）。``workers == 1`` 时在本进程逐环境顺序跑，与改动前逐字相同。
+
+    ``workers > 1`` 时每个环境作为一个任务提交给进程池（spawn，每进程独立 gym 环境），
+    结果按任务序合并。``executor_factory``/``draw_one`` 只供单测注入（线程池 + 假 reset）。
+    """
+    if workers <= 1:
+        rows: list[dict[str, Any]] = []
+        for task in tasks:
+            rows.extend(draw_task(task, samplings[task], candidates_per_env, max_reset_attempts, draw_one))
+        return rows
+    workers = min(workers, len(tasks))
+    if executor_factory is None:
+        from concurrent.futures import ProcessPoolExecutor
+
+        ctx = mp.get_context("spawn")
+        gpu_queue = None
+        if gpus:
+            gpu_queue = ctx.Queue()
+            for index in range(workers):
+                gpu_queue.put(gpus[index % len(gpus)])
+        executor = ProcessPoolExecutor(max_workers=workers, mp_context=ctx, initializer=_draw_worker_init,
+                                       initargs=(gpu_queue, str(REPO_ROOT / "src")))
+        # 以包名重新取本模块，保证子进程按 scripts.parity.v4_specs 反序列化函数（本文件常以 -m 运行为 __main__）
+        target = importlib.import_module("scripts.parity.v4_specs").draw_task
+    else:
+        executor = executor_factory(workers)
+        target = draw_task
+    rows_by_task: dict[str, list[dict[str, Any]]] = {}
+    failures: list[str] = []
+    with executor:
+        futures = {executor.submit(target, task, samplings[task], candidates_per_env, max_reset_attempts, draw_one): task
+                   for task in tasks}
+        from concurrent.futures import as_completed
+
+        for future in as_completed(futures):
+            task = futures[future]
+            try:
+                rows_by_task[task] = future.result()
+            except BaseException as exc:  # noqa: BLE001 子进程崩溃（如段错误）不吞，汇总后整体失败
+                failures.append(f"{task}: {type(exc).__name__}: {exc}")
+    if failures:
+        raise SpecsError(f"多 worker 抽签有环境未完成，未写出 drafts：{failures}")
+    return merge_task_rows(tasks, rows_by_task)
+
+
+def cmd_draw(args: argparse.Namespace) -> int:
+    workers = int(getattr(args, "workers", 1) or 1)
+    gpus = _parse_gpus(getattr(args, "gpus", None))
+    if workers <= 1:
+        if gpus:
+            os.environ["CUDA_VISIBLE_DEVICES"] = gpus[0]
+        sys.path.insert(0, str(REPO_ROOT / "src"))
+        import robomme.robomme_env  # noqa: F401 注册环境
+
+    sampling_document = json.loads(Path(args.sampling_config).read_text(encoding="utf-8"))
+    tasks = list(ALL_TASKS) if args.tasks == "all" else args.tasks.split(",")
+    header = build_draw_header(args.run_id, sampling_document, tasks)
+    out = Path(args.out)
+    if out.exists():
+        raise SpecsError(f"{out} 已存在，禁止覆盖")
+    rows = draw_rows(tasks, header["sampling_config"], args.candidates_per_env, args.max_reset_attempts,
+                     workers, gpus)
     _write_jsonl(out, [header, *rows])
     print(f"DRAW_DONE rows={len(rows)} ok={sum(r['reset_ok'] for r in rows)} out={out}")
     return 0
@@ -396,6 +525,10 @@ def main() -> int:
     draw.add_argument("--sampling-config", default=str(DEFAULT_SAMPLING))
     draw.add_argument("--candidates-per-env", type=int, default=10)
     draw.add_argument("--max-reset-attempts", type=int, default=30)
+    draw.add_argument("--workers", type=int, default=1,
+                      help="并行进程数；默认 1 与改动前逐字相同，>1 时按环境分给 spawn 子进程，合并后行序不变")
+    draw.add_argument("--gpus", default=None,
+                      help="逗号分隔的物理 GPU 号，子进程按轮转领取并写进 CUDA_VISIBLE_DEVICES；缺省沿用当前环境")
     draw.add_argument("--out", required=True)
     draw.set_defaults(func=cmd_draw)
     fr = sub.add_parser("freeze", help="冻结：核验来源后写出 specs.jsonl（纯 CPU）")

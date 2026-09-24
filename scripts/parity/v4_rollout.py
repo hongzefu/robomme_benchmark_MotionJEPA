@@ -23,6 +23,15 @@
     uv run --no-sync python -m scripts.parity.v4_rollout run --specs <specs.jsonl> --label run2 \
         --identities-from artifacts/newtask-v4/<id>/rollout/run1/results.jsonl ...
     uv run --no-sync python -m scripts.parity.v4_rollout compare artifacts/newtask-v4/<id>/rollout/run1 artifacts/newtask-v4/<id>/rollout/run2
+
+V5（NEWTASK_RELEASE_V5_PLAN 3.1④）只跑 ``run`` 一遍（口径 12），不跑 run2 / compare；本文件没有写死 V4 的路径或 run id，
+换 ``--specs`` 与 ``--output`` 即可：
+
+    uv run --no-sync python -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v5/v5-01/specs.jsonl \
+        --label run1 --workers 8 --official-root artifacts/train-parity/local-smoke-01/official-src \
+        --output artifacts/newtask-v5/v5-01/rollout
+
+生成报告见 ``scripts/parity/v5_generation.py report``。
 """
 
 from __future__ import annotations
@@ -72,7 +81,8 @@ def _run_batch(batch: list[dict], header: dict, out_dir: Path, args, round_index
     command = [
         sys.executable, str(RUNNER), "--official-root", str(Path(args.official_root).resolve()),
         "--src-root", str(REPO_ROOT), "--jobs-json", str(work / "jobs.json"),
-        "--results-json", str(work / "results.json"), "--workers", str(args.workers), "--gpu", "0",
+        "--results-json", str(work / "results.json"), "--workers", str(args.workers),
+        "--gpu", str(getattr(args, "gpu", "0")),
         "--sampling-config", str(work / "sampling.json"), "--episode-specs", str(work / "specs.json"),
         "--identity-source", "formula", "--no-recovery",  # V4 全部不开 recover（与抽签同口径）
     ]
@@ -238,6 +248,8 @@ def main() -> int:
     run.add_argument("--official-root", required=True, help="官方隔离源码树（提供编排代码）")
     run.add_argument("--identities-from", default=None, help="严格重放另一轮 results.jsonl 的全部身份")
     run.add_argument("--workers", type=int, default=1, help="runner 并行 worker 数（K5：本机多 worker）")
+    run.add_argument("--gpu", default="0",
+                     help="交给 runner 的 GPU 号（worker 把它写进 CUDA_VISIBLE_DEVICES，即物理编号）；默认 0 与改动前相同")
     run.add_argument("--output", required=True)
     run.set_defaults(func=cmd_run)
     cmp_ = sub.add_parser("compare", help="V2：两轮终态一致 + 成功局 HDF5 逐位")
