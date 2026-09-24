@@ -34,7 +34,7 @@ from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.SceneGenerationError import SceneGenerationError
-from .utils.xhard import DISTRACTOR_COLORS
+from .utils.xhard import DISTRACTOR_COLORS, cube_obb2d_exact
 
 from ..logging_utils import logger
 
@@ -98,20 +98,27 @@ NATIVE_SAMPLING = {
 }
 
 
-# ── V4 xhard 专属 decision（计划 2.4 / 2.21，C1 / G1 / A5 / B2）────────────────
-# * target_cube_position_policy：目标候选方块（三个有色方块）的区域与边角偏置。区域沿用原值，
-#   corner_bias 取 0.5：用户 2026-09-22 定「0.5，推全部 3 块」（本机 4 seed 下 0.5 与 1.0 演示成败相同）。
-# * goal_position_policy：放置圆盘独立一套区域参数（C1：圆盘可以留在中间，值沿用原区域）。
-# * distractor：三个干扰方块，黄／青／品红各一（DISTRACTOR_COLORS），在方块区域内均匀放置。
+# ── xhard 专属 decision（V4 计划 2.4 / 2.21：C1 / G1 / A5 / B2；V5 计划 2.13：L43～L46）──────
+# * target_cube_position_policy：目标候选方块（三个有色方块）的采样区域。V5 L43 (c) 取消边角偏置
+#   （删 corner_bias 键，推翻 V4 J5），与干扰方块一样在区域内均匀抽；V5 L46 半宽 0.2 → 0.25
+#   （P1 探针：10 cm 三块团 33.5% → 10.2%，演示 13/13）。
+# * goal_position_policy：放置圆盘独立一套区域参数（C1：圆盘可以留在中间，值沿用原区域，V5 不变）。
+# * distractor：三个干扰方块，黄／青／品红各一（DISTRACTOR_COLORS），在方块区域内均匀放置；V5 L46 半宽同为 0.25。
+# * min_center_dist_m：V5 L44，6 块（3 有色 + 3 干扰）两两中心距下限（米），留一个方块宽的缝。
 XHARD_DECISION = {
-    "target_cube_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2, "corner_bias": 0.5},
+    "target_cube_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.25},
     "goal_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2},
     "distractor": {
         "colors": [entry["name"] for entry in DISTRACTOR_COLORS],
         "region_center": [-0.1, 0],
-        "region_half_size": 0.2,
+        "region_half_size": 0.25,
     },
+    "min_center_dist_m": 0.08,
 }
+
+# V5 L45：xhard 方块（有色 + 干扰）每块的拒绝采样预算（原三档沿用 spawn_random_cube 默认 256，不受影响）。
+# 计划 2.13 估：加 8 cm 中心距后 256 次约 3.5% 的局放不下、1024 次约 1%；S3f 离线 3000 局实测 1024 次 0 失败。
+XHARD_CUBE_MAX_TRIALS = 1024
 
 
 def _disk_avoid_obb(target, clearance):
@@ -529,7 +536,9 @@ class PickXtimes(BaseEnv):
         与原路径的差别（全部只在 xhard 生效，H2）：
         * G1：**先放圆盘再放方块**，方块经 ``_disk_avoid_obb`` 显式避让圆盘；
         * 颜色取自 ``NATIVE_SAMPLING.parameters.color_pool``（xhard 路径的单一真值，不再读硬编码字面量）；
-        * 三个有色方块（目标候选）加 ``corner_bias`` 推向边角；
+        * V5（计划 2.13）：三个有色方块在区域内均匀抽（L43 取消 V4 的 corner_bias）；6 块两两中心距
+          ≥ ``min_center_dist_m``（L44，经 ``spawn_random_cube(min_center_dist=...)``）；已放方块以
+          ``cube_obb2d_exact`` 精确 OBB 进 ``avoid``（修 2.0① 障碍框退化）；每块预算 ``XHARD_CUBE_MAX_TRIALS``（L45）；
         * D2：圆盘或方块放不下直接抛 ``SceneGenerationError``，不再静默截断或落到未绑定变量；
         * 目标方块从显式候选列表 ``self.target_candidates`` 抽（与 ``all_cubes`` 解耦，干扰物不会被抽中）；
         * ``target_color_name`` 按对象查表回填，不再走三色 if 链（新颜色不命中时会残留旧值）。
@@ -539,12 +548,14 @@ class PickXtimes(BaseEnv):
         xcfg = self._sampling["decision"]["xhard"]
         cube_region = xcfg["target_cube_position_policy"]
         goal_region = xcfg["goal_position_policy"]
-        corner_bias = float(cube_region["corner_bias"])
+        min_center_dist = float(xcfg["min_center_dist_m"])
         cube_pose_cfg = self._sampling["positions"]["cube_pose"]
         target_pose_cfg = self._sampling["positions"]["target_pose"]
         cubes_per_color = self._sampling["parameters"]["cubes_per_color"]
         n_colors = self._sampling["decision"]["color"][self.difficulty]
-        self._spec.record("layout.cube_corner_bias", corner_bias)
+        self._spec.record("layout.cube_min_center_dist", min_center_dist)
+        # V5：已放方块（有色 + 干扰共用一张表）的精确 OBB；既作中心距规则的参考点，也作 avoid 里的障碍
+        self._xhard_cube_obbs = []
 
         self.all_cubes = []
         self.distractor_cubes = []
@@ -617,7 +628,8 @@ class PickXtimes(BaseEnv):
                         generator=generator,
                         recorder=self._spec,
                         spec_path=f"layout.cubes.{group['name']}_{cube_idx}",
-                        corner_bias=corner_bias,
+                        max_trials=XHARD_CUBE_MAX_TRIALS,
+                        min_center_dist=(min_center_dist, self._xhard_cube_obbs),
                     )
                 except RuntimeError as exc:
                     raise SceneGenerationError(f"PickXtimes xhard: 方块 {cube_name} 放不下: {exc}") from exc
@@ -626,7 +638,7 @@ class PickXtimes(BaseEnv):
                 group["name_list"].append(cube_name)
                 self._cube_color_of.append((cube, group["name"]))
                 setattr(self, cube_name, cube)
-                avoid.append(cube)
+                self._append_cube_obstacle_xhard(cube, avoid)
         # 2.2④：请求数 vs 实际数，不等即本局失败（上面的 raise 已保证，这里再显式记录与核对）
         self._spec.record("objects.cube_count", {"requested": requested, "actual": len(self.all_cubes)})
         if len(self.all_cubes) != requested or requested == 0:
@@ -654,12 +666,24 @@ class PickXtimes(BaseEnv):
                 return name
         raise SceneGenerationError("PickXtimes xhard: 目标方块不在颜色登记表里")
 
+    def _append_cube_obstacle_xhard(self, cube, avoid):
+        """V5（计划 2.0① / 2.13）：把刚放下的方块以精确 OBB 登记为后续方块的障碍与中心距参考点。
+
+        不再把 actor 本身放进 ``avoid``：actor 路径经 ``_trimesh_box_to_obb2d``，对正方体约 2/3 的姿态
+        退化成线段，``min_gap`` 在其法向上失效。纯几何，不抽随机数。
+        """
+        obb = cube_obb2d_exact(cube, self.cube_half_size)
+        self._xhard_cube_obbs.append(obb)
+        avoid.append(obb)
+
     def _spawn_distractors_xhard(self, generator, avoid):
         """V4 xhard：放三个「其他颜色」干扰方块（A5/B2：黄／青／品红各一）。
 
         干扰方块进 ``all_cubes`` 与 ``non_target_cubes``（抓错即触发 failure_func 判失败），
         不进 ``target_candidates``。放不下直接抛 ``SceneGenerationError``（2.2④，不许静默截断）。
+        V5：与有色方块共用中心距规则、精确 OBB 障碍与拒绝预算（计划 2.13）。
         """
+        min_center_dist = float(self._sampling["decision"]["xhard"]["min_center_dist_m"])
         dcfg = self._sampling["decision"]["xhard"]["distractor"]
         palette = {entry["name"]: entry["rgba"] for entry in DISTRACTOR_COLORS}
         names = list(dcfg["colors"])
@@ -685,6 +709,8 @@ class PickXtimes(BaseEnv):
                     generator=generator,
                     recorder=self._spec,
                     spec_path=f"layout.distractors.{name}_0",
+                    max_trials=XHARD_CUBE_MAX_TRIALS,
+                    min_center_dist=(min_center_dist, self._xhard_cube_obbs),
                 )
             except RuntimeError as exc:
                 raise SceneGenerationError(f"PickXtimes xhard: 干扰方块 {cube_name} 放不下: {exc}") from exc
@@ -694,7 +720,7 @@ class PickXtimes(BaseEnv):
             setattr(self, f"{name}_cubes", [cube])
             setattr(self, f"{name}_cube_names", [cube_name])
             setattr(self, cube_name, cube)
-            avoid.append(cube)
+            self._append_cube_obstacle_xhard(cube, avoid)
         self._spec.record("objects.distractor_count",
                           {"requested": len(names), "actual": len(self.distractor_cubes)})
         if len(self.distractor_cubes) != len(names):

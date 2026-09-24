@@ -37,7 +37,7 @@ from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
-from .utils.xhard import DISTRACTOR_COLORS
+from .utils.xhard import DISTRACTOR_COLORS, cube_obb2d_exact
 
 from ..logging_utils import logger
 
@@ -109,12 +109,14 @@ NATIVE_SAMPLING = {
 # distractor：三个「其他颜色」干扰方块，黄／青／品红各一（DISTRACTOR_COLORS），
 # 区域沿用原方块区域（中心 [-0.1,0]、半边长 0.25，容量宽松）。
 # 干扰色**不并入** native.color_pool：并入会改变 randperm(len(color_groups)) 的长度，平移原三档随机流。
+# min_center_dist_m：V5 L44（计划 2.14），6 块（3 有色 + 3 干扰）两两中心距下限（米）；本环境没有 corner_bias。
 XHARD_DECISION = {
     "distractor": {
         "colors": [entry["name"] for entry in DISTRACTOR_COLORS],
         "region_center": [-0.1, 0],
         "region_half_size": 0.25,
     },
+    "min_center_dist_m": 0.08,
 }
 
 
@@ -378,41 +380,47 @@ class SwingXtimes(BaseEnv):
             self.target_color_name = color_groups[target_color_idx]["name"]
             logger.debug(f"Target color selected: {self.target_color_name}")
 
-            # Generate cubes for each color group
-            for idx, group in enumerate(color_groups):
-                if idx < self._sampling["decision"]["color"][self.difficulty]:
-                    for cube_idx in range(cubes_per_color):
-                        try:
-                            cube = spawn_random_cube(
-                                self,
-                                color=group["color"],
-                                avoid=avoid,
-                                include_existing=False,
-                                include_goal=False,
-                                region_center=list(cubes_cfg["region_center"]),
-                                region_half_size=cubes_cfg["region_half_size"],
-                                half_size=self.cube_half_size,
-                                min_gap=self.cube_half_size,
-                                random_yaw=cubes_cfg["random_yaw"],
-                                name_prefix=f"cube_{group['name']}_{cube_idx}",
-                                generator=generator,
-                                recorder=self._spec,
-                                spec_path=f"layout.cubes.{group['name']}_{cube_idx}",
-                            )
-                        except RuntimeError as e:
-                            raise _scene_gen_error(self.difficulty)(
-                                f"Failed to generate {group['name']} cube {cube_idx}: {e}"
-                            ) from e
+            if self.difficulty == "xhard":
+                # V5（计划 2.14）：xhard 的有色方块另走一支——两两中心距规则与精确 OBB 障碍；
+                # 取值点、抽样次数上限与颜色／命名登记与下面原代码相同。
+                self._spawn_colored_cubes_xhard(generator, avoid, color_groups)
+            else:
+                # 原三档：下面整段逐字保留原代码（仅缩进一级），行为不变（H2）。
+                # Generate cubes for each color group
+                for idx, group in enumerate(color_groups):
+                    if idx < self._sampling["decision"]["color"][self.difficulty]:
+                        for cube_idx in range(cubes_per_color):
+                            try:
+                                cube = spawn_random_cube(
+                                    self,
+                                    color=group["color"],
+                                    avoid=avoid,
+                                    include_existing=False,
+                                    include_goal=False,
+                                    region_center=list(cubes_cfg["region_center"]),
+                                    region_half_size=cubes_cfg["region_half_size"],
+                                    half_size=self.cube_half_size,
+                                    min_gap=self.cube_half_size,
+                                    random_yaw=cubes_cfg["random_yaw"],
+                                    name_prefix=f"cube_{group['name']}_{cube_idx}",
+                                    generator=generator,
+                                    recorder=self._spec,
+                                    spec_path=f"layout.cubes.{group['name']}_{cube_idx}",
+                                )
+                            except RuntimeError as e:
+                                raise _scene_gen_error(self.difficulty)(
+                                    f"Failed to generate {group['name']} cube {cube_idx}: {e}"
+                                ) from e
 
-                        self.all_cubes.append(cube)
-                        group["list"].append(cube)
-                        cube_name = f"cube_{group['name']}_{cube_idx}"
-                        group["name_list"].append(cube_name)
-                        self._cube_color_of.append((cube, group["name"]))
-                        setattr(self, cube_name, cube)
-                        avoid.append(cube)
+                            self.all_cubes.append(cube)
+                            group["list"].append(cube)
+                            cube_name = f"cube_{group['name']}_{cube_idx}"
+                            group["name_list"].append(cube_name)
+                            self._cube_color_of.append((cube, group["name"]))
+                            setattr(self, cube_name, cube)
+                            avoid.append(cube)
 
-                logger.debug(f"Generated {len(group['list'])} {group['name']} cubes")
+                    logger.debug(f"Generated {len(group['list'])} {group['name']} cubes")
 
             logger.debug(f"Generated {len(self.all_cubes)} cubes total (red: {len(self.red_cubes)}, blue: {len(self.blue_cubes)}, green: {len(self.green_cubes)})")
 
@@ -639,13 +647,75 @@ class SwingXtimes(BaseEnv):
         self.distractor_cubes = []
         self.non_target_cubes = [cube for cube in self.all_cubes if cube is not self.target_cube]
 
+    def _append_cube_obstacle_xhard(self, cube, avoid):
+        """V5（计划 2.0① / 2.14）：把刚放下的方块以精确 OBB 登记为后续物体的障碍与中心距参考点。
+
+        不再把 actor 本身放进 ``avoid``：actor 路径经 ``_trimesh_box_to_obb2d``，对正方体约 2/3 的姿态
+        退化成线段，``min_gap`` 在其法向上失效。纯几何，不抽随机数。
+        """
+        obb = cube_obb2d_exact(cube, self.cube_half_size)
+        self._xhard_cube_obbs.append(obb)
+        avoid.append(obb)
+
+    def _spawn_colored_cubes_xhard(self, generator, avoid, color_groups):
+        """V5 xhard（计划 2.14）：放三个有色方块（目标候选）。
+
+        与原三档共用循环的差别只有两条：候选中心与已放方块两两距离 ≥ ``min_center_dist_m``（L44，经
+        ``spawn_random_cube(min_center_dist=...)``，自身不抽随机数）；放下的方块以 ``cube_obb2d_exact``
+        精确 OBB 进 ``avoid``（其后的两个圆盘与干扰方块都据此避让）。区域、间距、yaw、取值点路径、
+        每块拒绝预算（默认 256）与原循环相同；放不下抛真 ``SceneGenerationError``（L3）。
+        """
+        cubes_cfg = self._sampling["positions"]["cubes"]
+        cubes_per_color = self._sampling["parameters"]["cubes_per_color"]
+        min_center_dist = float(self._sampling["decision"]["xhard"]["min_center_dist_m"])
+        self._spec.record("layout.cube_min_center_dist", min_center_dist)
+        # 已放方块（有色 + 干扰共用一张表）的精确 OBB；既作中心距规则的参考点，也作 avoid 里的障碍
+        self._xhard_cube_obbs = []
+        for idx, group in enumerate(color_groups):
+            if idx < self._sampling["decision"]["color"][self.difficulty]:
+                for cube_idx in range(cubes_per_color):
+                    cube_name = f"cube_{group['name']}_{cube_idx}"
+                    try:
+                        cube = spawn_random_cube(
+                            self,
+                            color=group["color"],
+                            avoid=avoid,
+                            include_existing=False,
+                            include_goal=False,
+                            region_center=list(cubes_cfg["region_center"]),
+                            region_half_size=cubes_cfg["region_half_size"],
+                            half_size=self.cube_half_size,
+                            min_gap=self.cube_half_size,
+                            random_yaw=cubes_cfg["random_yaw"],
+                            name_prefix=cube_name,
+                            generator=generator,
+                            recorder=self._spec,
+                            spec_path=f"layout.cubes.{group['name']}_{cube_idx}",
+                            min_center_dist=(min_center_dist, self._xhard_cube_obbs),
+                        )
+                    except RuntimeError as exc:
+                        raise _RealSceneGenerationError(
+                            f"SwingXtimes xhard: 方块 {cube_name} 放不下: {exc}"
+                        ) from exc
+
+                    self.all_cubes.append(cube)
+                    group["list"].append(cube)
+                    group["name_list"].append(cube_name)
+                    self._cube_color_of.append((cube, group["name"]))
+                    setattr(self, cube_name, cube)
+                    self._append_cube_obstacle_xhard(cube, avoid)
+
+                logger.debug(f"Generated {len(group['list'])} {group['name']} cubes")
+
     def _spawn_distractors_xhard(self, generator, avoid):
         """V4 xhard：放三个「其他颜色」干扰方块（A5/B2：黄／青／品红各一）。
 
         干扰方块进 ``all_cubes`` 与 ``non_target_cubes``（抓错即触发 failure_func 判失败），
         不进 ``target_candidates``；两个圆盘经 ``_disk_avoid_obb`` 显式避让。
         放不下直接抛 ``SceneGenerationError``（2.2④，不许静默截断）。
+        V5：与有色方块共用中心距规则与精确 OBB 障碍（计划 2.14）。
         """
+        min_center_dist = float(self._sampling["decision"]["xhard"]["min_center_dist_m"])
         dcfg = self._sampling["decision"]["xhard"]["distractor"]
         palette = {entry["name"]: entry["rgba"] for entry in DISTRACTOR_COLORS}
         names = list(dcfg["colors"])
@@ -675,6 +745,7 @@ class SwingXtimes(BaseEnv):
                     generator=generator,
                     recorder=self._spec,
                     spec_path=f"layout.distractors.{name}_0",
+                    min_center_dist=(min_center_dist, self._xhard_cube_obbs),
                 )
             except RuntimeError as exc:
                 raise _RealSceneGenerationError(f"SwingXtimes xhard: 干扰方块 {cube_name} 放不下: {exc}") from exc
@@ -684,7 +755,7 @@ class SwingXtimes(BaseEnv):
             setattr(self, f"{name}_cubes", [cube])
             setattr(self, f"{name}_cube_names", [cube_name])
             setattr(self, cube_name, cube)
-            avoid.append(cube)
+            self._append_cube_obstacle_xhard(cube, avoid)
         self._spec.record("objects.distractor_count",
                           {"requested": len(names), "actual": len(self.distractor_cubes)})
         if len(self.distractor_cubes) != len(names):

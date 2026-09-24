@@ -69,7 +69,9 @@ def test_decision_xhard_entries() -> None:
     decision, _ = MOD.native_blocks(CLS)
     assert decision["number_range"]["xhard"] == [4, 10]
     assert decision["color"]["xhard"] == 3
-    assert set(decision["xhard"]) == {"distractor"}
+    # V5 S3f（计划 2.14）：新增 min_center_dist_m（L44）
+    assert set(decision["xhard"]) == {"distractor", "min_center_dist_m"}
+    assert decision["xhard"]["min_center_dist_m"] == 0.08
     dcfg = decision["xhard"]["distractor"]
     assert dcfg["colors"] == [entry["name"] for entry in DISTRACTOR_COLORS] == ["yellow", "cyan", "magenta"]
     # 干扰方块区域沿用原方块区域
