@@ -115,13 +115,13 @@ videorepick的生成也要均匀 并且支持所有的cube都要swap
 
 **跨环境（先答这 5 项，其余依赖它们）**
 
-| 编号 | 问题 | 选项 | 建议 |
-|---|---|---|---|
-| L1 | V4 红线 N5（新随机调用只许追加在既有取值点之后）在 V5 怎么读？ | (a) N5 只保护**原三档与已冻结产物**；xhard 流允许**原地**移位（拒绝循环、换序、次数变化），所有被改动环境重冻为 `v5-01`。V4 先例：MoveCube 的 corner_bias 就曾平移 cube 循环次数与 way_idx。<br>(b) 严格字面：只许追加。这会挡掉 InsertPeg、MoveCube、Pick/Swing/BinFill/VideoRepick 的间距规则 | (a) |
-| L2 | 障碍框退化缺陷修到哪？ | (a) 只修 V5 动到的 xhard 环境：BinFill、PickXtimes、SwingXtimes；MoveCube 用 L34 顺带；VideoRepick 被 0.12 m 最小距覆盖。<br>(b) 连 PickHighlight、VideoPlaceButton/Order 的 xhard 一起修，这些环境也要重冻。<br>(c) 全局修，会破坏 V1，H2/N12 禁止 | (a)，(b) 留作后续 |
-| L3 | K2 的 `SceneGenerationError` 遮蔽修复是否扩到 VideoRepick、SwingXtimes、PatternLock、VUS、BUS 的 xhard？ | 是 / 否 | 是：否则 V5 新增的 xhard 拒绝会变成 TypeError，被当成代码错误 |
-| L4 | 共用采样函数 `spawn_random_cube` / `spawn_random_target` 上的新规则怎么挂？ | (a) **只加一个**可选参数 `extra_reject=None`（可调用对象，不抽随机数，默认整段跳过）。<br>(b) 每个环境各加各的参数 | (a) |
-| L5 | 快照、run id 与 V4 产物怎么处理？ | (a) 新目录 `scripts/configs/newtask-v5/`、run id `v5-01`，16 个环境全部重抽；未改动的 4 个环境必须逐位复现 v4-01；V4 推理钉在 `0baff09`（建议打 tag）。<br>(b) 加版本门，让 V4 快照在 V5 代码上仍可回放 | (a) |
+| 编号 | 问题 | 选项 | 建议 | 结论（用户答复） |
+|---|---|---|---|---|
+| L1 | V4 红线 N5（新随机调用只许追加在既有取值点之后）在 V5 怎么读？ | (a) N5 只保护**原三档与已冻结产物**；xhard 流允许**原地**移位（拒绝循环、换序、次数变化），所有被改动环境重冻为 `v5-01`。V4 先例：MoveCube 的 corner_bias 就曾平移 cube 循环次数与 way_idx。<br>(b) 严格字面：只许追加。这会挡掉 InsertPeg、MoveCube、Pick/Swing/BinFill/VideoRepick 的间距规则 | (a) | **(a)**（2026-09-24 用户原话「L1 a」）：N5 只保护原三档与已冻结产物，xhard 流允许原地移位，被改动环境重冻为 `v5-01` |
+| L2 | 障碍框退化缺陷修到哪？ | (a) 只修 V5 动到的 xhard 环境：BinFill、PickXtimes、SwingXtimes；MoveCube 用 L34 顺带；VideoRepick 被 0.12 m 最小距覆盖。<br>(b) 连 PickHighlight、VideoPlaceButton/Order 的 xhard 一起修，这些环境也要重冻。<br>(c) 全局修，会破坏 V1，H2/N12 禁止 | (a)，(b) 留作后续 | 待答 |
+| L3 | K2 的 `SceneGenerationError` 遮蔽修复是否扩到 VideoRepick、SwingXtimes、PatternLock、VUS、BUS 的 xhard？ | 是 / 否 | 是：否则 V5 新增的 xhard 拒绝会变成 TypeError，被当成代码错误 | 待答 |
+| L4 | 共用采样函数 `spawn_random_cube` / `spawn_random_target` 上的新规则怎么挂？ | (a) **只加一个**可选参数 `extra_reject=None`（可调用对象，不抽随机数，默认整段跳过）。<br>(b) 每个环境各加各的参数 | (a) | 待答 |
+| L5 | 快照、run id 与 V4 产物怎么处理？ | (a) 新目录 `scripts/configs/newtask-v5/`、run id `v5-01`，16 个环境全部重抽；未改动的 4 个环境必须逐位复现 v4-01；V4 推理钉在 `0baff09`（建议打 tag）。<br>(b) 加版本门，让 V4 快照在 V5 代码上仍可回放 | (a) | 待答 |
 
 **四个 Unmask 环境的干扰容器（2.2～2.4）**
 
