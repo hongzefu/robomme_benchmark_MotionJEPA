@@ -168,8 +168,8 @@ XHARD_CONDS = {"xhard", "self._is_xhard", "self.difficulty == 'xhard'"}
 def test_四环境揭示只在xhard且原揭示循环不变(file_name):
     funcs = _step_and_scene(file_name)
     step = funcs["step"]
-    # V5（S3b，L14）：VideoUnmask / ButtonUnmask 改调停放版 reveal_distractor_bins_parked（签名相同）；
-    # 两个 Swap 环境在 S3h 接入前仍调 V4 的 reveal_distractor_bins。两种都只许出现在 xhard 分支。
+    # V5（L14）：四个 Unmask 环境 xhard 都改调停放版 reveal_distractor_bins_parked（签名相同，窗口与落回步不变）；
+    # 两种调用都认，但都只许出现在 xhard 分支。
     conds = _guarded_calls(step, "reveal_distractor_bins") + _guarded_calls(step, "reveal_distractor_bins_parked")
     assert conds and all(c in XHARD_CONDS for c in conds), conds
     text = ast.unparse(step)

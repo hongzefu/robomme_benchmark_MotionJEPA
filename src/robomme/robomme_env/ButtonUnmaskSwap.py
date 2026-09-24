@@ -37,18 +37,23 @@ from .utils.difficulty import normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils.bin_collision import BinCollisionError, check_bin_state, check_swap_sweep, object_state_from_actor
-from .utils.unmask_distractors import add_distractor_misgrasp_failure, reveal_distractor_bins
+from .utils.unmask_distractors import add_distractor_misgrasp_failure
+from .utils.unmask_distractor_sampler import (
+    park_cubes_onto_bins,
+    reveal_actors_parked,
+    reveal_distractor_bins_parked,
+)
 from .utils.unmask_swap_xhard import (
     SWAP_WINDOW_START,
     SWAP_WINDOW_STEPS,
-    XHARD_DISTRACTOR,
     XHARD_SWAP_SPEED_MULTIPLIER,
-    bin_footprint_radius,
-    build_distractors,
     distractor_generator,
-    predict_swap_sweeps,
-    sample_distractors,
+    joint_sweep_from_actual,
+    run_outer_swaps,
     scaled_window_steps,
+    spawn_swap_distractors_v5,
+    v5_distractor_cfg,
+    v5_distractor_swap_cfg,
 )
 from ..logging_utils import logger
 
@@ -142,11 +147,13 @@ def _native_decision(cls):
         # 交换速度倍率：原值 1（每段 50 步），原三档消费它（=1 ⇒ 原样 50 步）。
         "swap_speed_multiplier": 1,
         "distractor": None,
-        # V4 xhard 专属（2.11）：速度 ×1.5 ⇒ 每段 33 步；3 个外环干扰容器（B3/B13）。
-        # 放在 xhard 子键下，守卫对原三档可见部分仍逐键全等。
+        # V4 xhard 专属（2.11）：速度 ×1.5 ⇒ 每段 33 步。放在 xhard 子键下，守卫对原三档可见部分仍逐键全等。
+        # V5（2.7，L13/L16 b）：干扰容器改用统一采样器的预设（V4 环带、10 个、含 cube [5,5]）；
+        # 新增 distractor_swap：外环随内环同步交换的规则（L17～L23，外环路径离按钮中心 ≥ 0.122）。
         "xhard": {
             "swap_speed_multiplier": XHARD_SWAP_SPEED_MULTIPLIER,
-            "distractor": copy.deepcopy(XHARD_DISTRACTOR),
+            "distractor": v5_distractor_cfg("ButtonUnmaskSwap"),
+            "distractor_swap": v5_distractor_swap_cfg("ButtonUnmaskSwap"),
         },
     }
 
@@ -310,6 +317,10 @@ class ButtonUnmaskSwap(BaseEnv):
         self.distractor_bins = []
         self.distractor_cubes = []
         if self._is_xhard:
+            # V5（2.7）：外环交换对、外环 cube 跟随对、reset 预演的内环对；由 _spawn_xhard_distractors 填写
+            self.distractor_swap_pairs = []
+            self.distractor_cube_bin_pairs = []
+            self.predicted_inner_swap_pairs = []
             self._spec.record(
                 "actions.swap_window",
                 {"start_step": self.swap_window_start, "duration_steps": self.swap_window_steps,
@@ -459,6 +470,9 @@ class ButtonUnmaskSwap(BaseEnv):
                     spec_path=f"layout.bins.{i}"
                 )
             except RuntimeError as e:
+                if self._is_xhard:
+                    # V5 L15：xhard 不许静默截断（截断后交换对与环带障碍都会变），改抛真异常作候选级重抽
+                    raise _RealSceneGenerationError(f"xhard 内环容器 bin_{i} 放不下：{e}") from e
                 break
 
             self.spawned_bins.append(bin_actor)
@@ -619,27 +633,28 @@ class ButtonUnmaskSwap(BaseEnv):
             self._spawn_xhard_distractors([button_obb_1, button_obb_2])
 
     def _spawn_xhard_distractors(self, button_obbs):
-        """建 3 个外环干扰容器（B3/B13）；避开按钮与容器，候选与预演的任一段交换扫掠相交即重抽（H1）。"""
-        cfg = self._sampling["decision"]["xhard"]["distractor"]
-        radius = bin_footprint_radius(self.cube_half_size)
-        obstacles = [(self._get_actor_position(actor)[:2], radius) for actor in self.spawned_bins]
-        for center, _axes, half in button_obbs:
-            # 按钮的避让 OBB（create_button_obb，已含 1.5 倍安全区）按外接圆处理
-            obstacles.append((np.asarray(center, dtype=np.float64)[:2], float(np.linalg.norm(np.asarray(half)[:2]))))
-        layout = sample_distractors(
+        """V5 xhard（2.7）：10 个外环干扰容器（统一采样器，按钮 OBB 精确进障碍）+ 外环随内环同步交换的 reset 规划。
+
+        与 VideoUnmaskSwap 同构（L20 预判 → 放置 + H1 → 外环规划，最多 16 次整段重抽），另加外环路径离两个按钮中心
+        ≥ 0.122（L19）。全部抽样只走独立流，主流（含 _initialize_episode 里 inject_fail_grasp 继续消费的
+        self.generator）一次都不多抽；干扰容器仍不进 spawned_bins（本环境没有 _verify_swap_binding，混进去会静默改交换对）。
+        """
+        result = spawn_swap_distractors_v5(
+            self,
             generator=distractor_generator(self.seed),
-            cfg=cfg,
-            obstacles=obstacles,
-            # 本环境的最近邻是硬编码 [:2]（XY），预演用同一轴
-            sweeps=predict_swap_sweeps(self, [0, 1]),
-            recorder=self._spec,
-            cube_half_size=self.cube_half_size,
+            # 本环境的内环最近邻是硬编码 [:2]（XY），预演用同一轴
+            partner_axes=[0, 1],
+            button_obbs=list(button_obbs),
+            hidden_half_size=self.cube_half_size / self._sampling["positions"]["hidden_cube"]["half_size_divisor"],
         )
-        self.distractor_bins, self.distractor_cubes = build_distractors(
-            self, layout, build_bin, spawn_fixed_cube,
-            cube_divisor=self._sampling["positions"]["hidden_cube"]["half_size_divisor"],
-        )
-        self.distractor_cube_colors = list(layout["cube_colors"])
+        self.distractor_bins = result.bins
+        self.distractor_cubes = result.cubes
+        self.distractor_cube_bin_pairs = result.cube_bin_pairs
+        self.distractor_cube_colors = result.layout.cube_colors
+        self.distractor_layout = result.layout
+        self.distractor_swap_pairs = result.pairs
+        self.predicted_inner_swap_pairs = result.predicted_inner_pairs
+        self._distractor_plan_timing = result.timing
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         with torch.device(self.device):
@@ -881,7 +896,32 @@ class ButtonUnmaskSwap(BaseEnv):
 
     def _check_swap_sweep_from_actual(self, sweep_index, initiator, partner):
         """V4 xhard（H1）：从实际位姿对整段交换路径做连续检查，旁观者含其余容器与全部干扰容器；
-        命中即抛 ``BinCollisionError`` 中止该样本。原三档从不调用。"""
+        命中即抛 ``BinCollisionError`` 中止该样本。原三档从不调用。
+
+        V5：xhard 改为内环对（运行时解析，L22 a）与本窗外环对的两对联合复核（带认证预筛，L23）；下面 V4 的单对
+        分支只在没有 ``_is_xhard`` 的实例上走（本环境原三档从不调用本函数）。"""
+        if getattr(self, "_is_xhard", False):
+            gap, rejection, info = joint_sweep_from_actual(self, sweep_index, initiator, partner)
+            if info["inner_partner_mismatch"]:
+                logger.warning(
+                    f"ButtonUnmaskSwap xhard 第 {sweep_index} 段内环对 {info['inner_pair']} 与 reset 预演 "
+                    f"{info['predicted_inner_pair']} 不一致（运行时照常按实际最近邻交换，联合复核用实际对）"
+                )
+                self._spec.record(f"actions.inner_swap_mismatch.{sweep_index}",
+                                  {"runtime": info["inner_pair"], "predicted": info["predicted_inner_pair"]})
+            self._runtime_checks.append(
+                {
+                    "kind": "swap_sweep",
+                    "sweep_index": sweep_index,
+                    "control_step": int(self.elapsed_steps),
+                    "min_g_m": None if rejection is not None else gap,
+                    "rejection": None if rejection is None else rejection.as_dict(),
+                    **info,
+                }
+            )
+            if rejection is not None:
+                raise BinCollisionError(rejection)
+            return
         states = {
             index: object_state_from_actor(actor, f"bin_{index}")
             for index, actor in enumerate(self.spawned_bins)
@@ -982,19 +1022,22 @@ class ButtonUnmaskSwap(BaseEnv):
 
         timestep = self.elapsed_steps
         
-        # Keep all spawned bins in their original placement during the pre-swap window
-        for bin_actor in getattr(self, "spawned_bins", []):
-            lift_and_drop_objects_back_to_original(
-                self,
-                obj=bin_actor,
-                start_step=0,
-                end_step=self.swap_window_start,  # 预交换锁定段终点 = 首段交换起点（64）
-                cur_step=timestep,
-            )
         if self._is_xhard:
-            # V4 xhard（用户 2026-09-22「参与揭示」）：外环干扰容器与区域内容器同一窗口 [0, 64)、同一机制揭示；
-            # 仍不进 spawned_bins、不参与 swap／最近邻
-            reveal_distractor_bins(self, start_step=0, end_step=self.swap_window_start, cur_step=timestep)
+            # V5 xhard（L14，主会话定内环也用）：内环容器与外环干扰容器同一窗口 [0, 64)、同一时间线揭示，
+            # 但每个物体停在各自的画面外停放点，不再全部叠在 (10,10,10)；干扰容器仍不进 spawned_bins
+            reveal_actors_parked(self, getattr(self, "spawned_bins", []), group="bin",
+                                 start_step=0, end_step=self.swap_window_start, cur_step=timestep)
+            reveal_distractor_bins_parked(self, start_step=0, end_step=self.swap_window_start, cur_step=timestep)
+        else:
+            # Keep all spawned bins in their original placement during the pre-swap window
+            for bin_actor in getattr(self, "spawned_bins", []):
+                lift_and_drop_objects_back_to_original(
+                    self,
+                    obj=bin_actor,
+                    start_step=0,
+                    end_step=self.swap_window_start,  # 预交换锁定段终点 = 首段交换起点（64）
+                    cur_step=timestep,
+                )
         for i in range(len(self.swap_schedule)):
             start = self.swap_schedule[i][2]
             end = self.swap_schedule[i][3]
@@ -1041,18 +1084,27 @@ class ButtonUnmaskSwap(BaseEnv):
             )
 
 
-        for cube_actor, bin_actor in getattr(self, "cube_bin_pairs", []):
-            if cube_actor is None or bin_actor is None:
-                continue
-            
-            lift_and_drop_objectA_onto_objectB(
-                self,
-                obj_a=cube_actor,
-                obj_b=bin_actor,
-                start_step=self.swap_window_start,
-                end_step=self.swap_schedule[-1][3],
-                cur_step=timestep,
-            )
+        if self._is_xhard:
+            # V5 xhard（2.7，口径 4）：外环与内环同窗口交换，写在内环搭档循环之外，不增加任何控制步
+            run_outer_swaps(self, timestep)
+            # 内环与外环被藏 cube 在 [64, last_end) 各停独立点，last_end 那一步落到各自容器最终 XY（L14）
+            park_cubes_onto_bins(self, getattr(self, "cube_bin_pairs", []), group="hidden_cube",
+                                 start_step=self.swap_window_start, end_step=self.swap_schedule[-1][3], cur_step=timestep)
+            park_cubes_onto_bins(self, getattr(self, "distractor_cube_bin_pairs", []), group="distractor_cube",
+                                 start_step=self.swap_window_start, end_step=self.swap_schedule[-1][3], cur_step=timestep)
+        else:
+            for cube_actor, bin_actor in getattr(self, "cube_bin_pairs", []):
+                if cube_actor is None or bin_actor is None:
+                    continue
+
+                lift_and_drop_objectA_onto_objectB(
+                    self,
+                    obj_a=cube_actor,
+                    obj_b=bin_actor,
+                    start_step=self.swap_window_start,
+                    end_step=self.swap_schedule[-1][3],
+                    cur_step=timestep,
+                )
 
         obs, reward, terminated, truncated, info = super().step(action)
         return obs, reward, terminated, truncated, info

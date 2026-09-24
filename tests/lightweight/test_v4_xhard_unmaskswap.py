@@ -96,10 +96,13 @@ def test_decision去掉xhard后与原值相同(task):
     assert decision["swap_count_range"]["xhard"] == [lo, hi]
     assert decision["pick_count_range"]["xhard"] == [3, 3]
     assert decision["xhard"]["swap_speed_multiplier"] == 1.5
+    # V5（2.6/2.7，L16 b）：干扰容器改为统一采样器的键与值（V4 环带、10 个、含 cube [5,5]），新增外环交换配置块
     assert decision["xhard"]["distractor"] == {
-        "count": 3, "with_cube_range": [1, 2], "ring_half_extent": [0.2675, 0.45],
-        "min_gap": 0.04, "colors": ["yellow", "cyan", "magenta"],
+        "count": 10, "ring_max_abs_xy": [0.2675, 0.45], "cube_count_range": [5, 5],
+        "color_pool": ["yellow", "cyan", "magenta"], "color_rule": "balanced_cycle",
+        "min_gap_factor": 0.75, "max_trials": 1024,
     }
+    assert decision["xhard"]["distractor_swap"] == ux.v5_distractor_swap_cfg(task)
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))
@@ -108,7 +111,7 @@ def test_守卫放行xhard收窄_拒绝原三档改动与申报外键(task):
     default, _native = module.native_blocks(cls)
     narrowed = copy.deepcopy(default)
     narrowed["swap_count_range"]["xhard"] = [narrowed["swap_count_range"]["xhard"][1]] * 2
-    narrowed["xhard"]["distractor"]["with_cube_range"] = [2, 2]
+    narrowed["xhard"]["distractor"]["cube_count_range"] = [4, 4]  # V5 统一键名（V4 为 with_cube_range）
     assert_native_decision(narrowed, default, task)
     for mutate in (
         lambda d: d["swap_count_range"].__setitem__("hard", [2, 4]),
