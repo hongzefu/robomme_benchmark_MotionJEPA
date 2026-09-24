@@ -29,7 +29,7 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import SamplingConfigError, assert_native_decision, split_sampling_config
 from .utils.SceneGenerationError import SceneGenerationError
-from .utils.xhard import corner_push
+from .utils.episode_spec import EpisodeSpecError
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
@@ -88,6 +88,9 @@ def _native_decision(cls):
 
     V4（计划 2.17）：xhard 新值一律挂在名为 ``xhard`` 的子键下（守卫只放行这些键偏离），
     默认值取自 ``cls.configs["xhard"]``；原三档可见部分与 V3 逐字相同。
+
+    V5（计划 2.9，L30/L33）：V4 的 ``corner_bias`` 已删除；演示段与执行段各自暴露一份
+    ``center_exclusion``（桌面中心共同禁区，两段各自声明、各自消费）。
     """
     xhard = cls.configs["xhard"]
     return {
@@ -96,15 +99,15 @@ def _native_decision(cls):
         "demo_layout": {
             "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
             "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
-            # V4 xhard：杆与方块的边角偏置（B7/G3；None = 待用户定数，xhard reset 时拒绝）
-            "xhard": {"corner_bias": xhard["corner_bias"]},
+            # V5 xhard：桌面中心共同禁区（L30；杆按轴线段、goal 与方块按中心判）
+            "xhard": {"center_exclusion": copy.deepcopy(xhard["center_exclusion"])},
         },
         # 执行阶段另抽一套，原规则与演示相同但必须分开，不能误合并。
         "execution_layout": {
             "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
             "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
-            # V4 xhard：执行段的边角偏置，与演示段各自声明、各自消费（两套不可合并）
-            "xhard": {"corner_bias": xhard["corner_bias"]},
+            # V5 xhard：执行段的中心禁区，与演示段各自声明、各自消费（两套不可合并）
+            "xhard": {"center_exclusion": copy.deepcopy(xhard["center_exclusion"])},
         },
         # 杆在桌面内的转角范围：原值 ±π/4（表达式为 u*span - offset）。
         # V4 xhard：±π（A1，仍只绕世界 z；joint7 冲突按等价朝向归约，见 B11）。
@@ -120,6 +123,51 @@ def _resolve_sampling_config(cls, override):
     assert_native_decision(decision, decision_default, cls.__name__)
     native["decision"] = decision
     return native
+
+
+# ── V5 xhard 桌面中心禁区（计划 2.9）：纯数值判据，不抽随机数，只在 xhard 分支被调用 ──────────
+def _peg_axis_extent(length):
+    """杆轴线段在杆根坐标系里沿杆朝向 u 的区间 ``(t_min, t_max)``（米）。
+
+    由 ``utils/object_generation.py::build_peg`` 的几何推出：head link 以杆根为中心，tail link
+    经固定关节挂在 ``−length·u``；两段的碰撞盒半长 ``0.45·length``、可视盒半长 ``0.5·length``。
+    取碰撞与可视外形的并集（即可视外形），``length=0.1`` 时为 ``(−0.15, +0.05)``，与 P2 实测一致。
+    xhard 每次建杆后由 ``MoveCube._xhard_verify_peg_extent`` 用实际形状复核，二者不符即报错。
+    """
+    head_half = 0.5 * float(length)          # 可视盒半长（碰撞盒 0.45·length 被它包住）
+    tail_center = -float(length)             # tail 固定关节的 pose_in_parent
+    return (tail_center - head_half, head_half)
+
+
+def _peg_root_xy(base_y, x_jitter, y_jitter):
+    """与 ``_load_scene`` 建杆时的 float32 平移逐位同算法，得到杆根 xy（float64）。"""
+    translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
+    translation[1] = base_y
+    translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
+    return translation[:2].astype(np.float64)
+
+
+def _peg_zone_distance(base_y, x_jitter, y_jitter, yaw, zone, extent):
+    """杆实际轴线段 ``root + t·u``（``t∈extent``）离禁区圆心的最近距离。"""
+    root = _peg_root_xy(base_y, x_jitter, y_jitter)
+    u = np.array([np.cos(float(yaw)), np.sin(float(yaw))], dtype=np.float64)
+    rel = root - zone["center"]
+    t = float(np.clip(-(rel @ u), extent[0], extent[1]))
+    return float(np.linalg.norm(rel + t * u))
+
+
+def _zone_violated(zone, xy):
+    """物体中心 ``xy`` 离禁区圆心的距离 ``< radius`` 即违反（与 spawn 函数的 center_exclusion 同一判据）。"""
+    return float(np.linalg.norm(np.asarray(xy, dtype=np.float64) - zone["center"])) < zone["radius"]
+
+
+def _assert_peg_outside_zone(base_y, x_jitter, y_jitter, yaw, zone, extent, spec_prefix):
+    """N17：回放冻结规格时杆位姿不经拒绝循环，按同一规则复核，违反抛 ``EpisodeSpecError``。"""
+    dist = _peg_zone_distance(base_y, x_jitter, y_jitter, yaw, zone, extent)
+    if dist < zone["radius"]:
+        raise EpisodeSpecError(
+            f"MoveCube xhard：{spec_prefix}.peg_offsets/peg_yaw 的杆轴线段离禁区圆心 {dist:.6f} "
+            f"< {zone['radius']}（冻结或注入值违反桌面中心禁区）")
 
 
 @register_env("MoveCube")
@@ -149,9 +197,12 @@ class MoveCube(BaseEnv):
     config_xhard = {
         # ±180°：u*2π - π（A1）
         "peg_yaw_range": {"span_rad": 2 * np.pi, "offset_rad": np.pi},
-        # G3 已定（2026-09-22 用户按本机扫描选 0.5：0→8/8、0.25→7/8、0.5→6/8、0.75→6/8、1.0→5/8）；
-        # 设成 None 时 xhard reset 仍会抛 SamplingConfigError（留给外部配置显式置空的反例测试）
-        "corner_bias": 0.5,
+        # V5（计划 2.9，L30/L33）：V4 的 corner_bias 已删除（不再用偏置），改为桌面中心共同禁区、
+        # 直接拒绝：以 (0,0) 为圆心、半径 0.05 m 的圆；杆按实际轴线段离圆心的最近点判，
+        # goal 圆盘、方块候选中心与方块最终中心按物体中心判；落进圆即原地重抽。
+        # max_trials 只约束新增的杆重抽循环（goal/方块沿用各自原有循环的预算），超出抛 SceneGenerationError。
+        "center_exclusion": {"shape": "circle", "center": [0.0, 0.0], "radius_m": 0.05,
+                             "judge": "object_center", "max_trials": 128},
     }
     configs = {
         "easy": config_native,
@@ -265,17 +316,21 @@ class MoveCube(BaseEnv):
         exec_layout = self._sampling["decision"]["execution_layout"]
         peg_yaw_range = self._sampling["decision"]["peg_yaw_range"]
         native_pos = self._sampling["positions"]
-        # V4 xhard（计划 2.17）：边角偏置与 ±180° 转角只在 xhard 生效；原三档 bias=0、
-        # corner_push 原样返回抽样值，转角仍读 decision 顶层的 span/offset，随机调用序列逐字不变
+        # V4 xhard（计划 2.17）：±180° 转角只在 xhard 生效；原三档转角仍读 decision 顶层的 span/offset。
+        # V5 xhard（计划 2.9）：corner_bias 已删除，改为桌面中心共同禁区（直接拒绝）；原三档
+        # demo_zone/exec_zone 为 None，不执行任何禁区判定、不多抽随机数，随机调用序列逐字不变
         xhard = self.difficulty == "xhard"
         if xhard:
-            demo_bias = self._xhard_corner_bias(demo_layout, "demo_layout")
-            exec_bias = self._xhard_corner_bias(exec_layout, "execution_layout")
+            demo_zone = self._xhard_center_exclusion(demo_layout, "demo_layout")
+            exec_zone = self._xhard_center_exclusion(exec_layout, "execution_layout")
             yaw_policy = peg_yaw_range["xhard"]
-            dk_demo, dk_exec, dk_yaw = ("demo_layout.xhard.corner_bias",
-                                        "execution_layout.xhard.corner_bias", "peg_yaw_range.xhard")
+            dk_demo, dk_exec, dk_yaw = ("demo_layout.xhard.center_exclusion",
+                                        "execution_layout.xhard.center_exclusion", "peg_yaw_range.xhard")
+            # 杆轴线段在杆根坐标系里沿朝向 u 的区间，由 build_peg 的几何推出（不写死常数）
+            peg_extent = _peg_axis_extent(self.length)
+            zone_trials = {"demo": {}, "execution": {}}
         else:
-            demo_bias = exec_bias = 0.0
+            demo_zone = exec_zone = None
             yaw_policy = peg_yaw_range
             dk_demo = dk_exec = dk_yaw = None
         demo_peg = demo_layout["peg_position_policy"]
@@ -284,8 +339,13 @@ class MoveCube(BaseEnv):
         peg_spawn_translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
 
         # Generate [-0.05, 0.05] random offset (using torch generator)
-        x_jitter = (corner_push(torch.rand(1, generator=self._hb_generator).item(), demo_bias) - 0.5) * demo_peg["jitter_span"]
-        y_jitter = (corner_push(torch.rand(1, generator=self._hb_generator).item(), demo_bias) - 0.5) * demo_peg["jitter_span"]
+        if xhard:
+            # V5：抖动与 yaw 按原顺序抽完后判杆轴线段是否进禁区，进了就三者原地重抽
+            x_jitter, y_jitter, initial_yaw, zone_trials["demo"]["peg_trials"] = self._xhard_sample_peg_outside_zone(
+                base_y, demo_peg, yaw_policy, demo_zone, peg_extent, "演示段")
+        else:
+            x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
+            y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
 
         # Apply offset
         base_y, x_jitter, y_jitter = self._spec.value(
@@ -296,8 +356,12 @@ class MoveCube(BaseEnv):
         self.peg1_basex=peg_spawn_translation[0]
         self.peg1_basey=peg_spawn_translation[1]
 
-        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
+        if not xhard:
+            initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
         initial_yaw = self._spec.value("layout.demo.peg_yaw", initial_yaw, decision_key=dk_yaw)
+        if xhard:
+            # N17：回放时上面两处 value 返回冻结值、不经拒绝循环，必须按同一规则复核
+            _assert_peg_outside_zone(base_y, x_jitter, y_jitter, initial_yaw, demo_zone, peg_extent, "layout.demo")
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -317,6 +381,10 @@ class MoveCube(BaseEnv):
             tail_color= "#EC7357",
         )
 
+        if xhard:
+            # 禁区判据用的杆轴线段必须与刚建好的杆的实际碰撞/可视几何一致，否则判据形同虚设
+            self._xhard_verify_peg_extent(peg_extent)
+
         # Create lists for backward compatibility
         self.pegs = [self.peg]
         self.peg_heads = [self.peg_head]
@@ -333,16 +401,23 @@ class MoveCube(BaseEnv):
         base_y = -exec_peg["base_y_abs"] if torch.rand(1, generator=self._hb_generator).item() < exec_peg["base_y_threshold"] else exec_peg["base_y_abs"]
 
         peg_spawn_translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
-        x_jitter = (corner_push(torch.rand(1, generator=self._hb_generator).item(), exec_bias) - 0.5) * exec_peg["jitter_span"]
-        y_jitter = (corner_push(torch.rand(1, generator=self._hb_generator).item(), exec_bias) - 0.5) * exec_peg["jitter_span"]
+        if xhard:
+            x_jitter, y_jitter, initial_yaw, zone_trials["execution"]["peg_trials"] = self._xhard_sample_peg_outside_zone(
+                base_y, exec_peg, yaw_policy, exec_zone, peg_extent, "执行段")
+        else:
+            x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
+            y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
         base_y, x_jitter, y_jitter = self._spec.value(
             "layout.execution.peg_offsets", [base_y, x_jitter, y_jitter], decision_key=dk_exec
         )
         peg_spawn_translation[1] = base_y
         peg_spawn_translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
 
-        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
+        if not xhard:
+            initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
         initial_yaw = self._spec.value("layout.execution.peg_yaw", initial_yaw, decision_key=dk_yaw)
+        if xhard:
+            _assert_peg_outside_zone(base_y, x_jitter, y_jitter, initial_yaw, exec_zone, peg_extent, "layout.execution")
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -371,7 +446,11 @@ class MoveCube(BaseEnv):
         #self.direction = -1 if dir_sample.item() == 0 else 1
 
 
-        self.goal_site = spawn_random_target(
+        # V5 xhard：goal 圆盘中心落进禁区即在 spawn_random_target 的拒绝循环里重抽；原三档不传新参数
+        demo_goal_extra = {"center_exclusion": demo_zone["rule"]} if xhard else {}
+        exec_goal_extra = {"center_exclusion": exec_zone["rule"]} if xhard else {}
+        try:
+            self.goal_site = spawn_random_target(
                         self,
                         avoid=None,  # Use current avoidance list, containing all spawned cubes
                         include_existing=False,  # Manually maintain list
@@ -384,9 +463,15 @@ class MoveCube(BaseEnv):
                         name_prefix=f"goal_site",
                         recorder=self._spec,
                         spec_path="layout.demo.goal_xy",
-                        generator=self._hb_generator
+                        generator=self._hb_generator,
+                        **demo_goal_extra,
                         )
-        self.goal_site_2 = spawn_random_target(
+        except RuntimeError as exc:
+            if xhard and not isinstance(exc, SceneGenerationError):
+                raise SceneGenerationError(f"MoveCube xhard：演示段 goal 生成失败：{exc}") from exc
+            raise
+        try:
+            self.goal_site_2 = spawn_random_target(
                 self,
                 avoid=None,  # Use current avoidance list, containing all spawned cubes
                 include_existing=False,  # Manually maintain list
@@ -399,8 +484,13 @@ class MoveCube(BaseEnv):
                 name_prefix=f"goal_site_2",
                 recorder=self._spec,
                 spec_path="layout.execution.goal_xy",
-                generator=self._hb_generator
+                generator=self._hb_generator,
+                **exec_goal_extra,
                 )
+        except RuntimeError as exc:
+            if xhard and not isinstance(exc, SceneGenerationError):
+                raise SceneGenerationError(f"MoveCube xhard：执行段 goal 生成失败：{exc}") from exc
+            raise
         
 
 
@@ -413,14 +503,21 @@ class MoveCube(BaseEnv):
         def _sample_cube_center(required_distance: float):
             for _ in range(max_cube_spawn_trials):
                 demo_cube = demo_layout["cube_position_policy"]
-                sampled_x = corner_push(torch.rand(1, generator=self._hb_generator).item(), demo_bias) * demo_cube["center_span"] + demo_cube["center_offset"]
+                sampled_x = torch.rand(1, generator=self._hb_generator).item() * demo_cube["center_span"] + demo_cube["center_offset"]
                 #direction = -1.0 if -self.peg1_basey < 0 else 1.0
                 #sampled_y = torch.rand(1, generator=self._hb_generator).item() * 0.2 * direction
-                sampled_y = corner_push(torch.rand(1, generator=self._hb_generator).item(), demo_bias) * demo_cube["center_span"] + demo_cube["center_offset"]
+                sampled_y = torch.rand(1, generator=self._hb_generator).item() * demo_cube["center_span"] + demo_cube["center_offset"]
                 candidate_xy = np.array([sampled_x, sampled_y], dtype=np.float64)
                 if np.linalg.norm(candidate_xy - goal_xy) > required_distance:
+                    # V5 xhard：候选中心落进禁区同样拒绝（与 goal 距离判据共用同一次试验与 128 次预算）
+                    if demo_zone is not None and _zone_violated(demo_zone, candidate_xy):
+                        zone_trials["demo"]["cube_candidate_center_rejects"] += 1
+                        continue
                     return candidate_xy
             return None
+
+        if xhard:
+            zone_trials["demo"]["cube_candidate_center_rejects"] = 0
 
         cube_center = _sample_cube_center(self.cube_half_size*native_pos["cube_rejection"]["min_distance_factor"])
         if xhard and cube_center is None:
@@ -430,8 +527,10 @@ class MoveCube(BaseEnv):
 
         cube_x, cube_y = float(cube_center[0]), float(cube_center[1])
 
-        # xhard 才多传 corner_bias；原三档调用参数逐字不变
-        demo_cube_extra = {"corner_bias": demo_bias} if xhard else {}
+        # V5 xhard：方块最终中心按禁区复查；include_existing=False 让已放方块不以 actor（会退化的
+        # trimesh OBB）作障碍——本局演示段方块之前没有别的方块，结果与默认值相同（计划 2.0①）。
+        # 原三档调用参数逐字不变
+        demo_cube_extra = {"include_existing": False, "center_exclusion": demo_zone["rule"]} if xhard else {}
         try:
             self.cube = spawn_random_cube(
                             self,
@@ -460,14 +559,20 @@ class MoveCube(BaseEnv):
         def _sample_cube_center(required_distance: float):
             for _ in range(max_cube_spawn_trials):
                 exec_cube = exec_layout["cube_position_policy"]
-                sampled_x = corner_push(torch.rand(1, generator=self._hb_generator).item(), exec_bias) * exec_cube["center_span"] + exec_cube["center_offset"]
+                sampled_x = torch.rand(1, generator=self._hb_generator).item() * exec_cube["center_span"] + exec_cube["center_offset"]
                 #direction = -1.0 if -self.peg2_basey < 0 else 1.0
                 #sampled_y = torch.rand(1, generator=self._hb_generator).item() * 0.2 * direction
-                sampled_y = corner_push(torch.rand(1, generator=self._hb_generator).item(), exec_bias)  * exec_cube["center_span"] + exec_cube["center_offset"]
+                sampled_y = torch.rand(1, generator=self._hb_generator).item()  * exec_cube["center_span"] + exec_cube["center_offset"]
                 candidate_xy = np.array([sampled_x, sampled_y], dtype=np.float64)
                 if np.linalg.norm(candidate_xy - goal_xy) > required_distance:
+                    if exec_zone is not None and _zone_violated(exec_zone, candidate_xy):
+                        zone_trials["execution"]["cube_candidate_center_rejects"] += 1
+                        continue
                     return candidate_xy
             return None
+
+        if xhard:
+            zone_trials["execution"]["cube_candidate_center_rejects"] = 0
 
         cube_center = _sample_cube_center(self.cube_half_size*native_pos["cube_rejection"]["min_distance_factor"])
         if xhard and cube_center is None:
@@ -476,7 +581,9 @@ class MoveCube(BaseEnv):
                 f"MoveCube xhard：执行段方块中心 {max_cube_spawn_trials} 次拒绝采样全部失败")
 
         cube_x, cube_y = float(cube_center[0]), float(cube_center[1])
-        exec_cube_extra = {"corner_bias": exec_bias} if xhard else {}
+        # V5 xhard（L34）：执行段方块与演示段方块从不同时在场（cube_2 只取位姿，随即被传送走），
+        # 不再把演示段方块当障碍（include_existing=False）；最终中心按禁区复查
+        exec_cube_extra = {"include_existing": False, "center_exclusion": exec_zone["rule"]} if xhard else {}
         try:
             self.cube_2 = spawn_random_cube(
                             self,
@@ -511,23 +618,90 @@ class MoveCube(BaseEnv):
         self.goal_site_1_pose_q = goal1_q
 
         if xhard:
-            # 只读记录本局实际生效的边角偏置（不抽随机数，排在全部取值点之后）
-            self._spec.record("layout.demo.corner_bias", float(demo_bias))
-            self._spec.record("layout.execution.corner_bias", float(exec_bias))
+            # 只读记录本局实际生效的禁区规则与各拒绝循环的尝试次数（N18；不抽随机数，排在全部取值点之后）
+            for seg, zone in (("demo", demo_zone), ("execution", exec_zone)):
+                self._spec.record(f"layout.{seg}.center_exclusion", dict(zone["decision"], peg_axis_extent_m=list(peg_extent)))
+                self._spec.record(f"layout.{seg}.center_exclusion_trials", dict(zone_trials[seg]))
 
-    def _xhard_corner_bias(self, layout, key):
-        """取 xhard 的边角偏置；G3 未定数（None）时拒绝，不许静默当 0 用。"""
-        bias = layout["xhard"]["corner_bias"]
-        if bias is None:
-            raise SamplingConfigError(
-                f"MoveCube xhard：decision.{key}.xhard.corner_bias 待用户定数（G3），"
-                "请经 sampling_config 显式传入 [0,1] 内的值")
-        bias = float(bias)
-        if not 0.0 <= bias <= 1.0:
-            raise SamplingConfigError(f"MoveCube xhard：corner_bias 必须在 [0,1]，收到 {bias}")
-        return bias
+    def _xhard_center_exclusion(self, layout, key):
+        """取并校验 xhard 的桌面中心禁区（计划 2.9）；形状或数值不合法时拒绝，不许静默放宽。
 
+        返回 dict：``rule`` 为传给 ``spawn_random_cube/target(center_exclusion=...)`` 的
+        ``(center_xy, radius)``；``center``（(2,) float64）、``radius``、``max_trials`` 供杆与方块候选的
+        本地判据使用；``decision`` 为原样的配置副本（写进规格留痕）。
+        """
+        cfg = layout["xhard"]["center_exclusion"]
+        where = f"MoveCube xhard：decision.{key}.xhard.center_exclusion"
+        if not isinstance(cfg, dict):
+            raise SamplingConfigError(f"{where} 必须是字典，收到 {cfg!r}")
+        if cfg.get("shape") != "circle":
+            raise SamplingConfigError(f"{where}.shape 只支持 circle，收到 {cfg.get('shape')!r}")
+        if cfg.get("judge") != "object_center":
+            raise SamplingConfigError(f"{where}.judge 只支持 object_center，收到 {cfg.get('judge')!r}")
+        try:
+            center = np.asarray(cfg["center"], dtype=np.float64).reshape(-1)
+            radius = float(cfg["radius_m"])
+            max_trials = cfg["max_trials"]
+        except (KeyError, TypeError, ValueError) as exc:
+            raise SamplingConfigError(f"{where} 缺字段或类型不对：{exc}") from exc
+        if center.shape != (2,) or not np.all(np.isfinite(center)):
+            raise SamplingConfigError(f"{where}.center 必须是两个有限数，收到 {cfg['center']!r}")
+        if not (np.isfinite(radius) and radius >= 0.0):
+            raise SamplingConfigError(f"{where}.radius_m 必须是 ≥0 的有限数，收到 {cfg['radius_m']!r}")
+        if isinstance(max_trials, bool) or not isinstance(max_trials, (int, np.integer)) or int(max_trials) < 1:
+            raise SamplingConfigError(f"{where}.max_trials 必须是 ≥1 的整数，收到 {max_trials!r}")
+        return {
+            "rule": ((float(center[0]), float(center[1])), radius),
+            "center": center,
+            "radius": radius,
+            "max_trials": int(max_trials),
+            "decision": copy.deepcopy(cfg),
+        }
 
+    def _xhard_sample_peg_outside_zone(self, base_y, peg_policy, yaw_policy, zone, extent, seg_label):
+        """V5 xhard：按原顺序抽 (x_jitter, y_jitter, yaw)，杆轴线段离禁区圆心最近点 < 半径就三者原地重抽。
+
+        随机调用顺序与原路径相同（x、y、yaw 各一次 ``torch.rand``），只是被拒时整组重来；
+        ``base_y`` 不重抽。只返回被接受的那组，``recorder.value`` 由调用方在其后照常调用（N18）。
+        返回 ``(x_jitter, y_jitter, yaw, 尝试次数)``；超过 ``max_trials`` 抛真 ``SceneGenerationError``。
+        """
+        span = peg_policy["jitter_span"]
+        for trial in range(1, zone["max_trials"] + 1):
+            x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * span
+            y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * span
+            yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
+            if _peg_zone_distance(base_y, x_jitter, y_jitter, yaw, zone, extent) >= zone["radius"]:
+                return x_jitter, y_jitter, yaw, trial
+        raise SceneGenerationError(
+            f"MoveCube xhard：{seg_label}杆 {zone['max_trials']} 次重抽全部落进桌面中心禁区")
+
+    def _xhard_verify_peg_extent(self, extent):
+        """用刚建好的杆的实际碰撞盒与可视盒复核禁区判据所用的轴线段区间（取二者并集）。
+
+        读 head/tail 两个 link 的 box 形状半长、形状局部位姿与 tail 固定关节的 ``pose_in_parent``／``pose_in_child``，
+        得到沿杆朝向（link 局部 x 轴）的实际区间；与 ``_peg_axis_extent`` 不一致就抛 RuntimeError
+        （属代码类错误：说明 build_peg 的几何变了而判据没跟上）。
+        """
+        lo, hi = np.inf, -np.inf
+        for link in (self.peg_head, self.peg_tail):
+            comp = link._objs[0]
+            joint = comp.get_joint()
+            # 固定关节只有沿 x 的平移（build_peg）：link 原点在父 link 系的 x = pose_in_parent.x − pose_in_child.x
+            offset = 0.0 if comp.get_parent() is None else (
+                float(joint.get_pose_in_parent().p[0]) - float(joint.get_pose_in_child().p[0]))
+            shapes = [(float(sh.half_size[0]), float(sh.local_pose.p[0])) for sh in comp.get_collision_shapes()]
+            for c in comp.get_entity().get_components():
+                for rs in getattr(c, "render_shapes", []) or []:
+                    if hasattr(rs, "half_size"):
+                        shapes.append((float(rs.half_size[0]), float(rs.local_pose.p[0])))
+            if not shapes:
+                raise RuntimeError(f"MoveCube xhard：杆 link {link.name} 没有可读的 box 形状，无法复核禁区杆轴线段")
+            for half, local_x in shapes:
+                lo = min(lo, offset + local_x - half)
+                hi = max(hi, offset + local_x + half)
+        if abs(lo - extent[0]) > 1e-6 or abs(hi - extent[1]) > 1e-6:
+            raise RuntimeError(
+                f"MoveCube xhard：禁区判据用的杆轴线段 {tuple(extent)} 与实际几何 ({lo}, {hi}) 不一致")
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         # 每次初始化各自记一份规格，不复用上一次的结果

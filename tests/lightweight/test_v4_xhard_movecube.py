@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """轻量测试：V4 MoveCube 的 xhard 档（计划 2.16 / 2.17），纯 CPU、不起 sapien 场景。
 
-* A6：``configs`` 三档同值且等于原全局常量；xhard 为 ±180° 与 G3 已定的 ``corner_bias=0.5``；
+* A6：``configs`` 三档同值且等于原全局常量；xhard 为 ±180°；
+  V5（计划 2.9，L33）：xhard 的 ``corner_bias`` 已删干净，改为 ``center_exclusion``（断言已改为 V5 语义，
+  ``corner_bias`` 取值校验的旧单测随 ``_xhard_corner_bias`` 一并删除，禁区校验见 ``test_v5_xhard_movecube.py``）；
 * ``_native_decision`` 去掉 ``xhard`` 子键后与 V3 原值逐字相同；守卫放行 xhard 取新值；
-  演示段与执行段的 ``corner_bias`` 各自声明（两套不可合并）；
-* ``corner_bias`` 为 None / 越界时 xhard 取值拒绝（不许静默当 0 用）；
+  演示段与执行段的 ``center_exclusion`` 各自声明（两套不可合并）；
 * B11：翻转夹爪后 ``solve_push_to_target_with_peg`` 的世界系路点与杆位姿对
   ``obj_flag × direction`` 四种组合逐一与未归约时一致，不补偿则杆朝向相差 180°。
 
@@ -68,37 +69,29 @@ def test_configs_three_tiers_identical_and_xhard_values() -> None:
     x = CLS.configs["xhard"]
     assert x["peg_yaw_range"]["span_rad"] == pytest.approx(2 * np.pi)
     assert x["peg_yaw_range"]["offset_rad"] == pytest.approx(np.pi)
-    # G3 未定数：默认必须是 None，不许实施方自填
-    assert x["corner_bias"] == 0.5  # G3 用户定数
+    # V5 L33：corner_bias 删键；桌面中心禁区为 L30 定数
+    assert "corner_bias" not in x
+    assert x["center_exclusion"] == {"shape": "circle", "center": [0.0, 0.0], "radius_m": 0.05,
+                                     "judge": "object_center", "max_trials": 128}
 
 
 def test_decision_visible_part_unchanged_and_guard() -> None:
     decision, _native = movecube_mod.native_blocks(CLS)
     assert _strip(decision) == V3_DECISION
-    assert decision["demo_layout"]["xhard"] == {"corner_bias": 0.5}
-    assert decision["execution_layout"]["xhard"] == {"corner_bias": 0.5}
+    assert decision["demo_layout"]["xhard"] == {"center_exclusion": CLS.configs["xhard"]["center_exclusion"]}
+    assert decision["execution_layout"]["xhard"] == {"center_exclusion": CLS.configs["xhard"]["center_exclusion"]}
+    # 两段是各自的副本，改一段不影响另一段与类默认值
+    assert decision["demo_layout"]["xhard"]["center_exclusion"] is not decision["execution_layout"]["xhard"]["center_exclusion"]
     assert decision["peg_yaw_range"]["xhard"] == CLS.configs["xhard"]["peg_yaw_range"]
     # 演示段与执行段各自一份（可取不同值）
     tuned = copy.deepcopy(decision)
-    tuned["demo_layout"]["xhard"]["corner_bias"] = 0.25
-    tuned["execution_layout"]["xhard"]["corner_bias"] = 0.75
+    tuned["demo_layout"]["xhard"]["center_exclusion"]["radius_m"] = 0.04
+    tuned["execution_layout"]["xhard"]["center_exclusion"]["radius_m"] = 0.06
     assert_native_decision(tuned, decision, "MoveCube")
     bad = copy.deepcopy(decision)
     bad["demo_layout"]["peg_position_policy"]["jitter_span"] = 0.2
     with pytest.raises(SamplingConfigError):
         assert_native_decision(bad, decision, "MoveCube")
-
-
-@pytest.mark.parametrize("value, ok", [(None, False), (-0.1, False), (1.5, False),
-                                       (0, True), (0.5, True), (1.0, True)])
-def test_corner_bias_validation(value, ok) -> None:
-    layout = {"xhard": {"corner_bias": value}}
-    dummy = SimpleNamespace()
-    if ok:
-        assert CLS._xhard_corner_bias(dummy, layout, "demo_layout") == float(value)
-    else:
-        with pytest.raises(SamplingConfigError):
-            CLS._xhard_corner_bias(dummy, layout, "demo_layout")
 
 
 # ── B11：推杆路点补偿 ──────────────────────────────────────────────────────────
