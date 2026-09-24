@@ -42,8 +42,8 @@
 | MoveCube | 方块、目标圆盘、杆都**直接拒绝**落在桌面中心的共同禁区（R = 0.05 m 圆），不再用 bias |
 | PatternLock / RouteStick | 不改布局，演示在现布局下**尽可能长**：PatternLock 节点 [24,25]（约 26～27.5 s），RouteStick L 拉长到 25～35 s 带内 |
 | BinFill | 修障碍框缺陷，加同色成团上限 |
-| PickXtimes / SwingXtimes | 修障碍框缺陷，加 8 cm 间距；PickXtimes 三个有色方块各占一个象限 |
-| VideoRepick | 最小中心距 0.12 m 铺开；**全部 6 块都当发起者**，搭档在 reset 时规划 |
+| PickXtimes / SwingXtimes | 修障碍框缺陷，6 块两两 ≥ 8 cm；PickXtimes **取消边角偏置**，全部均匀 |
+| VideoRepick | 最小中心距 0.12 m 铺开；**6 块按 k%6 轮流发起**，搭档在 reset 时从 3 个最近可行里选 |
 
 ### 1.1 定死的口径
 
@@ -182,32 +182,32 @@ videorepick的生成也要均匀 并且支持所有的cube都要swap
 | L38 | RouteStick 的 L 范围是否冻进 decision 与规格 header（现在从类属性读、未冻结） | 是 / 否 | 是 | **是** |
 | L39 | 「30 s」怎么量 | h5 中 `is_video_demo` 帧数 ÷ 30（A2） / 物理仿真时间 | A2 | **A2** |
 
-**BinFill（2.12）**
+**BinFill（2.12）**（2026-09-24 用户答复原话「l40 b l41 T=3、0.09、64 / l42不限制 / l43 取消边角偏置，全部均匀 / l44 0.08 留一个方块宽的缝 / l45 1024 / l46 先做演示探针再定 / l47 纯 k%6 轮转，目标块不特殊。目标块被换的次数会少 / l48 3 个最近或任一可行：路径更长、更乱。 / l49 reset 时规划 / l50 0.12 l51不改」）
 
-| 编号 | 问题 | 选项 | 建议 |
-|---|---|---|---|
-| L40 | 「均匀」指什么 | (a) 空闲区内均匀：已成立，无需改。<br>(b) 颜色充分混合，没有大块同色团。<br>(c) 蓝噪声式铺开。<br>(d) 整个矩形密度拉平（需挪按钮/板） | (b) 加 L2 的缺陷修复 |
-| L41 | 同色成团上限参数 | T = 3 / 2；连通距离 0.08 / 0.09 / 0.10；最多重排 64 次，失败时取最优 | T=3、0.09、64 |
-| L42 | 是否限制每色生成块数（避免 7+ 同色） | 不限 / 上限 max(target, 6) | 不限：它会改配额规则并平移整条流 |
+| 编号 | 问题 | 选项 | 建议 | 结论（用户答复） |
+|---|---|---|---|---|
+| L40 | 「均匀」指什么 | (a) 空闲区内均匀：已成立，无需改。<br>(b) 颜色充分混合，没有大块同色团。<br>(c) 蓝噪声式铺开。<br>(d) 整个矩形密度拉平（需挪按钮/板） | (b) 加 L2 的缺陷修复 | **(b)** |
+| L41 | 同色成团上限参数 | T = 3 / 2；连通距离 0.08 / 0.09 / 0.10；最多重排 64 次，失败时取最优 | T=3、0.09、64 | **T=3、0.09、64** |
+| L42 | 是否限制每色生成块数（避免 7+ 同色） | 不限 / 上限 max(target, 6) | 不限：它会改配额规则并平移整条流 | **不限** |
 
 **PickXtimes / SwingXtimes（2.13 / 2.14）**
 
-| 编号 | 问题 | 选项 | 建议 |
-|---|---|---|---|
-| L43 | PickXtimes 边角语义（含 MoveCube 方提出的「是否也改为拒绝而非 bias」） | (a) 保留 J5（3 块都 corner_bias 0.5），另加「3 个有色方块各占不同象限」。<br>(b) 只推目标（推翻 J5）。<br>(c) 取消边角（推翻 V4 1.2 原文与 J5）。<br>(d) 只加间距 | (a) |
-| L44 | 6 块之间的最小中心距（xhard） | 0.06 / 0.08 / 0.10 | 两环境都取 0.08 |
-| L45 | PickXtimes xhard 放置 max_trials | 256 / 1024 | 1024 |
-| L46 | 是否把 PickXtimes xhard 的方块区域扩到半宽 0.25 | 是 / 否 / 先做演示探针再定 | 先探针再定 |
+| 编号 | 问题 | 选项 | 建议 | 结论（用户答复） |
+|---|---|---|---|---|
+| L43 | PickXtimes 边角语义（含 MoveCube 方提出的「是否也改为拒绝而非 bias」） | (a) 保留 J5（3 块都 corner_bias 0.5），另加「3 个有色方块各占不同象限」。<br>(b) 只推目标（推翻 J5）。<br>(c) 取消边角（推翻 V4 1.2 原文与 J5）。<br>(d) 只加间距 | (a) | **(c) 取消边角偏置，全部均匀**（推翻 V4 J5 与 V4 1.2「推向边角」）；不加象限规则 |
+| L44 | 6 块之间的最小中心距（xhard） | 0.06 / 0.08 / 0.10 | 两环境都取 0.08 | **0.08** |
+| L45 | PickXtimes xhard 放置 max_trials | 256 / 1024 | 1024 | **1024** |
+| L46 | 是否把 PickXtimes xhard 的方块区域扩到半宽 0.25 | 是 / 否 / 先做演示探针再定 | 先探针再定 | **先做演示探针再定**（规划期先跑，见 3.5） |
 
 **VideoRepick（2.15）**
 
-| 编号 | 问题 | 选项 | 建议 |
-|---|---|---|---|
-| L47 | 「所有 cube 都 swap」指什么 | (a) 每块都当发起者：目标每 3 次一轮，其余 5 块按 randperm 顺序轮转。<br>(a') 纯 k%6 轮转。<br>(b) 只要求覆盖。<br>(c) 每次随机一对 | (a) |
-| L48 | 搭档规则 | 最近邻 / 在 2 个最近且扫掠可行的候选中均匀选、不立即重复上一对 / 3 个最近或任一可行 | 2 个最近可行、不立即重复 |
-| L49 | 搭档在哪决定 | reset 时规划，留 5 mm 余量 / 运行时按实际状态 | reset 规划 |
-| L50 | 摆放的最小中心距 | 0.10 / 0.12 / 0.13 / 0.14 m | 0.12 |
-| L51 | 是否改区域或按钮，让方块铺满更多画面 | 不改 / 向 +x 扩 / 移动或缩小按钮禁区 | 不改 |
+| 编号 | 问题 | 选项 | 建议 | 结论（用户答复） |
+|---|---|---|---|---|
+| L47 | 「所有 cube 都 swap」指什么 | (a) 每块都当发起者：目标每 3 次一轮，其余 5 块按 randperm 顺序轮转。<br>(a') 纯 k%6 轮转。<br>(b) 只要求覆盖。<br>(c) 每次随机一对 | (a) | **(a') 纯 k%6 轮转，目标块不特殊**；用户接受目标块被换次数变少 |
+| L48 | 搭档规则 | 最近邻 / 在 2 个最近且扫掠可行的候选中均匀选、不立即重复上一对 / 3 个最近或任一可行 | 2 个最近可行、不立即重复 | **3 个最近且扫掠可行的候选里均匀选，都不可行则任一可行**；用户接受路径更长 |
+| L49 | 搭档在哪决定 | reset 时规划，留 5 mm 余量 / 运行时按实际状态 | reset 规划 | **reset 时规划** |
+| L50 | 摆放的最小中心距 | 0.10 / 0.12 / 0.13 / 0.14 m | 0.12 | **0.12** |
+| L51 | 是否改区域或按钮，让方块铺满更多画面 | 不改 / 向 +x 扩 / 移动或缩小按钮禁区 | 不改 | **不改** |
 
 ### 1.5 本计划推翻或修改的 V4 决策
 
@@ -227,8 +227,8 @@ videorepick的生成也要均匀 并且支持所有的cube都要swap
 | V4 计划 2.20 与风险 #6（陈述错误） | 「执行段 = L×50+200，L>≈22 必被截断」 | 更正：强制复位是演示态 NO RECORD，不计预算；执行段为 50·L（+1 初始帧）；截断点是 L≥27 | 2.11 |
 | V4 计划 2.19（陈述错误） | 「每段约 31 帧、上限约 24.8 s」 | 更正：实测平均每段 34.25 帧，随方向变化；24 段平均约 27.4 s，这也是不改布局时的上限 | 2.10 |
 | B1（修改执行） | BinFill 区域与间距不动 | 数值不动，但名义 2 cm 间距在 xhard 真正生效；加同色成团上限 | 2.12 |
-| J5（修改） | PickXtimes 3 个有色方块都 corner_bias 0.5 | 保留 0.5，另加「不同象限」、8 cm 间距、精确 OBB、1024 次 | 2.13 |
-| B12 / J2 | VideoRepick 发起者仍 3 个；接受约 45% 的 D5 演示期拒绝、靠 H4 递补 | 6 块全当发起者；最小距 0.12 m 加 reset 规划可行搭档；D5 保留作运行时守卫，H4 保留作兜底 | 2.15 |
+| J5 / V4 1.2「推向边角」（推翻） | PickXtimes 3 个有色方块都 corner_bias 0.5 | 取消边角偏置、全部均匀；加 8 cm 间距、精确 OBB、1024 次 | 2.13 |
+| B12 / J2 | VideoRepick 发起者仍 3 个；接受约 45% 的 D5 演示期拒绝、靠 H4 递补 | 6 块按 k%6 轮流发起、目标不特殊；最小距 0.12 m 加 reset 规划搭档（3 个最近可行里选）；D5 保留作运行时守卫，H4 保留作兜底 | 2.15 |
 | K2（扩展） | 只在 VideoPlaceOrder 的 xhard 修异常遮蔽 | 同样修到 5 个环境的 xhard | 2.0 |
 
 ## 二、逐环境改动
@@ -247,7 +247,7 @@ videorepick的生成也要均匀 并且支持所有的cube都要swap
 | 文件::锚点 | 改什么 | 为什么 | 不启用新值时必须 |
 |---|---|---|---|
 | `utils/xhard.py`（新增 `cube_obb2d_exact(pose, half)`） | 纯函数，按方块真实 yaw 给出 2D 障碍三元组 `(c, A, h)`，不抽随机数；xhard 分支把放下的方块以**预制三元组**放进 `avoid`，不再放 actor 本身 | ① 新发现的共用缺陷（见下） | 不被调用；`_trimesh_box_to_obb2d` / `_safe_unit` **不改** |
-| `utils/object_generation.py::spawn_random_cube` / `spawn_random_target` | **按 L4 (b)**：各环境各加各的显式可选参数（如 `center_zone_half=None`、`min_center_dist=None`、`quadrant_of=None`），都在既有 OBB/圆判据之后、`recorder.value` 之前求值，自身不抽随机数 | ② MoveCube 中心区、Pick/Swing 8 cm、PickXtimes 象限、VideoRepick 0.12 m 都要在这两个被 12 个环境共用的拒绝循环里加判据 | 每个新参数默认 `None` 时整段跳过，沿用 V4 `corner_bias` 默认 0 即原样返回的先例；每个参数各配一条「默认值下逐位不变」单测 |
+| `utils/object_generation.py::spawn_random_cube` / `spawn_random_target` | **按 L4 (b)**：各环境各加各的显式可选参数（如 `center_zone=None`、`min_center_dist=None`），都在既有 OBB/圆判据之后、`recorder.value` 之前求值，自身不抽随机数 | ② MoveCube 中心区、Pick/Swing 8 cm、PickXtimes 象限、VideoRepick 0.12 m 都要在这两个被 12 个环境共用的拒绝循环里加判据 | 每个新参数默认 `None` 时整段跳过，沿用 V4 `corner_bias` 默认 0 即原样返回的先例；每个参数各配一条「默认值下逐位不变」单测 |
 | VideoRepick、SwingXtimes、PatternLock、RouteStick、StopCube、VUS、BUS 七个模块头部 | 仿 `VideoPlaceOrder.py` 加 `_RealSceneGenerationError` 别名，raise 与 except 两处按 `difficulty == "xhard"` 选类 | ③ `SceneGenerationError` 被 `from .utils import *` 遮蔽成子模块（见下，L3：所有存在遮蔽的环境的 xhard 都修） | 原三档仍是 TypeError（H2） |
 | `utils/bin_collision.py`（新增 `check_multi_swap_sweep` 与认证预筛） | 复用 `_prove_pair` 证两对同时移动；预筛只跳过已证明分离的对 | 2.5 的外环交换与 VideoRepick 的 reset 规划都要用 | `check_swap_sweep` 判定不变；单对时新函数与旧函数逐位相同（`MULTI_SWEEP_EQUIV`） |
 | `scripts/configs/newtask-v5/`（新目录） | 全部改完后**只重导一次** `sampling_config.json`；run id `v5-01`；不再生成 `combos.json`（口径 11） | ④ 每个环境都会增删 `decision.xhard` 键，`assert_native_decision` 的形状检查会拒绝 V4 快照；RouteStick 的 L 范围 V4 header 没冻结，V4 规格在 V5 代码上会直接 `ValueError`（L5、L38）。**V4 作废**，不做兼容 | V4 配置目录原样留着不引用 |
@@ -295,9 +295,9 @@ PatternLock 搜索耗尽改为抛错、Unmask 内环预判拒绝），所以必�
 | PatternLock | 改 | 布局不动；节点 [20,24] → **[24,25]**；搜索预算 1000 → 20000；搜索耗尽即抛错 | 2.10 |
 | RouteStick | 改 | L [12,15] → **[15,21]**；L 范围冻进 decision | 2.11 |
 | BinFill | 改 | 障碍框用精确 OBB；同色成团上限（T=3、0.09 m、最多重排 64 次） | 2.12 |
-| PickXtimes | 改 | 3 个有色方块各占不同象限；6 块两两 ≥ 8 cm；精确 OBB；1024 次 | 2.13 |
+| PickXtimes | 改 | 取消 `corner_bias`（全部均匀）；6 块两两 ≥ 8 cm；精确 OBB；1024 次 | 2.13 |
 | SwingXtimes | 改 | 共用循环加显式 xhard 分支；8 cm 间距；精确 OBB | 2.14 |
-| VideoRepick | 改 | 最小中心距 0.12 m；6 块全部发起；搭档 reset 规划 | 2.15 |
+| VideoRepick | 改 | 最小中心距 0.12 m；6 块 k%6 轮流发起；搭档 reset 规划（3 个最近可行） | 2.15 |
 | PickHighlight / VideoPlaceButton / VideoPlaceOrder | 改（只修缺陷） | xhard 分支的方块障碍改用精确 OBB（L2 b）；异常类不涉及 | 2.16 |
 | StopCube | 改（只修异常类） | 不用 `spawn_random_cube`，无扎堆问题；只按 L3 修 `SceneGenerationError` 遮蔽 | 2.0③ |
 
@@ -709,27 +709,26 @@ for i in 0..3:
 
 ### 2.13 PickXtimes（在 V4 xhard 上改）
 
-**要做**：去扎堆——3 个有色方块各占不同象限、6 块两两 ≥ 8 cm、修障碍框缺陷。
+**要做**：去扎堆——取消边角偏置、全部均匀（L43）；6 块两两 ≥ 8 cm；修障碍框缺陷。
 
 | 字段 | 含义 | V4 xhard 现值 | V5 新值 / 注入什么 |
 |---|---|---|---|
-| `XHARD_DECISION.target_cube_position_policy`（新增 `quadrant_distinct`） | 3 个有色方块的象限约束 | 无（`corner_bias 0.5` 保留，91.3% 落角格，44.5% 的局 ≥2 块同角格） | **各占不同象限**，象限以 `(-0.1, 0)` 划分，经 `extra_reject` 实现（L43-a）；注入 `layout.cube_dispersion` |
-| `XHARD_DECISION` 新增 `min_center_dist_m` | 6 块（3 有色 + 3 干扰）两两最小中心距 | 无（只有 OBB `min_gap`，且退化） | **`0.08`**（L44）；注入 `layout.cube_min_center_dist` |
+| `XHARD_DECISION.target_cube_position_policy.corner_bias` | 3 个有色方块的边角偏置 | `0.5`（91.3% 落角格，44.5% 的局 ≥2 块同角格） | **删键**，有色方块与干扰方块一样在区域内均匀抽（L43）；`_spawn_scene_objects_xhard` 不再传 `corner_bias`；`utils/xhard.py::corner_push` 与 `spawn_random_cube` 的 `corner_bias` 形参保留（默认 0，原三档本来就不传） |
+| `XHARD_DECISION` 新增 `min_center_dist_m` | 6 块（3 有色 + 3 干扰）两两最小中心距 | 无（只有 OBB `min_gap`，且退化） | **`0.08`**（L44，留一个方块宽的缝）；注入 `layout.cube_min_center_dist` |
 | 障碍框（`_spawn_scene_objects_xhard` / `_spawn_distractors_xhard`） | 已放方块如何进 `avoid` | actor（15.5% 的局有 < 6 cm 的对） | `cube_obb2d_exact` 预制三元组 |
-| `max_trials` | 每块的拒绝预算 | `256` | **`1024`**（L45；256 次时 reset 失败 3.53%，1024 次 0.97%） |
+| `max_trials` | 每块的拒绝预算 | `256` | **`1024`**（L45） |
+| 方块区域半宽（L46） | 有色与干扰方块的采样区 | `0.2` | **待探针**：半宽 0.2 与 0.25 各跑演示探针比较成功率后定（3.5） |
 
 **实施要点**
 
-- **归因**：同角挤压的约 30 个百分点来自 `corner_bias`（`corner_push` 对每个轴 `t' = sign(t)|t|^p`，p = 1/(1+4b)，b=0.5 时 p=1/3，
-  联合分布集中在 4 个角格：拒绝前 92.7%、拒绝后 91.3%）；< 6 cm 的对 100% 来自障碍框缺陷；松散的 10 cm 团主要由密度决定
-  （理想 Poisson 6 cm 过程也有 41%）。按钮总在靠机器人一边，有色方块远侧 56.8%、近侧 38.9%；整个区域只占画面 11.0%。
-- **改后效果**（3000 局）：同角格 44.5% → 0，同象限 58.9% → 0，< 8 cm 的对 → 0，10 cm 三块团 45.3% → 19.9%；目标到边缘的中位距离
-  1.75 → 1.63 cm（推向边角的意图保住）。
+- **归因**：同角挤压的约 30 个百分点来自 `corner_bias`，取消后同角格 ≥2 块从 44.5% 降到均匀采样的 14.3%（精确 OBB 后 12.3%）；
+  < 6 cm 的对 100% 来自障碍框缺陷，精确 OBB 后归零；8 cm 间距再把 < 8 cm 的对归零。松散的 10 cm 团主要由密度决定
+  （理想 Poisson 6 cm 过程也有 41%），均匀 + 8 cm 下约 20%。
+- 取消偏置后 V4 1.2「把 target 推向边角」不再成立，目标块与干扰块位置分布相同，V4 风险登记里的「位置捷径」随之消失。
 - 抽样顺序（按钮 → `randperm(3)` → 占位 `randint(3)` → 圆盘 → 3 有色 → `randint(3)` 选目标 → 3 干扰）不变；G1 先放盘不变。
-- **可选（L46）**：把方块区扩到半宽 0.25，RMS 分散度 +36%、10 cm 团降到 4.3%；但远角离基座约 0.78 m，最多 15 次抓放的可达性没测过，先做演示探针。
-- ⚠ **位置捷径**：J5 + 象限规则下有色候选块都在角上、干扰块在中间，仅凭位置就能区分候选与干扰；若这对基准有影响，需用户另行决策。
-- 验收：`V5_EXACT_OBB=PASS degenerate=0`；`V5_PICK_DISPERSION=PASS same_cornercell_ge2=0.000 min_pair_lt_0p08=0.000 in_corner_cell>=0.85`；
-  `V5_RESET_FEASIBILITY=PASS pick_fail<=0.010`。
+- reset 失败率：均匀 + 8 cm + 1024 次约 1%（256 次时 3.5%）。
+- 验收（落成单测与单次 reset 检查）：`V5_EXACT_OBB=PASS degenerate=0`；`V5_PICK_DISPERSION=PASS min_pair_lt_0p08=0.000`；
+  `V5_RESET_FEASIBILITY=PASS pick_fail<=0.015`。
 
 ### 2.14 SwingXtimes（在 V4 xhard 上改）
 
@@ -755,8 +754,8 @@ for i in 0..3:
 | 字段 | 含义 | V4 xhard 现值 | V5 新值 / 注入什么 |
 |---|---|---|---|
 | `config_xhard` 新增 `min_center_dist_m` | 6 块两两最小中心距 | 无（最近一对中位 0.079 m；26.9% 的局 ≥3 块挤在同一六分之一区域） | **`0.12`**（L50），经 `spawn_random_cube(..., extra_reject=…)`，每次 trial 仍是 3 个 rand；注入逐块 `xy` |
-| 发起者（`objects.swap_initiators_remaining`） | 谁发起第 k 次交换 | `[目标] + randperm(5)[:2]`（B12），`swap_indices[k % 3]` | **6 块全部发起**（L47-a）：`randperm(5)` 原本就抽了、只是 V4 只取 `[:2]`，现在用满；`seq[k] = 目标`（k % 3 == 0），否则按 perm 顺序轮转其余 5 块；不新增抽样；`swap_initiators_remaining` 变为长度 5 |
-| 搭档（新增 `VideoRepick._plan_swaps_xhard`） | 第 k 次和谁换、在哪定 | `step` 里运行时按实际 XY 取最近邻（`position_axes [0,1]`） | **reset 时规划**（L49）：在名义槽位上用 `cube_shape_specs(hs + 0.005)` 按距离排序其余槽位，过滤扫掠不可行的（`check_swap_sweep`，按无序对缓存）与「重复上一对」的，取前 2 个、用 `u[k]` 均匀选一个（L48）；某步没有可行搭档抛真 `SceneGenerationError`（L3）；注入 `actions.swap_pairs.<k>`（value） |
+| 发起者（`objects.swap_initiators_remaining`） | 谁发起第 k 次交换 | `[目标] + randperm(5)[:2]`（B12），`swap_indices[k % 3]` | **纯 k%6 轮转，目标不特殊**（L47-a'）：`seq = [目标] + randperm(5)`（V4 本来就抽了，只是只取 `[:2]`，现在用满），第 k 次发起者 `seq[k % 6]`；n_swaps 8～12 时每块发起 1～2 次；不新增抽样；`swap_initiators_remaining` 变为长度 5 |
+| 搭档（新增 `VideoRepick._plan_swaps_xhard`） | 第 k 次和谁换、在哪定 | `step` 里运行时按实际 XY 取最近邻（`position_axes [0,1]`） | **reset 时规划**（L49）：在名义槽位上用 `cube_shape_specs(hs + 0.005)` 按距离排序其余槽位，过滤扫掠不可行的（`check_swap_sweep`，按无序对缓存），**取前 3 个可行的、用 `u[k]` 均匀选一个；3 个最近都不可行则在任一可行里均匀选**（L48）；没有任何可行搭档抛真 `SceneGenerationError`（L3）；注入 `actions.swap_pairs.<k>`（value） |
 | 新增取值点 `objects.swap_partner_u` | 搭档选择的随机数 | 无 | **追加**一次 `u = torch.rand(n_swaps)` |
 | `step` 的搭档分支 | 运行时用哪个搭档 | 最近邻循环 | xhard 用规划好的搭档；**D5 的 `_check_swap_sweep_from_actual` 保留**作运行时守卫与回放交叉核对 |
 
@@ -765,7 +764,7 @@ for i in 0..3:
 - **为什么不是所有 cube 都动**：3 个固定发起者加最近邻搭档，槽位集合在交换中从不改变，每个发起者只能在自己的最近邻链上来回。
   V4 6 块全部动过的局只有 **17.0%**，目标回原位 35.7%，单局同一对最多重复 5.77 次；ep3（seed 4900300，12 次，发起者 bin_5/bin_4/bin_0）
   的交换序列 (5,2),(4,3),(0,2),(5,0),(4,3),(0,5),(5,0),(4,3),(0,5),(5,0),(4,3),(0,5)，bin_4↔bin_3 来回 4 次净效果为零，**bin_1 一次没动**。
-- **实测**（离线 1500～2400 局；最小距 0.12、余量 5 mm、k = 2、交错发起）：
+- **实测**（离线 1500～2400 局；最小距 0.12、余量 5 mm、**k = 2 且目标每 3 次一轮**——与最终定的 k%6 轮转 + 3 个最近不同，下表只作参考，3.5 的探针按最终规则重跑）：
 
   | 指标 | V4 | V5 |
   |---|---|---|
@@ -781,7 +780,8 @@ for i in 0..3:
   | D5 拒绝 | 演示期约 35～45% | reset 期 8.4%（抽签时重抽，代价低）；运行时残余 0.00%（目标落放偏移 ≤ 12 mm），偏移 ≤ 20 mm 时 0.27% |
 
   最小替代方案（只加间距与全员发起，搭档仍运行时最近邻）：全员参与 100%、D5 3.3%，但目标回原位 37.2%、同一对最多重复 3.38 次。
-- ⚠ 规划出的路径更长（均值 0.19 m，最大约 0.30 m，V4 约 0.12～0.16 m），窗口固定 50 步，方块移动速度快到约 1.5 倍，要人工看片。
+- ⚠ 规划出的路径更长（k=2 时均值 0.19 m，最大约 0.30 m，V4 约 0.12～0.16 m；用户定的 k=3 会更长），窗口固定 50 步，方块移动速度可能到 1.5 倍以上，要人工看片。用户已接受「路径更长、更乱」。
+- ⚠ 目标块按 k%6 只发起 1～2 次，被换次数比 V4（目标每 3 次一轮）少，用户已接受。
 - ⚠ `_resolve_sampling_config` 对 native 的 `object_selection` / `swap_selection` 的 JSON 全等检查**不改**；新规则全部挂 `decision.xhard`，
   xhard 代码不再读 native 的 `swap_remaining_count` 与 `position_axes`。
 - ⚠ **完整方案没有在模拟器里跑过**，只跑过最小方案（3 个 seed：1 成功，2 次 D5 拒绝都被离线预测到）。
@@ -853,17 +853,16 @@ for i in 0..3:
    corner_bias 删除；三个物体同一个圆、同一条按中心判的规则
 ```
 
-#### PickXtimes：3 个有色方块各占一个象限，6 块两两 ≥ 8 cm
+#### PickXtimes：取消边角偏置，6 块均匀且两两 ≥ 8 cm
 
 ```text
                  y=-0.18                 0                  +0.18
-   x=+0.08   ┌──────────────────────────┬──────────────────────────┐
-             │ ●红（被推到角）            │             ●蓝（被推到角） │  象限以 (-0.1, 0) 划分；corner_bias 0.5 保留
-             │          ◇青              │      ◇品红                │  ◇ = 干扰，均匀抽
-   x=-0.10   ├──────────────────────────┼──────────────────────────┤
-             │  ◇黄      ◯圆盘可在中间    │                          │
-             │ ⊕按钮                     │               ●绿（第三象限）│  V4：44.5% 的局有 2 块挤在同一角格 → V5：0
-   x=-0.28   └──────────────────────────┴──────────────────────────┘
+   x=+0.08   ┌──────────────────────────────────────────────────────┐
+             │      ●红          ◇青              ●蓝               │  ● 有色、◇ 干扰：同一区域均匀抽，无 corner_bias
+             │                                                      │  任意两块中心距 ≥ 0.08（留一个方块宽的缝）
+   x=-0.10   │  ◇黄       ◯圆盘可在中间         ◇品红                 │  障碍框精确 OBB，不再退化
+             │ ⊕按钮                       ●绿                       │  V4：44.5% 的局有 2 块挤在同一角格 → V5：约 12%（均匀水平）
+   x=-0.28   └──────────────────────────────────────────────────────┘
 ```
 
 #### 布局**不变**、只改规则的环境
@@ -942,6 +941,22 @@ for i in 0..3:
 
 （实施完成后在此追加，原计划不改写。）
 
+### 3.5 规划期探针（决策全部答复后、实施前，2026-09-24 用户「还有什么需要探针 先做了！探针用worktree做」「不得修改代码本身」）
+
+在独立 git worktree 里跑，**只用进程内补丁与离线副本，不改任何被跟踪的代码文件**；产物落 `artifacts/newtask-v5/plan-probes-r2/<主题>/`
+（本机留档、不进 Git），每个主题出一份中文 `REPORT.md`。目的是把第二节里「按最终决策尚未验证」的数字补上，结果写回本节，实施前不再有未验证的口径。
+
+| # | 主题 | 要回答什么 | 判据 / 产出 |
+|---|---|---|---|
+| P1 | PickXtimes 区域半宽（L46） | 均匀 + 8 cm + 精确 OBB + 1024 次下，半宽 0.2 与 0.25 各自的 reset 成功率与本机演示成功率（各 ≥ 8 局，num 取上限 15 附近） | 两组成功率对比，交用户定 L46 |
+| P2 | MoveCube 桌面中心圆禁区（L30 新口径） | R = 0.05、按中心判：离线 MC ≥ 2000 局的生成成功率、每局重抽次数、耗尽概率；本机演示 ≥ 8 局（三种 way 都要有）；顺带记 R = 0.04 / 0.06 的拒绝率作参考 | `MOVECUBE_R005=REPORT layout_fail=… mean_redraw=… demo_ok=k/n` |
+| P3 | PatternLock 5×5 节点 [24,25]（L35/L36） | 20000 次预算下 24 / 25 节点各自的命中率与搜索墙钟（≥ 200 次）；本机演示 ≥ 3 局，实测 `is_video_demo` 帧数 | `PL_2425=REPORT hit24=… hit25=… search_s_p95=… demo_s=[…]` |
+| P4 | VideoRepick 最终规则（L47～L50） | k%6 轮转 + 3 个最近可行 + 0.12 m + reset 规划：离线 ≥ 1500 局的摆放成功率、全员参与率、规划失败率、路径长度分布；本机演示 ≥ 4 局看 D5 与速度 | `VR_FINAL=REPORT place_ok=… plan_fail=… path_mean=… path_max=… demo_ok=k/n` |
+| P5 | Swap 两环境 V4 环带 10 个 + 外环交换（L16～L23） | 用最终规则（全体轮转、换下一个回退、离内环 0.04、BUS 离按钮 0.122、lane 0.07、预筛）重跑联合可行性 ≥ 300 布局/环境；进程内原型各跑 ≥ 2 局演示，记 reset 墙钟 | `SWAP10=REPORT VUS_first=… BUS_first=… reset_s=… demo_ok=k/n` |
+| P6 | InsertPeg 演示成功率（2.8 盲区） | 四根一个循环 + 0.03/0.01 轮廓间隔的原型，本机演示 ≥ 8 局 | `INSERTPEG_DEMO=REPORT ok=k/n by_cause=…` |
+
+结果：（跑完后在此追加）
+
 # 第二部分（技术细节，供 agent 追踪）
 
 ## 〇、前置声明与红线
@@ -969,7 +984,7 @@ N7～N10、N11 传入即可生成；N12 既有缺陷只在 xhard 修。V5 新增
 
 | 阶段 | 文件 / 锚点 | 拟改什么、为什么 | 关闭态 | 开启态（xhard） |
 |---|---|---|---|---|
-| S2 | `utils/object_generation.py::spawn_random_cube`、`spawn_random_target` | 按 L4 (b) 各加显式可选参数（`center_zone_half`、`min_center_dist`、`quadrant_of` 等，名字以实现为准）：在 OBB/圆判据之后、`recorder.value` 之前求值，为真即 continue；不抽随机数 | 每个参数 `None` 时不执行任何新增语句，各配一条逐位不变单测 | 各环境按需传入 |
+| S2 | `utils/object_generation.py::spawn_random_cube`、`spawn_random_target` | 按 L4 (b) 各加显式可选参数（`center_zone`、`min_center_dist` 等，名字以实现为准）：在 OBB/圆判据之后、`recorder.value` 之前求值，为真即 continue；不抽随机数 | 每个参数 `None` 时不执行任何新增语句，各配一条逐位不变单测 | 各环境按需传入 |
 | S2 | `utils/xhard.py` | 新增 `cube_obb2d_exact(pose, half) -> (c, A, h)`；`footprint_gap(rect_a, rect_b)`（有向矩形精确距离，重叠为 0）；`center_zone_half(area_ratio, half)`；`balanced_color_cycle(order, n)`；`max_same_color_component(xy, colors, link)`；各配单测 | 纯函数，不被原三档调用 | 被各环境 xhard 分支调用 |
 | S2 | `utils/bin_collision.py` | 新增 `check_multi_swap_sweep(pairs, bystanders)`：对每对自身、跨对的移动者两两、移动者对静止物，复用 `_prove_pair`；新增认证预筛（401 个 s 采样，并以 Lipschitz 界证明分离），只在新函数与显式开关的包装里使用 | `check_swap_sweep` 判定不变 | Swap 两环境与 VideoRepick 的规划期/运行时用 |
 | S2 | VideoRepick、SwingXtimes、PatternLock、RouteStick、StopCube、VUS、BUS 七个模块头部 | 仿 `VideoPlaceOrder.py` 加 `_RealSceneGenerationError` 别名；raise 与 except 两处按 `difficulty == "xhard"` 选类（L3） | 原三档仍是 TypeError（H2） | 抛真 `SceneGenerationError` |
@@ -980,8 +995,8 @@ N7～N10、N11 传入即可生成；N12 既有缺陷只在 xhard 修。V5 新增
 | S3c | `MoveCube.py::config_xhard`、`_native_decision`、`_load_scene`（杆抖动、goal、`_sample_cube_center`、`cube_2` 生成）、`_xhard_corner_bias`（或新的校验器） | 按 2.9 的伪码；删掉 `corner_bias` 键与 MoveCube 内全部消费点（L33）；桌面中心 R=0.05 圆 `center_exclusion`，按物体中心判；执行段 `include_existing=False` | 原三档 27 次抽样的路径不变（原三档本来就不传 corner_bias） | 2.9 |
 | S3d | `InsertPeg.py::config_xhard`、`_initialize_episode`，新增 `_xhard_sample_pegs`，删除 `_xhard_place_near_target_peg` | 按 2.8 的伪码；新记录与回放守卫 | 原生循环逐字不动 | 2.8 |
 | S3e | `BinFill.py::_load_scene`（xhard clutter 分支）、`_resolve_sampling_config`，新增 `decision.configs.xhard.color_mix` 与 `cube_obstacle_obb` | 槽位 → 配色 → `spawn_random_cube(fixed_xy, fixed_yaw)` 建 actor；配色重排只在末尾追加 `randperm(12)` | `native_dynamic` 分支不动 | 2.12 |
-| S3f | `PickXtimes.py::XHARD_DECISION`、`_spawn_scene_objects_xhard`、`_spawn_distractors_xhard`；`SwingXtimes.py::XHARD_DECISION`、`_load_scene` 有色方块循环、`_spawn_distractors_xhard` | 象限与 8 cm 规则经 `extra_reject`；放下的方块用 `cube_obb2d_exact` 作障碍；`max_trials` 1024（Pick）；新记录 `layout.cube_dispersion`、`layout.cube_min_center_dist` | `_spawn_scene_objects_native` 不动；Swing 共用循环的非 xhard 一支逐字保留 | 2.13 / 2.14 |
-| S3g | `VideoRepick.py::config_xhard`、`_native_decision`、`_load_cubes_xhard`，新增 `_plan_swaps_xhard`，`step`（`if pair_idx2 is None` 内的 xhard 分支，并用 getattr 取默认值） | 按 2.15 的伪码；新规格路径 `objects.swap_partner_u`、reset 时写入的 `actions.swap_pairs.<k>`；`swap_initiators_remaining` 变为长度 5 | `NATIVE_SAMPLING` 与 JSON 全等守卫都不动 | 2.15 |
+| S3f | `PickXtimes.py::XHARD_DECISION`、`_spawn_scene_objects_xhard`、`_spawn_distractors_xhard`；`SwingXtimes.py::XHARD_DECISION`、`_load_scene` 有色方块循环、`_spawn_distractors_xhard` | PickXtimes 删 `corner_bias` 键与传参（L43）；8 cm 规则经显式参数（L4 b）；放下的方块用 `cube_obb2d_exact` 作障碍；`max_trials` 1024（Pick）；新记录 `layout.cube_min_center_dist`；区域半宽按 L46 探针结果 | `_spawn_scene_objects_native` 不动；Swing 共用循环的非 xhard 一支逐字保留 | 2.13 / 2.14 |
+| S3g | `VideoRepick.py::config_xhard`、`_native_decision`、`_load_cubes_xhard`，新增 `_plan_swaps_xhard`，`step`（`if pair_idx2 is None` 内的 xhard 分支，并用 getattr 取默认值） | 按 2.15 的表（k%6 轮转发起、3 个最近可行里选、reset 规划）；新规格路径 `objects.swap_partner_u`、reset 时写入的 `actions.swap_pairs.<k>`；`swap_initiators_remaining` 变为长度 5 | `NATIVE_SAMPLING` 与 JSON 全等守卫都不动 | 2.15 |
 | S3h | `unmask_swap_xhard.py`（统一采样器、`plan_distractor_swaps`、带序号命名、`cube_bins`）；`VideoUnmaskSwap.py` / `ButtonUnmaskSwap.py::_spawn_xhard_distractors`、`_check_swap_sweep_from_actual`、`step`（锁定循环之外的两条新循环）、`_native_decision`；`ButtonUnmaskSwap._load_scene` 的截断修复 | 按 2.5 的伪码 | AST 锁绿；原三档不进 xhard 分支 | 2.6 / 2.7 |
 | S3i | `PickHighlight.py` / `VideoPlaceButton.py` / `VideoPlaceOrder.py` 的 `_load_scene` xhard 分支 | 方块障碍改用 `cube_obb2d_exact` 预制三元组（L2 b） | 原三档调用逐字不动 | 2.16 |
 | S4 | `scripts/configs/newtask-v5/sampling_config.json`（新建）；`scripts/README.md` 的 V5 节 | 一次性重导；消费审计；不再生成 `combos.json` | V4 的配置目录原样留着不引用 | — |
@@ -1053,7 +1068,7 @@ tmux new-session -d -s v5-gen \
 | 10 | PatternLock 不改布局时演示上限约 27.4 s，到不了 30 s；25 节点依赖 20000 次搜索预算，reset 墙钟增加未实测 | 用户已接受「尽可能长」；S1 实测搜索耗时并记录 |
 | 11 | VideoRepick 规划路径更长，窗口固定 50 步，方块移动速度快到约 1.5 倍 | k = 2 而不是「任一可行」；可选路径上限 0.25 m；冻结前人工看片 |
 | 12 | 画面与机型：所有模拟器证据来自本机 sm_89，且负载时高时低（load 35～600），墙钟数字只作参考 | 沿用 K4/K5；时间类指标一律只报告、不设闸 |
-| 13 | PickXtimes 的位置捷径：候选块在角、干扰块在中间 | 列为用户可另行决策的事项；V5 不默认处理 |
+| 13 | VideoRepick 3 个最近可行里选搭档，路径比 k=2 更长，50 步窗口内方块速度可能超过 1.5 倍 | 用户已接受；冻结前人工看片，报告里记每局最长交换路径 |
 | 14 | V4 推理与 V4 规格在 V5 代码上不可回放 | N15：V4 作废，接受不可回放；产物留在 Git 不删 |
 | 15 | 只跑一遍、不做 V2，可重放性（同规格两次一致）在 V5 无证据；多 worker 下 mplib RRT 墙钟预算会让同一规格搜出不同路径（V3/V4 已证实） | 用户决定接受（口径 12）；报告里注明 v5-01 的 h5 是单次产物 |
 
