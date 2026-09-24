@@ -27,7 +27,7 @@ from mani_skill.utils.geometry.rotation_conversions import (
 from .utils import *
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.subgoal_evaluate_func import static_check
-from .utils.episode_spec import SpecRecorder
+from .utils.episode_spec import EpisodeSpecError, SpecRecorder
 from .utils.sampling_config import SamplingConfigError, assert_native_decision, split_sampling_config
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils import subgoal_language
@@ -96,6 +96,76 @@ NATIVE_SAMPLING = {
 }
 
 
+# ── V5 xhard：杆与孔板的桌面轮廓几何（计划 2.8 / L24～L26）──────────────────────────
+# 几何按实际建模核实（utils/object_generation.py）：
+#   * build_peg：根链接 = 杆头，位姿 p 即采样的 xy（下称 root），杆轴 u = (cos yaw, sin yaw)；
+#     杆尾链接在 root − length·u。两段视觉盒半尺寸各为 (length/2, radius)，合起来整根杆轮廓是
+#     中心 root − (length/2)·u、半尺寸 (length, radius) 的有向矩形（length=0.05, radius=0.01 时即
+#     中心 root − 0.025u、半尺寸 (0.05, 0.01)，杆身从 root − 0.075u 到 root + 0.025u）。
+#     两段碰撞盒半长 0.9·length/2，被视觉轮廓完全包住，按视觉轮廓量更保守。
+#   * build_box_with_hole：四块板局部 x 半长 = depth（这里传的是 length），局部 y 外沿 = outer_radius
+#     （= radius·outer_radius_factor）⇒ 孔板轮廓半尺寸 (length, radius·4) = (0.05, 0.04)，朝向 box_yaw。
+def _rect_corners(center, yaw, half):
+    """有向矩形 (中心, 朝向, 半尺寸) → 4 个顶点（逆时针），float64。"""
+    c = np.asarray(center, dtype=np.float64).reshape(2)
+    u = np.array([np.cos(yaw), np.sin(yaw)], dtype=np.float64)
+    v = np.array([-u[1], u[0]], dtype=np.float64)
+    a = u * float(half[0])
+    b = v * float(half[1])
+    return np.stack([c + a + b, c - a + b, c - a - b, c + a - b])
+
+
+def _point_segment_distance(p, a, b):
+    ab = b - a
+    denom = float(np.dot(ab, ab))
+    t = 0.0 if denom <= 0.0 else min(1.0, max(0.0, float(np.dot(p - a, ab)) / denom))
+    return float(np.linalg.norm(p - (a + t * ab)))
+
+
+def _rects_overlap(ca, cb):
+    """分离轴定理：两矩形（含边界接触）有公共点即返回 True。"""
+    for corners in (ca, cb):
+        for k in range(2):
+            edge = corners[k + 1] - corners[k]
+            axis = np.array([-edge[1], edge[0]], dtype=np.float64)
+            pa = ca @ axis
+            pb = cb @ axis
+            if pa.max() < pb.min() or pb.max() < pa.min():
+                return False
+    return True
+
+
+def footprint_gap(rect_a, rect_b):
+    """两个有向矩形轮廓的精确最小距离（米）。
+
+    ``rect = (center_xy, yaw, half_xy)``。SAT 判为相交（含接触）时返回 0；否则两矩形不相交，
+    最小距离必在某个顶点到对方某条边之间取到，取 4×4×2 = 32 个「顶点到边」距离的最小值。
+    ⚠ 调用方的判据必须用严格不等号（``gap > g``）：相交时恒为 0，写成 ``≥ 0`` 等于没有约束。
+    """
+    ca = _rect_corners(*rect_a)
+    cb = _rect_corners(*rect_b)
+    if _rects_overlap(ca, cb):
+        return 0.0
+    best = float("inf")
+    for src, dst in ((ca, cb), (cb, ca)):
+        for p in src:
+            for j in range(4):
+                best = min(best, _point_segment_distance(p, dst[j], dst[(j + 1) % 4]))
+    return best
+
+
+def peg_footprint(root_xy, yaw, length, radius):
+    """整根杆的桌面轮廓：中心 root − (length/2)·u，半尺寸 (length, radius)。"""
+    root = np.asarray(root_xy, dtype=np.float64).reshape(2)
+    u = np.array([np.cos(yaw), np.sin(yaw)], dtype=np.float64)
+    return (root - 0.5 * float(length) * u, float(yaw), (float(length), float(radius)))
+
+
+def box_footprint(box_xy, box_yaw, depth, outer_radius):
+    """孔板的桌面轮廓：中心 box_xy，半尺寸 (depth, outer_radius)，朝向 box_yaw。"""
+    return (np.asarray(box_xy, dtype=np.float64).reshape(2), float(box_yaw), (float(depth), float(outer_radius)))
+
+
 def native_blocks(cls):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
     return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
@@ -106,6 +176,8 @@ def _native_decision(cls):
 
     V4（计划 2.18）：xhard 新值整体挂在顶层 ``xhard`` 子键下（守卫只放行这些键偏离），
     默认值取自 ``cls.configs["xhard"]``；原三档可见的四个键与 V3 逐字相同。
+    V5（计划 2.8）：``xhard`` 子键去掉 ``near_target_distractor``，新增 ``peg_min_pair_gap_m`` /
+    ``peg_box_min_gap_m`` / ``peg_x_max_m``；顶层原三档可见部分不动。
     """
     return {
         # 场上杆的总数：原值 3 根（offsets 决定构造期的排布）。
@@ -115,7 +187,7 @@ def _native_decision(cls):
         "near_target_distractor": None,
         # 杆在桌面内的转角范围：原值 ±45°（表达式 (u*2-1)*radians(45)）。
         "peg_yaw_range": {"half_span_deg": 45},
-        # V4 xhard：4 根杆、第 4 根贴近目标杆、±180°（A1/B6/B11）
+        # xhard：4 根杆、±180°（V4 A1/B11）；V5 四根同一采样器 + 轮廓间隔（计划 2.8）
         "xhard": copy.deepcopy(cls.configs["xhard"]),
     }
 
@@ -159,13 +231,14 @@ class InsertPeg(BaseEnv):
         # peg_count 同步为 4：会改变 _load_scene 里那次 randint 的取值域（结果仍被 overridden_to=0 覆盖）
         "peg_count": 4,
         "peg_offsets": [0.1, 0, -0.1, -0.2],
-        # B6：杆间判据（> length*1.5 = 0.075 m）不动；最后一根杆改为在目标杆周围的距离带里采样，
-        # 带宽上限是实施方取值（尽量贴近下限），可经 sampling_config 覆盖
-        "near_target_distractor": {
-            "anchor_peg_index": 0,
-            "max_center_distance_m": 0.085,
-        },
         "peg_yaw_range": {"half_span_deg": 180},
+        # V5（计划 2.8）：删除 V4 的 near_target_distractor（L28）；4 根杆由 _xhard_sample_pegs 一个循环抽，
+        # 原生两条杆根判据（离孔板中心 > radius*6、杆根两两 > length*1.5）保留，另加两条轮廓间隔：
+        # 任意两杆轮廓 > peg_min_pair_gap_m（L24，严格不等号），杆轮廓与孔板轮廓 > peg_box_min_gap_m（L26）。
+        "peg_min_pair_gap_m": 0.03,
+        "peg_box_min_gap_m": 0.01,
+        # L52：杆区 x 上界由原生的 x_offset + x_span = 0.2 收到 0.1（下界 −0.2 与 y 范围不动）
+        "peg_x_max_m": 0.1,
     }
     configs = {
         "easy": config_native,
@@ -281,7 +354,7 @@ class InsertPeg(BaseEnv):
 
         decision_cfg = self._sampling["decision"]
         if self.difficulty == "xhard":
-            # V4：xhard 的 peg_count / peg_offsets / near_target_distractor / peg_yaw_range 全部改读 xhard 子键
+            # V4：xhard 的 peg_count / peg_offsets / peg_yaw_range 全部改读 xhard 子键（V5 起另有两条间隔与 x 上界，只在 _xhard_sample_pegs 里读）
             decision_cfg = decision_cfg["xhard"]
         native_pos = self._sampling["positions"]
         offsets = list(decision_cfg["peg_offsets"])  # X-axis differences for the 3 pegs
@@ -382,8 +455,9 @@ class InsertPeg(BaseEnv):
             if xhard:
                 xhard_cfg = self._sampling["decision"]["xhard"]
                 yaw_half_span_deg = xhard_cfg["peg_yaw_range"]["half_span_deg"]
-                # 最后一根杆（近目标干扰杆）排到全部既有取值点之后单独采样（N5）
-                uniform_pegs = self.pegs[:-1]
+                # V5（计划 2.8 / L27a）：4 根杆全部交给 _xhard_sample_pegs 一个循环抽（紧接在下面这个原生
+                # 循环之后、obj/dir 之前），原生循环在 xhard 下一根都不跑；循环体逐字保留不动。
+                uniform_pegs = []
                 yaw_dk = "xhard.peg_yaw_range"
             else:
                 yaw_half_span_deg = self._sampling["decision"]["peg_yaw_range"]["half_span_deg"]
@@ -431,7 +505,8 @@ class InsertPeg(BaseEnv):
                 peg.set_pose(pose)
                 sampled_xy_positions.append(candidate_xy)
 
-
+            if xhard:
+                self._xhard_sample_pegs(box_xy, box_yaw, xhard_cfg)
 
             # Store initial poses for all pegs
             self.peg_init_poses = []
@@ -464,8 +539,7 @@ class InsertPeg(BaseEnv):
             self.direction = -1 if dir_sample == 0 else 1
 
             if xhard:
-                # V4 xhard：第 4 根杆贴近目标杆（排在全部既有取值点之后，N5）
-                self._xhard_place_near_target_peg(box_xy, sampled_xy_positions, xhard_cfg)
+                # V5：V4 的「第 4 根杆贴近目标杆」已删除（L28），这里只重置抓取翻转记录（B11）
                 self._peg_grasp_flipped = False
                 self._peg_grasp_flip_log = []
             
@@ -596,70 +670,90 @@ class InsertPeg(BaseEnv):
             # Store task list for RecordWrapper use
             self.task_list = tasks
 
-    def _xhard_place_near_target_peg(self, box_xy, sampled_xy_positions, xhard_cfg):
-        """V4 xhard（计划 2.18 / B6）：最后一根杆在锚点杆（目标杆 peg_0）周围的距离带里采样。
+    def _xhard_sample_pegs(self, box_xy, box_yaw, xhard_cfg):
+        """V5 xhard（计划 2.8 / L24～L29 / L52）：4 根杆一个循环、同一套规则抽位姿。
 
-        判据与原三档完全相同（离孔板 > radius*6、与任何已放杆 > length*1.5、落在原杆位区域内），
-        只把候选分布从「全区域均匀」换成「以锚点为圆心、半径 ∈ (length*1.5, max_center_distance_m]、
-        方位角均匀」⇒ 在现判据允许的范围内尽量贴近 0.075 m 下限。尝试上限沿用 max_attempts，
-        耗尽抛 SceneGenerationError（不静默少放）。抽样顺序：每次尝试 半径 u、方位 u 各一次，
-        接受后 yaw 一次。
+        每根杆最多 ``max_attempts``（512）次尝试，每次：
+          1. 按原生取法抽 x、y 各一次 rand（x 上界收到 ``peg_x_max_m``，L52；y 与原生相同）；
+          2. 原生两条杆根判据（离孔板中心 ≤ radius*6 或离任一已放杆根 ≤ length*1.5 → 重抽，L25 保留）；
+          3. 通过后才抽 yaw（lazy，±half_span_deg）；
+          4. 杆轮廓与孔板轮廓 ``footprint_gap ≤ peg_box_min_gap_m`` → 重抽（L26）；
+          5. 与任一已放杆 ``footprint_gap ≤ peg_min_pair_gap_m`` → 重抽（L24，严格不等号）。
+        耗尽即抛 ``SceneGenerationError``（任务性失败，可换 seed）。只在被接受的那次调用 ``_spec.value``，
+        尝试次数与实测最小间隔用 ``record`` 留痕（N18）；回放冻结规格时对冻结值复核两种间隔，
+        不合格抛 ``EpisodeSpecError``（N17 / L29）。目标恒为 peg_0（只是第一个被抽的）。
         """
         peg_sampling = self._sampling["positions"]["peg_sampling"]
-        near_cfg = xhard_cfg["near_target_distractor"]
-        idx = len(self.pegs) - 1
-        anchor_idx = int(near_cfg["anchor_peg_index"])
-        anchor_xy = np.asarray(sampled_xy_positions[anchor_idx], dtype=np.float32)
-        d_min = self.length * peg_sampling["min_distance_between_pegs_factor"]
-        d_max = float(near_cfg["max_center_distance_m"])
-        if not d_max > d_min:
-            raise SamplingConfigError(
-                f"InsertPeg xhard：max_center_distance_m={d_max} 必须大于杆间下限 {d_min}")
-        x_lo, x_hi = peg_sampling["x_offset"], peg_sampling["x_offset"] + peg_sampling["x_span"]
-        y_lo, y_hi = peg_sampling["y_offset"], peg_sampling["y_offset"] + peg_sampling["y_span"]
         max_attempts = peg_sampling["max_attempts"]
-        candidate_xy = None
-        attempts = 0
-        for attempts in range(1, max_attempts + 1):
-            radius = d_min + torch.rand(1, generator=self._hb_generator).item() * (d_max - d_min)
-            theta = torch.rand(1, generator=self._hb_generator).item() * 2 * np.pi
-            sampled_xy = anchor_xy + np.array([radius * np.cos(theta), radius * np.sin(theta)], dtype=np.float32)
-            if not (x_lo <= sampled_xy[0] <= x_hi and y_lo <= sampled_xy[1] <= y_hi):
-                continue
-            if np.linalg.norm(sampled_xy - box_xy) <= self.radius * peg_sampling["min_distance_to_box_factor"]:
-                continue
-            if any(np.linalg.norm(sampled_xy - prev_xy) <= d_min for prev_xy in sampled_xy_positions):
-                continue
-            candidate_xy = sampled_xy
-            break
+        x_lo = peg_sampling["x_offset"]
+        x_span = float(xhard_cfg["peg_x_max_m"]) - x_lo
+        if not x_span > 0:
+            raise SamplingConfigError(f"InsertPeg xhard：peg_x_max_m 必须大于 x 下界 {x_lo}")
+        yaw_half = np.radians(xhard_cfg["peg_yaw_range"]["half_span_deg"])
+        pair_gap = float(xhard_cfg["peg_min_pair_gap_m"])
+        box_gap = float(xhard_cfg["peg_box_min_gap_m"])
+        box_to_root = self.radius * peg_sampling["min_distance_to_box_factor"]
+        root_to_root = self.length * peg_sampling["min_distance_between_pegs_factor"]
+        box_cfg = self._sampling["positions"]["box"]
+        box_fp = box_footprint(box_xy, box_yaw, self.length, self.radius * box_cfg["outer_radius_factor"])
         prefix = f"initializations.{self._native_init_index}"
-        placed = len(sampled_xy_positions) + (1 if candidate_xy is not None else 0)
-        self._spec.record(f"{prefix}.peg_placement", {"requested": len(self.pegs), "placed": placed})
-        if candidate_xy is None:
-            raise SceneGenerationError(
-                f"InsertPeg xhard：近目标干扰杆 peg_{idx} 在 {max_attempts} 次内找不到满足判据的位置")
-        yaw_value = (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * np.radians(
-            xhard_cfg["peg_yaw_range"]["half_span_deg"])
-        candidate_xy_list, yaw_value = self._spec.value(
-            f"{prefix}.pegs.{idx}",
-            [[float(candidate_xy[0]), float(candidate_xy[1])], yaw_value],
-            decision_key="xhard.near_target_distractor",
-        )
-        candidate_xy = np.array(candidate_xy_list, dtype=np.float32)
-        self._spec.record(f"{prefix}.near_target_distance",
-                          float(np.linalg.norm(candidate_xy - anchor_xy)))
-        self._spec.record(f"{prefix}.near_target_attempts", attempts)
-        yaw_angles = torch.tensor([[0.0, 0.0, yaw_value]], dtype=torch.float32)
-        yaw_quat = matrix_to_quaternion(euler_angles_to_matrix(yaw_angles, convention="XYZ"))[0].detach().cpu().numpy().tolist()
-        peg = self.pegs[idx]
-        peg.set_pose(sapien.Pose(p=[float(candidate_xy[0]), float(candidate_xy[1]), 0.0], q=yaw_quat))
-        sampled_xy_positions.append(candidate_xy)
-        # peg_init_poses 在前面已按全部杆存过一次（此时新杆还在构造期位姿），这里按下标覆盖成真实初始位姿
-        # （step 的复位循环按下标读）
-        pose = peg.pose
-        self.peg_init_poses[idx] = (sapien.Pose(
-            p=np.asarray(pose.p, dtype=np.float32).reshape(-1).copy(),
-            q=np.asarray(pose.q, dtype=np.float32).reshape(-1).copy()))
+
+        placed_xy = []
+        placed_fp = []
+        attempts_log = []
+        for i, peg in enumerate(self.pegs):
+            accepted = None
+            attempts = 0
+            for attempts in range(1, max_attempts + 1):
+                x_sample = (torch.rand(1, generator=self._hb_generator).item() * x_span) + x_lo
+                y_sample = (torch.rand(1, generator=self._hb_generator).item() * peg_sampling["y_span"]) + peg_sampling["y_offset"]
+                sampled_xy = np.array([x_sample, y_sample], dtype=np.float32)
+                if np.linalg.norm(sampled_xy - box_xy) <= box_to_root:
+                    continue
+                if any(np.linalg.norm(sampled_xy - prev_xy) <= root_to_root for prev_xy in placed_xy):
+                    continue
+                yaw_try = (torch.rand(1, generator=self._hb_generator).item() * 2 - 1) * yaw_half
+                fp = peg_footprint(sampled_xy, yaw_try, self.length, self.radius)
+                if footprint_gap(fp, box_fp) <= box_gap:
+                    continue
+                if any(footprint_gap(fp, prev_fp) <= pair_gap for prev_fp in placed_fp):
+                    continue
+                accepted = (sampled_xy, yaw_try)
+                break
+            if accepted is None:
+                raise SceneGenerationError(
+                    f"InsertPeg xhard：peg_{i} 在 {max_attempts} 次内找不到满足判据（杆根 + 轮廓间隔）的位置")
+            attempts_log.append(attempts)
+            candidate_xy, yaw_value = accepted
+            # 拒绝采样的失败尝试照常发生；这里冻结被接受的位姿
+            candidate_xy_list, yaw_value = self._spec.value(
+                f"{prefix}.pegs.{i}",
+                [[float(candidate_xy[0]), float(candidate_xy[1])], yaw_value],
+                decision_key="xhard.peg_yaw_range",
+            )
+            candidate_xy = np.array(candidate_xy_list, dtype=np.float32)
+            fp = peg_footprint(candidate_xy, yaw_value, self.length, self.radius)
+            # N17：回放时这里是冻结值，必须重查两种间隔（导出时恒成立，复查不抽随机数）
+            gap_box = footprint_gap(fp, box_fp)
+            if not gap_box > box_gap:
+                raise EpisodeSpecError(
+                    f"InsertPeg xhard：peg_{i} 与孔板轮廓间隔 {gap_box:.4f} m 不大于 {box_gap} m（冻结规格违反 V5 规则）")
+            for j, prev_fp in enumerate(placed_fp):
+                gap_pair = footprint_gap(fp, prev_fp)
+                if not gap_pair > pair_gap:
+                    raise EpisodeSpecError(
+                        f"InsertPeg xhard：peg_{i} 与 peg_{j} 轮廓间隔 {gap_pair:.4f} m 不大于 {pair_gap} m（冻结规格违反 V5 规则）")
+            yaw_angles = torch.tensor([[0.0, 0.0, yaw_value]], dtype=torch.float32)
+            yaw_quat = matrix_to_quaternion(euler_angles_to_matrix(yaw_angles, convention="XYZ"))[0].detach().cpu().numpy().tolist()
+            peg.set_pose(sapien.Pose(p=[float(candidate_xy[0]), float(candidate_xy[1]), 0.0], q=yaw_quat))
+            placed_xy.append(candidate_xy)
+            placed_fp.append(fp)
+
+        self._spec.record(f"{prefix}.peg_attempts", attempts_log)
+        self._spec.record(f"{prefix}.min_pair_gap_m", min((
+            footprint_gap(placed_fp[a], placed_fp[b])
+            for a in range(len(placed_fp)) for b in range(a + 1, len(placed_fp))), default=None))
+        self._spec.record(f"{prefix}.min_box_gap_m", min((footprint_gap(item, box_fp) for item in placed_fp), default=None))
 
     def evaluate(self,solve_complete_eval=False):
         timestep = self.elapsed_steps

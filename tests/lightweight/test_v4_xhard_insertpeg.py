@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """轻量测试：V4 InsertPeg 的 xhard 档（计划 2.16 / 2.18），纯 CPU、不起 sapien 场景。
 
-* A6：``configs`` 三档同值且等于原全局常量，xhard 为 4 根杆 / ±180° / 近目标干扰杆；
+* A6：``configs`` 三档同值且等于原全局常量，xhard 为 4 根杆 / ±180°（V5 起近目标干扰杆已删除，
+  改为四根同一采样器 + 轮廓间隔，专项断言见 ``test_v5_xhard_insertpeg.py``）；
 * ``_native_decision`` 去掉 ``xhard`` 子键后与 V3 原值逐字相同，守卫放行 xhard 取新值、拒绝原值偏离；
 * B11 等价朝向归约：判据在原三档（±45°）范围内从不翻转；翻转后 ``insert_peg`` 的**世界系**
   路点与杆位姿对 ``obj × direction`` 四种组合逐一与未归约时一致（且不补偿时会明显不一致，
@@ -59,10 +60,9 @@ def test_configs_three_tiers_identical_to_native() -> None:
     x = CLS.configs["xhard"]
     assert x["peg_count"] == 4 and len(x["peg_offsets"]) == 4
     assert x["peg_yaw_range"] == {"half_span_deg": 180}
-    near = x["near_target_distractor"]
-    assert near["anchor_peg_index"] == 0
-    # 带宽上限必须严格大于杆间下限 length*1.5 = 0.075（B6 判据不动）
-    assert near["max_center_distance_m"] > 0.05 * 1.5
+    # V5（计划 2.8 / L28）：V4 的近目标干扰杆整键删除，换成两条轮廓间隔与 x 上界
+    assert "near_target_distractor" not in x
+    assert x["peg_min_pair_gap_m"] == 0.03 and x["peg_box_min_gap_m"] == 0.01 and x["peg_x_max_m"] == 0.1
 
 
 def test_decision_visible_part_unchanged_and_guard() -> None:
@@ -72,7 +72,7 @@ def test_decision_visible_part_unchanged_and_guard() -> None:
     assert decision["xhard"] == CLS.configs["xhard"]
     # 守卫：xhard 子键取新值放行
     narrowed = copy.deepcopy(decision)
-    narrowed["xhard"]["near_target_distractor"]["max_center_distance_m"] = 0.08
+    narrowed["xhard"]["peg_min_pair_gap_m"] = 0.035
     assert_native_decision(narrowed, decision, "InsertPeg")
     # 守卫：原值部分偏离拒绝
     bad = copy.deepcopy(decision)
