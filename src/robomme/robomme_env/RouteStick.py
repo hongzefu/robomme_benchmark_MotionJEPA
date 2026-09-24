@@ -40,6 +40,7 @@ from .utils.route import *
 from .utils.subgoal_planner_func import *
 from .utils.difficulty import normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
+from .utils.episode_spec import EpisodeSpecError as _EpisodeSpecError
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 
 from ..logging_utils import logger
@@ -163,6 +164,9 @@ def _native_decision(cls):
     return {
         "demo_duration_seconds_range": None,
         "demonstration_duration_policy": "native",
+        # V5 xhard 专属（计划 2.11，L37/L38）：段数 L 的范围冻进 decision 与规格 header，回放时从 header 读，
+        # 不再从类属性读。键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
+        "xhard": {"segment_count_range": list(cls.config_xhard["length"])},
     }
 
 
@@ -217,10 +221,13 @@ class RouteStick(BaseEnv):
     'length':[4,7],
     'backtrack':True,
     }
-    # V4 xhard（派生自 hard，B9；A7 作废 2026-09-11 的旧值 [8,10]）：布局不动，段数提到 12～15，
-    # 演示 L×50 帧 ⇒ 600～750 帧 ⇒ 20～25 s @30fps；L>约 22 会被评估上限截断，故不取更长。
+    # V4 xhard（派生自 hard，B9；A7 作废 2026-09-11 的旧值 [8,10]）：布局不动，段数 12～15。
+    # V5（计划 2.11，L37）：段数 L 改为 [15,21]。演示每段恰好 50 帧 ⇒ 750～1050 帧 ⇒ 25～35 s @30fps，
+    # 均匀抽样均值 30 s；执行段 50·L（+1 初始帧），L=21 时 1050 步，在评估 1301 步预算内（截断点 L≥27）。
+    # 抽样点与顺序不变，只改值域；xhard 实际消费的是 decision.xhard.segment_count_range（冻进 header），
+    # 这里的 length 是它的默认来源。
     config_xhard = {
-    'length':[12,15],
+    'length':[15,21],
     'backtrack':True,
     }
 
@@ -506,18 +513,30 @@ class RouteStick(BaseEnv):
         fallback_difficulty = self._sampling["parameters"]["configs_fallback_difficulty"]
         cfg = sampling_configs.get(getattr(self, "difficulty", "easy"), sampling_configs[fallback_difficulty])
         length_min, length_max = cfg.get("length")
+        length_decision_key = f"configs.{getattr(self, 'difficulty', 'easy')}.length"
+        if self.difficulty == "xhard":
+            # V5（计划 2.11 / L38）：xhard 的段数范围从 decision（规格 header 冻结的那份）读
+            length_min, length_max = self._xhard_segment_count_range()
+            length_decision_key = "xhard.segment_count_range"
         allow_backtracking = bool(cfg.get("backtrack", True))
         if spec is None:
             steps = self._spec.value(
                 "objects.L",
                 int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item()),
-                decision_key=f"configs.{getattr(self, 'difficulty', 'easy')}.length",
+                decision_key=length_decision_key,
             )
             # 游走函数内部的抽样照常发生；这里只冻结最终节点序列
             traj = self._spec.value(
                 "actions.nodes",
                 list(generate_dynamic_walk(button_indices, steps=steps, allow_backtracking=allow_backtracking, generator=generator, walk_config=walk_cfg)),
             )
+            if self.difficulty == "xhard":
+                # V5（N17 精神）：回放冻结规格时 value() 直接返回冻结值、不复核，这里复核段数与节点数
+                if not length_min <= int(steps) <= length_max or len(traj) != int(steps) + 1:
+                    raise _EpisodeSpecError(
+                        f"RouteStick xhard: 段数 {steps} / 节点数 {len(traj)} 与 "
+                        f"segment_count_range [{length_min}, {length_max}] 不符（应为 L 在范围内、节点数 L+1）"
+                    )
         else:
             # 规格定死路线：先按 generate_dynamic_walk 的线性邻接语义校验拓扑，
             # 再直接使用给定路线，不再抽随机数。
@@ -652,6 +671,24 @@ class RouteStick(BaseEnv):
         self.task_list = tasks
 
 
+
+    def _xhard_segment_count_range(self):
+        """V5（计划 2.11 / L38）：xhard 的段数 L 范围，取自 ``decision.xhard.segment_count_range``。
+
+        抽签时它等于 ``config_xhard.length`` 的默认值；回放时 sampling_config 来自规格 header，
+        因此读到的是冻结值。缺键说明传入的是 V4 或更早的快照（V4 header 没冻结 L 范围），
+        V4 已作废（口径 13），直接报错而不是回退到类属性。
+        """
+        xhard_cfg = self._sampling["decision"].get("xhard")
+        value = xhard_cfg.get("segment_count_range") if isinstance(xhard_cfg, dict) else None
+        if (not isinstance(value, (list, tuple)) or len(value) != 2
+                or any(isinstance(v, bool) or not isinstance(v, int) for v in value)
+                or not 1 <= value[0] <= value[1]):
+            raise ValueError(
+                "RouteStick xhard: sampling_config.decision.xhard.segment_count_range 缺失或不是 "
+                f"[下界, 上界] 正整数对（收到 {value!r}；V4 及更早的快照在 V5 代码上不可用）"
+            )
+        return int(value[0]), int(value[1])
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         with torch.device(self.device):
