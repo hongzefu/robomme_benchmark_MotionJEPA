@@ -944,6 +944,26 @@ for i in 0..3:
 
 （实施完成后在此追加，原计划不改写。）
 
+**2026-09-24 一夜实施（12.117～12.133，分支 `newtaskRelease-v5`）**。用户原话「开始实施 同意使用多agent并行做环境 但是不启动workflow」
+「开始跑了就一路做到底 用户在睡觉 尽可能完整呈现所有结论 等用户最后一轮统一决策」；起跑前两问答复：落新分支 newtaskRelease-v5、全在本机跑且 GL 结束后释放。
+总报告：[docs/validation/newtask-v5/20260924-v5-final-report.md](docs/validation/newtask-v5/20260924-v5-final-report.md)。
+
+| 闸门 / 报告 | 实测 |
+|---|---|
+| V0 | 每步零改动；新快照剥掉全部 xhard 键后 16 环境与 V4 快照逐字相同 |
+| LIGHTWEIGHT | 46 failed / 1347 passed / 12 errors，失败集合与 S0 基线 58 条逐条相同 |
+| SAMPLING_SNAPSHOT | `SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0` |
+| **V1** | `H5_PARITY pair=base.B\|v5.B compared=144 sha_equal=144 field_mismatch=0`（基线 `13e5151` vs V5 `17867d2`）⇒ `NATIVE_REGRESSION=PASS` |
+| FROZEN_FILES | 录像器未改；`scripts/*.py` 5 个 |
+| 生成报告 | `V5_GENERATION=REPORT tasks=16 draft_ok=160 rollout_ok=48 backfilled=2 selected_shortfall=0 demo_frames_out_of_band=0 outer_swap_mismatch=0 bin_collision=0 vr_min_participants=6` |
+
+- 抽签尝试（上限 30）：10 个环境 10 次；VUS 11、BUS 12、PickHighlight 12、VideoRepick 14、VideoPlaceButton 16、VideoPlaceOrder 23；失败全为 SceneGenerationError。
+- 实跑失败只在 InsertPeg（7 局成 3，递补 2）；其余 15 个环境 3/3 一次成功；52 局规格绑定 mismatch 0。
+- PatternLock 818/872/837 帧（27.3～29.1 s），RouteStick 1050/850/800 帧；Swap 两环境外环窗口数 = n_swaps 6/6；VideoRepick 3 局 6 块全参与。
+- 与计划不符或新发现（详见总报告第五节）：VideoRepick 按钮纳入障碍后规划失败 9.04% → 39.96%；PickHighlight / VideoPlaceOrder 修障碍框后 reset 成功率 97.0% → 87.0% / 59.3% → 48.3%；
+  InsertPeg 插入不到位仍是主失败；P5 的每步 290 ms 查实为传感器渲染管线周期性卡顿、与 V5 无关；外环来回撤销率 40% / 57% 高于估计。
+- 实施方自决项：内环容器与被藏 cube 也独立停放、VUS 静默截断同 L15 改抛错、MoveCube 杆线段取碰撞与可视外形并集、PatternLock 固定 25 节点。
+
 ### 3.5 规划期探针（决策全部答复后、实施前，2026-09-24 用户「还有什么需要探针 先做了！探针用worktree做」「不得修改代码本身」）
 
 在独立 git worktree 里跑，**只用进程内补丁与离线副本，不改任何被跟踪的代码文件**；产物落 `artifacts/newtask-v5/plan-probes-r2/<主题>/`
