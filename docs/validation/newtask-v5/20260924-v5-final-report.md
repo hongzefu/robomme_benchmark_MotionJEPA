@@ -109,9 +109,10 @@
 ## 六、产物与清理
 
 - 进 Git：代码与测试（12.117～12.13x）、`scripts/configs/newtask-v5/sampling_config.json`、`v5-01/specs.jsonl`、`v5-01/specs.selected.jsonl`、`docs/validation/newtask-v5/*.md`。
-- 本机留档（不进 Git）：
-  - `artifacts/newtask-v5/v5-01/`（抽签 drafts、实跑 h5 与视频 32 GB、生成报告 md/json）；
-  - `artifacts/newtask-v5/v1/base`、`v1/v5`（V1 两侧 144 条 h5）与 `v1/compare`；
-  - `/data/hongzefu/robomme_v5_wt/<组>/`：S2/S3 各组 worktree，内含各组本机演示 h5/视频约 57 GB（plrs 11G、phvp 15G、vrepick 7.8G、pickswing 6.2G、vubu 4.1G、swap 4.1G、movecube 3.0G、binfill 2.5G、insertpeg 1.6G 等），以及 v1base（13e5151）与 v1v5（17867d2）两个对拍工作树。worktree 的本地分支 `v5wt-*` 未推送。
-  - 是否删除上述 worktree 与演示大件，等用户决定。
+- 本机留档（不进 Git，2026-09-24 按用户「worktree … 和对拍两侧的 h5 以后都删除 只保留最终的产物16*3 h5 demo和j16*10sonl」清理后）：
+  - **最终产物**：`artifacts/newtask-v5/v5-01/rollout/run1/episodes/<环境>_episode_<n>/`，48 局正式局（16 环境 × 3），各含 `hdf5_files/*.h5` 与 `videos/*.mp4`，约 32 GB；
+    对应规格 `scripts/configs/newtask-v5/v5-01/specs.jsonl`（16 × 10 候选）与 `specs.selected.jsonl`（进 Git）。
+  - 小体积证据保留：`v5-01/rollout/run1/results.jsonl`、`summary.json`、`v5-01/draft/drafts.jsonl`、`v5-01/report/`、`v1/compare/`（144 对散列与判定）。
+  - **已删除**：`/data/hongzefu/robomme_v5_wt/` 下全部 worktree 与本地分支 `v5wt-*`（约 56 GB，含各组本机演示）；V1 两侧 h5 `v1/base`、`v1/v5` 及分担目录（约 98 GB）；
+    实跑中失败的 InsertPeg 4 局（episode 2/3/4/6）。
 - GL 占位 job 61776866 / 61776867：本轮未使用，已按用户答复 scancel 释放。
