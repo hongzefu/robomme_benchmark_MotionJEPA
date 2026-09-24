@@ -62,7 +62,7 @@
 | 9 | 演示时长目标 **25～35 s**，按录像器 30 fps 计，即 h5 中 `info/is_video_demo` 为真的帧数在 **750～1050** 之间；**但两环境都不改布局**，PatternLock 在 5×5 上的物理上限约 27.4 s，取「现布局下尽可能长」 | 原话「30s上下浮动5s」「patternlock和routestick不要改布局 尽可能长对齐」 |
 | 10 | VideoRepick **全部方块都能参与交换** | 原话「支持所有的cube都要swap」 |
 | 11 | **不再跑 V6 组合覆盖**，也不再跑任何「完整跑完的对拍」（V2 两遍重放、V3g 规格反例、V5e 推理链路、副本逐位对齐）。可生成性只由正式那一次生成的结果如实报告；某环境攒不够 10 条候选或 3 条正式局就如实记 shortfall 回报用户 | 用户 2026-09-24「其他完整跑完的对拍都放弃 都不用了」（L5 答复）|
-| 12 | **只做一次对拍、一次生成**：①对拍 = 原三档回归 V1，**16 任务 × 3 局与最原始基线逐位一致**；②生成 = **一次多 worker 运行**，每环境抽 10 条 reset 成功候选（尝试上限 30）+ 按 index 0/3/6 实跑 3 条正式局（演示失败在 10 条内递补，H4），落 h5 与视频（J9），**不跑第二遍**。不开 fail recover（I3）保留 | 用户 2026-09-24「我只需要做一次对拍 旧的16*3生成一致 之后就直接1次多worker生成10候选+3实际执行」 |
+| 12 | **只做一次对拍、一次生成**：①对拍 = 原三档回归 V1，**16 任务 × 9 局（easy/medium/hard 各 3 局，即 V3/V4 的 144 条子集）与最原始基线逐位一致**（用户 2026-09-24「改用16×9」）；②生成 = **一次多 worker 运行**，每环境抽 10 条 reset 成功候选（尝试上限 30）+ 按 index 0/3/6 实跑 3 条正式局（演示失败在 10 条内递补，H4），落 h5 与视频（J9），**不跑第二遍**。不开 fail recover（I3）保留 | 用户 2026-09-24「我只需要做一次对拍 旧的16*3生成一致 之后就直接1次多worker生成10候选+3实际执行」 |
 | 13 | **V4 作废**：不做版本门、不保证 V4 快照在 V5 代码上可回放、不用 v4-01 作对照；V4 已进 Git 的产物原样留着不删，V5 新产物一律落 `newtask-v5` 新目录 | 用户 2026-09-24「废弃v4 我只需要实现新生成的和最原始对拍」（L5 答复） |
 | 14 | **待决项不许自填**：1.4 的 L 项必须逐条问用户；实施中新发现的待决项追加进 1.4，同样先问。**例外**：取整、边界取舍这类不改变设计意图的细节由实施方自决并在报告里注明，不上报 | V4 N3；用户 2026-09-24「以后四舍五入这种问题都不要来找我 自己决定」 |
 
@@ -898,7 +898,7 @@ for i in 0..3:
 |---|---|---|---|
 | V0 | 静态 `git diff`：`config_easy/medium/hard`，以及原三档消费的 `NATIVE_SAMPLING` 键；另对剥掉 xhard 的 decision 跑 `assert_native_decision` | V5 的改动只许落在 `decision.xhard` 或 xhard 分支，这些块里出现任何 diff 都直接违反 H2/N12 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
 | LIGHTWEIGHT | `tests/lightweight/` 全量（≤5 分钟），失败集合与 S0 存档的基线相同；各环境「验收」行里的判定项在这里落成单测或单次 reset 检查（纯函数：`cube_obb2d_exact` 无退化、`footprint_gap` 严格、`check_multi_swap_sweep` 单对等价、Unmask 密度推导锁定；单次 reset：InsertPeg 间隔、MoveCube 中心区、VideoRepick 最小距、Unmask 环带内与可见） | 这些是几何保证的直接编码，一次 reset 就能量到，不需要跑完整局 | `LIGHTWEIGHT=PASS failure_set_equal_baseline=1` |
-| **V1（唯一的对拍）** | 原三档回归：**16 任务 × 3 局**（按「旧的 16×3」理解为 easy/medium/hard 各 1 局；若用户指其他口径以用户为准），本机、单 worker、相近负载，用**最原始基线**与 V5 代码各跑一遍，HDF5 逐位比（`compare_h5_pair`：先整文件 SHA-256，不同再逐路径比 dtype/shape/attribute/`tobytes()`，不设容差）。V4 的 V1 基线 h5 已在 12.95 清理，基线侧要重新生成 | 硬闸门（N4）。它同时覆盖 L4 (b) 加在共用函数上的每个新参数、SwingXtimes 共用循环的分支、AST 锁定循环之外的新代码：任何一处泄漏到原三档都会在这里逐位暴露 | `NATIVE_REGRESSION=PASS compared=48 sha_equal=48 field_mismatch=0` |
+| **V1（唯一的对拍）** | 原三档回归：**16 任务 × 9 局**（easy/medium/hard 各 3 局，即 V3/V4 的 144 条子集；用户 2026-09-24「改用16×9」），本机、单 worker、相近负载，用**最原始基线**与 V5 代码各跑一遍，HDF5 逐位比（`compare_h5_pair`：先整文件 SHA-256，不同再逐路径比 dtype/shape/attribute/`tobytes()`，不设容差）。V4 的 V1 基线 h5 已在 12.95 清理，基线侧要重新生成 | 硬闸门（N4）。它同时覆盖 L4 (b) 加在共用函数上的每个新参数、SwingXtimes 共用循环的分支、AST 锁定循环之外的新代码：任何一处泄漏到原三档都会在这里逐位暴露 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
 | FROZEN_FILES | `git diff --quiet` 录像器；`scripts/evaluation.py` 与官方副本 diff；`ls -1 scripts/*.py` 恰好五个 | N2，以及不得通过挪动评估预算常量来吸收变长的局 | `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
 | 生成报告（不设门槛） | 一次运行的结果：每环境 `draft_attempted / draft_ok / candidate_shortfall`；实跑 `rollout_attempted / rollout_ok / backfilled / selected_shortfall / by_class`；PatternLock/RouteStick 每局 `is_video_demo` 帧数是否落在 750～1050；Swap 两环境每局外环交换窗口数是否等于 n_swaps 与 BinCollisionError 计数；VideoRepick 每局参与交换的方块数 | 新值局没有官方原版可比，只能如实报告；某环境攒不够 10 条候选或 3 条正式局、某项几何保证在实跑里被违反，都回报用户 | `V5_GENERATION=REPORT tasks=16 draft_ok=… rollout_ok=… backfilled=… selected_shortfall=… demo_frames_out_of_band=… outer_swap_mismatch=… bin_collision=… vr_min_participants=…` |
 
@@ -930,7 +930,7 @@ for i in 0..3:
 | S3h | VideoUnmaskSwap 加 ButtonUnmaskSwap（2.6 / 2.7） | V0；LIGHTWEIGHT（含 AST 锁与 swap 测试） |
 | S3i | PickHighlight / VideoPlaceButton / VideoPlaceOrder 的障碍框修复，StopCube 的异常类（2.16 / 2.0③） | V0；LIGHTWEIGHT |
 | S4 | 一次性重导 `scripts/configs/newtask-v5/sampling_config.json`，跑消费审计；README 补 V5 节 | `SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0`；V0 |
-| S5 | **V1**：基线侧与 V5 侧各生成 16×3 原三档局，逐位比 | `NATIVE_REGRESSION=PASS compared=48 sha_equal=48 field_mismatch=0` |
+| S5 | **V1**：基线侧与 V5 侧各生成 16×9 原三档局（144 条），逐位比 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
 | S6 | **一次多 worker 生成**：抽 10 候选 → 冻结 `v5-01` → 实跑 48 条（含 H4 递补），保存 h5 与视频；出生成报告 | `V5_GENERATION=REPORT …`；FROZEN_FILES |
 | S7 | 留档与提交：`docs/validation/newtask-v5/` 逐步报告 + 总报告；本节 3.4 追加实测 | 每步 md 报告齐备 |
 
@@ -1000,7 +1000,7 @@ N7～N10、N11 传入即可生成；N12 既有缺陷只在 xhard 修。V5 新增
 | S3h | `unmask_swap_xhard.py`（统一采样器、`plan_distractor_swaps`、带序号命名、`cube_bins`）；`VideoUnmaskSwap.py` / `ButtonUnmaskSwap.py::_spawn_xhard_distractors`、`_check_swap_sweep_from_actual`、`step`（锁定循环之外的两条新循环）、`_native_decision`；`ButtonUnmaskSwap._load_scene` 的截断修复 | 按 2.5 的伪码 | AST 锁绿；原三档不进 xhard 分支 | 2.6 / 2.7 |
 | S3i | `PickHighlight.py` / `VideoPlaceButton.py` / `VideoPlaceOrder.py` 的 `_load_scene` xhard 分支 | 方块障碍改用 `cube_obb2d_exact` 预制三元组（L2 b） | 原三档调用逐字不动 | 2.16 |
 | S4 | `scripts/configs/newtask-v5/sampling_config.json`（新建）；`scripts/README.md` 的 V5 节 | 一次性重导；消费审计；不再生成 `combos.json` | V4 的配置目录原样留着不引用 | — |
-| S5～S6 | `scripts/parity/v4_specs.py`、`v4_rollout.py`、`v4_demo_probe.py`、`train_split_parity.py` | 以新参数（配置目录、run id）支持 V5，默认值不变；`draw → freeze → run` 串成一条多 worker 命令；V1 用 `train_split_parity` 的既有比较器跑 16×3；`v4_combos.py`、`v4_reset_probe.py`、`scripts/eval/v4_eval.py` 在 V5 不用、不改（**不在 `scripts/` 顶层新增文件**） | V4 命令照旧 | V5 用新参数 |
+| S5～S6 | `scripts/parity/v4_specs.py`、`v4_rollout.py`、`v4_demo_probe.py`、`train_split_parity.py` | 以新参数（配置目录、run id）支持 V5，默认值不变；`draw → freeze → run` 串成一条多 worker 命令；V1 用 `train_split_parity` 的既有比较器跑 16×9（144 条）；`v4_combos.py`、`v4_reset_probe.py`、`scripts/eval/v4_eval.py` 在 V5 不用、不改（**不在 `scripts/` 顶层新增文件**） | V4 命令照旧 | V5 用新参数 |
 | 全程 | `tests/lightweight/test_v4_xhard_{videounmask_buttonunmask,unmaskswap,insertpeg,movecube,videorepick,pickxtimes,swingxtimes,binfill}.py`、`test_swap_schedule_generic.py`、`test_window_timeline.py`、`test_v4_xhard_unmask_distractor_reveal.py`、`test_bin_collision.py`、`test_TaskGoal.py`（若 Unmask 文本受影响） | 断言改为 V5 语义；第二节各表「验收」行的判定项落成单测或单次 reset 检查（3.2 LIGHTWEIGHT）；`test_real_swap_resolution_matches_baseline_and_preserves_ties` 必须保持绿 | 原三档断言不放宽 | — |
 
 ## 二、对拍闸门总表
@@ -1010,7 +1010,7 @@ N7～N10、N11 传入即可生成；N12 既有缺陷只在 xhard 修。V5 新增
 | V0 | 无（静态，每步收尾都跑） | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
 | LIGHTWEIGHT | 每次提交前；S0 已存档基线失败集合 | `LIGHTWEIGHT=PASS failure_set_equal_baseline=1` |
 | SAMPLING_SNAPSHOT | S4 | `SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0` |
-| V1（唯一对拍） | S5；基线侧与 V5 侧同机、单 worker、相近负载 | `NATIVE_REGRESSION=PASS compared=48 sha_equal=48 field_mismatch=0` |
+| V1（唯一对拍） | S5；基线侧与 V5 侧同机、单 worker、相近负载 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
 | FROZEN_FILES | 每次提交前 | `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
 | 生成报告 | S6 一次运行完成 | `V5_GENERATION=REPORT tasks=16 draft_ok=… rollout_ok=… backfilled=… selected_shortfall=… demo_frames_out_of_band=… outer_swap_mismatch=… bin_collision=… vr_min_participants=…`（不设门槛，N10） |
 
@@ -1030,10 +1030,10 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 CUDA_VISIBLE_DEVICES=0 timeout 290 uv run --no-sync python -m scripts.parity.v4_demo_probe --task MoveCube --n 4 \
   --sampling-config <v5 单任务配置> --out artifacts/newtask-v5/demo-probe/<name>
 
-# V1：原三档 16×3 与最原始基线逐位比（S5；基线侧在基线提交的工作树里跑同一命令，单 worker）
+# V1：原三档 16×9（144 条）与最原始基线逐位比（S5；基线侧在基线提交的工作树里跑同一命令，单 worker）
 tmux new-session -d -s v5-v1 \
   "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.parity.train_split_parity run \
-   --subset 16x3 --workers 1 --output artifacts/newtask-v5/v1/<side> 2>&1 | tee artifacts/logs/v5-v1-<side>.log; \
+   --subset 16x9 --workers 1 --output artifacts/newtask-v5/v1/<side> 2>&1 | tee artifacts/logs/v5-v1-<side>.log; \
    echo \"EXIT_CODE=\$?\" >> artifacts/logs/v5-v1-<side>.log"
 uv run --no-sync python -m scripts.parity.train_split_parity compare artifacts/newtask-v5/v1/base artifacts/newtask-v5/v1/v5
 
