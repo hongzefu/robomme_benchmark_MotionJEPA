@@ -26,6 +26,10 @@ from mani_skill.utils.geometry.rotation_conversions import (
 )
 
 from .utils import *
+# V5 L3（仿 VideoPlaceOrder 的 K2 修法）：上一行的 `from .utils import *` 会把同名子模块
+# `utils.SceneGenerationError` 盖到名字 `SceneGenerationError` 上（import 自省核实），原三档的
+# raise / except 因此是 TypeError（按 H2 原三档保持现状）。xhard 用下面这个别名拿到真正的异常类。
+from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenerationError
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
@@ -47,6 +51,17 @@ from .utils.unmask_swap_xhard import (
     scaled_window_steps,
 )
 from ..logging_utils import logger
+
+
+def _scene_gen_error(difficulty):
+    """V5 L3：按档选场景生成异常类。
+
+    xhard 返回真正的 ``SceneGenerationError``（可重试的任务性失败）；原三档原样返回本模块里
+    被遮蔽的名字 ``SceneGenerationError``（子模块，raise / except 时仍是 TypeError，行为逐字不变）。
+    用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
+    只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
+    """
+    return _RealSceneGenerationError if difficulty == "xhard" else SceneGenerationError
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
 A simple task where the objective is to grasp a red cube with the {robot_id} robot and move it to a target goal position. This is also the *baseline* task to test whether a robot with manipulation

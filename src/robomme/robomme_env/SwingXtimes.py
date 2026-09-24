@@ -27,6 +27,10 @@ from mani_skill.utils.geometry.rotation_conversions import (
 
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils import *
+# V5 L3（仿 VideoPlaceOrder 的 K2 修法）：上一行的 `from .utils import *` 会把同名子模块
+# `utils.SceneGenerationError` 盖到名字 `SceneGenerationError` 上（import 自省核实），原三档的
+# raise / except 因此是 TypeError（按 H2 原三档保持现状）。xhard 用下面这个别名拿到真正的异常类。
+from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenerationError
 from .utils.subgoal_evaluate_func import static_check, too_many_swings
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
@@ -36,6 +40,17 @@ from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils.xhard import DISTRACTOR_COLORS
 
 from ..logging_utils import logger
+
+
+def _scene_gen_error(difficulty):
+    """V5 L3：按档选场景生成异常类。
+
+    xhard 返回真正的 ``SceneGenerationError``（可重试的任务性失败）；原三档原样返回本模块里
+    被遮蔽的名字 ``SceneGenerationError``（子模块，raise / except 时仍是 TypeError，行为逐字不变）。
+    用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
+    只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
+    """
+    return _RealSceneGenerationError if difficulty == "xhard" else SceneGenerationError
 
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
@@ -385,7 +400,7 @@ class SwingXtimes(BaseEnv):
                                 spec_path=f"layout.cubes.{group['name']}_{cube_idx}",
                             )
                         except RuntimeError as e:
-                            raise SceneGenerationError(
+                            raise _scene_gen_error(self.difficulty)(
                                 f"Failed to generate {group['name']} cube {cube_idx}: {e}"
                             ) from e
 
@@ -422,7 +437,7 @@ class SwingXtimes(BaseEnv):
                 avoid.append(temp_target_0)
                 logger.debug(f"Generated first target")
             except RuntimeError as e:
-                raise SceneGenerationError("First target sampling failed") from e
+                raise _scene_gen_error(self.difficulty)("First target sampling failed") from e
 
             # Generate second target
             try:
@@ -445,7 +460,7 @@ class SwingXtimes(BaseEnv):
                 avoid.append(temp_target_1)
                 logger.debug(f"Generated second target")
             except RuntimeError as e:
-                raise SceneGenerationError("Second target sampling failed") from e
+                raise _scene_gen_error(self.difficulty)("Second target sampling failed") from e
 
             # Swap names if necessary to ensure target_0.y < target_1.y
             temp_0_y = temp_target_0.pose.p[0, 1].item()  # Get y coordinate
@@ -493,10 +508,10 @@ class SwingXtimes(BaseEnv):
 
 
 
-        except SceneGenerationError:
+        except _scene_gen_error(self.difficulty):  # V5 L3：xhard 用真类，原三档仍是被遮蔽的原名字
             raise
         except Exception as exc:
-            raise SceneGenerationError(
+            raise _scene_gen_error(self.difficulty)(
                 f"Failed to load SwingXtimes scene for seed {self.seed}"
             ) from exc
         
@@ -595,7 +610,7 @@ class SwingXtimes(BaseEnv):
         for actor, name in self._cube_color_of:
             if actor is cube:
                 return name
-        raise SceneGenerationError("SwingXtimes xhard: 目标方块不在颜色登记表里")
+        raise _RealSceneGenerationError("SwingXtimes xhard: 目标方块不在颜色登记表里")
 
     def _select_target_xhard(self, generator):
         """V4 xhard 的目标方块选择：从显式候选列表抽，颜色按对象回填。
@@ -611,7 +626,7 @@ class SwingXtimes(BaseEnv):
         })
         self.target_candidates = list(self.all_cubes)
         if not self.target_candidates:
-            raise SceneGenerationError("SwingXtimes xhard: 没有可选的目标候选方块")
+            raise _RealSceneGenerationError("SwingXtimes xhard: 没有可选的目标候选方块")
         self._spec.record(
             "objects.target_candidates", [self._color_name_of(cube) for cube in self.target_candidates]
         )
@@ -636,7 +651,7 @@ class SwingXtimes(BaseEnv):
         names = list(dcfg["colors"])
         unknown = [name for name in names if name not in palette]
         if unknown:
-            raise SceneGenerationError(f"SwingXtimes xhard: 干扰色不在 DISTRACTOR_COLORS 里: {unknown}")
+            raise _RealSceneGenerationError(f"SwingXtimes xhard: 干扰色不在 DISTRACTOR_COLORS 里: {unknown}")
         target_geom = self._sampling["positions"]["target_geometry"]
         clearance = self.cube_half_size * (target_geom["radius_factor"] + target_geom["min_gap_factor"]) \
             - self.cube_half_size
@@ -662,7 +677,7 @@ class SwingXtimes(BaseEnv):
                     spec_path=f"layout.distractors.{name}_0",
                 )
             except RuntimeError as exc:
-                raise SceneGenerationError(f"SwingXtimes xhard: 干扰方块 {cube_name} 放不下: {exc}") from exc
+                raise _RealSceneGenerationError(f"SwingXtimes xhard: 干扰方块 {cube_name} 放不下: {exc}") from exc
             self.all_cubes.append(cube)
             self.distractor_cubes.append(cube)
             self._cube_color_of.append((cube, name))
@@ -673,7 +688,7 @@ class SwingXtimes(BaseEnv):
         self._spec.record("objects.distractor_count",
                           {"requested": len(names), "actual": len(self.distractor_cubes)})
         if len(self.distractor_cubes) != len(names):
-            raise SceneGenerationError(
+            raise _RealSceneGenerationError(
                 f"SwingXtimes xhard: 干扰方块请求 {len(names)} 实际 {len(self.distractor_cubes)}"
             )
         # failure_func 在调用时才读 self.non_target_cubes，这里重建即可让干扰方块参与判失败

@@ -28,6 +28,10 @@ from mani_skill.utils.geometry.rotation_conversions import (
 
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils import *
+# V5 L3（仿 VideoPlaceOrder 的 K2 修法）：上一行的 `from .utils import *` 会把同名子模块
+# `utils.SceneGenerationError` 盖到名字 `SceneGenerationError` 上（import 自省核实），原三档的
+# raise / except 因此是 TypeError（按 H2 原三档保持现状）。xhard 用下面这个别名拿到真正的异常类。
+from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenerationError
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
@@ -44,6 +48,17 @@ from .utils.bin_collision import (
 )
 
 from ..logging_utils import logger
+
+
+def _scene_gen_error(difficulty):
+    """V5 L3：按档选场景生成异常类。
+
+    xhard 返回真正的 ``SceneGenerationError``（可重试的任务性失败）；原三档原样返回本模块里
+    被遮蔽的名字 ``SceneGenerationError``（子模块，raise / except 时仍是 TypeError，行为逐字不变）。
+    用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
+    只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
+    """
+    return _RealSceneGenerationError if difficulty == "xhard" else SceneGenerationError
 
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
@@ -657,10 +672,10 @@ class VideoRepick(BaseEnv):
                             for entry, actor in zip(spec["layout"]["cubes"], self.spawned_cubes)
                         ],
                     }
-        except SceneGenerationError:
+        except _scene_gen_error(self.difficulty):  # V5 L3：xhard 用真类，原三档仍是被遮蔽的原名字
             raise
         except Exception as exc:
-            raise SceneGenerationError(
+            raise _scene_gen_error(self.difficulty)(
                 f"Failed to load VideoRepick scene for seed {self.seed}"
             ) from exc
 
@@ -710,14 +725,14 @@ class VideoRepick(BaseEnv):
                     spec_path=f"layout.cubes.{i}.xy_yaw",
                 )
             except RuntimeError as e:
-                raise SceneGenerationError(f"xhard: failed to generate bin_{i} of {requested}") from e
+                raise _RealSceneGenerationError(f"xhard: failed to generate bin_{i} of {requested}") from e
             self.spawned_cubes.append(cube_actor)
             setattr(self, f"bin_{i}", cube_actor)
             avoid.append(cube_actor)
         self._spec.record("objects.cube_count.requested", requested)
         self._spec.record("objects.cube_count.actual", len(self.spawned_cubes))
         if len(self.spawned_cubes) != requested:
-            raise SceneGenerationError(
+            raise _RealSceneGenerationError(
                 f"xhard: requested {requested} cubes but spawned {len(self.spawned_cubes)}"
             )
 
@@ -729,7 +744,7 @@ class VideoRepick(BaseEnv):
         self.target_cube_1 = self.spawned_cubes[target_index]
         remaining_indices = [i for i in range(len(self.spawned_cubes)) if i != target_index]
         if len(remaining_indices) < selection_cfg["swap_remaining_count"]:
-            raise SceneGenerationError("Not enough cubes for swapping")
+            raise _RealSceneGenerationError("Not enough cubes for swapping")
         # B12：发起者仍 3 个 = 目标 + 其余块中随机取 2 块，第 k 次交换循环复用 swap_indices[k % 3]
         selected_remaining = self._spec.value(
             "objects.swap_initiators_remaining",
