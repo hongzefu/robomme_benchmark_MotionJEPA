@@ -71,13 +71,16 @@ def test_native_decision_without_xhard_is_original() -> None:
 
 
 def test_xhard_values_match_plan() -> None:
+    # V5（计划 2.12，L41）：xhard 另加 color_mix（同色成团上限），其余 V4 键不变
+    color_mix = {"max_component": 3, "link_m": 0.09, "max_redraws": 64}
     assert CLS.config_xhard == {
         "color": 3, "spawn_cubes": [12, 12], "put_in_color": [2, 3],
-        "put_in_numbers": [5, 7], "layout_mode": "clutter",
+        "put_in_numbers": [5, 7], "layout_mode": "clutter", "color_mix": color_mix,
     }
     decision = binfill._native_decision(CLS)
     assert decision["configs"]["xhard"] == {
         "color": 3, "spawn_cubes": [12, 12], "put_in_numbers": [5, 7], "layout_mode": "clutter",
+        "color_mix": color_mix,
     }
     # D6：clutter ⇒ dynamic 固定 False；只实现了这一种模式
     assert binfill.XHARD_LAYOUT_DYNAMIC == {"clutter": False}
@@ -94,6 +97,8 @@ def test_default_resolution_merges_xhard() -> None:
     assert resolved["parameters"]["configs"]["xhard"] == {
         "color": 3, "spawn_cubes": [12, 12], "put_in_numbers": [5, 7],
         "layout_mode": "clutter", "put_in_color": [2, 3],
+        # V5（L41）
+        "color_mix": {"max_component": 3, "link_m": 0.09, "max_redraws": 64},
     }
     for difficulty, expected in ORIGINAL.items():
         assert resolved["parameters"]["configs"][difficulty] == expected
