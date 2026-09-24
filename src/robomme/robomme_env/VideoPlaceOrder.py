@@ -39,6 +39,7 @@ from .utils.difficulty import normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, split_sampling_config
 from .utils.xhard_home_site import build_home_sites, home_pose_record, validate_demo_plan
+from .utils.xhard import cube_obb2d_exact
 
 from ..logging_utils import logger
 
@@ -379,7 +380,14 @@ class VideoPlaceOrder(BaseEnv):
                         cube_name = f"cube_{group['name']}_{cube_idx}"
                         group["name_list"].append(cube_name)
                         setattr(self, cube_name, cube)
-                        avoid.append(cube)
+                        if self.difficulty == "xhard":
+                            # V5（L2 b，计划 2.16）：已放方块以精确 2D 障碍进 avoid，后续方块与目标台
+                            # 两类 spawn 调用都据此避让。actor 路径经 _trimesh_box_to_obb2d 约 2/3 退化成
+                            # 线段，min_gap 在其法向失效；取 initial_pose（不依赖仿真已初始化），不抽随机数。
+                            # 原三档仍放 actor，spawn 调用本身逐字不变。
+                            avoid.append(cube_obb2d_exact(cube.initial_pose, self.cube_half_size))
+                        else:
+                            avoid.append(cube)
 
                 logger.debug(f"Generated {len(group['list'])} {group['name']} cubes")
 

@@ -94,7 +94,7 @@ def native_blocks(cls):
 #     （"hsv_floor"：色相任意、S≥0.5、V≥0.4，见 utils/xhard.py::HSV_FLOOR_COLOR；alpha 固定 1）。
 #   subgoal_color_suffix：任意 RGB 没有颜色名，subgoal 的 ``, which is {color}`` 后缀如何写。
 #     用户 2026-09-22 定「整段去掉」（"omit"）；目前只实现这一种，其余取值直接拒绝。
-from .utils.xhard import HSV_FLOOR_COLOR, hsv_floor_rgb
+from .utils.xhard import HSV_FLOOR_COLOR, cube_obb2d_exact, hsv_floor_rgb
 
 XHARD_DECISION = {
     "block_color_policy": "hsv_floor",
@@ -384,7 +384,13 @@ class PickHighlight(BaseEnv):
                 self.all_cube_names.append(cube_name)
                 self.all_cube_colors.append(chosen_color.get("label", chosen_color["name"]))
                 setattr(self, cube_name, cube)
-                avoid.append(cube)
+                if xhard:
+                    # V5（L2 b，计划 2.16）：已放方块以精确 2D 障碍进 avoid。actor 路径经
+                    # _trimesh_box_to_obb2d 约 2/3 退化成线段，min_gap 在其法向失效；取建方块时的
+                    # initial_pose（不依赖仿真已初始化），不抽随机数。原三档仍放 actor，逐字不变。
+                    avoid.append(cube_obb2d_exact(cube.initial_pose, self.cube_half_size))
+                else:
+                    avoid.append(cube)
 
             except RuntimeError as e:
                 if xhard:
