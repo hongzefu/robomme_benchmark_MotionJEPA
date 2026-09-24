@@ -12,6 +12,10 @@
 * :func:`check_swap_sweep` —— 连续判据：复刻
   ``statechange.py::swap_flat_two_lane`` 的弯道与四元数插值，用区间二分证明整段路径
   始终分开；证明不出来一律按 ``uncertified`` 排除，不改成抽帧放行。
+* :func:`check_multi_swap_sweep` —— V5 新增：同一窗口多对同时交换的联合连续判据，复用同一个
+  区间二分证明；带默认开启的认证预筛（401 个采样点 + Lipschitz 界，只跳过已证明分离的对）。
+  :func:`check_swap_sweep_prefiltered` 是它的单对包装；:func:`static_box_state` 等 helper 构造
+  任意有向盒体作静止障碍（按钮底座、干扰容器等）。:func:`check_swap_sweep` 本身不预筛、判定不变。
 
 判据数值全部定死在模块常量里：``EPS_M``、``MAX_DEPTH``、``MAX_INTERVALS``、
 ``DEGENERATE_NORM``。不提供放宽阈值的开关。
@@ -47,6 +51,14 @@ __all__ = [
     "check_pair_static",
     "check_bin_layout",
     "check_swap_sweep",
+    "PREFILTER_SAMPLES",
+    "PREFILTER_MARGIN_M",
+    "check_multi_swap_sweep",
+    "check_swap_sweep_prefiltered",
+    "static_box_state",
+    "static_rect_state",
+    "static_state_from_obb2d",
+    "button_base_state",
     "check_bin_state",
     "shape_specs_from_actor",
     "object_state_from_actor",
@@ -794,6 +806,400 @@ def check_swap_sweep(
         return float(worst), None
     # 全部对象对都在粗筛里过掉了：没有精算值，退回包围球下界，仍然是「已证明分离」
     return (float(coarse_worst) if math.isfinite(coarse_worst) else float("nan")), None
+
+
+# ── V5：多对同时交换的联合连续判据与认证预筛（只加不改） ─────────────────────
+#: 认证预筛在 s∈[0,1] 上的等距采样点数（V5 计划 2.5 / L23）。
+PREFILTER_SAMPLES = 401
+#: 认证预筛的放行余量，米。预筛证出的「竖直圆柱间隙下界」必须大于它才跳过精确证明。
+#: 取 1 毫米而不是 ``EPS_M``：让被跳过的对与「精确证明也一定能证出来」的对之间留出三个数量级的缓冲，
+#: 把「真实分离但分离轴判定值落在数值边界带、或二分耗尽」这种理论上的分歧挤到不可能的区域（见
+#: :func:`check_multi_swap_sweep` 的说明）。它只决定跳不跳精确证明，不参与任何拒绝判定。
+PREFILTER_MARGIN_M = 1e-3
+
+
+def _swap_movers(moving_a: ObjectState, moving_b: ObjectState) -> tuple[_Mover, _Mover]:
+    """按 :func:`check_swap_sweep` 完全相同的方式构造一对交换者（逐字段一致，保证单对时逐位相同）。"""
+    a_xy = moving_a.p[:2]
+    b_xy = moving_b.p[:2]
+    delta, normal = _lane_endpoints(a_xy, b_xy)
+    mover_a = _Mover(
+        name=moving_a.name,
+        shapes=moving_a.shapes,
+        radii=moving_a.radii,
+        xy0=a_xy.copy(),
+        z=float(moving_a.p[2]),
+        delta=delta,
+        normal=normal,
+        sign=1.0,
+        q0=moving_a.q.copy(),
+        q1=moving_b.q.copy(),
+    )
+    mover_b = _Mover(
+        name=moving_b.name,
+        shapes=moving_b.shapes,
+        radii=moving_b.radii,
+        xy0=b_xy.copy(),
+        z=float(moving_b.p[2]),
+        delta=delta,
+        normal=normal,
+        sign=-1.0,
+        q0=moving_b.q.copy(),
+        q1=moving_a.q.copy(),
+    )
+    return mover_a, mover_b
+
+
+def _quat_to_matrix_batch(q: np.ndarray) -> np.ndarray:
+    """``(N,4)`` 的 wxyz 四元数批量转 ``(N,3,3)`` 旋转矩阵，公式与 :func:`quat_to_matrix` 相同。"""
+    w, x, y, z = q[:, 0], q[:, 1], q[:, 2], q[:, 3]
+    out = np.empty((q.shape[0], 3, 3), dtype=np.float64)
+    out[:, 0, 0] = 1 - 2 * (y * y + z * z)
+    out[:, 0, 1] = 2 * (x * y - z * w)
+    out[:, 0, 2] = 2 * (x * z + y * w)
+    out[:, 1, 0] = 2 * (x * y + z * w)
+    out[:, 1, 1] = 1 - 2 * (x * x + z * z)
+    out[:, 1, 2] = 2 * (y * z - x * w)
+    out[:, 2, 0] = 2 * (x * z - y * w)
+    out[:, 2, 1] = 2 * (y * z + x * w)
+    out[:, 2, 2] = 1 - 2 * (x * x + y * y)
+    return out
+
+
+def _local_vertices(shapes: Sequence[ShapeSpec]) -> np.ndarray:
+    """全部盒体的 8 个顶点在 actor 局部坐标系里的位置，``(8·形状数, 3)``。"""
+    signs = np.array([[sx, sy, sz] for sx in (-1.0, 1.0) for sy in (-1.0, 1.0) for sz in (-1.0, 1.0)])
+    blocks = []
+    for shape in shapes:
+        rot = quat_to_matrix(shape.local_q)
+        blocks.append(shape.local_p[None, :] + (signs * shape.half[None, :]) @ rot.T)
+    return np.concatenate(blocks, axis=0)
+
+
+@dataclass
+class _PrefilterTrack:
+    """一个对象在预筛采样点上的竖直包围圆柱：原点 XY 轨迹、圆柱半径与二者合起来的 Lipschitz 常数。
+
+    ``xy[i]`` 与 ``rho[i]`` 是 ``s = PREFILTER_S[i]`` 时 actor 原点的 XY 与「全部盒体顶点到原点竖直轴的最大
+    水平距离」。对象整个落在以 ``xy[i]`` 为轴、半径 ``rho[i]`` 的无限高竖直圆柱里（凸包由顶点张成）。
+    ``lipschitz`` 是 ``‖xy(s)‖`` 与 ``rho(s)`` 对 ``s`` 的变化率上界之和：原点平移速度上界
+    ``‖δ‖ + 0.07π`` 加上旋转引起的顶点速度上界 ``max(radii)·2‖Δq‖/m``（与 ``_Mover.speed_bound`` 同式，
+    ``m`` 取整段 ``[0,1]`` 上的最小混合范数）。静止物为 0。
+    """
+
+    xy: np.ndarray  # (N, 2)
+    rho: np.ndarray  # (N,)
+    lipschitz: float
+
+
+def _prefilter_samples() -> np.ndarray:
+    return np.linspace(0.0, 1.0, PREFILTER_SAMPLES)
+
+
+def _prefilter_track(obj: Any, samples: np.ndarray) -> _PrefilterTrack | None:
+    """为交换者或静止物构造预筛圆柱；四元数混合退化（算不出角速度上界）时返回 ``None``，该对象不参与预筛。"""
+    vertices = _local_vertices(obj.shapes)
+    if isinstance(obj, _Static):
+        rot = quat_to_matrix(obj.q)
+        rho = float(np.max(np.linalg.norm((vertices @ rot.T)[:, :2], axis=1)))
+        n = samples.shape[0]
+        return _PrefilterTrack(
+            xy=np.repeat(np.asarray(obj.p, dtype=np.float64)[None, :2], n, axis=0),
+            rho=np.full(n, rho, dtype=np.float64),
+            lipschitz=0.0,
+        )
+    if not isinstance(obj, _Mover):
+        raise TypeError(f"预筛不认识的对象类型 {type(obj).__name__}")
+    dq = obj.q1 - obj.q0
+    m = _min_blend_norm(obj.q0, dq, 0.0, 1.0)
+    if not math.isfinite(m) or m <= DEGENERATE_NORM:
+        # 退化的对象交给精确证明去报 uncertified，预筛绝不替它放行
+        return None
+    s = samples[:, None]
+    offset = LANE_OFFSET * np.sin(np.pi * s)
+    xy = obj.xy0[None, :] + obj.sign * (obj.delta[None, :] * s + obj.normal[None, :] * offset)
+    blended = (1.0 - s) * obj.q0[None, :] + s * obj.q1[None, :]
+    blended = blended / np.linalg.norm(blended, axis=1, keepdims=True)
+    rots = _quat_to_matrix_batch(blended)
+    horizontal = np.einsum("nij,vj->nvi", rots[:, :2, :], vertices)
+    rho = np.max(np.linalg.norm(horizontal, axis=2), axis=1)
+    translation = float(np.linalg.norm(obj.delta)) + LANE_OFFSET * math.pi
+    omega = 2.0 * float(np.linalg.norm(dq)) / m
+    lipschitz = translation + max(obj.radii) * omega
+    if not (np.all(np.isfinite(xy)) and np.all(np.isfinite(rho)) and math.isfinite(lipschitz)):
+        return None
+    return _PrefilterTrack(xy=xy, rho=rho, lipschitz=float(lipschitz))
+
+
+def _prefilter_clearance(left: _PrefilterTrack, right: _PrefilterTrack, step: float) -> float:
+    """两个竖直圆柱在整段 ``s∈[0,1]`` 上的水平间隙下界。
+
+    ``G(s) = ‖xy_l(s) − xy_r(s)‖ − rho_l(s) − rho_r(s)`` 是 ``L = L_l + L_r`` -Lipschitz 的；在相邻两个采样点
+    ``[s_i, s_i + h]`` 之间 ``G(s) ≥ max(G_i − L(s−s_i), G_{i+1} − L(s_{i+1}−s)) ≥ (G_i + G_{i+1})/2 − L·h/2``。
+    对全部小区间取最小即整段下界；下界为正就证明了两个圆柱（从而两个对象）整段分离。
+    """
+    gaps = np.linalg.norm(left.xy - right.xy, axis=1) - left.rho - right.rho
+    if gaps.shape[0] < 2:
+        return float("nan")
+    worst_mid = float(np.min(0.5 * (gaps[:-1] + gaps[1:])))
+    bound = worst_mid - (left.lipschitz + right.lipschitz) * step * 0.5
+    return bound if math.isfinite(bound) else float("nan")
+
+
+def check_multi_swap_sweep(
+    pairs: Sequence[tuple[ObjectState, ObjectState]],
+    bystanders: Sequence[ObjectState] = (),
+    *,
+    sweep_index: int | None = None,
+    stage: str = "sweep",
+    raise_on_reject: bool = False,
+    prefilter: bool = True,
+    stats: dict[str, int] | None = None,
+) -> tuple[float, CollisionRejection | None]:
+    """同一窗口里多对同时交换的连续检查（V5 计划 2.5：外环随内环同步交换；2.15：按钮底座作静止障碍）。
+
+    ``pairs`` 里每一项 ``(A, B)`` 都按 ``swap_flat_two_lane(lane_offset=0.07, smooth=True)`` 在**同一个窗口**
+    里对换：同一控制步上所有对的进度 ``α``（smoothstep 之后）相同，因此全体位姿都是同一个参数 ``s`` 的函数，
+    可以直接用 :func:`_prove_pair` 证明（它本来就能证两个都在动的对象）。``bystanders`` 是整段静止的对象，
+    可以是容器、方块，也可以是 :func:`static_box_state` / :func:`static_rect_state` /
+    :func:`static_state_from_obb2d` / :func:`button_base_state` 构造的任意有向盒体。
+
+    检查的对象对与顺序：
+
+    1. 每一对自身（交换双方），按 ``pairs`` 顺序；
+    2. 跨对的交换者两两（交换者按 ``A1, B1, A2, B2, …`` 排序后取 ``i < j`` 且不同对）；
+    3. 每个静止物依次对全部交换者（先静止物、后交换者，与 :func:`check_swap_sweep` 的旁观对象顺序一致）。
+
+    **只有一对时，检查的对象对、顺序、粗筛与每个盒对的证明都与** :func:`check_swap_sweep` **完全相同**；
+    ``prefilter=False`` 时返回值逐位相同（单测大量随机样例核对）。
+
+    ``prefilter=True``（默认，L23 已定开启）时，在包围球粗筛之后、精确证明之前再做一层认证预筛：对每个对象
+    在 ``s`` 上等距取 ``PREFILTER_SAMPLES = 401`` 个点，算竖直包围圆柱的水平间隙，用 Lipschitz 界把样本间的
+    空隙补成整段下界（:func:`_prefilter_clearance`）；下界大于 ``PREFILTER_MARGIN_M`` 的对象对**已被证明整段
+    分离**，跳过逐盒对的二分证明。预筛**只会跳过、不会拒绝**：拒绝一律来自 :func:`_prove_pair`，按同样的
+    对象对顺序遇到的第一个被证否的盒对给出，所以拒绝证据与不预筛时逐位相同。
+
+    ⚠ 与 :func:`check_swap_sweep` 的包围球粗筛同理，被跳过的对**不进返回的最小 g**；通过时返回值是
+    「精算过的那些盒对里的最小 g」，全部对象对都被跳过时退回粗筛/预筛下界里的最小值。预筛开关因此可能
+    改变**通过时**返回的数，但不改变判定与拒绝证据。
+    ⚠ 理论上唯一可能的分歧：某对真实间隙 > 1 mm，但精确证明因分离轴判定值 ≤ ε 或二分耗尽而证不出来——
+    这与原函数的包围球粗筛是同一个前提（粗筛跳过的对同样没有经过精确证明），1 mm 余量让它在实际几何下
+    不会出现。四元数混合退化的交换者不参与预筛，照旧交给精确证明报 ``uncertified``。
+
+    ``stats`` 传入一个字典时，就地累加计数：``object_pairs``（考察的对象对数）、``coarse_skipped``（包围球
+    粗筛跳过）、``prefilter_skipped``（认证预筛跳过）、``proved_object_pairs``（进入精确证明的对象对）、
+    ``proved_shape_pairs``（实际完成证明或被证否的盒对数）。
+
+    返回 ``(最小判定值, 拒绝证据或 None)``，与 :func:`check_swap_sweep` 同结构；``raise_on_reject`` 为真时
+    改抛 :class:`BinCollisionError`。同一个对象（按 ``name``）不得同时出现在两处，否则抛 ``ValueError``。
+    """
+    pair_list = [tuple(item) for item in pairs]
+    if not pair_list:
+        raise ValueError("check_multi_swap_sweep 至少需要一对交换对象")
+    names: list[str] = []
+    for item in pair_list:
+        if len(item) != 2:
+            raise ValueError(f"每一对必须恰好两个对象，收到 {len(item)} 个")
+        names.extend(obj.name for obj in item)
+    names.extend(obj.name for obj in bystanders)
+    duplicated = sorted({name for name in names if names.count(name) > 1})
+    if duplicated:
+        raise ValueError(f"对象名重复出现（同一对象不能既在两对里、或既交换又静止）：{duplicated}")
+
+    movers: list[_Mover] = []
+    pair_of: list[int] = []
+    for index, (moving_a, moving_b) in enumerate(pair_list):
+        mover_a, mover_b = _swap_movers(moving_a, moving_b)
+        movers.extend((mover_a, mover_b))
+        pair_of.extend((index, index))
+    statics = [
+        _Static(name=item.name, shapes=item.shapes, radii=item.radii, p=item.p.copy(), q=item.q.copy())
+        for item in bystanders
+    ]
+
+    checks: list[tuple[Any, Any]] = [(movers[2 * k], movers[2 * k + 1]) for k in range(len(pair_list))]
+    for i in range(len(movers)):
+        for j in range(i + 1, len(movers)):
+            if pair_of[i] != pair_of[j]:
+                checks.append((movers[i], movers[j]))
+    for item in statics:
+        for mover in movers:
+            checks.append((mover, item))
+
+    counts = {
+        "object_pairs": 0,
+        "coarse_skipped": 0,
+        "prefilter_skipped": 0,
+        "proved_object_pairs": 0,
+        "proved_shape_pairs": 0,
+    }
+    samples = _prefilter_samples() if prefilter else None
+    step = float(samples[1] - samples[0]) if samples is not None else 0.0
+    tracks: dict[int, _PrefilterTrack | None] = {}
+
+    def track_of(obj: Any) -> _PrefilterTrack | None:
+        key = id(obj)
+        if key not in tracks:
+            tracks[key] = _prefilter_track(obj, samples)
+        return tracks[key]
+
+    def flush_stats() -> None:
+        if stats is not None:
+            for key, value in counts.items():
+                stats[key] = stats.get(key, 0) + value
+
+    worst = np.inf
+    coarse_worst = np.inf
+    for left, right in checks:
+        counts["object_pairs"] += 1
+        # 第一层：与 check_swap_sweep 完全相同的整段包围球粗筛
+        center_l, radius_l = left.bounding_sphere()
+        center_r, radius_r = right.bounding_sphere()
+        clearance = float(np.linalg.norm(center_l - center_r)) - radius_l - radius_r
+        if clearance > EPS_M:
+            coarse_worst = min(coarse_worst, clearance)
+            counts["coarse_skipped"] += 1
+            continue
+        # 第二层：认证预筛（只跳过已证明分离的对）
+        if samples is not None:
+            track_l = track_of(left)
+            track_r = track_of(right)
+            if track_l is not None and track_r is not None:
+                bound = _prefilter_clearance(track_l, track_r, step)
+                if math.isfinite(bound) and bound > PREFILTER_MARGIN_M:
+                    coarse_worst = min(coarse_worst, bound)
+                    counts["prefilter_skipped"] += 1
+                    continue
+        # 第三层：逐盒对区间二分证明，与 check_swap_sweep 同一个 _prove_pair
+        counts["proved_object_pairs"] += 1
+        for ia in range(len(left.shapes)):
+            for ib in range(len(right.shapes)):
+                gap, rejection = _prove_pair(left, right, ia, ib, stage=stage, sweep_index=sweep_index)
+                counts["proved_shape_pairs"] += 1
+                if rejection is not None:
+                    flush_stats()
+                    if raise_on_reject:
+                        raise BinCollisionError(rejection)
+                    return gap, rejection
+                if math.isfinite(gap):
+                    worst = min(worst, gap)
+    flush_stats()
+    if math.isfinite(worst):
+        return float(worst), None
+    return (float(coarse_worst) if math.isfinite(coarse_worst) else float("nan")), None
+
+
+def check_swap_sweep_prefiltered(
+    moving_a: ObjectState,
+    moving_b: ObjectState,
+    bystanders: Sequence[ObjectState] = (),
+    *,
+    sweep_index: int | None = None,
+    stage: str = "sweep",
+    raise_on_reject: bool = False,
+    prefilter: bool = True,
+    stats: dict[str, int] | None = None,
+) -> tuple[float, CollisionRejection | None]:
+    """单对交换的带预筛包装：等于 ``check_multi_swap_sweep([(moving_a, moving_b)], bystanders, ...)``。
+
+    :func:`check_swap_sweep` 本身保持原样、从不预筛；想给单对检查提速（如 Swap 两环境 reset 时的内环对内环
+    预判、VideoRepick 的搭档可行性过滤）就改调本函数。``prefilter=False`` 时与 :func:`check_swap_sweep`
+    返回值逐位相同；``prefilter=True`` 时判定与拒绝证据相同，只有「通过时的最小 g」可能不同。
+    """
+    return check_multi_swap_sweep(
+        [(moving_a, moving_b)],
+        bystanders,
+        sweep_index=sweep_index,
+        stage=stage,
+        raise_on_reject=raise_on_reject,
+        prefilter=prefilter,
+        stats=stats,
+    )
+
+
+# ── V5：构造静止障碍（任意有向盒体／矩形）────────────────────────────────────
+def static_box_state(
+    name: str,
+    center: Sequence[float],
+    half_size: Sequence[float],
+    *,
+    yaw_rad: float = 0.0,
+) -> ObjectState:
+    """一个绕 z 轴转 ``yaw_rad`` 的实心盒体作静止物：世界中心 ``center (3,)``、半尺寸 ``half_size (3,)``。
+
+    actor 原点就放在盒体中心、局部位姿为单位，因此包围球与预筛圆柱都是紧的。
+    """
+    center_arr = np.asarray(center, dtype=np.float64).reshape(3)
+    half_arr = np.asarray(half_size, dtype=np.float64).reshape(3)
+    if not (np.all(np.isfinite(center_arr)) and np.all(np.isfinite(half_arr))) or np.any(half_arr <= 0.0):
+        raise ValueError(f"静止盒体参数非法：center={center_arr.tolist()} half={half_arr.tolist()}")
+    shape = ShapeSpec(np.zeros(3, dtype=np.float64), np.array([1.0, 0.0, 0.0, 0.0]), half_arr)
+    return ObjectState(name=name, p=center_arr, q=euler_xyz_to_quat([0.0, 0.0, float(yaw_rad)]), shapes=(shape,))
+
+
+def static_rect_state(
+    name: str,
+    center_xy: Sequence[float],
+    half_xy: Sequence[float],
+    *,
+    yaw_rad: float = 0.0,
+    z_range: tuple[float, float],
+) -> ObjectState:
+    """桌面上一个有向矩形沿 z 拉伸成的静止盒体：XY 中心、XY 半尺寸、绕 z 的朝向，外加必须显式给出的
+    ``z_range = (z_low, z_high)``（米）。``z_range`` 故意不给默认值：障碍多高直接决定会不会挡住某个物体，
+    写错高度会静默放行，必须由调用方按实际几何填写（例如「只挡地面上的东西」可以给 ``(0.0, 1.0)``）。
+    """
+    z_low, z_high = (float(v) for v in z_range)
+    if not (math.isfinite(z_low) and math.isfinite(z_high)) or z_high <= z_low:
+        raise ValueError(f"z_range 非法：{z_range}")
+    cx, cy = (float(v) for v in center_xy)
+    hx, hy = (float(v) for v in half_xy)
+    return static_box_state(
+        name,
+        [cx, cy, 0.5 * (z_low + z_high)],
+        [hx, hy, 0.5 * (z_high - z_low)],
+        yaw_rad=yaw_rad,
+    )
+
+
+def static_state_from_obb2d(
+    name: str,
+    obb2d: tuple[Sequence[float], Any, Sequence[float]],
+    *,
+    z_range: tuple[float, float],
+    tol: float = 1e-6,
+) -> ObjectState:
+    """把仓库放置逻辑用的二维 OBB 三元组 ``(c (2,), A (2×2，列为轴), h (2,))`` 转成静止盒体。
+
+    三元组格式与 ``object_generation._trimesh_box_to_obb2d`` / ``create_button_obb`` 的返回值一致。
+    ``A`` 的两列必须是单位正交向量（误差 ``tol`` 内），否则抛 ``ValueError``——倾斜物体投影出来的非正交轴
+    不能当成矩形。第二列允许与第一列成左手系（翻转 180° 扣放的容器投影就是这样），矩形关于轴对称，
+    只取第一列定朝向。
+    """
+    c, axes, half = obb2d
+    axes_arr = np.asarray(axes, dtype=np.float64).reshape(2, 2)
+    gram = axes_arr.T @ axes_arr
+    if not np.all(np.isfinite(gram)) or float(np.max(np.abs(gram - np.eye(2)))) > tol:
+        raise ValueError(f"二维 OBB 的轴不是单位正交的：A={axes_arr.tolist()}")
+    yaw = math.atan2(float(axes_arr[1, 0]), float(axes_arr[0, 0]))
+    return static_rect_state(name, c, half, yaw_rad=yaw, z_range=z_range)
+
+
+def button_base_state(
+    name: str,
+    center_xy: Sequence[float],
+    *,
+    scale: float = 1.0,
+    base_half: Sequence[float] = (0.025, 0.025, 0.005),
+) -> ObjectState:
+    """复刻 ``object_generation.build_button`` 的按钮**底座**碰撞盒：半尺寸 ``base_half × scale``，
+    轴对齐，底面贴桌（中心 z = 半高）。
+
+    只含底座，不含上面那个圆柱按帽（碰撞模型只有盒体）；V5 计划 L54 要求把底座 OBB 当交换扫掠的静止
+    障碍。``center_xy`` 必须是 ``build_button`` 最终使用的中心（随机偏移与规格回注之后的值）。
+    """
+    half = np.asarray(base_half, dtype=np.float64).reshape(3) * float(scale)
+    return static_box_state(name, [float(center_xy[0]), float(center_xy[1]), float(half[2])], half)
 
 
 def nearest_partner_index(reference: Sequence[float], candidates: Sequence[tuple[int, Sequence[float]]]) -> tuple[int, list[tuple[int, float]]]:
