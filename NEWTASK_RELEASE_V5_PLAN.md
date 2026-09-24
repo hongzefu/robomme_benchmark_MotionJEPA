@@ -602,7 +602,7 @@ for i in 0..3:
 |---|---|---|---|
 | `config_xhard.corner_bias` | 边角偏置（经 `utils/xhard.py::corner_push`） | `0.5`（作用于杆抖动、方块候选中心与局部偏移；goal 从未被偏置） | **删键、删干净**（L33）：`_native_decision` 的 `demo_layout.xhard.corner_bias` / `execution_layout.xhard.corner_bias`、`_xhard_corner_bias`、`_load_scene` 里对 `corner_push` 的调用、`spawn_random_cube(..., corner_bias=)` 的传参、`layout.*.corner_bias` 记录、对应单测一并删除；`utils/xhard.py::corner_push` 与 `spawn_random_cube` 的 `corner_bias` 形参保留（PickXtimes 仍用） |
 | `config_xhard.center_exclusion`（新增） | 桌面中心禁区 | 无 | **`{shape: circle, center: [0, 0], radius_m: 0.05, judge: object_center, max_trials: 128}`**；`_native_decision` 按 segment 暴露 `demo_layout.xhard` / `execution_layout.xhard`；注入 `layout.{demo,execution}.center_exclusion` |
-| 杆根抖动（`_load_scene` 的 `x_jitter/y_jitter`）与 yaw | 杆的位姿 | `corner_push` 后直接用 | 抖动与 yaw 抽完后，判杆轴线段离 (0,0) 的最近点 `< 0.05` 即原地重抽（上限 128，超出抛 `SceneGenerationError`）；几何上几乎不触发（见要点） |
+| 杆根抖动（`_load_scene` 的 `x_jitter/y_jitter`）与 yaw | 杆的位姿 | `corner_push` 后直接用 | 抖动与 yaw 抽完后，判杆**实际轴线段**离 (0,0) 的最近点 `< 0.05` 即原地重抽（上限 128，超出抛 `SceneGenerationError`）；P2 实测 MoveCube 杆身为 `root − 0.15u … root + 0.05u`（长 0.2），约 3.8% 的杆会触发；线段端点从实际碰撞几何取，不写死 |
 | goal（`spawn_random_target`） | 目标圆盘中心 | 无拒绝（demo 半宽 0.11、exec 0.06 内均匀） | 加显式参数（L4 b）：圆盘**中心**离 (0,0) `< 0.05` 即拒绝 |
 | 方块候选（局部函数 `_sample_cube_center`） | 方块候选中心 | 接受条件 `\|c − g\| > 0.1` | 加「候选中心离 (0,0) ≥ 0.05」 |
 | 方块最终（`spawn_random_cube`） | 方块最终中心 | 默认 `include_existing=True` | 加显式参数：最终中心离 (0,0) `< 0.05` 即拒绝；**执行段 `cube_2` 改 `include_existing=False`**（L34 已定：是） |
@@ -611,7 +611,7 @@ for i in 0..3:
 禁区：圆心 (0,0)，R = 0.05 m；判据一律按物体中心（杆按轴线段最近点）
   goal：  |c_goal| < R  → 重抽
   方块：  |c_cand| < R 或 |c_final| < R → 重抽
-  杆：    dist(segment(root − 0.075u, root + 0.025u), (0,0)) < R → 重抽
+  杆：    dist(segment(杆身实际两端，P2 实测 root − 0.15u … root + 0.05u), (0,0)) < R → 重抽
 不按轮廓判：exec goal 只在半宽 0.06 的框里抽、圆盘半径 0.04，要求轮廓不进圆时无解
 ```
 
@@ -619,13 +619,11 @@ for i in 0..3:
 
 - **为什么是 R = 0.05**：比方块边长 0.04 与 goal 圆盘半径 0.04 都略大，中心一块直径 10 cm 的空地在 256×256 画面里约 14 px 宽，
   肉眼可辨「中间是空的」；再大会把执行段 goal 的采样框（半宽 0.06）几乎吃光。
-- **杆物理上本来就进不了中心**：杆根 |y| ≥ 0.15，杆身从根向内最多伸 0.10（`build_peg`：root − 0.075u … root + 0.025u，
-  两端合计 0.10），最近只能到 y = 0.05，恰好与 R 相切；这条规则对杆几乎不拒，写上只为三者同一条规则。
-  若用户要杆离中心更远，只能缩小杆根的 `base_y_abs`/`jitter_span` 采样带，那是另一个决策。
-- **每次抽样的拒绝率**（解析值，采样框内均匀）：demo goal `π·0.05²/0.22²` = 16.2%；exec goal `π·0.05²/0.12²` = 54.5%；
-  方块候选 `π·0.05²/0.2²` = 19.6%；杆 ≈ 0。exec goal 在 128 次预算下耗尽概率 0.545^128 ≈ 1e-33。
-  ⚠ 2.9 原来那套「各物体自身框 30% 面积」的 MC 数字（2000 局全成功、每局多抽约 10 个随机数、本机演示 10/10）**不再适用**，
-  S1 离线复核时按本规则重跑；演示成功率仍要靠 S3c 的本机演示探针。
+- **杆几何按 P2 实测**：MoveCube 的杆身是 `root − 0.15u … root + 0.05u`（长 0.2，与 InsertPeg 的 0.1 不同），杆根 |y| ≥ 0.15 时
+  杆身向内最多伸到中心附近，约 3.8% 的杆会触发规则、原地重抽，改后 0 失败、重抽均值 1.86。计划早先按 InsertPeg 的 0.1 假设「杆几乎不触发」
+  是错的，实施时杆轴线段端点从实际碰撞几何取。
+- **每次抽样的拒绝率**（P2 离线 5000 局实测，括号内为解析值）：demo goal 16.1%（16.2%）；exec goal 55.1%（54.5%）；方块候选 19.7%（19.6%）；
+  方块最终位置另约 7%；杆约 3.8%。每局重抽均值 1.79、p99 8，5000 局 0 耗尽、0 落进禁区。演示 19/24，与 R=0 对照组 22/24 的差距在演示抖动范围内，失败全是任务类（见 3.5 P2）。
 - **偏置不等于排除**：V4 的 goal 从未被偏置，demo goal 有 26% 的中心落在 5 cm 圆内、exec goal 约 55%；方块最终位置约 6%。
 - **既有缺陷（L34）**：执行段 `cube_2` 用默认 `include_existing=True`，把演示段方块的（退化）OBB 当障碍；两块在物理上**从不同时在场**
   （`cube_2` 被传送到 (10,10,1)，阶段切换时 `step` 再把 `self.cube` 挪到 `cube_init_pose_2`），但候选落在演示方块附近时 256 次会全部失败。
@@ -961,6 +959,8 @@ for i in 0..3:
   判定行：`PL_2425=REPORT hit24@20000=1.000 hit25@20000=1.000 search_s_p95=0.141 demo=8/8 ok frames=[794,872,841,735,857,772,832,826]`。报告 `plan-probes-r2/patternlock_2425/REPORT.md`。
 - **P5 Swap 两环境外环交换（已完成，2026-09-24）**：离线每环境 500 局，首次干扰布局可行率 VUS 99.8% / BUS 98.9%，最多重抽 1 次、16 次耗尽 0；第一候选发起者就可行的窗口 VUS 62.6% / BUS 48.3%（BUS 主要被可见性与按钮距离挡掉）；内环对内环 reset 预判拒绝 VUS 0.8% / BUS 9.8%。校验：副本对 v4-01 冻结规格 20/20 一致，原型 reset 的放置与交换对与离线逐值相同，预筛开/关判定 72/72 不变，V4 碰撞局 seed 4500300 在 reset 的 sweep#1 被拒、与 V4 实跑位置一致。进程内原型演示 **6/6 成功**（VUS 3、BUS 3），外环终点误差 ≤ 0.16 mm，外环 cube 跟随误差 ≤ 0.14 mm，外环容器全程在画面内，BinCollisionError 0。reset 墙钟：预筛开 VUS 1.4～1.9 s / BUS 1.3～1.6 s，预筛关 34～55 s / 23～33 s ⇒ **预筛必须覆盖三处检查**，否则抽签每环境要多 5～7 分钟。⚠ 每步耗时 p95 约 290 ms，空跑诊断显示与外环 cube 停放点堆叠无关，根因未定位，实施时要再看。
   判定行：`SWAP10=REPORT VUS_first=0.998 BUS_first=0.989 fallback_mean=VUS0.002/BUS0.011 exhaust16=0/0 inner_reject=VUS0.008/BUS0.098 reset_s_prefilter_on/off=VUS1.4~1.9/34~55,BUS1.3~1.6/23~33 demo_ok=6/6 bin_collision=0`。报告 `plan-probes-r2/unmask_swap10/REPORT.md`。
+- **P2 MoveCube 圆禁区（已完成，2026-09-24）**：副本对 v4-01 的 10 行逐位一致（bias 0.5 口径），打补丁的真模拟器 reset 与副本逐值对拍 6/6。离线 5000 局：生成成功 100%、0 次耗尽、最终布局无一落进禁区；实测每次抽样拒绝率 16.1% / 55.1% / 19.7%，与 2.9 解析值吻合；每局重抽均值 1.79、p99 8（R=0.04 时 0.83，R=0.06 时 4.72）。**发现杆几何口径错**：模拟器实测 MoveCube 杆身范围是 `root − 0.15u` 到 `root + 0.05u`（长 0.2），不是计划按 InsertPeg 写的 `−0.075u…+0.025u`；按错口径杆规则永远不触发，按实测口径约 3.8% 的杆身会伸进圆里、需重抽，改后仍 0 失败、重抽均值 1.86。**实施方决定**：杆轴线段一律从实际碰撞几何取（不写死常数），2.9 已改。另：演示实际用的 way 来自第二次初始化 `initializations.1`。演示 V5 组 19/24（peg_push 5/8、gripper_push 6/8、grasp_putdown 8/8），同补丁 R=0 的对照组 22/24，差距在同布局重复演示的抖动范围内（seed 5400400 同一布局两次结果不同）；5 次失败都是任务类（2 例 PlannerExhausted 复跑仍失败，3 例推/钩到目标旁没到位，其中 5400500 对照组同样失败），与禁区无关。seed 1000442 / 1000446 执行段方块生成 2/2 通过。
+  判定行：`MOVECUBE_R005=REPORT layout_fail=0/5000 mean_redraw=1.79 p99_redraw=8 exhausted=0 demo_ok=19/24 by_way=peg_push:5/8,gripper_push:6/8,grasp_putdown:8/8 exec_spawn_ok=2/2`。报告 `plan-probes-r2/movecube_circle/REPORT.md`。
 
 # 第二部分（技术细节，供 agent 追踪）
 
