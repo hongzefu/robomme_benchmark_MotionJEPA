@@ -1,8 +1,8 @@
 # 新值模式 V6：hard 与 xhard 之间插入 xhard1/2/3、交换对象均匀化、MoveCube 环带外推
 
 > 本方案以用户 2026-09-25 的两轮要求为准，**只规划，不实施**。工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，
-> 分支 `newtaskRelease-v5`，代码锚点 HEAD `da77662`（12.134）。commit 编号沿用 `<大版本>.<小版本> <中文描述>`。
-> 依赖锚点：`uv.lock` `ff0ffd847a55…` / `pyproject.toml` `d03537d6c77a…`。
+> 分支 `newtaskRelease-v5`，代码锚点 `da77662`（12.134；此后到 12.139 只改文档与 `docs/greatlakes.md`，src/scripts/tests/依赖零改动，审计 A 段核实）。commit 编号沿用 `<大版本>.<小版本> <中文描述>`；S1～S7 的编号自 12.140 起顺延（12.136～12.139 已被计划文档占用）。
+> 依赖锚点（文件 sha256）：`uv.lock` `ff0ffd847a55…` / `pyproject.toml` `d03537d6c77a…`。
 >
 > **前置文档**：V5 计划 [NEWTASK_RELEASE_V5_PLAN.md](NEWTASK_RELEASE_V5_PLAN.md)（口径 1～14、L1～L54）；V5 总报告
 > [docs/validation/newtask-v5/20260924-v5-final-report.md](docs/validation/newtask-v5/20260924-v5-final-report.md)；V5 正式快照
@@ -40,8 +40,8 @@ InsertPeg、StopCube 原版无梯度，一字不动。所有新档与重冻的 x
 | 环境 | 梯度维度 | hard → xhard1 → xhard2 → xhard3 → xhard |
 |---|---|---|
 | BinFill | 数量（投入块数） | 投入 [3,5] → [4,5] → [4,6] → [5,6] → [5,7]；总块 12，xhard 杂乱布局 + 同色团上限 |
-| PickXtimes | 数量（次数 + 干扰块） | 次数 [4,5] → [5,7] → [6,9] → [7,12] → [6,15]；干扰 0 → 1 → 2 → 3 → 3 |
-| SwingXtimes | 数量（轮数 + 干扰块） | 轮数 3 → [3,4] → [4,6] → [5,8] → [4,10]；干扰 0 → 1 → 2 → 3 → 3 |
+| PickXtimes | 数量（次数 + 干扰块） | 次数 [4,5] → [5,7] → [6,9] → [6,12] → [6,15]；干扰 0 → 1 → 2 → 3 → 3 |
+| SwingXtimes | 数量（轮数 + 干扰块） | 轮数 3 → [3,4] → [4,6] → [4,8] → [4,10]；干扰 0 → 1 → 2 → 3 → 3 |
 | PickHighlight | 干扰数 + pick 数 | pick 3 → 4 → [4,5] → [5,6] → [5,7]；总块 6 → 7 → 8 → [8,9] → [8,10] |
 | VU / BU | 干扰数 / pick 次数 | VU 干扰 0 → 8 → 10 → 13 → 15，pick 2 → 2 → 3 → 3 → 3；BU 干扰 0 → 7 → 9 → 12 → 14，pick 同 |
 | VUS / BUS | swap 次数 / pick / 干扰 | VUS swap [2,3] → [4,5] → [5,7] → [7,9] → [8,12]；BUS [2,3] → [3,4] → [4,5] → [5,6] → [6,8]；pick 2 → 2 → 3 → 3 → 3；外环干扰 0 → 4 → 6 → 8 → 10 |
@@ -58,10 +58,10 @@ InsertPeg、StopCube 原版无梯度，一字不动。所有新档与重冻的 x
 | # | 口径 | 依据 |
 |---|---|---|
 | 1 | **原三档逐位冻结**（定义、reset 取值、演示 h5）；V1 是唯一硬闸门 | V5 口径 1/12 |
-| 2 | **录像器、`evaluation.py`、五入口冻结**；新档步数都不超过 xhard，评估预算问题不再存在，V5 FROZEN_FILES 判据原文保留 | V5 口径 2 |
+| 2 | **录像器、`evaluation.py`、`run_example.py`、`dataset_replay.py`、五入口冻结**（三文件与官方副本 `artifacts/train-parity/local-smoke-01/official-src/scripts/`、`origin/dataset-gen-NewSeed`、`13e5151` 逐字节相同，审计已核）；新档步数都不超过 xhard，评估预算问题不再存在，V5 FROZEN_FILES 判据原文保留 | V5 口径 2 |
 | 3 | **难度序 easy < medium < hard < xhard1 < xhard2 < xhard3 < xhard**，档名固定 `xhard1/xhard2/xhard3`；xhard 是最难档 | 用户 2026-09-25「改名为xhard1 xhard2 xhard3 / 目前的xhard作为最难一档」 |
-| 4 | **范围 = 原版有梯度的 13 个环境**（BinFill、PickXtimes、SwingXtimes、PH、VU、BU、VUS、BUS、VR、PatternLock、RouteStick、VPB、VPO）；StopCube、MoveCube、InsertPeg 原三档 `self.difficulty` 只在 `__init__` 赋值从不读取，不加档 | 用户原话「原版中有难度梯度的」；调查 A |
-| 5 | **新档沿用 xhard 的全部生成机制、只内插数值**：每档在已加码字段上单调不减，且至少一个字段均值严格上升；取值区间允许重叠，均值必须严格介于相邻两档之间 | 用户原话「都要比现在的hard更难」+ 第二轮「X1 < X2 < X3 … xhard 最难」 |
+| 4 | **范围 = 原版有梯度的 13 个环境**（BinFill、PickXtimes、SwingXtimes、PH、VU、BU、VUS、BUS、VR、PatternLock、RouteStick、VPB、VPO）；StopCube、MoveCube、InsertPeg 原三档之间没有任何取值分支（MoveCube/InsertPeg 三档指向同一 `config_native`，StopCube 三档同值；三者只读 `== "xhard"`），不加档 | 用户原话「原版中有难度梯度的」；调查 A |
+| 5 | **新档沿用 xhard 的全部生成机制、只内插数值**：**「加码字段」= 用户为该环境指定的难度维度**（BinFill 投入数；Unmask 干扰/swap/pick；PH pick 与总块；PickX/Swing 次数与干扰；Pattern/Route 长度；VP 放置次数），其均值逐档严格上升（区间允许重叠、下界不高于 xhard）；机制型字段（框半宽、搜索预算、交换步数、容器数、环带宽）只要求单调不减或不变，不计入 TIER_MONOTONE（审计 C 段：按「所有字段严格递增」计划表自身有 10 处违例，故收窄口径） | 用户原话「都要比现在的hard更难」+ 第二轮「X1 < X2 < X3 … xhard 最难」 |
 | 6 | **「均匀」的执行定义**：碰撞/可行性判定是硬约束，均匀性在可行集合内实现；① 跨局：每个对象作为交换参与者的边际频率相等（10000 局离线卡方 p>0.05）；② 局内：各对象参与次数极差 ≤1（做不到时 ≤2）；③ 不许「刚换完立即换回」。算法选型见 M6 | 用户原话「碰撞检测后 对象层面的选择仍然均匀」「先给出可行候选 再均匀采」 |
 | 7 | **均匀化算法 xhard 与新档共用**，VUS、BUS、VR 的 xhard 重冻；其余环境 xhard 逐位复现 v5-01（回注闸门 X0） | 用户把不均匀当缺陷提出；M3 |
 | 8 | **MoveCube「往外推」= 方块中心、goal 中心、杆抓取点三者共用一个圆环 U 做拒绝采样**：圆心放在实测可达范围的中心 (−0.06, 0)，内孔挖掉、朝向全随机，直接拒绝、不用 bias；约束落在杆的抓取点（杆尾）而不是杆根。**用户 2026-09-25 已批准：「movecube这个同意 就这么做 固化到plan内」** | 用户原话「改为一个 robot 能抓到的最大的区域 去掉中间区域…统一作为生成区域 杆/方块朝向加入全随机」「圆形 放在可达范围的中心 而不是现在这样」；实测 reach/A、B、C、U |
@@ -115,7 +115,7 @@ X1 < X2 < X3
 
 1. **碰撞不可达作用在「位置槽」上，与对象编号无关。** 每次交换在窗口末精确对换位姿，所以一局里 4 个内环容器只是在 4 个固定位姿槽之间轮换；一对能不能换只取决于它们此刻占的两个槽（VUS 长方形锚点的两条对角线几乎总不可行：可行率 6.6%，其余四条边 85～99%）。reset 时对 6 个槽对各跑一次仓库精确判定 `check_swap_sweep_prefiltered`，得到「可行槽对图 G」，之后每次交换的可行候选就是 G 里的边。对象一开始被随机分到槽里，所以**任何对编号对称的选取规则，在碰撞拒绝之后跨局边际仍然均匀**。V5 现状不均匀（VUS 参与频率 [.236,.283,.279,.201]，p≈0）的根源是发起者抽样 `randperm(3)[:2]` 只可能是 0/1/2、bin_3 永不发起的概率约 50%，**不是碰撞**。
 2. **「可行候选里均匀抽」（S1）做到跨局均匀，但局内不均衡。** 10000 局离线：S1 边际 p=0.285（均匀），但每局各对象参与次数极差均值 3.79、27% 的交换是「刚换完立即换回」；加一条「禁止立即撤销」（S1n）后极差 2.63、撤销 0。
-3. **再加一步「参与次数少者优先、平局均匀抽」（S5）就同时满足局内均衡**：极差均值 0.54、撤销 0、边际 p=0.967；叠加「G 必须连通」作 reset 接受条件后极差 ≤1 的局 VUS 95.7%、BUS 89.4%，其余 ≤2。代价：BUS 约 1/3 内环布局在 reset 被拒（G 连通率 66.5%，VUS 95.4%）。
+3. **再加一步「参与次数少者优先、平局均匀抽」（S5）就同时满足局内均衡**：单趟极差均值 0.54、撤销 0、边际 p=0.967；单趟 + G 连通时极差 ≤1 的局 VUS 95.7%、BUS 89.4%；**再加「整条极差 >1 重排 ≤20 趟」（M6(a) 的完整形式）后 VUS 100%、BUS 99.9%，撤销 0，边际 p 0.977/0.996**（VUS 平均 1.18 趟、4.8% 的局需重排；BUS 2.40 趟、13.9%）。可视化 `plan-probes/unmask/viz/`（6 张图，见证据索引）。代价：BUS 约 1/3 内环布局在 reset 被拒（G 连通率 66.5%，VUS 95.4%）。
 4. **VR 同理**：规划失败 40% 的根因是可行图太稀（每块平均只能与 1.54 块互换、41% 布局有孤立块），不是「3 个最近」限制；S1 在 VR 上「全员参与」只有 50.3%（违反 V5 口径 10），S5 为 100%、极差 ≤1 达 96.7%、reset 成功率不降。
 5. **外环做不到局内均匀**：V5 路径约束（全程可见、离内环净距、离按钮）下每窗 45 个槽对只有 5.6/3.6 对可行，28%/44% 的槽某窗没有任何搭档，任何算法「全员参与」≤4.3%。能做到的是跨局均匀（放置后序号随机重排）+ 均衡贪心 O4 把未参与率从 40%/54% 降到 28%/43%、撤销率从 42%/56% 降到 0.5%/6.7%。处置见 M7。
 
@@ -134,16 +134,16 @@ X1 < X2 < X3
 - A 末端可达图（顶抓 / 夹爪推 / 带杆推起点 × 8 个 yaw，57288 次真实规划）：全 yaw 可达 = 离基座 0.31～0.80 m，y=0 线上 x∈[−0.30, 0.175]；grasp 在 yaw=90° 时 screw 全灭但 `solve_pickup` 取最近边使 yaw≡yaw+180°，push 在 yaw=270° 缺左上楔形（有 IK、RRT* 兜底）；远端 0.80 m 与 yaw 无关。
 - B 抓杆可达图（杆根网格 × 12 个 yaw，12276 次真调 `grasp_and_lift_peg_side`）：成败只看抓取点（杆尾 = root − 0.10·u）离基座距离，0.27～0.80 全成功、≥0.85 为 0；杆 yaw 只是把抓取点伸到不同位置，所以**约束要落在抓取点而不是杆根**。
 - C 放宽区域真演示（环带 0.06～0.24、杆根也在环带、yaw 全 2π，144 局）：peg_push 24/48、gripper_push 35/48、grasp_putdown 48/48；失败集中在抓杆点 x>0.15 / 离基座 >0.80 与推距 >0.30。
-- 由此定 U（2.6），离线图 `reach/U/unified_region.png`；GL 复测 `reach/U/gl/u_results.png`：**118/144，peg_push 35/48、gripper_push 35/48、grasp_putdown 48/48**（V5 基线 5/8、6/8、8/8），失败全是推动接触（推没到位 22、抓杆 4），与位置无关。
+- 由此定 U（2.6；第一版绕桌心挖洞 GL 118/144，用户改为圆环后定稿）：圆环版离线图 `reach/U/unified_region_v2.png`；GL 复测 `reach/U/gl2/u2_results.png`：**120/144，peg_push 35/48、gripper_push 37/48、grasp_putdown 48/48**（V5 基线 5/8、6/8、8/8），失败全是推动接触（推没到位 22、抓杆 4），与位置无关。
 
 **调查结论（决定方案走向的事实）**
 
 | 事实 | 结论 |
 |---|---|
 | 哪些任务「原版有梯度」 | 13 个；StopCube、MoveCube、InsertPeg 三档逐字同值 |
-| 管道认几个新值档 | 只认写死的 `"xhard"`（src 约 105 处、共用件 5 处、scripts 单一 `DIFFICULTY`/`SEED_RULE`/身份键）；加档是一次管道改造 |
+| 管道认几个新值档 | 只认写死的 `"xhard"`（审计实测：src 带引号 `"xhard"` 143 行 = 16 个环境文件 134 行 + `utils/` 7 文件 9 行，其中 `==`/`!=` 比较 61 行；scripts 另 14 行；scripts 单一 `DIFFICULTY`/`SEED_RULE`/身份键）；加档是一次管道改造 |
 | 新档的时长/预算 | 全部落在 hard 与 xhard 之间，执行步与总步数都不超过 xhard 现状；`fail_safe_limit=5000` 与评估 1301 步都不新增约束（xhard 本身已有超 1301 的局，那是 V5 现状，本轮不动） |
-| MoveCube 能推多远 | 实测：三种 way 的可达硬边界是离基座 0.31～0.80 m（与 yaw 无关）；统一区域 U 在 GL 真演示 118/144，失败与位置无关；V5 另有 2.7% 的局方块生成时压在杆身，U 带离杆 ≥ 0.04 顺带修 |
+| MoveCube 能推多远 | 实测：三种 way 的可达硬边界是离基座 0.31～0.80 m（与 yaw 无关）；统一区域 U（圆环版）在 GL 真演示 120/144，失败与位置无关；V5 另有 2.7% 的局方块生成时压在杆身，U 带离杆 ≥ 0.04 顺带修 |
 | 均匀性 | 见上 |
 | 规模 | 13 环境 × 3 档 + 重冻 4 个 xhard = 43 格，430 候选、129 正式局；另 12 个 xhard 回注 36 局 |
 
@@ -159,6 +159,8 @@ X1 < X2 < X3
 | M6 | **均匀化算法选型**（口径 6 的实现） | (a) S5：可行候选中参与次数最少者优先、平局均匀抽、禁止立即撤销、整条极差 >1 重排 ≤20 次；VUS/BUS 另以 G 连通作 reset 接受条件。<br>(b) S1n：可行候选里均匀抽 + 禁止立即撤销（用户提议的形式；跨局均匀，局内极差 2.63，VR 全员参与只 50%）。<br>(c) S1：可行候选里均匀抽，不加任何约束 | (a) | |
 | M7 | 外环在 V5 路径约束下局内做不到均匀 | (a) 接受「跨局均匀 + O4 尽量均衡」，报告逐局未参与数。<br>(b) 放宽「路径全程可见」（零可行搭档槽 31.7% → 15.0%），交换会出画。<br>(c) 外环改沿环切向成对放置（改布局）。<br>(d) 外环不做均匀化，只做内环 | (a) | |
 | M8 | MoveCube 统一区域 | **已定**：圆环，圆心 (−0.06, 0)，内孔 0.12、外径 0.20，推距上限 0.30 保留（2.6） | — | 用户 2026-09-25「movecube这个同意 就这么做 固化到plan内」 |
+| M10 | PickHighlight「按干扰数量」在 xhard 不重冻时无法加码（干扰均值 hard=xhard=3） | (a) 只按 pick 与总块加码，干扰均值全程 3（2.9 现表）。<br>(b) 重冻 PH xhard：新增 decision 键直接抽干扰数（如 3/4/5/6），pick 不变 | (a) | |
+| M11 | VPB/VPO 的三档：原三档本就有「pick 后放到 goal_site」一段，`return_to_origin` 只是换终点，放置段数不随 hard→xhard1 增加；(k=2,不放回) 时第二块放哪没有定义（只有一个 `goal_site`），`validate_demo_plan` 也会拒；xhard1→xhard2 从放回变不放回是倒退 | (a) 只用两个已存在的旋钮：xhard1=(k1,放回)、xhard2=(k2,放回)=xhard 的机制但 VPO v 上界 3、xhard3=(k2,放回) + 演示时长/按钮数等第三轴（实施方定）。<br>(b) 引入 `return_last_only` 新语义（vp 副本已在实现）并定义 (k2,不放回) 的第二块落点（第二个 goal_site）。<br>(c) VP 两环境退出加档（13→11） | (b)，落点定义待实施方给出后再定 | |
 | M9 | VR 的 hard 是「聚簇 15 块、0 交换」另一条路线，新档按 medium → xhard 的轴（块数/交换/重拿）内插，xhard1（4 块、[3,5] 次交换、[2,3] 次重拿）是否算「比 hard 更难」 | (a) 算，照表。<br>(b) 不算，VR 新档从 6 块起只内插交换/重拿次数 | (a) | |
 
 ### 1.5 本计划推翻或修改的 V5 决策
@@ -168,7 +170,8 @@ X1 < X2 < X3
 | VUS/BUS 内环「3 个固定发起者 + 最近邻搭档」、VR「k%6 轮流 + 3 最近可行」 | 全部换成 S5（M6） |
 | 2.9 MoveCube「R=0.05 圆形禁区」+ 三个小采样框 | 改为以可达中心为圆心的圆环 U（口径 8，用户已定） |
 | 难度白名单只有一个新值档 | 加 `xhard1/2/3`，族判断（口径 11） |
-| 其余（演示 25～35 s、`evaluation.py` 判据、L51 VR 不扩区、录像器冻结） | 不变 |
+| 口径 5 / N7「所有加码字段严格递增」 | 收窄为「用户指定维度严格递增、机制型字段单调不减」（审计 C 段） |
+| 其余（xhard 的演示 25～35 s 校准、`evaluation.py` 判据、L51 VR 不扩区、录像器冻结） | 不变（25～35 s 只约束 xhard；新档 PatternLock/RouteStick 按计划数字约 700～735 帧，低于 25 s 是预期） |
 
 ## 二、逐环境改动
 
@@ -180,14 +183,15 @@ X1 < X2 < X3
 |---|---|---|---|
 | `utils/difficulty.py` | `VALID_DIFFICULTIES` | 加 `xhard1/2/3`；新增 `NEWVALUE_DIFFICULTIES`、`is_newvalue_difficulty()`、`newvalue_tier()`（xhard1=1 … xhard=4） | 无 |
 | `utils/sampling_config.py` | `XHARD_KEY`、`_strip_xhard`、`_xhard_shape`、`assert_native_decision` | 单一键名改键名集合；V0「剥掉全部新值键后与原三档快照逐字相同」照旧 | 中：三档必经，但只多剥名字 |
-| `utils/episode_spec.py`、`task_goal.py`、`xhard_home_site.py`、`unmask_swap_xhard.py` | `spec_kind_for`、`_unmask_pick_count`、`validate_demo_plan`、`decision["xhard"]` | 族判断；按本局档位取 `decision[<tier>]` | 无 |
+| `utils/episode_spec.py`、`task_goal.py`、`xhard_home_site.py`、`unmask_swap_xhard.py` | `spec_kind_for`、`_unmask_pick_count`、`validate_demo_plan`（三者是 `== "xhard"` 字面比较）、`unmask_swap_xhard` 的 `decision["xhard"]` | 族判断；`spec_kind` 升为 `native-newvalue/2`（VUS/BUS/VR/MoveCube 的 v5-01 旧规格在类别层即拒，其余 12 环境的回注行由 X0 单独规格文件承载）；`validate_demo_plan` 按档读 `demo_return_policy` 不写死 `return_to_origin`；VUS 的交换/pick 次数实际取自 `native.parameters.configs[档]`（decision 键无人读，探针 E 实测），新档要挂到该位置；按本局档位取 `decision[<tier>]` | 无 |
 | `utils/xhard.py`、`unmask_distractor_sampler.py`、`unmask_distractors.py` | 环带、干扰数、颜色轮转 | 容量从档位子树读 | 无 |
 | 各环境文件 | `config_xhard` → `config_xhard1/2/3` + 档位表、`XHARD_DECISION` → `NEWVALUE_DECISION[<tier>]`、`_native_decision`、`_resolve_sampling_config` 兜底、全部 `== "xhard"` | 自动派生的 `number_range.*` 一类会自动长出新键；手写的 `decision.xhard.*` 改成按档表 | 中；VR 的 `elif self.difficulty == "hard"` 链族判断必须在前；RouteStick `.get(difficulty, 回退 easy)` 改缺键抛错 |
 | `utils/object_generation.py` | `spawn_random_cube/target` | MoveCube 三个显式可选参数（环带外半径、x 封顶、离杆距离），默认 None 整段跳过 | 高：V1 覆盖 |
-| `scripts/parity/v4_specs.py` | `DIFFICULTY`、`SEED_RULE`、header 档位比对 | 档位改 CLI 参数（默认 xhard 保 V5 字节不变）；seed 偏移：xhard 重冻 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6 | 无 |
+| `scripts/parity/v4_specs.py` | `DIFFICULTY`、`SEED_RULE`、header 档位比对、`source_fingerprint`/每任务 `sampling_config` 校验 | 档位改 CLI 参数（默认 xhard 保 V5 字节不变）；seed 偏移：xhard 重冻 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6；**一份快照只封一条 `seed_rule`，而 v6-01 的 xhard 档同时含 12 个环境的 v5-01 回注行（4e6）与 4 个环境的重冻行（6e6）：X0 回放用单独规格文件（header 保留 V5 的 `seed_rule` 并重新封存来源指纹），v6-01 快照只装重冻行与新档行**（审计必改 4）；`tests/lightweight/test_v4_specs.py::test_seed_rule_disjoint_from_existing_layouts` 扩到 6e6/8e6/10e6/12e6 四段（`test_v5_xhard_obb_fix.py` 离线扫描已用 5e6/6e6 起的 seed，只是测试、不影响数据集） | 无 |
 | `scripts/parity/v4_rollout.py`、`v5_generation.py`（另起 `v6_generation.py`）、`train_split_config.py`（`RELEASE_NOTES` 加 `newtask-v6`）、`train_split_runner.py` | 从 header 取档位；产物 `artifacts/newtask-v6/v6-01/<tier>/…`；快照 `scripts/configs/newtask-v6/v6-01/<tier>/specs.jsonl` | 无 |
-| tests | `test_v4_xhard_{pickxtimes,swingxtimes,stopcube}`（断言恰 4 档 → 7 档）、`test_episode_spec_recorder`、`test_sampling_config_split`（改指 V6 快照）、`test_v5_xhard_pickswing`（`NATIVE_AST_GOLDEN` 不动；分支原文断言改族判断）、`test_v5_generation_tools`、`test_episode_action_sampling` | 扩到 7 档 | — |
-| 不动 | 录像器、`evaluation.py`、`seed_layout.DIFFICULTY_ORDER`、`generate_dataset_newseed.py`、`injection/*` | — | — |
+| tests | `test_v4_xhard_{pickxtimes,swingxtimes}`（断言恰 4 档 → 7 档；`test_v4_xhard_stopcube` 不改，StopCube 不加档）、`test_operand_scope.py`、`test_episode_action_sampling.py`（同样写死 4 档）、`test_v4_specs.py::test_seed_rule_disjoint_from_existing_layouts`（扩四段）、`test_episode_spec_recorder`、`test_sampling_config_split`（改指 V6 快照）、`test_v5_xhard_pickswing`（`NATIVE_AST_GOLDEN` 不动；分支原文断言改族判断）、`test_v5_generation_tools`、`test_episode_action_sampling` | 扩到 7 档 | — |
+| 不动 | 录像器、`evaluation.py`、`seed_layout.DIFFICULTY_ORDER`、`injection/*` | — | — |
+| 待核 | `generate_dataset_newseed.py` 的 `extract_native_sampling` / `validate_sampling_config` 只认 `config_xhard`，`v4_demo_probe` 与 `injection/rollout` 会调用 | S1 先确认 V6 链路是否经过；经过则按族判断改 | 低 |
 
 ### 2.1 改动范围总表
 
@@ -215,12 +219,12 @@ X1 < X2 < X3
 
 ### 2.3 VideoUnmask / ButtonUnmask
 
-hard = 15 容器 / pick 2 / 无干扰；xhard = 8 容器 / pick 3 / 贴身环带干扰 15（VU）/ 14（BU），一半含 cube，`min_gap_factor` 0.75，独立停放。新档沿 xhard 机制（8 容器 + 贴身环带），干扰总数保证 > hard 的 15 个容器：
+hard = 15 容器 / pick 2 / 无干扰；xhard = 8 容器 / pick 3 / 贴身环带干扰 15（VU）/ 14（BU），一半含 cube，`min_gap_factor` 0.75，独立停放。新档沿 xhard 机制（8 容器 + 贴身环带），容器总数（8 内环 + 干扰）保证 ≥ 16 > hard 的 15：
 
 | 字段 | hard | xhard1 | xhard2 | xhard3 | xhard |
 |---|---|---|---|---|---|
 | VU 内环容器 / pick / 干扰 / 含 cube | 15 / 2 / 0 | 8 / 2 / 8 / 4 | 8 / 3 / 10 / 5 | 8 / 3 / 13 / [6,7] | 8 / 3 / 15 / [7,8] |
-| BU | 15 / 2 / 0 | 8 / 2 / 7 / [3,4] | 8 / 3 / 9 / [4,5] | 8 / 3 / 12 / 6 | 8 / 3 / 14 / [7,7] |
+| BU | 15 / 2 / 0 | 8 / 2 / 8 / 4 | 8 / 3 / 10 / 5 | 8 / 3 / 12 / 6 | 8 / 3 / 14 / [7,7] |
 
 - 环带、密度推导、三色轮转、停放点全沿 V5；干扰数少时环带随机稀疏放置（不重新推导带宽）。
 - 帧数：pick 最坏 125 + put down 52，全部 ≤ xhard。
@@ -254,7 +258,7 @@ hard = 4 容器 / swap [2,3] / pick 2 / 每次 50 步 / 无外环；xhard = swap
 
 ### 2.6 MoveCube（只推 xhard，重冻；M2、M8）
 
-**现状**：方块候选框 ±0.10（面积 0.040 m²）、demo goal 框 ±0.11、exec goal 框 ±0.06、杆根两个 ±0.05 小框（y=±0.2），三者各不相同；桌心 R=0.05 圆禁区；2.7% 的局方块生成时压在杆身；杆 yaw 与方块 yaw 已是全 2π。
+**现状**：方块候选中心框 ±0.10（面积 0.040 m²；最终中心再抖 ±0.03，实际覆盖约 ±0.13）、demo goal 框 ±0.11、exec goal 框 ±0.06、杆根两个 ±0.05 小框（y=±0.2），三者各不相同；桌心 R=0.05 圆禁区；2.7% 的局方块生成时压在杆身；杆 yaw 与方块 yaw 已是全 2π。
 
 **要做（统一区域 U 圆环版，用户已定；`reach/U/region.py` 为离线定义）**：方块中心、goal 中心、**杆抓取点（杆尾 = root − 0.10·u）**三者共用同一个圆环做拒绝采样，杆根由抓取点 + yaw 推出：
 
@@ -282,7 +286,7 @@ hard = 4 容器 / swap [2,3] / pick 2 / 每次 50 步 / 无外环；xhard = swap
 圆环版 24 局失败：推没到位 20（gripper 11、钩推 9）、抓杆 PlannerExhausted 3、FailsafeTimeout 1（步数中位 500、最大 5000，墙钟中位 49 s，517 s 跑完 144 局）。第一版 26 局失败：推没到位 22（gripper 13、钩推 9）、抓杆 PlannerExhausted 2、FailsafeTimeout 2；成功/失败段的推距、抓杆点、离基座距离中位数持平（位置不再是失败来源）；失败段方块棱角更朝前（|yaw mod 90° − 45°| 中位 14～19° 对 24～26°），是推动接触问题，V5 同样存在。步数中位 500、最大 5000（1 局）。无 SceneGenerationError / EpisodeSpecError。
 
 - 可视化：`reach/U/unified_region_v2.png`（圆环版区域、散点、示例）、`reach/U/gl2/u2_results.png`（圆环版复测）；第一版 `reach/U/unified_region.png`、`reach/U/gl/u_results.png` 留作对照、`reach/A/reach_envelope.png`、`reach/B/peg_envelope.png`。
-- 验收：`MC_REGION=PASS violations=0 layout_fail=0`（三物体、推起点、杆身全部按 U 复核）；`MC_DEMO=REPORT ok=…/12`，与 GL 118/144 同量级。
+- 验收：`MC_REGION=PASS violations=0 layout_fail=0`（三物体、推起点、杆身全部按 U 复核）；`MC_DEMO=REPORT ok=…/12`，与 GL 120/144 同量级。
 - 复测运行方式：GL 占位 job 内 `srun --overlap` 16 worker，逐局产物写节点 `/tmp` 即删，NFS 不留大文件，结果搬回 `/data`。
 
 ### 2.7 BinFill
@@ -306,12 +310,12 @@ hard = 3 色 / 总块 [10,12] / 投入色 [2,3] / 投入 [3,5] / 原生布局；
 | PickXtimes | hard | [4,5] | 4.5 | 0 | 原生（框 0.2） |
 | | xhard1 | [5,7] | 6 | 1 | xhard 机制（框 0.25、中心距 0.08、精确 OBB、均匀无偏置） |
 | | xhard2 | [6,9] | 7.5 | 2 | 同 |
-| | xhard3 | [7,12] | 9.5 | 3 | 同 |
+| | xhard3 | [6,12] | 9 | 3 | 同 |
 | | xhard | [6,15] | 10.5 | 3 | 同 |
 | SwingXtimes | hard | 3 | 3 | 0 | 原生 |
 | | xhard1 | [3,4] | 3.5 | 1 | xhard 机制（0.08、精确 OBB） |
 | | xhard2 | [4,6] | 5 | 2 | 同 |
-| | xhard3 | [5,8] | 6.5 | 3 | 同 |
+| | xhard3 | [4,8] | 6 | 3 | 同 |
 | | xhard | [4,10] | 7 | 3 | 同 |
 
 干扰块颜色仍取黄/青/品红前 k 个；数词 ≤ 12 不越界；帧数 ≤ xhard。
@@ -320,11 +324,13 @@ hard = 3 色 / 总块 [10,12] / 投入色 [2,3] / 投入 [3,5] / 原生布局；
 
 | 档 | pick | 总块 spawn | 干扰 = spawn − pick | 机制 |
 |---|---|---|---|---|
-| hard | 3 | 6 | 3 | 原生（RGB 均匀色） |
+| hard | 3 | 6 | 3（均值 3） | 原生（RGB 均匀色） |
 | xhard1 | 4 | 7 | 3 | xhard 机制（HSV 任意色、精确 OBB） |
-| xhard2 | [4,5] | 8 | 3～4 | 同 |
-| xhard3 | [5,6] | [8,9] | 2～4 | 同 |
-| xhard | [5,7] | [8,10] | 1～5 | 同 |
+| xhard2 | [4,5] | [7,8] | 3（均值 3） | 同 |
+| xhard3 | [5,6] | [8,9] | 3（均值 3） | 同 |
+| xhard | [5,7] | [8,10] | 1～5（均值 3） | 同 |
+
+审计 C 段发现：PH 的干扰数 = spawn − pick 两者独立抽，**xhard 自己的干扰均值 3 与 hard 相同**，所以在不重冻 PH xhard 的前提下「按干扰数量加码」做不到；上表已把 xhard2 的 spawn 改为 [7,8]（原 8，干扰均值 3.5 会高过 xhard）。要不要为 PH 重冻 xhard 引入直接抽干扰数的轴，见 M10。
 
 保持 `spawn_lo ≥ pick_hi` 断言；框、预算不动；reset 成功率随 N 从 7 到 10 单调下降（离线 N=8 98.7%、N=9 93.4%、N=10 71.8%），全部不低于 xhard。
 
@@ -387,12 +393,12 @@ hard 与 xhard 之间只有两个开关（演示方块数 k：1 → 2；`demo_re
 
 | 判据 | 查什么 | 判定行 |
 |---|---|---|
-| V0 | `config_easy/medium/hard` 与原三档消费的 `NATIVE_SAMPLING` 键零 diff；剥掉四个新值键后 decision 与 V5 快照逐字相同 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
+| V0 | `config_easy/medium/hard`（StopCube/MoveCube/InsertPeg 为 `config_native`/`_CONFIG_CURRENT`）与原三档消费的 `NATIVE_SAMPLING` 键零 diff；剥掉四个新值键后 decision 与 V5 快照逐字相同 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
 | LIGHTWEIGHT | `tests/lightweight/` 全量 ≤5 分钟，失败集合与 S0 基线（46 failed / 12 errors）相同；新增族判断覆盖、S5 均匀性、档位单调性单测 | `LIGHTWEIGHT=PASS failure_set_equal_baseline=1` |
 | **V1（唯一硬闸门）** | 原三档 16×9 = 144 条与 `13e5151` 逐位比 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
 | X0（M3(a)） | 12 个未改动环境的 xhard：v5-01 specs 行在 V6 代码重跑 3 局，h5 SHA 与 v5-01 相同 | `XHARD_REPLAY=PASS envs=12 compared=36 sha_equal=36` |
 | FROZEN_FILES | 录像器 `git diff --quiet`；`evaluation.py` 与官方副本 diff；五入口 | `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
-| 单调性 | 每环境每档抽 200 局离线：各加码字段均值严格递增（口径 5） | `TIER_MONOTONE=PASS envs=13 violations=0` |
+| 单调性 | 每环境每档抽 200 局离线：用户指定维度的均值严格递增、机制型字段单调不减（口径 5） | `TIER_MONOTONE=PASS envs=13 violations=0`（字段清单按 2.3～2.12 各表「加码字段」列） |
 | 生成报告（不设门槛） | 每格 draft/rollout/backfilled/shortfall；均匀性统计（每局各对象参与次数、撤销数、外环未参与数）；MoveCube 环带违例 | `V6_GENERATION=REPORT cells=43 draft_ok=… rollout_ok=… shortfall=… uniform_range_gt1=… undo=…` |
 
 ### 3.3 实施步骤
@@ -414,7 +420,7 @@ hard 与 xhard 之间只有两个开关（演示方块数 k：1 → 2；`demo_re
 
 ## 〇、前置声明与红线
 
-N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`evaluation.py`、五入口冻结。N3 待决项不自填。N4 新值流按 L1(a) 允许原地移位，未改动环境的 xhard 须过 X0。N5 共用函数新参数默认等价关闭，`NATIVE_SPEC_GOLDEN`/`NATIVE_AST_GOLDEN` 不动。N6 碰撞检测不为均匀让路。N7 每档所有加码字段均值严格介于相邻档之间。N8 文档禁硬编码行号。N9 subagent 一律 opus、并行不设上限、workflow 需逐次审批。N10 长任务 tmux + Monitor。
+N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`evaluation.py`、五入口冻结。N3 待决项不自填。N4 新值流按 L1(a) 允许原地移位，未改动环境的 xhard 须过 X0。N5 共用函数新参数默认等价关闭，`NATIVE_SPEC_GOLDEN`/`NATIVE_AST_GOLDEN` 不动。N6 碰撞检测不为均匀让路。N7 每档在用户指定维度上均值严格介于相邻档之间，机制型字段单调不减（口径 5）。N8 文档禁硬编码行号。N9 Agent 工具派的 subagent 一律 opus、并行不设上限；workflow 需逐次审批且其 `agent()` 只用 sonnet（收尾/计划类最多 3 次 opus）、`model` 不得省略（与 CLAUDE.md 一致）。N10 长任务 tmux + Monitor。
 
 ## 一、按阶段、按文件的逐项改动清单
 
@@ -422,16 +428,16 @@ N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`eval
 
 | 环境 | 新档 config 键 | decision 子树键 | 新增/改动方法 |
 |---|---|---|---|
-| BinFill | 投入数区间 | `<tier>.{layout: clutter, color_mix}` | `_spawn_cubes_xhard` 读档位 |
-| PickXtimes / SwingXtimes | 次数区间、干扰数 | `<tier>.{distractor_count, min_center_gap, corner_bias: 0}` | 干扰颜色取前 k 色 |
-| PH | pick、spawn 区间 | `<tier>.{hsv_floor_color, exact_obb}` | — |
-| VU / BU | pick、内环容器 8 | `<tier>.distractor.{count, cube_range}` | 环带稀疏放置；藏 cube `randperm(4)[:pick]`（M5） |
-| VUS / BUS | swap、pick、干扰、交换步数 | `<tier>.{distractor, distractor_swap, swap_speed_multiplier, inner_swap_policy: balanced}` | `_plan_inner_swaps_balanced`、G 连通判定、锁定循环内改读预规划 |
-| VR | 块数、swap、repick | `<tier>.{min_center_gap 0.12, partner_policy: balanced}` | `_plan_swap_partners_xhard` 改 S5 |
+| BinFill | 投入数区间 | `decision.configs.<tier>.{layout_mode: clutter, color_mix}`（投入色沿 xhard） | `_spawn_cubes_xhard` 读档位 |
+| PickXtimes / SwingXtimes | 次数区间、干扰数 | `<tier>.{distractor.colors（长度即干扰数）, min_center_dist_m}`（`corner_bias` V5 已删，不得写回，`_xhard_shape` 会拒） | 干扰颜色取前 k 色 |
+| PH | pick、spawn 区间 | `<tier>.{block_color_policy, block_color_hsv}`（精确 OBB 是硬编码调用，无键） | — |
+| VU / BU | pick、内环容器 8 | `<tier>.distractor.{count, cube_count_range}`、`bin_layout_policy.<tier>.min_gap_factor` | 环带稀疏放置；藏 cube `randperm(4)[:pick]`（M5） |
+| VUS / BUS | swap、pick、干扰、交换步数 | `<tier>.{distractor（含 cube 数 = 干扰数一半：2/3/4）, distractor_swap, swap_speed_multiplier, inner_swap_policy: balanced}`；VUS 的 swap/pick 次数实际读 `native.parameters.configs[<tier>]`（探针 E 实测） | `_plan_inner_swaps_balanced`、G 连通判定、锁定循环内改读预规划 |
+| VR | 块数、swap、repick | `<tier>.layout.min_center_dist_m 0.12`、`<tier>.swap_plan.partner_rule: balanced`、`num_repeats_range.<tier>`（手写子树，不会自动长出） | `_plan_swap_partners_xhard` 改 S5；`_compute_dynamic_swap_candidates` / `_select_swap_pair_from_positions` 死代码同 Unmask 处理 |
 | MoveCube | — | `demo_layout.xhard.region`（离基座环带、桌心半径、x/y 封顶、推距、离杆）、`execution_layout.xhard.region` | `spawn_random_*` 新增可选参数；杆改抽抓取点 |
 | PatternLock | 节点区间 | `<tier>.path_search_max_attempts 20000` | — |
 | RouteStick | `segment_count_range` | — | 缺键抛错 |
-| VPB / VPO | k、放回策略、v 上界 | `<tier>.{demo_object_count, demo_return_policy, visit_count_max}` | `return_last_only`；`validate_demo_plan` 放行 |
+| VPB / VPO | k、放回策略、v 上界 | `<tier>.{demo_object_count, demo_return_policy}`；VPO 的 v 上界只能走 decision 新键（`visit_selection.count_sampler` 在 native 块，V0 零 diff） | `return_last_only`；`validate_demo_plan` 按档放行（含 (k2,不放回) 的落点定义，M11） |
 
 ## 二、对拍闸门总表
 
@@ -441,28 +447,30 @@ V0 → LIGHTWEIGHT → V1 → X0 → FROZEN_FILES → TIER_MONOTONE → 生成�
 
 ```bash
 # 只读核验
-git diff --quiet 13e5151 -- src/robomme/env_record_wrapper/RecordWrapper.py && ls -1 scripts/*.py | wc -l
-# 每次提交前
-uv run python -m pytest tests/lightweight/ -q
+git diff --quiet da77662 -- src/robomme/env_record_wrapper/RecordWrapper.py && echo RECORDER_FROZEN=PASS; ls -1 scripts/*.py | wc -l   # 期望 5（fail_safe_limit 2000→5000 发生在 12.76，不能与 13e5151 比）
+# 每次提交前（与 V5 S0 基线同口径）
+timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q
 # 单环境演示探针（S3）
-uv run python scripts/parity/v4_rollout.py probe --env <Env> --difficulty <tier> --episodes 4
+uv run --no-sync python -m scripts.parity.v4_demo_probe --task <Env> --difficulty <tier> --n 4 --out artifacts/newtask-v6/demo-probe/<Env>-<tier>
 # V1
 uv run --no-sync python scripts/parity/train_split_parity.py compare --run base=artifacts/newtask-v6/v1/base --run v6=artifacts/newtask-v6/v1/v6 --pair base/B:v6/B
 # 生成（tmux 起）
-tmux new-session -d -s v6gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run python scripts/parity/v6_generation.py pipeline --run-id v6-01 --tiers xhard,xhard1,xhard2,xhard3 --workers 8 2>&1 | tee artifacts/newtask-v6/v6-01/run.log; echo \"EXIT_CODE=\$?\" >> artifacts/newtask-v6/v6-01/run.log"
+mkdir -p artifacts/newtask-v6/v6-01
+tmux new-session -d -s v6gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.parity.v5_generation pipeline --run-id v6-01 --tiers xhard,xhard1,xhard2,xhard3 --official-root artifacts/train-parity/local-smoke-01/official-src --draw-workers 8 --workers 8 2>&1 | tee artifacts/newtask-v6/v6-01/run.log; echo \"EXIT_CODE=\$?\" >> artifacts/newtask-v6/v6-01/run.log"
+# （`--tiers` 是 S1 新增参数；V1 的 run 步用 `train_split_parity run --manifest scripts/parity/manifest_16x3.json …`，V5 的 `--subset 16x9` 已不存在）
 ```
 
 ## 四、风险登记
 
 | # | 风险 | 处置 |
 |---|---|---|
-| 1 | 约 105 处 `"xhard"` 字面判断改族判断时漏掉一处，新档静默落进原三档或 xhard 路径 | grep 计数归零作 S1 验收；每环境每档一次 reset 断言 `spec_kind` 与档名 |
+| 1 | src 143 行 `"xhard"` 字面（61 行比较）改族判断时漏掉一处，新档静默落进原三档或 xhard 路径 | 以 143/61/14 为起点 grep 计数归零作 S1 验收；每环境每档一次 reset 断言 `spec_kind` 与档名 |
 | 2 | BUS 内环 G 连通率 66.5%，reset 拒绝约 1/3 | 抽签上限 60；如实报 shortfall |
 | 3 | 外环局内不均匀（M7） | 报告逐局未参与数 |
-| 4 | MoveCube 两种推法约 27% 推没到位（V5 同量级，与位置无关） | 已实测（GL 118/144）；S3 只做回归 12 局 |
+| 4 | MoveCube 两种推法约 25% 推没到位（V5 同量级，与位置无关） | 已实测（GL 圆环版 120/144）；S3 只做回归 12 局 |
 | 5 | VP `return_last_only` 是新语义，任务文本要能描述 | S3 核对 `__ALT__` 文本 |
 | 6 | AST 锁：内环预填搭档会跳过锁定循环的运行时复核分支 | 复核另挂在循环内读预规划处，锁定测试保持通过 |
-| 7 | 产物 80～100 GB、V1 6 h | `/data` 余量核对后再起 |
+| 7 | 生成产物 80～115 GB（v5-01 实测 48 局 h5 33 GB）+ V1 两侧约 98 GB + worktree 约 56 GB，峰值约 230～270 GB；V1 6 h | `/data` 余 2.4 TB（审计核），够；起跑前再核 |
 
 ## 五、盲区诚实清单
 
@@ -482,6 +490,7 @@ tmux new-session -d -s v6gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run python 
 | B MoveCube | `movecube/` | report.md | mc_v6.py、sweep_v6.py、budget_tail.py、**viz_v6.py → movecube_v6_layouts.png**、viz_ranges.py |
 | B2 MoveCube 统一区域 U（第二轮，真实模拟器实测） | `reach/A`、`reach/B`、`reach/C`、`reach/U` | 各 report.md | A：probe_reach.py → reach_maps.png / reach_envelope.png；B：probe.py → peg_reach_maps.png / peg_envelope.png；C：gen_layouts.py → w_results.png；U：region.py、viz_u.py → unified_region.png，gl/ → u_results.png |
 | C Unmask 四环境 | `unmask/` | report.md | p2_inner_mc.py、p2d_connected.py、p3_outer_mc.py、p4b_ring_wide.py、p5_inner_count.py |
+| C2 Swap 方案可视化（用户「我需要做到局内均衡 给出 Swap 方案可视化图 内环外环分别是什么样的」） | `unmask/viz/` | — | fig1～fig6 → layout_inner_outer.png（内环 4 槽 + 外环 10/14/18、可见区、按钮禁入圈）、feasible_slot_graph.png（G 的 6 条边可行率）、s5_episode_timeline.png（S5 vs S1 一局）、balance_compare.png（S1/S1n/S5 极差与撤销）、outer_ring.png（O4、零搭档热力图）、swap_scheme_overview.png（流程） |
 | D VideoRepick | `videorepick/` | report.md | （见目录） |
 | E 计数类四环境 | `count-tasks/` | report.md | mc_lib.py、run_mc.py、binfill_color.py、camera_reach.py、frames_analyze.py |
 | F 路径/放置类六环境 | `path-place-tasks/` | report.md | pl_dfs_hit.py、pl_path_study_v6.py、rs_reach.py、vp_layout_mc.py |
