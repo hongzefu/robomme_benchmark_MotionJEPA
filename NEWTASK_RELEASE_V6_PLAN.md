@@ -162,6 +162,7 @@ X1 < X2 < X3
 | M10 | PickHighlight「按干扰数量」在 xhard 不重冻时无法加码（干扰均值 hard=xhard=3） | (a) 只按 pick 与总块加码，干扰均值全程 3（2.9 现表）。<br>(b) 重冻 PH xhard：新增 decision 键直接抽干扰数（如 3/4/5/6），pick 不变 | (a) | |
 | M12 | VU/BU 新档内环容器数从 hard 的 15 降到 xhard 机制的 8（口径 5 下容器数算不算加码字段） | (a) 不算（机制型字段），按 2.3 表。<br>(b) 算，新档内环容器 12/10/8 递减不允许，改为保持 15 并只加干扰 | (a) | |
 | M13 | AGENTS.md 规则 11 字面仍是「逐个批准」，与本计划授权边界（用户 2026-09-21 口头：src/robomme 免逐项批准、改完出报告）不一致 | (a) 更新 AGENTS.md 规则 11。<br>(b) 计划头部引用用户原话并保留 AGENTS.md 原文 | (b) | |
+| M14 | BUS 的「G 连通」reset 接受条件把接受率从 96% 压到 63%（GL 实测）；最常见拒绝形态 `[0,0,1,1,0,0]`（22/28）下 S5 仍可行、极差也能 ≤1，只是对象分两组永不相遇 | (a) 维持 G 连通，接受约 37% 拒绝（已实测）。<br>(b) 放宽为「无孤立槽」，本批可收回 22/28 个拒绝（未实测） | (a) | |
 | M11 | VPB/VPO 的三档：原三档本就有「pick 后放到 goal_site」一段，`return_to_origin` 只是换终点，放置段数不随 hard→xhard1 增加；(k=2,不放回) 时第二块放哪没有定义（只有一个 `goal_site`），`validate_demo_plan` 也会拒；xhard1→xhard2 从放回变不放回是倒退 | (a) 只用两个已存在的旋钮：xhard1=(k1,放回)、xhard2=(k2,放回)=xhard 的机制但 VPO v 上界 3、xhard3=(k2,放回) + 演示时长/按钮数等第三轴（实施方定）。<br>(b) 引入 `return_last_only` 新语义（vp 副本已在实现）并定义 (k2,不放回) 的第二块落点（第二个 goal_site）。<br>(c) VP 两环境退出加档（13→11） | (b)；vp 副本（/data/hongzefu/v6-draft/vp）已实现并回放核验：不放回的块落在隐藏 `goal_site` 中心沿 y 轴等距排开（VPB 间距 0.07、VPO 0.10，落点确定、不抽随机数，generator 状态逐字节不变）；`return_last_only` = 前 k−1 块按不放回落点、末块放回原位；`validate_demo_plan` 按档读策略；VPO 新增 decision 键 `visit_count_range`（会让 `test_snapshot_matches_source` 对 v5 快照失败，S4 重导快照后修）。按 reset 实际任务表，VPB 各档 pick-place 段数 3/3/6/6/6，难度差在终点是原位还是桌面。本机真演示 VPB (k1,放回) 3/3、(k2,不放回) 3/3、VPO (k1,v[2,4],放回) 3/3；PatternLock 三档 3/3 且首局步数 646/924/1256（xhard 1614），RouteStick xhard1/2 3/3（1000/1200 步）；VP 的 xhard 本身 1500～1993 步已超评估 1301（V5 现状，与口径 2 一致：新档不超 xhard） | |
 | M9（论据修正：审计补测 4 块/5 块 reset 成功率 0.625/0.629，低于原写的 ≈0.9/≈0.75；块数少时可行图更稀 1.29/1.46 < 6 块的 1.54，「块数少更易」不成立） | VR 的 hard 是「聚簇 15 块、0 交换」另一条路线，新档按 medium → xhard 的轴（块数/交换/重拿）内插，xhard1（4 块、[3,5] 次交换、[2,3] 次重拿）是否算「比 hard 更难」 | (a) 算，照表。<br>(b) 不算，VR 新档从 6 块起只内插交换/重拿次数 | (a) | |
 
@@ -174,6 +175,19 @@ X1 < X2 < X3
 | 难度白名单只有一个新值档 | 加 `xhard1/2/3`，族判断（口径 11） |
 | 口径 5 / N7「所有加码字段严格递增」 | 收窄为「用户指定维度严格递增、机制型字段单调不减」（审计 C 段） |
 | 其余（xhard 的演示 25～35 s 校准、`evaluation.py` 判据、L51 VR 不扩区、录像器冻结） | 不变（25～35 s 只约束 xhard；新档 PatternLock/RouteStick 按计划数字约 700～735 帧，低于 25 s 是预期） |
+
+### 1.6 副本实现与实测状态（2026-09-25 晚，用户「可以先开始做代码的改动但是不要修改原文件以副本的形式保留下来」）
+
+四个 git worktree 副本（主仓库源码一字未动），各自分支未 push：
+
+| 副本 | 分支 / commit | 做了什么 | 实测 | 待合入时定 |
+|---|---|---|---|---|
+| `/data/hongzefu/v6-draft/movecube` | `v6-draft-movecube` / `7adbca5` | 2.6 圆环 U 落源码：`spawn_random_cube/target` 新增 `annulus/base_band/segment_clearance/push_feasible` 四个可选参数（默认 None 整段跳过）；`config_xhard.center_exclusion` → `region`；xhard 走 `_load_scene_xhard_region`（抽抓取点 + yaw 推杆根）；方块预算 4096；新增 `test_v6_xhard_movecube_region.py` | 真实 reset 2000 局 `MC_REGION=PASS violations=0`；本机真演示 9/12（3 局推没到位）；easy/medium/hard 与主仓库 reset 逐字节相同；MoveCube 相关 133 测试通过 | 副本就地重导了 V5 快照（只有 MoveCube xhard 两段 diff）→ 合入时改为另起 `newtask-v6` 快照、恢复 V5 快照；v5-01 的 MoveCube xhard 行不能再回放（重冻预期） |
+| `/data/hongzefu/v6-draft/swap` | `v6-draft-swap` / `fec4d98` | 2.2/2.4/2.5 S5 + O4 落源码：新文件 `utils/swap_uniform.py`（G、S5 规划、序列复核、O4 分组，局部生成器种子 `objects.swap_plan_seed`）；VUS/BUS 新键 `decision.xhard.swap_plan_v6`（含 M5 开关 `hidden_bin_permutation_size=4`）；外环编号重排记为取值点 `label_perm`；VR `swap_partner_u` → `swap_plan_seed`；新增 `test_v6_swap_uniform.py`（19 项） | 离线 10000 局：VUS p=0.998 极差 ≤1 100%、BUS 0.937 / 99.83%、VR 0.994 / 95.7%，撤销 0；本机真实 reset 200：VUS G 不连通拒 3%、BUS 31%、VR 82 次（与旧版逐 seed 一致），局内极差 ≤1 100%/100%/93.2%；真演示 VUS 4/4、BUS 3/4、VR 3/4（失败皆 reset 设计内拒绝）；O4 外环未参与 2.57/10、4.42/10，撤销 0.46%/4.1%；原三档 36 局逐字节相同 | `test_snapshot_matches_source` 对 V5 快照失败（未改快照，等 V6 快照重导） |
+| `/data/hongzefu/v6-draft/vp` | `v6-draft-vp`（未 commit，收尾中） | 2.10 三种放回策略（`return_to_origin` / `return_last_only` / `native_random_goal_site`）与 (k2,不放回) 落点定义（M11）；VPO 新键 `visit_count_range`；`scripts/parity/v6_tier_monotone.py` 单调检查器 + `test_v6_tier_monotone.py` | 本机真演示：VPB (k1,放回) 3/3、(k2,不放回) 3/3、VPO (k1,v[2,4],放回) 3/3、(k2,v[2,3],不放回) 2/3、(k2,v[2,4],不放回) 2/3、(k2,只放回末块) 3/4（对照 xhard 3/4）；PatternLock/RouteStick 三档各 3/3，步数 646/924/1256、1000/1200/1400；PatternLock 三档 DFS 预算耗尽 0；`TIER_MONOTONE` 按计划表跑出 1 处违例（PH xhard3，已在 2.9 表修正） | 两组不放回各 1 局 DatasetGenerationError 原因待查 |
+| `/data/hongzefu/v6-draft/pipeline` | `v6-draft-pipeline` / `891180f` | 2.0 管道改造：`difficulty.py` 新增族常量与 `require_xhard_only`；`sampling_config.py` 按键名集合剥离 + `fill_missing_newvalue`（只在同层已有 xhard 时补新档，V4 以前快照不补）；`spec_kind_for`/`_unmask_pick_count`/`validate_demo_plan`/`unmask_swap_xhard` 族判断；13 环境各加 `config_xhard1/2/3` + decision 子树（计划 2.3～2.12 数值；VUS 次数挂到 `native.parameters.configs[档]`；VUS/BUS 外环 cube 数 [2,2]/[3,3]/[4,4]；VPO 的 v 上界放源码常量）；三个不加档环境 `__init__` 拒收新档名；`v4_specs --difficulty/--seed-profile v5|v6`（默认与 V5 逐字节同）、`train_split_runner` 按档核验、`v4_rollout` 从 header 取档与 seed 规则、`v5_generation` 按档分目录、`train_split_config` 加 `newtask-v6`；新增 `test_v6_difficulty_tiers.py` | `"xhard"` 字面 130→40（剩余全为定义/键名/docstring，业务比较清零）；lightweight 78 文件失败集合与主仓库基线 46F/12E 逐条相同；V0 `NATIVE_DEFS_UNCHANGED=PASS envs=16`；本机 reset：16 环境 × 4 档 128 局 spec/位姿 sha 与主仓库逐字相同，13 × 3 新档 78 局 76 成功（VR xhard1/2 各 1 局 SceneGenerationError，换 seed 通过）、`spec_kind=native-newvalue/1`；StopCube/MoveCube/InsertPeg × 新档 18 局全部按预期 ValueError | ① VR 新档 reset 成功率 30 seed 实测 19/17/18（≈60%，与审计 0.625 一致，M9 论据已改）；② VP「不放回」这里只是最小占位（方块留台上，有答案泄露/瞬移副作用）→ 合入时以 vp 副本的落点定义为准（M11）；③ `test_episode_action_sampling` 未扩 7 档（20 条基线失败）；④ V6 快照未导出（S4）、README 未更新（S7）；⑤ 新档只验证到 reset，完整演示见 GL 273 局实测 |
+
+GL 实测（只 `srun --overlap` 连现有占位 job 61890467/61890468，不开新 job）：MoveCube 圆环 U 144 局 120/144（2.6）；13 环境 × 3 新档 × 6 局 + xhard 对照 = 273 局（`plan-probes/tiers/`，用 `sampling_config` 覆盖 xhard 数值模拟新档；第一次 16 worker 跑到 48 局 worker 静默死亡，改 8 worker 续跑）；Swap S5 真机回放 VUS/BUS/VR（`plan-probes/swap-real/`）。结果见各目录 report.md，并入本计划对应小节。
 
 ## 二、逐环境改动
 
@@ -215,6 +229,8 @@ X1 < X2 < X3
 3. 锁定循环里的搭档分支改为读预规划（仿 VR `_xhard_planned_partner` 先例），仍做 `joint_sweep_from_actual` 复核；外环 H1 守卫改为覆盖 G 中全部可行槽对。
 4. M5(a)：藏 cube 容器 `randperm(4)[:pick]`。
 5. 离线验收（按 M6(a) 完整形式 S5 + 整条重排 ≤20 + G 连通）：边际 p>0.05、极差 ≤1 ≥ 99%（离线 VUS 100% / BUS 99.9%）、撤销 0（「全部布局」口径下 S5 单趟撤销率 0.2%/5.0%，G 连通子集上为 0）；单测锁定「G 为完全图时 S5 边际严格均匀」。
+
+**GL 真机验证（2026-09-25，`plan-probes/swap-real/`，占位 job 61890468，292 局）**：S5 以进程内 patch 形式（交换对不是规格取值点、无法回放注入）在真实演示链路跑 VUS/BUS/VR 各 48 局（通过 reset 的局），对照 V5 各 24 局：**演示成功 48/48、48/48、48/48（V5 24/24 ×3）**；局内极差 ≤1 100% / 100% / 93.8%（V5 0% / 12.5% / 8.3%），立即撤销 0/494、0/331、0/476（V5 56/242、46/171、22/240）；跨局参与频率卡方 p 0.991 / 0.999 / 0.9997（V5 0.005 / 0.025 / 0.945）；窗首运行时复核与逐控制步真实碰撞盒复核全部通过（16350/10971/23800 步零拒绝），规划序列 = 执行序列 48/48；外环 O4 未参与 28.3% / 40.2%、撤销 0.4% / 3.3%（V5 45%/52%、44%/46%）。reset 接受率：VUS 92.3%（V5 100%）、**BUS 63.2%（V5 96%，G 不连通拒 28/76）**、VR 60.8%（V5 66.7%，同种子接受集合逐局相同）。实装要点：VUS/BUS 预填搭档后必须显式挂回窗首 `joint_sweep_from_actual` 复核；`_verify_swap_binding` 从最近邻核验改为「规划对 + 扫掠可行」；`swap_initiators` 轮转语义作废改记 `actions.swap_pairs.<k>`；VR `resolve` 允许任意方向；规划种子在主流追加一次抽取、平局/重排走局部生成器（swap 副本已按此实现）。BUS 的 G 连通接受条件见 M14。
 
 **外环（O4）**：`plan_distractor_swaps` 改均衡贪心（每窗在可行槽对里选参与次数和最小、禁止立即撤销），放置后追加一次 `randperm(count)` 重排序号；`evaluate_outer_candidate` 的 vis → btn → inner_clear → exact 四道判定不动（M7(a)）。离线目标：未参与对象 VUS ≤30%、BUS ≤45%，撤销 ≤1%/≤7%，整局可行率 ≥99%/≥98%。
 
@@ -493,6 +509,7 @@ tmux new-session -d -s v6gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sy
 | B MoveCube | `movecube/` | report.md | mc_v6.py、sweep_v6.py、budget_tail.py、**viz_v6.py → movecube_v6_layouts.png**、viz_ranges.py |
 | B2 MoveCube 统一区域 U（第二轮，真实模拟器实测） | `reach/A`、`reach/B`、`reach/C`、`reach/U` | 各 report.md | A：probe_reach.py → reach_maps.png / reach_envelope.png；B：probe.py → peg_reach_maps.png / peg_envelope.png；C：gen_layouts.py → w_results.png；U：region.py、viz_u.py → unified_region.png，gl/ → u_results.png |
 | C Unmask 四环境 | `unmask/` | report.md | p2_inner_mc.py、p2d_connected.py、p3_outer_mc.py、p4b_ring_wide.py、p5_inner_count.py |
+| C3 Swap S5 真机验证（GL 292 局） | `swap-real/` | report.md | s5_patch.py（P1～P4 进程内 patch）、probe_worker.py、run_probe.py、analyze.py、plot.py → swap_real.png；gl/results.jsonl |
 | C2 Swap 方案可视化（用户「我需要做到局内均衡 给出 Swap 方案可视化图 内环外环分别是什么样的」） | `unmask/viz/` | — | fig1～fig6 → layout_inner_outer.png（内环 4 槽 + 外环 10/14/18、可见区、按钮禁入圈）、feasible_slot_graph.png（G 的 6 条边可行率）、s5_episode_timeline.png（S5 vs S1 一局）、balance_compare.png（S1/S1n/S5 极差与撤销）、outer_ring.png（O4、零搭档热力图）、swap_scheme_overview.png（流程） |
 | D VideoRepick | `videorepick/` | report.md | （见目录） |
 | E 计数类四环境 | `count-tasks/` | report.md | mc_lib.py、run_mc.py、binfill_color.py、camera_reach.py、frames_analyze.py |
