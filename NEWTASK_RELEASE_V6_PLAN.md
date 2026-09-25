@@ -13,6 +13,7 @@
 > **规划期证据**：2026-09-25 一次规划期调查（6 个议题并行、各由一个 opus subagent 只读完成，未启动 workflow），
 > 六份调查报告与探针留在 `artifacts/newtask-v6/plan-probes/<议题>/report.md`（本机留档、未进 Git，索引见第二部分七）。
 > 数字全部来自与仓库纯函数或 v5-01 冻结规格逐值对齐过的离线副本，模拟器实跑样本为零，只当规划期估计，不能当验收结论。
+> **例外：MoveCube 统一区域 U（2.6）是 2026-09-25 第二次调查用真实模拟器实测的**（本机三路可达探针 + greatlakes 144 局真演示），见 `artifacts/newtask-v6/plan-probes/reach/`。
 > **调查是按第一轮口径（三档都比 xhard 更难）做的**，第二轮口径改为「三档落在 hard 与 xhard 之间」后，
 > 外推的上限探测（放大框、预算、评估步数）不再需要，但现状刻画、均匀性算法、MoveCube 外推三块结论原样有效。
 >
@@ -30,7 +31,7 @@
 **一句话方案**：难度序列变为 **easy < medium < hard < xhard1 < xhard2 < xhard3 < xhard**，现有 xhard 保持最难档。
 对**原版 easy/medium/hard 有梯度的 13 个环境**，在 hard 与 xhard 之间插入三档：**新档一律沿用 xhard 的生成机制**
 （杂乱布局、精确 OBB、干扰环带、外环同步交换、HSV 任意色、拒绝采样等），**只把数值从 hard 一侧向 xhard 一侧逐档内插**，
-每档在用户指定的维度上均值单调上升。同时修三处 xhard 本身并随新档共用：**MoveCube 三物体继续往外推**（环带 + 放大框），
+每档在用户指定的维度上均值单调上升。同时修三处 xhard 本身并随新档共用：**MoveCube 三物体改为「机器人能抓到的最大区域、挖掉桌心」的统一区域 U**（实测定界），
 **VUS/BUS 内环与外环的交换对象、VR 的交换对象在碰撞检测之后按对象层面均匀选取**。原三档逐位不变（V1）；
 InsertPeg、StopCube 原版无梯度，一字不动。所有新档与重冻的 xhard 抽签冻成 `v6-01`，链路与闸门沿 V5。
 
@@ -49,7 +50,7 @@ InsertPeg、StopCube 原版无梯度，一字不动。所有新档与重冻的 x
 | RouteStick | 难度（段数 L） | L [4,7] → [8,10] → [11,12] → [13,14] → [15,21] |
 | VPB | 实施方定：放置次数 | (k=1,不放回) → (k=1,放回) → (k=2,不放回) → (k=2,只放回末块) → (k=2,全放回) |
 | VPO | 实施方定：放置次数 | (k=1,v[2,4],不放回) → (k=1,v[2,4],放回) → (k=2,v[2,3],不放回) → (k=2,v[2,4],不放回) → (k=2,v[2,4],放回) |
-| MoveCube | 只推 xhard，不加档（M2） | 中心圆禁区 R=0.05 → 环带 [0.10,0.14] + 框 0.14 + x ≤ 0.11 + 方块离杆 ≥ 0.04（T2，M8） |
+| MoveCube | 只推 xhard，不加档（M2） | 中心圆禁区 R=0.05 + 三个小框 → 统一区域 U：离基座 [0.35,0.76]、挖桌心 R_IN=0.14、|y|≤0.30、x∈[−0.30,0.15]，方块/goal/杆抓取点共用，杆/方块 yaw 全 2π（2.6，M8） |
 | InsertPeg / StopCube | 原版无梯度 | 不动（xhard 逐位复现 v5-01） |
 
 ### 1.1 定死的口径
@@ -63,7 +64,7 @@ InsertPeg、StopCube 原版无梯度，一字不动。所有新档与重冻的 x
 | 5 | **新档沿用 xhard 的全部生成机制、只内插数值**：每档在已加码字段上单调不减，且至少一个字段均值严格上升；取值区间允许重叠，均值必须严格介于相邻两档之间 | 用户原话「都要比现在的hard更难」+ 第二轮「X1 < X2 < X3 … xhard 最难」 |
 | 6 | **「均匀」的执行定义**：碰撞/可行性判定是硬约束，均匀性在可行集合内实现；① 跨局：每个对象作为交换参与者的边际频率相等（10000 局离线卡方 p>0.05）；② 局内：各对象参与次数极差 ≤1（做不到时 ≤2）；③ 不许「刚换完立即换回」。算法选型见 M6 | 用户原话「碰撞检测后 对象层面的选择仍然均匀」「先给出可行候选 再均匀采」 |
 | 7 | **均匀化算法 xhard 与新档共用**，VUS、BUS、VR 的 xhard 重冻；其余环境 xhard 逐位复现 v5-01（回注闸门 X0） | 用户把不均匀当缺陷提出；M3 |
-| 8 | **MoveCube「往外推」= 方块、goal、杆根三者改环带拒绝采样**，直接拒绝、不用 bias | 用户原话；V5 口径 8 |
+| 8 | **MoveCube「往外推」= 方块中心、goal 中心、杆抓取点三者共用一个实测定界的统一区域 U 做拒绝采样**（挖掉桌心、朝向全随机），直接拒绝、不用 bias；约束落在杆的抓取点（杆尾）而不是杆根 | 用户原话（2026-09-25 第二轮：「改为一个 robot 能抓到的最大的区域 去掉中间区域…统一作为生成区域 杆/方块朝向加入全随机」）；实测 reach/A、B、C、U |
 | 9 | **只做一次对拍、一次生成**：V1 = 16 × 9 原三档与 `13e5151` 逐位比；生成 = 一次多 worker 运行，每格「10 候选 + index 0/3/6 三局正式」（M4 未改前） | V5 口径 12 |
 | 10 | **待决项不许自填**；细节自决并在报告注明 | V5 口径 14 |
 | 11 | **实现上所有 `== "xhard"` 字面判断改为族判断**（`is_newvalue_difficulty()` + `newvalue_tier()`），不得复制四份分支 | 调查 A |
@@ -122,10 +123,18 @@ X1 < X2 < X3
 
 **问：修改后的 MoveCube 采样采出来会是什么样？**
 
-**答：见图 `artifacts/newtask-v6/plan-probes/movecube/movecube_v6_layouts.png`**（`viz_v6.py` 用与 v5-01 逐值核对过的离线副本各跑 2000 局；已发给用户）。四列 = V5 现状 / 环带 T1 [0.08,0.12] / T2 [0.10,0.14]（建议）/ T3 [0.12,0.16]；四行 = 示例一局（杆身线段、方块、goal 圆盘、禁区、采样框）、4000 个方块中心散点、4000 个 goal 中心散点、离桌心距离与方块-goal 距离直方图。要点：
+**答（第一轮，环带 T1～T3 方案；已被下一问的统一区域 U 取代，留作对照）：见图 `artifacts/newtask-v6/plan-probes/movecube/movecube_v6_layouts.png`**（`viz_v6.py` 用与 v5-01 逐值核对过的离线副本各跑 2000 局；已发给用户）。四列 = V5 现状 / 环带 T1 [0.08,0.12] / T2 [0.10,0.14]（建议）/ T3 [0.12,0.16]；四行 = 示例一局（杆身线段、方块、goal 圆盘、禁区、采样框）、4000 个方块中心散点、4000 个 goal 中心散点、离桌心距离与方块-goal 距离直方图。要点：
 - V5 现状：方块中心离桌心均值 0.094、goal 0.078，goal 挤在 [−0.06,0.06]² 的小方框里贴着 R=0.05 的禁区，画面上三物体都在桌心附近。
 - T2：方块与 goal 都只落在半径 0.10～0.14 的圆环上（均值 0.120，最小 0.100），远端 x ≤ 0.11 封顶让环在 +x 侧被切平（不往远离机器人的方向扩），方块-goal 距离均值 0.147 → 0.191；2000/2000 局布局成功，杆仍在 y=±0.2 两侧。
 - T3 环更大（0.12～0.16），方块-goal 距离 0.211，peg_push 路点离基座 >0.80 m 比例 4.5%（V5 3.6%），是可达性的边缘。
+
+**问（第二轮）：杆/方块/target 改为机器人能抓到的最大区域、去掉中间、朝向全随机，采出来什么样？机械臂在 xy 不同朝向抓取会不会影响能抓到的最大区域？**
+
+**答：会影响，但只影响「手腕转不转得过去」，不改变远近硬边界；统一区域 U 已按实测定界并在 greatlakes 真演示 144 局验证。** 三路实测（本机 opus subagent 并行，`artifacts/newtask-v6/plan-probes/reach/`）：
+- A 末端可达图（顶抓 / 夹爪推 / 带杆推起点 × 8 个 yaw，57288 次真实规划）：全 yaw 可达 = 离基座 0.31～0.80 m，y=0 线上 x∈[−0.30, 0.175]；grasp 在 yaw=90° 时 screw 全灭但 `solve_pickup` 取最近边使 yaw≡yaw+180°，push 在 yaw=270° 缺左上楔形（有 IK、RRT* 兜底）；远端 0.80 m 与 yaw 无关。
+- B 抓杆可达图（杆根网格 × 12 个 yaw，12276 次真调 `grasp_and_lift_peg_side`）：成败只看抓取点（杆尾 = root − 0.10·u）离基座距离，0.27～0.80 全成功、≥0.85 为 0；杆 yaw 只是把抓取点伸到不同位置，所以**约束要落在抓取点而不是杆根**。
+- C 放宽区域真演示（环带 0.06～0.24、杆根也在环带、yaw 全 2π，144 局）：peg_push 24/48、gripper_push 35/48、grasp_putdown 48/48；失败集中在抓杆点 x>0.15 / 离基座 >0.80 与推距 >0.30。
+- 由此定 U（2.6），离线图 `reach/U/unified_region.png`；GL 复测 `reach/U/gl/u_results.png`：**118/144，peg_push 35/48、gripper_push 35/48、grasp_putdown 48/48**（V5 基线 5/8、6/8、8/8），失败全是推动接触（推没到位 22、抓杆 4），与位置无关。
 
 **调查结论（决定方案走向的事实）**
 
@@ -134,7 +143,7 @@ X1 < X2 < X3
 | 哪些任务「原版有梯度」 | 13 个；StopCube、MoveCube、InsertPeg 三档逐字同值 |
 | 管道认几个新值档 | 只认写死的 `"xhard"`（src 约 105 处、共用件 5 处、scripts 单一 `DIFFICULTY`/`SEED_RULE`/身份键）；加档是一次管道改造 |
 | 新档的时长/预算 | 全部落在 hard 与 xhard 之间，执行步与总步数都不超过 xhard 现状；`fail_safe_limit=5000` 与评估 1301 步都不新增约束（xhard 本身已有超 1301 的局，那是 V5 现状，本轮不动） |
-| MoveCube 能推多远 | 不放大框 R 上限约 0.07（exec goal 框半宽 0.06）；环带 + 放大框 + x 封顶 + 离杆 0.04 三档离线 20000 局成功 100%；V5 另有 2.7% 的局方块生成时压在杆身，顺带修 |
+| MoveCube 能推多远 | 实测：三种 way 的可达硬边界是离基座 0.31～0.80 m（与 yaw 无关）；统一区域 U 在 GL 真演示 118/144，失败与位置无关；V5 另有 2.7% 的局方块生成时压在杆身，U 带离杆 ≥ 0.04 顺带修 |
 | 均匀性 | 见上 |
 | 规模 | 13 环境 × 3 档 + 重冻 4 个 xhard = 43 格，430 候选、129 正式局；另 12 个 xhard 回注 36 局 |
 
@@ -143,13 +152,13 @@ X1 < X2 < X3
 | 编号 | 问题 | 选项 | 建议 | 结论（用户答复） |
 |---|---|---|---|---|
 | M1 | 新档是否**沿用 xhard 的全部机制只内插数值**（口径 5）。这意味着 BinFill xhard1 就是杂乱布局、PH xhard1 就是 HSV 任意色、VUS xhard1 就带外环同步交换、PickXtimes xhard1 就是均匀无偏置 + 0.08 间距 | (a) 是。<br>(b) 否：某些机制（如外环交换、杂乱布局）也按档分级引入，需逐环境再定 | (a) | |
-| M2 | MoveCube 要不要也加三档（原版无梯度） | (a) 不加，只推 xhard。<br>(b) 加：xhard1/2/3 = 圆禁区 R=0.05（现状）/ 环带 T1 / 环带 T2，xhard = T3 | (a) | |
+| M2 | MoveCube 要不要也加三档（原版无梯度） | (a) 不加，只推 xhard。<br>(b) 加：xhard1/2/3 = 在现状与 U 之间按桌心半径 / 离基座环带内插三档，xhard = U | (a) | |
 | M3 | 未被改动的 9 个环境（含 InsertPeg、StopCube 共 12 个）的 xhard 是否必须逐位复现 v5-01 | (a) 必须：回注闸门 X0（v5-01 specs 行在 V6 代码重跑 3 局，h5 SHA 相同）。<br>(b) 不要求，16 个 xhard 全部重抽 | (a) | |
 | M4 | 每格规模 | (a) 沿用「10 候选 + 3 正式」，抽签尝试上限按环境 30～60。<br>(b) 新档减到「6 候选 + 2 正式」 | (a) | |
 | M5 | Unmask 内环 xhard 里「bin_3 恒为空容器」（藏 cube 只在 bin_0..2）要不要一并随机化 | (a) 随机化（`randperm(4)[:pick]`，xhard 流原地移位）。<br>(b) 不动 | (a) | |
 | M6 | **均匀化算法选型**（口径 6 的实现） | (a) S5：可行候选中参与次数最少者优先、平局均匀抽、禁止立即撤销、整条极差 >1 重排 ≤20 次；VUS/BUS 另以 G 连通作 reset 接受条件。<br>(b) S1n：可行候选里均匀抽 + 禁止立即撤销（用户提议的形式；跨局均匀，局内极差 2.63，VR 全员参与只 50%）。<br>(c) S1：可行候选里均匀抽，不加任何约束 | (a) | |
 | M7 | 外环在 V5 路径约束下局内做不到均匀 | (a) 接受「跨局均匀 + O4 尽量均衡」，报告逐局未参与数。<br>(b) 放宽「路径全程可见」（零可行搭档槽 31.7% → 15.0%），交换会出画。<br>(c) 外环改沿环切向成对放置（改布局）。<br>(d) 外环不做均匀化，只做内环 | (a) | |
-| M8 | MoveCube 推到哪一档 | (i) 框不动、R 0.05 → 0.07（上限，goal 挤四角）。<br>(ii) T1 [0.08,0.12]。<br>(iii) T2 [0.10,0.14]。<br>(iv) T3 [0.12,0.16] | (iii)，smoke 后再定 | |
+| M8 | MoveCube 统一区域 U 的两个数值 | (a) 桌心挖除 R_IN = 0.14（U 面积 0.186 m²，GL 实测 118/144）。<br>(b) R_IN = 0.16（0.169 m²，未实测）。<br>另：推距上限 0.30 保留 / 去掉（去掉时 gripper_push 约 55%，探针 C） | (a)，推距上限保留 | |
 | M9 | VR 的 hard 是「聚簇 15 块、0 交换」另一条路线，新档按 medium → xhard 的轴（块数/交换/重拿）内插，xhard1（4 块、[3,5] 次交换、[2,3] 次重拿）是否算「比 hard 更难」 | (a) 算，照表。<br>(b) 不算，VR 新档从 6 块起只内插交换/重拿次数 | (a) | |
 
 ### 1.5 本计划推翻或修改的 V5 决策
@@ -157,7 +166,7 @@ X1 < X2 < X3
 | V5 决策 | V6 处理 |
 |---|---|
 | VUS/BUS 内环「3 个固定发起者 + 最近邻搭档」、VR「k%6 轮流 + 3 最近可行」 | 全部换成 S5（M6） |
-| 2.9 MoveCube「R=0.05 圆形禁区」 | 改为环带 + 放大框（口径 8） |
+| 2.9 MoveCube「R=0.05 圆形禁区」+ 三个小采样框 | 改为实测定界的统一区域 U（口径 8） |
 | 难度白名单只有一个新值档 | 加 `xhard1/2/3`，族判断（口径 11） |
 | 其余（演示 25～35 s、`evaluation.py` 判据、L51 VR 不扩区、录像器冻结） | 不变 |
 
@@ -245,20 +254,34 @@ hard = 4 容器 / swap [2,3] / pick 2 / 每次 50 步 / 无外环；xhard = swap
 
 ### 2.6 MoveCube（只推 xhard，重冻；M2、M8）
 
-**现状**：方块、goal、杆根拒绝落在 (0,0) R=0.05 圆内；exec goal 框半宽 0.06、demo goal 0.11、方块候选 0.10；2.7% 的局方块生成时压在杆身。
+**现状**：方块候选框 ±0.10（面积 0.040 m²）、demo goal 框 ±0.11、exec goal 框 ±0.06、杆根两个 ±0.05 小框（y=±0.2），三者各不相同；桌心 R=0.05 圆禁区；2.7% 的局方块生成时压在杆身；杆 yaw 与方块 yaw 已是全 2π。
 
-**要做（建议 T2）**：goal 中心、方块候选与最终中心只许落在环带 [R_in, R_out]，杆根仍只查内半径；各采样框半宽放大到 R_out（demo/exec goal 统一）；+x 远端封顶 x ≤ 0.11；方块到杆身 ≥ 0.04（候选处再多留 0.02）；参数放 `demo_layout.<tier>` / `execution_layout.<tier>` 子键，`spawn_random_target/cube` 新增三个显式可选参数（L4(b)），回放按同一规则复核。
+**要做（统一区域 U，实测定界；`reach/U/region.py` 为离线定义）**：方块中心、goal 中心、**杆抓取点（杆尾 = root − 0.10·u）**三者共用同一个区域做拒绝采样，杆根由抓取点 + yaw 推出：
 
-| 档 | 环带 | 框半宽 | 方块-goal 距离均值 | peg_push 路点 >0.80 m | 布局成功（20000 局） |
-|---|---|---|---|---|---|
-| V5 xhard | [0.05,∞) | 0.11 / 0.06 / 0.10 | 0.156 / 0.136 | 3.6% | 100% |
-| T1 | [0.08,0.12] | 0.12 | 0.166 | 3.3% | 100% |
-| T2 | [0.10,0.14] | 0.14 | 0.189 | 4.4% | 100% |
-| T3 | [0.12,0.16] | 0.16 | 0.212 | 4.5% | 100% |
+| 条件 | 值 | 依据（实测） |
+|---|---|---|
+| 离基座距离 | 0.35 ≤ \|p − (−0.615, 0)\| ≤ 0.76 | A/B：全 yaw 可达 0.31～0.80，各留 4 cm |
+| 挖掉桌心 | \|p\| ≥ R_IN = 0.14（M8） | 「尽可能多去掉」：面积 0.186 m²，仍为 V5 方块框 4.7 倍 |
+| 封顶 | \|y\| ≤ 0.30，−0.30 ≤ x ≤ 0.15 | A 左上楔形 / 近端；C 抓杆点 x>0.15 时 2/17 |
+| 成对 | 0.10 ≤ \|方块 − goal\| ≤ 0.30；推起点（后退 0.10，带杆再侧移 ±0.10）离基座也在 [0.35, 0.76] | C 推距 >0.30 成功 12/22 |
+| 杆 | 抓取点在 U 内均匀，yaw ∈ U(−π, π)；杆身线段离桌心 ≥ R_IN；方块离杆身 ≥ 0.04、goal 离杆身 ≥ 0.02 | B；V5 压杆缺陷 |
+| 朝向 | 杆 yaw、方块 yaw 全 2π（方块本来就是） | C 核实 `random_yaw` = u·2π |
 
-- 可视化：`artifacts/newtask-v6/plan-probes/movecube/movecube_v6_layouts.png`（1.3）。
-- 相机不构成约束；演示最长估约 1100 帧；成功判据不随位置变。风险：外圈 peg_push 规划失败率未知，S3 先 smoke 再每档 12 局（三种 way 各 4 局）与 V5 对照。
-- 验收：`MC_RING=PASS violations=0 layout_fail=0`；`MC_DEMO=REPORT ok=…/12`。
+参数放 `demo_layout.xhard.region` / `execution_layout.xhard.region` 子键（两段统一），`spawn_random_target/cube` 新增显式可选参数（离基座环带、桌心半径、x/y 封顶、离杆距离；默认 None 整段跳过，L4(b)），杆改为「抽抓取点 + yaw → 推杆根」并复核杆身离桌心；回放按同一规则复核；随机调用次序在 xhard 分支内重排（xhard 重冻，原三档不经过）。
+
+**实测（2026-09-25，`artifacts/newtask-v6/plan-probes/reach/`）**：
+
+| 口径 | peg_push | gripper_push | grasp_putdown | 合计 |
+|---|---|---|---|---|
+| V5 xhard 基线（P2，本机） | 5/8 | 6/8 | 8/8 | 19/24 |
+| 探针 C：放宽环带 0.06～0.24、杆根满环带（本机 144 局） | 24/48 | 35/48 | 48/48 | 107/144 |
+| **U（R_IN 0.14）：greatlakes A40 真演示 144 局** | **35/48** | **35/48** | **48/48** | **118/144** |
+
+U 的 26 局失败：推没到位 22（gripper 13、钩推 9）、抓杆 PlannerExhausted 2、FailsafeTimeout 2；成功/失败段的推距、抓杆点、离基座距离中位数持平（位置不再是失败来源）；失败段方块棱角更朝前（|yaw mod 90° − 45°| 中位 14～19° 对 24～26°），是推动接触问题，V5 同样存在。步数中位 500、最大 5000（1 局）。无 SceneGenerationError / EpisodeSpecError。
+
+- 可视化：`reach/U/unified_region.png`（区域形状、散点、示例）、`reach/U/gl/u_results.png`（复测）、`reach/A/reach_envelope.png`、`reach/B/peg_envelope.png`。
+- 验收：`MC_REGION=PASS violations=0 layout_fail=0`（三物体、推起点、杆身全部按 U 复核）；`MC_DEMO=REPORT ok=…/12`，与 GL 118/144 同量级。
+- 复测运行方式：GL 占位 job 内 `srun --overlap` 16 worker，逐局产物写节点 `/tmp` 即删，NFS 不留大文件，结果搬回 `/data`。
 
 ### 2.7 BinFill
 
@@ -376,7 +399,7 @@ hard 与 xhard 之间只有两个开关（演示方块数 k：1 → 2；`demo_re
 |---|---|---|
 | S0 | 存 LIGHTWEIGHT 基线；V1 基线侧（`13e5151` worktree）开跑 | 基线失败集合、基线 h5 |
 | S1 | 管道改造（2.0）：族判断、档位表、守卫、specs/rollout 按档、tests 扩 7 档；三新档 config 先复制 xhard 值 | 12.136 + 报告 |
-| S2 | 共用件：S5 内环/外环/VR 均衡贪心 + 离线均匀性单测；MoveCube 环带参数；VP `return_last_only`；单调性检查器 | 12.137～12.139 |
+| S2 | 共用件：S5 内环/外环/VR 均衡贪心 + 离线均匀性单测；MoveCube 统一区域 U 参数与采样器；VP `return_last_only`；单调性检查器 | 12.137～12.139 |
 | S3 | 逐环境填新档值并做本机演示探针（每格 ≥2 局，MoveCube 12 局，VUS/BUS/VR 各档 4 局）；opus subagent 按环境组在独立 worktree 并行，主会话审核合并 | 12.140～12.148 + 逐环境报告 |
 | S4 | 重导 `newtask-v6` 快照、测试改指 | 12.149 |
 | S5 | V1 V6 侧 144 条 + X0 36 局回放 | 12.150 |
@@ -403,7 +426,7 @@ N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`eval
 | VU / BU | pick、内环容器 8 | `<tier>.distractor.{count, cube_range}` | 环带稀疏放置；藏 cube `randperm(4)[:pick]`（M5） |
 | VUS / BUS | swap、pick、干扰、交换步数 | `<tier>.{distractor, distractor_swap, swap_speed_multiplier, inner_swap_policy: balanced}` | `_plan_inner_swaps_balanced`、G 连通判定、锁定循环内改读预规划 |
 | VR | 块数、swap、repick | `<tier>.{min_center_gap 0.12, partner_policy: balanced}` | `_plan_swap_partners_xhard` 改 S5 |
-| MoveCube | — | `demo_layout.xhard.{ring, x_cap, peg_clearance}`、`execution_layout.xhard.*` | `spawn_random_*` 三新参数 |
+| MoveCube | — | `demo_layout.xhard.region`（离基座环带、桌心半径、x/y 封顶、推距、离杆）、`execution_layout.xhard.region` | `spawn_random_*` 新增可选参数；杆改抽抓取点 |
 | PatternLock | 节点区间 | `<tier>.path_search_max_attempts 20000` | — |
 | RouteStick | `segment_count_range` | — | 缺键抛错 |
 | VPB / VPO | k、放回策略、v 上界 | `<tier>.{demo_object_count, demo_return_policy, visit_count_max}` | `return_last_only`；`validate_demo_plan` 放行 |
@@ -434,7 +457,7 @@ tmux new-session -d -s v6gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run python 
 | 1 | 约 105 处 `"xhard"` 字面判断改族判断时漏掉一处，新档静默落进原三档或 xhard 路径 | grep 计数归零作 S1 验收；每环境每档一次 reset 断言 `spec_kind` 与档名 |
 | 2 | BUS 内环 G 连通率 66.5%，reset 拒绝约 1/3 | 抽签上限 60；如实报 shortfall |
 | 3 | 外环局内不均匀（M7） | 报告逐局未参与数 |
-| 4 | MoveCube 外圈 peg_push 规划失败率未知 | S3 smoke + 每档 12 局 |
+| 4 | MoveCube 两种推法约 27% 推没到位（V5 同量级，与位置无关） | 已实测（GL 118/144）；S3 只做回归 12 局 |
 | 5 | VP `return_last_only` 是新语义，任务文本要能描述 | S3 核对 `__ALT__` 文本 |
 | 6 | AST 锁：内环预填搭档会跳过锁定循环的运行时复核分支 | 复核另挂在循环内读预规划处，锁定测试保持通过 |
 | 7 | 产物 80～100 GB、V1 6 h | `/data` 余量核对后再起 |
@@ -442,7 +465,7 @@ tmux new-session -d -s v6gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run python 
 ## 五、盲区诚实清单
 
 - 全部帧数与成功率来自离线副本，无一格跑过模拟器演示；新档数值内插后未单独做过离线扫描（介于已扫过的 hard 与 xhard 之间，按单调性推断）。
-- MoveCube 外圈的规划成败离线量不到。
+- MoveCube 例外：可达边界与 U 已用真实模拟器实测（本机三路探针 + GL 144 局）。
 - 蒙特卡洛用 numpy 随机数，只做统计，不与 torch 随机流逐位一致。
 
 ## 六、留档与 commit 纪律
@@ -454,7 +477,8 @@ tmux new-session -d -s v6gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run python 
 | 议题 | 目录 | 报告 | 关键脚本 / 图 |
 |---|---|---|---|
 | A 难度框架与四档总表 | `difficulty-framework/` | report.md | dump_configs.py、h5_frames.py |
-| B MoveCube | `movecube/` | report.md | mc_v6.py、sweep_v6.py、budget_tail.py、**viz_v6.py → movecube_v6_layouts.png** |
+| B MoveCube | `movecube/` | report.md | mc_v6.py、sweep_v6.py、budget_tail.py、**viz_v6.py → movecube_v6_layouts.png**、viz_ranges.py |
+| B2 MoveCube 统一区域 U（第二轮，真实模拟器实测） | `reach/A`、`reach/B`、`reach/C`、`reach/U` | 各 report.md | A：probe_reach.py → reach_maps.png / reach_envelope.png；B：probe.py → peg_reach_maps.png / peg_envelope.png；C：gen_layouts.py → w_results.png；U：region.py、viz_u.py → unified_region.png，gl/ → u_results.png |
 | C Unmask 四环境 | `unmask/` | report.md | p2_inner_mc.py、p2d_connected.py、p3_outer_mc.py、p4b_ring_wide.py、p5_inner_count.py |
 | D VideoRepick | `videorepick/` | report.md | （见目录） |
 | E 计数类四环境 | `count-tasks/` | report.md | mc_lib.py、run_mc.py、binfill_color.py、camera_reach.py、frames_analyze.py |
