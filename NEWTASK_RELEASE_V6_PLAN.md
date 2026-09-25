@@ -117,7 +117,7 @@ X1 < X2 < X3
 2. **「可行候选里均匀抽」（S1）做到跨局均匀，但局内不均衡。** 10000 局离线：S1 边际 p=0.285（均匀），但每局各对象参与次数极差均值 3.79、27% 的交换是「刚换完立即换回」；加一条「禁止立即撤销」（S1n）后极差 2.63、撤销 0。
 3. **再加一步「参与次数少者优先、平局均匀抽」（S5）就同时满足局内均衡**：单趟极差均值 0.54、撤销 0、边际 p=0.967；单趟 + G 连通时极差 ≤1 的局 VUS 95.7%、BUS 89.4%；**再加「整条极差 >1 重排 ≤20 趟」（M6(a) 的完整形式）后 VUS 100%、BUS 99.9%，撤销 0，边际 p 0.977/0.996**（VUS 平均 1.18 趟、4.8% 的局需重排；BUS 2.40 趟、13.9%）。可视化 `plan-probes/unmask/viz/`（6 张图，见证据索引）。代价：BUS 约 1/3 内环布局在 reset 被拒（G 连通率 66.5%，VUS 95.4%）。
 4. **VR 同理**：规划失败 40% 的根因是可行图太稀（每块平均只能与 1.54 块互换、41% 布局有孤立块），不是「3 个最近」限制；S1 在 VR 上「全员参与」只有 50.3%（违反 V5 口径 10），S5 为 100%、极差 ≤1 达 96.7%、reset 成功率不降。
-5. **外环做不到局内均匀**：V5 路径约束（全程可见、离内环净距、离按钮）下每窗 45 个槽对只有 5.6/3.6 对可行，28%/44% 的槽某窗没有任何搭档，任何算法「全员参与」≤4.3%。能做到的是跨局均匀（放置后序号随机重排）+ 均衡贪心 O4 把未参与率从 40%/54% 降到 28%/43%、撤销率从 42%/56% 降到 0.5%/6.7%。处置见 M7。
+5. **外环做不到局内均匀**：V5 路径约束（全程可见、离内环净距、离按钮）下每窗 45 个槽对只有 5.6/3.6 对可行，28%/44% 的槽某窗没有任何搭档（按整局平均度数计；按「窗 × 槽」计为 31.7%/45%，M7(b) 的 31.7% → 15.0% 用后一口径），任何算法「全员参与」≤4.3%。能做到的是跨局均匀（放置后序号随机重排）+ 均衡贪心 O4 把未参与率从 40%/54% 降到 28%/43%、撤销率从 42%/56% 降到 0.5%/6.7%。处置见 M7。
 
 用户提出的「先给出可行候选、再均匀采」= S1；本文推荐 S5 = 「可行候选中优先参与次数最少者，平局均匀抽，禁止立即撤销，整条极差 >1 重排」。两者对比与选型放 M6。
 
@@ -153,15 +153,17 @@ X1 < X2 < X3
 |---|---|---|---|---|
 | M1 | 新档是否**沿用 xhard 的全部机制只内插数值**（口径 5）。这意味着 BinFill xhard1 就是杂乱布局、PH xhard1 就是 HSV 任意色、VUS xhard1 就带外环同步交换、PickXtimes xhard1 就是均匀无偏置 + 0.08 间距 | (a) 是。<br>(b) 否：某些机制（如外环交换、杂乱布局）也按档分级引入，需逐环境再定 | (a) | |
 | M2 | MoveCube 要不要也加三档（原版无梯度） | (a) 不加，只推 xhard。<br>(b) 加：xhard1/2/3 = 在现状与 U 之间按桌心半径 / 离基座环带内插三档，xhard = U | (a) | |
-| M3 | 未被改动的 9 个环境（含 InsertPeg、StopCube 共 12 个）的 xhard 是否必须逐位复现 v5-01 | (a) 必须：回注闸门 X0（v5-01 specs 行在 V6 代码重跑 3 局，h5 SHA 相同）。<br>(b) 不要求，16 个 xhard 全部重抽 | (a) | |
+| M3 | 未被改动的 10 个环境（加 InsertPeg、StopCube 共 12 个）的 xhard 是否必须逐位复现 v5-01 | (a) 必须：回注闸门 X0（v5-01 specs 行在 V6 代码重跑 3 局，h5 SHA 相同）。<br>(b) 不要求，16 个 xhard 全部重抽 | (a) | |
 | M4 | 每格规模 | (a) 沿用「10 候选 + 3 正式」，抽签尝试上限按环境 30～60。<br>(b) 新档减到「6 候选 + 2 正式」 | (a) | |
 | M5 | Unmask 内环 xhard 里「bin_3 恒为空容器」（藏 cube 只在 bin_0..2）要不要一并随机化 | (a) 随机化（`randperm(4)[:pick]`，xhard 流原地移位）。<br>(b) 不动 | (a) | |
 | M6 | **均匀化算法选型**（口径 6 的实现） | (a) S5：可行候选中参与次数最少者优先、平局均匀抽、禁止立即撤销、整条极差 >1 重排 ≤20 次；VUS/BUS 另以 G 连通作 reset 接受条件。<br>(b) S1n：可行候选里均匀抽 + 禁止立即撤销（用户提议的形式；跨局均匀，局内极差 2.63，VR 全员参与只 50%）。<br>(c) S1：可行候选里均匀抽，不加任何约束 | (a) | |
 | M7 | 外环在 V5 路径约束下局内做不到均匀 | (a) 接受「跨局均匀 + O4 尽量均衡」，报告逐局未参与数。<br>(b) 放宽「路径全程可见」（零可行搭档槽 31.7% → 15.0%），交换会出画。<br>(c) 外环改沿环切向成对放置（改布局）。<br>(d) 外环不做均匀化，只做内环 | (a) | |
 | M8 | MoveCube 统一区域 | **已定**：圆环，圆心 (−0.06, 0)，内孔 0.12、外径 0.20，推距上限 0.30 保留（2.6） | — | 用户 2026-09-25「movecube这个同意 就这么做 固化到plan内」 |
 | M10 | PickHighlight「按干扰数量」在 xhard 不重冻时无法加码（干扰均值 hard=xhard=3） | (a) 只按 pick 与总块加码，干扰均值全程 3（2.9 现表）。<br>(b) 重冻 PH xhard：新增 decision 键直接抽干扰数（如 3/4/5/6），pick 不变 | (a) | |
-| M11 | VPB/VPO 的三档：原三档本就有「pick 后放到 goal_site」一段，`return_to_origin` 只是换终点，放置段数不随 hard→xhard1 增加；(k=2,不放回) 时第二块放哪没有定义（只有一个 `goal_site`），`validate_demo_plan` 也会拒；xhard1→xhard2 从放回变不放回是倒退 | (a) 只用两个已存在的旋钮：xhard1=(k1,放回)、xhard2=(k2,放回)=xhard 的机制但 VPO v 上界 3、xhard3=(k2,放回) + 演示时长/按钮数等第三轴（实施方定）。<br>(b) 引入 `return_last_only` 新语义（vp 副本已在实现）并定义 (k2,不放回) 的第二块落点（第二个 goal_site）。<br>(c) VP 两环境退出加档（13→11） | (b)，落点定义待实施方给出后再定 | |
-| M9 | VR 的 hard 是「聚簇 15 块、0 交换」另一条路线，新档按 medium → xhard 的轴（块数/交换/重拿）内插，xhard1（4 块、[3,5] 次交换、[2,3] 次重拿）是否算「比 hard 更难」 | (a) 算，照表。<br>(b) 不算，VR 新档从 6 块起只内插交换/重拿次数 | (a) | |
+| M12 | VU/BU 新档内环容器数从 hard 的 15 降到 xhard 机制的 8（口径 5 下容器数算不算加码字段） | (a) 不算（机制型字段），按 2.3 表。<br>(b) 算，新档内环容器 12/10/8 递减不允许，改为保持 15 并只加干扰 | (a) | |
+| M13 | AGENTS.md 规则 11 字面仍是「逐个批准」，与本计划授权边界（用户 2026-09-21 口头：src/robomme 免逐项批准、改完出报告）不一致 | (a) 更新 AGENTS.md 规则 11。<br>(b) 计划头部引用用户原话并保留 AGENTS.md 原文 | (b) | |
+| M11 | VPB/VPO 的三档：原三档本就有「pick 后放到 goal_site」一段，`return_to_origin` 只是换终点，放置段数不随 hard→xhard1 增加；(k=2,不放回) 时第二块放哪没有定义（只有一个 `goal_site`），`validate_demo_plan` 也会拒；xhard1→xhard2 从放回变不放回是倒退 | (a) 只用两个已存在的旋钮：xhard1=(k1,放回)、xhard2=(k2,放回)=xhard 的机制但 VPO v 上界 3、xhard3=(k2,放回) + 演示时长/按钮数等第三轴（实施方定）。<br>(b) 引入 `return_last_only` 新语义（vp 副本已在实现）并定义 (k2,不放回) 的第二块落点（第二个 goal_site）。<br>(c) VP 两环境退出加档（13→11） | (b)；vp 副本（/data/hongzefu/v6-draft/vp）已实现并回放核验：不放回的块落在隐藏 `goal_site` 中心沿 y 轴等距排开（VPB 间距 0.07、VPO 0.10，落点确定、不抽随机数，generator 状态逐字节不变）；`return_last_only` = 前 k−1 块按不放回落点、末块放回原位；`validate_demo_plan` 按档读策略；VPO 新增 decision 键 `visit_count_range`（会让 `test_snapshot_matches_source` 对 v5 快照失败，S4 重导快照后修）。按 reset 实际任务表，VPB 各档 pick-place 段数 3/3/6/6/6，难度差在终点是原位还是桌面。本机真演示 VPB (k1,放回) 3/3、(k2,不放回) 3/3、VPO (k1,v[2,4],放回) 3/3；PatternLock 三档 3/3 且首局步数 646/924/1256（xhard 1614），RouteStick xhard1/2 3/3（1000/1200 步）；VP 的 xhard 本身 1500～1993 步已超评估 1301（V5 现状，与口径 2 一致：新档不超 xhard） | |
+| M9（论据修正：审计补测 4 块/5 块 reset 成功率 0.625/0.629，低于原写的 ≈0.9/≈0.75；块数少时可行图更稀 1.29/1.46 < 6 块的 1.54，「块数少更易」不成立） | VR 的 hard 是「聚簇 15 块、0 交换」另一条路线，新档按 medium → xhard 的轴（块数/交换/重拿）内插，xhard1（4 块、[3,5] 次交换、[2,3] 次重拿）是否算「比 hard 更难」 | (a) 算，照表。<br>(b) 不算，VR 新档从 6 块起只内插交换/重拿次数 | (a) | |
 
 ### 1.5 本计划推翻或修改的 V5 决策
 
@@ -191,6 +193,7 @@ X1 < X2 < X3
 | `scripts/parity/v4_rollout.py`、`v5_generation.py`（另起 `v6_generation.py`）、`train_split_config.py`（`RELEASE_NOTES` 加 `newtask-v6`）、`train_split_runner.py` | 从 header 取档位；产物 `artifacts/newtask-v6/v6-01/<tier>/…`；快照 `scripts/configs/newtask-v6/v6-01/<tier>/specs.jsonl` | 无 |
 | tests | `test_v4_xhard_{pickxtimes,swingxtimes}`（断言恰 4 档 → 7 档；`test_v4_xhard_stopcube` 不改，StopCube 不加档）、`test_operand_scope.py`、`test_episode_action_sampling.py`（同样写死 4 档）、`test_v4_specs.py::test_seed_rule_disjoint_from_existing_layouts`（扩四段）、`test_episode_spec_recorder`、`test_sampling_config_split`（改指 V6 快照）、`test_v5_xhard_pickswing`（`NATIVE_AST_GOLDEN` 不动；分支原文断言改族判断）、`test_v5_generation_tools`、`test_episode_action_sampling` | 扩到 7 档 | — |
 | 不动 | 录像器、`evaluation.py`、`seed_layout.DIFFICULTY_ORDER`、`injection/*` | — | — |
+| `scripts/parity/v5_generation.py` | `DEMO_BAND=(750,1050)` 演示时长带 | 只对 xhard 判定；新档（PatternLock/RouteStick 演示 9～25 s）按档豁免或按档给带 | 无 |
 | 待核 | `generate_dataset_newseed.py` 的 `extract_native_sampling` / `validate_sampling_config` 只认 `config_xhard`，`v4_demo_probe` 与 `injection/rollout` 会调用 | S1 先确认 V6 链路是否经过；经过则按族判断改 | 低 |
 
 ### 2.1 改动范围总表
@@ -211,7 +214,7 @@ X1 < X2 < X3
 2. 主流追加一次 `torch.rand(n_swaps)` 作平局打破；预规划整段序列：每次在 G 的边里选「两块已参与次数之和最小」的一对，平局按该随机数，禁止与上一次相同的对；整条极差 >1 重排 ≤20 次，仍不满足接受极差 2。
 3. 锁定循环里的搭档分支改为读预规划（仿 VR `_xhard_planned_partner` 先例），仍做 `joint_sweep_from_actual` 复核；外环 H1 守卫改为覆盖 G 中全部可行槽对。
 4. M5(a)：藏 cube 容器 `randperm(4)[:pick]`。
-5. 离线验收：边际 p>0.05、极差 ≤1 ≥ 89%、撤销 0；单测锁定「G 为完全图时 S5 边际严格均匀」。
+5. 离线验收（按 M6(a) 完整形式 S5 + 整条重排 ≤20 + G 连通）：边际 p>0.05、极差 ≤1 ≥ 99%（离线 VUS 100% / BUS 99.9%）、撤销 0（「全部布局」口径下 S5 单趟撤销率 0.2%/5.0%，G 连通子集上为 0）；单测锁定「G 为完全图时 S5 边际严格均匀」。
 
 **外环（O4）**：`plan_distractor_swaps` 改均衡贪心（每窗在可行槽对里选参与次数和最小、禁止立即撤销），放置后追加一次 `randperm(count)` 重排序号；`evaluate_outer_candidate` 的 vis → btn → inner_clear → exact 四道判定不动（M7(a)）。离线目标：未参与对象 VUS ≤30%、BUS ≤45%，撤销 ≤1%/≤7%，整局可行率 ≥99%/≥98%。
 
@@ -227,7 +230,7 @@ hard = 15 容器 / pick 2 / 无干扰；xhard = 8 容器 / pick 3 / 贴身环带
 | BU | 15 / 2 / 0 | 8 / 2 / 8 / 4 | 8 / 3 / 10 / 5 | 8 / 3 / 12 / 6 | 8 / 3 / 14 / [7,7] |
 
 - 环带、密度推导、三色轮转、停放点全沿 V5；干扰数少时环带随机稀疏放置（不重新推导带宽）。
-- 帧数：pick 最坏 125 + put down 52，全部 ≤ xhard。
+- 帧数：pick 约 125（9 个样本的最大值）+ put down 52，全部 ≤ xhard。
 - 验收：`UNMASK_RING=PASS n=<N> in_band=<N> visible=<N>`。
 
 ### 2.4 VideoUnmaskSwap / ButtonUnmaskSwap
@@ -240,8 +243,8 @@ hard = 4 容器 / swap [2,3] / pick 2 / 每次 50 步 / 无外环；xhard = swap
 | BUS | [2,3] / 2 / 0 / 50 | [3,4] / 2 / 4 / 50 | [4,5] / 3 / 6 / 33 | [5,6] / 3 / 8 / 33 | [6,8] / 3 / 10 / 33 |
 
 - xhard1 保留 50 步交换速度（与 hard 同），xhard2 起用 xhard 的 ×1.5 速；外环交换从 xhard1 起每窗一次（M1(a)）。
-- 干扰 4/6/8 时外环环带 [0.2675,0.45] 稀疏放置；外环可行率随干扰数减少只会更高。
-- BUS 交换段计入评估步：xhard3 最坏 65+33×6+177×3−40 ≈ 794，远低于 xhard。
+- 干扰 4/6/8 时外环方环 [0.2675,0.45]（按 max(|x|,|y|) 判，不是圆环）稀疏放置；干扰 4/6/8 的外环可行率未测（已有 BUS 10/14/18 三点 0.983/0.996/0.986 不单调），S3 实测后填；外环 ≥99%/≥98% 的数字是在 V5 内环序列下测的。
+- BUS 交换段计入评估步：xhard3 最坏 65+33×6+177×3−40 = 754，xhard 同公式 820，低于 xhard。
 - 验收：沿 V5（外环窗口数 = n_swaps、`bin_collision=0`）+ 2.2 均匀性判定。
 
 ### 2.5 VideoRepick
@@ -251,7 +254,7 @@ hard = 4 容器 / swap [2,3] / pick 2 / 每次 50 步 / 无外环；xhard = swap
 | 字段 | medium | hard | xhard1 | xhard2 | xhard3 | xhard |
 |---|---|---|---|---|---|---|
 | 块数 / swap / repick | 3 / [2,3] / [1,3] | 聚簇 15 / 0 / [1,3] | 4 / [3,5] / [2,3] | 5 / [5,7] / [3,4] | 6 / [6,9] / [4,5] | 6 / [8,12] / [4,6] |
-| reset 成功率（离线） | — | — | ≈0.9（4 块） | ≈0.75 | 0.59 | 0.59 |
+| reset 成功率（离线，审计 D 段补测） | — | — | 0.625（4 块） | 0.629（5 块） | 0.59 | 0.59 |
 
 - 新档沿 xhard 机制：杂乱区、最小中心距 0.12、按钮入障碍、reset 预规划；块数 4/5 时可行图更密、reset 成功率更高（M9）。
 - 验收：`VR_UNIFORM=PASS range_le1>=0.93 undo=0 all_participate=1`。
@@ -316,7 +319,7 @@ hard = 3 色 / 总块 [10,12] / 投入色 [2,3] / 投入 [3,5] / 原生布局；
 | | xhard1 | [3,4] | 3.5 | 1 | xhard 机制（0.08、精确 OBB） |
 | | xhard2 | [4,6] | 5 | 2 | 同 |
 | | xhard3 | [4,8] | 6 | 3 | 同 |
-| | xhard | [4,10] | 7 | 3 | 同 |
+| | xhard | [4,10] | 7 | 3 | 同（reset 成功率约 96%：三个新档与 xhard 都是 192/200，8 个失败 seed 相同、皆为放圆盘采样失败，与干扰数无关） |
 
 干扰块颜色仍取黄/青/品红前 k 个；数词 ≤ 12 不越界；帧数 ≤ xhard。
 
@@ -365,7 +368,7 @@ hard 与 xhard 之间只有两个开关（演示方块数 k：1 → 2；`demo_re
 | xhard3 | 5×5 | [18,22] | 20000 |
 | xhard | 5×5 | 25 | 20000 |
 
-布局不动，不重访；每段约 35 帧 ⇒ xhard3 最长约 735 帧；DFS 命中率 n≥22 远高于 n=25 的 0.9996。
+布局不动，不重访；每段约 35 帧（均值）⇒ xhard3 约 735 帧，按每段均值上界算约 763 帧（25.4 s）；DFS 命中率 n≥22 远高于 n=25 的 0.9996。
 
 ### 2.12 RouteStick
 
@@ -465,7 +468,7 @@ tmux new-session -d -s v6gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sy
 | # | 风险 | 处置 |
 |---|---|---|
 | 1 | src 143 行 `"xhard"` 字面（61 行比较）改族判断时漏掉一处，新档静默落进原三档或 xhard 路径 | 以 143/61/14 为起点 grep 计数归零作 S1 验收；每环境每档一次 reset 断言 `spec_kind` 与档名 |
-| 2 | BUS 内环 G 连通率 66.5%，reset 拒绝约 1/3 | 抽签上限 60；如实报 shortfall |
+| 2 | BUS 内环 G 连通率 66.5%，reset 拒绝约 1/3 | 抽签上限按 M4 定（建议 60）；如实报 shortfall |
 | 3 | 外环局内不均匀（M7） | 报告逐局未参与数 |
 | 4 | MoveCube 两种推法约 25% 推没到位（V5 同量级，与位置无关） | 已实测（GL 圆环版 120/144）；S3 只做回归 12 局 |
 | 5 | VP `return_last_only` 是新语义，任务文本要能描述 | S3 核对 `__ALT__` 文本 |
