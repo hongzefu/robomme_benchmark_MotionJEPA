@@ -141,7 +141,11 @@ def main(argv: list[str] | None = None) -> int:
         repo_root = Path(__file__).resolve().parents[2]
         if str(repo_root) not in sys.path:
             sys.path.insert(0, str(repo_root))
-        from scripts.parity.v4_specs import DIFFICULTY as V4_DIFFICULTY, seed_for as v4_seed_for  # noqa: PLC0415
+        from scripts.parity.v4_specs import (  # noqa: PLC0415
+            DIFFICULTY as V4_DIFFICULTY,
+            _known_seed_rule as v4_known_seed_rule,
+            seed_for as v4_seed_for,
+        )
     for item in jobs_payload:
         task, episode = str(item["task"]), int(item["episode"])
         if args.identity_source == "train_metadata":
@@ -153,11 +157,18 @@ def main(argv: list[str] | None = None) -> int:
                     f"official=({record['seed']}, {record['difficulty']})"
                 )
         else:
-            expected = v4_seed_for(task, episode, int(item["attempt"]))
-            if int(item["seed"]) != expected or str(item["difficulty"]) != V4_DIFFICULTY:
+            # V6：jobs 可带 header 封存的 seed_rule（新值族任一档 + v6 按档偏移）；不带时与 V4/V5 逐字相同
+            rule = item.get("seed_rule")
+            want_difficulty = V4_DIFFICULTY
+            if rule is not None:
+                want_difficulty = str(item["difficulty"])
+                if not v4_known_seed_rule(want_difficulty, rule):
+                    raise SystemExit(f"{task}/episode_{episode} 的 seed 规则与档位 {want_difficulty} 不符：{rule}")
+            expected = v4_seed_for(task, episode, int(item["attempt"]), rule)
+            if int(item["seed"]) != expected or str(item["difficulty"]) != want_difficulty:
                 raise SystemExit(
                     f"{task}/episode_{episode} 身份与 V4 公式不符：jobs=({item['seed']}, {item['difficulty']}) "
-                    f"formula=({expected}, {V4_DIFFICULTY})"
+                    f"formula=({expected}, {want_difficulty})"
                 )
         jobs.append(
             official.EpisodeJob(

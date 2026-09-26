@@ -35,9 +35,9 @@ from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenera
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import is_newvalue_difficulty, normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 from .utils.bin_collision import (
     BinCollisionError,
     SpecBindingError,
@@ -68,7 +68,7 @@ def _scene_gen_error(difficulty):
     用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
     只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
     """
-    return _RealSceneGenerationError if difficulty == "xhard" else SceneGenerationError
+    return _RealSceneGenerationError if is_newvalue_difficulty(difficulty) else SceneGenerationError
 
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
@@ -337,15 +337,17 @@ def _native_decision(cls):
             for difficulty, cfg in cls.configs.items()
         },
     }
-    xhard = cls.configs.get("xhard")
-    if xhard is not None:
+    # V6（口径 11）：新值族四档（xhard 及 xhard1/2/3）共用同一套键结构，按 configs 的键序逐档派生；
+    # xhard 先于 xhard1/2/3 写入，xhard 子树的键、值与键序与改动前逐字相同。
+    for tier in [d for d in cls.configs if is_newvalue_difficulty(d)]:
+        xhard = cls.configs[tier]
         # num_repeats_range 在原三档仍是死键（__init__ 读 native.parameters.num_repeats）；
-        # 它的 xhard 子键**有消费点**：xhard 分支从这里取 pick times 的半开区间。
-        decision["num_repeats_range"]["xhard"] = {
+        # 它的新值档子键**有消费点**：新值档分支从这里取 pick times 的半开区间。
+        decision["num_repeats_range"][tier] = {
             "low": xhard["num_repeats_low"],
             "high_exclusive": xhard["num_repeats_high_exclusive"],
         }
-        decision["xhard"] = {
+        decision[tier] = {
             "layout": {
                 "mode": xhard["layout_mode"],
                 "cube_count": xhard["cube"],
@@ -354,12 +356,12 @@ def _native_decision(cls):
             },
             "block_color": copy.deepcopy(XHARD_BLOCK_COLOR),
         }
-        # V5（计划 2.15，L47～L50、L54）：新规则全部挂 decision.xhard；native 的 object_selection /
-        # swap_selection 不动（_resolve_sampling_config 的 JSON 全等守卫照旧），xhard 代码不再读
+        # V5（计划 2.15，L47～L50、L54）：新规则全部挂 decision.<档>；native 的 object_selection /
+        # swap_selection 不动（_resolve_sampling_config 的 JSON 全等守卫照旧），新值档代码不再读
         # native 的 swap_remaining_count 与 position_axes。
-        decision["xhard"]["layout"]["min_center_dist_m"] = xhard["min_center_dist_m"]
-        decision["xhard"]["swap_plan"] = {
-            # L47 a'：seq = [目标] + randperm(其余 5 块)，第 k 次发起者 seq[k % 6]，目标不特殊
+        decision[tier]["layout"]["min_center_dist_m"] = xhard["min_center_dist_m"]
+        decision[tier]["swap_plan"] = {
+            # L47 a'：seq = [目标] + randperm(其余块)，第 k 次发起者 seq[k % 块数]，目标不特殊
             "initiator_rule": "target_then_randperm_k_mod_cube_count",
             # L48/L49：reset 时在名义槽位上规划搭档，u[k] 在前 nearest_k 个扫掠可行候选里均匀选；
             # 最近 nearest_k 个都不可行时在任一可行候选里均匀选；无任何可行候选则本局 SceneGenerationError
@@ -378,6 +380,8 @@ def _resolve_sampling_config(cls, override):
     decision, native = split_sampling_config(override, native_default, decision_default)
     # 第一轮只做原值导出／消费：decision 必须逐键等于原值（红线 R7）。
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：旧快照（V5 及以前）没有 xhard1/2/3 子树，按源码默认补齐
+    fill_missing_newvalue(decision, decision_default)
     resolved = native
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
     resolved["decision"] = decision
@@ -422,7 +426,7 @@ class VideoRepick(BaseEnv):
     # 整片区域 clutter 6 块（G2 用户定数）、每局同色且色值任意（C2）、pick times [4,6]、swap [8,12]（A3），
     # 发起者仍 3 个（B12），不做速度 ×1.5。xhard 分支**只读 decision**（见 _native_decision 的 xhard 条目），
     # 本字典经 native.parameters.configs.xhard 留一份同形副本，xhard 分支不从那里取值。
-    config_xhard = {
+    config_xhard4 = {
         "cube": 6,
         "swap_min": 8,
         "swap_max": 12,
@@ -443,12 +447,26 @@ class VideoRepick(BaseEnv):
     }
 
 
+    # V6（计划 2.5）：hard 与 xhard 之间插三档，沿用 xhard 的全部机制（clutter 区、同色任意色值、
+    # 最小中心距 0.12、搭档 reset 预规划、按钮入障碍），只内插块数 / swap / pick times：
+    #   xhard1 = 4 块 / swap [3,5] / pick [2,3]；xhard2 = 5 块 / [5,7] / [3,4]；xhard3 = 6 块 / [6,9] / [4,5]。
+    # pick times 与 xhard 同为 torch.randint 半开区间，闭区间 [lo,hi] 写成 low=lo、high_exclusive=hi+1。
+    config_xhard1 = dict(config_xhard4, cube=4, swap_min=3, swap_max=5,
+                         num_repeats_low=2, num_repeats_high_exclusive=4)
+    config_xhard2 = dict(config_xhard4, cube=5, swap_min=5, swap_max=7,
+                         num_repeats_low=3, num_repeats_high_exclusive=5)
+    config_xhard3 = dict(config_xhard4, cube=6, swap_min=6, swap_max=9,
+                         num_repeats_low=4, num_repeats_high_exclusive=6)
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard
+        'xhard4': config_xhard4,
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
 
 
@@ -514,18 +532,18 @@ class VideoRepick(BaseEnv):
         # Use seed to randomly determine number of repetitions (1-5)
         self.generator = torch.Generator()
         self.generator.manual_seed(seed)
-        if self.difficulty == "xhard" and self._episode_spec is not None:
+        if is_newvalue_difficulty(self.difficulty) and self._episode_spec is not None:
             # V4：旧 xhard 已作废（A7），链路甲已退役（口径 1）；甲的规格只有 3 块、颜色按名字存，
             # 与 6 块 clutter + 任意色值的新 xhard 结构不兼容，直接拒绝而不是半截消费。
-            raise ValueError("VideoRepick xhard 不接受链路甲的 episode_spec；新值规格请走 native_episode_spec")
+            raise ValueError(f"VideoRepick {self.difficulty} 不接受链路甲的 episode_spec；新值规格请走 native_episode_spec")
         repeats_cfg = self._sampling["parameters"]["num_repeats"]
-        if self._episode_spec is None and self.difficulty == "xhard":
+        if self._episode_spec is None and is_newvalue_difficulty(self.difficulty):
             # V4 xhard：pick times 取 decision.num_repeats_range.xhard（半开区间），抽样形态与原值相同
-            xhard_repeats = self._sampling["decision"]["num_repeats_range"]["xhard"]
+            xhard_repeats = self._sampling["decision"]["num_repeats_range"][self.difficulty]
             self.num_repeats = self._spec.value(
                 "objects.num_repeats",
                 torch.randint(xhard_repeats["low"], xhard_repeats["high_exclusive"], tuple(repeats_cfg["shape"]), generator=self.generator).item(),
-                decision_key="num_repeats_range.xhard",
+                decision_key=f"num_repeats_range.{self.difficulty}",
             )
         elif self._episode_spec is None:
             self.num_repeats = torch.randint(repeats_cfg["low"], repeats_cfg["high_exclusive"], tuple(repeats_cfg["shape"]), generator=self.generator).item()
@@ -534,13 +552,13 @@ class VideoRepick(BaseEnv):
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
 
         difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
-        if self._episode_spec is None and self.difficulty == "xhard":
+        if self._episode_spec is None and is_newvalue_difficulty(self.difficulty):
             # V4 xhard：交换次数取 decision.swap.xhard（闭区间 [8,12]），与原值同一取值点路径
-            xhard_swap = self._sampling["decision"]["swap"]["xhard"]
+            xhard_swap = self._sampling["decision"]["swap"][self.difficulty]
             self.swap_times = self._spec.value(
                 "objects.n_swaps",
                 torch.randint(xhard_swap["swap_min"], xhard_swap["swap_max"] + 1, (1,), generator=self.generator).item(),
-                decision_key="swap.xhard",
+                decision_key=f"swap.{self.difficulty}",
             )
         elif self._episode_spec is None:
             self.swap_times = self._spec.value(
@@ -611,8 +629,8 @@ class VideoRepick(BaseEnv):
                 {"color": (0, 0, 1, 1), "name": "blue"},
                 {"color": (0, 1, 0, 1), "name": "green"},
             ]
-            if self.difficulty == "xhard":
-                # V4 xhard 走独立方法：原三档的分支与取值点一行不动（H2/N12）
+            if is_newvalue_difficulty(self.difficulty):
+                # V4 xhard（V6 起新值族四档）走独立方法；族判断放在 hard 分支之前，新档不会误入 hard 聚簇：原三档的分支与取值点一行不动（H2/N12）
                 self._load_cubes_xhard(avoid)
             elif self.difficulty == "hard":
                 self.spawned_cubes = []
@@ -810,7 +828,7 @@ class VideoRepick(BaseEnv):
         except _scene_gen_error(self.difficulty):  # V5 L3：xhard 用真类，原三档仍是被遮蔽的原名字
             raise
         except Exception as exc:
-            if self.difficulty == "xhard" and isinstance(exc, _EpisodeSpecError):
+            if is_newvalue_difficulty(self.difficulty) and isinstance(exc, _EpisodeSpecError):
                 # V5 N17：回放冻结规格违反几何规则（最小中心距、规划搭档）是规格／代码类错误，
                 # 不包成可重试的 SceneGenerationError；原三档不进这个分支，行为逐字不变
                 raise
@@ -836,7 +854,7 @@ class VideoRepick(BaseEnv):
           第 k 次发起者 ``seq[k % 6]``，不新增抽样；``objects.swap_initiators_remaining`` 变为长度 5。
         * L48/L49/L54：见 ``_plan_swaps_xhard``。
         """
-        xhard_cfg = self._sampling["decision"]["xhard"]
+        xhard_cfg = self._sampling["decision"][self.difficulty]
         layout = xhard_cfg["layout"]
         if layout["mode"] != "clutter":
             raise ValueError(f"VideoRepick xhard 只实现了 clutter 布局，收到 {layout['mode']!r}")
@@ -850,7 +868,7 @@ class VideoRepick(BaseEnv):
         rgb = self._spec.value(
             "objects.color_rgb",
             hsv_floor_rgb(u, color_cfg),
-            decision_key="xhard.block_color",
+            decision_key=f"{self.difficulty}.block_color",
         )
         chosen_color = (float(rgb[0]), float(rgb[1]), float(rgb[2]), 1.0)
 
@@ -940,7 +958,7 @@ class VideoRepick(BaseEnv):
         回放时用冻结值，并复核「发起者与规划一致、搭档扫掠可行」（N17）。结果存
         ``self._xhard_swap_partners``（第 k 次交换的搭档方块号），``step`` 的 xhard 分支据此取搭档。
         """
-        swap_cfg = self._sampling["decision"]["xhard"]["swap_plan"]
+        swap_cfg = self._sampling["decision"][self.difficulty]["swap_plan"]
         if swap_cfg["initiator_rule"] != "target_then_randperm_k_mod_cube_count":
             raise ValueError(f"VideoRepick xhard 未实现发起者规则 {swap_cfg['initiator_rule']!r}")
         if swap_cfg["partner_rule"] != "reset_plan_nearest_feasible":
@@ -970,7 +988,7 @@ class VideoRepick(BaseEnv):
             chosen = self._spec.value(
                 f"actions.swap_pairs.{k}",
                 {"initiator": f"bin_{initiator}", "partner": f"bin_{partner}"},
-                decision_key="xhard.swap_plan",
+                decision_key=f"{self.difficulty}.swap_plan",
             )
             if not isinstance(chosen, dict) or chosen.get("initiator") != f"bin_{initiator}":
                 raise _EpisodeSpecError(
@@ -1003,7 +1021,7 @@ class VideoRepick(BaseEnv):
 
     def _sweep_checks_enabled(self):
         """D5（H2）：几何检查只在「甲通道」或「xhard 的乙通道」开启；原三档乙通道仍不检查。"""
-        return self._episode_spec is not None or self.difficulty == "xhard"
+        return self._episode_spec is not None or is_newvalue_difficulty(self.difficulty)
 
 
 
@@ -1028,7 +1046,7 @@ class VideoRepick(BaseEnv):
                     raise BinCollisionError(rejection)
             # V4 xhard：静止/交换段改用只吞 AttributeError 的等待函数（见 _solve_hold_obj_xhard），
             # 否则 D5 抛出的 BinCollisionError 会被 solve_hold_obj 的裸 except 吞掉并死循环；原三档仍用原函数
-            hold_fn = _solve_hold_obj_xhard if self.difficulty == "xhard" else solve_hold_obj
+            hold_fn = _solve_hold_obj_xhard if is_newvalue_difficulty(self.difficulty) else solve_hold_obj
             tasks = [
             {
                 "func": (lambda: is_obj_pickup(self, obj=self.target_cube_1)),
@@ -1432,7 +1450,7 @@ class VideoRepick(BaseEnv):
                     pair_idx2 = getattr(self, f'swap_pair{i+1}_idx2')
 
                     if pair_idx2 is None and pair_idx1 is not None:
-                        if getattr(self, "difficulty", None) == "xhard":
+                        if is_newvalue_difficulty(getattr(self, "difficulty", None)):
                             # V5 xhard（计划 2.15，L49）：搭档用 reset 时规划好的，不再按实际 XY 取最近邻；
                             # 下面 D5 的实际位姿扫掠检查照旧跑，作运行时守卫
                             closest_actor = self._xhard_planned_partner(i, pair_idx1)
@@ -1458,7 +1476,7 @@ class VideoRepick(BaseEnv):
                             # 搭档身份核验只有甲的规格里预写了搭档，乙通道改为只读记录（见下）。
                             if self._sweep_checks_enabled():
                                 self._check_swap_sweep_from_actual(i, pair_idx1, closest_actor)
-                            if self.difficulty == "xhard":
+                            if is_newvalue_difficulty(self.difficulty):
                                 self._spec.record(
                                     f"actions.swap_pairs.{i}",
                                     {"initiator": f"bin_{self.spawned_cubes.index(pair_idx1)}",

@@ -30,9 +30,9 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import normalize_robomme_difficulty, is_newvalue_difficulty
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils.xhard import DISTRACTOR_COLORS, cube_obb2d_exact
 
@@ -116,6 +116,23 @@ XHARD_DECISION = {
     "min_center_dist_m": 0.08,
 }
 
+
+def _newvalue_decision(n_distractors):
+    """V6（计划 2.8）：新值族某档的 decision 子树——键结构与 ``XHARD_DECISION`` 完全相同，
+    只把干扰方块颜色截成 ``DISTRACTOR_COLORS`` 前 k 个；区域、中心距等其余字段沿用 xhard。"""
+    tree = copy.deepcopy(XHARD_DECISION)
+    tree["distractor"]["colors"] = [entry["name"] for entry in DISTRACTOR_COLORS[:n_distractors]]
+    return tree
+
+
+# V6 新值族档位表：干扰块数 xhard1=1、xhard2=2、xhard3=3、xhard4=3。
+NEWVALUE_DECISION = {
+    "xhard1": _newvalue_decision(1),
+    "xhard2": _newvalue_decision(2),
+    "xhard3": _newvalue_decision(3),
+    "xhard4": _newvalue_decision(min(4, len(DISTRACTOR_COLORS))),
+}
+
 # V5 L45：xhard 方块（有色 + 干扰）每块的拒绝采样预算（原三档沿用 spawn_random_cube 默认 256，不受影响）。
 # 计划 2.13 估：加 8 cm 中心距后 256 次约 3.5% 的局放不下、1024 次约 1%；S3f 离线 3000 局实测 1024 次 0 失败。
 XHARD_CUBE_MAX_TRIALS = 1024
@@ -158,7 +175,9 @@ def _native_decision(cls):
         # 第二节的「增加其他颜色 distractor」原三档不启用（原值保持 None）。
         "distractor": None,
         # V4 xhard 专属（计划 2.4）：键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
-        "xhard": copy.deepcopy(XHARD_DECISION),
+        # V6（计划 2.8）：xhard 之后追加 xhard1/2/3 三棵同结构子树（新值族，守卫同样放行）。
+        "xhard4": copy.deepcopy(XHARD_DECISION),
+        **{tier: copy.deepcopy(NEWVALUE_DECISION[tier]) for tier in ("xhard1", "xhard2", "xhard3")},
     }
 
 
@@ -167,6 +186,8 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：旧快照（如 V5 快照）缺 xhard1/2/3 子树时从源码申报补齐
+    fill_missing_newvalue(decision, decision_default)
     native["decision"] = decision
     return native
 
@@ -206,10 +227,29 @@ class PickXtimes(BaseEnv):
     }
 
     # V4 xhard（派生自 hard，计划 2.4）：颜色 3 不变，重复抓放次数 [6,15]。
-    config_xhard = {
+    config_xhard4 = {
+        'color': 3,
+        'number_min': 13,
+        'number_max': 15,
+    }
+
+    # V6 新值族：次数与干扰数按定稿分档。
+    config_xhard1 = {
         'color': 3,
         'number_min': 6,
-        'number_max': 15,
+        'number_max': 7,
+    }
+
+    config_xhard2 = {
+        'color': 3,
+        'number_min': 8,
+        'number_max': 9,
+    }
+
+    config_xhard3 = {
+        'color': 3,
+        'number_min': 10,
+        'number_max': 12,
     }
 
     # Combine into a dictionary
@@ -217,7 +257,10 @@ class PickXtimes(BaseEnv):
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard,
+        'xhard4': config_xhard4,
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
@@ -340,7 +383,7 @@ class PickXtimes(BaseEnv):
 
         # V4：xhard 走独立的生成路径（G1 先放圆盘、目标候选池解耦、D2 修复、按对象回填颜色），
         # 原三档仍走原代码（整段原样搬进 _spawn_scene_objects_native，一行未改，H2/N12）。
-        if self.difficulty == "xhard":
+        if is_newvalue_difficulty(self.difficulty):
             self._spawn_scene_objects_xhard(generator, avoid)
         else:
             self._spawn_scene_objects_native(generator, avoid)
@@ -402,7 +445,7 @@ class PickXtimes(BaseEnv):
             self.fail_grasp_task_index = None
 
         # V4 xhard：干扰方块是新增的随机取值，追加在本函数全部既有取值点（含恢复动作抽样）之后（N5）。
-        if self.difficulty == "xhard":
+        if is_newvalue_difficulty(self.difficulty):
             self._spawn_distractors_xhard(generator, avoid)
 
     def _spawn_scene_objects_native(self, generator, avoid):
@@ -545,7 +588,7 @@ class PickXtimes(BaseEnv):
         随机调用的相对顺序：color_order → target_color_idx → 圆盘 → 方块 → target_cube_idx，
         其后才是恢复动作与干扰方块（N5）。
         """
-        xcfg = self._sampling["decision"]["xhard"]
+        xcfg = self._sampling["decision"][self.difficulty]
         cube_region = xcfg["target_cube_position_policy"]
         goal_region = xcfg["goal_position_policy"]
         min_center_dist = float(xcfg["min_center_dist_m"])
@@ -683,8 +726,8 @@ class PickXtimes(BaseEnv):
         不进 ``target_candidates``。放不下直接抛 ``SceneGenerationError``（2.2④，不许静默截断）。
         V5：与有色方块共用中心距规则、精确 OBB 障碍与拒绝预算（计划 2.13）。
         """
-        min_center_dist = float(self._sampling["decision"]["xhard"]["min_center_dist_m"])
-        dcfg = self._sampling["decision"]["xhard"]["distractor"]
+        min_center_dist = float(self._sampling["decision"][self.difficulty]["min_center_dist_m"])
+        dcfg = self._sampling["decision"][self.difficulty]["distractor"]
         palette = {entry["name"]: entry["rgba"] for entry in DISTRACTOR_COLORS}
         names = list(dcfg["colors"])
         unknown = [name for name in names if name not in palette]

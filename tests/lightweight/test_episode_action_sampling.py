@@ -2,6 +2,7 @@
 
 import ast
 import copy
+import importlib
 import json
 import math
 from types import SimpleNamespace
@@ -24,7 +25,12 @@ def resolver(task):
     tree = source_tree(task)
     fn = generator._func_def(tree, "_resolve_sampling_config")
     native = generator._module_literal(tree, "NATIVE_SAMPLING")
+    module = importlib.import_module(f"robomme.robomme_env.{task}")
     namespace = {"copy": copy, "json": json, "math": math, "NATIVE_SAMPLING": native}
+    for name in ("native_blocks", "split_sampling_config", "assert_native_decision", "fill_missing_newvalue",
+                 "is_newvalue_difficulty", "NEWVALUE_DIFFICULTIES", "SamplingConfigError"):
+        if hasattr(module, name):
+            namespace[name] = getattr(module, name)
     exec(compile(ast.Module(body=[fn], type_ignores=[]), task, "exec"), namespace)
     return namespace["_resolve_sampling_config"], native
 
@@ -32,7 +38,7 @@ def resolver(task):
 @pytest.mark.parametrize("task", ["VideoUnmaskSwap", "VideoRepick", "RouteStick"])
 def test_direct_environment_config_is_validated_without_sampling(task):
     resolve, native = resolver(task)
-    cls = SimpleNamespace(configs={})
+    cls = getattr(importlib.import_module(f"robomme.robomme_env.{task}"), task)
     state = torch.get_rng_state().clone()
     assert resolve(cls, None) == resolve(cls, native)
     bad = copy.deepcopy(native)
@@ -48,7 +54,7 @@ def test_direction_threshold_rejects_invalid_values(value):
     resolve, native = resolver("RouteStick")
     native["parameters"]["walk"]["direction"]["threshold"] = value
     with pytest.raises(ValueError):
-        resolve(SimpleNamespace(configs={}), native)
+        resolve(importlib.import_module("robomme.robomme_env.RouteStick").RouteStick, native)
 
 
 @pytest.mark.parametrize("value", [0, 0.5, 1])
@@ -56,7 +62,8 @@ def test_direction_threshold_accepts_boundaries(value):
     resolve, native = resolver("RouteStick")
     candidate = copy.deepcopy(native)
     candidate["parameters"]["walk"]["direction"]["threshold"] = value
-    assert resolve(SimpleNamespace(configs={}), candidate)["parameters"]["walk"]["direction"]["threshold"] == value
+    cls = importlib.import_module("robomme.robomme_env.RouteStick").RouteStick
+    assert resolve(cls, candidate)["parameters"]["walk"]["direction"]["threshold"] == value
 
 
 @pytest.mark.parametrize("ref", [BASELINE_COMMIT, "94a9b5e"])
@@ -110,15 +117,26 @@ def test_real_walk_matches_baseline_nodes_and_rng(backtrack, steps, start):
 
 
 @pytest.mark.parametrize("task", ["VideoUnmaskSwap", "VideoRepick"])
-@pytest.mark.parametrize("difficulty", ["easy", "medium", "hard", "xhard"])  # xhard 的对象数：Unmask 4、Repick 3，走非 hard 分支
+@pytest.mark.parametrize("difficulty", ["easy", "medium", "hard", "xhard1", "xhard2", "xhard3", "xhard4"])
 def test_real_object_selection_expressions_match_baseline(task, difficulty):
+    class _Spec:
+        def value(self, _path, drawn, **_kwargs):
+            return drawn
+
+        def record(self, *_args, **_kwargs):
+            return None
+
     def run(baseline):
         scene = generator._func_def(source_tree(task, baseline), "_load_scene")
-        count = (3 if difficulty == "easy" else 4) if task == "VideoUnmaskSwap" else (15 if difficulty == "hard" else 3)
+        repick_counts = {"xhard1": 4, "xhard2": 5, "xhard3": 6, "xhard4": 7}
+        count = (3 if difficulty == "easy" else 4) if task == "VideoUnmaskSwap" else (
+            15 if difficulty == "hard" else repick_counts.get(difficulty, 3)
+        )
         actors = [object() for _ in range(count)]
         native = resolver(task)[1]
         rng = torch.Generator().manual_seed(1234)
-        env = SimpleNamespace(spawned_bins=actors, spawned_cubes=actors, generator=rng)
+        env = SimpleNamespace(spawned_bins=actors, spawned_cubes=actors, generator=rng,
+                              _spec=_Spec(), difficulty=difficulty)
         ns = {"self": env, "torch": torch, "generator": rng,
               "selection_cfg": native["parameters"]["object_selection"]}
         if task == "VideoUnmaskSwap":
@@ -166,7 +184,10 @@ def test_real_swap_resolution_matches_baseline_and_preserves_ties(task, points):
             # 这里模拟原三档乙通道的关闭态（easy、无甲规格 ⇒ 开关为假），语义与改动前相同
             env.difficulty = "easy"
             env._sweep_checks_enabled = lambda: False
-        namespace = {"self": env, "np": np, "timestep": 0}
+        # V6：VideoRepick 的 step 循环里 xhard 判断改为族判断 is_newvalue_difficulty，exec 时需把它放进命名空间
+        from robomme.robomme_env.utils.difficulty import is_newvalue_difficulty  # noqa: PLC0415
+
+        namespace = {"self": env, "np": np, "timestep": 0, "is_newvalue_difficulty": is_newvalue_difficulty}
         exec(compile(ast.Module(body=loops, type_ignores=[]), task, "exec"), namespace)
         index = next(i for i, actor in enumerate(actors) if actor is env.swap_pair1_idx2)
         actors[1].position[:] = [0.001, 0]

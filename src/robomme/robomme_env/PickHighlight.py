@@ -30,10 +30,12 @@ from .utils.subgoal_evaluate_func import static_check
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import SamplingConfigError, assert_native_decision, split_sampling_config
+from .utils.sampling_config import (
+    SamplingConfigError, assert_native_decision, fill_missing_newvalue, split_sampling_config,
+)
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import normalize_robomme_difficulty, is_newvalue_difficulty
 from ..logging_utils import logger
 
 
@@ -102,6 +104,14 @@ XHARD_DECISION = {
     "subgoal_color_suffix": "omit",
 }
 
+# V6：四档沿用 HSV 任意色、精确 OBB 与 subgoal 去色后缀；档位值只改变 pick 数与总块数。
+NEWVALUE_DECISION = {
+    "xhard4": XHARD_DECISION,
+    "xhard1": copy.deepcopy(XHARD_DECISION),
+    "xhard2": copy.deepcopy(XHARD_DECISION),
+    "xhard3": copy.deepcopy(XHARD_DECISION),
+}
+
 
 def _native_decision(cls):
     """按方案第二节 2.9 切出 decision 块（原值阶段等于原值）。
@@ -115,7 +125,8 @@ def _native_decision(cls):
         "highlight_count": {difficulty: copy.deepcopy(cfg["pickup"]) for difficulty, cfg in cls.configs.items()},
         "spawn_count": {difficulty: copy.deepcopy(cfg["spawn"]) for difficulty, cfg in cls.configs.items()},
         "block_color_policy": "native_per_cube_uniform",
-        "xhard": copy.deepcopy(XHARD_DECISION),
+        # V6：xhard 子树原值不变，再按档追加 xhard1/2/3 三棵同结构子树
+        **{tier: copy.deepcopy(entry) for tier, entry in NEWVALUE_DECISION.items()},
     }
 
 
@@ -135,6 +146,8 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：旧快照（V5 没有 xhard1/2/3 子树）从源码申报补齐缺的新值档，已有的不动
+    fill_missing_newvalue(decision, decision_default)
     native["decision"] = decision
     return native
 
@@ -170,12 +183,26 @@ class PickHighlight(BaseEnv):
         "pickup": 2
     }
 
-    # V4 xhard（派生自 hard，计划 2.12）：闭区间，每局各抽一次。
-    # spawn [8,10]（B5：区域与 min_gap 不动时实测只稳放 8~10）；highlight [5,7]（用户原文）。
-    # 约束 spawn 下界 ≥ highlight 上界，_load_scene 的 xhard 分支对实际生效的区间做硬断言。
-    config_xhard = {
-        'spawn': [8, 10],
-        "pickup": [5, 7]
+    # xhard4：定稿 pick 7、总块 10；区间退化为单值。
+    config_xhard4 = {
+        'spawn': [10, 10],
+        "pickup": [7, 7]
+    }
+
+    # V6 新档按定稿取值，并保持 spawn 下界 ≥ pick 上界。
+    config_xhard1 = {
+        'spawn': [7, 7],
+        "pickup": [4, 4]
+    }
+
+    config_xhard2 = {
+        'spawn': [8, 8],
+        "pickup": [5, 5]
+    }
+
+    config_xhard3 = {
+        'spawn': [9, 9],
+        "pickup": [6, 6]
     }
 
     # Combine into a dictionary
@@ -183,7 +210,10 @@ class PickHighlight(BaseEnv):
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard,
+        'xhard4': config_xhard4,
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
 
 
@@ -303,34 +333,36 @@ class PickHighlight(BaseEnv):
         ]
 
         # V4 xhard 分支（H2/N12：原三档一行不走这里）。
-        xhard = self.difficulty == "xhard"
+        # V6：新值族四档共用本分支，按本局档位取子树与区间
+        xhard = is_newvalue_difficulty(self.difficulty)
+        tier = self.difficulty
         if xhard:
-            xhard_cfg = decision_cfg["xhard"]
+            xhard_cfg = decision_cfg[tier]
             if xhard_cfg["block_color_policy"] != "hsv_floor":
                 raise SamplingConfigError(
-                    "PickHighlight: decision.xhard.block_color_policy 只支持 'hsv_floor'，"
+                    f"PickHighlight: decision.{tier}.block_color_policy 只支持 'hsv_floor'，"
                     f"收到 {xhard_cfg['block_color_policy']!r}"
                 )
             if xhard_cfg["subgoal_color_suffix"] != "omit":
                 raise SamplingConfigError(
-                    "PickHighlight: decision.xhard.subgoal_color_suffix 目前只实现 'omit'，"
+                    f"PickHighlight: decision.{tier}.subgoal_color_suffix 目前只实现 'omit'，"
                     f"收到 {xhard_cfg['subgoal_color_suffix']!r}"
                 )
-            spawn_lo, spawn_hi = _closed_range(decision_cfg["spawn_count"]["xhard"], "spawn_count.xhard")
+            spawn_lo, spawn_hi = _closed_range(decision_cfg["spawn_count"][tier], f"spawn_count.{tier}")
             highlight_lo, highlight_hi = _closed_range(
-                decision_cfg["highlight_count"]["xhard"], "highlight_count.xhard"
+                decision_cfg["highlight_count"][tier], f"highlight_count.{tier}"
             )
             # spawn≥highlight 硬断言（计划 2.12）：按生效区间的最坏情形判，外部收窄写坏时当场拒绝
             if spawn_lo < highlight_hi:
                 raise SamplingConfigError(
-                    f"PickHighlight: xhard 须 spawn 下界 ≥ highlight 上界，收到 spawn=[{spawn_lo},{spawn_hi}] "
+                    f"PickHighlight: {tier} 须 spawn 下界 ≥ highlight 上界，收到 spawn=[{spawn_lo},{spawn_hi}] "
                     f"highlight=[{highlight_lo},{highlight_hi}]"
                 )
             # 新增取值点：本局方块数（只在 xhard 抽；它决定下面循环的长度，只能排在方块循环之前）
             num_cubes_to_spawn = int(self._spec.value(
                 "objects.n_cubes",
                 int(torch.randint(spawn_lo, spawn_hi + 1, (1,), generator=self.generator).item()),
-                decision_key="spawn_count.xhard",
+                decision_key=f"spawn_count.{tier}",
             ))
         else:
             # Get number of cubes to spawn based on difficulty
@@ -345,7 +377,7 @@ class PickHighlight(BaseEnv):
                     f"objects.color_rgba.{cube_idx}",
                     hsv_floor_rgb(torch.rand(3, generator=self.generator).tolist(),
                                   xhard_cfg["block_color_hsv"]) + [1.0],
-                    decision_key="xhard.block_color_policy",
+                    decision_key=f"{tier}.block_color_policy",
                 )
                 chosen_color = {"color": tuple(float(c) for c in rgba), "name": "rgb", "label": None}
             else:
@@ -412,7 +444,7 @@ class PickHighlight(BaseEnv):
             highlight_count = int(self._spec.value(
                 "objects.highlight_count",
                 int(torch.randint(highlight_lo, highlight_hi + 1, (1,), generator=self.generator).item()),
-                decision_key="highlight_count.xhard",
+                decision_key=f"highlight_count.{tier}",
             ))
             # randperm(len)[:k] 在 k>len 时会静默截断，这里显式挡住
             if highlight_count > len(permutation):
@@ -421,7 +453,7 @@ class PickHighlight(BaseEnv):
                 )
             target_cube_indices = self._spec.value(
                 "objects.highlight_ids", permutation[:highlight_count],
-                decision_key="highlight_count.xhard",
+                decision_key=f"highlight_count.{tier}",
             )
         else:
             # Randomly select one cube from all available cubes as the target
@@ -657,7 +689,7 @@ class PickHighlight(BaseEnv):
 
       
 
-        if self.difficulty == "xhard":
+        if is_newvalue_difficulty(self.difficulty):
             # xhard 的 highlight_count 是区间，本局实际高亮数就是已抽定的目标数
             highlight_count = len(target_cubes)
         else:

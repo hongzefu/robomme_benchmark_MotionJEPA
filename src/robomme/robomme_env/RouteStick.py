@@ -38,10 +38,10 @@ from .utils.object_generation import *
 from .utils import reset_panda
 from .utils.route import *
 from .utils.subgoal_planner_func import *
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import NEWVALUE_DIFFICULTIES, is_newvalue_difficulty, normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.episode_spec import EpisodeSpecError as _EpisodeSpecError
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 
 from ..logging_utils import logger
 
@@ -54,7 +54,8 @@ def _scene_gen_error(difficulty):
     用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
     只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
     """
-    return _RealSceneGenerationError if difficulty == "xhard" else SceneGenerationError
+    # V6 口径 11：新值族（xhard1/2/3/xhard）都走真异常类，原三档不变
+    return _RealSceneGenerationError if is_newvalue_difficulty(difficulty) else SceneGenerationError
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
 A simple task where the objective is to grasp a red cube with the {robot_id} robot and move it to a target goal position. This is also the *baseline* task to test whether a robot with manipulation
@@ -166,7 +167,10 @@ def _native_decision(cls):
         "demonstration_duration_policy": "native",
         # V5 xhard 专属（计划 2.11，L37/L38）：段数 L 的范围冻进 decision 与规格 header，回放时从 header 读，
         # 不再从类属性读。键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
-        "xhard": {"segment_count_range": list(cls.config_xhard["length"])},
+        "xhard4": {"segment_count_range": list(cls.config_xhard4["length"])},
+        # V6（计划 2.12）：追加 xhard1/2/3 三棵同结构子树，值取各档 config 的 length（xhard 保持首位不变）
+        **{d: {"segment_count_range": list(cls.configs[d]["length"])}
+           for d in NEWVALUE_DIFFICULTIES if d != NEWVALUE_DIFFICULTIES[-1]},
     }
 
 
@@ -176,6 +180,10 @@ def _resolve_sampling_config(cls, override):
     decision, native = split_sampling_config(override, native_default, decision_default)
     # 第一轮只做原值导出／消费：decision 必须逐键等于原值（红线 R7）。
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：V5 快照（已有顶层 xhard 子树）缺 xhard1/2/3 时从源码补齐；V4 及更早的快照不补，
+    # 保持 V5「V4 header 在新值档上直接报错、不静默取源码新值」的口径 13。
+    if NEWVALUE_DIFFICULTIES[-1] in decision:
+        fill_missing_newvalue(decision, decision_default)
     resolved = native
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
     resolved["decision"] = decision
@@ -226,8 +234,22 @@ class RouteStick(BaseEnv):
     # 均匀抽样均值 30 s；执行段 50·L（+1 初始帧），L=21 时 1050 步，在评估 1301 步预算内（截断点 L≥27）。
     # 抽样点与顺序不变，只改值域；xhard 实际消费的是 decision.xhard.segment_count_range（冻进 header），
     # 这里的 length 是它的默认来源。
-    config_xhard = {
-    'length':[15,21],
+    config_xhard4 = {
+    'length':[17,21],
+    'backtrack':True,
+    }
+
+    # V6（计划 2.12）：hard 与 xhard 之间插入三档，布局与游走规则沿用 xhard，只改段数 L；backtrack 恒 True
+    config_xhard1 = {
+    'length':[8,10],
+    'backtrack':True,
+    }
+    config_xhard2 = {
+    'length':[11,13],
+    'backtrack':True,
+    }
+    config_xhard3 = {
+    'length':[14,16],
     'backtrack':True,
     }
 
@@ -236,7 +258,10 @@ class RouteStick(BaseEnv):
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard
+        'xhard4': config_xhard4,
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
 
     def __init__(self, *args, robot_uids="panda_stick", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
@@ -511,13 +536,22 @@ class RouteStick(BaseEnv):
 
         sampling_configs = self._sampling["parameters"]["configs"]
         fallback_difficulty = self._sampling["parameters"]["configs_fallback_difficulty"]
-        cfg = sampling_configs.get(getattr(self, "difficulty", "easy"), sampling_configs[fallback_difficulty])
+        if is_newvalue_difficulty(getattr(self, "difficulty", "easy")):
+            # V6（计划 2.12）：新值族缺键直接抛错，不静默回退到 easy
+            if self.difficulty not in sampling_configs:
+                raise ValueError(
+                    f"RouteStick {self.difficulty}: sampling_config.parameters.configs 缺少 {self.difficulty} 档"
+                )
+            cfg = sampling_configs[self.difficulty]
+        else:
+            # 原三档：保持原有的静默回退行为逐字不变
+            cfg = sampling_configs.get(getattr(self, "difficulty", "easy"), sampling_configs[fallback_difficulty])
         length_min, length_max = cfg.get("length")
         length_decision_key = f"configs.{getattr(self, 'difficulty', 'easy')}.length"
-        if self.difficulty == "xhard":
-            # V5（计划 2.11 / L38）：xhard 的段数范围从 decision（规格 header 冻结的那份）读
+        if is_newvalue_difficulty(self.difficulty):
+            # V5（计划 2.11 / L38）：xhard 的段数范围从 decision（规格 header 冻结的那份）读；V6 新值族按本局档位读
             length_min, length_max = self._xhard_segment_count_range()
-            length_decision_key = "xhard.segment_count_range"
+            length_decision_key = f"{self.difficulty}.segment_count_range"
         allow_backtracking = bool(cfg.get("backtrack", True))
         if spec is None:
             steps = self._spec.value(
@@ -530,11 +564,11 @@ class RouteStick(BaseEnv):
                 "actions.nodes",
                 list(generate_dynamic_walk(button_indices, steps=steps, allow_backtracking=allow_backtracking, generator=generator, walk_config=walk_cfg)),
             )
-            if self.difficulty == "xhard":
+            if is_newvalue_difficulty(self.difficulty):
                 # V5（N17 精神）：回放冻结规格时 value() 直接返回冻结值、不复核，这里复核段数与节点数
                 if not length_min <= int(steps) <= length_max or len(traj) != int(steps) + 1:
                     raise _EpisodeSpecError(
-                        f"RouteStick xhard: 段数 {steps} / 节点数 {len(traj)} 与 "
+                        f"RouteStick {self.difficulty}: 段数 {steps} / 节点数 {len(traj)} 与 "
                         f"segment_count_range [{length_min}, {length_max}] 不符（应为 L 在范围内、节点数 L+1）"
                     )
         else:
@@ -675,17 +709,18 @@ class RouteStick(BaseEnv):
     def _xhard_segment_count_range(self):
         """V5（计划 2.11 / L38）：xhard 的段数 L 范围，取自 ``decision.xhard.segment_count_range``。
 
-        抽签时它等于 ``config_xhard.length`` 的默认值；回放时 sampling_config 来自规格 header，
+        抽签时它等于 ``config_xhard4.length`` 的默认值；回放时 sampling_config 来自规格 header，
         因此读到的是冻结值。缺键说明传入的是 V4 或更早的快照（V4 header 没冻结 L 范围），
         V4 已作废（口径 13），直接报错而不是回退到类属性。
         """
-        xhard_cfg = self._sampling["decision"].get("xhard")
+        # V6：按本局档位取子树（新值族四档同结构）
+        xhard_cfg = self._sampling["decision"].get(self.difficulty)
         value = xhard_cfg.get("segment_count_range") if isinstance(xhard_cfg, dict) else None
         if (not isinstance(value, (list, tuple)) or len(value) != 2
                 or any(isinstance(v, bool) or not isinstance(v, int) for v in value)
                 or not 1 <= value[0] <= value[1]):
             raise ValueError(
-                "RouteStick xhard: sampling_config.decision.xhard.segment_count_range 缺失或不是 "
+                f"RouteStick {self.difficulty}: sampling_config.decision.{self.difficulty}.segment_count_range 缺失或不是 "
                 f"[下界, 上界] 正整数对（收到 {value!r}；V4 及更早的快照在 V5 代码上不可用）"
             )
         return int(value[0]), int(value[1])

@@ -75,9 +75,14 @@ def _original_decision(task: str) -> dict:
     return decision
 
 
+NEWVALUE = ("xhard1", "xhard2", "xhard3", "xhard")
+ALL_TIERS = ("easy", "medium", "hard", "xhard1", "xhard2", "xhard3", "xhard")
+
+
 def _strip(node):
     if isinstance(node, dict):
-        return {k: _strip(v) for k, v in node.items() if k != "xhard"}
+        # V6：剥离整个新值族（xhard1/2/3/xhard），与 assert_native_decision 同口径
+        return {k: _strip(v) for k, v in node.items() if k not in NEWVALUE}
     return node
 
 
@@ -101,6 +106,50 @@ def test_decision_visible_part_equals_original(task: str) -> None:
     assert _strip(decision) == _original_decision(task)
     assert decision["xhard"] == {"demo_object_count": 2, "demo_return_policy": "return_to_origin"}
     assert decision["targets"]["xhard"] == 4 and decision["swap"]["xhard"] is True
+    # V6：四个新值档子树键结构与 xhard 相同，targets/swap 等派生映射恰好 7 档
+    for tier in NEWVALUE:
+        assert set(decision[tier]) == set(decision["xhard"])
+    assert set(decision["targets"]) == set(ALL_TIERS) == set(cls.configs)
+
+
+# V6 计划 2.10 的数值表：(k, 放回策略)
+V6_DEMO_TABLE = {
+    "VideoPlaceButton": {
+        "xhard1": (1, "return_to_origin"),
+        "xhard2": (2, "no_return"),
+        "xhard3": (2, "no_return"),  # TODO(V6 S2)：return_last_only 占位
+        "xhard": (2, "return_to_origin"),
+    },
+    "VideoPlaceOrder": {
+        "xhard1": (1, "return_to_origin"),
+        "xhard2": (2, "no_return"),
+        "xhard3": (2, "no_return"),
+        "xhard": (2, "return_to_origin"),
+    },
+}
+
+
+@pytest.mark.parametrize("task", sorted(MODULES))
+def test_v6_newvalue_demo_table(task: str) -> None:
+    module, cls = MODULES[task]
+    decision = module._native_decision(cls)
+    for tier, (k, policy) in V6_DEMO_TABLE[task].items():
+        assert (decision[tier]["demo_object_count"], decision[tier]["demo_return_policy"]) == (k, policy)
+        assert cls.configs[tier] == cls.configs["hard"]  # color 3、targets 4、swap True 与 hard 同
+        assert xhard_home_site.validate_demo_plan(k, policy, tier, 3) == (k, policy)
+
+
+def test_v6_vpo_visit_count_range() -> None:
+    assert vpo_mod.NEWVALUE_VISIT_COUNT_RANGE == {
+        "xhard1": (2, 4), "xhard2": (2, 3), "xhard3": (2, 4), "xhard": (2, 4),
+    }
+
+
+@pytest.mark.parametrize("counts", [[2, 2], [3, 2], [2, 3], [4, 3]])
+def test_v6_button_index_no_return(counts) -> None:
+    """不放回时序列里没有放回单元：下标 = 2 × (button_after_visit + 1)，且与 with_home=True 的单对象退化一致。"""
+    for k in range(sum(counts)):
+        assert vpo_mod.VideoPlaceOrder.xhard_button_task_index(counts, k, with_home=False) == 2 * (k + 1)
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))

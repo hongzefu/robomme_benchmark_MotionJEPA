@@ -33,9 +33,9 @@ from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenera
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import *
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import NEWVALUE_DIFFICULTIES, is_newvalue_difficulty, normalize_robomme_difficulty, require_xhard4_only
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 from ..logging_utils import logger
 
 
@@ -47,7 +47,7 @@ def _scene_gen_error(difficulty):
     用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
     只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
     """
-    return _RealSceneGenerationError if difficulty == "xhard" else SceneGenerationError
+    return _RealSceneGenerationError if is_newvalue_difficulty(difficulty) else SceneGenerationError
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
 A simple task where the objective is to grasp a red cube with the {robot_id} robot and move it to a target goal position. This is also the *baseline* task to test whether a robot with manipulation
@@ -139,7 +139,7 @@ def _native_decision(cls):
     return {
         "move_interval_choices": list(hard["move_interval_choices"]),
         "stop_time_range": dict(hard["stop_time_range"]),
-        "xhard": copy.deepcopy(cls.configs["xhard"]),
+        "xhard4": copy.deepcopy(cls.configs["xhard4"]),
     }
 
 
@@ -148,10 +148,12 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
-    # 旧快照（v2/v3 导出时还没有 xhard 条目）守卫照旧放行；这里补上源码申报的 xhard 默认值，
-    # 只影响 xhard 局，原三档不读这个键。
-    if "xhard" not in decision:
-        decision["xhard"] = copy.deepcopy(decision_default["xhard"])
+    # 旧快照（v2/v3 导出时还没有 xhard 条目）守卫照旧放行；这里补上源码申报的新值档默认值，
+    # 只影响新值档局，原三档不读这些键。V6：fill_missing_newvalue 只补 xhard1/2/3（本环境不加档，补了也不会被读），
+    # xhard 的旧快照兜底保持本环境 V4/V5 原有写法（按族键名 NEWVALUE_DIFFICULTIES[-1] 取，即最难档 xhard）。
+    fill_missing_newvalue(decision, decision_default)
+    if NEWVALUE_DIFFICULTIES[-1] not in decision:
+        decision[NEWVALUE_DIFFICULTIES[-1]] = copy.deepcopy(decision_default[NEWVALUE_DIFFICULTIES[-1]])
     native["decision"] = decision
     return native
 
@@ -177,7 +179,7 @@ class StopCube(BaseEnv):
         "easy": copy.deepcopy(_CONFIG_CURRENT),
         "medium": copy.deepcopy(_CONFIG_CURRENT),
         "hard": copy.deepcopy(_CONFIG_CURRENT),
-        "xhard": copy.deepcopy(_CONFIG_XHARD),
+        "xhard4": copy.deepcopy(_CONFIG_XHARD),
     }
 
 
@@ -236,6 +238,8 @@ class StopCube(BaseEnv):
                 self.difficulty = "medium"
             else:  # seed_mod == 2
                 self.difficulty = "hard"
+        # V6（计划 2.13 / M2）：本环境原版无梯度、不加档，传入 xhard1/2/3 明确报错
+        require_xhard4_only(self.difficulty, "StopCube")
 
         self.highlight_starts = {}  # Use dictionary to store highlight start time for each button
         super().__init__(*args, robot_uids=robot_uids, **kwargs)
@@ -347,9 +351,9 @@ class StopCube(BaseEnv):
 
             # 难度真正被消费的唯一位置：xhard 读 decision.xhard 子键，原三档读顶层原值（三档同值）。
             # 两个分支的随机调用次数、顺序、区间形式完全相同，只是区间端点不同（红线 N5）。
-            xhard = self.difficulty == "xhard"
-            decision_cfg = self._sampling["decision"]["xhard"] if xhard else self._sampling["decision"]
-            key_prefix = "xhard." if xhard else ""
+            xhard = is_newvalue_difficulty(self.difficulty)
+            decision_cfg = self._sampling["decision"][self.difficulty] if xhard else self._sampling["decision"]
+            key_prefix = f"{self.difficulty}." if xhard else ""
 
             move_interval_list = list(decision_cfg["move_interval_choices"])
             idx = self._spec.value(
@@ -568,7 +572,7 @@ class StopCube(BaseEnv):
         # Alternate between the two waypoints so the cube makes five passes
         # （原三档逐字保持 range(5)；xhard 按 _initialize_episode 算出的实际段数展开，
         #   segment % 2 的起终点交替规则不变）
-        if getattr(self, "difficulty", None) == "xhard":
+        if is_newvalue_difficulty(getattr(self, "difficulty", None)):
             segments = range(self.motion_segments)
         else:
             segments = range(5)

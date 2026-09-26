@@ -72,7 +72,7 @@ def _sampling(color_mix=None):
     if color_mix is not None:
         decision, native = binfill.native_blocks(CLS)
         decision = copy.deepcopy(decision)
-        decision["configs"]["xhard"]["color_mix"] = dict(color_mix)
+        decision["configs"]["xhard4"]["color_mix"] = dict(color_mix)
         override = {"decision": decision, "native": native}
     return binfill._resolve_sampling_config(CLS, override)
 
@@ -82,7 +82,9 @@ def _fake_env(spec_doc=None, color_mix=None):
         cube_half_size=HALF, device="cpu", scene=None, all_cubes=[],
         red_cubes=[], blue_cubes=[], green_cubes=[],
         _sampling=_sampling(color_mix),
-        _spec=SpecRecorder(spec_doc, "BinFill", {"seed": 0}, difficulty="xhard"),
+        # V6：_spawn_cubes_xhard 按本局档位取 color_mix，假 env 也要带 difficulty
+        difficulty="xhard4",
+        _spec=SpecRecorder(spec_doc, "BinFill", {"seed": 0}, difficulty="xhard4"),
     )
 
 
@@ -104,7 +106,7 @@ def _pre_cube(seed, env):
         _board_side=board_cfg["board_side"], _hole_side=board_cfg["hole_side"],
         pose=SimpleNamespace(p=torch.tensor([[0.15 + xv, yv, 0.0]], dtype=torch.float32)),
     )
-    config = sampling["parameters"]["configs"]["xhard"]
+    config = sampling["parameters"]["configs"]["xhard4"]
     color_pool = torch.randperm(3, generator=g).tolist()[: config["color"]]
     pic = torch.randint(config["put_in_color"][0], config["put_in_color"][1] + 1, (1,), generator=g).item()
     pic = min(max(1, min(3, pic)), max(1, config["color"]))
@@ -198,14 +200,14 @@ def batch():
 # 配置与守卫（V5 语义；替代 V4 测试里「config_xhard 只有 5 个键」的断言）
 # ---------------------------------------------------------------------------
 def test_config_xhard_has_color_mix_and_three_tiers_untouched() -> None:
-    assert CLS.config_xhard["color_mix"] == COLOR_MIX
+    assert CLS.config_xhard4["color_mix"] == COLOR_MIX
     decision = binfill._native_decision(CLS)
-    assert decision["configs"]["xhard"]["color_mix"] == COLOR_MIX
+    assert decision["configs"]["xhard4"]["color_mix"] == COLOR_MIX
     for difficulty in ("easy", "medium", "hard"):
         assert "color_mix" not in CLS.configs[difficulty]
         assert set(decision["configs"][difficulty]) == {"color", "spawn_cubes", "put_in_numbers"}
     resolved = binfill._resolve_sampling_config(CLS, None)
-    assert resolved["parameters"]["configs"]["xhard"]["color_mix"] == COLOR_MIX
+    assert resolved["parameters"]["configs"]["xhard4"]["color_mix"] == COLOR_MIX
 
 
 @pytest.mark.parametrize("bad", [
@@ -225,8 +227,8 @@ def test_guard_rejects_snapshot_missing_color_mix() -> None:
     """V4 快照的 xhard 条目没有 color_mix：形状检查拒绝（V4 作废，预期）。"""
     decision, native = binfill.native_blocks(CLS)
     decision = copy.deepcopy(decision)
-    decision["configs"]["xhard"].pop("color_mix")
-    with pytest.raises(SamplingConfigError, match="xhard"):
+    decision["configs"]["xhard4"].pop("color_mix")
+    with pytest.raises(SamplingConfigError, match="xhard4"):
         binfill._resolve_sampling_config(CLS, {"decision": decision, "native": native})
 
 

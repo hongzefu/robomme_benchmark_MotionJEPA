@@ -24,10 +24,10 @@ from mani_skill.utils.geometry.rotation_conversions import (
 )
 import copy
 from .utils import *
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import is_newvalue_difficulty, normalize_robomme_difficulty, require_xhard4_only
 from .utils.subgoal_evaluate_func import static_check
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import SamplingConfigError, assert_native_decision, split_sampling_config
+from .utils.sampling_config import SamplingConfigError, assert_native_decision, fill_missing_newvalue, split_sampling_config
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils.episode_spec import EpisodeSpecError
 from .utils import subgoal_language
@@ -87,12 +87,12 @@ def _native_decision(cls):
     """按方案第二节 2.13 切出 decision 块（原值阶段等于原值）。
 
     V4（计划 2.17）：xhard 新值一律挂在名为 ``xhard`` 的子键下（守卫只放行这些键偏离），
-    默认值取自 ``cls.configs["xhard"]``；原三档可见部分与 V3 逐字相同。
+    默认值取自 ``cls.configs["xhard4"]``；原三档可见部分与 V3 逐字相同。
 
     V5（计划 2.9，L30/L33）：V4 的 ``corner_bias`` 已删除；演示段与执行段各自暴露一份
     ``center_exclusion``（桌面中心共同禁区，两段各自声明、各自消费）。
     """
-    xhard = cls.configs["xhard"]
+    xhard = cls.configs["xhard4"]
     return {
         # 演示阶段的方块与杆位置采样规则（原值：杆基位 y=±0.2、xy 各抖动 ±0.05；
         # 方块候选中心 xy 各 ±0.1，再在 half_size 0.05 的小区里生成）。
@@ -100,19 +100,19 @@ def _native_decision(cls):
             "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
             "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
             # V5 xhard：桌面中心共同禁区（L30；杆按轴线段、goal 与方块按中心判）
-            "xhard": {"center_exclusion": copy.deepcopy(xhard["center_exclusion"])},
+            "xhard4": {"center_exclusion": copy.deepcopy(xhard["center_exclusion"])},
         },
         # 执行阶段另抽一套，原规则与演示相同但必须分开，不能误合并。
         "execution_layout": {
             "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
             "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
             # V5 xhard：执行段的中心禁区，与演示段各自声明、各自消费（两套不可合并）
-            "xhard": {"center_exclusion": copy.deepcopy(xhard["center_exclusion"])},
+            "xhard4": {"center_exclusion": copy.deepcopy(xhard["center_exclusion"])},
         },
         # 杆在桌面内的转角范围：原值 ±π/4（表达式为 u*span - offset）。
         # V4 xhard：±π（A1，仍只绕世界 z；joint7 冲突按等价朝向归约，见 B11）。
         "peg_yaw_range": {"span_rad": np.pi / 2, "offset_rad": np.pi / 4,
-                          "xhard": dict(xhard["peg_yaw_range"])},
+                          "xhard4": dict(xhard["peg_yaw_range"])},
     }
 
 
@@ -121,6 +121,8 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：旧快照缺的新值档子树从源码申报补齐（本环境不加档，只可能补 xhard）；原三档不读这些键
+    fill_missing_newvalue(decision, decision_default)
     native["decision"] = decision
     return native
 
@@ -194,7 +196,7 @@ class MoveCube(BaseEnv):
         "peg_yaw_range": {"span_rad": np.pi / 2, "offset_rad": np.pi / 4},
         "corner_bias": 0.0,
     }
-    config_xhard = {
+    config_xhard4 = {
         # ±180°：u*2π - π（A1）
         "peg_yaw_range": {"span_rad": 2 * np.pi, "offset_rad": np.pi},
         # V5（计划 2.9，L30/L33）：V4 的 corner_bias 已删除（不再用偏置），改为桌面中心共同禁区、
@@ -208,7 +210,7 @@ class MoveCube(BaseEnv):
         "easy": config_native,
         "medium": config_native,
         "hard": config_native,
-        "xhard": config_xhard,
+        "xhard4": config_xhard4,
     }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
@@ -265,7 +267,9 @@ class MoveCube(BaseEnv):
                 self.difficulty = "medium"
             else:
                 self.difficulty = "hard"
-        if self.difficulty == "xhard":
+        # V6（计划 2.13 / M2）：本环境原版无梯度、不加档，传入 xhard1/2/3 明确报错
+        require_xhard4_only(self.difficulty, "MoveCube")
+        if is_newvalue_difficulty(self.difficulty):
             # V4 B11：抓杆时按等价朝向归约（只改夹爪姿态，并同步补偿抓杆后的推杆路点）；
             # 求解器按这个开关分叉，原三档不设此属性、走原路径
             self._xhard_peg_yaw_reduction = True
@@ -319,13 +323,14 @@ class MoveCube(BaseEnv):
         # V4 xhard（计划 2.17）：±180° 转角只在 xhard 生效；原三档转角仍读 decision 顶层的 span/offset。
         # V5 xhard（计划 2.9）：corner_bias 已删除，改为桌面中心共同禁区（直接拒绝）；原三档
         # demo_zone/exec_zone 为 None，不执行任何禁区判定、不多抽随机数，随机调用序列逐字不变
-        xhard = self.difficulty == "xhard"
+        xhard = is_newvalue_difficulty(self.difficulty)
         if xhard:
             demo_zone = self._xhard_center_exclusion(demo_layout, "demo_layout")
             exec_zone = self._xhard_center_exclusion(exec_layout, "execution_layout")
-            yaw_policy = peg_yaw_range["xhard"]
-            dk_demo, dk_exec, dk_yaw = ("demo_layout.xhard.center_exclusion",
-                                        "execution_layout.xhard.center_exclusion", "peg_yaw_range.xhard")
+            yaw_policy = peg_yaw_range[self.difficulty]
+            dk_demo, dk_exec, dk_yaw = (f"demo_layout.{self.difficulty}.center_exclusion",
+                                        f"execution_layout.{self.difficulty}.center_exclusion",
+                                        f"peg_yaw_range.{self.difficulty}")
             # 杆轴线段在杆根坐标系里沿朝向 u 的区间，由 build_peg 的几何推出（不写死常数）
             peg_extent = _peg_axis_extent(self.length)
             zone_trials = {"demo": {}, "execution": {}}
@@ -630,8 +635,8 @@ class MoveCube(BaseEnv):
         ``(center_xy, radius)``；``center``（(2,) float64）、``radius``、``max_trials`` 供杆与方块候选的
         本地判据使用；``decision`` 为原样的配置副本（写进规格留痕）。
         """
-        cfg = layout["xhard"]["center_exclusion"]
-        where = f"MoveCube xhard：decision.{key}.xhard.center_exclusion"
+        cfg = layout[self.difficulty]["center_exclusion"]
+        where = f"MoveCube {self.difficulty}：decision.{key}.{self.difficulty}.center_exclusion"
         if not isinstance(cfg, dict):
             raise SamplingConfigError(f"{where} 必须是字典，收到 {cfg!r}")
         if cfg.get("shape") != "circle":
@@ -737,7 +742,7 @@ class MoveCube(BaseEnv):
             #self.way="gripper_push"
 
             self.agent.reset(qpos)            
-            if self.difficulty == "xhard":
+            if is_newvalue_difficulty(self.difficulty):
                 # B11：每次初始化清掉上一次抓杆的归约标记（由 grasp_and_lift_peg_side 重新设置）
                 self._peg_grasp_flipped = False
                 self._peg_grasp_flip_log = []

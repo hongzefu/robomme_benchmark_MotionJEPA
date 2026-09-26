@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import importlib
+import inspect
 import json
 import sys
 from pathlib import Path
@@ -34,17 +35,21 @@ RELEASE_NOTES = {
     "newtask-v4": "V4 快照：原三档部分等于原值（v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），xhard 条目为 V4 新值",
     "newtask-v5": "V5 快照：原三档部分等于原值（V0 闸门逐字核验；v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），"
                   "xhard 条目为 V5 新值（NEWTASK_RELEASE_V5_PLAN）；V4 快照 scripts/configs/newtask-v4/ 已作废、原样留档",
+    "newtask-v6": "V6 快照：原 easy/medium/hard 三档按 V0 核验；新值族 xhard1 < xhard2 < xhard3 < xhard4 四档条目为 V6 新值（NEWTASK_RELEASE_V6_PLAN）；V5 快照 scripts/configs/newtask-v5/ 原样留档",
 }
 
 
-def extract_task(task: str):
+def extract_task(task: str, release: str = DEFAULT_RELEASE):
     """返回该环境的 (decision, native)；未接口化的环境返回 None。"""
     module = importlib.import_module(f"robomme.robomme_env.{task}")
     blocks = getattr(module, "native_blocks", None)
     if blocks is None:
         return None
     cls = getattr(module, task)
-    decision, native = blocks(cls)
+    if "release" in inspect.signature(blocks).parameters:
+        decision, native = blocks(cls, release=release)
+    else:
+        decision, native = blocks(cls)
     return {"decision": decision, "native": native}
 
 
@@ -68,7 +73,7 @@ def main(argv: list[str] | None = None) -> int:
     payload: dict[str, object] = {}
     pending: list[str] = []
     for task in tasks:
-        block = extract_task(task)
+        block = extract_task(task, args.release)
         if block is None:
             pending.append(task)
             continue

@@ -179,7 +179,7 @@ def _offline_env(task, seed, difficulty, spec=None, sampling_config=None):
     return env
 
 
-def run_offline(task, seed, difficulty="xhard", spec=None, sampling_config=None):
+def run_offline(task, seed, difficulty="xhard4", spec=None, sampling_config=None):
     """跑一次真实 ``_load_scene``（须在 OfflineScene 内调用）；返回 env（其 ``_spec.to_dict()`` 即本局规格）。"""
     env = _offline_env(task, seed, difficulty, spec=spec, sampling_config=sampling_config)
     getattr(MODULES[task], task)._load_scene(env, {})
@@ -257,7 +257,7 @@ def sweep(task, seeds):
 # ---------------------------------------------------------------------------
 def test_pick_xhard_decision_v5() -> None:
     decision, _ = PICK.native_blocks(PICK.PickXtimes)
-    xhard = decision["xhard"]
+    xhard = decision["xhard4"]
     assert set(xhard) == {"target_cube_position_policy", "goal_position_policy", "distractor", "min_center_dist_m"}
     # L43 (c)：删 corner_bias 键，全部均匀
     assert xhard["target_cube_position_policy"] == {"region_center": [-0.1, 0], "region_half_size": 0.25}
@@ -271,8 +271,8 @@ def test_pick_xhard_decision_v5() -> None:
 
 def test_swing_xhard_decision_v5() -> None:
     decision, _ = SWING.native_blocks(SWING.SwingXtimes)
-    assert set(decision["xhard"]) == {"distractor", "min_center_dist_m"}
-    assert decision["xhard"]["min_center_dist_m"] == MIN_CENTER_DIST
+    assert set(decision["xhard4"]) == {"distractor", "min_center_dist_m"}
+    assert decision["xhard4"]["min_center_dist_m"] == MIN_CENTER_DIST
     assert "corner_bias" not in json.dumps(decision)
 
 
@@ -323,10 +323,11 @@ def test_native_code_ast_unchanged() -> None:
 
 
 def test_swing_loop_branch_is_explicit() -> None:
-    """Swing 共用循环外面包了显式 difficulty 分支：xhard 走新方法，原循环只在 else 一支。"""
+    """Swing 共用循环外面包了显式 difficulty 分支：新值族（含 xhard）走新方法，原循环只在 else 一支。"""
     node = _func("SwingXtimes", "_load_scene")
     branches = [n for n in ast.walk(node) if isinstance(n, ast.If)
-                and ast.unparse(n.test) == "self.difficulty == 'xhard'"
+                # V6（口径 11）：分支判断式由字面 == 'xhard4' 改为新值族判断
+                and ast.unparse(n.test) == "is_newvalue_difficulty(self.difficulty)"
                 and any(isinstance(s, ast.Expr) and "_spawn_colored_cubes_xhard" in ast.unparse(s) for s in n.body)]
     assert len(branches) == 1
     orelse = branches[0].orelse

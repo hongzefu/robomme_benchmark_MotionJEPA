@@ -14,7 +14,7 @@
 分支属于旧注入模式，按红线 R9 原样保留、不复用为 D 路；本模块只挂在原随机分支上，
 由新的 ``native_episode_spec`` 开关驱动。
 
-V4 新值模式（NEWTASK_RELEASE_V4_PLAN 步 2）：xhard 档导出的规格标 ``native-newvalue/1``，
+V6 新值模式：xhard1～xhard4 导出的规格标 ``native-newvalue/2``，
 原三档仍标 ``native-parity/1``；两类**不许互喂**（回注时 kind 与本局难度不符即拒绝）。
 新值规格回注时的每条不等都要尽量归因到某个 ``decision`` 键（``value(..., decision_key=...)``），
 归不了因的才算 RNG 漂移；原值规格仍要求零不等。
@@ -26,14 +26,16 @@ import copy
 from typing import Any
 
 SPEC_KIND = "native-parity/1"
-# V4：xhard 档的规格类别；与 SPEC_KIND 互斥。
-SPEC_KIND_NEWVALUE = "native-newvalue/1"
+# V6 新值档规格版本。
+SPEC_KIND_NEWVALUE = "native-newvalue/2"
 SPEC_KINDS = (SPEC_KIND, SPEC_KIND_NEWVALUE)
 
 
 def spec_kind_for(difficulty: str | None) -> str:
-    """按本局难度决定规格类别：只有显式的 xhard 走新值类别，其余（含不传）一律原值类别。"""
-    if isinstance(difficulty, str) and difficulty.strip().lower() == "xhard":
+    """按本局难度决定规格类别：新值族档走 V6 规格类别，其余（含不传）一律原值类别。"""
+    from .difficulty import is_newvalue_difficulty
+
+    if is_newvalue_difficulty(difficulty):
         return SPEC_KIND_NEWVALUE
     return SPEC_KIND
 

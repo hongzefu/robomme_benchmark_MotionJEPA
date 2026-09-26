@@ -50,6 +50,7 @@ from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     _strip_xhard,
     assert_native_decision,
+    fill_missing_newvalue,
 )
 from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
 from robomme.robomme_env.utils.task_goal import get_language_goal  # noqa: E402
@@ -105,6 +106,49 @@ def test_decision去掉xhard后与原值相同(task):
     assert decision["xhard"]["distractor_swap"] == ux.v5_distractor_swap_cfg(task)
 
 
+# V6（NEWTASK_RELEASE_V6_PLAN 2.4）：hard 与 xhard 之间的三档，按表内插
+NEWVALUE = {
+    "VideoUnmaskSwap": {"xhard1": [4, 5], "xhard2": [5, 7], "xhard3": [7, 9]},
+    "ButtonUnmaskSwap": {"xhard1": [3, 4], "xhard2": [4, 5], "xhard3": [5, 6]},
+}
+NEWVALUE_PICK = {"xhard1": 2, "xhard2": 3, "xhard3": 3}
+NEWVALUE_COUNT = {"xhard1": 4, "xhard2": 6, "xhard3": 8}
+NEWVALUE_SPEED = {"xhard1": 1.0, "xhard2": 1.5, "xhard3": 1.5}
+
+
+@pytest.mark.parametrize("task", sorted(MODULES))
+def test_v6新值三档按表取值且键结构同xhard(task):
+    module, cls = MODULES[task]
+    assert list(cls.configs) == ["hard", "easy", "medium", "xhard", "xhard1", "xhard2", "xhard3"]
+    decision, _native = module.native_blocks(cls)
+    for tier, (lo, hi) in NEWVALUE[task].items():
+        pick = NEWVALUE_PICK[tier]
+        assert cls.configs[tier] == {"bin": 4, "swap_min": lo, "swap_max": hi, "pick_min": pick, "pick_max": pick}
+        assert decision["swap_count_range"][tier] == [lo, hi]
+        assert decision["pick_count_range"][tier] == [pick, pick]
+        sub = decision[tier]
+        assert set(sub) == set(decision["xhard"])
+        assert sub["swap_speed_multiplier"] == NEWVALUE_SPEED[tier]
+        assert ux.scaled_window_steps(50, sub["swap_speed_multiplier"]) == (50 if tier == "xhard1" else 33)
+        # 干扰只改数量与含 cube 数（取一半），其余键与 xhard 相同；外环交换配置块与 xhard 逐字相同
+        n = NEWVALUE_COUNT[tier]
+        expected = dict(decision["xhard"]["distractor"], count=n, cube_count_range=[n // 2, n // 2])
+        assert sub["distractor"] == expected
+        assert sub["distractor_swap"] == decision["xhard"]["distractor_swap"]
+    # 快照里出现新档时结构必须一致；V5 旧快照（无 xhard1/2/3）由 fill_missing_newvalue 补齐
+    old = copy.deepcopy(decision)
+    for tier in ("xhard1", "xhard2", "xhard3"):
+        del old[tier]
+        del old["swap_count_range"][tier]
+        del old["pick_count_range"][tier]
+    assert_native_decision(old, decision, task)
+    assert fill_missing_newvalue(old, decision) == decision
+    bad = copy.deepcopy(decision)
+    bad["xhard2"]["新键"] = 1
+    with pytest.raises(SamplingConfigError):
+        assert_native_decision(bad, decision, task)
+
+
 @pytest.mark.parametrize("task", sorted(MODULES))
 def test_守卫放行xhard收窄_拒绝原三档改动与申报外键(task):
     module, cls = MODULES[task]
@@ -127,7 +171,9 @@ def test_守卫放行xhard收窄_拒绝原三档改动与申报外键(task):
 def test_bus_native_swap_window与原值相同且被声明为具名常量():
     _decision, native = bus_module.native_blocks(BUS)
     assert native["parameters"]["swap_window"] == {"start_step": 64, "duration_steps": 50}
-    assert native["parameters"]["bin_count"] == {"easy": 3, "medium": 4, "hard": 4, "xhard": 4}
+    # V6：configs 追加 xhard1/2/3 后由 cls.configs 派生的 bin_count 扩到 7 档（新档容器数同 xhard）
+    assert native["parameters"]["bin_count"] == {"easy": 3, "medium": 4, "hard": 4, "xhard": 4,
+                                                 "xhard1": 4, "xhard2": 4, "xhard3": 4}
 
 
 def test_vus_object_selection原值不变_xhard抓取序号单列():

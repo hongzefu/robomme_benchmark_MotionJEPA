@@ -10,7 +10,7 @@ from mani_skill.agents.robots import SO100, Fetch, Panda
 from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.envs.tasks.tabletop.pick_cube_cfgs import PICK_CUBE_CONFIGS
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 from mani_skill.sensors.camera import CameraConfig
 from mani_skill.utils import sapien_utils
 from mani_skill.utils.building import actors
@@ -31,7 +31,7 @@ from .utils import *
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import normalize_robomme_difficulty, is_newvalue_difficulty
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils.unmask_distractors import add_distractor_misgrasp_failure
 # V5 xhard（L13 / L14）：统一干扰采样器与独立停放点；只在 xhard 分支调用，原三档不进该模块
@@ -105,6 +105,28 @@ XHARD_BIN_LAYOUT = {
 XHARD_DISTRACTOR = copy.deepcopy(V5_DISTRACTOR_PRESETS["ButtonUnmask"])
 
 
+# ── V6（NEWTASK_RELEASE_V6_PLAN 2.3）新值族档位表：xhard1/2/3 沿用 xhard 的全部机制（8 内环容器 + 贴身环带 +
+# 三色轮转 + 独立停放），只按档改干扰总数 count 与含 cube 个数 cube_count_range；环带宽度、间距、
+# 尝试次数等一律沿用 xhard（干扰数少时即在同一环带内更稀疏地随机放置，不重新推导带宽）。
+# 「xhard」键即原 XHARD_* 常量本身，取值逐位不变。
+def _newvalue_distractor(count, cube_count_range):
+    """以 xhard 的干扰配置为底，只替换 count 与 cube_count_range。"""
+    cfg = copy.deepcopy(XHARD_DISTRACTOR)
+    cfg["count"] = count
+    cfg["cube_count_range"] = list(cube_count_range)
+    return cfg
+
+
+NEWVALUE_DISTRACTOR = {
+    "xhard4": XHARD_DISTRACTOR,
+    "xhard1": _newvalue_distractor(8, [4, 4]),
+    "xhard2": _newvalue_distractor(10, [5, 5]),
+    "xhard3": _newvalue_distractor(12, [6, 6]),
+}
+# 内环容器摆放（间距系数 0.75）四档相同
+NEWVALUE_BIN_LAYOUT = {tier: XHARD_BIN_LAYOUT for tier in NEWVALUE_DISTRACTOR}
+
+
 def native_blocks(cls):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
     return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
@@ -118,11 +140,12 @@ def _native_decision(cls):
             "count": {difficulty: cfg["bin"] for difficulty, cfg in cls.configs.items()},
             "region_center": [0, 0],
             "region_half_size": 0.2,
-            "xhard": copy.deepcopy(XHARD_BIN_LAYOUT),
+            # xhard 在前（键序与 V5 相同），V6 的 xhard1/2/3 追加其后
+            **{tier: copy.deepcopy(layout) for tier, layout in NEWVALUE_BIN_LAYOUT.items()},
         },
         # 原三档可见部分保持 None；V4 的干扰容器放在 xhard 子键下
         "distractor": None,
-        "xhard": {"distractor": copy.deepcopy(XHARD_DISTRACTOR)},
+        **{tier: {"distractor": copy.deepcopy(dist)} for tier, dist in NEWVALUE_DISTRACTOR.items()},
     }
 
 
@@ -131,6 +154,8 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：旧快照（V5 没有 xhard1/2/3 子树）从源码申报补齐
+    fill_missing_newvalue(decision, decision_default)
     native["decision"] = decision
     return native
 
@@ -167,7 +192,23 @@ class ButtonUnmask(BaseEnv):
 
     # V4 xhard（派生自 hard，计划 2.9）：pick 2 → 3；容器数 15 → 8（G2：配 min_gap_factor 0.75，
     # 见 XHARD_BIN_LAYOUT）。另有贴身环带干扰容器（V5：XHARD_DISTRACTOR，VU 15 个 / BU 14 个），不计入 bin。
-    config_xhard = {
+    config_xhard4 = {
+    'bin':8,
+    "pick":3,
+    }
+
+    # V6 新值族：内环容器数固定为 8，pick 按档为 2/3/3/3。
+    config_xhard1 = {
+    'bin':8,
+    "pick":2,
+    }
+
+    config_xhard2 = {
+    'bin':8,
+    "pick":3,
+    }
+
+    config_xhard3 = {
     'bin':8,
     "pick":3,
     }
@@ -177,7 +218,10 @@ class ButtonUnmask(BaseEnv):
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard,
+        'xhard4': config_xhard4,
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
 
 
@@ -306,9 +350,10 @@ class ButtonUnmask(BaseEnv):
         bin_layout = decision_cfg["bin_layout_policy"]
         bins_cfg = self._sampling["positions"]["bins"]
         hidden_cfg = self._sampling["positions"]["hidden_cube"]
-        xhard = self.difficulty == "xhard"
+        # V6：新值族（xhard1/2/3/xhard）同走 xhard 机制，数值按本局档位查表
+        xhard = is_newvalue_difficulty(self.difficulty)
         # V4 xhard：间距系数取 decision 的 xhard 条目（G2 0.75）；原三档仍读 native 的原值，表达式不变
-        gap_factor = (bin_layout["xhard"]["min_gap_factor"] if xhard
+        gap_factor = (bin_layout[self.difficulty]["min_gap_factor"] if xhard
                       else bins_cfg["min_gap_factor"])
         if xhard:
             requested_bins = bin_layout["count"][self.difficulty]
@@ -468,7 +513,8 @@ class ButtonUnmask(BaseEnv):
             # V5（L13）：统一干扰采样器；仍用主场景 generator、仍在全部既有取值点之后，内环取值与 V4 同 seed 逐位相同
             self.distractor_bins, self.distractor_cubes, self.distractor_layout = spawn_distractor_layout(
                 self,
-                cfg=decision_cfg["xhard"]["distractor"],
+                cfg=decision_cfg[self.difficulty]["distractor"],
+                decision_prefix=f"{self.difficulty}.distractor",
                 avoid=avoid,
                 generator=generator,
                 recorder=self._spec,
@@ -611,7 +657,7 @@ class ButtonUnmask(BaseEnv):
         timestep = self.elapsed_steps
         
                 #Lift and drop bins (bin_0 to bin_4 if they exist)
-        if self.difficulty == "xhard":
+        if is_newvalue_difficulty(self.difficulty):
             # V5 xhard（L14，主会话 2026-09-24 定：内环容器也停独立点）：窗口与半窗落回步与原机制逐步相同，
             # 只把「远处」从共用的 (10,10,10) 换成每个物体各自的画面外停放点，免得 20 多个容器叠放拖慢物理。
             # 内环容器与原循环扫同一组 bin_<i>（i < step_bin_scan），第 i 个停在 xhard_park_point("bin", i)；

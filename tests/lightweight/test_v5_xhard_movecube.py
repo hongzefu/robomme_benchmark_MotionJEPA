@@ -28,6 +28,7 @@ import json
 import math
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -67,6 +68,10 @@ class _FakeActor:
     def __init__(self, name, pose):
         self.name = name
         self.pose = pose
+
+
+# V6：_xhard_center_exclusion 按本局档位查 layout[self.difficulty]，假 self 只需带 difficulty
+_XHARD_SELF = SimpleNamespace(difficulty="xhard")
 
 
 def _as_ms_pose(sp):
@@ -207,7 +212,7 @@ def test_corner_bias_removed_cleanly() -> None:
 def test_center_exclusion_decision_and_validation() -> None:
     decision, _ = mc.native_blocks(CLS)
     layout = copy.deepcopy(decision["demo_layout"])
-    zone = CLS._xhard_center_exclusion(None, layout, "demo_layout")
+    zone = CLS._xhard_center_exclusion(_XHARD_SELF, layout, "demo_layout")
     assert zone["rule"] == ((0.0, 0.0), 0.05)
     assert zone["max_trials"] == 128
     bad_cases = [
@@ -218,11 +223,11 @@ def test_center_exclusion_decision_and_validation() -> None:
         broken = copy.deepcopy(layout)
         broken["xhard"]["center_exclusion"][key] = value
         with pytest.raises(SamplingConfigError):
-            CLS._xhard_center_exclusion(None, broken, "demo_layout")
+            CLS._xhard_center_exclusion(_XHARD_SELF, broken, "demo_layout")
     missing = copy.deepcopy(layout)
     del missing["xhard"]["center_exclusion"]["radius_m"]
     with pytest.raises(SamplingConfigError):
-        CLS._xhard_center_exclusion(None, missing, "demo_layout")
+        CLS._xhard_center_exclusion(_XHARD_SELF, missing, "demo_layout")
 
 
 def test_peg_axis_extent_matches_measured_geometry() -> None:

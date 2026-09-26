@@ -46,7 +46,7 @@ def _fake_draw_one(task, seed, episode, sampling):
     time.sleep(random.random() * 0.01)  # 打乱完成顺序
     if seed % 3 == 0:
         return False, None, "SceneGenerationError", "fake"
-    return True, {"spec_kind": "native-newvalue/1", "task": task, "objects": {"seed": seed}}, None, None
+    return True, {"spec_kind": "native-newvalue/2", "task": task, "objects": {"seed": seed}}, None, None
 
 
 def _strip_wall(rows):
@@ -83,9 +83,12 @@ def test_multi_worker_rows_identical_to_single_worker(workers: int) -> None:
 
 def test_merged_drafts_freeze_directly(tmp_path: Path) -> None:
     sampling, samplings = _samplings()
-    header = V.build_draw_header("t", sampling, TASKS)
+    difficulty = "xhard4"
+    rule = V.seed_rule_for(difficulty, "v6")
+    header = V.build_draw_header("t", sampling, TASKS, difficulty=difficulty, seed_rule=rule)
     rows = V.draw_rows(TASKS, header["sampling_config"], 7, 30, workers=3, draw_one=_fake_draw_one,
-                       executor_factory=lambda n: ThreadPoolExecutor(max_workers=n))
+                       executor_factory=lambda n: ThreadPoolExecutor(max_workers=n),
+                       difficulty=difficulty, seed_rule=rule)
     drafts = tmp_path / "drafts.jsonl"
     V._write_jsonl(drafts, [header, *rows])
     result = V.freeze(drafts, V.DEFAULT_SAMPLING, tmp_path / "specs.jsonl", candidates_per_env=10)
@@ -319,6 +322,63 @@ def test_pipeline_plan_paths_and_resume(tmp_path: Path) -> None:
     resumed = G.plan_pipeline(_pipe_args(resume=True), root=tmp_path)
     assert [s["skip"] for s in resumed] == [True, False, False, False]
     assert not any(s["skip"] for s in G.plan_pipeline(_pipe_args(), root=tmp_path))  # 不带 --resume 不跳
+
+
+def test_pipeline_tiers_use_isolated_v6_paths(tmp_path: Path) -> None:
+    args = G.build_parser().parse_args([
+        "pipeline", "--run-id", "v6-01", "--tiers", "xhard1,xhard2,xhard3,xhard4", "--draw-workers", "4",
+    ])
+    tiers = G.parse_pipeline_tiers(args.tiers)
+    assert tiers == ("xhard1", "xhard2", "xhard3", "xhard4")
+    assert G.pipeline_release(args) == "newtask-v6"
+    assert len(G.NEWVALUE_TASKS) == 13
+    for tier in tiers:
+        single = argparse.Namespace(**vars(args))
+        single.tiers = None
+        single.release = "newtask-v6"
+        single.difficulty = tier
+        single.seed_profile = "v6"
+        single.tasks = G.pipeline_tasks_for_tier(tier, args.tasks)
+        steps = G.plan_pipeline(single, root=tmp_path)
+        draw, freeze, run, report = (" ".join(step["cmd"]) for step in steps)
+        assert "--workers 4" in draw and f"--difficulty {tier} --seed-profile v6" in draw
+        assert ("--tasks all" in draw) is (tier == "xhard4")
+        if tier != "xhard4":
+            assert "MoveCube" not in draw and "InsertPeg" not in draw and "StopCube" not in draw
+        assert f"artifacts/newtask-v6/v6-01/{tier}/draft/drafts.jsonl" in draw
+        assert f"scripts/configs/newtask-v6/v6-01/{tier}/specs.jsonl" in freeze
+        assert f"artifacts/newtask-v6/v6-01/{tier}/rollout" in run
+        assert f"artifacts/newtask-v6/v6-01/{tier}/report" in report
+    with pytest.raises(ValueError, match="重复"):
+        G.parse_pipeline_tiers("xhard1,xhard1")
+    with pytest.raises(ValueError, match="未知档位"):
+        G.parse_pipeline_tiers("xhard")
+    with pytest.raises(ValueError, match="不支持环境"):
+        G.pipeline_tasks_for_tier("xhard2", "MoveCube,PatternLock")
+
+
+def test_v6_aggregate_report_counts_55_cells(tmp_path: Path) -> None:
+    fields = {"draft_attempted": 10, "draft_ok": 10, "candidate_shortfall": 0,
+              "rollout_attempted": 3, "rollout_ok": 3, "backfilled": 0, "selected_shortfall": 0}
+    total = {"draft_attempted": 130, "draft_ok": 130, "candidate_shortfall": 0,
+             "rollout_attempted": 39, "rollout_ok": 39, "backfilled": 0, "selected_shortfall": 0,
+             "demo_frames_checked": 0, "outer_swap_checked": 0, "bin_collision": 0,
+             "draft_bin_collision": 0, "vr_checked": 0, "demo_frames_out_of_band": "N/A",
+             "outer_swap_mismatch": "N/A", "vr_min_participants": "N/A"}
+    tiers = ("xhard1", "xhard2", "xhard3", "xhard4")
+    for tier in tiers:
+        tasks = G.ALL_TASKS if tier == "xhard4" else G.NEWVALUE_TASKS
+        report_dir = tmp_path / G.pipeline_paths("newtask-v6", "v6-01", tier=tier)["report"]
+        report_dir.mkdir(parents=True)
+        (report_dir / "generation_report.json").write_text(
+            json.dumps({"per_env": {task: dict(fields) for task in tasks}, "totals": dict(total), "warnings": []}),
+            encoding="utf-8",
+        )
+    summary = G.aggregate_tier_reports("newtask-v6", "v6-01", tiers, root=tmp_path)
+    assert summary["totals"]["cells"] == 55
+    assert summary["line"].startswith("V6_GENERATION=REPORT cells=55")
+    assert len(summary["cells"]) == 55
+    assert (tmp_path / "artifacts/newtask-v6/v6-01/report/generation_report.md").is_file()
 
 
 def test_rollout_passes_gpu_to_runner(tmp_path: Path, monkeypatch) -> None:

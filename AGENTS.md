@@ -217,7 +217,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0 基线已记录；V1 基线侧运行中 | 同口径轻量集与 V5 S0 失败／错误集合逐项相同（46 failed、12 errors）；`BinFill/0` 单 worker 冒烟通过；`13e5151` 基线侧在 tmux `v6-v1-base` 中运行144条 | 并行审查四副本后实施 S1；保持V1基线运行，完成后核对144条结果 |
+| 新值模式 V6 实施（2026-09-26） | S0 基线已记录；V1 基线侧运行中；S1 pipeline 已集成，MoveCube/VP/swap 待集成 | 轻量失败／错误集合已冻结；`BinFill/0` 冒烟通过；`13e5151` 基线侧 144 条在 tmux 运行；pipeline 核心定向测试 94 passed/3 skipped、最终 PL/RS 文件 40 passed、四档 dry-run 退出0 | 集成剩余三路实现与 V6 快照，运行原档冻结、全环境 reset、LIGHTWEIGHT 失败集合及最终 V1 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1828,6 +1828,12 @@
 - 计划原指 `scripts/parity/manifest_16x3.json`，实查仅48行（每 task/difficulty 一条），不足 V1 的16环境×3难度×3局。改用 `scripts/configs/newtask-v3/subset_manifest.json`，实际144行，保留原 episode 身份。此为修正执行清单，不改变 V1 范围。
 - V1 基线侧现由 detached tmux `v6-v1-base` 执行，固定 `13e5151`、B 路、144条、单 worker、GPU 0，输出 `artifacts/newtask-v6/v1/base/`，日志 `artifacts/newtask-v6/v1/base.log`；启动后 `tmux has-session -t v6-v1-base` 返回 0，进程仍运行，尚无退出码。复现命令与输出状态见 `docs/validation/newtask-v6/20260926-s0.md`。S1 不触碰该 worktree及其输出。
 
+### 2026-09-26 America/Detroit — 新值模式 V6 S1 副本适配开始
+
+- 按用户追加授权使用 multi agent，将四份互相独立的草稿分别留在原 worktree 适配；主仓库继续保持未改生产源码，V1 基线长任务继续运行，副本分支一律不 push。
+- 三份已完成只读核对显示，原草稿不能原样合入：pipeline 仍用 `xhard` 作为第四档且数值不是定稿值；swap 只覆盖旧 xhard，使用 M5(a)（藏放范围四个容器），定稿须恢复 `bin_3` 恒空和 M5(b)；MoveCube 副本改过冻结的 V5 snapshot，且档名仍是 xhard；VP 缺少按档 VPB 额外放台、VPO 固定 `visit_counts` 和定稿单调性检查。MoveCube/VP 分别留有其副本实测报告，但这些旧决策数字不算定稿验收。
+- 已向 pipeline、MoveCube、VP 三个独立 worktree 分派最终口径适配、定向测试及只提交各自改动的任务；第四份 swap 适配待 pipeline 副本完成后再单独收敛。主仓尚未开始代码 cherry-pick 或合并，未新增依赖；下一步按副本完成结果逐项集成，并复核公共文件重叠、V5 快照字节与 S1 验收。
+
 ### 2026-09-26 America/Detroit — Codex 专属规则与 SSH 并发配置落地，16并发待验收
 
 - 用户要求原话：「写codex特有的提示 让claude忽略这个」「尽可能积极调用使用multi agent来实现 但是分隔要保持清晰」「实验告诉我 注意我是codex app进行ssh的机制 不是cli」「并且同步到https://github.com/hongzefu/AgentMetaRules-hongzefu」；追加「子agent要小于等于主要请求agent的规格」，选择「只限制模型档位」「提高到 16 个子代理」；强调「我的问题是同时已开启的能不能超过」「你先实测16个agent能并发 而且因为现在是asttra尝试用luna并发试试看」「开始实现 并且验收完毕前测试16并发」「已经退出了 开始实现该计划！」。
@@ -1843,3 +1849,11 @@
 - 2026-09-26T18:26:08.039Z 的原始 `list_agents` 返回root与probe01～probe16全部running；主代理不计入16。18:26:12.249Z尝试probe17，原始错误为 `collab spawn failed: agent thread limit reached`。独立核对16份 `session_meta` 的直接父任务身份以及 `turn_context.model/effort`，全部为 `gpt-6-luna/low`，主代理 `gpt-6-astra`；不使用子代理自报型号。随后16次 `interrupt_agent` 均返回 `previous_status=running`，末次状态列表中16个探针全部interrupted，无子代理继续运行。
 - 可复核命令：`command -v uv && uv run --no-sync python artifacts/codex-multiagent/20260926/verify_acceptance.py`，退出0，原始日志 `artifacts/codex-multiagent/20260926/verification.log`；判定 `CONCURRENT_16=PASS running=16 root_excluded=1`、`MODELS_16=PASS model=gpt-6-luna effort=low checked=16`、`LIMIT_17=PASS rejected=1`、`CLEANUP=PASS interrupted=16 running_children=0`。该脚本只读原始父子任务记录，不以配置或累计创建代替并发快照。
 - 结构化证据 `artifacts/codex-multiagent/20260926/acceptance.json` 的SHA-256为 `256cde26fa084e6ef9dd15367068015b3879067b522c4447b1a2fa53f17edc91`；`cleanup.json` 为 `75144e524e57c751950271b2c0cdc092e0cf6f3b30e8fb0d181784aba4ae68db`。实验报告与导航已提交到规则正本 `082781982e143c4326b32df8c1c31439a4bf1450` 并推送，远端SHA核验一致；报告文档静态检查 `ACCEPTANCE_DOCS=PASS files=3 local_links=22 evidence_checks=4`，`git diff --check`通过。历史未通过记录保留，当前进度更新为已完成；本项目仍仅提交自己的账本改动，保留V6并行任务在途内容。
+
+### 2026-09-26 America/Detroit — 新值模式 V6 S1 pipeline 首路集成
+
+- 主分支当时 HEAD 为 `b462dee0acc8068dd31e0dff5d61b8f190fe23b2`，已包含并保留其他任务提交的规则13与 SSH 并发账本，不回退、不混入本轮提交。将 `v6-draft-pipeline` 最终代码差异应用到主工作树；其独立提交为 `3beb5ab5010c18ef4892aa0071f6ffc1a7904041`（`12.155`）。应用范围包含难度与规格公共件、指定环境四档数值、`v5_generation --tiers` 管道和相应轻量测试；本记录只归档主树自己的集成验证。
+- 当前主树 `scripts/configs/newtask-v5/sampling_config.json` SHA-256 保持 `c45d4408a5b87d71a8be72d1724322f06d6801118bb53e4afdffd07b1eaf8315`。`RecordWrapper.py` 相对代码锚点 `268c41f` 零 diff；`scripts/` 顶层仍只有五个入口。V6 独立 snapshot 尚未导出，须待 MoveCube、VP、swap 最终实现合并后统一抽取。
+- 主树定向测试：`uv run --no-sync python -m pytest tests/lightweight/test_v6_difficulty_tiers.py tests/lightweight/test_v4_specs.py tests/lightweight/test_v5_generation_tools.py tests/lightweight/test_episode_spec_recorder.py tests/lightweight/test_episode_action_sampling.py tests/lightweight/test_sampling_config_split.py -m 'not gpu and not slow' -q`，94 passed、3 skipped、9.60 秒；`tests/lightweight/test_v5_xhard_patternlock_routestick.py` 经最终表断言修正后 40 passed、6.45 秒。dry-run `uv run --no-sync python -m scripts.parity.v5_generation pipeline --run-id s1-dry-run --tiers xhard1,xhard2,xhard3,xhard4 --draw-workers 16 --workers 16 --official-root artifacts/train-parity/local-smoke-01/official-src --dry-run` 退出0，输出16步；前三档各使用13个有梯度环境、xhard4使用all，四个目录隔离且均为 `seed-profile v6`。
+- 集成未完成时先跑的一组跨文件探索测试为 305 passed、44 failed、1 deselected；其中 VideoUnmaskSwap/VideoRepick、MoveCube、VP 的断言仍对应各自待集成的最终实现，PatternLock/RouteStick 文件独立修正后整文件 40 项通过。该探索结果不作为 LIGHTWEIGHT 最终验收；四路合并后须重跑对应目标及同 S0 口径失败集合闸门。
+- 本阶段未启动生成、reset 抽样或 rollout，未改 `generate_dataset_newseed.py`、V2 快照、冻结录像器、五个入口或依赖。下一步应用 MoveCube 圆环、VP放台/visit_counts、VUS/BUS/VR S5/M5(b) 的最终差异，再导出独立 V6 snapshot 和运行全环境单调样本。

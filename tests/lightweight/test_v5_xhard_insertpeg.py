@@ -223,10 +223,12 @@ class _FakePeg:
 
 def _fake_env(seed, spec=None, sampling_config=None, n_pegs=4):
     env = SimpleNamespace()
+    # V6：_xhard_sample_pegs 的 decision_key 归因标签按本局档位拼（f"{self.difficulty}.peg_yaw_range"）
+    env.difficulty = "xhard4"
     env.pegs = [_FakePeg() for _ in range(n_pegs)]
     env._hb_generator = torch.Generator()
     env._hb_generator.manual_seed(int(seed))
-    env._spec = SpecRecorder(spec, "InsertPeg", {"seed": seed}, difficulty="xhard")
+    env._spec = SpecRecorder(spec, "InsertPeg", {"seed": seed}, difficulty="xhard4")
     env._sampling = insertpeg_mod._resolve_sampling_config(CLS, sampling_config)
     env.length, env.radius = LENGTH, RADIUS
     env._native_init_index = 0
@@ -247,7 +249,7 @@ def _box_for(seed):
 def _run(seed, spec=None, box=None):
     env = _fake_env(seed, spec=spec)
     box_xy, box_yaw = box if box is not None else _box_for(seed)
-    CLS._xhard_sample_pegs(env, box_xy, box_yaw, env._sampling["decision"]["xhard"])
+    CLS._xhard_sample_pegs(env, box_xy, box_yaw, env._sampling["decision"]["xhard4"])
     return env, box_xy, box_yaw
 
 
@@ -320,7 +322,7 @@ def test_rng_order_matches_reference(seed) -> None:
 def test_exhaustion_raises_scene_generation_error() -> None:
     # 把孔板放在杆区中心且间隔要求大到放不下第 2 根 → 真 SceneGenerationError（不静默少放）
     env = _fake_env(3)
-    cfg = copy.deepcopy(env._sampling["decision"]["xhard"])
+    cfg = copy.deepcopy(env._sampling["decision"]["xhard4"])
     cfg["peg_min_pair_gap_m"] = 1.0
     with pytest.raises(SceneGenerationError):
         CLS._xhard_sample_pegs(env, np.array([0.0, 0.0], dtype=np.float32), np.pi / 2, cfg)
@@ -356,7 +358,7 @@ def test_replay_tampered_spec_rejected() -> None:
 def test_v4_layout_rejected_on_replay() -> None:
     """V4 v4-01 里 InsertPeg seed 5300000 第 0 次初始化的冻结布局（逐字抄录）：第 4 根贴近目标杆，轮廓重叠。"""
     spec = {
-        "spec_kind": "native-newvalue/1", "task": "InsertPeg",
+        "spec_kind": "native-newvalue/2", "task": "InsertPeg",
         "initializations": {"0": {"pegs": {
             "0": [[0.1344267576932907, -0.033931732177734375], -0.5979094588374843],
             "1": [[0.08544471114873886, 0.17761626839637756], 1.4553032278608904],
@@ -380,7 +382,7 @@ V4_XHARD_DECISION = {
 def test_v4_header_rejected_by_shape_check() -> None:
     decision, native = insertpeg_mod.native_blocks(CLS)
     v4 = copy.deepcopy(decision)
-    v4["xhard"] = copy.deepcopy(V4_XHARD_DECISION)
+    v4["xhard4"] = copy.deepcopy(V4_XHARD_DECISION)
     with pytest.raises(SamplingConfigError):
         insertpeg_mod._resolve_sampling_config(CLS, {"decision": v4, "native": native})
 

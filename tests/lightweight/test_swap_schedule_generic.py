@@ -133,5 +133,5 @@ def test_xhard_v4_首尾相接每段三十三帧(task, n):
 def test_源码里不再有按次数写死的分支(task):
     source = SOURCES[task].read_text(encoding="utf-8")
     assert "self.swap_times==1" not in source and "self.swap_times==3" not in source
-    for name in ("config_easy", "config_medium", "config_hard", "config_xhard"):
+    for name in ("config_easy", "config_medium", "config_hard", "config_xhard4"):
         assert re.search(rf"^\s+{name}\s*=", source, re.M), name  # 源码里 config_medium= 没有空格，按正则找

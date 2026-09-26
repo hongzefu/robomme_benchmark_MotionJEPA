@@ -168,3 +168,12 @@ def test_push_without_compensation_flips_peg(obj_flag, direction) -> None:
     # 不补偿：杆长轴在世界系反向（点积 ≈ -1），伸出的一端落到推杆方向的另一侧
     dots = [float(np.dot(_rot(pa)[:, 0], _rot(pb)[:, 0])) for (_, pa), (_, pb) in zip(a, bad)]
     assert all(d < -0.99 for d in dots)
+
+
+@pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3"])
+def test_v6_no_tier_rejects_xhard123(tier) -> None:
+    """V6（计划 2.13 / M2）：本环境原版无梯度、不加档，configs 仍只有 4 档；
+    传入 xhard1/2/3 在 __init__ 里（super().__init__ 之前、不起 sapien 场景）明确抛 ValueError。"""
+    assert set(CLS.configs) == {"easy", "medium", "hard", "xhard"}
+    with pytest.raises(ValueError, match="不加档"):
+        CLS(difficulty=tier)

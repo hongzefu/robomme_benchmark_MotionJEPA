@@ -49,7 +49,7 @@ for extra in (REPO_ROOT, REPO_ROOT / "scripts"):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-from scripts.parity.v4_specs import DIFFICULTY, _read_jsonl, validate_specs  # noqa: E402
+from scripts.parity.v4_specs import DIFFICULTY, SEED_RULE, _read_jsonl, validate_specs  # noqa: E402
 
 BACKFILL_ORDER = (1, 2, 4, 5, 7, 8, 9)
 RUNNER = REPO_ROOT / "scripts" / "parity" / "train_split_runner.py"
@@ -68,10 +68,17 @@ def _run_batch(batch: list[dict], header: dict, out_dir: Path, args, round_index
     work = out_dir / "_rounds" / f"round_{round_index:02d}"
     work.mkdir(parents=True, exist_ok=False)
     jobs, specs = [], {}
+    # V6：档位与 seed 规则一律取 header 封存值；V5 快照（xhard + 4e6 规则）下 jobs 与改动前逐字相同
+    difficulty = header.get("difficulty", DIFFICULTY)
+    seed_rule = header.get("seed_rule", SEED_RULE)
+    legacy = difficulty == DIFFICULTY and seed_rule == SEED_RULE
     for row in batch:
         worker_dir = out_dir / "episodes" / f"{row['task']}_episode_{row['episode']}"
-        jobs.append({"task": row["task"], "episode": row["episode"], "seed": row["seed"],
-                     "attempt": row["attempt"], "difficulty": DIFFICULTY, "worker_dir": str(worker_dir)})
+        job = {"task": row["task"], "episode": row["episode"], "seed": row["seed"],
+               "attempt": row["attempt"], "difficulty": difficulty, "worker_dir": str(worker_dir)}
+        if not legacy:
+            job["seed_rule"] = seed_rule
+        jobs.append(job)
         specs[f"{row['task']}/{row['episode']}"] = row["spec"]
     tasks = sorted({row["task"] for row in batch})
     (work / "jobs.json").write_text(json.dumps(jobs, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -106,7 +113,7 @@ def _run_batch(batch: list[dict], header: dict, out_dir: Path, args, round_index
                        "unused": len(payload.get("unused", [])), "value_points": payload.get("value_points")}
         h5 = sorted((worker_dir / "hdf5_files").glob("*.h5"))
         out.append({
-            "task": row["task"], "difficulty": DIFFICULTY, "episode": row["episode"], "seed": row["seed"],
+            "task": row["task"], "difficulty": difficulty, "episode": row["episode"], "seed": row["seed"],
             "attempt": row["attempt"], "spec_sha256": row["spec_sha256"], "run_label": args.label,
             "role": row["_role"], "ok": bool(result.get("ok")), "error_type": result.get("error_type"),
             "error": (result.get("error") or "")[:500] or None, "spec_binding": binding,

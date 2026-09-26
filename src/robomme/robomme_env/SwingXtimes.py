@@ -34,9 +34,9 @@ from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenera
 from .utils.subgoal_evaluate_func import static_check, too_many_swings
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import normalize_robomme_difficulty, is_newvalue_difficulty
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 from .utils.xhard import DISTRACTOR_COLORS, cube_obb2d_exact
 
 from ..logging_utils import logger
@@ -50,7 +50,7 @@ def _scene_gen_error(difficulty):
     用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
     只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
     """
-    return _RealSceneGenerationError if difficulty == "xhard" else SceneGenerationError
+    return _RealSceneGenerationError if is_newvalue_difficulty(difficulty) else SceneGenerationError
 
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
@@ -120,6 +120,23 @@ XHARD_DECISION = {
 }
 
 
+def _newvalue_decision(n_distractors):
+    """V6（计划 2.8）：新值族某档的 decision 子树——键结构与 ``XHARD_DECISION`` 完全相同，
+    只把干扰方块颜色截成 ``DISTRACTOR_COLORS`` 前 k 个；区域、中心距沿用 xhard。"""
+    tree = copy.deepcopy(XHARD_DECISION)
+    tree["distractor"]["colors"] = [entry["name"] for entry in DISTRACTOR_COLORS[:n_distractors]]
+    return tree
+
+
+# V6 新值族档位表：干扰块数 xhard1=1、xhard2=2、xhard3=3、xhard4=3。
+NEWVALUE_DECISION = {
+    "xhard1": _newvalue_decision(1),
+    "xhard2": _newvalue_decision(2),
+    "xhard3": _newvalue_decision(3),
+    "xhard4": _newvalue_decision(min(4, len(DISTRACTOR_COLORS))),
+}
+
+
 def _disk_avoid_obb(target, clearance):
     """把圆盘换算成方块拒绝采样可用的预制 OBB ``(中心, 轴, 半边长)``。
 
@@ -153,7 +170,9 @@ def _native_decision(cls):
         "color": {difficulty: cfg["color"] for difficulty, cfg in cls.configs.items()},
         "distractor": None,
         # V4 xhard 专属（计划 2.5）：键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
-        "xhard": copy.deepcopy(XHARD_DECISION),
+        "xhard4": copy.deepcopy(XHARD_DECISION),
+        # V6（计划 2.8）：xhard 之后追加 xhard1/2/3 三棵同结构子树（新值族，守卫同样放行）。
+        **{tier: copy.deepcopy(NEWVALUE_DECISION[tier]) for tier in ("xhard1", "xhard2", "xhard3")},
     }
 
 
@@ -162,6 +181,8 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：旧快照（如 V5 快照）缺 xhard1/2/3 子树时从源码申报补齐
+    fill_missing_newvalue(decision, decision_default)
     native["decision"] = decision
     return native
 
@@ -201,10 +222,29 @@ class SwingXtimes(BaseEnv):
     }
 
     # V4 xhard（派生自 hard，计划 2.5）：颜色 3 不变，摆动轮数 [4,10]。
-    config_xhard = {
+    config_xhard4 = {
+        'color': 3,
+        'number_min': 10,
+        'number_max': 11,
+    }
+
+    # V6 新值族：摆动轮数与干扰数按定稿分档。
+    config_xhard1 = {
         'color': 3,
         'number_min': 4,
-        'number_max': 10,
+        'number_max': 5,
+    }
+
+    config_xhard2 = {
+        'color': 3,
+        'number_min': 6,
+        'number_max': 7,
+    }
+
+    config_xhard3 = {
+        'color': 3,
+        'number_min': 8,
+        'number_max': 9,
     }
 
     # Combine into a dictionary
@@ -212,7 +252,10 @@ class SwingXtimes(BaseEnv):
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard,
+        'xhard4': config_xhard4,
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
 
 
@@ -380,7 +423,7 @@ class SwingXtimes(BaseEnv):
             self.target_color_name = color_groups[target_color_idx]["name"]
             logger.debug(f"Target color selected: {self.target_color_name}")
 
-            if self.difficulty == "xhard":
+            if is_newvalue_difficulty(self.difficulty):
                 # V5（计划 2.14）：xhard 的有色方块另走一支——两两中心距规则与精确 OBB 障碍；
                 # 取值点、抽样次数上限与颜色／命名登记与下面原代码相同。
                 self._spawn_colored_cubes_xhard(generator, avoid, color_groups)
@@ -485,7 +528,7 @@ class SwingXtimes(BaseEnv):
                 self.target_left = temp_target_0
                 logger.debug(f"Swapped: target_0 y={temp_1_y:.3f}, target_1 y={temp_0_y:.3f} (swapped to ensure target_0.y < target_1.y)")
 
-            if self.difficulty == "xhard":
+            if is_newvalue_difficulty(self.difficulty):
                 # V4 xhard：目标候选池与 all_cubes 解耦、颜色按对象回填（计划 2.5，与 PickXtimes 同构）
                 self._select_target_xhard(generator)
             # Randomly select one cube from all available cubes as the target
@@ -610,7 +653,7 @@ class SwingXtimes(BaseEnv):
             self.fail_grasp_task_index = None
 
         # V4 xhard：干扰方块是新增的随机取值，追加在本函数全部既有取值点（含恢复动作抽样）之后（N5）。
-        if self.difficulty == "xhard":
+        if is_newvalue_difficulty(self.difficulty):
             self._spawn_distractors_xhard(generator, avoid)
 
     def _color_name_of(self, cube):
@@ -667,7 +710,7 @@ class SwingXtimes(BaseEnv):
         """
         cubes_cfg = self._sampling["positions"]["cubes"]
         cubes_per_color = self._sampling["parameters"]["cubes_per_color"]
-        min_center_dist = float(self._sampling["decision"]["xhard"]["min_center_dist_m"])
+        min_center_dist = float(self._sampling["decision"][self.difficulty]["min_center_dist_m"])
         self._spec.record("layout.cube_min_center_dist", min_center_dist)
         # 已放方块（有色 + 干扰共用一张表）的精确 OBB；既作中心距规则的参考点，也作 avoid 里的障碍
         self._xhard_cube_obbs = []
@@ -715,8 +758,8 @@ class SwingXtimes(BaseEnv):
         放不下直接抛 ``SceneGenerationError``（2.2④，不许静默截断）。
         V5：与有色方块共用中心距规则与精确 OBB 障碍（计划 2.14）。
         """
-        min_center_dist = float(self._sampling["decision"]["xhard"]["min_center_dist_m"])
-        dcfg = self._sampling["decision"]["xhard"]["distractor"]
+        min_center_dist = float(self._sampling["decision"][self.difficulty]["min_center_dist_m"])
+        dcfg = self._sampling["decision"][self.difficulty]["distractor"]
         palette = {entry["name"]: entry["rgba"] for entry in DISTRACTOR_COLORS}
         names = list(dcfg["colors"])
         unknown = [name for name in names if name not in palette]

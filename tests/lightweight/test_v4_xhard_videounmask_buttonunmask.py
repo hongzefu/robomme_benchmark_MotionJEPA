@@ -72,10 +72,10 @@ def test_original_three_configs_unchanged(task) -> None:
 @pytest.mark.parametrize("task", TASKS)
 def test_xhard_values_match_user_decisions(task) -> None:
     mod, cls = _module(task), _cls(task)
-    assert cls.configs["xhard"] == {"bin": 8, "pick": 3}          # G2 N=8、pick 3
+    assert cls.configs["xhard4"] == {"bin": 8, "pick": 3}          # G2 N=8、pick 3
     decision = mod._native_decision(cls)
-    assert decision["bin_layout_policy"]["xhard"] == {"min_gap_factor": 0.75}   # G2
-    dist = decision["xhard"]["distractor"]
+    assert decision["bin_layout_policy"]["xhard4"] == {"min_gap_factor": 0.75}   # G2
+    dist = decision["xhard4"]["distractor"]
     # V5（S3b，NEWTASK_RELEASE_V5_PLAN 2.3 / 2.4）：V4 的 3 个外环 [0.2675, 0.45]、cube [1,2] 作废，
     # 改为贴身环带 + 按密度定数 + 半数含 cube + 三色平衡轮转，统一 7 键 schema
     expect_count, expect_cubes = {"VideoUnmask": (15, [7, 8]), "ButtonUnmask": (14, [7, 7])}[task]
@@ -88,7 +88,7 @@ def test_xhard_values_match_user_decisions(task) -> None:
     assert dist["min_gap_factor"] == 0.75 and dist["max_trials"] == 1024
     assert dist["color_pool"] == [c["name"] for c in ud.DISTRACTOR_COLORS]   # B2
     # 揭示动画的扫描上限必须覆盖 xhard 容器数
-    assert mod.NATIVE_SAMPLING["parameters"]["step_bin_scan"] >= cls.configs["xhard"]["bin"]
+    assert mod.NATIVE_SAMPLING["parameters"]["step_bin_scan"] >= cls.configs["xhard4"]["bin"]
     # native 原值不动
     assert mod.NATIVE_SAMPLING["positions"]["bins"]["min_gap_factor"] == 2
 
@@ -108,11 +108,11 @@ def test_guard(task) -> None:
     assert_native_decision(copy.deepcopy(ORIGINAL_DECISION), default, task)
     # 已申报的 xhard 条目可改值（组合覆盖扫描收窄用）
     narrowed = copy.deepcopy(default)
-    narrowed["xhard"]["distractor"]["cube_count_range"] = [2, 2]
+    narrowed["xhard4"]["distractor"]["cube_count_range"] = [2, 2]
     assert_native_decision(narrowed, default, task)
     # 申报外的 xhard 键拒绝
     extra = copy.deepcopy(default)
-    extra["xhard"]["distractor"]["bogus"] = 1
+    extra["xhard4"]["distractor"]["bogus"] = 1
     with pytest.raises(SamplingConfigError):
         assert_native_decision(extra, default, task)
     # 原三档可见部分改动拒绝
@@ -127,7 +127,7 @@ def _fake_env(task, n_bins=8):
     env = SimpleNamespace(
         spawned_bins=bins,
         color_names=["green", "red", "blue"],
-        _spec=SpecRecorder(None, task, {"seed": 0}, difficulty="xhard"),
+        _spec=SpecRecorder(None, task, {"seed": 0}, difficulty="xhard4"),
     )
     for i, b in enumerate(bins):
         setattr(env, f"bin_{i}", b)

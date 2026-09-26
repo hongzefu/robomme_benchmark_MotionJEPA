@@ -25,10 +25,10 @@ from mani_skill.utils.geometry.rotation_conversions import (
 )
 
 from .utils import *
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import is_newvalue_difficulty, normalize_robomme_difficulty, require_xhard4_only
 from .utils.subgoal_evaluate_func import static_check
 from .utils.episode_spec import EpisodeSpecError, SpecRecorder
-from .utils.sampling_config import SamplingConfigError, assert_native_decision, split_sampling_config
+from .utils.sampling_config import SamplingConfigError, assert_native_decision, fill_missing_newvalue, split_sampling_config
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
@@ -175,7 +175,7 @@ def _native_decision(cls):
     """按方案第二节 2.14 切出 decision 块（原值阶段等于原值）。
 
     V4（计划 2.18）：xhard 新值整体挂在顶层 ``xhard`` 子键下（守卫只放行这些键偏离），
-    默认值取自 ``cls.configs["xhard"]``；原三档可见的四个键与 V3 逐字相同。
+    默认值取自 ``cls.configs["xhard4"]``；原三档可见的四个键与 V3 逐字相同。
     V5（计划 2.8）：``xhard`` 子键去掉 ``near_target_distractor``，新增 ``peg_min_pair_gap_m`` /
     ``peg_box_min_gap_m`` / ``peg_x_max_m``；顶层原三档可见部分不动。
     """
@@ -188,7 +188,7 @@ def _native_decision(cls):
         # 杆在桌面内的转角范围：原值 ±45°（表达式 (u*2-1)*radians(45)）。
         "peg_yaw_range": {"half_span_deg": 45},
         # xhard：4 根杆、±180°（V4 A1/B11）；V5 四根同一采样器 + 轮廓间隔（计划 2.8）
-        "xhard": copy.deepcopy(cls.configs["xhard"]),
+        "xhard4": copy.deepcopy(cls.configs["xhard4"]),
     }
 
 
@@ -197,6 +197,8 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：旧快照缺的新值档子树从源码申报补齐（本环境不加档，只可能补 xhard）；原三档不读这些键
+    fill_missing_newvalue(decision, decision_default)
     native["decision"] = decision
     return native
 
@@ -226,7 +228,7 @@ class InsertPeg(BaseEnv):
         "near_target_distractor": None,
         "peg_yaw_range": {"half_span_deg": 45},
     }
-    config_xhard = {
+    config_xhard4 = {
         # peg_offsets 的长度决定杆数（构造期临时排布，第 4 根放在 y_base+0.2 处，随后被重采样覆盖）；
         # peg_count 同步为 4：会改变 _load_scene 里那次 randint 的取值域（结果仍被 overridden_to=0 覆盖）
         "peg_count": 4,
@@ -244,7 +246,7 @@ class InsertPeg(BaseEnv):
         "easy": config_native,
         "medium": config_native,
         "hard": config_native,
-        "xhard": config_xhard,
+        "xhard4": config_xhard4,
     }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
@@ -302,7 +304,9 @@ class InsertPeg(BaseEnv):
                 self.difficulty = "medium"
             else:
                 self.difficulty = "hard"
-        if self.difficulty == "xhard":
+        # V6（计划 2.13 / M2）：本环境原版无梯度、不加档，传入 xhard1/2/3 明确报错
+        require_xhard4_only(self.difficulty, "InsertPeg")
+        if is_newvalue_difficulty(self.difficulty):
             # V4 B11：抓杆按等价朝向归约，并同步补偿 insert_peg 的局部平移；原三档不设此属性
             self._xhard_peg_yaw_reduction = True
 
@@ -353,9 +357,9 @@ class InsertPeg(BaseEnv):
         self._peg_initial_poses = []
 
         decision_cfg = self._sampling["decision"]
-        if self.difficulty == "xhard":
+        if is_newvalue_difficulty(self.difficulty):
             # V4：xhard 的 peg_count / peg_offsets / peg_yaw_range 全部改读 xhard 子键（V5 起另有两条间隔与 x 上界，只在 _xhard_sample_pegs 里读）
-            decision_cfg = decision_cfg["xhard"]
+            decision_cfg = decision_cfg[self.difficulty]
         native_pos = self._sampling["positions"]
         offsets = list(decision_cfg["peg_offsets"])  # X-axis differences for the 3 pegs
         # Sample a single pair of colors so all pegs share the same appearance per seed.
@@ -400,7 +404,7 @@ class InsertPeg(BaseEnv):
         random_peg_idx = self._spec.value(
             "objects.sampling_trace.random_peg_idx",
             int(torch.randint(0, decision_cfg["peg_count"], (1,), generator=self._hb_generator).item()),
-            decision_key="xhard.peg_count" if self.difficulty == "xhard" else None,
+            decision_key=f"{self.difficulty}.peg_count" if is_newvalue_difficulty(self.difficulty) else None,
         )
         random_peg_idx=target_cfg["overridden_to"]
         self.peg = self.pegs[random_peg_idx]
@@ -451,14 +455,14 @@ class InsertPeg(BaseEnv):
             sampled_xy_positions = []
             max_sampling_attempts = peg_sampling["max_attempts"]
 
-            xhard = self.difficulty == "xhard"
+            xhard = is_newvalue_difficulty(self.difficulty)
             if xhard:
-                xhard_cfg = self._sampling["decision"]["xhard"]
+                xhard_cfg = self._sampling["decision"][self.difficulty]
                 yaw_half_span_deg = xhard_cfg["peg_yaw_range"]["half_span_deg"]
                 # V5（计划 2.8 / L27a）：4 根杆全部交给 _xhard_sample_pegs 一个循环抽（紧接在下面这个原生
                 # 循环之后、obj/dir 之前），原生循环在 xhard 下一根都不跑；循环体逐字保留不动。
                 uniform_pegs = []
-                yaw_dk = "xhard.peg_yaw_range"
+                yaw_dk = f"{self.difficulty}.peg_yaw_range"
             else:
                 yaw_half_span_deg = self._sampling["decision"]["peg_yaw_range"]["half_span_deg"]
                 uniform_pegs = self.pegs
@@ -729,7 +733,7 @@ class InsertPeg(BaseEnv):
             candidate_xy_list, yaw_value = self._spec.value(
                 f"{prefix}.pegs.{i}",
                 [[float(candidate_xy[0]), float(candidate_xy[1])], yaw_value],
-                decision_key="xhard.peg_yaw_range",
+                decision_key=f"{self.difficulty}.peg_yaw_range",
             )
             candidate_xy = np.array(candidate_xy_list, dtype=np.float32)
             fp = peg_footprint(candidate_xy, yaw_value, self.length, self.radius)

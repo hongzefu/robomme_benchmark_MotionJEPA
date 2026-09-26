@@ -113,8 +113,11 @@ def test_spec_kind_follows_difficulty() -> None:
     assert spec_kind_for(None) == SPEC_KIND
     for difficulty in ("easy", "medium", "hard"):
         assert spec_kind_for(difficulty) == SPEC_KIND
-    assert spec_kind_for("xhard") == SPEC_KIND_NEWVALUE
-    assert spec_kind_for(" XHard ") == SPEC_KIND_NEWVALUE
+    assert spec_kind_for("xhard4") == SPEC_KIND_NEWVALUE
+    assert spec_kind_for(" XHard4 ") == SPEC_KIND_NEWVALUE
+    assert spec_kind_for("xhard") == SPEC_KIND
+    for difficulty in ("xhard1", "xhard2", "xhard3", " XHard2 "):
+        assert spec_kind_for(difficulty) == SPEC_KIND_NEWVALUE
 
 
 def test_newvalue_export_is_tagged_and_parity_unchanged() -> None:
@@ -122,19 +125,19 @@ def test_newvalue_export_is_tagged_and_parity_unchanged() -> None:
     assert parity["spec_kind"] == SPEC_KIND
     # 原值模式的 provenance 形态与 V3 逐字一致，不多出归因计数
     assert "unattributed_mismatches" not in parity["provenance"]
-    recorder = SpecRecorder(None, "BinFill", {**IDENTITY, "difficulty": "xhard"}, difficulty="xhard")
-    recorder.value("objects.put_in_total", 6, decision_key="configs.xhard.put_in_numbers")
+    recorder = SpecRecorder(None, "BinFill", {**IDENTITY, "difficulty": "xhard4"}, difficulty="xhard4")
+    recorder.value("objects.put_in_total", 6, decision_key="configs.xhard4.put_in_numbers")
     document = recorder.to_dict()
     assert document["spec_kind"] == SPEC_KIND_NEWVALUE
     assert document["provenance"]["unattributed_mismatches"] == 0
 
 
 def test_kinds_cannot_be_cross_fed() -> None:
-    """原值规格不能喂给 xhard，新值规格也不能喂给原三档。"""
+    """原值规格不能喂给 xhard4，新值规格也不能喂给原三档。"""
     parity = _export().to_dict()
     with pytest.raises(EpisodeSpecError):
-        SpecRecorder(parity, "BinFill", IDENTITY, difficulty="xhard")
-    recorder = SpecRecorder(None, "BinFill", IDENTITY, difficulty="xhard")
+        SpecRecorder(parity, "BinFill", IDENTITY, difficulty="xhard4")
+    recorder = SpecRecorder(None, "BinFill", IDENTITY, difficulty="xhard4")
     recorder.value("layout.dynamic", False)
     newvalue = recorder.to_dict()
     with pytest.raises(EpisodeSpecError):
@@ -144,15 +147,15 @@ def test_kinds_cannot_be_cross_fed() -> None:
 
 
 def test_newvalue_mismatch_attribution() -> None:
-    recorder = SpecRecorder(None, "BinFill", IDENTITY, difficulty="xhard")
-    recorder.value("objects.put_in_total", 6, decision_key="configs.xhard.put_in_numbers")
+    recorder = SpecRecorder(None, "BinFill", IDENTITY, difficulty="xhard4")
+    recorder.value("objects.put_in_total", 6, decision_key="configs.xhard4.put_in_numbers")
     recorder.value("layout.board.x_var", 0.5)
-    replay = SpecRecorder(recorder.to_dict(), "BinFill", IDENTITY, difficulty="xhard")
+    replay = SpecRecorder(recorder.to_dict(), "BinFill", IDENTITY, difficulty="xhard4")
     # 归因到 decision 键的不等不算漂移；没有归因的算
-    assert replay.value("objects.put_in_total", 7, decision_key="configs.xhard.put_in_numbers") == 6
+    assert replay.value("objects.put_in_total", 7, decision_key="configs.xhard4.put_in_numbers") == 6
     assert replay.value("layout.board.x_var", 0.25) == 0.5
     assert len(replay.mismatches) == 2
-    assert replay.mismatches[0]["decision_key"] == "configs.xhard.put_in_numbers"
+    assert replay.mismatches[0]["decision_key"] == "configs.xhard4.put_in_numbers"
     assert [item["path"] for item in replay.unattributed_mismatches()] == ["layout.board.x_var"]
     assert replay.to_dict()["provenance"]["unattributed_mismatches"] == 1
 

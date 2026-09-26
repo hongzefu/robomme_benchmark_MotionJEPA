@@ -219,7 +219,7 @@ def spawn_ring_distractor_bins(env, *, cfg: dict, avoid: list, generator: torch.
 # ── 干扰容器的揭示与误抓判失败（用户 2026-09-22 决策「参与揭示+误抓即失败」）──────────────
 # 四个 Unmask 环境（VideoUnmask / ButtonUnmask / VideoUnmaskSwap / ButtonUnmaskSwap）的 xhard 共用；
 # 两个 Swap 环境的干扰容器由 unmask_swap_xhard.build_distractors 生成，同样挂在 env.distractor_bins 上。
-# 只在 difficulty == "xhard" 分支被调用，原三档从不进入。
+# 只在新值族（V6 族判断）分支被调用，原三档从不进入。
 
 
 def reveal_distractor_bins(env, *, start_step: int, end_step: int, cur_step: int) -> None:

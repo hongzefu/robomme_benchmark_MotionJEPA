@@ -46,9 +46,13 @@ for extra in (REPO_ROOT, REPO_ROOT / "scripts"):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
+from seed_layout import ALL_TASKS  # noqa: E402
+
 DEFAULT_RELEASE = "newtask-v5"
 DEFAULT_LABEL = "run1"
 DEFAULT_SELECT = (0, 3, 6)
+NO_TIER_TASKS = frozenset({"MoveCube", "InsertPeg", "StopCube"})
+NEWVALUE_TASKS = tuple(task for task in ALL_TASKS if task not in NO_TIER_TASKS)
 NA = "N/A"
 
 # 口径 9：演示时长 25～35 s × 30 fps ⇒ is_video_demo 为真的帧数落在 [750, 1050]
@@ -481,21 +485,151 @@ def cmd_report(args: argparse.Namespace) -> int:
 # ── 一条命令串起三段 ─────────────────────────────────────────────────────
 
 
-def pipeline_paths(release: str, run_id: str, label: str = DEFAULT_LABEL) -> dict[str, Path]:
-    """全部落点只由 release 与 run id 推导（相对仓库根）。"""
+def pipeline_paths(release: str, run_id: str, label: str = DEFAULT_LABEL, tier: str | None = None) -> dict[str, Path]:
+    """全部落点只由 release、run id（V6 起再加档位）推导（相对仓库根）。
+
+    ``tier=None`` 与 V5 逐字相同；V6 每档一套独立产物（计划 2.0）：``artifacts/<release>/<run_id>/<tier>/…``、
+    ``scripts/configs/<release>/<run_id>/<tier>/specs.jsonl``，sampling 快照全档共用一份。
+    """
+    run = Path(run_id) if tier is None else Path(run_id) / tier
     return {
         "sampling": Path("scripts") / "configs" / release / "sampling_config.json",
-        "drafts": Path("artifacts") / release / run_id / "draft" / "drafts.jsonl",
-        "specs": Path("scripts") / "configs" / release / run_id / "specs.jsonl",
-        "rollout_root": Path("artifacts") / release / run_id / "rollout",
-        "rollout": Path("artifacts") / release / run_id / "rollout" / label,
-        "report": Path("artifacts") / release / run_id / "report",
+        "drafts": Path("artifacts") / release / run / "draft" / "drafts.jsonl",
+        "specs": Path("scripts") / "configs" / release / run / "specs.jsonl",
+        "rollout_root": Path("artifacts") / release / run / "rollout",
+        "rollout": Path("artifacts") / release / run / "rollout" / label,
+        "report": Path("artifacts") / release / run / "report",
     }
+
+
+def pipeline_tier(args: argparse.Namespace) -> str | None:
+    """V6：默认 V5 调用不分档目录；显式新值档按档分目录。"""
+    difficulty = getattr(args, "difficulty", "xhard") or "xhard"
+    profile = pipeline_seed_profile(args)
+    return None if (difficulty == "xhard" and profile == "v5") else difficulty
+
+
+def pipeline_seed_profile(args: argparse.Namespace) -> str:
+    """未显式指定时，旧 xhard 默认走 V5；V6 档位默认走 V6 seed 区段。"""
+    difficulty = getattr(args, "difficulty", "xhard") or "xhard"
+    requested = getattr(args, "seed_profile", None)
+    if requested is not None:
+        return requested
+    return "v5" if difficulty == "xhard" and not getattr(args, "tiers", None) else "v6"
+
+
+def pipeline_release(args: argparse.Namespace) -> str:
+    """按档位选择独立快照目录；无档位的旧调用保持 V5 默认。"""
+    release = getattr(args, "release", None)
+    if release is not None:
+        return release
+    return "newtask-v6" if pipeline_tier(args) is not None or getattr(args, "tiers", None) else DEFAULT_RELEASE
+
+
+def parse_pipeline_tiers(value: str | None) -> tuple[str, ...]:
+    """解析一次 pipeline 的档位列表，并拒绝未知、重复和空项。"""
+    if value is None:
+        return ()
+    tiers = tuple(part.strip() for part in value.split(","))
+    if not tiers or any(not tier for tier in tiers):
+        raise ValueError("--tiers 不能为空，档位间用逗号分隔")
+    if len(set(tiers)) != len(tiers):
+        raise ValueError(f"--tiers 不允许重复：{tiers}")
+    from scripts.parity.v4_specs import NEWVALUE_TIERS
+
+    unknown = tuple(tier for tier in tiers if tier not in NEWVALUE_TIERS)
+    if unknown:
+        raise ValueError(f"--tiers 包含未知档位 {unknown}；允许值为 {NEWVALUE_TIERS}")
+    return tiers
+
+
+def pipeline_tasks_for_tier(tier: str, tasks: str) -> str:
+    """将 ``--tasks all`` 展开为该档支持的任务；xhard1/2/3 不含三种无梯度环境。"""
+    if tasks == "all":
+        return "all" if tier == "xhard4" else ",".join(NEWVALUE_TASKS)
+    requested = ALL_TASKS if tasks == "all" else tuple(part.strip() for part in tasks.split(",") if part.strip())
+    if not requested:
+        raise ValueError("--tasks 不能为空")
+    unknown = tuple(task for task in requested if task not in ALL_TASKS)
+    if unknown:
+        raise ValueError(f"--tasks 包含未知环境 {unknown}")
+    incompatible = set(requested) & NO_TIER_TASKS if tier != "xhard4" else set()
+    if incompatible:
+        raise ValueError(f"{tier} 不支持环境 {sorted(incompatible)}")
+    return tasks
+
+
+def aggregate_tier_reports(release: str, run_id: str, tiers: tuple[str, ...],
+                           label: str = DEFAULT_LABEL, root: Path = REPO_ROOT) -> dict[str, Any]:
+    """汇总逐档报告，保留每格明细，并输出 V6 的 55 格总报告。"""
+    reports: dict[str, dict[str, Any]] = {}
+    cells: dict[str, dict[str, Any]] = {}
+    for tier in tiers:
+        path = root / pipeline_paths(release, run_id, label, tier)["report"] / "generation_report.json"
+        if not path.is_file():
+            raise FileNotFoundError(f"档位 {tier} 缺少 generation_report.json：{path}")
+        report = json.loads(path.read_text(encoding="utf-8"))
+        reports[tier] = report
+        for task, stats in report["per_env"].items():
+            cells[f"{tier}/{task}"] = stats
+
+    numeric_keys = ("draft_attempted", "draft_ok", "candidate_shortfall", "rollout_attempted", "rollout_ok",
+                    "backfilled", "selected_shortfall", "demo_frames_checked", "outer_swap_checked",
+                    "bin_collision", "draft_bin_collision", "vr_checked")
+    totals = {key: sum(int(report["totals"].get(key, 0)) for report in reports.values()) for key in numeric_keys}
+    demo_values = [report["totals"].get("demo_frames_out_of_band") for report in reports.values()]
+    swap_values = [report["totals"].get("outer_swap_mismatch") for report in reports.values()]
+    vr_values = [report["totals"].get("vr_min_participants") for report in reports.values()]
+    totals["demo_frames_out_of_band"] = sum(int(value) for value in demo_values if isinstance(value, int)) \
+        if all(isinstance(value, int) for value in demo_values) else NA
+    totals["outer_swap_mismatch"] = sum(int(value) for value in swap_values if isinstance(value, int)) \
+        if all(isinstance(value, int) for value in swap_values) else NA
+    totals["vr_min_participants"] = min(int(value) for value in vr_values if isinstance(value, int)) \
+        if any(isinstance(value, int) for value in vr_values) else NA
+    totals["cells"] = len(cells)
+    line = ("V6_GENERATION=REPORT " + " ".join(f"{key}={totals[key]}" for key in (
+        "cells", "draft_ok", "candidate_shortfall", "rollout_ok", "backfilled", "selected_shortfall",
+        "demo_frames_out_of_band", "outer_swap_mismatch", "bin_collision", "vr_min_participants")))
+    summary = {
+        "schema": "newtask-v6-generation-summary/1",
+        "run_id": run_id,
+        "tiers": list(tiers),
+        "line": line,
+        "totals": totals,
+        "per_tier": {tier: report["totals"] for tier, report in reports.items()},
+        "cells": cells,
+        "source_reports": {tier: str(pipeline_paths(release, run_id, label, tier)["report"] /
+                                          "generation_report.json") for tier in tiers},
+        "warnings": [warning for report in reports.values() for warning in report.get("warnings", [])],
+        "report_dir": str(pipeline_paths(release, run_id, label)["report"]),
+    }
+    out = root / pipeline_paths(release, run_id, label)["report"]
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "generation_report.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
+                                                 encoding="utf-8")
+    lines = ["# V6 生成汇总", "", f"`{line}`", "", "| 档位 | 格数 | 候选成功 | 候选缺口 | 正式成功 | 递补 | 正式缺口 |",
+             "|---|---:|---:|---:|---:|---:|---:|"]
+    for tier, values in summary["per_tier"].items():
+        lines.append(f"| {tier} | {len(reports[tier]['per_env'])} | {values['draft_ok']} | "
+                     f"{values['candidate_shortfall']} | {values['rollout_ok']} | {values['backfilled']} | "
+                     f"{values['selected_shortfall']} |")
+    lines += ["", "## 每格摘要", "", "| 档位/环境 | 候选尝试 | 候选成功 | 正式尝试 | 正式成功 | 递补 | 正式缺口 |",
+              "|---|---:|---:|---:|---:|---:|---:|"]
+    for key, values in cells.items():
+        lines.append(f"| {key} | {values['draft_attempted']} | {values['draft_ok']} | "
+                     f"{values['rollout_attempted']} | {values['rollout_ok']} | {values['backfilled']} | "
+                     f"{values['selected_shortfall']} |")
+    if summary["warnings"]:
+        lines += ["", "## 提示", ""] + [f"- {warning}" for warning in summary["warnings"]]
+    (out / "generation_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return summary
 
 
 def plan_pipeline(args: argparse.Namespace, root: Path = REPO_ROOT) -> list[dict[str, Any]]:
     """四步的命令与落点；``--resume`` 时标出可跳过的步骤。纯函数，单测直接调用。"""
-    paths = pipeline_paths(args.release, args.run_id, args.label)
+    tier = pipeline_tier(args)
+    release = pipeline_release(args)
+    paths = pipeline_paths(release, args.run_id, args.label, tier)
     py = [sys.executable, "-m"]
     draw = py + ["scripts.parity.v4_specs", "draw", "--run-id", args.run_id, "--tasks", args.tasks,
                  "--sampling-config", str(paths["sampling"]), "--candidates-per-env", str(args.candidates_per_env),
@@ -503,6 +637,9 @@ def plan_pipeline(args: argparse.Namespace, root: Path = REPO_ROOT) -> list[dict
                  "--out", str(paths["drafts"])]
     if args.draw_gpus:
         draw += ["--gpus", args.draw_gpus]
+    if tier is not None:
+        # V6：档位与 seed 规则族显式传给抽签；freeze/run/report 一律从 header 取，不再另传
+        draw += ["--difficulty", args.difficulty, "--seed-profile", pipeline_seed_profile(args)]
     freeze = py + ["scripts.parity.v4_specs", "freeze", "--drafts", str(paths["drafts"]),
                    "--sampling-config", str(paths["sampling"]), "--select", args.select,
                    "--candidates-per-env", str(args.candidates_per_env), "--out", str(paths["specs"])]
@@ -524,7 +661,42 @@ def plan_pipeline(args: argparse.Namespace, root: Path = REPO_ROOT) -> list[dict
 
 
 def cmd_pipeline(args: argparse.Namespace) -> int:
-    paths = pipeline_paths(args.release, args.run_id, args.label)
+    try:
+        tiers = parse_pipeline_tiers(getattr(args, "tiers", None))
+    except ValueError as exc:
+        print(f"PIPELINE_FAIL step=arguments {exc}", flush=True)
+        return 2
+    if tiers:
+        if getattr(args, "release", None) not in (None, "newtask-v6"):
+            print("PIPELINE_FAIL step=arguments --tiers 只能与 --release newtask-v6 一起使用", flush=True)
+            return 2
+        for tier in tiers:
+            try:
+                tier_tasks = pipeline_tasks_for_tier(tier, args.tasks)
+            except ValueError as exc:
+                print(f"PIPELINE_FAIL step=arguments {exc}", flush=True)
+                return 2
+            single = argparse.Namespace(**vars(args))
+            single.tiers = None
+            single.release = "newtask-v6"
+            single.difficulty = tier
+            single.seed_profile = "v6"
+            single.tasks = tier_tasks
+            code = cmd_pipeline(single)
+            if code != 0:
+                return code
+        if args.dry_run:
+            print(f"PIPELINE_TIERS_DRY_RUN run_id={args.run_id} tiers={','.join(tiers)}", flush=True)
+            return 0
+        try:
+            summary = aggregate_tier_reports("newtask-v6", args.run_id, tiers, args.label)
+        except (OSError, KeyError, ValueError) as exc:
+            print(f"PIPELINE_FAIL step=aggregate {type(exc).__name__}: {exc}", flush=True)
+            return 2
+        print(summary["line"], flush=True)
+        print(f"# 汇总报告：{summary['report_dir']}/generation_report.md", flush=True)
+        return 0
+    paths = pipeline_paths(pipeline_release(args), args.run_id, args.label, pipeline_tier(args))
     steps = plan_pipeline(args)
     if args.dry_run:
         for step in steps:
@@ -532,7 +704,7 @@ def cmd_pipeline(args: argparse.Namespace) -> int:
         return 0
     if not (REPO_ROOT / paths["sampling"]).is_file():
         print(f"PIPELINE_FAIL step=precheck 快照不存在：{paths['sampling']}（先跑 train_split_config extract "
-              f"--release {args.release}）", flush=True)
+              f"--release {pipeline_release(args)}）", flush=True)
         return 2
     rollout_dir = REPO_ROOT / paths["rollout"]
     if rollout_dir.exists() and not (rollout_dir / "results.jsonl").is_file() and not args.dry_run:
@@ -567,9 +739,15 @@ def build_parser() -> argparse.ArgumentParser:
     rep.set_defaults(func=cmd_report)
     pipe = sub.add_parser("pipeline", help="一条命令：draw → freeze → run → report")
     pipe.add_argument("--run-id", required=True)
-    pipe.add_argument("--release", default=DEFAULT_RELEASE)
+    pipe.add_argument("--release", default=None)
     pipe.add_argument("--label", default=DEFAULT_LABEL)
     pipe.add_argument("--tasks", default="all")
+    pipe.add_argument("--tiers", default=None,
+                      help="一次串行运行多个 V6 新值档，例如 xhard1,xhard2,xhard3,xhard4；逐档隔离产物")
+    pipe.add_argument("--difficulty", default="xhard", choices=("xhard1", "xhard2", "xhard3", "xhard4"),
+                      help="单档运行；默认 xhard 保留无参数 V5 行为")
+    pipe.add_argument("--seed-profile", default=None, choices=("v5", "v6"),
+                      help="seed 规则族：V5 默认走原 4e6；V6 新档默认使用 xhard4 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6")
     pipe.add_argument("--candidates-per-env", type=int, default=10)
     pipe.add_argument("--max-reset-attempts", type=int, default=30)
     pipe.add_argument("--select", default=",".join(map(str, DEFAULT_SELECT)))

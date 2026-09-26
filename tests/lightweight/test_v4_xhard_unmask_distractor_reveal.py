@@ -161,7 +161,8 @@ def _guarded_calls(func, callee):
     return found
 
 
-XHARD_CONDS = {"xhard", "self._is_xhard", "self.difficulty == 'xhard'"}
+# V6（口径 11）：族判断原文 is_newvalue_difficulty(self.difficulty) 同样视为 xhard 分支
+XHARD_CONDS = {"xhard", "self._is_xhard", "self.difficulty == 'xhard'", "is_newvalue_difficulty(self.difficulty)"}
 
 
 @pytest.mark.parametrize("file_name", FOUR_ENVS)

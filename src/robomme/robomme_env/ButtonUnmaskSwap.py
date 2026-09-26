@@ -33,9 +33,9 @@ from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenera
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import is_newvalue_difficulty, normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 from .utils.bin_collision import BinCollisionError, check_bin_state, check_swap_sweep, object_state_from_actor
 from .utils.unmask_distractors import add_distractor_misgrasp_failure
 from .utils.unmask_distractor_sampler import (
@@ -66,7 +66,8 @@ def _scene_gen_error(difficulty):
     用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
     只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
     """
-    return _RealSceneGenerationError if difficulty == "xhard" else SceneGenerationError
+    # V6：新值族（xhard1/2/3/xhard）一律用真异常
+    return _RealSceneGenerationError if is_newvalue_difficulty(difficulty) else SceneGenerationError
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
 A simple task where the objective is to grasp a red cube with the {robot_id} robot and move it to a target goal position. This is also the *baseline* task to test whether a robot with manipulation
@@ -135,6 +136,38 @@ def native_blocks(cls):
     return _native_decision(cls), native
 
 
+# ── V6（NEWTASK_RELEASE_V6_PLAN 2.4）：新值族 xhard1 < xhard2 < xhard3 < xhard 的按档数值 ──────────────
+# 新档沿用 xhard 的全部生成机制（外环统一采样器、同窗外环交换、H1 扫掠复核、误抓即失败），只按档取数值：
+#   ButtonUnmaskSwap 外环干扰 4/6/8/10；每段交换步数 50/33/33/33（xhard1 倍率 1.0 保留 hard 的 50 步，xhard2 起 ×1.5）。
+# 含 cube 的干扰容器数计划未给，按 xhard「一半含 cube」（10 个含 [5,5]）取一半：[2,2]/[3,3]/[4,4]（实施方自决）。
+# 环带 [0.2675, 0.45]、色池、min_gap_factor、max_trials 与 distractor_swap 全部沿用 xhard（干扰少时环带稀疏放置）。
+# xhard 行只是把原来的 XHARD_SWAP_SPEED_MULTIPLIER 与 V5 预设原样查出来，取值与改动前逐位相同。
+NEWVALUE_SWAP_SPEED_MULTIPLIER = {
+    "xhard1": 1.0,
+    "xhard2": XHARD_SWAP_SPEED_MULTIPLIER,
+    "xhard3": XHARD_SWAP_SPEED_MULTIPLIER,
+    "xhard4": XHARD_SWAP_SPEED_MULTIPLIER,
+}
+#: 相对 V5 预设（xhard）要覆盖的干扰字段；xhard 不覆盖
+NEWVALUE_DISTRACTOR_OVERRIDES = {
+    "xhard1": {"count": 4, "cube_count_range": [2, 2]},
+    "xhard2": {"count": 6, "cube_count_range": [3, 3]},
+    "xhard3": {"count": 8, "cube_count_range": [4, 4]},
+    "xhard4": {},
+}
+
+
+def _newvalue_decision(tier):
+    """新值族某一档的 decision 子树；键结构与 xhard 完全相同（assert_native_decision 按档核对结构）。"""
+    distractor = v5_distractor_cfg("ButtonUnmaskSwap")
+    distractor.update(copy.deepcopy(NEWVALUE_DISTRACTOR_OVERRIDES[tier]))
+    return {
+        "swap_speed_multiplier": NEWVALUE_SWAP_SPEED_MULTIPLIER[tier],
+        "distractor": distractor,
+        "distractor_swap": v5_distractor_swap_cfg("ButtonUnmaskSwap"),
+    }
+
+
 def _native_decision(cls):
     """按方案第二节 2.8 切出 decision 块（原值阶段等于原值）。"""
     return {
@@ -150,11 +183,11 @@ def _native_decision(cls):
         # V4 xhard 专属（2.11）：速度 ×1.5 ⇒ 每段 33 步。放在 xhard 子键下，守卫对原三档可见部分仍逐键全等。
         # V5（2.7，L13/L16 b）：干扰容器改用统一采样器的预设（V4 环带、10 个、含 cube [5,5]）；
         # 新增 distractor_swap：外环随内环同步交换的规则（L17～L23，外环路径离按钮中心 ≥ 0.122）。
-        "xhard": {
-            "swap_speed_multiplier": XHARD_SWAP_SPEED_MULTIPLIER,
-            "distractor": v5_distractor_cfg("ButtonUnmaskSwap"),
-            "distractor_swap": v5_distractor_swap_cfg("ButtonUnmaskSwap"),
-        },
+        "xhard4": _newvalue_decision("xhard4"),
+        # V6：追加三棵与 xhard 键结构相同、数值按档的子树（xhard 原值与位置不变）
+        "xhard1": _newvalue_decision("xhard1"),
+        "xhard2": _newvalue_decision("xhard2"),
+        "xhard3": _newvalue_decision("xhard3"),
     }
 
 
@@ -163,6 +196,11 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：旧快照（V5 没有 xhard1/2/3 子树）缺的新值档从源码补齐；已有的不动
+    fill_missing_newvalue(decision, decision_default)
+    # V6：native.parameters.bin_count 按档取；V5 快照只有四档，缺的新值族档从源码类属性补齐（已有的不动）
+    if isinstance(native.get("parameters", {}).get("bin_count"), dict):
+        fill_missing_newvalue(native["parameters"]["bin_count"], native_default["parameters"]["bin_count"])
     native["decision"] = decision
     return native
 
@@ -208,7 +246,7 @@ class ButtonUnmaskSwap(BaseEnv):
 
     # V4 xhard（派生自 hard，2.11）：swap [6,8]（读 decision）、pick 3、容器数不变；
     # 速度与干扰容器见 decision.xhard。
-    config_xhard = {
+    config_xhard4 = {
         "bin":4,
         "swap_min":6,
         "swap_max":8,
@@ -217,12 +255,39 @@ class ButtonUnmaskSwap(BaseEnv):
     }
 
 
+    # V6（计划 2.4）：hard 与 xhard 之间的三档，容器数不变，swap / pick 按表内插
+    config_xhard1 = {
+        "bin":4,
+        "swap_min":3,
+        "swap_max":4,
+        "pick_min":2,
+        "pick_max":2
+    }
+    config_xhard2 = {
+        "bin":4,
+        "swap_min":4,
+        "swap_max":5,
+        "pick_min":3,
+        "pick_max":3
+    }
+    config_xhard3 = {
+        "bin":4,
+        "swap_min":5,
+        "swap_max":6,
+        "pick_min":3,
+        "pick_max":3
+    }
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard
+        'xhard4': config_xhard4,
+        # V6（计划 2.4）：新值族三档，追加在 'xhard4' 之后（原有键顺序与值不变）
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
     # 交换窗口的具名常量（B4）；运行时读 native.swap_window（默认值即这两个常量）
     SWAP_WINDOW_START = SWAP_WINDOW_START
@@ -306,8 +371,9 @@ class ButtonUnmaskSwap(BaseEnv):
         # xhard 取 decision.xhard 的 1.5 ⇒ {64, 33}。不抽随机数。
         decision = self._sampling["decision"]
         window = self._sampling["parameters"]["swap_window"]
-        self._is_xhard = self.difficulty == "xhard"
-        multiplier = decision["xhard"]["swap_speed_multiplier"] if self._is_xhard else decision["swap_speed_multiplier"]
+        # V6：_is_xhard 表示「新值族」（xhard1/2/3/xhard），全部沿用 xhard 机制；倍率按本局档位查 decision[档]
+        self._is_xhard = is_newvalue_difficulty(self.difficulty)
+        multiplier = decision[self.difficulty]["swap_speed_multiplier"] if self._is_xhard else decision["swap_speed_multiplier"]
         self.swap_window_start = int(window["start_step"])
         self.swap_window_steps = scaled_window_steps(int(window["duration_steps"]), multiplier)
         # xhard 做运行时碰撞检查（H1：初态＋每段交换的连续扫掠，含干扰容器）；原三档不检查，行为不变

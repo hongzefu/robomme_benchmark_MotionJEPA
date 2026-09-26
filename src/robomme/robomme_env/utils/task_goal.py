@@ -51,7 +51,9 @@ def _unmask_pick_count(self):
     ``xhard_pick_count``（外部 sampling_config 可改 decision 的 xhard 值，类属性不会跟着变）。
     """
     pick = self.env.unwrapped.configs[self.difficulty]['pick']
-    if self.difficulty == "xhard":
+    # V6 族判断：新值族（xhard1/2/3/xhard）统一读实际次数。本模块会被单测按文件路径单独加载（无包上下文），
+    # 故不用相对导入，直接对新值族档名做成员判断（与 utils/difficulty.NEWVALUE_DIFFICULTIES 同一组名字）。
+    if isinstance(self.difficulty, str) and self.difficulty.strip().lower() in ("xhard1", "xhard2", "xhard3", "xhard4"):
         pick = getattr(self.env.unwrapped, "xhard_pick_count", pick)
     return pick
 

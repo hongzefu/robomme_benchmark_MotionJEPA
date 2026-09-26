@@ -348,7 +348,8 @@ def _load_scene_source(env_name):
 
 def _is_xhard_test(test):
     src = ast.unparse(test)
-    return src in ("xhard", "self.difficulty == 'xhard'")
+    # V6 口径 11：分支判断式改为族判断原文
+    return src in ("xhard", "self.difficulty == 'xhard'", "is_newvalue_difficulty(self.difficulty)")
 
 
 @pytest.mark.parametrize("env_name", ENV_NAMES)

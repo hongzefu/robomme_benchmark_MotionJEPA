@@ -359,7 +359,8 @@ def test_回放V4形态的发起者列表即报错():
 def test_load_scene_对xhard的EpisodeSpecError不包成SceneGenerationError():
     scene = ast.unparse(next(n for n in ast.walk(ast.parse(SOURCE))
                              if isinstance(n, ast.FunctionDef) and n.name == "_load_scene"))
-    assert "if self.difficulty == 'xhard' and isinstance(exc, _EpisodeSpecError):\n            raise\n" in scene
+    # V6：族判断
+    assert "if is_newvalue_difficulty(self.difficulty) and isinstance(exc, _EpisodeSpecError):\n            raise\n" in scene
 
 
 # ── step 的 xhard 分支 ─────────────────────────────────────────────────────
@@ -388,15 +389,16 @@ def _loop_env(difficulty, planned):
                           _spec=SimpleNamespace(record=lambda path, value: calls.append(("record", path, value))))
     env._get_actor_position = lambda actor: actor.position
     env._refresh_swap_schedule = lambda *args: None
-    env._sweep_checks_enabled = lambda: difficulty == "xhard"
+    env._sweep_checks_enabled = lambda: MOD.is_newvalue_difficulty(difficulty)
     env._check_swap_sweep_from_actual = lambda i, a, b: calls.append(("d5", i, actors.index(a), actors.index(b)))
     env._xhard_planned_partner = types.MethodType(CLS._xhard_planned_partner, env)
     return env, actors, calls
 
 
-def test_step_xhard分支用规划搭档且D5照跑():
-    env, actors, calls = _loop_env("xhard", [2])
-    exec(_swap_loop(), {"self": env, "np": np})
+@pytest.mark.parametrize("tier", ["xhard", "xhard1", "xhard2", "xhard3"])
+def test_step_xhard分支用规划搭档且D5照跑(tier):
+    env, actors, calls = _loop_env(tier, [2])
+    exec(_swap_loop(), {"self": env, "np": np, "is_newvalue_difficulty": MOD.is_newvalue_difficulty})
     assert env.swap_pair1_idx2 is actors[2]  # 规划搭档是最远的那块，不是最近邻 actors[1]
     assert ("d5", 0, 0, 2) in calls
     assert ("record", "actions.swap_pairs.0", {"initiator": "bin_0", "partner": "bin_2"}) in calls
@@ -404,7 +406,7 @@ def test_step_xhard分支用规划搭档且D5照跑():
 
 def test_step_原三档分支仍取最近邻():
     env, actors, calls = _loop_env("easy", None)
-    exec(_swap_loop(), {"self": env, "np": np})
+    exec(_swap_loop(), {"self": env, "np": np, "is_newvalue_difficulty": MOD.is_newvalue_difficulty})
     assert env.swap_pair1_idx2 is actors[1]
     assert not [c for c in calls if c[0] == "d5"]
 
@@ -414,4 +416,4 @@ def test_step_xhard缺规划即报错():
 
     env, _actors, _calls = _loop_env("xhard", None)
     with pytest.raises(SpecBindingError):
-        exec(_swap_loop(), {"self": env, "np": np})
+        exec(_swap_loop(), {"self": env, "np": np, "is_newvalue_difficulty": MOD.is_newvalue_difficulty})

@@ -29,7 +29,9 @@ for extra in (REPO_ROOT / "src", REPO_ROOT / "scripts", REPO_ROOT / "scripts" / 
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-SNAPSHOT = REPO_ROOT / "scripts" / "configs" / "newtask-v5" / "sampling_config.json"  # V5 起源码快照改看 v5；v3 / v4 快照冻结留档（V4 已作废，其 xhard 键与 V5 源码不再一致）
+V5_SNAPSHOT = REPO_ROOT / "scripts" / "configs" / "newtask-v5" / "sampling_config.json"
+V5_SNAPSHOT_SHA256 = "c45d4408a5b87d71a8be72d1724322f06d6801118bb53e4afdffd07b1eaf8315"
+SNAPSHOT = REPO_ROOT / "scripts" / "configs" / "newtask-v6" / "sampling_config.json"
 
 
 def _ready_tasks() -> tuple[str, ...]:
@@ -73,17 +75,34 @@ def test_changed_decision_is_rejected_in_native_mode(task: str) -> None:
         module._resolve_sampling_config(cls, {"decision": tampered, "native": native})
 
 
-def test_snapshot_matches_source() -> None:
-    if not SNAPSHOT.exists():
-        pytest.skip("快照缺失；先运行 scripts/parity/train_split_config.py extract")
+def test_v5_snapshot_remains_frozen() -> None:
+    import hashlib
+
+    assert V5_SNAPSHOT.exists()
+    assert hashlib.sha256(V5_SNAPSHOT.read_bytes()).hexdigest() == V5_SNAPSHOT_SHA256
+
+
+def test_v6_snapshot_matches_source(tmp_path) -> None:
+    out = tmp_path / "sampling_config.json"
     result = subprocess.run(
-        [sys.executable, str(REPO_ROOT / "scripts" / "parity" / "train_split_config.py"), "extract", "--release", "newtask-v5", "--verify"],
+        [sys.executable, str(REPO_ROOT / "scripts" / "parity" / "train_split_config.py"), "extract",
+         "--release", "newtask-v6", "--output", str(out)],
         capture_output=True,
         text=True,
         cwd=REPO_ROOT,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    document = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+    fresh = json.loads(out.read_text(encoding="utf-8"))
+    assert len(fresh["tasks_ready"]) == 16 and fresh["tasks_pending"] == []
+    assert len(fresh["tasks_ready"]) + len(fresh["tasks_pending"]) == 16
+    for task in fresh["tasks_ready"]:
+        assert set(fresh["tasks"][task]) == {"decision", "native"}
+        assert fresh["tasks"][task]["decision"]
+    if not SNAPSHOT.exists():
+        pytest.skip("V6 快照由主线程在四路源码集成后导出")
+    frozen = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+    assert fresh == frozen
+    document = frozen
     assert document["tasks_ready"] == sorted(READY_TASKS)
     assert len(document["tasks_ready"]) + len(document["tasks_pending"]) == 16
     for task in READY_TASKS:

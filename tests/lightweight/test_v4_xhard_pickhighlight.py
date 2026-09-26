@@ -60,9 +60,9 @@ def test_原三档配置逐字不变() -> None:
 
 
 def test_xhard新值() -> None:
-    assert CLS.configs["xhard"] == {"spawn": [8, 10], "pickup": [5, 7]}
-    spawn_lo = CLS.configs["xhard"]["spawn"][0]
-    highlight_hi = CLS.configs["xhard"]["pickup"][1]
+    assert CLS.configs["xhard4"] == {"spawn": [10, 10], "pickup": [7, 7]}
+    spawn_lo = CLS.configs["xhard4"]["spawn"][0]
+    highlight_hi = CLS.configs["xhard4"]["pickup"][1]
     assert spawn_lo >= highlight_hi
 
 
@@ -73,14 +73,14 @@ def test_decision去掉xhard后与原值相同() -> None:
 
 def test_decision的xhard条目结构() -> None:
     decision, _native = module.native_blocks(CLS)
-    assert decision["highlight_count"]["xhard"] == [5, 7]
-    assert decision["spawn_count"]["xhard"] == [8, 10]
-    assert decision["xhard"] == {"block_color_policy": "hsv_floor",
+    assert decision["highlight_count"]["xhard4"] == [7, 7]
+    assert decision["spawn_count"]["xhard4"] == [10, 10]
+    assert decision["xhard4"] == {"block_color_policy": "hsv_floor",
                                  "block_color_hsv": {"h_range": [0.0, 1.0], "s_range": [0.5, 1.0], "v_range": [0.4, 1.0]},
                                  "subgoal_color_suffix": "omit"}
     # 导出副本互不共享可变对象（外部改 decision 不能回写类属性）
-    decision["spawn_count"]["xhard"][0] = 99
-    assert CLS.configs["xhard"]["spawn"] == [8, 10]
+    decision["spawn_count"]["xhard4"][0] = 99
+    assert CLS.configs["xhard4"]["spawn"] == [10, 10]
 
 
 def test_native块不变() -> None:
@@ -93,9 +93,9 @@ def test_native块不变() -> None:
 def test_守卫放行已申报xhard条目改值() -> None:
     default, _ = module.native_blocks(CLS)
     for mutate in (
-        lambda d: d["highlight_count"].__setitem__("xhard", [7, 7]),
-        lambda d: d["spawn_count"].__setitem__("xhard", [8, 8]),
-        lambda d: d["xhard"].__setitem__("subgoal_color_suffix", "omit"),
+        lambda d: d["highlight_count"].__setitem__("xhard4", [7, 7]),
+        lambda d: d["spawn_count"].__setitem__("xhard4", [8, 8]),
+        lambda d: d["xhard4"].__setitem__("subgoal_color_suffix", "omit"),
     ):
         decision = copy.deepcopy(default)
         mutate(decision)
@@ -107,7 +107,7 @@ def test_守卫拒绝原三档改值与申报外新键() -> None:
     for mutate in (
         lambda d: d["highlight_count"].__setitem__("hard", 4),
         lambda d: d.__setitem__("block_color_policy", "hsv_floor"),
-        lambda d: d["xhard"].__setitem__("distractor", {"count": 3}),
+        lambda d: d["xhard4"].__setitem__("distractor", {"count": 3}),
     ):
         decision = copy.deepcopy(default)
         mutate(decision)
@@ -132,3 +132,50 @@ def test_源码xhard分支不静默截断且D4只在xhard修() -> None:
     assert "button_failure_func = lambda: is_any_obj_pickup(self, [cube for cube in self.all_cubes])" in src
     # 原三档的 break 静默截断仍在（H2：原三档行为不变）
     assert "break" in src
+
+
+# ── V6（计划 2.9）：hard 与 xhard 之间插入 xhard1/2/3 ──────────────────────────
+V6_TIERS = {
+    "xhard1": {"spawn": [7, 7], "pickup": [4, 4]},
+    "xhard2": {"spawn": [8, 8], "pickup": [5, 5]},
+    "xhard3": {"spawn": [9, 9], "pickup": [6, 6]},
+    "xhard4": {"spawn": [10, 10], "pickup": [7, 7]},
+}
+
+
+def test_v6新档数值与断言() -> None:
+    for tier, expected in V6_TIERS.items():
+        assert CLS.configs[tier] == expected
+        # 保持 spawn 下界 ≥ pick 上界
+        assert expected["spawn"][0] >= expected["pickup"][1]
+    # 原四档键序不变，三个新档追加在 xhard 之后
+    assert list(CLS.configs) == ["hard", "easy", "medium", "xhard4", "xhard1", "xhard2", "xhard3"]
+
+
+def test_v6新档decision子树与xhard同结构() -> None:
+    decision = module._native_decision(CLS)
+    for tier in ("xhard1", "xhard2", "xhard3"):
+        assert decision[tier] == decision["xhard4"]
+        assert decision["highlight_count"][tier] == V6_TIERS[tier]["pickup"]
+        assert decision["spawn_count"][tier] == V6_TIERS[tier]["spawn"]
+    # 全部新值档剥掉后仍与原值逐字相同
+    assert _strip_xhard(decision) == ORIGINAL_DECISION
+
+
+def test_v6旧快照缺新档按源码补齐() -> None:
+    default, native = module.native_blocks(CLS)
+    decision = copy.deepcopy(default)
+    for tier in ("xhard1", "xhard2", "xhard3"):
+        decision.pop(tier)
+        decision["highlight_count"].pop(tier)
+        decision["spawn_count"].pop(tier)
+    resolved = module._resolve_sampling_config(CLS, {"decision": decision, "native": native})
+    assert resolved["decision"]["xhard3"] == default["xhard3"]
+    assert resolved["decision"]["spawn_count"]["xhard3"] == [9, 9]
+    assert resolved["decision"]["highlight_count"]["xhard4"] == [7, 7]
+
+
+def test_v6源码用族判断() -> None:
+    src = inspect.getsource(CLS._load_scene)
+    assert "xhard = is_newvalue_difficulty(self.difficulty)" in src
+    assert 'self.difficulty == "xhard4"' not in inspect.getsource(CLS)

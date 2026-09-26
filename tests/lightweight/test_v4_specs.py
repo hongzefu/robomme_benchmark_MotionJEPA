@@ -34,11 +34,13 @@ TASKS = ["PatternLock", "RouteStick"]
 
 def _drafts(tmp_path: Path, n: int = 7, mutate_header=None) -> Path:
     sampling = json.loads(V.DEFAULT_SAMPLING.read_text(encoding="utf-8"))
+    difficulty = "xhard4"
+    rule = V.seed_rule_for(difficulty, "v6")
     header = {
-        "record": "header", "schema": V.DRAFT_SCHEMA, "run_id": "t", "difficulty": "xhard",
+        "record": "header", "schema": V.DRAFT_SCHEMA, "run_id": "t", "difficulty": difficulty,
         "sampling_config": {t: V.task_sampling(sampling, t) for t in TASKS},
         "source_fingerprint": V.source_fingerprint(), "runtime": dict(V.RUNTIME),
-        "seed_rule": dict(V.SEED_RULE), "recovery_rule": dict(V.RECOVERY_RULE), "identity_source": "formula", "tasks": TASKS,
+        "seed_rule": dict(rule), "recovery_rule": dict(V.RECOVERY_RULE), "identity_source": "formula", "tasks": TASKS,
     }
     header["sampling_config_sha256"] = V.digest(header["sampling_config"])
     if mutate_header:
@@ -46,14 +48,14 @@ def _drafts(tmp_path: Path, n: int = 7, mutate_header=None) -> Path:
     rows = []
     for task in TASKS:
         # 第 1 条候选先失败一次再成功：episode 编号只算成功的
-        rows.append({"record": "draft", "task": task, "difficulty": "xhard", "episode": 1, "attempt": 0,
-                     "seed": V.seed_for(task, 1, 0), "reset_ok": False, "fail_class": "RuntimeError",
+        rows.append({"record": "draft", "task": task, "difficulty": difficulty, "episode": 1, "attempt": 0,
+                     "seed": V.seed_for(task, 1, 0, rule), "reset_ok": False, "fail_class": "RuntimeError",
                      "error": "x", "spec": None, "spec_sha256": None, "wall_s": 1.0})
         for ep in range(n):
             attempt = 1 if ep == 1 else 0
-            spec = {"spec_kind": "native-newvalue/1", "task": task, "objects": {"v": ep * 10}}
-            rows.append({"record": "draft", "task": task, "difficulty": "xhard", "episode": ep,
-                         "attempt": attempt, "seed": V.seed_for(task, ep, attempt), "reset_ok": True,
+            spec = {"spec_kind": "native-newvalue/2", "task": task, "objects": {"v": ep * 10}}
+            rows.append({"record": "draft", "task": task, "difficulty": difficulty, "episode": ep,
+                         "attempt": attempt, "seed": V.seed_for(task, ep, attempt, rule), "reset_ok": True,
                          "fail_class": None, "error": None, "spec": spec, "spec_sha256": V.spec_sha256(spec),
                          "wall_s": 1.0})
     path = tmp_path / "drafts.jsonl"

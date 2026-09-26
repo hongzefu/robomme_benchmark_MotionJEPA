@@ -13,7 +13,7 @@
 * **随机流（N5）**：干扰容器的全部抽样走**独立的专用流**（种子 = 本局 seed + 固定盐），
   主流一次都不多抽——原三档根本不进这里，xhard 的主流取值序列也与不加干扰容器时相同。
 
-本模块只在 ``difficulty == "xhard"`` 分支被调用；原三档从不 import 这里的函数参与取值。
+本模块只在新值族（xhard1/2/3/xhard，V6 族判断 ``is_newvalue_difficulty``）分支被调用；原三档从不 import 这里的函数参与取值。
 
 V5（NEWTASK_RELEASE_V5_PLAN 2.5～2.7，L13～L23）在文件末尾新增一节，两个环境的 xhard 改为调用它：
 
@@ -154,7 +154,7 @@ def solve_hold_obj_xhard(env, planner, static_steps: int) -> None:
     ``planner.open_gripper()``：xhard 打开运行时碰撞检查（H1）后，``env.step`` 在交换开始时抛出的
     ``BinCollisionError`` 会被吞掉，``elapsed_steps`` 不前进，等待循环永不结束（本机实测挂满外部超时）。
     这里让碰撞拒绝（及其他一切非 ``AttributeError`` 异常）原样上抛，由 ``_worker`` 归为任务性失败。
-    共享函数按 N12 不就地修；原三档继续用原函数，本函数只在 ``difficulty == "xhard"`` 分支被引用。
+    共享函数按 N12 不就地修；原三档继续用原函数，本函数只在新值族分支被引用。
     """
     start_step = int(getattr(env, "elapsed_steps", 0))
     target_step = start_step + static_steps
@@ -849,7 +849,8 @@ def spawn_swap_distractors_v5(
     冻结布局经 ``commit`` 按同一规则（含 H1 回调，用同一份内环预演）复核，冻结的发起者排列若与重抽不同则用冻结排列
     重新规划并复核可行性（N17），违反即抛 ``SceneGenerationError``。
     """
-    decision = env._sampling["decision"]["xhard"]
+    # V6：按本局档位取新值子树（xhard1/2/3/xhard 各一份，结构相同、数值按档）
+    decision = env._sampling["decision"][env.difficulty]
     chs = float(env.cube_half_size)
     dcfg = parse_distractor_cfg(decision["distractor"])
     windows = predict_inner_windows(env, partner_axes)

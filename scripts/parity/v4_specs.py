@@ -28,6 +28,14 @@ V5（NEWTASK_RELEASE_V5_PLAN 3.1②③）沿用同一套封套与 seed 规则，
     uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
         --sampling-config scripts/configs/newtask-v5/sampling_config.json --out scripts/configs/newtask-v5/v5-01/specs.jsonl
 
+V6：档位改为 CLI 参数 ``--difficulty``，seed 规则按
+``--seed-profile`` 取（默认 ``v5`` = 原 4e6 单一规则，默认参数下 header 与行逐字节同 V5）；``v6`` 按档加偏移
+（xhard4 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6）。header 的 ``difficulty`` 与 ``seed_rule`` 即为封存的档位与规则，
+冻结/校验/实跑/推理一律按 header 取，不再与模块常量比：
+
+    uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v6-01 --difficulty xhard2 --seed-profile v6 \
+        --sampling-config scripts/configs/newtask-v6/sampling_config.json --out artifacts/newtask-v6/v6-01/xhard2/draft/drafts.jsonl
+
 ``--workers N``（默认 1，行为与改动前逐字相同）按环境把抽签分给 N 个 spawn 子进程，各进程独立起 gym 环境；
 每个环境的 (episode, attempt, seed) 序列只由 ``SEED_RULE`` 决定、与 worker 数无关，合并时按 header 的任务序、
 每环境内按抽签先后拼接，因此 drafts.jsonl 的 header 与行序和单 worker 完全一致（只有 ``wall_s`` 这种墙钟量不同）。
@@ -61,7 +69,10 @@ DEFAULT_SAMPLING = REPO_ROOT / "scripts" / "configs" / "newtask-v4" / "sampling_
 SOURCE_ROOT = REPO_ROOT / "src" / "robomme" / "robomme_env"
 DRAFT_SCHEMA = "v4-drafts/1"
 SPECS_SCHEMA = "v4-specs/1"
+#: V4/V5 兼容默认值；V6 新值档必须显式指定。
 DIFFICULTY = "xhard"
+#: V6 允许抽签的活动档位。
+NEWVALUE_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
 # runtime 四项与主入口 / parity worker 的 gym.make 参数逐字相同（推理侧起环境时逐字比对）
 RUNTIME = {
     "obs_mode": "rgb+depth+segmentation",
@@ -72,6 +83,31 @@ RUNTIME = {
 # V4 专用 seed 布局：与 train/test/val/heldout 四代都不重叠（heldout 最大约 1.5e6+16e5）。
 # seed = offset + env_code × env_block + episode × 100 + attempt
 SEED_RULE = {"offset": 4_000_000, "env_block": 100_000, "episode_stride": 100, "formula": "offset + env_code*env_block + episode*100 + attempt"}
+# V6：每档独立 seed 区段，与 V4/V5 的 4e6 区段及彼此都不重叠。
+V6_SEED_OFFSETS = {"xhard4": 6_000_000, "xhard1": 8_000_000, "xhard2": 10_000_000, "xhard3": 12_000_000}
+SEED_PROFILES = ("v5", "v6")
+
+
+def seed_rule_for(difficulty: str = DIFFICULTY, profile: str = "v5") -> dict[str, Any]:
+    """按档位与规则族给出 seed 规则；V5 的无档位调用保留原 xhard 与 4e6 规则。"""
+    if difficulty == DIFFICULTY and profile == "v5":
+        return dict(SEED_RULE)
+    if difficulty not in NEWVALUE_TIERS:
+        raise SpecsError(f"未知档位 {difficulty!r}，只支持 {NEWVALUE_TIERS}")
+    if profile == "v5":
+        raise SpecsError(f"seed 规则 v5 只覆盖 V5 默认档；{difficulty} 必须用 --seed-profile v6")
+    if profile == "v6":
+        return {**SEED_RULE, "offset": V6_SEED_OFFSETS[difficulty]}
+    raise SpecsError(f"未知 seed 规则族 {profile!r}，只支持 {SEED_PROFILES}")
+
+
+def _known_seed_rule(difficulty: str, rule: dict[str, Any]) -> bool:
+    """header 封存的 seed 规则是否为该档位的合法规则（v5 或 v6 之一）。"""
+    try:
+        return any(rule == seed_rule_for(difficulty, profile)
+                   for profile in SEED_PROFILES if not (profile == "v5" and difficulty != DIFFICULTY))
+    except SpecsError:
+        return False
 # fail recover：用户 2026-09-22 定「V4 全部不开 recover」——抽签、实跑、推理三处一律不开。
 # ⚠ recover 会改变 reset 期的抽样（inject_fail_grasp），三处必须同口径，否则回注对不上；
 # 规则写进 header 封存，实跑侧（runner --no-recovery）与推理侧（from_v4_specs）按它执行。
@@ -94,8 +130,10 @@ class SpecsError(ValueError):
 # ── 基础函数 ─────────────────────────────────────────────────────────────
 
 
-def seed_for(task: str, episode: int, attempt: int) -> int:
-    layout = SeedLayout(offset=SEED_RULE["offset"], env_block=SEED_RULE["env_block"])
+def seed_for(task: str, episode: int, attempt: int, rule: dict[str, Any] | None = None) -> int:
+    """seed 公式；``rule`` 缺省为 V5 的 ``SEED_RULE``（与改动前逐字相同），V6 传 header 封存的规则。"""
+    rule = SEED_RULE if rule is None else rule
+    layout = SeedLayout(offset=rule["offset"], env_block=rule["env_block"])
     return layout.seed(task, episode, attempt)
 
 
@@ -114,9 +152,9 @@ def recovery_mode(episode: int) -> str | None:
     return None
 
 
-def env_kwargs(seed: int, episode: int) -> dict[str, Any]:
-    """抽签与实跑共用的 gym.make 参数（不含 sampling_config / native_episode_spec）。"""
-    kwargs = {**RUNTIME, "seed": seed, "difficulty": DIFFICULTY}
+def env_kwargs(seed: int, episode: int, difficulty: str = DIFFICULTY) -> dict[str, Any]:
+    """抽签与实跑共用的 gym.make 参数（不含 sampling_config / native_episode_spec）；V6 档位由调用方按 header 传入。"""
+    kwargs = {**RUNTIME, "seed": seed, "difficulty": difficulty}
     mode = recovery_mode(episode)
     if mode is not None:
         kwargs["robomme_failure_recovery"] = True
@@ -193,7 +231,7 @@ def _check_sources(header: dict[str, Any], sampling_document: dict[str, Any], la
         problems.append("source_fingerprint")
     if header["runtime"] != RUNTIME:
         problems.append("runtime")
-    if header["seed_rule"] != SEED_RULE:
+    if not _known_seed_rule(header["difficulty"], header["seed_rule"]):
         problems.append("seed_rule")
     if header["recovery_rule"] != RECOVERY_RULE:
         problems.append("recovery_rule")
@@ -204,15 +242,16 @@ def _check_sources(header: dict[str, Any], sampling_document: dict[str, Any], la
 # ── 抽签 ───────────────────────────────────────────────────────────────
 
 
-def _draw_one(task: str, seed: int, episode: int, sampling: dict[str, Any]) -> tuple[bool, dict | None, str | None, str | None]:
+def _draw_one(task: str, seed: int, episode: int, sampling: dict[str, Any],
+              difficulty: str = DIFFICULTY) -> tuple[bool, dict | None, str | None, str | None]:
     import gymnasium as gym
 
     env = None
     try:
-        env = gym.make(task, sampling_config=sampling, **env_kwargs(seed, episode))
+        env = gym.make(task, sampling_config=sampling, **env_kwargs(seed, episode, difficulty))
         env.reset()
         recorder = env.unwrapped._spec
-        recorder.identity.update({"task": task, "seed": seed, "difficulty": DIFFICULTY,
+        recorder.identity.update({"task": task, "seed": seed, "difficulty": difficulty,
                                   "episode": episode, "recovery_mode": recovery_mode(episode)})
         return True, recorder.to_dict(), None, None
     except Exception as exc:  # noqa: BLE001 失败本身要归类记录
@@ -222,17 +261,19 @@ def _draw_one(task: str, seed: int, episode: int, sampling: dict[str, Any]) -> t
             env.close()
 
 
-def build_draw_header(run_id: str, sampling_document: dict[str, Any], tasks: list[str]) -> dict[str, Any]:
-    """抽签 header：来源在抽签时就封存（单 worker 与多 worker 共用同一份构造）。"""
+def build_draw_header(run_id: str, sampling_document: dict[str, Any], tasks: list[str],
+                      difficulty: str = DIFFICULTY, seed_rule: dict[str, Any] | None = None) -> dict[str, Any]:
+    """抽签 header：来源在抽签时就封存（单 worker 与多 worker 共用同一份构造）；默认参数与 V5 逐字节相同。"""
+    seed_rule = SEED_RULE if seed_rule is None else seed_rule
     header = {
         "record": "header",
         "schema": DRAFT_SCHEMA,
         "run_id": run_id,
-        "difficulty": DIFFICULTY,
+        "difficulty": difficulty,
         "sampling_config": {task: task_sampling(sampling_document, task) for task in tasks},
         "source_fingerprint": source_fingerprint(),
         "runtime": dict(RUNTIME),
-        "seed_rule": dict(SEED_RULE),
+        "seed_rule": dict(seed_rule),
         "recovery_rule": copy.deepcopy(RECOVERY_RULE),
         "identity_source": "formula",
         "tasks": tasks,
@@ -242,21 +283,24 @@ def build_draw_header(run_id: str, sampling_document: dict[str, Any], tasks: lis
 
 
 def draw_task(task: str, sampling: dict[str, Any], candidates_per_env: int, max_reset_attempts: int,
-              draw_one=None) -> list[dict[str, Any]]:
+              draw_one=None, difficulty: str = DIFFICULTY, seed_rule: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     """单环境抽签循环：攒够 ``candidates_per_env`` 条 reset 成功或尝试满 ``max_reset_attempts`` 次为止。
 
     seed 只由 (task, episode, attempt) 经 ``SEED_RULE`` 决定，所以这一环境的行序列与在哪个进程里跑无关。
     ``draw_one`` 只供单测注入假 reset；缺省为真实的 ``_draw_one``。
     """
-    draw_one = draw_one or _draw_one
+    if draw_one is None:
+        import functools
+
+        draw_one = functools.partial(_draw_one, difficulty=difficulty)
     rows: list[dict[str, Any]] = []
     episode = attempt = total = 0
     while episode < candidates_per_env and total < max_reset_attempts:
-        seed = seed_for(task, episode, attempt)
+        seed = seed_for(task, episode, attempt, seed_rule)
         started = time.time()
         ok, spec, fail_class, error = draw_one(task, seed, episode, sampling)
         row = {
-            "record": "draft", "task": task, "difficulty": DIFFICULTY, "episode": episode,
+            "record": "draft", "task": task, "difficulty": difficulty, "episode": episode,
             "attempt": attempt, "seed": seed, "reset_ok": ok, "fail_class": fail_class,
             "error": error, "spec": spec, "spec_sha256": spec_sha256(spec) if spec else None,
             "wall_s": round(time.time() - started, 2),
@@ -272,7 +316,8 @@ def draw_task(task: str, sampling: dict[str, Any], candidates_per_env: int, max_
     return rows
 
 
-def merge_task_rows(tasks: list[str], rows_by_task: dict[str, list[dict[str, Any]]]) -> list[dict[str, Any]]:
+def merge_task_rows(tasks: list[str], rows_by_task: dict[str, list[dict[str, Any]]],
+                    seed_rule: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     """把各环境的行按 header 任务序拼成一份（与单 worker 逐环境顺序抽签的行序相同）。
 
     每个环境的行必须恰好属于该环境、且 (episode, attempt) 与抽签循环的推进规则一致，否则拒绝合并。
@@ -286,7 +331,7 @@ def merge_task_rows(tasks: list[str], rows_by_task: dict[str, list[dict[str, Any
         episode = attempt = 0
         for row in rows_by_task[task]:
             if row["task"] != task or (row["episode"], row["attempt"]) != (episode, attempt) \
-                    or row["seed"] != seed_for(task, episode, attempt):
+                    or row["seed"] != seed_for(task, episode, attempt, seed_rule):
                 raise SpecsError(f"多 worker 合并：{task} 的行序与抽签规则不符（期望 ep={episode} attempt={attempt}）")
             if row["reset_ok"]:
                 episode, attempt = episode + 1, 0
@@ -318,7 +363,8 @@ def _parse_gpus(text: str | None) -> list[str] | None:
 
 def draw_rows(tasks: list[str], samplings: dict[str, dict[str, Any]], candidates_per_env: int,
               max_reset_attempts: int, workers: int = 1, gpus: list[str] | None = None, *,
-              draw_one=None, executor_factory=None) -> list[dict[str, Any]]:
+              draw_one=None, executor_factory=None, difficulty: str = DIFFICULTY,
+              seed_rule: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     """全部环境的抽签行（header 之外）。``workers == 1`` 时在本进程逐环境顺序跑，与改动前逐字相同。
 
     ``workers > 1`` 时每个环境作为一个任务提交给进程池（spawn，每进程独立 gym 环境），
@@ -327,7 +373,8 @@ def draw_rows(tasks: list[str], samplings: dict[str, dict[str, Any]], candidates
     if workers <= 1:
         rows: list[dict[str, Any]] = []
         for task in tasks:
-            rows.extend(draw_task(task, samplings[task], candidates_per_env, max_reset_attempts, draw_one))
+            rows.extend(draw_task(task, samplings[task], candidates_per_env, max_reset_attempts, draw_one,
+                                  difficulty, seed_rule))
         return rows
     workers = min(workers, len(tasks))
     if executor_factory is None:
@@ -349,7 +396,8 @@ def draw_rows(tasks: list[str], samplings: dict[str, dict[str, Any]], candidates
     rows_by_task: dict[str, list[dict[str, Any]]] = {}
     failures: list[str] = []
     with executor:
-        futures = {executor.submit(target, task, samplings[task], candidates_per_env, max_reset_attempts, draw_one): task
+        futures = {executor.submit(target, task, samplings[task], candidates_per_env, max_reset_attempts, draw_one,
+                                   difficulty, seed_rule): task
                    for task in tasks}
         from concurrent.futures import as_completed
 
@@ -361,7 +409,7 @@ def draw_rows(tasks: list[str], samplings: dict[str, dict[str, Any]], candidates
                 failures.append(f"{task}: {type(exc).__name__}: {exc}")
     if failures:
         raise SpecsError(f"多 worker 抽签有环境未完成，未写出 drafts：{failures}")
-    return merge_task_rows(tasks, rows_by_task)
+    return merge_task_rows(tasks, rows_by_task, seed_rule)
 
 
 def cmd_draw(args: argparse.Namespace) -> int:
@@ -375,12 +423,14 @@ def cmd_draw(args: argparse.Namespace) -> int:
 
     sampling_document = json.loads(Path(args.sampling_config).read_text(encoding="utf-8"))
     tasks = list(ALL_TASKS) if args.tasks == "all" else args.tasks.split(",")
-    header = build_draw_header(args.run_id, sampling_document, tasks)
+    difficulty = getattr(args, "difficulty", DIFFICULTY) or DIFFICULTY
+    seed_rule = seed_rule_for(difficulty, getattr(args, "seed_profile", "v5") or "v5")
+    header = build_draw_header(args.run_id, sampling_document, tasks, difficulty, seed_rule)
     out = Path(args.out)
     if out.exists():
         raise SpecsError(f"{out} 已存在，禁止覆盖")
     rows = draw_rows(tasks, header["sampling_config"], args.candidates_per_env, args.max_reset_attempts,
-                     workers, gpus)
+                     workers, gpus, difficulty=difficulty, seed_rule=seed_rule)
     _write_jsonl(out, [header, *rows])
     print(f"DRAW_DONE rows={len(rows)} ok={sum(r['reset_ok'] for r in rows)} out={out}")
     return 0
@@ -394,8 +444,9 @@ def freeze(drafts_path: Path, sampling_path: Path, out: Path, select=DEFAULT_SEL
     records = _read_jsonl(drafts_path)
     header, drafts = records[0], records[1:]
     _exact_keys(header, HEADER_KEYS, "drafts header")
-    if header["schema"] != DRAFT_SCHEMA or header["difficulty"] != DIFFICULTY:
+    if header["schema"] != DRAFT_SCHEMA or header["difficulty"] not in NEWVALUE_TIERS:
         raise SpecsError("drafts 版本或难度不符")
+    difficulty, seed_rule = header["difficulty"], header["seed_rule"]
     sampling_document = json.loads(Path(sampling_path).read_text(encoding="utf-8"))
     _check_sources(header, sampling_document, "冻结")
     rows, per_env = [], {}
@@ -407,7 +458,9 @@ def freeze(drafts_path: Path, sampling_path: Path, out: Path, select=DEFAULT_SEL
                 continue
             if row["spec_sha256"] != spec_sha256(row["spec"]):
                 raise SpecsError(f"drafts 行规格散列不符：{task}/{row['episode']}")
-            if row["seed"] != seed_for(task, row["episode"], row["attempt"]):
+            if row["difficulty"] != difficulty:
+                raise SpecsError(f"drafts 行档位与 header 不符：{task}/{row['episode']}")
+            if row["seed"] != seed_for(task, row["episode"], row["attempt"], seed_rule):
                 raise SpecsError(f"drafts 行 seed 与公式不符：{task}/{row['episode']}")
             ok_rows.append(row)
         ok_rows.sort(key=lambda r: r["episode"])
@@ -420,7 +473,7 @@ def freeze(drafts_path: Path, sampling_path: Path, out: Path, select=DEFAULT_SEL
                          "selected": selected}
         for row in ok_rows:
             rows.append({
-                "record": "spec", "task": task, "difficulty": DIFFICULTY, "episode": row["episode"],
+                "record": "spec", "task": task, "difficulty": difficulty, "episode": row["episode"],
                 "attempt": row["attempt"], "seed": row["seed"], "spec": row["spec"],
                 "spec_sha256": row["spec_sha256"], "selected": row["episode"] in select,
             })
@@ -439,8 +492,10 @@ def freeze(drafts_path: Path, sampling_path: Path, out: Path, select=DEFAULT_SEL
 
 def validate_specs(header: dict[str, Any], rows: list[dict[str, Any]], *, check_disk: bool = False) -> None:
     _exact_keys(header, HEADER_KEYS | SPECS_HEADER_EXTRA, "specs header")
-    if header["schema"] != SPECS_SCHEMA or header["difficulty"] != DIFFICULTY or header["runtime"] != RUNTIME:
+    if header["schema"] != SPECS_SCHEMA or header["difficulty"] not in NEWVALUE_TIERS or header["runtime"] != RUNTIME:
         raise SpecsError("specs 版本、难度或 runtime 不符")
+    if not _known_seed_rule(header["difficulty"], header["seed_rule"]):
+        raise SpecsError("specs 的 seed 规则与档位不符")
     if header["sampling_config_sha256"] != digest(header["sampling_config"]):
         raise SpecsError("内嵌 sampling_config 散列不自洽")
     seen = set()
@@ -452,7 +507,9 @@ def validate_specs(header: dict[str, Any], rows: list[dict[str, Any]], *, check_
         seen.add(key)
         if row["spec_sha256"] != spec_sha256(row["spec"]):
             raise SpecsError(f"规格散列不符：{key}")
-        if row["seed"] != seed_for(row["task"], row["episode"], row["attempt"]):
+        if row["difficulty"] != header["difficulty"]:
+            raise SpecsError(f"规格行档位与 header 不符：{key}")
+        if row["seed"] != seed_for(row["task"], row["episode"], row["attempt"], header["seed_rule"]):
             raise SpecsError(f"seed 与公式不符：{key}")
         if type(row["selected"]) is not bool:
             raise SpecsError(f"selected 必须是布尔：{key}")
@@ -519,7 +576,7 @@ def cmd_freeze(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
-    draw = sub.add_parser("draw", help="抽签：xhard 只 reset，导出规格到 drafts.jsonl")
+    draw = sub.add_parser("draw", help="抽签：新值档（默认 xhard）只 reset，导出规格到 drafts.jsonl")
     draw.add_argument("--run-id", required=True)
     draw.add_argument("--tasks", default="all")
     draw.add_argument("--sampling-config", default=str(DEFAULT_SAMPLING))
@@ -529,6 +586,10 @@ def main() -> int:
                       help="并行进程数；默认 1 与改动前逐字相同，>1 时按环境分给 spawn 子进程，合并后行序不变")
     draw.add_argument("--gpus", default=None,
                       help="逗号分隔的物理 GPU 号，子进程按轮转领取并写进 CUDA_VISIBLE_DEVICES；缺省沿用当前环境")
+    draw.add_argument("--difficulty", default=DIFFICULTY, choices=NEWVALUE_TIERS,
+                      help="V6 必须选 xhard1..xhard4；未指定时保留历史 V5 header 默认值")
+    draw.add_argument("--seed-profile", default="v5", choices=SEED_PROFILES,
+                      help="seed 规则族：v5 保留历史 4e6；v6 按档偏移 xhard4 6e6 / xhard1 8e6 / xhard2 10e6 / xhard3 12e6")
     draw.add_argument("--out", required=True)
     draw.set_defaults(func=cmd_draw)
     fr = sub.add_parser("freeze", help="冻结：核验来源后写出 specs.jsonl（纯 CPU）")

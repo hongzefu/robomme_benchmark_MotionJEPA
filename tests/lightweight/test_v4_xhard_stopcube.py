@@ -52,18 +52,19 @@ INTERVAL = 30  # NATIVE_SAMPLING.parameters.interval_sample.overridden_to
 
 
 def test_configs_three_same_and_xhard_new() -> None:
-    assert set(CLS.configs) == {"easy", "medium", "hard", "xhard"}
+    # V6（计划 2.13 / M2）：StopCube 不加档，不新增 xhard1/2/3，所以这里保持「恰 4 档」不扩到 7 档
+    assert set(CLS.configs) == {"easy", "medium", "hard", "xhard4"}
     for difficulty in ("easy", "medium", "hard"):
         assert CLS.configs[difficulty] == V3_DECISION, difficulty
-    assert CLS.configs["xhard"] == XHARD
+    assert CLS.configs["xhard4"] == XHARD
     # 三档是各自独立的副本，改一档不会串到另一档
     assert CLS.configs["easy"] is not CLS.configs["hard"]
 
 
 def test_native_decision_visible_part_unchanged() -> None:
     decision, native = MODULE.native_blocks(CLS)
-    assert {k: v for k, v in decision.items() if k != "xhard"} == V3_DECISION
-    assert decision["xhard"] == XHARD
+    assert {k: v for k, v in decision.items() if k != "xhard4"} == V3_DECISION
+    assert decision["xhard4"] == XHARD
     # native 块本轮一个键都没动
     assert native["parameters"]["motion_segments"] == 5
 
@@ -71,9 +72,9 @@ def test_native_decision_visible_part_unchanged() -> None:
 def test_guard_allows_xhard_narrowing_rejects_original_change() -> None:
     decision, native = MODULE.native_blocks(CLS)
     narrowed = copy.deepcopy(decision)
-    narrowed["xhard"]["stop_time_range"] = {"low": 15, "high_exclusive": 16}
+    narrowed["xhard4"]["stop_time_range"] = {"low": 15, "high_exclusive": 16}
     resolved = MODULE._resolve_sampling_config(CLS, {"decision": narrowed, "native": native})
-    assert resolved["decision"]["xhard"]["stop_time_range"] == {"low": 15, "high_exclusive": 16}
+    assert resolved["decision"]["xhard4"]["stop_time_range"] == {"low": 15, "high_exclusive": 16}
 
     broken = copy.deepcopy(decision)
     broken["move_interval_choices"] = [60]
@@ -81,7 +82,7 @@ def test_guard_allows_xhard_narrowing_rejects_original_change() -> None:
         MODULE._resolve_sampling_config(CLS, {"decision": broken, "native": native})
 
     extra = copy.deepcopy(decision)
-    extra["xhard"]["press_lead"] = 20
+    extra["xhard4"]["press_lead"] = 20
     with pytest.raises(SamplingConfigError):
         assert_native_decision(extra, decision, "StopCube")
 
@@ -91,7 +92,7 @@ def test_old_snapshot_without_xhard_gets_default() -> None:
     resolved = MODULE._resolve_sampling_config(
         CLS, {"decision": copy.deepcopy(V3_DECISION), "native": native}
     )
-    assert resolved["decision"]["xhard"] == XHARD
+    assert resolved["decision"]["xhard4"] == XHARD
     assert resolved["decision"]["move_interval_choices"] == [60, 80, 120]
 
 
@@ -125,7 +126,7 @@ def _combos():
             yield "orig", mi, st
     for mi in XHARD["move_interval_choices"]:
         for st in range(XHARD["stop_time_range"]["low"], XHARD["stop_time_range"]["high_exclusive"]):
-            yield "xhard", mi, st
+            yield "xhard4", mi, st
 
 
 @pytest.mark.parametrize("tier,mi,st", list(_combos()))
@@ -145,7 +146,7 @@ def test_vqa_checkpoints_match_env(tier, mi, st) -> None:
     for _ in range(len(expected)):
         solve()
     assert hold_calls == [int(v) for v in expected]
-    if tier == "xhard":
+    if tier == "xhard4":
         # 60×15 下 remain static 最多 9 条（计划 2.6 实施要点）
         assert len(expected) <= 9
 
@@ -162,3 +163,12 @@ def test_xhard_segments_cover_stop_pass(st) -> None:
     assert window[0] <= steps_press <= window[1]
     # 评估超时判据 move_interval*stop_time 最大 900 步，低于 scripts/evaluation.py 的 max_steps=1300
     assert mi * st <= 900
+
+
+@pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3"])
+def test_v6_no_tier_rejects_xhard123(tier) -> None:
+    """V6（计划 2.13 / M2）：本环境原版无梯度、不加档，configs 仍只有 4 档；
+    传入 xhard1/2/3 在 __init__ 里（super().__init__ 之前、不起 sapien 场景）明确抛 ValueError。"""
+    assert set(CLS.configs) == {"easy", "medium", "hard", "xhard4"}
+    with pytest.raises(ValueError, match="不加档"):
+        CLS(difficulty=tier)

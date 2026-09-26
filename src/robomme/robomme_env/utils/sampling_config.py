@@ -69,39 +69,71 @@ def split_sampling_config(override, native_default, decision_default):
     return decision, native
 
 
-XHARD_KEY = "xhard"
+# V6：活动新值键为 xhard1..xhard4；只读 V5 投影也识别旧键 xhard，以便保持旧快照不变。
+from .difficulty import NEWVALUE_DIFFICULTIES
+
+#: 活动新值族的最难档键。
+XHARD4_KEY = "xhard4"
+#: decision 里所有「新值」子树的键名（任意深度）
+NEWVALUE_KEYS = frozenset(NEWVALUE_DIFFICULTIES)
+#: V5 冻结快照中的历史新值键；仅用于比较剥离，不作为可用难度档。
+LEGACY_NEWVALUE_KEYS = frozenset({"xhard"})
+_STRIP_NEWVALUE_KEYS = NEWVALUE_KEYS | LEGACY_NEWVALUE_KEYS
 
 
 def _strip_xhard(node):
-    """去掉任意深度上键名为 ``xhard`` 的条目，得到原三档可见的那部分 decision。"""
+    """去掉活动及 V5 历史新值键，得到原三档可见部分。"""
     if isinstance(node, dict):
-        return {key: _strip_xhard(value) for key, value in node.items() if key != XHARD_KEY}
+        return {key: _strip_xhard(value) for key, value in node.items() if key not in _STRIP_NEWVALUE_KEYS}
     if isinstance(node, list):
         return [_strip_xhard(item) for item in node]
     return node
 
 
-def _xhard_shape(node, prefix="", inside=False):
-    """列出 xhard 子树的全部键路径（只看结构不看值），用于拒绝申报外的新键或缺键。"""
+def _xhard_shape(node, prefix="", tier=None):
+    """列出新值子树的全部键路径（只看结构不看值），返回 ``{(档名, 路径)}``；档名取路径上第一个新值键。"""
     out = set()
     if isinstance(node, dict):
         for key, value in node.items():
             path = f"{prefix}.{key}" if prefix else key
-            here = inside or key == XHARD_KEY
-            if here:
-                out.add(path)
+            here = tier if tier is not None else (key if key in NEWVALUE_KEYS else None)
+            if here is not None:
+                out.add((here, path))
             out |= _xhard_shape(value, path, here)
     return out
+
+
+#: xhard1/2/3 是在 xhard4 之后新加的档；缺失时仅从同层 xhard4 配置补齐。
+V6_ADDED_KEYS = frozenset(NEWVALUE_DIFFICULTIES[:-1])
+
+
+def fill_missing_newvalue(decision, decision_default):
+    """旧快照兜底（V6 口径 11）：快照里缺的 **V6 新增档**（xhard1/2/3）子树从源码申报深拷贝补齐；已有的一律不动。
+
+    只补 xhard1/2/3，且只在同一层已有 xhard4 时补；V5 快照中的历史 xhard 不会触发补齐。
+    **xhard4 本身缺失的层一概不补**，保持旧快照原有行为。
+    原三档可见部分不受影响。原地修改并返回 ``decision``。
+    """
+    if isinstance(decision, dict) and isinstance(decision_default, dict):
+        for key, value in decision_default.items():
+            if key in V6_ADDED_KEYS:
+                # 只给「同一层已有 xhard4」的 V6 快照补齐缺档；V5 历史 xhard 不触发补齐
+                if key not in decision and XHARD4_KEY in decision:
+                    decision[key] = json.loads(json.dumps(value))
+            elif key in decision and key not in NEWVALUE_KEYS:
+                fill_missing_newvalue(decision[key], value)
+            elif key in decision:
+                # 已有的新值档子树（如 xhard）内部不再下钻补键：结构由 assert_native_decision 按档核对
+                pass
+    return decision
 
 
 def assert_native_decision(decision, decision_default, task):
     """``decision`` 守卫（红线 R7；V4 步 2 分叉）。
 
-    * **原值部分**（去掉所有 ``xhard`` 键之后）必须与原值快照逐键相同——原三档可见的
+    * **原值部分**（去掉所有新值及历史 xhard 键之后）必须与原值快照逐键相同——原三档可见的
       任何偏差都必须是显式的新用户决策，不能混在「仅随机外移」里悄悄生效。
-    * **新值部分**（V4）：只允许偏离本环境源码里**已申报**的 ``xhard`` 条目（组合覆盖扫描等
-      用它收窄 xhard 范围），不许新增申报外的 ``xhard`` 键。旧快照（v2/v3 导出时还没有
-      ``xhard`` 条目）去掉 ``xhard`` 后与原值相同，照旧放行。
+    * **新值部分**：只允许偏离本环境源码里已申报的新值档条目，不许新增申报外的键。
     """
     left = json.dumps(_strip_xhard(decision), sort_keys=True, ensure_ascii=False)
     right = json.dumps(_strip_xhard(decision_default), sort_keys=True, ensure_ascii=False)
@@ -110,9 +142,11 @@ def assert_native_decision(decision, decision_default, task):
             f"{task}: 原值对拍模式下 decision 必须等于原值快照；收到的与原值不同"
         )
     shape = _xhard_shape(decision)
-    if shape and shape != _xhard_shape(decision_default):
-        # 键结构必须与源码申报的逐一相同（值可以不同）；完全没有 xhard 条目的旧快照除外
-        declared = _xhard_shape(decision_default)
+    # V6：按档核对——快照里出现的每个新值档，其键结构必须与源码申报逐一相同（值可以不同）；
+    # 快照里完全没出现的档不核对；仅对已有 xhard4 的 V6 快照由 fill_missing_newvalue 补缺档。
+    present = {tier for tier, _path in shape}
+    declared = {item for item in _xhard_shape(decision_default) if item[0] in present}
+    if shape and shape != declared:
         raise SamplingConfigError(
             f"{task}: decision 的 xhard 条目与源码申报不符："
             f"多出 {sorted(shape - declared)}，缺少 {sorted(declared - shape)}"

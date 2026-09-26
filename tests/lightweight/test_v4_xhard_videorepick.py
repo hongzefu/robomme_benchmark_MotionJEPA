@@ -211,5 +211,40 @@ def test_只有xhard换用专用等待函数():
     tree = ast.parse(SOURCE)
     init = next(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "_initialize_episode")
     text = ast.unparse(init)
-    assert "hold_fn = _solve_hold_obj_xhard if self.difficulty == 'xhard' else solve_hold_obj" in text
+    # V6：族判断（新值族四档都换用专用等待函数）
+    assert "hold_fn = _solve_hold_obj_xhard if is_newvalue_difficulty(self.difficulty) else solve_hold_obj" in text
     assert text.count("hold_fn(env, planner") == 2
+
+
+# ── V6（计划 2.5）：xhard1/2/3 新档数值与族判断 ──────────────────────────────
+
+
+@pytest.mark.parametrize("tier, cube, swap, repeats", [
+    ("xhard1", 4, (3, 5), (2, 4)),   # pick [2,3] ⇒ 半开 [2,4)
+    ("xhard2", 5, (5, 7), (3, 5)),   # pick [3,4] ⇒ 半开 [3,5)
+    ("xhard3", 6, (6, 9), (4, 6)),   # pick [4,5] ⇒ 半开 [4,6)
+    ("xhard", 6, (8, 12), (4, 7)),   # xhard 原值不变
+])
+def test_v6_新值族各档数值(tier, cube, swap, repeats):
+    decision = MODULE._native_decision(CLS)
+    assert decision["swap"][tier] == {"swap_min": swap[0], "swap_max": swap[1]}
+    assert decision["num_repeats_range"][tier] == {"low": repeats[0], "high_exclusive": repeats[1]}
+    assert decision[tier]["layout"]["cube_count"] == cube
+    # 其余字段沿用 xhard
+    for key in ("mode", "region_center", "region_half_size", "min_center_dist_m"):
+        assert decision[tier]["layout"][key] == decision["xhard"]["layout"][key]
+    assert decision[tier]["swap_plan"] == decision["xhard"]["swap_plan"]
+    assert decision[tier]["block_color"] == decision["xhard"]["block_color"]
+
+
+def test_v6_configs_七档且原四档键序不变():
+    assert list(CLS.configs) == ["hard", "easy", "medium", "xhard", "xhard1", "xhard2", "xhard3"]
+    decision = MODULE._native_decision(CLS)
+    assert [k for k in decision if k.startswith("xhard")] == ["xhard", "xhard1", "xhard2", "xhard3"]
+
+
+def test_v6_load_scene_族判断在hard分支之前():
+    scene = ast.unparse(next(n for n in ast.walk(ast.parse(SOURCE))
+                             if isinstance(n, ast.FunctionDef) and n.name == "_load_scene"))
+    # 族判断紧挨在 hard 分支之前（同一条 if/elif 链），新档不会误入 hard 聚簇
+    assert "if is_newvalue_difficulty(self.difficulty):\n            self._load_cubes_xhard(avoid)\n        elif self.difficulty == 'hard':" in scene

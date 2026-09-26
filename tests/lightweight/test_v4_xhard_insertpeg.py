@@ -57,7 +57,7 @@ V3_DECISION = {
 def test_configs_three_tiers_identical_to_native() -> None:
     for tier in ("easy", "medium", "hard"):
         assert CLS.configs[tier] == V3_DECISION
-    x = CLS.configs["xhard"]
+    x = CLS.configs["xhard4"]
     assert x["peg_count"] == 4 and len(x["peg_offsets"]) == 4
     assert x["peg_yaw_range"] == {"half_span_deg": 180}
     # V5（计划 2.8 / L28）：V4 的近目标干扰杆整键删除，换成两条轮廓间隔与 x 上界
@@ -67,12 +67,12 @@ def test_configs_three_tiers_identical_to_native() -> None:
 
 def test_decision_visible_part_unchanged_and_guard() -> None:
     decision, _native = insertpeg_mod.native_blocks(CLS)
-    visible = {k: v for k, v in decision.items() if k != "xhard"}
+    visible = {k: v for k, v in decision.items() if k != "xhard4"}
     assert visible == V3_DECISION
-    assert decision["xhard"] == CLS.configs["xhard"]
+    assert decision["xhard4"] == CLS.configs["xhard4"]
     # 守卫：xhard 子键取新值放行
     narrowed = copy.deepcopy(decision)
-    narrowed["xhard"]["peg_min_pair_gap_m"] = 0.035
+    narrowed["xhard4"]["peg_min_pair_gap_m"] = 0.035
     assert_native_decision(narrowed, decision, "InsertPeg")
     # 守卫：原值部分偏离拒绝
     bad = copy.deepcopy(decision)
@@ -81,7 +81,7 @@ def test_decision_visible_part_unchanged_and_guard() -> None:
         assert_native_decision(bad, decision, "InsertPeg")
     # 守卫：xhard 里新增申报外的键拒绝
     extra = copy.deepcopy(decision)
-    extra["xhard"]["surprise"] = 1
+    extra["xhard4"]["surprise"] = 1
     with pytest.raises(SamplingConfigError):
         assert_native_decision(extra, decision, "InsertPeg")
 
@@ -237,3 +237,12 @@ def test_vqa_insertpeg_available_scales_with_peg_count() -> None:
                               obj_flag=1, insert_target=None)
         options = vqa_options._options_insertpeg(env, None, lambda: None, env)
         assert len(options[0]["available"]) == 2 * n
+
+
+@pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3"])
+def test_v6_no_tier_rejects_xhard123(tier) -> None:
+    """V6（计划 2.13 / M2）：本环境原版无梯度、不加档，configs 仍只有 4 档；
+    传入 xhard1/2/3 在 __init__ 里（super().__init__ 之前、不起 sapien 场景）明确抛 ValueError。"""
+    assert set(CLS.configs) == {"easy", "medium", "hard", "xhard4"}
+    with pytest.raises(ValueError, match="不加档"):
+        CLS(difficulty=tier)

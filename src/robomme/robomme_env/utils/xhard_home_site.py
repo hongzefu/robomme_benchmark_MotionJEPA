@@ -21,8 +21,15 @@ from .SceneGenerationError import SceneGenerationError
 
 # 原三档的取值：只演示 1 个方块，演示完放到随机 goal_site（z 压到桌面以下隐藏）
 NATIVE_DEMO_PLAN = (1, "native_random_goal_site")
-# xhard 唯一支持的返回策略：每个演示方块放回自己的初始位置
+# xhard 使用的返回策略：每个演示方块放回自己的初始位置
 RETURN_TO_ORIGIN = "return_to_origin"
+# V6（计划 2.10）：新值族的演示放置标尺还要用到两种策略——
+# 不放回（no_return：演示完不建落点、方块留在最后一个目标台）与只放回末块（return_last_only）。
+# TODO(V6 S2)：``return_last_only`` 的真正执行语义由另一路实现；本步只放行策略名，环境侧尚未使用
+# （VPB xhard3 暂以 (k=2, no_return) 占位）。
+NO_RETURN = "no_return"
+RETURN_LAST_ONLY = "return_last_only"
+NEWVALUE_RETURN_POLICIES = (RETURN_TO_ORIGIN, NO_RETURN, RETURN_LAST_ONLY)
 
 # 落点 actor 的尺寸只影响（被隐藏的）可视外观，不参与任何碰撞或判定：
 # is_obj_dropped_onto 只看水平距离 ≤ 0.05，solve_putonto_whenhold 只取 pose.p。
@@ -33,14 +40,16 @@ def validate_demo_plan(count, policy, difficulty: str, n_cubes: int) -> tuple[in
     """核对演示方块数与返回策略；非法组合直接抛 ``SceneGenerationError``（不静默截断）。"""
     count = int(count)
     policy = str(policy)
-    if difficulty != "xhard":
+    from .difficulty import is_newvalue_difficulty
+
+    if not is_newvalue_difficulty(difficulty):  # V6 族判断：新值族档都走下面的新值校验
         if (count, policy) != NATIVE_DEMO_PLAN:
             raise SceneGenerationError(
                 f"原三档只支持 demo_object_count=1 + native_random_goal_site，收到 {(count, policy)}"
             )
         return count, policy
-    if policy != RETURN_TO_ORIGIN:
-        raise SceneGenerationError(f"xhard 只支持 demo_return_policy={RETURN_TO_ORIGIN!r}，收到 {policy!r}")
+    if policy not in NEWVALUE_RETURN_POLICIES:
+        raise SceneGenerationError(f"新值族只支持 demo_return_policy ∈ {NEWVALUE_RETURN_POLICIES!r}，收到 {policy!r}")
     if not 1 <= count <= n_cubes:
         raise SceneGenerationError(
             f"xhard demo_object_count={count} 超出场上方块数 {n_cubes}（请求数 ≠ 可演示数）"

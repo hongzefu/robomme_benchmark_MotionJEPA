@@ -35,10 +35,10 @@ from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenera
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import is_newvalue_difficulty, normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, split_sampling_config
-from .utils.xhard_home_site import build_home_sites, home_pose_record, validate_demo_plan
+from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
+from .utils.xhard_home_site import NO_RETURN, build_home_sites, home_pose_record, validate_demo_plan
 from .utils.xhard import cube_obb2d_exact
 
 from ..logging_utils import logger
@@ -109,6 +109,25 @@ def native_blocks(cls):
 # xhard 值放在名为 xhard 的子键下（守卫去掉 xhard 后原三档可见部分与原值逐字相同）。
 XHARD_DEMO_DECISION = {"demo_object_count": 2, "demo_return_policy": "return_to_origin"}
 
+# V6（计划 2.10）：新值族四档的演示决策档位表，键结构与 xhard 完全相同，只按档取值。
+# 「不放回」（no_return）= 演示完方块留在它最后访问的目标台，不追加放回原位那一对 pick+drop。
+NEWVALUE_DEMO_DECISION = {
+    "xhard1": {"demo_object_count": 1, "demo_return_policy": "return_to_origin"},
+    "xhard2": {"demo_object_count": 2, "demo_return_policy": NO_RETURN},
+    "xhard3": {"demo_object_count": 2, "demo_return_policy": NO_RETURN},
+    "xhard": XHARD_DEMO_DECISION,
+}
+
+# V6（计划 2.10）：每个演示方块访问台数 v 的闭区间，按档取（原三档与 xhard 的 count_sampler 为
+# torch.randint(2, len(targets) + 1)，targets=4 时即 [2,4]）。放在源码常量而非 decision：
+# 往 xhard 子树加键会让 V5 xhard 快照过不了按档键结构核对；xhard 取 [2,4] 时抽样调用与改动前逐位相同。
+NEWVALUE_VISIT_COUNT_RANGE = {
+    "xhard1": (2, 4),
+    "xhard2": (2, 3),
+    "xhard3": (2, 4),
+    "xhard": (2, 4),
+}
+
 
 def _native_decision(cls):
     """按方案第二节 2.12 切出 decision 块（原值阶段等于原值）。"""
@@ -119,8 +138,9 @@ def _native_decision(cls):
         "demo_return_policy": "native_random_goal_site",
         "targets": {difficulty: cfg["targets"] for difficulty, cfg in cls.configs.items()},
         "swap": {difficulty: cfg["swap"] for difficulty, cfg in cls.configs.items()},
-        # 消费点见 _load_scene_xhard_tail
+        # 消费点见 _load_scene_xhard_tail；xhard 原值不变，V6 追加 xhard1/2/3 同结构子树
         "xhard": dict(XHARD_DEMO_DECISION),
+        **{tier: dict(NEWVALUE_DEMO_DECISION[tier]) for tier in ("xhard1", "xhard2", "xhard3")},
     }
 
 
@@ -129,6 +149,10 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    fill_missing_newvalue(decision, decision_default)
+    # V6：native.parameters.color 按档取；V5 快照只有四档，缺的新值族档从源码补齐（已有的不动）
+    if isinstance(native.get("parameters", {}).get("color"), dict):
+        fill_missing_newvalue(native["parameters"]["color"], native_default["parameters"]["color"])
     native["decision"] = decision
     return native
 
@@ -179,12 +203,33 @@ class VideoPlaceOrder(BaseEnv):
         "targets":4
     }
 
+    # V6 新值族 xhard1/2/3（计划 2.10）：color 3、targets 4、swap True 与 hard/xhard 同；
+    # 档间差别在 decision 的演示决策子树（NEWVALUE_DEMO_DECISION）与访问台数区间（NEWVALUE_VISIT_COUNT_RANGE）。
+    config_xhard1 = {
+        'color': 3,
+        "swap":True,
+        "targets":4
+    }
+    config_xhard2 = {
+        'color': 3,
+        "swap":True,
+        "targets":4
+    }
+    config_xhard3 = {
+        'color': 3,
+        "swap":True,
+        "targets":4
+    }
+
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
         'xhard': config_xhard,
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
 
 
@@ -276,7 +321,7 @@ class VideoPlaceOrder(BaseEnv):
 
     def _load_scene(self, options: dict):
         # V4 H2：xhard 用真正的异常类（失败归为可重试的任务性失败）；原三档仍是被遮蔽的原名字，行为逐字不变
-        _SceneGenError = _RealSceneGenerationError if self.difficulty == "xhard" else SceneGenerationError
+        _SceneGenError = _RealSceneGenerationError if is_newvalue_difficulty(self.difficulty) else SceneGenerationError
 
         try:
             self.table_scene = TableSceneBuilder(
@@ -380,7 +425,7 @@ class VideoPlaceOrder(BaseEnv):
                         cube_name = f"cube_{group['name']}_{cube_idx}"
                         group["name_list"].append(cube_name)
                         setattr(self, cube_name, cube)
-                        if self.difficulty == "xhard":
+                        if is_newvalue_difficulty(self.difficulty):
                             # V5（L2 b，计划 2.16）：已放方块以精确 2D 障碍进 avoid，后续方块与目标台
                             # 两类 spawn 调用都据此避让。actor 路径经 _trimesh_box_to_obb2d 约 2/3 退化成
                             # 线段，min_gap 在其法向失效；取 initial_pose（不依赖仿真已初始化），不抽随机数。
@@ -418,7 +463,7 @@ class VideoPlaceOrder(BaseEnv):
                     setattr(self, f"target_{i}", target)
                     avoid.append(target)
 
-            if self.difficulty == "xhard":
+            if is_newvalue_difficulty(self.difficulty):
                 # V4 xhard：目标选择及其后的全部抽样另走一条路径；原三档下面的代码一行不改
                 self._load_scene_xhard_tail()
                 return
@@ -515,12 +560,12 @@ class VideoPlaceOrder(BaseEnv):
     # ------------------------------------------------------------------
     def _xhard_spec_kwargs(self, spec_path):
         """xhard 才给 spawn_* 传记录器；原三档返回空字典（调用形态与原来逐字等价）。"""
-        if self.difficulty != "xhard":
+        if not is_newvalue_difficulty(self.difficulty):
             return {}
         return {"recorder": self._spec, "spec_path": spec_path}
 
     @staticmethod
-    def xhard_button_task_index(visit_counts, button_after_visit):
+    def xhard_button_task_index(visit_counts, button_after_visit, with_home=True):
         """按钮插在演示序列里的下标（2 对象推广，取代原 ``k*2+2``）。
 
         xhard 演示序列 = 按对象依次展开 ``[该对象的各次访问 pick+drop …, 放回原位 pick+drop]``，
@@ -531,6 +576,7 @@ class VideoPlaceOrder(BaseEnv):
 
         某对象的最后一次访问恰好是插点时，按钮排在它放回原位**之前**。
         ``visit_counts=[n]`` 时退化为原公式 ``k*2+2``。
+        ``with_home=False``（V6 不放回）：序列里没有「放回原位」单元，下标即 ``2 × (button_after_visit + 1)``。
         """
         placed = int(button_after_visit) + 1
         if not 1 <= placed <= sum(visit_counts):
@@ -539,7 +585,7 @@ class VideoPlaceOrder(BaseEnv):
         cumulative = 0
         for count in visit_counts:
             cumulative += int(count)
-            if cumulative < placed:
+            if cumulative < placed and with_home:
                 homes_before += 1
         return 2 * (placed + homes_before)
 
@@ -556,8 +602,8 @@ class VideoPlaceOrder(BaseEnv):
         落点 actor 不抽随机数，放在所有 spawn 之后。
         """
         decision_cfg = self._sampling["decision"]
-        xhard_cfg = decision_cfg["xhard"]
-        demo_count, _ = validate_demo_plan(
+        xhard_cfg = decision_cfg[self.difficulty]  # V6：按本局档位取演示决策子树
+        demo_count, return_policy = validate_demo_plan(
             xhard_cfg["demo_object_count"], xhard_cfg["demo_return_policy"],
             self.difficulty, len(self.all_cubes),
         )
@@ -567,7 +613,7 @@ class VideoPlaceOrder(BaseEnv):
         demo_ids = self._spec.value(
             "objects.demo_ids",
             torch.randperm(len(self.all_cubes), generator=self.generator)[:demo_count].tolist(),
-            decision_key="xhard.demo_object_count",
+            decision_key=f"{self.difficulty}.demo_object_count",
         )
         demo_ids = [int(i) for i in demo_ids]
         if len(demo_ids) != demo_count:
@@ -581,7 +627,7 @@ class VideoPlaceOrder(BaseEnv):
             perm = self._spec.value(
                 "objects.swap_pair_ids",
                 torch.randperm(len(self.targets), generator=self.generator).tolist(),
-                decision_key="swap.xhard",
+                decision_key=f"swap.{self.difficulty}",
             )
             swap_idx_a, swap_idx_b = int(perm[0]), int(perm[1])
             self.swap_target_a = self.targets[swap_idx_a]
@@ -593,24 +639,50 @@ class VideoPlaceOrder(BaseEnv):
         # 每个演示方块各自按原规则抽访问数与访问顺序
         self.demo_visit_targets = []
         visit_counts = []
+        visit_lo, visit_hi = NEWVALUE_VISIT_COUNT_RANGE[self.difficulty]
+        occupied = []  # V6 不放回：前面方块最终停留的目标台下标，后面方块不再访问
         for k in range(demo_count):
-            count = int(self._spec.value(
-                f"objects.num_targets_by_object.{k}",
-                torch.randint(2, len(self.targets) + 1, (1,), generator=self.generator).item(),
-                decision_key="xhard.demo_object_count",
-            ))
-            ids = self._spec.value(
-                f"objects.visit_ids_by_object.{k}",
-                torch.randperm(len(self.targets), generator=self.generator)[:count].tolist(),
-                decision_key="xhard.demo_object_count",
-            )
+            if return_policy == NO_RETURN and occupied:
+                # V6 不放回：可访问台 = 未被前面方块占着的台；访问数上界截到可访问台数。
+                # 抽样形态与放回路径同构（randint 抽数 → randperm 抽序），只是在可访问台里抽后映射回原下标。
+                free_ids = [i for i in range(len(self.targets)) if i not in occupied]
+                hi = min(visit_hi, len(free_ids))
+                if hi < visit_lo:
+                    raise _RealSceneGenerationError(
+                        f"不放回时方块 {k} 可访问台只剩 {len(free_ids)} 个，不足下界 {visit_lo}"
+                    )
+                count = int(self._spec.value(
+                    f"objects.num_targets_by_object.{k}",
+                    torch.randint(visit_lo, hi + 1, (1,), generator=self.generator).item(),
+                    decision_key=f"{self.difficulty}.demo_object_count",
+                ))
+                ids = self._spec.value(
+                    f"objects.visit_ids_by_object.{k}",
+                    [free_ids[j] for j in torch.randperm(len(free_ids), generator=self.generator)[:count].tolist()],
+                    decision_key=f"{self.difficulty}.demo_object_count",
+                )
+            else:
+                # xhard（[2,4]、targets=4）时与改动前的 randint(2, len(targets) + 1) 逐位相同
+                count = int(self._spec.value(
+                    f"objects.num_targets_by_object.{k}",
+                    torch.randint(visit_lo, min(visit_hi, len(self.targets)) + 1, (1,),
+                                  generator=self.generator).item(),
+                    decision_key=f"{self.difficulty}.demo_object_count",
+                ))
+                ids = self._spec.value(
+                    f"objects.visit_ids_by_object.{k}",
+                    torch.randperm(len(self.targets), generator=self.generator)[:count].tolist(),
+                    decision_key=f"{self.difficulty}.demo_object_count",
+                )
             self.demo_visit_targets.append([self.targets[int(i)] for i in ids])
             visit_counts.append(len(ids))
+            if return_policy == NO_RETURN:
+                occupied.append(int(ids[-1]))
 
         answer_index = int(self._spec.value(
             "objects.answer_demo_index",
             torch.randint(0, demo_count, (1,), generator=self.generator).item(),
-            decision_key="xhard.demo_object_count",
+            decision_key=f"{self.difficulty}.demo_object_count",
         ))
         self.target_cube = self.demo_cubes[answer_index]
         for color_name, group in (("red", self.red_cubes), ("blue", self.blue_cubes), ("green", self.green_cubes)):
@@ -622,7 +694,7 @@ class VideoPlaceOrder(BaseEnv):
         self.which_in_subset = int(self._spec.value(
             "objects.which_in_subset",
             torch.randint(1, len(self.which_targets_to_pick) + 1, (1,), generator=self.generator).item(),
-            decision_key="xhard.demo_object_count",
+            decision_key=f"{self.difficulty}.demo_object_count",
         ))
         self.target_target = self.which_targets_to_pick[self.which_in_subset - 1]
         self.targets_not_true = [t for t in self.targets if t != self.target_target]
@@ -631,22 +703,32 @@ class VideoPlaceOrder(BaseEnv):
         button_after_visit = int(self._spec.value(
             "objects.button_after_visit_index",
             torch.randint(0, sum(visit_counts), (1,), generator=self.generator).item(),
-            decision_key="xhard.demo_object_count",
+            decision_key=f"{self.difficulty}.demo_object_count",
         ))
-        self.button_task_index = self.xhard_button_task_index(visit_counts, button_after_visit)
+        self.button_task_index = self.xhard_button_task_index(
+            visit_counts, button_after_visit, with_home=(return_policy != NO_RETURN)
+        )
         self._spec.record("actions.button_task_index", self.button_task_index)
 
         # 放回原位的落点：所有 spawn 之后、按方块初始位姿直接调 target builder（不用 spawn_random_target）
-        self.xhard_home_sites, self._xhard_home_checks = build_home_sites(self, self.demo_cubes, self.generator)
-        self._spec.record("actions.return_pose_by_object_id", home_pose_record(self.demo_cubes, self.xhard_home_sites))
+        self._xhard_return_policy = return_policy
+        if return_policy == NO_RETURN:
+            # V6 不放回：演示完方块留在最后访问的台，不建落点、不记放回位姿（builder 本就不抽随机数）
+            self.xhard_home_sites, self._xhard_home_checks = [], {"pose_equal": [], "rng_state_equal": True}
+        else:
+            self.xhard_home_sites, self._xhard_home_checks = build_home_sites(self, self.demo_cubes, self.generator)
+            self._spec.record("actions.return_pose_by_object_id", home_pose_record(self.demo_cubes, self.xhard_home_sites))
 
     def _build_xhard_task_list(self):
         """xhard 的任务表（每次 _initialize_episode 重建，与原三档同一时机）。"""
         pair_tasks = []
-        for cube, visits, home in zip(self.demo_cubes, self.demo_visit_targets, self.xhard_home_sites):
+        # V6 不放回时没有落点，每个方块只展开访问段（zip 遇空列表会整段吞掉，所以按下标取）
+        homes = self.xhard_home_sites
+        for idx, (cube, visits) in enumerate(zip(self.demo_cubes, self.demo_visit_targets)):
             for target in visits:
                 pair_tasks.extend(self._xhard_pick_place(cube, target))
-            pair_tasks.extend(self._xhard_pick_place(cube, home, home=True))
+            if homes:
+                pair_tasks.extend(self._xhard_pick_place(cube, homes[idx], home=True))
 
         button_task = {
             "func": (lambda: is_button_pressed(self, obj=self.button)),
@@ -767,7 +849,7 @@ class VideoPlaceOrder(BaseEnv):
             self.goal_site.set_pose(sapien.Pose(p=pose_p,q=pose_q))
             #print(self.goal_site.pose.p)
 
-            if self.difficulty == "xhard":
+            if is_newvalue_difficulty(self.difficulty):
                 # V4 xhard：演示模板按对象循环重写；原三档下面的内联序列一行不改
                 self._build_xhard_task_list()
                 return

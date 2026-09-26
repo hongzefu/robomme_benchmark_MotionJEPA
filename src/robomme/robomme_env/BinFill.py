@@ -31,11 +31,12 @@ from .utils.xhard import cube_obb2d_exact
 from .utils.episode_spec import EpisodeSpecError
 from .utils import reset_panda
 from .utils import subgoal_language
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import normalize_robomme_difficulty, is_newvalue_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import (
     SamplingConfigError,
     assert_native_decision,
+    fill_missing_newvalue,
     split_sampling_config,
 )
 from .utils.SceneGenerationError import SceneGenerationError
@@ -76,10 +77,10 @@ def _native_decision(cls):
             "put_in_numbers": list(cfg["put_in_numbers"]),
         }
         if "layout_mode" in cfg:
-            # 只有 config_xhard 带这个键；原三档的字典里没有，输出与改动前逐字相同。
+            # 只有 config_xhard4 带这个键；原三档的字典里没有，输出与改动前逐字相同。
             entry["layout_mode"] = cfg["layout_mode"]
         if "color_mix" in cfg:
-            # V5（L41）：只有 config_xhard 带同色成团上限；原三档没有这个键，输出不变。
+            # V5（L41）：只有 config_xhard4 带同色成团上限；原三档没有这个键，输出不变。
             entry["color_mix"] = dict(cfg["color_mix"])
         return entry
 
@@ -236,19 +237,26 @@ def _resolve_sampling_config(cls, override):
     decision, native = split_sampling_config(override, native_default, decision_default)
     # 第一轮只做原值导出／消费：decision 必须逐键等于原值，否则就是没申报的新用户决策。
     assert_native_decision(decision, decision_default, "BinFill")
+    # V6：旧快照（V5 没有 xhard1/2/3 子树）从源码申报补齐缺的新值档，已有的不动
+    fill_missing_newvalue(decision, decision_default)
     if decision.get("layout_mode") != "native_dynamic":
         raise SamplingConfigError("BinFill: 本轮只支持原布局模式 native_dynamic")
     # V4：硬守卫只对 xhard 放开，且只放行已实现的模式（clutter）；原三档仍只认顶层 native_dynamic。
-    xhard_decision = decision.get("configs", {}).get("xhard")
-    if xhard_decision is not None and xhard_decision.get("layout_mode") not in XHARD_LAYOUT_DYNAMIC:
-        raise SamplingConfigError(
-            f"BinFill: xhard 的 layout_mode 只支持 {sorted(XHARD_LAYOUT_DYNAMIC)}，"
-            f"收到 {xhard_decision.get('layout_mode')!r}"
-        )
-    if xhard_decision is not None:
-        # V5（L41）：同色成团上限的取值校验；原三档没有 xhard 条目，不进这里。
+    # V6：新值族四档（xhard1/2/3/xhard）逐档做同样的校验；原三档没有新值条目，不进这里。
+    for tier_name, xhard_decision in decision.get("configs", {}).items():
+        if not is_newvalue_difficulty(tier_name):
+            continue
+        if xhard_decision.get("layout_mode") not in XHARD_LAYOUT_DYNAMIC:
+            raise SamplingConfigError(
+                f"BinFill: {tier_name} 的 layout_mode 只支持 {sorted(XHARD_LAYOUT_DYNAMIC)}，"
+                f"收到 {xhard_decision.get('layout_mode')!r}"
+            )
+        # V5（L41）：同色成团上限的取值校验
         _validate_color_mix(xhard_decision.get("color_mix"))
     native["parameters"].setdefault("put_in_color", native_default["parameters"]["put_in_color"])
+    # V6：旧快照的 native.put_in_color 同样缺新值档（V5 只有 xhard），按源码补齐，否则下面合并时 KeyError；
+    # 只补缺的新值档键，原三档与已有档的值不动。
+    fill_missing_newvalue(native["parameters"]["put_in_color"], native_default["parameters"]["put_in_color"])
     # 消费侧仍按难度读一份合并后的配置：decision 出色数／生成数／投入数，
     # native 出投入颜色数范围，合并结果与改动前的 cls.configs[difficulty] 逐键相同。
     native["parameters"]["configs"] = {
@@ -362,11 +370,39 @@ class BinFill(BaseEnv):
     # 方块区域与间距不动（B1）。put_in 单色最多 7，序数表已扩到 20（E2）。
     # V5（计划 2.12，L41）：color_mix＝同色成团上限——最大同色连通团（中心距 ≤ link_m 相连）超过
     # max_component 块时，在末尾追加 randperm 重排颜色，最多 max_redraws 次，失败取最优。
-    config_xhard = {
+    config_xhard4 = {
     'color': 3,
     'spawn_cubes':[12,12],
     "put_in_color":[2,3],
-    "put_in_numbers":[5,7],
+    "put_in_numbers":[9,9],
+    "layout_mode": "clutter",
+    "color_mix": {"max_component": 3, "link_m": 0.09, "max_redraws": 64},
+    }
+
+    # V6：四档沿用杂乱布局、精确 OBB 与同色团限制，只按档设置投入总数 6/7/8/9；总块固定 12。
+    config_xhard1 = {
+    'color': 3,
+    'spawn_cubes':[12,12],
+    "put_in_color":[2,3],
+    "put_in_numbers":[6,6],
+    "layout_mode": "clutter",
+    "color_mix": {"max_component": 3, "link_m": 0.09, "max_redraws": 64},
+    }
+
+    config_xhard2 = {
+    'color': 3,
+    'spawn_cubes':[12,12],
+    "put_in_color":[2,3],
+    "put_in_numbers":[7,7],
+    "layout_mode": "clutter",
+    "color_mix": {"max_component": 3, "link_m": 0.09, "max_redraws": 64},
+    }
+
+    config_xhard3 = {
+    'color': 3,
+    'spawn_cubes':[12,12],
+    "put_in_color":[2,3],
+    "put_in_numbers":[8,8],
     "layout_mode": "clutter",
     "color_mix": {"max_component": 3, "link_m": 0.09, "max_redraws": 64},
     }
@@ -376,7 +412,10 @@ class BinFill(BaseEnv):
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard,
+        'xhard4': config_xhard4,
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
@@ -442,15 +481,15 @@ class BinFill(BaseEnv):
         self.generator = torch.Generator()
         self.generator.manual_seed(seed)
         dynamic_cfg = self._sampling["parameters"]["dynamic"]
-        if self._episode_spec is None and self.difficulty == "xhard":
+        if self._episode_spec is None and is_newvalue_difficulty(self.difficulty):
             # V4 xhard（D6）：摆放模式由 decision.configs.xhard.layout_mode 决定，clutter ⇒ dynamic 固定
             # False。**不抽**原来那次 randint：xhard 是新档，其自身随机流整体前移一位可接受；
             # 原三档走下面的 else 分支，随机调用序列逐字不变（N5/H2）。
-            layout_mode = self._sampling["parameters"]["configs"]["xhard"]["layout_mode"]
+            layout_mode = self._sampling["parameters"]["configs"][self.difficulty]["layout_mode"]
             self._spec.record("layout.mode", layout_mode)
             self.dynamic = bool(self._spec.value(
                 "layout.dynamic", XHARD_LAYOUT_DYNAMIC[layout_mode],
-                decision_key="configs.xhard.layout_mode",
+                decision_key=f"configs.{self.difficulty}.layout_mode",
             ))
             self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
         elif self._episode_spec is None:
@@ -713,8 +752,8 @@ class BinFill(BaseEnv):
         cubes_cfg = self._sampling["positions"]["cubes"]
         # V4 xhard：min_gap 从调用点字面量外提到 positions.cubes.min_gap_value（值同为 0.02，B1 不动）；
         # 原三档仍用调用点原来的 self.cube_half_size，逐字不变。
-        min_gap = float(cubes_cfg["min_gap_value"]) if self.difficulty == "xhard" else self.cube_half_size
-        if spec is None and self.difficulty == "xhard":
+        min_gap = float(cubes_cfg["min_gap_value"]) if is_newvalue_difficulty(self.difficulty) else self.cube_half_size
+        if spec is None and is_newvalue_difficulty(self.difficulty):
             # V5 xhard（计划 2.12）：槽位 → 配色 → 建 actor 三段，已放方块以精确 OBB 作障碍。
             # 原三档与旧注入通道（spec 非 None）走下面 else 里的原循环，逐字不变。
             self._spawn_cubes_xhard(cube_tasks, avoid, cubes_cfg, min_gap, generator)
@@ -740,7 +779,7 @@ class BinFill(BaseEnv):
 
         logger.debug(f"Generated {len(self.all_cubes)} cubes total (red: {len(self.red_cubes)}, blue: {len(self.blue_cubes)}, green: {len(self.green_cubes)})")
 
-        if self.difficulty == "xhard":
+        if is_newvalue_difficulty(self.difficulty):
             # V4 D1（只在 xhard 修，H2）：原三档上面的 except RuntimeError 只记日志、不补生成，
             # 实际块数可能静默少于请求数（2.2④）。xhard 记「请求数 vs 实际数」，不等直接判本局失败。
             requested, actual = len(cube_tasks), len(self.all_cubes)
@@ -848,7 +887,7 @@ class BinFill(BaseEnv):
             slots.append((x, y, yaw))
 
         # ── 第二段：配色（位置不动，只换颜色标签）──
-        mix = self._sampling["parameters"]["configs"]["xhard"]["color_mix"]
+        mix = self._sampling["parameters"]["configs"][self.difficulty]["color_mix"]
         max_component = int(mix["max_component"])
         link = float(mix["link_m"])
         max_redraws = int(mix["max_redraws"])
@@ -938,7 +977,7 @@ class BinFill(BaseEnv):
                 color_name, cube_collection, target_number = color_task_definitions[color_idx]
                 if target_number <= 0:
                     continue
-                if self.difficulty == "xhard" and len(cube_collection) < target_number:
+                if is_newvalue_difficulty(self.difficulty) and len(cube_collection) < target_number:
                     # V4 D1：原三档这里缺块会在 cube_collection[i] 处 IndexError；xhard 改为明确的场景失败
                     raise SceneGenerationError(
                         f"BinFill xhard: {color_name} 只有 {len(cube_collection)} 块，目标要投 {target_number} 块"

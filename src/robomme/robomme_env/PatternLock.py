@@ -34,10 +34,10 @@ from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenera
 from .utils.subgoal_evaluate_func import *
 from .utils.object_generation import *
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty
+from .utils.difficulty import NEWVALUE_DIFFICULTIES, is_newvalue_difficulty, normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.episode_spec import EpisodeSpecError as _EpisodeSpecError
-from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 from ..logging_utils import logger
 
 
@@ -49,7 +49,8 @@ def _scene_gen_error(difficulty):
     用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
     只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
     """
-    return _RealSceneGenerationError if difficulty == "xhard" else SceneGenerationError
+    # V6 口径 11：新值族（xhard1/2/3/xhard）都走真异常类，原三档不变
+    return _RealSceneGenerationError if is_newvalue_difficulty(difficulty) else SceneGenerationError
 
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
@@ -95,6 +96,15 @@ XHARD_DECISION = {
     "path_search_max_attempts": 20000,
 }
 
+# V6（计划 2.11）：新值族档位表。xhard1/2/3 键结构与 xhard 完全相同；计划未给出新档的搜索预算
+# 以外的差异——预算一律沿用 xhard 的 20000，耗尽同样抛真 SceneGenerationError。
+NEWVALUE_DECISION = {
+    "xhard1": {"path_search_max_attempts": 20000},
+    "xhard2": {"path_search_max_attempts": 20000},
+    "xhard3": {"path_search_max_attempts": 20000},
+    "xhard4": XHARD_DECISION,
+}
+
 
 def native_blocks(cls):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
@@ -111,7 +121,9 @@ def _native_decision(cls):
         "grid": {difficulty: cfg["grid"] for difficulty, cfg in cls.configs.items()},
         "path_length_range": {difficulty: list(cfg["length"]) for difficulty, cfg in cls.configs.items()},
         # V5 xhard 专属（计划 2.10）：键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
-        "xhard": copy.deepcopy(XHARD_DECISION),
+        "xhard4": copy.deepcopy(NEWVALUE_DECISION["xhard4"]),
+        # V6：追加 xhard1/2/3 三棵同结构子树（xhard 保持首位与原值不变）
+        **{d: copy.deepcopy(NEWVALUE_DECISION[d]) for d in NEWVALUE_DIFFICULTIES if d != NEWVALUE_DIFFICULTIES[-1]},
     }
 
 
@@ -120,6 +132,10 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
+    # V6：V5 快照（已有顶层 xhard 子树）缺 xhard1/2/3 时从源码补齐；更早的快照不补，
+    # 保持 V5「V4 及更早快照在新值档上直接报错、不静默取源码新值」的口径 13。
+    if NEWVALUE_DIFFICULTIES[-1] in decision:
+        fill_missing_newvalue(decision, decision_default)
     native["decision"] = decision
     return native
 
@@ -159,9 +175,23 @@ class PatternLock(BaseEnv):
     # V5（计划 2.10，L35/L36）：节点数固定 25（5×5 不重访路径的上限）。规划期探针 P3 发现按 [24,25]
     # 搜到第一条在区间内的路径就停时 86% 的局只有 24 节点，故实施方收成 [25,25]；配合 xhard 搜索预算
     # 20000（decision.xhard.path_search_max_attempts）与耗尽抛真 SceneGenerationError，杜绝静默用错长路径。
-    config_xhard = {
+    config_xhard4 = {
         "grid": 5,
-        "length": [25, 25]
+        "length": [21, 25]
+    }
+
+    # V6（计划 2.11）：hard 与 xhard 之间插入三档，布局、搜法、预算与耗尽抛错全部沿用 xhard，只改节点数
+    config_xhard1 = {
+        "grid": 5,
+        "length": [9, 12]
+    }
+    config_xhard2 = {
+        "grid": 5,
+        "length": [13, 16]
+    }
+    config_xhard3 = {
+        "grid": 5,
+        "length": [17, 20]
     }
 
     # Combine into a dictionary
@@ -169,7 +199,10 @@ class PatternLock(BaseEnv):
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard,
+        'xhard4': config_xhard4,
+        'xhard1': config_xhard1,
+        'xhard2': config_xhard2,
+        'xhard3': config_xhard3,
     }
 
 
@@ -360,7 +393,7 @@ class PatternLock(BaseEnv):
 
         num_targets = len(self.targets_grid)
         max_attempts = self._sampling["parameters"]["path_selection"]["max_attempts"]  # Safety limit
-        if self.difficulty == "xhard":
+        if is_newvalue_difficulty(self.difficulty):
             # V5（计划 2.10）：xhard 的搜索预算来自 decision（冻进规格 header），原三档仍用上一行的 1000
             max_attempts = self._xhard_decision("path_search_max_attempts")
 
@@ -383,11 +416,11 @@ class PatternLock(BaseEnv):
             if length_range[0] <= len(path_nodes) <= length_range[1]:
                 break
         else:
-            if self.difficulty == "xhard":
+            if is_newvalue_difficulty(self.difficulty):
                 # V5（计划 2.10 / L36 / L3）：xhard 搜索耗尽不再静默沿用最后一条错长路径（K1 根因），
                 # 抛真正的 SceneGenerationError（可重试的任务性失败）；原三档仍走下一行的静默兜底。
                 raise _RealSceneGenerationError(
-                    f"PatternLock xhard: {max_attempts} 次搜索内没有节点数落在 "
+                    f"PatternLock {self.difficulty}: {max_attempts} 次搜索内没有节点数落在 "
                     f"{decision_cfg['path_length_range'][self.difficulty]} 的路径"
                 )
             # If we couldn't find a path < 5 after max_attempts, use the last one
@@ -397,7 +430,7 @@ class PatternLock(BaseEnv):
         path_nodes = self._spec.value("actions.path_nodes", list(path_nodes),
                                       decision_key=f"path_length_range.{self.difficulty}")
         self._spec.record("actions.path_attempts", attempt + 1)
-        if self.difficulty == "xhard":
+        if is_newvalue_difficulty(self.difficulty):
             # V5（N17 精神）：回放冻结规格时 value() 直接返回冻结值、不复核，这里复核节点数与邻接
             self._check_xhard_path(path_nodes, num_rows, num_cols,
                                    decision_cfg["path_length_range"][self.difficulty])
@@ -469,10 +502,11 @@ class PatternLock(BaseEnv):
         缺键说明传入的 sampling_config 来自 V4 或更早的快照（没有 ``decision.xhard``）；
         V4 已作废（口径 13），直接报错而不是回退到原三档的值。
         """
-        xhard_cfg = self._sampling["decision"].get("xhard")
+        # V6：按本局档位取子树（新值族四档同结构）
+        xhard_cfg = self._sampling["decision"].get(self.difficulty)
         if not isinstance(xhard_cfg, dict) or key not in xhard_cfg:
             raise ValueError(
-                f"PatternLock xhard: sampling_config.decision 缺少 xhard.{key}"
+                f"PatternLock {self.difficulty}: sampling_config.decision 缺少 {self.difficulty}.{key}"
                 "（V4 及更早的快照在 V5 代码上不可用）"
             )
         return xhard_cfg[key]

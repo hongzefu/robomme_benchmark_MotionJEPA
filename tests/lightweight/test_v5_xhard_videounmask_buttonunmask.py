@@ -50,7 +50,8 @@ NEW_MODULE_NAMES = {
     "spawn_distractor_layout", "reveal_actors_parked", "reveal_distractor_bins_parked",
     "V5_DISTRACTOR_PRESETS",
 }
-XHARD_CONDS = {"xhard", "self.difficulty == 'xhard'"}
+# V6（口径 11）：新值族统一用族判断，分支判断式原文改为 is_newvalue_difficulty(self.difficulty)
+XHARD_CONDS = {"xhard", "xhard4", "self.difficulty == 'xhard4'", "is_newvalue_difficulty(self.difficulty)"}
 
 # V4（12.120 及以前）step 里原三档的揭示循环，ast.unparse 后的文本；V5 只许把它原样搬进 else
 V4_REVEAL_LOOP = (
@@ -108,10 +109,38 @@ def test_xhard干扰配置等于V5预设且是深拷贝(task):
     assert list(cfg.ring) == [0.2425, 0.3289]
     assert cfg.color_rule == "balanced_cycle" and cfg.min_gap_factor == 0.75 and cfg.max_trials == 1024
     decision = mod._native_decision(getattr(mod, task))
-    assert decision["xhard"]["distractor"] == uds.V5_DISTRACTOR_PRESETS[task]
+    assert decision["xhard4"]["distractor"] == uds.V5_DISTRACTOR_PRESETS[task]
     # decision 里的子树也是独立副本
-    decision["xhard"]["distractor"]["count"] = -1
+    decision["xhard4"]["distractor"]["count"] = -1
     assert mod.XHARD_DISTRACTOR["count"] == count
+
+
+# V6（计划 2.3）新值族档位表：xhard1/2/3 只改干扰数与含 cube 个数，其余沿用 xhard；xhard 逐位不变
+V6_EXPECT = {
+    "VideoUnmask": {"xhard1": (2, 8, [4, 4]), "xhard2": (3, 10, [5, 5]), "xhard3": (3, 13, [6, 7]),
+                    "xhard4": (3, 15, [7, 8])},
+    "ButtonUnmask": {"xhard1": (2, 8, [4, 4]), "xhard2": (3, 10, [5, 5]), "xhard3": (3, 12, [6, 6]),
+                     "xhard4": (3, 14, [7, 7])},
+}
+
+
+@pytest.mark.parametrize("task", TASKS)
+def test_v6新值族档位表按计划且其余键沿用xhard(task):
+    mod = _module(task)
+    cls = getattr(mod, task)
+    decision = mod._native_decision(cls)
+    # configs 键序：原四键不动，xhard1/2/3 追加在 xhard 之后
+    assert list(cls.configs) == ["hard", "easy", "medium", "xhard4", "xhard1", "xhard2", "xhard3"]
+    for tier, (pick, count, cubes) in V6_EXPECT[task].items():
+        assert cls.configs[tier] == {"bin": 8, "pick": pick}
+        assert decision["bin_layout_policy"][tier] == {"min_gap_factor": 0.75}
+        dist = decision[tier]["distractor"]
+        assert dist["count"] == count and dist["cube_count_range"] == cubes
+        rest = {k: v for k, v in dist.items() if k not in ("count", "cube_count_range")}
+        base = {k: v for k, v in uds.V5_DISTRACTOR_PRESETS[task].items() if k not in ("count", "cube_count_range")}
+        assert rest == base
+        uds.parse_distractor_cfg(dist)
+    assert decision["xhard4"]["distractor"] == uds.V5_DISTRACTOR_PRESETS[task]
 
 
 # ── AST：挂接点 ──────────────────────────────────────────────────────────────────
@@ -146,7 +175,7 @@ def test_新模块的调用全部在xhard分支(task):
 @pytest.mark.parametrize("task", TASKS)
 def test_step原三档揭示循环原样搬进else(task):
     step = _funcs(task)["step"]
-    ifs = [s for s in step.body if isinstance(s, ast.If) and ast.unparse(s.test) == "self.difficulty == 'xhard'"]
+    ifs = [s for s in step.body if isinstance(s, ast.If) and ast.unparse(s.test) == "is_newvalue_difficulty(self.difficulty)"]
     assert len(ifs) == 1
     branch = ifs[0]
     assert len(branch.orelse) == 1 and ast.unparse(branch.orelse[0]) == V4_REVEAL_LOOP
@@ -201,7 +230,7 @@ def _fake_env(task, difficulty, monkeypatch, n_bins=8, n_distractors=15):
         setattr(env, f"bin_{i}", actor)
         bins.append(actor)
     env.distractor_bins = [_Actor([0.3, -0.29 + 0.04 * j, 0.002]) for j in range(n_distractors)] \
-        if difficulty == "xhard" else []
+        if difficulty == "xhard4" else []
     return cls, env, bins
 
 
@@ -231,7 +260,7 @@ def test_hard仍走statechange停在10_10_10(task, monkeypatch):
 
 @pytest.mark.parametrize("task", TASKS)
 def test_xhard内环与干扰容器各停各的点且落回原位(task, monkeypatch):
-    cls, env, bins = _fake_env(task, "xhard", monkeypatch, n_distractors=EXPECT[task][0])
+    cls, env, bins = _fake_env(task, "xhard4", monkeypatch, n_distractors=EXPECT[task][0])
     actors = bins + env.distractor_bins
     origin = [a.xyz().copy() for a in actors]
     expected_park = [uds.xhard_park_point("bin", i) for i in range(len(bins))] + \
@@ -273,11 +302,11 @@ def reset_check(task, seed):
     from robomme.robomme_env.utils.xhard import DISTRACTOR_COLORS
 
     env = gym.make(task, obs_mode="rgb+depth+segmentation", control_mode="pd_joint_pos",
-                   render_mode="rgb_array", reward_mode="dense", seed=seed, difficulty="xhard")
+                   render_mode="rgb_array", reward_mode="dense", seed=seed, difficulty="xhard4")
     try:
         env.reset()
         u = env.unwrapped
-        cfg = uds.parse_distractor_cfg(u._sampling["decision"]["xhard"]["distractor"])
+        cfg = uds.parse_distractor_cfg(u._sampling["decision"]["xhard4"]["distractor"])
         layout = u.distractor_layout
         chs = float(u.cube_half_size)
         out_of_ring = sum(1 for x, y, _ in layout.bins
