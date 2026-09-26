@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 S3i——PickHighlight / VideoPlaceButton / VideoPlaceOrder 的 xhard 障碍框修复（计划 2.16、L2 b）。
+"""轻量测试：V5 S3i 精确 OBB 修复在 V6 新值档族中的延续。
 
 背景（计划 2.0①）：已放方块以 actor 形式进 ``avoid`` 时，``_trimesh_box_to_obb2d`` 对正方体的轴序任意，
-竖直轴落进前两列就退化成一条线段，``min_gap`` 在其法向失效。V5 在这三个环境的 xhard 分支里改把
+竖直轴落进前两列就退化成一条线段，``min_gap`` 在其法向失效。V5 在这三个环境的新值分支里改把
 ``cube_obb2d_exact(cube.initial_pose, cube_half_size)`` 预制三元组放进 ``avoid``；原三档仍放 actor。
 
 纯 CPU、不起 sapien 场景：用假 ``self``（SimpleNamespace）直接调环境类的 ``_load_scene``，
@@ -10,9 +10,9 @@
 ``build_button`` 抽同样的随机数、返回同一个按钮 OBB，因此布局与真 reset 同一随机流），
 ``spawn_random_cube`` / ``spawn_random_target`` 包一层探针记下每次调用的 ``avoid`` 与 ``min_gap``。
 
-* 多 seed xhard：已放物体两两（后放者对先放者）实际间距 ≥ 名义 ``min_gap``（violations=0），
+* 多 seed 新值档：已放物体两两（后放者对先放者）实际间距 ≥ 名义 ``min_gap``（violations=0），
   传入 spawn 的障碍里方块一律是非退化的精确三元组（退化数 = 0、方块 actor 数 = 0）；
-* 原三档：方块仍以 actor 进 ``avoid``（路径未改），源码里 xhard 分支与原三档分支的静态自查。
+* 原三档：方块仍以 actor 进 ``avoid``（路径未改），源码里新值族分支与原三档分支的静态自查。
 
     uv run --no-sync python -m pytest tests/lightweight/test_v5_xhard_obb_fix.py -q
 """
@@ -42,6 +42,9 @@ if str(REPO_ROOT / "src") not in sys.path:
 from robomme.robomme_env.utils import object_generation as og  # noqa: E402
 from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
 from robomme.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
+from robomme.robomme_env.utils.difficulty import (  # noqa: E402
+    is_newvalue_difficulty,
+)
 
 ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
 ENV_NAMES = ("PickHighlight", "VideoPlaceButton", "VideoPlaceOrder")
@@ -149,7 +152,7 @@ def _fake_self(env_name, difficulty, seed):
     for method in ("_xhard_spec_kwargs",):
         if hasattr(cls, method):
             setattr(fake, method, types.MethodType(getattr(cls, method), fake))
-    # xhard 尾段（选目标、演示模板、放回原位落点）与本修复无关，且要真 scene；这里置空
+    # 旧方法名的演示尾段与本修复无关，且要真 scene；这里置空
     fake._load_scene_xhard_tail = lambda *args, **kwargs: None
     return cls, fake
 
@@ -168,7 +171,7 @@ def _run_layout(env_name, difficulty, seed, monkeypatch):
     except SceneGenerationError as exc:
         return probe, exc
     except Exception as exc:  # noqa: BLE001
-        if difficulty == "xhard":
+        if is_newvalue_difficulty(difficulty):
             raise
         # 原三档：布局之后的代码（如 PickHighlight 原三档当场求值的 is_any_obj_pickup、
         # VideoPlaceOrder 被遮蔽的 except 子句）要真 scene，替身下会抛错；布局已由探针记下，
@@ -270,15 +273,16 @@ def _layout_stats(probe):
 
 
 # ---------------------------------------------------------------------------
-# xhard：名义间距真正生效
+# 新值族：名义间距真正生效
 # ---------------------------------------------------------------------------
 @pytest.mark.parametrize("env_name", ENV_NAMES)
-def test_xhard已放方块间距不小于名义min_gap且障碍无退化(env_name, fake_scene) -> None:
+def test_newvalue已放方块间距不小于名义min_gap且障碍无退化(env_name, fake_scene) -> None:
     totals = {"violations": 0, "pairs": 0, "exact": 0, "degenerate": 0, "cube_actor": 0}
     min_margin = math.inf
     ok = failed = 0
+    difficulty = "xhard4"
     for seed in range(N_SEEDS):
-        probe, exc = _run_layout(env_name, "xhard", 5_000_000 + seed, fake_scene)
+        probe, exc = _run_layout(env_name, difficulty, 5_000_000 + seed, fake_scene)
         stats = _layout_stats(probe)
         for key in totals:
             totals[key] += stats[key]
@@ -287,7 +291,7 @@ def test_xhard已放方块间距不小于名义min_gap且障碍无退化(env_nam
             ok += 1
         else:
             failed += 1
-    print(f"V5_XHARD_OBB_FIX env={env_name} seeds={N_SEEDS} ok={ok} scenegen_fail={failed} "
+    print(f"V6_NEWVALUE_OBB_FIX env={env_name} difficulty={difficulty} seeds={N_SEEDS} ok={ok} scenegen_fail={failed} "
           f"pairs={totals['pairs']} violations={totals['violations']} min_margin={min_margin:.6f} "
           f"exact_obstacles={totals['exact']} degenerate={totals['degenerate']} cube_actor={totals['cube_actor']}")
     assert ok > 0
@@ -295,15 +299,16 @@ def test_xhard已放方块间距不小于名义min_gap且障碍无退化(env_nam
     assert totals["violations"] == 0
     assert min_margin >= -GAP_TOL
     assert totals["degenerate"] == 0
-    # xhard 下已放方块不再以 actor 形式进 avoid（旧的会退化的路径一次都不走）
+    # 新值档下已放方块不再以 actor 形式进 avoid（旧的会退化的路径一次都不走）
     assert totals["cube_actor"] == 0
     # 方块确实以精确三元组进了 avoid（除按钮 OBB 外还有方块的）
     assert totals["exact"] > N_SEEDS
 
 
 def test_精确三元组与方块初始位姿一致(fake_scene) -> None:
-    """xhard 下 avoid 里第 k 块方块的三元组 == 由其 initial_pose 解析算出的正方形（不含 pad）。"""
-    probe, exc = _run_layout("PickHighlight", "xhard", 5_000_123, fake_scene)
+    """新值族下 avoid 的每个方块三元组都对应其 initial_pose（不含 pad）。"""
+    difficulty = "xhard4"
+    probe, exc = _run_layout("PickHighlight", difficulty, 5_000_123, fake_scene)
     assert exc is None
     cubes = [call["obj"] for call in probe.calls if call["kind"] == "cube"]
     last_avoid = probe.calls[-1]["avoid"]
@@ -346,23 +351,86 @@ def _load_scene_source(env_name):
     return next(n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == "_load_scene")
 
 
-def _is_xhard_test(test):
-    src = ast.unparse(test)
-    # V6 口径 11：分支判断式改为族判断原文
-    return src in ("xhard", "self.difficulty == 'xhard'", "is_newvalue_difficulty(self.difficulty)")
+def _is_newvalue_call(node):
+    if not isinstance(node, ast.Call):
+        return False
+    function = node.func
+    name = function.id if isinstance(function, ast.Name) else (
+        function.attr if isinstance(function, ast.Attribute) else None
+    )
+    return (
+        name in {"is_newvalue_difficulty", "_is_newvalue_difficulty"}
+        and bool(node.args)
+        and ast.unparse(node.args[0]) == "self.difficulty"
+    )
+
+
+def _newvalue_aliases(func):
+    aliases = set()
+    for node in ast.walk(func):
+        if isinstance(node, ast.Assign) and _is_newvalue_call(node.value):
+            aliases.update(target.id for target in node.targets if isinstance(target, ast.Name))
+        elif isinstance(node, ast.AnnAssign) and _is_newvalue_call(node.value):
+            if isinstance(node.target, ast.Name):
+                aliases.add(node.target.id)
+    return aliases
+
+
+def _is_legacy_xhard_test(test):
+    if not isinstance(test, ast.Compare) or len(test.ops) != 1 or not isinstance(test.ops[0], ast.Eq):
+        return False
+    if len(test.comparators) != 1:
+        return False
+    left, right = test.left, test.comparators[0]
+    return (
+        ast.unparse(left) == "self.difficulty" and isinstance(right, ast.Constant) and right.value == "xhard"
+    ) or (
+        ast.unparse(right) == "self.difficulty" and isinstance(left, ast.Constant) and left.value == "xhard"
+    )
+
+
+def _is_newvalue_test(test, aliases):
+    if isinstance(test, ast.Name) and test.id in aliases:
+        return True
+    if _is_newvalue_call(test):
+        return True
+    if isinstance(test, ast.BoolOp) and isinstance(test.op, ast.And):
+        return any(_is_newvalue_test(child, aliases) for child in test.values)
+    if isinstance(test, ast.BoolOp) and isinstance(test.op, ast.Or):
+        children = test.values
+        return any(_is_newvalue_test(child, aliases) for child in children) and all(
+            _is_newvalue_test(child, aliases) or _is_legacy_xhard_test(child) for child in children
+        )
+    return False
+
+
+@pytest.mark.parametrize(
+    ("expression", "expected"),
+    (
+        ("is_newvalue_difficulty(self.difficulty)", True),
+        ("is_newvalue", True),
+        ("self.difficulty == 'xhard' or _is_newvalue_difficulty(self.difficulty)", True),
+        ("not is_newvalue_difficulty(self.difficulty)", False),
+        ("other or is_newvalue_difficulty(self.difficulty)", False),
+    ),
+)
+def test_静态新值分支条件只接受已知兼容项(expression, expected) -> None:
+    condition = ast.parse(expression, mode="eval").body
+    assert _is_newvalue_test(condition, {"is_newvalue"}) is expected
 
 
 @pytest.mark.parametrize("env_name", ENV_NAMES)
-def test_静态自查_精确OBB只在xhard分支且spawn调用逐字不动(env_name) -> None:
+def test_静态自查_精确OBB由新值族或V5兼容分支保护且spawn调用不动(env_name) -> None:
     func = _load_scene_source(env_name)
+    aliases = _newvalue_aliases(func)
     exact_calls = []
     for node in ast.walk(func):
-        if isinstance(node, ast.If) and _is_xhard_test(node.test):
+        if isinstance(node, ast.If) and _is_newvalue_test(node.test, aliases):
             body_src = "\n".join(ast.unparse(s) for s in node.body)
             else_src = "\n".join(ast.unparse(s) for s in node.orelse)
             if "cube_obb2d_exact" in body_src:
                 exact_calls.append(node)
-                # xhard 分支：精确三元组；else（原三档）：原来的 avoid.append(cube) 一字不差
+                # 新值族分支用精确三元组；else（原三档）保留 actor 障碍路径。
                 assert body_src == "avoid.append(cube_obb2d_exact(cube.initial_pose, self.cube_half_size))"
                 assert else_src == "avoid.append(cube)"
     assert len(exact_calls) == 1

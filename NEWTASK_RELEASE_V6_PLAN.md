@@ -23,6 +23,7 @@
 | D8 | 09-26 | 「vpb vpo都是放回原位 xhard123 只在cube放target的步骤上有区分 给出难度梯度」 | VP 五档都放回原位，梯度 = 放到台上的次数 |
 | D9 | 09-26 | 「改为xhard123 xhard现在xhard改为xhard4！原来的纯xhard废弃 不要再使用 容易混淆 每个难度要有区分 不能有重叠交集合 给出新的难度梯度表」 | 档名 xhard1～xhard4，`xhard` 废弃；四档区间互不重叠 |
 | D10 | 09-26 | 「可以超过1300 新的四档表（hard 冻结不动）同意」「在第一部分不要留我md演进的过程 只保留用户决策列表 和最后定下来的计划」「把你已经定下来的分支和结论写入第二部分 新的agent可能无记忆要重新开始」 | 评估 1301 步不限制新档取值；四档表定稿；本文件结构；第二部分含接手指南 |
+| D11 | 09-26 | 「按无新增失败放行（建议）：将判据改为失败/错误集合是 S0 的子集，记明 20 项已修复。」 | LIGHTWEIGHT 改为失败与错误身份均无新增；已修复的 S0 失败如实记录，不要求旧失败继续存在 |
 
 ## 二、定稿口径
 
@@ -150,7 +151,7 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 | 判据 | 查什么 | 在哪 | 判定行 |
 |---|---|---|---|
 | V0 | 原三档 config（StopCube/MoveCube/InsertPeg 为 `config_native`/`_CONFIG_CURRENT`）与原三档消费的 `NATIVE_SAMPLING` 键零 diff；剥掉四个新值键后 decision 与 V5 快照逐字相同 | 本机静态 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
-| LIGHTWEIGHT | `tests/lightweight/ -m 'not gpu and not slow'`，失败集合与 S0 基线（46 failed / 12 errors）相同 | 本机 | `LIGHTWEIGHT=PASS failure_set_equal_baseline=1` |
+| LIGHTWEIGHT | `tests/lightweight/ -m 'not gpu and not slow'`；按五分钟预算分片，核对全部测试文件无遗漏/重复；失败与错误身份分别为 S0 基线（46 failed / 12 errors）的子集，新增均为零，另记已修复项 | 本机 | `LIGHTWEIGHT=PASS new_failures=0 new_errors=0 resolved=20` |
 | **V1** | 见 5.1 | 本机 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
 | FROZEN_FILES | 录像器对 `da77662` 零 diff；三脚本与官方副本逐字节同；五入口 | 本机静态 | `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
 | TIER_MONOTONE | 每环境每档 200 局离线 reset：用户指定维度均值严格递增且区间不重叠（`scripts/parity/v6_tier_monotone.py`） | 本机 | `TIER_MONOTONE=PASS envs=13 violations=0` |
@@ -236,12 +237,21 @@ N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`eval
 ```bash
 # 只读核验
 git diff --quiet da77662 -- src/robomme/env_record_wrapper/RecordWrapper.py && echo RECORDER_FROZEN=PASS; ls -1 scripts/*.py | wc -l   # 期望 5
-# 每次提交前（与 V5 S0 基线同口径）
-timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q
+# LIGHTWEIGHT：81 个测试文件分四片，各片沿用 S0 的 marker 并独立限时 280 秒
+command -v uv
+mkdir -p artifacts/newtask-v6/s0/lightweight-shards
+rg --files tests/lightweight -g 'test_*.py' | sort > artifacts/newtask-v6/s0/lightweight-shards/all.txt
+split -d -n l/4 artifacts/newtask-v6/s0/lightweight-shards/all.txt artifacts/newtask-v6/s0/lightweight-shards/shard-
+set -o pipefail
+for suffix in 00 01 02 03; do
+  timeout 280s xargs -a "artifacts/newtask-v6/s0/lightweight-shards/shard-$suffix" uv run --no-sync python -m pytest -m 'not gpu and not slow' -q 2>&1 | tee "artifacts/newtask-v6/s0/lightweight-shards/run-$suffix.log"
+  printf 'EXIT_CODE=%s\n' "$?" >> "artifacts/newtask-v6/s0/lightweight-shards/run-$suffix.log"
+done
+# 与 S0 的 FAILED/ERROR 身份分别作集合差：V6 减 S0 必须为空；S0 减 V6 逐项记为已修复
 # 单环境演示探针
 uv run --no-sync python -m scripts.parity.v4_demo_probe --task <Env> --difficulty <tier> --n 4 --out artifacts/newtask-v6/demo-probe/<Env>-<tier>
 # V1
-uv run --no-sync python scripts/parity/train_split_parity.py run --manifest scripts/parity/manifest_16x3.json …
+uv run --no-sync python scripts/parity/train_split_parity.py run --manifest scripts/configs/newtask-v3/subset_manifest.json …
 uv run --no-sync python scripts/parity/train_split_parity.py compare --run base=artifacts/newtask-v6/v1/base --run v6=artifacts/newtask-v6/v1/v6 --pair base/B:v6/B
 # 生成（GL 占位 job 内；本机同理去掉 srun）
 mkdir -p artifacts/newtask-v6/v6-01
