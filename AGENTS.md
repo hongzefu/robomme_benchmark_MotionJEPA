@@ -217,7 +217,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1 pipeline、MoveCube、VP已提交，swap代码已集成待提交 | 基线144/144成功、49GB、退出0；pipeline核心94 passed/3 skipped，MoveCube47 passed/1 deselected，VP41 passed，swap定向298 passed；V5 snapshot散列未变 | 完成swap提交，导出V6 snapshot，运行13×4真实reset、LIGHTWEIGHT失败集合及最终V1 |
+| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1四路代码已提交；V6 snapshot已导出；reset核验器已兼容xhard4全16环境；13×4 reset draws运行中 | 基线144/144成功、49GB、退出0；V6 snapshot ready=16/pending=0、verify通过；V5 snapshot SHA未变；BinFill/xhard1单候选smoke成功；关联测试56 passed；tmux `v6-tier-reset`运行中 | 完成 `--reset-all` 实测，核对LIGHTWEIGHT失败集合，做V6单条演示smoke与S2探针，再跑原档V1严格对拍 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1880,3 +1880,15 @@
 - VUS、BUS、VR 新值档均覆盖 `xhard1..xhard4`；swap/pick次数由各档 `native.parameters.configs[档]` 实际消费，内环使用 S5 可行图预规划并在窗口起点复核，外环使用 O4。M5(b) 维持仅前三个内环容器可作为藏物位置，`bin_3` 恒空；删除 M5(a) 的四容器藏物扩展。V4/V5 `native_blocks(release=...)` 保留旧 xhard 快照形状，V6 才导出四档决策与参数。
 - 主树定向组覆盖纯 S5算法、VUS/BUS/VR规格/时序/碰撞/揭示邻接：`uv run --no-sync python -m pytest tests/lightweight/test_v6_swap_uniform.py tests/lightweight/test_v4_xhard_unmaskswap.py tests/lightweight/test_v5_xhard_unmaskswap.py tests/lightweight/test_v4_xhard_videorepick.py tests/lightweight/test_v5_xhard_videorepick.py tests/lightweight/test_swap_schedule_generic.py tests/lightweight/test_v4_xhard_swap_hold.py tests/lightweight/test_v4_xhard_unmask_distractor_reveal.py tests/lightweight/test_v5_shared_sampling.py tests/lightweight/test_v5_unmask_distractor_sampler.py tests/lightweight/test_window_timeline.py -m 'not gpu and not slow' -q`，298 passed、2 warnings、63.64秒，退出0。V5 snapshot散列仍为 `c45d4408a5b87d71a8be72d1724322f06d6801118bb53e4afdffd07b1eaf8315`；录像器零diff；共享 helper 临时覆盖未提交，`git diff --check`通过。
 - xhard4 S5 单测使用7块固定完全可行图验证9次交换、参与计数极差≤1、无立即撤销与规格回放相同；这是算法/绑定覆盖，不是实际reset几何可行率。真实各档候选、VP/Unmask演示、13×4×200 reset、完整LIGHTWEIGHT失败集合、V6 snapshot与V1对拍仍待运行。
+
+### 2026-09-26 America/Detroit — V6 snapshot导出与13×4 reset采样启动
+
+- 四路代码已在主线提交：pipeline `12.155`、MoveCube `12.157`、VP `12.158`、swap `12.159`；S0基线收尾为 `12.156`。完整源码导出V6 snapshot：`command -v uv && uv run --no-sync python scripts/parity/train_split_config.py extract --release newtask-v6`，退出0，`ready=16 pending=0 sha256=6ab3b0c218ad77e2`；随后 `--verify` 再次退出0。V5 snapshot SHA-256仍为 `c45d4408a5b87d71a8be72d1724322f06d6801118bb53e4afdffd07b1eaf8315`。
+- V6 reset smoke 在 `BinFill/xhard1`、单候选、单worker成功：`DRAW BinFill ep=0 attempt=0 seed=8400000 ok=True`、`DRAW_TASK BinFill ok=1 attempted=1 shortfall=0`、退出0；输出 `artifacts/newtask-v6/s1-reset/smoke/BinFill-xhard1.jsonl`。该步骤只测reset与规格，不含演示或HDF5。
+- 全环境采样在 detached tmux `v6-tier-reset` 顺序执行xhard1/2/3的13环境以及xhard4的16环境，目标每格200次成功reset、每task最多12000次尝试，16 workers、GPU 0/1。四份草稿分别写入 `artifacts/newtask-v6/s1-reset/xhard1..xhard4/drafts.jsonl`，日志 `artifacts/newtask-v6/s1-reset/run.log`，使用pipefail、tee和EXIT_CODE尾行。启动核验 `tmux has-session -t v6-tier-reset` 返回0；本记录时尚无退出码。结束后运行 `v6_tier_monotone --reset-all --samples 200`，逐项报告短缺、reset失败及判定。
+- reset draws结束后仍需运行V6单条演示smoke、S2演示矩阵、同S0口径LIGHTWEIGHT失败集合复核及原三档V1 V6侧严格对拍；snapshot `--verify` 与静态 `TIER_PLAN_TABLE` 不代表行为验收。
+
+### 2026-09-26 America/Detroit — V6 reset 核验器兼容 xhard4 全16环境
+
+- 对抗检查发现 `v4_specs draw --difficulty xhard4 --tasks all` 会包含13个梯度环境外的 MoveCube、InsertPeg、StopCube；原 `v6_tier_monotone --reset-all` 把所有档位都限制为13项，因而无法验收计划要求的 xhard4 全任务输入。只修正核验器：前三档严格保留13项；xhard4 接受并核验16项，额外3项的身份、seed、spec 与 reset 尝试仍验证，但不计入52个梯度覆盖格。
+- 回归命令 `uv run --no-sync python -m pytest tests/lightweight/test_v6_tier_monotone.py -q`：14 passed，0.09秒，退出0；组合回归 `uv run --no-sync python -m pytest tests/lightweight/test_v6_tier_monotone.py tests/lightweight/test_v6_difficulty_tiers.py tests/lightweight/test_sampling_config_split.py -q`：56 passed、2条依赖弃用警告、8.17秒，退出0。快照复核 `uv run --no-sync python scripts/parity/train_split_config.py extract --release newtask-v6 --verify`：`ready=16 pending=0 sha256=6ab3b0c218ad77e2`，退出0。测试覆盖xhard4额外任务允许缺少成功规格但必须有reset尝试的边界。reset draws仍在运行，尚未据此宣称 `TIER_MONOTONE` 通过。

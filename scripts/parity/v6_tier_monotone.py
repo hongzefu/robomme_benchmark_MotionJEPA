@@ -280,6 +280,7 @@ PLAN_TIERS: dict[str, dict[str, dict[str, Any]]] = {
 }
 
 GRADIENT_ENVS = tuple(PLAN_TIERS)
+XHARD4_EXTRA_TASKS = frozenset({"MoveCube", "InsertPeg", "StopCube"})
 V6_SEED_OFFSETS = {"xhard4": 6_000_000, "xhard1": 8_000_000,
                    "xhard2": 10_000_000, "xhard3": 12_000_000}
 SEED_RULE_SHAPE = {
@@ -476,7 +477,7 @@ def dimensions_from_reset_spec(task: str, spec: Mapping[str, Any]) -> dict[str, 
     raise KeyError(f"未登记的梯度环境：{task}")
 
 
-def _validate_v4_header(header: Mapping[str, Any], path: Path) -> tuple[str, str]:
+def _validate_v4_header(header: Mapping[str, Any], path: Path) -> tuple[str, str, str, set[str]]:
     missing = DRAFT_HEADER_REQUIRED - header.keys()
     if missing:
         raise ValueError(f"{path} header 缺字段 {sorted(missing)}")
@@ -486,14 +487,16 @@ def _validate_v4_header(header: Mapping[str, Any], path: Path) -> tuple[str, str
     if tier not in NEWVALUE_TIERS:
         raise ValueError(f"{path} header difficulty={tier!r} 不属于 V6 新值四档")
     tasks = header["tasks"]
-    if (not isinstance(tasks, list) or len(tasks) != len(GRADIENT_ENVS)
-            or set(tasks) != set(GRADIENT_ENVS)):
-        raise ValueError(f"{path} header.tasks 必须恰含13个梯度环境")
+    expected_tasks = (set(GRADIENT_ENVS) | XHARD4_EXTRA_TASKS) if tier == "xhard4" else set(GRADIENT_ENVS)
+    if (not isinstance(tasks, list) or len(tasks) != len(expected_tasks)
+            or set(tasks) != expected_tasks):
+        expected_count = len(expected_tasks)
+        raise ValueError(f"{path} {tier} header.tasks 必须恰含 {expected_count} 个环境")
     if not isinstance(header["sampling_config"], Mapping):
         raise ValueError(f"{path} header.sampling_config 必须是对象")
-    if set(header["sampling_config"]) != set(GRADIENT_ENVS):
-        raise ValueError(f"{path} header.sampling_config 未覆盖13个梯度环境")
-    for task in GRADIENT_ENVS:
+    if set(header["sampling_config"]) != expected_tasks:
+        raise ValueError(f"{path} header.sampling_config 与 {tier} 的任务集合不符")
+    for task in expected_tasks:
         task_block = header["sampling_config"][task]
         decision = task_block.get("decision") if isinstance(task_block, Mapping) else None
         if not isinstance(decision, Mapping) or not _has_tier_key(decision, tier):
@@ -508,12 +511,15 @@ def _validate_v4_header(header: Mapping[str, Any], path: Path) -> tuple[str, str
         raise ValueError(f"{path} header.seed_rule 与 {tier} 的 V6 规则不符")
     if header["runtime"] != V6_RUNTIME or header["identity_source"] != "formula":
         raise ValueError(f"{path} header runtime/identity_source 与 v4_specs 口径不符")
-    return tier, _canonical_sha256({
-        "sampling_config": header["sampling_config"],
+    release_fingerprint = _canonical_sha256({
         "source_fingerprint": header["source_fingerprint"],
         "runtime": header["runtime"],
         "recovery_rule": header["recovery_rule"],
     })
+    gradient_config_fingerprint = _canonical_sha256(
+        {task: header["sampling_config"][task] for task in GRADIENT_ENVS}
+    )
+    return tier, release_fingerprint, gradient_config_fingerprint, expected_tasks
 
 
 def _seed_env_code(task: str) -> int:
@@ -524,16 +530,17 @@ def _seed_env_code(task: str) -> int:
     return int(env_code(task))
 
 
-def _read_v4_reset_file(path: Path) -> tuple[str, str, list[dict[str, Any]], dict[str, int]]:
+def _read_v4_reset_file(path: Path) -> tuple[str, str, str, set[str], list[dict[str, Any]], dict[str, int], set[str]]:
     lines = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
     if not lines:
         raise ValueError(f"{path} 为空")
     records = [json.loads(line) for line in lines]
     if not isinstance(records[0], Mapping):
         raise ValueError(f"{path} header 不是对象")
-    tier, release_fingerprint = _validate_v4_header(records[0], path)
-    failures = {task: 0 for task in GRADIENT_ENVS}
+    tier, release_fingerprint, gradient_config_fingerprint, header_tasks = _validate_v4_header(records[0], path)
+    failures = {task: 0 for task in header_tasks}
     valid_rows = []
+    seen_tasks = set()
     for index, row in enumerate(records[1:], start=2):
         if not isinstance(row, Mapping):
             raise ValueError(f"{path} 第{index}行不是对象")
@@ -543,8 +550,9 @@ def _read_v4_reset_file(path: Path) -> tuple[str, str, list[dict[str, Any]], dic
             raise ValueError(f"{path} 第{index}行缺字段 {sorted(missing)}")
         if row["record"] not in {"draft", "spec"}:
             raise ValueError(f"{path} 第{index}行 record 非 draft/spec")
-        if row["difficulty"] != tier or row["task"] not in GRADIENT_ENVS:
+        if row["difficulty"] != tier or row["task"] not in header_tasks:
             raise ValueError(f"{path} 第{index}行档位/任务与 header 不符")
+        seen_tasks.add(row["task"])
         episode, attempt, seed = row["episode"], row["attempt"], row["seed"]
         if any(type(value) is not int or value < 0 for value in (episode, attempt, seed)):
             raise ValueError(f"{path} 第{index}行 episode/attempt/seed 非法")
@@ -567,7 +575,7 @@ def _read_v4_reset_file(path: Path) -> tuple[str, str, list[dict[str, Any]], dic
                 or identity.get("seed") != seed or spec.get("spec_kind") != "native-newvalue/2"):
             raise ValueError(f"{path} 第{index}行 spec identity/spec_kind 不符")
         valid_rows.append({"task": row["task"], "episode": episode, "spec": spec})
-    return tier, release_fingerprint, valid_rows, failures
+    return tier, release_fingerprint, gradient_config_fingerprint, header_tasks, valid_rows, failures, seen_tasks
 
 
 def check_reset_drafts(paths: list[str | Path], samples: int = 200,
@@ -577,11 +585,14 @@ def check_reset_drafts(paths: list[str | Path], samples: int = 200,
         raise ValueError("samples 必须为正数")
     cell_rows = {(env, tier): {} for env in GRADIENT_ENVS for tier in NEWVALUE_TIERS}
     cell_failures = {(env, tier): 0 for env in GRADIENT_ENVS for tier in NEWVALUE_TIERS}
-    file_hashes, input_errors, tiers_seen, source_fingerprints = [], [], set(), set()
+    file_hashes, input_errors, tiers_seen = [], [], set()
+    source_fingerprints, gradient_config_fingerprints = set(), set()
+    xhard4_extra_validation = {task: {"valid_success_specs": 0, "reset_failures": 0}
+                               for task in sorted(XHARD4_EXTRA_TASKS)}
     for raw_path in paths:
         path = Path(raw_path).resolve()
         try:
-            tier, fingerprint, rows, failures = _read_v4_reset_file(path)
+            tier, fingerprint, config_fingerprint, header_tasks, rows, failures, seen_tasks = _read_v4_reset_file(path)
         except Exception as exc:
             input_errors.append({"path": str(path), "error": f"{type(exc).__name__}: {exc}"})
             continue
@@ -590,11 +601,22 @@ def check_reset_drafts(paths: list[str | Path], samples: int = 200,
             continue
         tiers_seen.add(tier)
         source_fingerprints.add(fingerprint)
+        gradient_config_fingerprints.add(config_fingerprint)
         file_hashes.append({"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
                             "tier": tier})
         for env in GRADIENT_ENVS:
             cell_failures[(env, tier)] = failures.get(env, 0)
+        if tier == "xhard4":
+            for task in XHARD4_EXTRA_TASKS:
+                xhard4_extra_validation[task]["reset_failures"] = failures.get(task, 0)
+                if task not in seen_tasks:
+                    input_errors.append({"path": str(path), "error":
+                                         f"xhard4 非梯度任务 {task} 缺少 reset 尝试行"})
         for row in rows:
+            if row["task"] not in GRADIENT_ENVS:
+                if tier == "xhard4" and row["task"] in XHARD4_EXTRA_TASKS:
+                    xhard4_extra_validation[row["task"]]["valid_success_specs"] += 1
+                continue
             key = (row["task"], tier)
             episode = row["episode"]
             target = cell_rows[key]
@@ -611,6 +633,8 @@ def check_reset_drafts(paths: list[str | Path], samples: int = 200,
         input_errors.append({"path": "", "error": f"需要四份档位文件，收到 {len(paths)} 份"})
     if len(source_fingerprints) > 1:
         input_errors.append({"path": "", "error": "四个档位文件的配置／源码／运行指纹不一致"})
+    if len(gradient_config_fingerprints) > 1:
+        input_errors.append({"path": "", "error": "四个档位文件的13个梯度环境 sampling_config 不一致"})
 
     table = copy.deepcopy(PLAN_TIERS)
     coverage = {}
@@ -665,6 +689,7 @@ def check_reset_drafts(paths: list[str | Path], samples: int = 200,
         "covered_cells": sum(not value["missing_episodes"] for value in coverage.values()),
         "missing_tiers": missing_tiers,
         "source_files": file_hashes,
+        "xhard4_non_gradient_validation": xhard4_extra_validation,
         "coverage": coverage,
         "samples": observed_samples,
         "input_errors": input_errors,

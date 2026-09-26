@@ -27,6 +27,11 @@ def _midpoint(value):
 
 
 def _sample_spec(task, tier, episode, seed, overrides=None):
+    if task not in M.PLAN_TIERS:
+        identity = {"task": task, "difficulty": tier, "episode": episode, "seed": seed,
+                    "recovery_mode": None}
+        return {"task": task, "identity": identity, "spec_kind": "native-newvalue/2",
+                "objects": {}, "actions": {}}
     overrides = overrides or {}
     dims = {
         key: _midpoint(value)
@@ -72,18 +77,23 @@ def _write_reset_drafts(tmp_path, samples=2, missing=None, overrides=None, bad_s
                for task in M.GRADIENT_ENVS}
     paths = []
     for tier in M.NEWVALUE_TIERS:
+        tasks = list(M.GRADIENT_ENVS)
+        if tier == "xhard4":
+            tasks.extend(sorted(M.XHARD4_EXTRA_TASKS))
+        task_configs = {task: configs.get(task, {"decision": {"xhard4": {}}, "native": {}})
+                        for task in tasks}
         header = {
             "record": "header", "schema": "v4-drafts/1", "run_id": f"test-{tier}",
-            "difficulty": tier, "sampling_config": configs,
-            "sampling_config_sha256": M._canonical_sha256(configs),
+            "difficulty": tier, "sampling_config": task_configs,
+            "sampling_config_sha256": M._canonical_sha256(task_configs),
             "source_fingerprint": {"files": 1, "sha256": "fixture"},
             "runtime": M.V6_RUNTIME,
             "seed_rule": {**M.SEED_RULE_SHAPE, "offset": M.V6_SEED_OFFSETS[tier]},
             "recovery_rule": {"rule": "fixture"}, "identity_source": "formula",
-            "tasks": list(M.GRADIENT_ENVS),
+            "tasks": tasks,
         }
         rows = []
-        for task in M.GRADIENT_ENVS:
+        for task in tasks:
             for episode in range(samples):
                 seed = M.V6_SEED_OFFSETS[tier] + env_code(task) * 100_000 + episode * 100
                 if missing == (task, tier, episode):
@@ -193,6 +203,21 @@ def test_v4_specs_reset_drafts_require_all_13_by_4_cells(tmp_path) -> None:
     assert report["check"]["verdict"] == "PASS"
     assert report["check"]["violations"] == []
     assert report["sample_source"] == "v4_specs draw/freeze EpisodeSpec"
+    assert report["xhard4_non_gradient_validation"] == {
+        task: {"valid_success_specs": 2, "reset_failures": 0}
+        for task in sorted(M.XHARD4_EXTRA_TASKS)
+    }
+
+
+def test_xhard4_extra_tasks_validate_specs_but_do_not_affect_coverage(tmp_path) -> None:
+    extra_task = sorted(M.XHARD4_EXTRA_TASKS)[0]
+    paths = _write_reset_drafts(tmp_path, samples=2, missing=(extra_task, "xhard4", 1))
+    report = M.check_reset_drafts(paths, samples=2)
+    assert report["covered_cells"] == report["expected_cells"] == 52
+    assert report["xhard4_non_gradient_validation"][extra_task] == {
+        "valid_success_specs": 1, "reset_failures": 1,
+    }
+    assert report["check"]["verdict"] == "PASS"
 
 
 def test_reset_all_cli_writes_measured_gate_report(tmp_path, monkeypatch, capsys) -> None:
