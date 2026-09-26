@@ -3,7 +3,7 @@
 > 分支 `newtaskRelease-v5`。V5原始代码锚点为 `da77662`；V6 S1 集成后的环境源码锚点为 `949b6eb`，现行S1结论见 [汇总报告](docs/validation/newtask-v6/20260926-s1-final.md)。依赖锚点（文件 sha256）`uv.lock` `ff0ffd847a55…` / `pyproject.toml` `d03537d6c77a…`。
 > **前置文档**：V5 计划 [NEWTASK_RELEASE_V5_PLAN.md](NEWTASK_RELEASE_V5_PLAN.md)、V5 总报告 [docs/validation/newtask-v5/20260924-v5-final-report.md](docs/validation/newtask-v5/20260924-v5-final-report.md)、V5 规格 `scripts/configs/newtask-v5/v5-01/specs.jsonl`。
 > **V5 决策除本文明确改动的以外全部延续**：原三档逐位冻结（V1 唯一硬闸门）、录像器冻结、`evaluation.py`/`run_example.py`/`dataset_replay.py` 与上游逐字节相同、L1(a)（新值流允许原地移位）、L4(b)（共用采样函数新参数默认等价关闭）、五入口冻结。
-> **授权边界**：`src/robomme/` 改动免逐项事前批准，每步收尾在 `docs/validation/newtask-v6/` 出 md 报告（用户 2026-09-21 口头、2026-09-26 重申「免逐项批准、改完出报告」）。S1 四个worktree副本已集成到主仓；副本分支不 push。用户最新决定S1收尾后停止，正式10／3之外不得擅加大量reset或rollout，采样分布实现另行沟通。
+> **授权边界**：`src/robomme/` 改动免逐项事前批准，每步收尾在 `docs/validation/newtask-v6/` 出 md 报告（用户 2026-09-21 口头、2026-09-26 重申「免逐项批准、改完出报告」）。S1 四个worktree副本已集成到主仓；副本分支不 push。用户已同意第5.3节的S2、S3原计划与S4候选／正式生成及失败预算，但最新指令为「不要直接做 写回md」：**本轮只更新文档，不启动reset、探针、轨迹生成或集群任务；S2～S5仍未执行**。后续收到开始执行的指令时，沿用本次完整授权，不再逐阶段重复询问；清单外新增或超预算才汇总申请补充授权。
 > **证据**：S1汇总和分项报告在 `docs/validation/newtask-v6/`；实测原产物在仓库内忽略目录 `artifacts/newtask-v6/`，不进Git。
 > **简称**：VU/BU/VUS/BUS = Video/ButtonUnmask(Swap)，VPB/VPO = VideoPlaceButton/Order，VR = VideoRepick，PH = PickHighlight，PL = PatternLock，RS = RouteStick；「内环」= `spawned_bins`，「外环」= `distractor_bins`；源码路径省略前缀 `src/robomme/robomme_env/`。
 
@@ -26,6 +26,11 @@
 | D11 | 09-26 | 「按无新增失败放行（建议）：将判据改为失败/错误集合是 S0 的子集，记明 20 项已修复。」 | LIGHTWEIGHT 改为失败与错误身份均无新增；已修复的 S0 失败如实记录，不要求旧失败继续存在 |
 | D12 | 09-26 | 「我只要生成10候选3正式 为什么要这么做？？？ 浪费太多时间了」「把这个写入项目经验教训 不要做大量reset对拍！除非用户指定！」 | 取消S1独立的每格200次reset与正式 `TIER_MONOTONE` 闸门；只按用户指定的每格10候选、3正式生成。其他大批量reset/演示探针不自动执行，须用户另行明确指定 |
 | D13 | 09-26 | 「禁止擅加大规模 reset 对拍 禁止加入大量的rollout生成 用户需要采样生成的分布 也要单独和用户沟通怎么实现」 | 正式10／3之外不加批量reset或rollout；采样生成分布的字段、分母、统计／图示与是否需要额外数据须另与用户定方案，不能据此自行扩大生成 |
+| D14 | 09-26 | 「复用正式每格 10 个候选 新档位实际取值是否符合配置 同意」 | 新档取值检查复用13任务×4档×10个正式成功候选，共520个；不另抽一批检查样本，不恢复200 reset闸门 |
+| D15 | 09-26 | 「修改这个仓库的agents md 所有的多worker超过50个reset/轨迹生成 单worker超过10个reset/轨迹生成 都要找用户授权 而且要一口气授权完 不能分阶段每次都骚扰用户」 | 按 `AGENTS.md` P3 一次列齐所有已知批次、重试与递补上限；已有授权持续有效，不拆阶段反复询问 |
+| D16 | 09-26 | 「按照任务*难度*数量！！！！！！！！！」「其他都同意」 | 规模按任务×难度×数量表述；S4为550成功候选／165成功轨迹目标，抽签每格最多60次尝试，轨迹只在已有10候选内递补至3成功或候选用尽 |
+| D17 | 09-26 | 「s3按照原计划」「s2也按照原计划继续做」 | S3保留16任务×原3档×3局＝144局，不缩为48；S2恢复55格共144次固定演示尝试，细分见第5.3节，不恢复预备材料中的额外200 reset或自动扩抽 |
+| D18 | 09-26 | 「写回md」「不要直接做 写回md」 | 本轮仅写回计划与必要账本，不启动任何生成；范围已同意与实际已执行分开记载 |
 
 ## 二、定稿口径
 
@@ -67,7 +72,7 @@
 
 ## 四、逐环境定稿（机制、实现落点、实测）
 
-> D13 覆盖下文任何可能被解释成额外批量采样的「验收」或「报告」描述：机制定义保留，分布统计如何从正式10／3产物实现须另与用户沟通；未获明确指定时不得为它加跑reset或rollout。
+> 下文机制与历史实测保留；当前执行范围统一以D14～D18和第5.3节为准。取值符合配置的检查只复用正式520个梯度候选；其他分布／均匀性图表不得自行增加样本。S2恢复144次固定演示尝试，200 reset闸门仍取消；本轮仅文档。
 
 ### 1. 难度档管道（全环境共用）
 
@@ -128,7 +133,7 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 | 项 | 内容 |
 |---|---|
-| 对拍什么 | easy / medium / hard 三档，16 个环境 × 3 档 × 3 局 = **144 局**（清单 `scripts/parity/manifest_16x3.json`） |
+| 对拍什么 | easy / medium / hard 三档，16 个任务 × 3 档 × 3 局 = **144 局**（与S0相同的清单 `scripts/configs/newtask-v3/subset_manifest.json`） |
 | 两侧 | 基线侧 = `13e5151` 的代码（worktree），V6 侧 = 合并后的主分支代码；同一批 seed |
 | 判定 | 逐局 h5 SHA 逐字节相同、规格字段零不一致：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
 | 在哪跑 | **本机**（两侧必须同一台机器、同一 GPU 架构，跨架构逐位必然不同；V5 实测每侧约 3 h） |
@@ -144,9 +149,9 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 | xhard4 | 16（13 + MoveCube + InsertPeg + StopCube） | 10 / 3 | 160 | 48 |
 | 合计 | 55 格 | | 550 | 165 |
 
-- 候选 = 抽签（只 reset，不跑演示），每格 10 个；正式局 = 每格取候选 index 0/3/6 跑完整演示；抽签失败按 M4 上限 60 次递补，如实报 shortfall。
+- 候选 = 抽签（只 reset，不跑演示），每格10个成功候选；每格最多60次抽签尝试，成功凑够10个即停，不是每个候选重试60次。正式首选为候选index 0/3/6；失败仅按 `v4_rollout.BACKFILL_ORDER` 从该格已有候选递补，成功3局或10候选全部尝试后停止，不为递补再抽候选。失败、递补和shortfall分别报告，完整上限见第5.3节。
 - 在哪跑：**全部在 GL**，两个占位 job 各 `srun --overlap` 16 worker（`OMP_NUM_THREADS=1`，driver 不用 `max_tasks_per_child`），逐局产物写节点 `/tmp`，正式局的 h5/视频与规格搬回 `/data`，NFS 不留大文件。
-- 原三档不重新生成数据。
+- S4不生成原三档；S3另生成V6侧原三档144局用于回归对拍，S0基线144局直接复用。
 
 ### 5.2 链路与验收判据
 
@@ -159,20 +164,42 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 | **V1** | 见 5.1 | 本机 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
 | FROZEN_FILES | 录像器对 `da77662` 零 diff；三脚本与官方副本逐字节同；五入口 | 本机静态 | `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
 | 梯度表静态核对 | `scripts/parity/v6_tier_monotone.py` 只检计划表的难度维度和不重叠区间；不额外抽reset，不把静态结果写成真实生成证明。正式10候选的实际取值与失败在S4报告 | 本机 | `TIER_PLAN_TABLE=PASS envs=13 violations=0`（静态） |
-| 采样生成分布 / 均匀性 / 区域 | 字段、分组、失败分母、统计和图示方法须另与用户沟通；在方案确定前不增加任何reset或rollout，也不把旧探针结果冒充正式10／3的分布 | 后续用户决策 | `DISTRIBUTION_REPORT=NOT_SPECIFIED` |
+| 正式候选取值检查 | 复用13任务×4档×10个成功候选，按第三节各任务梯度字段逐条核对本档定值／区间；配置来源为本次V6快照及实际消费字段。记录每格实际候选数、缺口、字段不符和失败尝试；不另起reset，不以样本均值替代逐条符合配置检查 | 本机离线读取S4规格 | 拟新增 `CANDIDATE_VALUES=PASS cells=52 candidates=520 mismatches=0 shortfall=0`；不足或不符不得报PASS，尚未实施／实测 |
+| 其他分布 / 均匀性 / 区域图表 | D14只确定复用候选核对实际取值；其他统计／图示方法未定，不据此加跑reset或rollout，也不把旧探针结果冒充正式10／3的分布 | 仅可复用已有产物 | `DISTRIBUTION_REPORT=NOT_SPECIFIED` |
 | 生成报告（不设门槛） | 仅按正式10候选／3局结果报告每格draft、rollout、backfilled、shortfall和失败类别；分布项待D13决定 | GL | `V6_GENERATION=REPORT cells=55 …` |
 
 ### 5.3 实施步骤
 
-| 步 | 内容 | 在哪 | commit（自 12.150 起顺延） |
-|---|---|---|---|
-| S0 | 存 LIGHTWEIGHT 基线；**V1 基线侧（`13e5151` worktree）144 局立即开跑，与 S1 并行**（不依赖任何 V6 改动） | 本机 | — |
-| S1 | 合并四个副本到主分支：管道改 `xhard4` 命名、四档 config 按第三节表填值、S5/O4、MoveCube U、VP 放台段、单调检查器；恢复 V5 快照原样、另起 `newtask-v6` 快照；完成V0、LIGHTWEIGHT、FROZEN_FILES、快照核验、静态梯度表和已完成的单格smoke。用户已取消额外200 reset，`TIER_MONOTONE` 不再是S1闸门 | 本机 | 已实施提交与S1汇总报告 |
-| S2（取消） | 原每格额外演示探针矩阵不自动执行；现有55格/144局预备清单仅作历史材料，除非用户另行明确指定 | — | — |
-| S3 / S4（待新对话决定） | S3原拟在本机跑V1 V6侧144局，属于大规模rollout，须先与用户确认仍需执行；S4为用户指定的55格×10候选、每格3正式（GL两席），采样生成分布实现方式须另与用户定后再启动。S1完成**不自动授权两项起跑**；若保留V1，正式接纳仍以V1 PASS为前提，若取消V1则须另定接纳口径 | S3 本机 / S4 GL | 新对话按D13决定 |
-| S5 | 总报告、`scripts/README.md` 更新、收尾只留正式产物、`scancel` 占位 job | 本机 + GL | 12.157 |
+**当前停在S1完成。下表范围已获用户同意，但本轮仅写回Markdown，S2～S5尚未执行。** 原三档＝easy／medium／hard；四个新档＝xhard1／xhard2／xhard3／xhard4。只有xhard4的三个任务＝MoveCube、InsertPeg、StopCube。
 
-原规模与时间估计：V1 基线侧已耗约3 h并完成；原拟V6侧约3 h、GL正式生成约2 h、产物峰值约230～270 GB。D13后这些估计仅供新对话讨论，不构成启动授权或当前进度。
+| 步 | 内容 | 任务 × 难度 × 数量 | 在哪 | 当前状态与判据 |
+|---|---|---|---|---|
+| S0 | 保存轻量测试基线和V1基线侧轨迹（`13e5151`） | **16任务 × 原3档 × 3局＝144局** | 本机 | 已完成144/144，后续复用，不重新生成 |
+| S1 | 集成四个副本、四档配置、S5/O4、MoveCube区域、VP放台段；恢复V5快照、导出V6快照；完成V0、轻量回归、冻结文件和静态梯度表检查 | 单格冒烟已完成；**不新增独立reset批次** | 本机＋既有GL冒烟 | 已完成，见S1汇总；200 reset闸门保持取消 |
+| S2 | 新档完整演示探针，提前暴露生成故障；不是新旧逐位对拍 | **10任务 × 新4档 × 2次＋3任务 × 新4档 × 4次＋2任务 × 1档 × 2次＋1任务 × 1档 × 12次＝144次** | 本机 | 恢复原计划、未执行；固定尝试数，逐条报告成功／失败，不自动补跑 |
+| S3 | V6侧原三档轨迹与S0相同seed的基线逐局比较；**不比较任何xhard档** | **16任务 × 原3档 × 3局＝144局** | 本机，同机同GPU架构 | 原计划保留、未执行；`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
+| S4抽签 | 每格取得10个成功候选 | **13任务 × 新4档 × 10候选＋3任务 × 1档 × 10候选＝550候选** | GL既有两席 | 已同意、未执行；失败尝试上限见下表 |
+| S4正式 | 每格首选index 0/3/6；失败可在已有候选内递补 | **13任务 × 新4档 × 3局＋3任务 × 1档 × 3局＝165成功局目标** | GL既有两席，各最多16 worker | 已同意、未执行；保留失败和短缺，V1通过后才接纳为正式产物 |
+| S4取值检查 | 检查新档实际取值符合配置，复用S4抽签所得的梯度候选 | **13任务 × 新4档 × 10候选＝520候选；额外生成0** | 本机离线 | 已同意、未实施；查每条规格，不恢复200次采样 |
+| S5 | 总报告、使用说明和产物清单；核对后释放本任务两席 | **额外reset／轨迹生成0** | 本机＋GL | 未执行；不自动重跑、覆盖或删除失败证据，清理须另列明确对象 |
+
+**S2的144次具体分组**：10个常规任务为BinFill、PickXtimes、SwingXtimes、PickHighlight、VideoUnmask、ButtonUnmask、PatternLock、RouteStick、VideoPlaceButton、VideoPlaceOrder（10×4×2＝80）；交换三任务为VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick（3×4×4＝48）；StopCube／InsertPeg只跑xhard4（2×1×2＝4）；MoveCube只跑xhard4（1×1×12＝12）。总数80＋48＋4＋12＝144，指尝试数，失败也在分母内，不保证144次全部成功。MoveCube三方法以4／4／4为覆盖目标，优先从已有可核实记录选择seed；不得为补齐方法配额另加reset，12次内覆盖不足如实报告。
+
+**全部失败预算一次列齐，后续不分阶段重复申请：**
+
+| 批次 | 任务 × 难度 × 单格上限 | 停止条件 |
+|---|---|---|
+| S2演示探针 | 上述 **144次固定尝试** | 固定身份各尝试一次，失败不自动重抽或补演示；VR七块情况只报告这批及正式候选中实际已有的结果 |
+| S3原值对拍 | **16 × 3 × 3＝144次轨迹尝试** | 基线不重跑、不换seed补成功；失败或不一致保留证据，不自动整批重跑 |
+| S4候选抽签（含失败重抽） | **13 × 4 × 最多60次＋3 × 1 × 最多60次＝最多3300次抽签尝试** | 每格10成功或60次总尝试即停；不是每候选各60次 |
+| S4演示（含失败递补） | **13 × 4 × 最多10次＋3 × 1 × 最多10次＝最多550次轨迹尝试** | 每格成功3局或已有10候选用尽即停；不为递补增加新候选 |
+| 额外200 reset、分布补样、新值run2、整批重跑 | **0** | 不恢复；旧预备材料中的命令不构成授权 |
+
+候选足额时，计划首批轨迹尝试最多144＋144＋165＝**453次**；计入S4递补的总尝试上限为144＋144＋550＝**838次**。候选短缺则实际可执行数相应减少，不能把目标数写成实际完成数；已完成S0与S1冒烟不再加跑。需要最小冒烟时取本批首条、计入该批预算，不再追加独立批次。**抽签尝试数不等于底层reset调用数**：当前入口先构造环境、再显式reset，正常每次候选或轨迹尝试通常包含两次环境reset；失败可能提前结束。执行记录须另记实际初始化／reset调用，不把3300写成所有阶段的reset调用总数。
+
+执行顺序为：收到后续开始执行指令后，先核对S1证据与现有产物，再做S2；S3与S4随后可并行，S4产物在V1通过前仅作待接纳产物。既定范围与上限已有一次性授权，仅清单外新任务、超预算或实质范围变化再合并提出补充授权。本轮不运行上表任何批次。
+
+时间与存储：S0基线日志实测 `elapsed_s=2994.404`（约50分钟）、退出0；原计划V6侧约3小时、GL正式约2小时与230～270 GB只是历史估计，未覆盖所有失败递补，S2尚无本轮实测耗时。执行前核对两席状态、空间与依赖；不得把历史资源快照当作当前可用资源。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -182,13 +209,15 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 | 项 | 值 |
 |---|---|
-| 主仓库 | `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，upstream `origin/newtaskRelease-v5`（GitHub `hongzefu/robomme_benchmark_MotionJEPA`）。S1已在主仓实施；环境源码锚点 `949b6eb`，现行验收与用户取消200 reset的边界见S1汇总报告 |
+| 主仓库 | `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，upstream `origin/newtaskRelease-v5`（GitHub `hongzefu/robomme_benchmark_MotionJEPA`）。S1已在主仓实施；环境源码锚点 `949b6eb`。S1结果见汇总报告，后续S2～S5当前范围以第5.3节及D14～D18为准；本轮仅文档 |
 | V1 基线 commit | `13e5151`（12.63） |
 | GL 侧仓库 | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl`（本机已挂载可直接读写；已切到 `newtaskRelease-v5`、`uv sync` 完成；官方隔离源码树在其 `artifacts/train-parity/local-smoke-01/official-src/`，7.5 MB，`.official_tree` 标记 `1d4c1369…`）。历史 `artifacts/` 有 654 GB 旧产物，不是 V6 的，不要动 |
 | 官方源码树（本机） | `artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py`，规格回放 worker 用 `scripts/parity/train_split_worker.run_one` |
 | venv | 主仓库 `.venv`（editable 安装指向主仓库 src）。在副本里运行先 `command -v uv`，再以 `PYTHONPATH=$PWD/src uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -c "import robomme;print(robomme.__file__)"` 确认导入源；NFS上uv操作另设 `UV_LINK_MODE=copy` |
 
 **四个历史代码副本（git worktree，分支从 `e1755f9` 切出；S1已按定稿集成，下表「合入时要改」是历史检查清单，不是当前待办；副本不 push）**
+
+表内「未实现」「要新做」「快照未导出」均描述合并前副本状态，相关集成项已随S1完成，当前状态以S1汇总报告为准；不要据此重复实施或重跑验证。
 
 | worktree | 分支 / commit | 内容 | 合入时要改 |
 |---|---|---|---|
@@ -197,7 +226,7 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 | `/data/hongzefu/v6-draft/swap` | `v6-draft-swap` / `fec4d98`（10 文件 +1035/−91） | 新文件 `utils/swap_uniform.py`（G、S5、序列复核、O4）；VUS/BUS `decision.xhard.swap_plan_v6`（含 M5 开关 `hidden_bin_permutation_size=4`）、外环 `label_perm`、锁定循环读预规划 + 窗首复核；VR `swap_plan_seed`；4 个锁旧配置的测试更新；`test_v6_swap_uniform.py`；报告 `plan-probes/impl-swap/report.md` | **M5 已定 (b) 不动 → 合入时把 `hidden_bin_permutation_size` 设回 3（或删键）**；键名 `xhard` → `xhard4`；`test_snapshot_matches_source` 对 V5 快照失败属预期，V6 快照重导后消失 |
 | `/data/hongzefu/v6-draft/vp` | `v6-draft-vp` / `9b51421`（7 文件 +646/−27） | `xhard_home_site.validate_demo_plan` 放行三种策略、避障落点 `plan_goal_drop_xy/build_goal_drop_sites`；VPB/VPO `_build_xhard_final_sites`；VPO `xhard.visit_count_range`；`vqa_options` drop 候选；`scripts/parity/v6_tier_monotone.py` + `test_v6_tier_monotone.py`；报告 `plan-probes/impl-vp/report.md` | 五档都 `return_to_origin`（D8）→ `return_last_only`/不放回代码保留不启用；**VPB 按档额外放台段（放到无关台）未实现，要新做**；VPO 每档总放台定值的分配逻辑要新做；`v6_tier_monotone.PLAN_TIERS` 按第三节表更新 |
 
-合并顺序建议：pipeline → swap → movecube → vp（后三者只动各自环境文件与少量共用件，冲突点是 `sampling_config.py`、`xhard_home_site.py`、各环境 `config_xhard*`、V5 快照与测试文件）。合并后先做 V0、LIGHTWEIGHT，再逐环境 reset 冒烟。
+历史合并顺序建议为pipeline → swap → movecube → vp；S1已完成集成及验证，不再次合并或另开逐环境reset冒烟。后续只执行第5.3节列明的批次。
 
 **已完成的实测（都在 `artifacts/newtask-v6/plan-probes/`，可直接引用，不必重跑）**
 
@@ -209,15 +238,17 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 | `audit/` | 计划四段审计逐条核对表（数字全部逐位复现） |
 | `impl-*/` | 四个副本各自的改动、测试、reset 逐字比、真演示 |
 
-**GL 现状**：占位 job `61890467`（gl1526）与 `61890468`（gl1517），各 1 GPU/16 CPU/192 G/48 h，2026-09-25 约 16:00 起跑，属 V6 生成任务；只许 `srun --jobid=<ID> --overlap --exact --ntasks=1 --cpus-per-task=16 --gpu_cmode=shared`，不许 sbatch/scancel 其它 job；生成完成 commit 后按这两个 ID `scancel`。登录 `ssh -o BatchMode=yes greatlakes`（ControlMaster 复用，不弹认证；失败就停下问用户认证方式）。NFS 上 V6 目录已清空。
+**GL 历史资源快照（本轮未查询）**：占位 job `61890467`（gl1526）与 `61890468`（gl1517），各1 GPU/16 CPU/192 G/48 h，2026-09-25约16:00起跑，属V6生成任务。执行前重查任务归属、存活、节点与空间；只许向这两个仍有效的席位 `srun --overlap`，不新开job、不操作其他任务；本任务完成并提交后才按精确ID释放这两个席位。登录沿用 `ssh -o BatchMode=yes greatlakes`；本轮不连接、不提交、不取消作业。
 
 **踩过的坑（不要再踩）**：driver 用 `ProcessPoolExecutor(max_tasks_per_child=N)` 在 spawn 上下文换代点必挂死（GL 两次）；`RobommeRecordWrapper` 的 h5 逐帧记录挂在 `save_video` 上，关视频会让全部局判失败；`generate_dataset_newseed._worker` 只认 `episode_spec`，MoveCube 等只认 `native_episode_spec`，规格回放走 `train_split_worker.run_one`；VUS 的 swap/pick 次数读 `native.parameters.configs[档]` 不读 decision；VUS/BUS 交换对、VR 发起者方向不是规格取值点（S5 需新增取值点）；出图用 `Noto Sans CJK JP`，出完必须 Read 目视检查；GL 上 NFS `rm -rf` 偶尔报 Directory not empty，重试即可。
 
-**下一步**：S0已完成；本轮只收尾S1并停止。S3/S4的原值对拍与正式10／3生成留给新对话，额外reset/rollout及采样分布方案遵守D12/D13另行决定。
+**下一步**：S0、S1已完成；S2恢复144次探针、S3保留144局原三档对拍、S4为550成功候选／165成功轨迹目标，并复用520候选核对取值。具体分组和失败上限见第5.3节，范围已同意、批次均未执行。用户本轮只要求写回Markdown；后续明确开始执行后沿用完整授权，不再按阶段重复询问。
+
+**预备资料的失效项**：`artifacts/newtask-v6/s2-prep/README.md` 中依赖S1 xhard4的200成功draft、MoveCube不足4／4／4就自动扩抽，以及 `videorepick_xhard4_reset_manifest.json` 的备用200次reset均不恢复。`s2-prep/manifest.json` 只可复用其中144次演示分组，执行前只读核验seed和配置来源；不得照搬整份旧说明启动额外批次。VR七块接受情况仅从S2四次相应探针和S4该格已有抽签尝试报告，失败入分母，小样本不代表总体成功率。`s4-prep/RUNBOOK.md` 的旧资源、提交和路径快照须重查，授权范围以第5.3节为准。
 
 ## 一、红线
 
-N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`evaluation.py`、五入口冻结。N3 第一部分决策清单以外不自加设计；细节自决并在报告注明。N4 新值流按 L1(a) 允许原地移位；xhard4 不对拍。N5 共用函数新参数默认等价关闭，`NATIVE_SPEC_GOLDEN`/`NATIVE_AST_GOLDEN` 不动。N6 碰撞检测不为均匀让路。N7 每档在用户指定维度上均值严格递增且区间不重叠。N8 文档禁硬编码行号。N9 Agent 工具派的 subagent 一律 opus、并行不设上限；workflow 需逐次审批且其 `agent()` 只用 sonnet（收尾/计划类最多 3 次 opus）、`model` 不得省略。N10 长任务 tmux + Monitor；GL 只 `srun --overlap` 连现有 job。N11 正式10／3之外不加批量reset或rollout；采样分布的字段、分母、图示和是否需要额外数据先与用户单独确定（D12/D13、`AGENTS.md`项目规则14）。
+N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`evaluation.py`、五入口冻结。N3 第一部分决策清单以外不自加设计；细节自决并在报告注明。N4 新值流按 L1(a) 允许原地移位；xhard4 不对拍。N5 共用函数新参数默认等价关闭，`NATIVE_SPEC_GOLDEN`/`NATIVE_AST_GOLDEN` 不动。N6 碰撞检测不为均匀让路。N7 每档在用户指定维度上均值严格递增且区间不重叠。N8 文档禁硬编码行号。N9 Agent 工具派的 subagent 一律 opus、并行不设上限；workflow 需逐次审批且其 `agent()` 只用 sonnet（收尾/计划类最多 3 次 opus）、`model` 不得省略。N10 长任务 tmux + Monitor；GL 只 `srun --overlap` 连现有 job。N11 只按第5.3节完整清单执行S2／S3／S4，额外200 reset、分布补样、run2及整批重跑为0；单worker超过10、多worker合计超过50按 `AGENTS.md` P3 一次性授权，已同意范围不重复询问。本轮受D18约束，仅写文档，不启动生成。
 
 ## 二、按文件的改动落点
 
@@ -238,6 +269,8 @@ N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`eval
 
 ## 三、runbook（参数名以 S1 实现为准）
 
+本节为后续执行参考，**本轮不运行**。S0／S1已完成的检查沿用现有证据，不为更新文档重跑。S2～S4统一受第5.3节数量与失败上限约束；长期任务须先按仓库规则落执行脚本、用tmux保存日志和退出码。
+
 ```bash
 # 只读核验
 git diff --quiet da77662 -- src/robomme/env_record_wrapper/RecordWrapper.py && echo RECORDER_FROZEN=PASS; ls -1 scripts/*.py | wc -l   # 期望 5
@@ -252,32 +285,35 @@ for suffix in 00 01 02 03; do
   printf 'EXIT_CODE=%s\n' "$?" >> "artifacts/newtask-v6/s0/lightweight-shards/run-$suffix.log"
 done
 # 与 S0 的 FAILED/ERROR 身份分别作集合差：V6 减 S0 必须为空；S0 减 V6 逐项记为已修复
-# 原S2额外演示矩阵已取消；不运行批量探针
-# V1
+# S2已恢复144次固定演示尝试：10×4×2 + 3×4×4 + 2×1×2 + 1×1×12。
+# 只复用s2-prep/manifest.json中的演示分组，失败不补；禁用备用200 reset与MoveCube自动扩抽。
+# S3 V1：只跑V6侧16×3×3=144局，复用既有base；下列省略号须按最终配置补全，不是可直接执行命令。
 uv run --no-sync python scripts/parity/train_split_parity.py run --manifest scripts/configs/newtask-v3/subset_manifest.json …
 uv run --no-sync python scripts/parity/train_split_parity.py compare --run base=artifacts/newtask-v6/v1/base --run v6=artifacts/newtask-v6/v1/v6 --pair base/B:v6/B
-# S4 正式生成留给新对话：每格10成功候选、index 0/3/6三正式、每环境最多60次总抽签尝试。
+# S4：13×4×10 + 3×1×10=550成功候选；每格最多60次抽签，总计最多3300次。
+# 正式首选13×4×3 + 3×1×3=165局；允许仅从已有候选递补，总计最多550次轨迹尝试。
+# 从上述正式候选离线核对13×4×10=520条梯度取值，不再另起reset批次。
 # 只连接现有两席job，逐局写节点/tmp，流式搬回/data；禁止使用旧的NFS仓库相对产物落点。
 # 起跑前核对最终主仓代码、两节点/tmp容量和 artifacts/newtask-v6/s4-prep/RUNBOOK.md；
-# 此预备runbook在忽略目录，须在新对话复核后按D12/D13收窄执行，不构成本轮起跑授权。
+# 此预备runbook在忽略目录，历史资源须复核；以D14～D18及5.3为准，本轮仅写文档。
 ```
 
 ## 四、风险登记
 
 | # | 风险 | 处置 |
 |---|---|---|
-| 1 | `xhard` → `xhard4` 全量改名漏一处（src 143 行字面、61 行比较、scripts 14 行） | grep `"xhard"` 归零作 S1 验收；每环境每档一次 reset 断言 `spec_kind` 与档名 |
+| 1 | `xhard` → `xhard4` 全量改名漏一处（src 143 行字面、61 行比较、scripts 14 行） | 沿用S1检查；在S2／S4已列尝试内检查 `spec_kind` 与档名，不另开每格reset批次 |
 | 2 | BUS G 不连通 reset 拒绝约 37%、VR 约 40%、VPO 约 50% | 抽签上限 60；如实报 shortfall |
 | 3 | 外环局内不均匀 | 只报告未参与数 |
 | 4 | MoveCube 两种推法约 25% 推没到位（与位置无关，V5 同量级） | 已实测；S2 只做回归 12 局 |
-| 5 | VPB 额外放台段是新实现；VR 7 块 reset 率未测 | S2 本机探针 |
+| 5 | VPB 额外放台段是新实现；VR 7 块实际接受情况未测 | 只用S2既定探针与S4已有候选尝试；不运行VR备用200 reset |
 | 6 | AST 锁：内环预填搭档会跳过锁定循环的运行时复核分支 | 窗首另挂复核（副本已做），锁定测试保持通过 |
 | 7 | 多 worker driver 用 `max_tasks_per_child` 会在 spawn 换代点挂死（GL 实测两次） | 不用该参数 |
 | 8 | 产物峰值约 230～270 GB | `/data` 余 2.4 TB，起跑前再核 |
 
 ## 五、留档与 commit 纪律
 
-沿 V5：每步一份 `docs/validation/newtask-v6/<日期>-<步>.md`；commit 只 add 本步文件，message 沿 `<大版本>.<小版本> 中文描述`；探针留 `artifacts/newtask-v6/plan-probes/`（不进 git）；收尾只保留正式 h5/视频与规格；GL 生成完成 commit 后 `scancel` 本任务的占位 job。
+沿V5：每步一份 `docs/validation/newtask-v6/<日期>-<步>.md`；commit只add本步文件，message沿 `<大版本>.<小版本> 中文描述`；探针留 `artifacts/newtask-v6/plan-probes/`（不进git）。正式h5／视频与规格、失败证据及必要日志保留；产物清理另列明确对象，不因进入S5自动删除。GL生成完成并提交后只释放核实仍属于本任务的两个占位job。本轮只提交文档，不操作任务或产物。
 
 ## 六、证据索引（`artifacts/newtask-v6/plan-probes/`）
 

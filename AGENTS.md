@@ -520,9 +520,10 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| V6第5.3节完整范围与仅文档边界（2026-09-26） | 计划已写回，生成未启动 | S2恢复144次固定探针，S3保留16×3×3＝144局；S4为13×4×10＋3×1×10＝550候选、13×4×3＋3×1×3＝165成功轨迹目标，复用520候选查取值；额外200 reset仍取消 | 用户最新要求「不要直接做 写回md」；后续收到开始指令再按完整清单执行，已同意范围不分阶段重问 |
 | reset／轨迹生成数量阈值与一次性授权（2026-09-26） | 文档修订完成 | 项目规则 P3 明确单 worker 超过10、多 worker 合计超过50须事先授权，失败重试和递补计入预算；全部已知阶段一次汇总审批，已有授权不重复询问；正本标记块保持不变 | 后续运行沿用完整授权清单；本轮未启动生成 |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0基线完成；按用户D11～D13修订范围的S1已验收并留汇总报告；额外200 reset按用户要求停跑 | V6 snapshot `ready=16 pending=0`；`NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0`；LIGHTWEIGHT新增失败/错误0、已修复20；`RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5`；静态 `TIER_PLAN_TABLE=PASS envs=13 violations=0`；GL单格pipeline 1/1；额外200批次 `TIER_MONOTONE=CANCELLED_BY_USER`，非PASS/FAIL；[S1汇总](docs/validation/newtask-v6/20260926-s1-final.md) | 本次S1提交后停止并移交新对话；正式每格10候选／3局、S3原值对拍与分布实现另按用户指令推进，不增加额外批量reset/rollout |
+| 新值模式 V6 实施（2026-09-26） | S0基线完成；按用户D11～D13修订范围的S1已验收并留汇总报告；额外200 reset按用户要求停跑 | V6 snapshot `ready=16 pending=0`；`NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0`；LIGHTWEIGHT新增失败/错误0、已修复20；`RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5`；静态 `TIER_PLAN_TABLE=PASS envs=13 violations=0`；GL单格pipeline 1/1；额外200批次 `TIER_MONOTONE=CANCELLED_BY_USER`，非PASS/FAIL；[S1汇总](docs/validation/newtask-v6/20260926-s1-final.md) | 后续范围已按D14～D18写回计划5.3；S2／S3恢复、S4已同意但均未启动，本轮仅文档，不增加清单外reset／rollout |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -2274,3 +2275,12 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 规则内容：reset 与轨迹生成分别按全部实际尝试计数，单 worker 超过10、多 worker 合计超过50须事先授权；失败、重试、递补、对照、冒烟与重跑纳入整体预算，不允许跨阶段／命令／机器／子代理拆分规避。首次一次性列齐已知工作与预算请用户决定，获批后连续执行，既有明确授权不重复申请；只有新增范围或超预算才合并提出补充授权。
 - 验证：`git diff --check` 退出0；用 `git show HEAD:AGENTS.md` 与当前文件分别提取 `common-agents` 标记块后执行 `cmp`，退出0；人工核对新增条款与用户要求一致，没有新增链接或命令示例。纯文档修改不运行 Python、测试、reset 或轨迹生成。
 - 当前状态：文档修订完成；按仓库提交规则只暂存本文件，提交后同步当前分支至既有 upstream。本次规则修改不授权启动任何生成批次。
+
+### 2026-09-26 America/Detroit — V6第5.3节按完整规模写回计划（仅文档）
+
+- 用户关键指令原话（按顺序）：「复用正式每格 10 个候选 新档位实际取值是否符合配置 同意」「其他都同意」「s3按照原计划」「s2也按照原计划继续做」「写回md」「不要直接做 写回md」。
+- 计划与范围：只修改 `NEWTASK_RELEASE_V6_PLAN.md` 的授权边界、决策表、第5.1～5.3节及相应接手指南／红线／运行说明，并同步本账本；主代理唯一写入，持久化子代理只读核对S2清单和最终差异。最新指令明确仅写Markdown，未启动reset、演示、轨迹、集群任务或测试。
+- 实施：S0／S1标完成；S2恢复10×4×2＋3×4×4＋2×1×2＋1×1×12＝144次固定演示尝试，失败不自动补跑；S3保留16×3×3＝144局原三档同seed对拍，基线直接复用，不比较xhard；修正144局权威清单为 `scripts/configs/newtask-v3/subset_manifest.json`。S4写清550成功候选、165成功轨迹目标、最多3300次候选抽签尝试及550次轨迹尝试；取值检查只复用13×4×10＝520候选。已同意范围不分阶段重问，S2～S5仍未执行。
+- 发现与处置：旧S2预备材料夹带VR备用200 reset及MoveCube分支不足就扩抽；本次仅恢复144次演示，计划明确排除这两项。MoveCube三分支4／4／4为覆盖目标，固定12次内不足如实报告，不另抽样。区分逻辑抽签尝试与构造／显式reset调用；历史GL席位只记快照，未连接集群。S0真实耗时为2994.404秒，替换原估算已耗约3小时的错误现状描述。
+- 验证：`jq`只读核对S2为55格144次（xhard1／2／3各32、xhard4为48），VR备用清单恰200行，S3权威清单恰144行；`git diff --check`通过。未修改生产代码、配置、旧预备材料或历史报告，未运行Python或生成。
+- 下一步：提交并推送本轮两份Markdown；后续收到开始执行指令后按第5.3节完整清单推进，不将本次文档提交当成任务已执行。
