@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V6 档位单调性检查器（计划 NEWTASK_RELEASE_V6_PLAN.md 的 S1 与验收判据 TIER_MONOTONE）。
+"""V6 档位单调性检查器（S1 默认只检查静态 TIER_PLAN_TABLE；真实 reset 是可选诊断）。
 
 难度序 ``easy < medium < hard < xhard1 < xhard2 < xhard3 < xhard4``。每个环境按计划第三节总表里
 用户指定（或实施方定）的难度维度取「每局取值的均值」，逐档比较：
@@ -18,16 +18,17 @@
 ``PLAN_TIERS`` 是按计划 2.3～2.12 表格逐格抄录的数值；新档 config 在管道那一路落地后，
 用 :func:`tiers_from_decisions` 从各档 decision 抽出同一组维度再调 :func:`check_all`。
 
+S1 默认验收只运行静态计划表检查，输出 ``TIER_PLAN_TABLE``。真实 reset 的 ``--reset-all`` 是额外诊断，
+只有用户明确要求时才运行，不属于 S1 默认验收；诊断结果不得替代静态 ``TIER_PLAN_TABLE``。
+
 uv run --no-sync python -m scripts.parity.v6_tier_monotone       # 检查最终计划表
 uv run --no-sync python -m scripts.parity.v6_tier_monotone --json
-# 按 S1 运行规程，前三档各抽13环境，xhard4 抽含 MoveCube/InsertPeg/StopCube 的16环境：
-uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v6-mono-xhard1 --tasks BinFill,PickXtimes,SwingXtimes,PickHighlight,VideoUnmask,ButtonUnmask,VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick,PatternLock,RouteStick,VideoPlaceButton,VideoPlaceOrder --difficulty xhard1 --seed-profile v6 --candidates-per-env 200 --max-reset-attempts 12000 --sampling-config scripts/configs/newtask-v6/sampling_config.json --out artifacts/newtask-v6/plan-probes/xhard1/drafts.jsonl
+# 仅用户明确要求真实 reset 诊断时运行：
 uv run --no-sync python -m scripts.parity.v6_tier_monotone --reset-all --drafts <xhard1.jsonl> --drafts <xhard2.jsonl> --drafts <xhard3.jsonl> --drafts <xhard4.jsonl> --samples 200 --out artifacts/newtask-v6/vp-tier-monotone.json
 
 ``--reset-all`` 消费四份 ``v4_specs draw`` 的真实 reset 规格，不启动仿真；xhard1～3 各须含13个梯度环境，
 xhard4 须含全部16环境。13个梯度环境的每档均需200条连续成功 episode，额外3环境只核验规格与尝试行。
-无 ``--reset-all`` 时只验静态计划表，结果标签为 ``TIER_PLAN_TABLE``，
-不得当作 ``TIER_MONOTONE`` 实测闸门。
+此诊断仅在用户明确指定时运行；无 ``--reset-all`` 时只验静态计划表，结果标签为 ``TIER_PLAN_TABLE``。
 """
 
 from __future__ import annotations
@@ -710,10 +711,11 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--json", action="store_true", help="额外打印逐档均值 JSON")
     parser.add_argument("--reset-all", action="store_true",
-                        help="用四份 v4_specs draw/freeze 文件验证13环境×4档的真实reset样本")
+                        help="仅用户明确要求时运行的可选真实reset诊断，不属于S1默认验收")
     parser.add_argument("--drafts", action="append", default=[],
                         help="一个 V6 档位的 v4_specs drafts.jsonl/specs.jsonl；须重复提供四次")
-    parser.add_argument("--samples", type=int, default=200, help="每个环境/档位所需成功reset数，默认200")
+    parser.add_argument("--samples", type=int, default=200,
+                        help="可选reset诊断每个环境/档位所需成功reset数，默认200")
     parser.add_argument("--out", help="reset闸门 JSON 报告路径，必须位于仓库内")
     args = parser.parse_args(argv)
     if args.reset_all:

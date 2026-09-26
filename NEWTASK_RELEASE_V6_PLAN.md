@@ -1,10 +1,10 @@
 # 新值模式 V6（定稿）：四档 xhard1～xhard4、交换对象均匀化、MoveCube 圆环区域
 
-> 分支 `newtaskRelease-v5`，代码锚点 `da77662`（12.134；此后至本文件只改文档），依赖锚点（文件 sha256）`uv.lock` `ff0ffd847a55…` / `pyproject.toml` `d03537d6c77a…`。
+> 分支 `newtaskRelease-v5`。V5原始代码锚点为 `da77662`；V6 S1 集成后的环境源码锚点为 `949b6eb`，现行S1结论见 [汇总报告](docs/validation/newtask-v6/20260926-s1-final.md)。依赖锚点（文件 sha256）`uv.lock` `ff0ffd847a55…` / `pyproject.toml` `d03537d6c77a…`。
 > **前置文档**：V5 计划 [NEWTASK_RELEASE_V5_PLAN.md](NEWTASK_RELEASE_V5_PLAN.md)、V5 总报告 [docs/validation/newtask-v5/20260924-v5-final-report.md](docs/validation/newtask-v5/20260924-v5-final-report.md)、V5 规格 `scripts/configs/newtask-v5/v5-01/specs.jsonl`。
 > **V5 决策除本文明确改动的以外全部延续**：原三档逐位冻结（V1 唯一硬闸门）、录像器冻结、`evaluation.py`/`run_example.py`/`dataset_replay.py` 与上游逐字节相同、L1(a)（新值流允许原地移位）、L4(b)（共用采样函数新参数默认等价关闭）、五入口冻结。
-> **授权边界**：`src/robomme/` 改动免逐项事前批准，每步收尾在 `docs/validation/newtask-v6/` 出 md 报告（用户 2026-09-21 口头、2026-09-26 重申「免逐项批准、改完出报告」）。代码改动目前只在四个 worktree 副本里（`/data/hongzefu/v6-draft/*`），主仓库源码未动，副本分支不 push。
-> **证据**：全部实测留档 `artifacts/newtask-v6/plan-probes/<议题>/report.md`（本机、不进 git，索引见第二部分六）。
+> **授权边界**：`src/robomme/` 改动免逐项事前批准，每步收尾在 `docs/validation/newtask-v6/` 出 md 报告（用户 2026-09-21 口头、2026-09-26 重申「免逐项批准、改完出报告」）。S1 四个worktree副本已集成到主仓；副本分支不 push。用户最新决定S1收尾后停止，正式10／3之外不得擅加大量reset或rollout，采样分布实现另行沟通。
+> **证据**：S1汇总和分项报告在 `docs/validation/newtask-v6/`；实测原产物在仓库内忽略目录 `artifacts/newtask-v6/`，不进Git。
 > **简称**：VU/BU/VUS/BUS = Video/ButtonUnmask(Swap)，VPB/VPO = VideoPlaceButton/Order，VR = VideoRepick，PH = PickHighlight，PL = PatternLock，RS = RouteStick；「内环」= `spawned_bins`，「外环」= `distractor_bins`；源码路径省略前缀 `src/robomme/robomme_env/`。
 
 # 第一部分（给人看）
@@ -24,6 +24,8 @@
 | D9 | 09-26 | 「改为xhard123 xhard现在xhard改为xhard4！原来的纯xhard废弃 不要再使用 容易混淆 每个难度要有区分 不能有重叠交集合 给出新的难度梯度表」 | 档名 xhard1～xhard4，`xhard` 废弃；四档区间互不重叠 |
 | D10 | 09-26 | 「可以超过1300 新的四档表（hard 冻结不动）同意」「在第一部分不要留我md演进的过程 只保留用户决策列表 和最后定下来的计划」「把你已经定下来的分支和结论写入第二部分 新的agent可能无记忆要重新开始」 | 评估 1301 步不限制新档取值；四档表定稿；本文件结构；第二部分含接手指南 |
 | D11 | 09-26 | 「按无新增失败放行（建议）：将判据改为失败/错误集合是 S0 的子集，记明 20 项已修复。」 | LIGHTWEIGHT 改为失败与错误身份均无新增；已修复的 S0 失败如实记录，不要求旧失败继续存在 |
+| D12 | 09-26 | 「我只要生成10候选3正式 为什么要这么做？？？ 浪费太多时间了」「把这个写入项目经验教训 不要做大量reset对拍！除非用户指定！」 | 取消S1独立的每格200次reset与正式 `TIER_MONOTONE` 闸门；只按用户指定的每格10候选、3正式生成。其他大批量reset/演示探针不自动执行，须用户另行明确指定 |
+| D13 | 09-26 | 「禁止擅加大规模 reset 对拍 禁止加入大量的rollout生成 用户需要采样生成的分布 也要单独和用户沟通怎么实现」 | 正式10／3之外不加批量reset或rollout；采样生成分布的字段、分母、统计／图示与是否需要额外数据须另与用户定方案，不能据此自行扩大生成 |
 
 ## 二、定稿口径
 
@@ -64,6 +66,8 @@
 | InsertPeg / StopCube | 不加档 | 原三档同值 | — | — | — | 原 xhard 改名 | 数值不动 |
 
 ## 四、逐环境定稿（机制、实现落点、实测）
+
+> D13 覆盖下文任何可能被解释成额外批量采样的「验收」或「报告」描述：机制定义保留，分布统计如何从正式10／3产物实现须另与用户沟通；未获明确指定时不得为它加跑reset或rollout。
 
 ### 1. 难度档管道（全环境共用）
 
@@ -154,21 +158,21 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 | LIGHTWEIGHT | `tests/lightweight/ -m 'not gpu and not slow'`；按五分钟预算分片，核对全部测试文件无遗漏/重复；失败与错误身份分别为 S0 基线（46 failed / 12 errors）的子集，新增均为零，另记已修复项 | 本机 | `LIGHTWEIGHT=PASS new_failures=0 new_errors=0 resolved=20` |
 | **V1** | 见 5.1 | 本机 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
 | FROZEN_FILES | 录像器对 `da77662` 零 diff；三脚本与官方副本逐字节同；五入口 | 本机静态 | `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
-| TIER_MONOTONE | 每环境每档 200 局离线 reset：用户指定维度均值严格递增且区间不重叠（`scripts/parity/v6_tier_monotone.py`） | 本机 | `TIER_MONOTONE=PASS envs=13 violations=0` |
-| 均匀性 / 区域 | 第四节 2、6 的判定行 | 本机离线 + 生成报告 | 同上 |
-| 生成报告（不设门槛） | 每格 draft/rollout/backfilled/shortfall；均匀性统计；MoveCube 区域违例 | GL | `V6_GENERATION=REPORT cells=55 …` |
+| 梯度表静态核对 | `scripts/parity/v6_tier_monotone.py` 只检计划表的难度维度和不重叠区间；不额外抽reset，不把静态结果写成真实生成证明。正式10候选的实际取值与失败在S4报告 | 本机 | `TIER_PLAN_TABLE=PASS envs=13 violations=0`（静态） |
+| 采样生成分布 / 均匀性 / 区域 | 字段、分组、失败分母、统计和图示方法须另与用户沟通；在方案确定前不增加任何reset或rollout，也不把旧探针结果冒充正式10／3的分布 | 后续用户决策 | `DISTRIBUTION_REPORT=NOT_SPECIFIED` |
+| 生成报告（不设门槛） | 仅按正式10候选／3局结果报告每格draft、rollout、backfilled、shortfall和失败类别；分布项待D13决定 | GL | `V6_GENERATION=REPORT cells=55 …` |
 
 ### 5.3 实施步骤
 
 | 步 | 内容 | 在哪 | commit（自 12.150 起顺延） |
 |---|---|---|---|
 | S0 | 存 LIGHTWEIGHT 基线；**V1 基线侧（`13e5151` worktree）144 局立即开跑，与 S1 并行**（不依赖任何 V6 改动） | 本机 | — |
-| S1 | 合并四个副本到主分支：管道改 `xhard4` 命名、四档 config 按第三节表填值、S5/O4、MoveCube U、VP 放台段、单调检查器；恢复 V5 快照原样、另起 `newtask-v6` 快照；V0 + LIGHTWEIGHT + FROZEN_FILES + TIER_MONOTONE | 本机 | 12.150～12.153 + 报告 |
-| S2 | 本机演示探针：每格 ≥2 局（VUS/BUS/VR 各档 4 局、MoveCube 12 局）；VR 7 块 reset 率实测 | 本机 | 12.154 + 报告 |
-| S3 ∥ S4 | **并行**：S3 = V1 V6 侧 144 局（本机）+ 与基线侧比；S4 = 抽签 550 候选 + 生成 165 正式局（GL 两席）。两者都只依赖 S1，互不依赖；生成产物先落盘，**V1 PASS 之后才算正式**，V1 不过则生成作废重跑 | S3 本机 / S4 GL | 12.155（S3）、12.156（S4）+ 生成报告 |
+| S1 | 合并四个副本到主分支：管道改 `xhard4` 命名、四档 config 按第三节表填值、S5/O4、MoveCube U、VP 放台段、单调检查器；恢复 V5 快照原样、另起 `newtask-v6` 快照；完成V0、LIGHTWEIGHT、FROZEN_FILES、快照核验、静态梯度表和已完成的单格smoke。用户已取消额外200 reset，`TIER_MONOTONE` 不再是S1闸门 | 本机 | 已实施提交与S1汇总报告 |
+| S2（取消） | 原每格额外演示探针矩阵不自动执行；现有55格/144局预备清单仅作历史材料，除非用户另行明确指定 | — | — |
+| S3 / S4（待新对话决定） | S3原拟在本机跑V1 V6侧144局，属于大规模rollout，须先与用户确认仍需执行；S4为用户指定的55格×10候选、每格3正式（GL两席），采样生成分布实现方式须另与用户定后再启动。S1完成**不自动授权两项起跑**；若保留V1，正式接纳仍以V1 PASS为前提，若取消V1则须另定接纳口径 | S3 本机 / S4 GL | 新对话按D13决定 |
 | S5 | 总报告、`scripts/README.md` 更新、收尾只留正式产物、`scancel` 占位 job | 本机 + GL | 12.157 |
 
-规模与时间（估）：V1 基线侧 3 h（本机，与 S1 同时跑）；S1 合并后 V1 V6 侧 3 h（本机）与生成 2 h（GL 两席）并行；总墙钟 ≈ 合并 + 3 h；产物峰值约 230～270 GB（`/data` 余 2.4 TB）。
+原规模与时间估计：V1 基线侧已耗约3 h并完成；原拟V6侧约3 h、GL正式生成约2 h、产物峰值约230～270 GB。D13后这些估计仅供新对话讨论，不构成启动授权或当前进度。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -178,13 +182,13 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 | 项 | 值 |
 |---|---|
-| 主仓库 | `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，upstream `origin/newtaskRelease-v5`（GitHub `hongzefu/robomme_benchmark_MotionJEPA`）。源码相对锚点 `da77662` 未改，只有本计划与 `docs/greatlakes.md` 更新到 12.148+ |
+| 主仓库 | `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，upstream `origin/newtaskRelease-v5`（GitHub `hongzefu/robomme_benchmark_MotionJEPA`）。S1已在主仓实施；环境源码锚点 `949b6eb`，现行验收与用户取消200 reset的边界见S1汇总报告 |
 | V1 基线 commit | `13e5151`（12.63） |
 | GL 侧仓库 | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl`（本机已挂载可直接读写；已切到 `newtaskRelease-v5`、`uv sync` 完成；官方隔离源码树在其 `artifacts/train-parity/local-smoke-01/official-src/`，7.5 MB，`.official_tree` 标记 `1d4c1369…`）。历史 `artifacts/` 有 654 GB 旧产物，不是 V6 的，不要动 |
 | 官方源码树（本机） | `artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py`，规格回放 worker 用 `scripts/parity/train_split_worker.run_one` |
-| venv | 主仓库 `.venv`（editable 安装指向主仓库 src）。在副本里跑代码必须 `cd <副本> && PYTHONPATH=$PWD/src /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python …`，先 `python -c "import robomme;print(robomme.__file__)"` 确认指向副本 |
+| venv | 主仓库 `.venv`（editable 安装指向主仓库 src）。在副本里运行先 `command -v uv`，再以 `PYTHONPATH=$PWD/src uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -c "import robomme;print(robomme.__file__)"` 确认导入源；NFS上uv操作另设 `UV_LINK_MODE=copy` |
 
-**四个代码副本（git worktree，分支从 `e1755f9` 切出，全部已 commit、工作区干净、不 push）**
+**四个历史代码副本（git worktree，分支从 `e1755f9` 切出；S1已按定稿集成，下表「合入时要改」是历史检查清单，不是当前待办；副本不 push）**
 
 | worktree | 分支 / commit | 内容 | 合入时要改 |
 |---|---|---|---|
@@ -209,11 +213,11 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 **踩过的坑（不要再踩）**：driver 用 `ProcessPoolExecutor(max_tasks_per_child=N)` 在 spawn 上下文换代点必挂死（GL 两次）；`RobommeRecordWrapper` 的 h5 逐帧记录挂在 `save_video` 上，关视频会让全部局判失败；`generate_dataset_newseed._worker` 只认 `episode_spec`，MoveCube 等只认 `native_episode_spec`，规格回放走 `train_split_worker.run_one`；VUS 的 swap/pick 次数读 `native.parameters.configs[档]` 不读 decision；VUS/BUS 交换对、VR 发起者方向不是规格取值点（S5 需新增取值点）；出图用 `Noto Sans CJK JP`，出完必须 Read 目视检查；GL 上 NFS `rm -rf` 偶尔报 Directory not empty，重试即可。
 
-**下一步**：从第一部分 5.3 的 S0/S1 开始（S0～S3 本机，S4 GL）。
+**下一步**：S0已完成；本轮只收尾S1并停止。S3/S4的原值对拍与正式10／3生成留给新对话，额外reset/rollout及采样分布方案遵守D12/D13另行决定。
 
 ## 一、红线
 
-N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`evaluation.py`、五入口冻结。N3 第一部分决策清单以外不自加设计；细节自决并在报告注明。N4 新值流按 L1(a) 允许原地移位；xhard4 不对拍。N5 共用函数新参数默认等价关闭，`NATIVE_SPEC_GOLDEN`/`NATIVE_AST_GOLDEN` 不动。N6 碰撞检测不为均匀让路。N7 每档在用户指定维度上均值严格递增且区间不重叠。N8 文档禁硬编码行号。N9 Agent 工具派的 subagent 一律 opus、并行不设上限；workflow 需逐次审批且其 `agent()` 只用 sonnet（收尾/计划类最多 3 次 opus）、`model` 不得省略。N10 长任务 tmux + Monitor；GL 只 `srun --overlap` 连现有 job。
+N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`evaluation.py`、五入口冻结。N3 第一部分决策清单以外不自加设计；细节自决并在报告注明。N4 新值流按 L1(a) 允许原地移位；xhard4 不对拍。N5 共用函数新参数默认等价关闭，`NATIVE_SPEC_GOLDEN`/`NATIVE_AST_GOLDEN` 不动。N6 碰撞检测不为均匀让路。N7 每档在用户指定维度上均值严格递增且区间不重叠。N8 文档禁硬编码行号。N9 Agent 工具派的 subagent 一律 opus、并行不设上限；workflow 需逐次审批且其 `agent()` 只用 sonnet（收尾/计划类最多 3 次 opus）、`model` 不得省略。N10 长任务 tmux + Monitor；GL 只 `srun --overlap` 连现有 job。N11 正式10／3之外不加批量reset或rollout；采样分布的字段、分母、图示和是否需要额外数据先与用户单独确定（D12/D13、`AGENTS.md`项目规则14）。
 
 ## 二、按文件的改动落点
 
@@ -248,14 +252,14 @@ for suffix in 00 01 02 03; do
   printf 'EXIT_CODE=%s\n' "$?" >> "artifacts/newtask-v6/s0/lightweight-shards/run-$suffix.log"
 done
 # 与 S0 的 FAILED/ERROR 身份分别作集合差：V6 减 S0 必须为空；S0 减 V6 逐项记为已修复
-# 单环境演示探针
-uv run --no-sync python -m scripts.parity.v4_demo_probe --task <Env> --difficulty <tier> --n 4 --out artifacts/newtask-v6/demo-probe/<Env>-<tier>
+# 原S2额外演示矩阵已取消；不运行批量探针
 # V1
 uv run --no-sync python scripts/parity/train_split_parity.py run --manifest scripts/configs/newtask-v3/subset_manifest.json …
 uv run --no-sync python scripts/parity/train_split_parity.py compare --run base=artifacts/newtask-v6/v1/base --run v6=artifacts/newtask-v6/v1/v6 --pair base/B:v6/B
-# 生成（GL 占位 job 内；本机同理去掉 srun）
-mkdir -p artifacts/newtask-v6/v6-01
-srun --jobid=<hold> --overlap --exact --ntasks=1 --cpus-per-task=16 --gpu_cmode=shared bash -c "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.parity.v5_generation pipeline --run-id v6-01 --tiers xhard1,xhard2,xhard3,xhard4 --official-root artifacts/train-parity/local-smoke-01/official-src --draw-workers 16 --workers 16 2>&1 | tee artifacts/newtask-v6/v6-01/run.log; echo EXIT_CODE=\$? >> artifacts/newtask-v6/v6-01/run.log"
+# S4 正式生成留给新对话：每格10成功候选、index 0/3/6三正式、每环境最多60次总抽签尝试。
+# 只连接现有两席job，逐局写节点/tmp，流式搬回/data；禁止使用旧的NFS仓库相对产物落点。
+# 起跑前核对最终主仓代码、两节点/tmp容量和 artifacts/newtask-v6/s4-prep/RUNBOOK.md；
+# 此预备runbook在忽略目录，须在新对话复核后按D12/D13收窄执行，不构成本轮起跑授权。
 ```
 
 ## 四、风险登记
