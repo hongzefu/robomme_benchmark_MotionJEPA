@@ -24,14 +24,14 @@ from mani_skill.utils.geometry.rotation_conversions import (
 )
 import copy
 from .utils import *
-from .utils.difficulty import is_newvalue_difficulty, normalize_robomme_difficulty, require_xhard4_only
+from .utils.difficulty import normalize_robomme_difficulty, require_xhard4_only
 from .utils.subgoal_evaluate_func import static_check
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import SamplingConfigError, assert_native_decision, fill_missing_newvalue, split_sampling_config
+from .utils.sampling_config import SamplingConfigError, assert_native_decision, split_sampling_config
 from .utils.SceneGenerationError import SceneGenerationError
 from .utils.episode_spec import EpisodeSpecError
 from .utils import subgoal_language
-from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
+from .utils.object_generation import spawn_fixed_cube, build_board_with_hole, point_segment_distance_xy
 from .utils import reset_panda
 from ..logging_utils import logger
 
@@ -86,33 +86,34 @@ def native_blocks(cls):
 def _native_decision(cls):
     """按方案第二节 2.13 切出 decision 块（原值阶段等于原值）。
 
-    V4（计划 2.17）：xhard 新值一律挂在名为 ``xhard`` 的子键下（守卫只放行这些键偏离），
+    V4（计划 2.17）：原 xhard 档的新值一律挂在名为 ``xhard4`` 的子键下（守卫只放行这些键偏离），
     默认值取自 ``cls.configs["xhard4"]``；原三档可见部分与 V3 逐字相同。
 
-    V5（计划 2.9，L30/L33）：V4 的 ``corner_bias`` 已删除；演示段与执行段各自暴露一份
-    ``center_exclusion``（桌面中心共同禁区，两段各自声明、各自消费）。
+    V5（计划 2.9，L30/L33）：V4 的 ``corner_bias`` 已删除。
+    V6（计划 2.6）：V5 的 ``center_exclusion`` 已删除，演示段与执行段各自暴露一份 ``region``
+    （统一区域 U，两段各自声明、各自消费）。
     """
-    xhard = cls.configs["xhard4"]
+    xhard4 = cls.configs["xhard4"]
     return {
         # 演示阶段的方块与杆位置采样规则（原值：杆基位 y=±0.2、xy 各抖动 ±0.05；
         # 方块候选中心 xy 各 ±0.1，再在 half_size 0.05 的小区里生成）。
         "demo_layout": {
             "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
             "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
-            # V5 xhard：桌面中心共同禁区（L30；杆按轴线段、goal 与方块按中心判）
-            "xhard4": {"center_exclusion": copy.deepcopy(xhard["center_exclusion"])},
+            # V6 xhard4：统一区域 U（计划 2.6；两段各自声明、各自消费，取值相同）
+            "xhard4": {"region": copy.deepcopy(xhard4["region"])},
         },
         # 执行阶段另抽一套，原规则与演示相同但必须分开，不能误合并。
         "execution_layout": {
             "peg_position_policy": {"base_y_abs": 0.2, "base_y_threshold": 0.5, "jitter_span": 0.1},
             "cube_position_policy": {"center_span": 0.2, "center_offset": -0.1, "region_half_size": 0.05},
-            # V5 xhard：执行段的中心禁区，与演示段各自声明、各自消费（两套不可合并）
-            "xhard4": {"center_exclusion": copy.deepcopy(xhard["center_exclusion"])},
+            # V6 xhard4：执行段的统一区域 U，与演示段各自声明、各自消费（两套不可合并）
+            "xhard4": {"region": copy.deepcopy(xhard4["region"])},
         },
         # 杆在桌面内的转角范围：原值 ±π/4（表达式为 u*span - offset）。
-        # V4 xhard：±π（A1，仍只绕世界 z；joint7 冲突按等价朝向归约，见 B11）。
+        # V4 xhard4：±π（A1，仍只绕世界 z；joint7 冲突按等价朝向归约，见 B11）。
         "peg_yaw_range": {"span_rad": np.pi / 2, "offset_rad": np.pi / 4,
-                          "xhard4": dict(xhard["peg_yaw_range"])},
+                          "xhard4": dict(xhard4["peg_yaw_range"])},
     }
 
 
@@ -121,20 +122,26 @@ def _resolve_sampling_config(cls, override):
     decision_default, native_default = native_blocks(cls)
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
-    # V6：旧快照缺的新值档子树从源码申报补齐（本环境不加档，只可能补 xhard）；原三档不读这些键
-    fill_missing_newvalue(decision, decision_default)
     native["decision"] = decision
     return native
 
 
-# ── V5 xhard 桌面中心禁区（计划 2.9）：纯数值判据，不抽随机数，只在 xhard 分支被调用 ──────────
+# ── V6 xhard4 统一区域 U（计划 2.6）：纯数值判据，不抽随机数，只在 xhard4 分支被调用 ──────────
+# 机械臂基座的桌面 xy（与 ``MoveCube._load_agent`` 的 ``sapien.Pose(p=[-0.615, 0, 0])`` 同值）
+ROBOT_BASE_XY = (-0.615, 0.0)
+# 推起点几何（``solve_push_to_target`` / ``solve_push_to_target_with_peg``）：方块沿推方向后退 0.10 起推，
+# 带杆推时再沿法向侧移 0.10；U 的成对约束要求这三个推起点离基座也落在 ``base_dist`` 区间内
+PUSH_BACKOFF_M = 0.10
+PEG_PUSH_LATERAL_M = 0.10
+
+
 def _peg_axis_extent(length):
     """杆轴线段在杆根坐标系里沿杆朝向 u 的区间 ``(t_min, t_max)``（米）。
 
     由 ``utils/object_generation.py::build_peg`` 的几何推出：head link 以杆根为中心，tail link
     经固定关节挂在 ``−length·u``；两段的碰撞盒半长 ``0.45·length``、可视盒半长 ``0.5·length``。
     取碰撞与可视外形的并集（即可视外形），``length=0.1`` 时为 ``(−0.15, +0.05)``，与 P2 实测一致。
-    xhard 每次建杆后由 ``MoveCube._xhard_verify_peg_extent`` 用实际形状复核，二者不符即报错。
+    xhard4 每次建杆后由 ``MoveCube._xhard4_verify_peg_extent`` 用实际形状复核，二者不符即报错。
     """
     head_half = 0.5 * float(length)          # 可视盒半长（碰撞盒 0.45·length 被它包住）
     tail_center = -float(length)             # tail 固定关节的 pose_in_parent
@@ -149,27 +156,47 @@ def _peg_root_xy(base_y, x_jitter, y_jitter):
     return translation[:2].astype(np.float64)
 
 
-def _peg_zone_distance(base_y, x_jitter, y_jitter, yaw, zone, extent):
-    """杆实际轴线段 ``root + t·u``（``t∈extent``）离禁区圆心的最近距离。"""
-    root = _peg_root_xy(base_y, x_jitter, y_jitter)
+def _peg_geometry(root, yaw, length, extent):
+    """杆根 ``root``、朝向 ``yaw`` → ``(抓取点 xy, 杆身线段端点 a, b)``（float64）。
+
+    抓取点 = tail link 中心 = ``root − length·u``（``evaluate`` 里 ``grasp_target = peg_tail``，
+    ``grasp_and_lift_peg_side`` 抓的就是它）；杆身线段 = ``root + t·u``，``t ∈ extent``。
+    """
     u = np.array([np.cos(float(yaw)), np.sin(float(yaw))], dtype=np.float64)
-    rel = root - zone["center"]
-    t = float(np.clip(-(rel @ u), extent[0], extent[1]))
-    return float(np.linalg.norm(rel + t * u))
+    root = np.asarray(root, dtype=np.float64)
+    return root - float(length) * u, root + extent[0] * u, root + extent[1] * u
 
 
-def _zone_violated(zone, xy):
-    """物体中心 ``xy`` 离禁区圆心的距离 ``< radius`` 即违反（与 spawn 函数的 center_exclusion 同一判据）。"""
-    return float(np.linalg.norm(np.asarray(xy, dtype=np.float64) - zone["center"])) < zone["radius"]
+def _in_region_u(xy, region):
+    """点（物体中心／抓取点）是否在统一区域 U 内：圆环 ∧ 离基座区间。违反返回说明文字，否则 None。"""
+    xy = np.asarray(xy, dtype=np.float64)
+    rc = float(np.linalg.norm(xy - region["center"]))
+    if not (region["r_in"] <= rc <= region["r_out"]):
+        return f"离圆环圆心 {rc:.6f} 不在 [{region['r_in']}, {region['r_out']}]"
+    rb = float(np.linalg.norm(xy - np.asarray(ROBOT_BASE_XY, dtype=np.float64)))
+    if not (region["base_lo"] <= rb <= region["base_hi"]):
+        return f"离基座 {rb:.6f} 不在 [{region['base_lo']}, {region['base_hi']}]"
+    return None
 
 
-def _assert_peg_outside_zone(base_y, x_jitter, y_jitter, yaw, zone, extent, spec_prefix):
+def _peg_region_violation(root, yaw, length, extent, region):
+    """杆规则：抓取点在 U 内，且杆身线段离圆环圆心 ≥ r_in（杆整体不进圆环内孔）。违反返回说明文字。"""
+    grasp, a, b = _peg_geometry(root, yaw, length, extent)
+    why = _in_region_u(grasp, region)
+    if why is not None:
+        return f"抓取点{why}"
+    d = point_segment_distance_xy(region["center"], a, b)
+    if d < region["r_in"]:
+        return f"杆身线段离圆环圆心 {d:.6f} < r_in {region['r_in']}"
+    return None
+
+
+def _assert_peg_in_region(root, yaw, length, extent, region, spec_prefix):
     """N17：回放冻结规格时杆位姿不经拒绝循环，按同一规则复核，违反抛 ``EpisodeSpecError``。"""
-    dist = _peg_zone_distance(base_y, x_jitter, y_jitter, yaw, zone, extent)
-    if dist < zone["radius"]:
+    why = _peg_region_violation(root, yaw, length, extent, region)
+    if why is not None:
         raise EpisodeSpecError(
-            f"MoveCube xhard：{spec_prefix}.peg_offsets/peg_yaw 的杆轴线段离禁区圆心 {dist:.6f} "
-            f"< {zone['radius']}（冻结或注入值违反桌面中心禁区）")
+            f"MoveCube xhard4：{spec_prefix}.peg_offsets/peg_yaw 违反统一区域 U（冻结或注入值）：{why}")
 
 
 @register_env("MoveCube")
@@ -190,7 +217,7 @@ class MoveCube(BaseEnv):
     _clearance = 0.01
 
     # V4（A4/A6）：本环境原本没有难度分档，现有全局常量即 hard；三档同值，
-    # difficulty 只在 xhard 生效。消费点读的是 decision（可被 sampling_config 覆盖），
+    # difficulty 只在 xhard4 生效。消费点读的是 decision（可被 sampling_config 覆盖），
     # 这里是 decision 的默认值来源。
     config_native = {
         "peg_yaw_range": {"span_rad": np.pi / 2, "offset_rad": np.pi / 4},
@@ -199,12 +226,18 @@ class MoveCube(BaseEnv):
     config_xhard4 = {
         # ±180°：u*2π - π（A1）
         "peg_yaw_range": {"span_rad": 2 * np.pi, "offset_rad": np.pi},
-        # V5（计划 2.9，L30/L33）：V4 的 corner_bias 已删除（不再用偏置），改为桌面中心共同禁区、
-        # 直接拒绝：以 (0,0) 为圆心、半径 0.05 m 的圆；杆按实际轴线段离圆心的最近点判，
-        # goal 圆盘、方块候选中心与方块最终中心按物体中心判；落进圆即原地重抽。
-        # max_trials 只约束新增的杆重抽循环（goal/方块沿用各自原有循环的预算），超出抛 SceneGenerationError。
-        "center_exclusion": {"shape": "circle", "center": [0.0, 0.0], "radius_m": 0.05,
-                             "judge": "object_center", "max_trials": 128},
+        # V6（计划 2.6，M8；用户 2026-09-25 定圆环版）：统一区域 U，替代 V5 的 (0,0)、R=0.05 中心圆禁区与
+        # 三个互不相同的小框。方块中心、goal 中心、杆抓取点（杆尾 = 杆根 − 0.10·u）共用：
+        #   圆环 r_in ≤ |p − center| ≤ r_out（center = 可达环带 [0.31, 0.80] 的中点 (−0.06, 0)），
+        #   保险 base_dist[0] ≤ |p − 基座(−0.615, 0)| ≤ base_dist[1]；
+        # 成对：0.10（原 cube_rejection 的 5×半边长）≤ |方块 − goal| ≤ push_len_max，三个推起点离基座也在 base_dist；
+        # 杆：杆身线段离 center ≥ r_in；方块离杆身 ≥ peg_gap，goal 离杆身 ≥ goal_peg_gap。
+        # 依据：artifacts/newtask-v6/plan-probes/reach/（A/B/C 三路实测）与 reach/U/region.py 离线定义。
+        # 三个 *_max_trials 是杆／goal／方块各自拒绝循环的预算（方块受推距与推起点约束，单次接受率最低约 0.5%，
+        # 故给 4096；离线估计最坏段耗尽概率约 1e-9），超出抛 SceneGenerationError。
+        "region": {"center": [-0.06, 0.0], "r_in": 0.12, "r_out": 0.20, "base_dist": [0.35, 0.76],
+                   "push_len_max": 0.30, "peg_gap": 0.04, "goal_peg_gap": 0.02,
+                   "peg_max_trials": 128, "goal_max_trials": 256, "cube_max_trials": 4096},
     }
     configs = {
         "easy": config_native,
@@ -267,9 +300,8 @@ class MoveCube(BaseEnv):
                 self.difficulty = "medium"
             else:
                 self.difficulty = "hard"
-        # V6（计划 2.13 / M2）：本环境原版无梯度、不加档，传入 xhard1/2/3 明确报错
         require_xhard4_only(self.difficulty, "MoveCube")
-        if is_newvalue_difficulty(self.difficulty):
+        if self.difficulty == "xhard4":
             # V4 B11：抓杆时按等价朝向归约（只改夹爪姿态，并同步补偿抓杆后的推杆路点）；
             # 求解器按这个开关分叉，原三档不设此属性、走原路径
             self._xhard_peg_yaw_reduction = True
@@ -320,53 +352,32 @@ class MoveCube(BaseEnv):
         exec_layout = self._sampling["decision"]["execution_layout"]
         peg_yaw_range = self._sampling["decision"]["peg_yaw_range"]
         native_pos = self._sampling["positions"]
-        # V4 xhard（计划 2.17）：±180° 转角只在 xhard 生效；原三档转角仍读 decision 顶层的 span/offset。
-        # V5 xhard（计划 2.9）：corner_bias 已删除，改为桌面中心共同禁区（直接拒绝）；原三档
-        # demo_zone/exec_zone 为 None，不执行任何禁区判定、不多抽随机数，随机调用序列逐字不变
-        xhard = is_newvalue_difficulty(self.difficulty)
-        if xhard:
-            demo_zone = self._xhard_center_exclusion(demo_layout, "demo_layout")
-            exec_zone = self._xhard_center_exclusion(exec_layout, "execution_layout")
-            yaw_policy = peg_yaw_range[self.difficulty]
-            dk_demo, dk_exec, dk_yaw = (f"demo_layout.{self.difficulty}.center_exclusion",
-                                        f"execution_layout.{self.difficulty}.center_exclusion",
-                                        f"peg_yaw_range.{self.difficulty}")
-            # 杆轴线段在杆根坐标系里沿朝向 u 的区间，由 build_peg 的几何推出（不写死常数）
-            peg_extent = _peg_axis_extent(self.length)
-            zone_trials = {"demo": {}, "execution": {}}
-        else:
-            demo_zone = exec_zone = None
-            yaw_policy = peg_yaw_range
-            dk_demo = dk_exec = dk_yaw = None
+        # V6 xhard4（计划 2.6）：统一区域 U 走独立分支（随机调用次序在分支内重排，xhard4 重冻）；
+        # 原三档不经过该分支，下面的原路径与 V3 原值逐字相同（V1 闸门）。
+        if self.difficulty == "xhard4":
+            self._load_scene_xhard4_region(demo_layout, exec_layout, peg_yaw_range, native_pos)
+            return
+        yaw_policy = peg_yaw_range
         demo_peg = demo_layout["peg_position_policy"]
         base_y = -demo_peg["base_y_abs"] if torch.rand(1, generator=self._hb_generator).item() < demo_peg["base_y_threshold"] else demo_peg["base_y_abs"]
 
         peg_spawn_translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
 
         # Generate [-0.05, 0.05] random offset (using torch generator)
-        if xhard:
-            # V5：抖动与 yaw 按原顺序抽完后判杆轴线段是否进禁区，进了就三者原地重抽
-            x_jitter, y_jitter, initial_yaw, zone_trials["demo"]["peg_trials"] = self._xhard_sample_peg_outside_zone(
-                base_y, demo_peg, yaw_policy, demo_zone, peg_extent, "演示段")
-        else:
-            x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
-            y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
+        x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
+        y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * demo_peg["jitter_span"]
 
         # Apply offset
         base_y, x_jitter, y_jitter = self._spec.value(
-            "layout.demo.peg_offsets", [base_y, x_jitter, y_jitter], decision_key=dk_demo
+            "layout.demo.peg_offsets", [base_y, x_jitter, y_jitter], decision_key=None
         )
         peg_spawn_translation[1] = base_y
         peg_spawn_translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
         self.peg1_basex=peg_spawn_translation[0]
         self.peg1_basey=peg_spawn_translation[1]
 
-        if not xhard:
-            initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
-        initial_yaw = self._spec.value("layout.demo.peg_yaw", initial_yaw, decision_key=dk_yaw)
-        if xhard:
-            # N17：回放时上面两处 value 返回冻结值、不经拒绝循环，必须按同一规则复核
-            _assert_peg_outside_zone(base_y, x_jitter, y_jitter, initial_yaw, demo_zone, peg_extent, "layout.demo")
+        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
+        initial_yaw = self._spec.value("layout.demo.peg_yaw", initial_yaw, decision_key=None)
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -386,10 +397,6 @@ class MoveCube(BaseEnv):
             tail_color= "#EC7357",
         )
 
-        if xhard:
-            # 禁区判据用的杆轴线段必须与刚建好的杆的实际碰撞/可视几何一致，否则判据形同虚设
-            self._xhard_verify_peg_extent(peg_extent)
-
         # Create lists for backward compatibility
         self.pegs = [self.peg]
         self.peg_heads = [self.peg_head]
@@ -406,23 +413,16 @@ class MoveCube(BaseEnv):
         base_y = -exec_peg["base_y_abs"] if torch.rand(1, generator=self._hb_generator).item() < exec_peg["base_y_threshold"] else exec_peg["base_y_abs"]
 
         peg_spawn_translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
-        if xhard:
-            x_jitter, y_jitter, initial_yaw, zone_trials["execution"]["peg_trials"] = self._xhard_sample_peg_outside_zone(
-                base_y, exec_peg, yaw_policy, exec_zone, peg_extent, "执行段")
-        else:
-            x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
-            y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
+        x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
+        y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * exec_peg["jitter_span"]
         base_y, x_jitter, y_jitter = self._spec.value(
-            "layout.execution.peg_offsets", [base_y, x_jitter, y_jitter], decision_key=dk_exec
+            "layout.execution.peg_offsets", [base_y, x_jitter, y_jitter], decision_key=None
         )
         peg_spawn_translation[1] = base_y
         peg_spawn_translation[:2] += np.array([x_jitter, y_jitter], dtype=np.float32)
 
-        if not xhard:
-            initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
-        initial_yaw = self._spec.value("layout.execution.peg_yaw", initial_yaw, decision_key=dk_yaw)
-        if xhard:
-            _assert_peg_outside_zone(base_y, x_jitter, y_jitter, initial_yaw, exec_zone, peg_extent, "layout.execution")
+        initial_yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
+        initial_yaw = self._spec.value("layout.execution.peg_yaw", initial_yaw, decision_key=None)
         yaw_angles = torch.tensor([[0.0, 0.0, initial_yaw]], dtype=torch.float32)
         yaw_matrix = euler_angles_to_matrix(yaw_angles, convention="XYZ")
         yaw_quat = matrix_to_quaternion(yaw_matrix)[0].detach().cpu().numpy().tolist()
@@ -438,64 +438,38 @@ class MoveCube(BaseEnv):
         self.finish_return_flag=False
 
                 # Define task list, each task contains a dictionary with function, name, demonstration flag, and optional failure_func
-        obj_sample = self._spec.value(
-            "objects.obj_sample",
-            int(torch.randint(0, 2, (1,), generator=self._hb_generator).item()),
-        )
-        self.obj_flag = -1 if obj_sample == 0 else 1
-        # 这次抽样原本就没被消费；记进 sampling_trace 以证明它照常发生（红线 R8）
-        dir_sample = self._spec.value(
-            "objects.sampling_trace.dir_sample",
-            int(torch.randint(0, 2, (1,), generator=self._hb_generator).item()),
-        )
-        #self.direction = -1 if dir_sample.item() == 0 else 1
+        self._sample_obj_and_dir()
 
-
-        # V5 xhard：goal 圆盘中心落进禁区即在 spawn_random_target 的拒绝循环里重抽；原三档不传新参数
-        demo_goal_extra = {"center_exclusion": demo_zone["rule"]} if xhard else {}
-        exec_goal_extra = {"center_exclusion": exec_zone["rule"]} if xhard else {}
-        try:
-            self.goal_site = spawn_random_target(
-                        self,
-                        avoid=None,  # Use current avoidance list, containing all spawned cubes
-                        include_existing=False,  # Manually maintain list
-                        include_goal=False,  # Manually maintain list
-                        region_center=list(native_pos["goal_demo"]["region_center"]),
-                        region_half_size=native_pos["goal_demo"]["region_half_size"],
-                        radius=self.cube_half_size*native_pos["goal_demo"]["radius_factor"],  # Use radius instead of half_size
-                        thickness=0.005,  # target thickness
-                        min_gap=self.cube_half_size*1,  # Gap requirement same as cube
-                        name_prefix=f"goal_site",
-                        recorder=self._spec,
-                        spec_path="layout.demo.goal_xy",
-                        generator=self._hb_generator,
-                        **demo_goal_extra,
-                        )
-        except RuntimeError as exc:
-            if xhard and not isinstance(exc, SceneGenerationError):
-                raise SceneGenerationError(f"MoveCube xhard：演示段 goal 生成失败：{exc}") from exc
-            raise
-        try:
-            self.goal_site_2 = spawn_random_target(
-                self,
-                avoid=None,  # Use current avoidance list, containing all spawned cubes
-                include_existing=False,  # Manually maintain list
-                include_goal=False,  # Manually maintain list
-                region_center=list(native_pos["goal_execution"]["region_center"]),
-                region_half_size=native_pos["goal_execution"]["region_half_size"],
-                radius=self.cube_half_size*native_pos["goal_execution"]["radius_factor"],  # Use radius instead of half_size
-                thickness=0.005,  # target thickness
-                min_gap=self.cube_half_size*1,  # Gap requirement same as cube
-                name_prefix=f"goal_site_2",
-                recorder=self._spec,
-                spec_path="layout.execution.goal_xy",
-                generator=self._hb_generator,
-                **exec_goal_extra,
-                )
-        except RuntimeError as exc:
-            if xhard and not isinstance(exc, SceneGenerationError):
-                raise SceneGenerationError(f"MoveCube xhard：执行段 goal 生成失败：{exc}") from exc
-            raise
+        self.goal_site = spawn_random_target(
+                    self,
+                    avoid=None,  # Use current avoidance list, containing all spawned cubes
+                    include_existing=False,  # Manually maintain list
+                    include_goal=False,  # Manually maintain list
+                    region_center=list(native_pos["goal_demo"]["region_center"]),
+                    region_half_size=native_pos["goal_demo"]["region_half_size"],
+                    radius=self.cube_half_size*native_pos["goal_demo"]["radius_factor"],  # Use radius instead of half_size
+                    thickness=0.005,  # target thickness
+                    min_gap=self.cube_half_size*1,  # Gap requirement same as cube
+                    name_prefix=f"goal_site",
+                    recorder=self._spec,
+                    spec_path="layout.demo.goal_xy",
+                    generator=self._hb_generator,
+                    )
+        self.goal_site_2 = spawn_random_target(
+            self,
+            avoid=None,  # Use current avoidance list, containing all spawned cubes
+            include_existing=False,  # Manually maintain list
+            include_goal=False,  # Manually maintain list
+            region_center=list(native_pos["goal_execution"]["region_center"]),
+            region_half_size=native_pos["goal_execution"]["region_half_size"],
+            radius=self.cube_half_size*native_pos["goal_execution"]["radius_factor"],  # Use radius instead of half_size
+            thickness=0.005,  # target thickness
+            min_gap=self.cube_half_size*1,  # Gap requirement same as cube
+            name_prefix=f"goal_site_2",
+            recorder=self._spec,
+            spec_path="layout.execution.goal_xy",
+            generator=self._hb_generator,
+            )
         
 
 
@@ -514,45 +488,24 @@ class MoveCube(BaseEnv):
                 sampled_y = torch.rand(1, generator=self._hb_generator).item() * demo_cube["center_span"] + demo_cube["center_offset"]
                 candidate_xy = np.array([sampled_x, sampled_y], dtype=np.float64)
                 if np.linalg.norm(candidate_xy - goal_xy) > required_distance:
-                    # V5 xhard：候选中心落进禁区同样拒绝（与 goal 距离判据共用同一次试验与 128 次预算）
-                    if demo_zone is not None and _zone_violated(demo_zone, candidate_xy):
-                        zone_trials["demo"]["cube_candidate_center_rejects"] += 1
-                        continue
                     return candidate_xy
             return None
 
-        if xhard:
-            zone_trials["demo"]["cube_candidate_center_rejects"] = 0
-
         cube_center = _sample_cube_center(self.cube_half_size*native_pos["cube_rejection"]["min_distance_factor"])
-        if xhard and cube_center is None:
-            # D3（只在 xhard 修，H2）：原三档此处 None 会在下一行触发 TypeError，保持原样
-            raise SceneGenerationError(
-                f"MoveCube xhard：演示段方块中心 {max_cube_spawn_trials} 次拒绝采样全部失败")
 
         cube_x, cube_y = float(cube_center[0]), float(cube_center[1])
 
-        # V5 xhard：方块最终中心按禁区复查；include_existing=False 让已放方块不以 actor（会退化的
-        # trimesh OBB）作障碍——本局演示段方块之前没有别的方块，结果与默认值相同（计划 2.0①）。
-        # 原三档调用参数逐字不变
-        demo_cube_extra = {"include_existing": False, "center_exclusion": demo_zone["rule"]} if xhard else {}
-        try:
-            self.cube = spawn_random_cube(
-                            self,
-                            region_center=[cube_x, cube_y],
-                            color=(1, 0, 0, 1),
-                            name_prefix="fixed_cube",
-                            recorder=self._spec,
-                            spec_path="layout.demo.cube_pose",
-                            region_half_size=demo_layout["cube_position_policy"]["region_half_size"],
-                            generator=self._hb_generator,
-                            half_size=self.cube_half_size,
-                            **demo_cube_extra,
-                        )
-        except RuntimeError as exc:
-            if xhard and not isinstance(exc, SceneGenerationError):
-                raise SceneGenerationError(f"MoveCube xhard：演示段方块生成失败：{exc}") from exc
-            raise
+        self.cube = spawn_random_cube(
+                        self,
+                        region_center=[cube_x, cube_y],
+                        color=(1, 0, 0, 1),
+                        name_prefix="fixed_cube",
+                        recorder=self._spec,
+                        spec_path="layout.demo.cube_pose",
+                        region_half_size=demo_layout["cube_position_policy"]["region_half_size"],
+                        generator=self._hb_generator,
+                        half_size=self.cube_half_size,
+                    )
         
         self.cube_init_pose=self.cube.pose
 
@@ -570,46 +523,44 @@ class MoveCube(BaseEnv):
                 sampled_y = torch.rand(1, generator=self._hb_generator).item()  * exec_cube["center_span"] + exec_cube["center_offset"]
                 candidate_xy = np.array([sampled_x, sampled_y], dtype=np.float64)
                 if np.linalg.norm(candidate_xy - goal_xy) > required_distance:
-                    if exec_zone is not None and _zone_violated(exec_zone, candidate_xy):
-                        zone_trials["execution"]["cube_candidate_center_rejects"] += 1
-                        continue
                     return candidate_xy
             return None
 
-        if xhard:
-            zone_trials["execution"]["cube_candidate_center_rejects"] = 0
-
         cube_center = _sample_cube_center(self.cube_half_size*native_pos["cube_rejection"]["min_distance_factor"])
-        if xhard and cube_center is None:
-            # D3（只在 xhard 修，H2）：执行段同样修
-            raise SceneGenerationError(
-                f"MoveCube xhard：执行段方块中心 {max_cube_spawn_trials} 次拒绝采样全部失败")
 
         cube_x, cube_y = float(cube_center[0]), float(cube_center[1])
-        # V5 xhard（L34）：执行段方块与演示段方块从不同时在场（cube_2 只取位姿，随即被传送走），
-        # 不再把演示段方块当障碍（include_existing=False）；最终中心按禁区复查
-        exec_cube_extra = {"include_existing": False, "center_exclusion": exec_zone["rule"]} if xhard else {}
-        try:
-            self.cube_2 = spawn_random_cube(
-                            self,
-                            region_center=[cube_x, cube_y],
-                            color=(1, 0, 0, 1),
-                            name_prefix="fixed_cube_2",
-                            recorder=self._spec,
-                            spec_path="layout.execution.cube_pose",
-                            region_half_size=exec_layout["cube_position_policy"]["region_half_size"],
-                            generator=self._hb_generator,
-                            half_size=self.cube_half_size,
-                            **exec_cube_extra,
-                        )
-        except RuntimeError as exc:
-            if xhard and not isinstance(exc, SceneGenerationError):
-                raise SceneGenerationError(f"MoveCube xhard：执行段方块生成失败：{exc}") from exc
-            raise
+        self.cube_2 = spawn_random_cube(
+                        self,
+                        region_center=[cube_x, cube_y],
+                        color=(1, 0, 0, 1),
+                        name_prefix="fixed_cube_2",
+                        recorder=self._spec,
+                        spec_path="layout.execution.cube_pose",
+                        region_half_size=exec_layout["cube_position_policy"]["region_half_size"],
+                        generator=self._hb_generator,
+                        half_size=self.cube_half_size,
+                    )
         
         self.cube_init_pose_2=self.cube_2.pose
         #only need the pose! teleport away in 
+        self._store_goal_poses()
 
+    def _sample_obj_and_dir(self):
+        """obj_sample 与 dir_sample 两次抽样（原三档与 xhard4 共用；次序与原代码相同）。"""
+        obj_sample = self._spec.value(
+            "objects.obj_sample",
+            int(torch.randint(0, 2, (1,), generator=self._hb_generator).item()),
+        )
+        self.obj_flag = -1 if obj_sample == 0 else 1
+        # 这次抽样原本就没被消费；记进 sampling_trace 以证明它照常发生（红线 R8）
+        dir_sample = self._spec.value(
+            "objects.sampling_trace.dir_sample",
+            int(torch.randint(0, 2, (1,), generator=self._hb_generator).item()),
+        )
+        #self.direction = -1 if dir_sample.item() == 0 else 1
+
+    def _store_goal_poses(self):
+        """两段 goal 圆盘位姿的 float64 副本（不抽随机数；原三档与 xhard4 共用）。"""
         goal2_p = np.array(self.goal_site_2.pose.p.detach().cpu().numpy(), dtype=np.float64, copy=True)
         self.goal_site_2_pose_p = goal2_p
 
@@ -622,66 +573,207 @@ class MoveCube(BaseEnv):
         goal1_q = np.array(self.goal_site.pose.q.detach().cpu().numpy(), dtype=np.float64, copy=True)
         self.goal_site_1_pose_q = goal1_q
 
-        if xhard:
-            # 只读记录本局实际生效的禁区规则与各拒绝循环的尝试次数（N18；不抽随机数，排在全部取值点之后）
-            for seg, zone in (("demo", demo_zone), ("execution", exec_zone)):
-                self._spec.record(f"layout.{seg}.center_exclusion", dict(zone["decision"], peg_axis_extent_m=list(peg_extent)))
-                self._spec.record(f"layout.{seg}.center_exclusion_trials", dict(zone_trials[seg]))
+    # ── V6 xhard4：统一区域 U（计划 2.6）─────────────────────────────────────────────
+    def _load_scene_xhard4_region(self, demo_layout, exec_layout, peg_yaw_range, native_pos):
+        """V6 xhard4 布局：方块中心、goal 中心、杆抓取点三者共用统一区域 U（圆环 ∧ 离基座区间）。
 
-    def _xhard_center_exclusion(self, layout, key):
-        """取并校验 xhard 的桌面中心禁区（计划 2.9）；形状或数值不合法时拒绝，不许静默放宽。
+        随机调用次序（只在本分支内，xhard4 重冻）：
+        演示段杆（每次试验 3 次 ``torch.rand``：抓取点 x、y、yaw；拒绝就整组重抽）→ 执行段杆（同）→
+        obj_sample、dir_sample → 演示段 goal → 执行段 goal → 演示段方块 → 执行段方块。
+        V5 的 base_y 抽样、方块候选中心两级采样、``center_exclusion`` 圆禁区、演示／执行段 goal 不同框全部删除。
 
-        返回 dict：``rule`` 为传给 ``spawn_random_cube/target(center_exclusion=...)`` 的
-        ``(center_xy, radius)``；``center``（(2,) float64）、``radius``、``max_trials`` 供杆与方块候选的
-        本地判据使用；``decision`` 为原样的配置副本（写进规格留痕）。
+        杆：抓取点（杆尾 = 杆根 − length·u）在 U 内均匀、yaw ∈ ±π，杆根由二者推出；杆身线段离圆环圆心 ≥ r_in。
+        goal：中心在 U 内，离本段杆身 ≥ goal_peg_gap。
+        方块：中心在 U 内，离本段杆身 ≥ peg_gap，离本段 goal ∈ [min_cg, push_len_max]，三个推起点离基座在区间内。
+        规格键沿用原路径：``layout.<seg>.peg_offsets = [0.0, 杆根 x, 杆根 y]``（base_y 恒 0、两个「抖动」即杆根 xy）。
+        回放冻结值不经拒绝循环，杆由本方法、goal／方块由 spawn 函数按同一规则复核（N17）。
         """
-        cfg = layout[self.difficulty]["center_exclusion"]
-        where = f"MoveCube {self.difficulty}：decision.{key}.{self.difficulty}.center_exclusion"
+        yaw_policy = peg_yaw_range["xhard4"]
+        dk_yaw = "peg_yaw_range.xhard4"
+        peg_extent = _peg_axis_extent(self.length)
+        regions = {"demo": self._xhard4_region(demo_layout, "demo_layout"),
+                   "execution": self._xhard4_region(exec_layout, "execution_layout")}
+        trials = {"demo": {}, "execution": {}}
+        pegs = {}
+        for seg, label in (("demo", "演示段"), ("execution", "执行段")):
+            region = regions[seg]
+            root_x, root_y, yaw, trials[seg]["peg_trials"] = self._xhard4_sample_peg_in_region(
+                region, yaw_policy, peg_extent, label)
+            base_y, root_x, root_y = self._spec.value(
+                f"layout.{seg}.peg_offsets", [0.0, root_x, root_y], decision_key=f"{region['key']}.xhard4.region")
+            yaw = self._spec.value(f"layout.{seg}.peg_yaw", yaw, decision_key=dk_yaw)
+            root = _peg_root_xy(base_y, root_x, root_y)
+            # N17：回放时上面两处 value 返回冻结值、不经拒绝循环，必须按同一规则复核
+            _assert_peg_in_region(root, yaw, self.length, peg_extent, region, f"layout.{seg}")
+            translation = np.array([0.0, base_y, 0.0], dtype=np.float32)
+            translation[1] = base_y
+            translation[:2] += np.array([root_x, root_y], dtype=np.float32)
+            yaw_angles = torch.tensor([[0.0, 0.0, yaw]], dtype=torch.float32)
+            yaw_quat = matrix_to_quaternion(euler_angles_to_matrix(yaw_angles, convention="XYZ"))[0].detach().cpu().numpy().tolist()
+            pose = sapien.Pose(p=translation.tolist(), q=yaw_quat)
+            _, seg_a, seg_b = _peg_geometry(root, yaw, self.length, peg_extent)
+            pegs[seg] = {"translation": translation, "pose": pose, "segment": (seg_a, seg_b)}
+            if seg == "demo":
+                self.peg1_basex = translation[0]
+                self.peg1_basey = translation[1]
+                self.peg, self.peg_head, self.peg_tail = build_peg(
+                    self, length=self.length, radius=self.radius, initial_pose=pose, name='peg',
+                    head_color="#EC7357", tail_color="#EC7357",
+                )
+                # 杆规则所用的杆轴线段必须与刚建好的杆的实际碰撞/可视几何一致，否则判据形同虚设
+                self._xhard4_verify_peg_extent(peg_extent)
+                self.pegs = [self.peg]
+                self.peg_heads = [self.peg_head]
+                self.peg_tails = [self.peg_tail]
+                self.peg_init_poses = [peg.pose for peg in self.pegs]
+                self.peg_init_pose = self.pegs[0].pose
+            else:
+                self.peg2_basex = translation[0]
+                self.peg2_basey = translation[1]
+                self.peg_init_poses_2 = [pose]
+        self.finish_return_flag = False
+
+        self._sample_obj_and_dir()
+
+        base_xy = tuple(ROBOT_BASE_XY)
+        goals = {}
+        for seg, name, attr, goal_key, label in (
+                ("demo", "goal_site", "goal_site", "goal_demo", "演示段"),
+                ("execution", "goal_site_2", "goal_site_2", "goal_execution", "执行段")):
+            region = regions[seg]
+            radius = self.cube_half_size * native_pos[goal_key]["radius_factor"]
+            try:
+                goal = spawn_random_target(
+                    self,
+                    avoid=None,
+                    include_existing=False,
+                    include_goal=False,
+                    # 采样框 = 圆环外接正方形（spawn 内部会把框收缩一个圆盘半径）
+                    region_center=[float(region["center"][0]), float(region["center"][1])],
+                    region_half_size=region["r_out"] + radius,
+                    radius=radius,
+                    thickness=0.005,
+                    min_gap=self.cube_half_size * 1,
+                    name_prefix=name,
+                    max_trials=region["goal_max_trials"],
+                    recorder=self._spec,
+                    spec_path=f"layout.{seg}.goal_xy",
+                    generator=self._hb_generator,
+                    annulus=region["annulus"],
+                    base_band=(base_xy, region["base_lo"], region["base_hi"]),
+                    segment_clearance=[(*pegs[seg]["segment"], region["goal_peg_gap"])],
+                )
+            except RuntimeError as exc:
+                if not isinstance(exc, SceneGenerationError):
+                    raise SceneGenerationError(f"MoveCube xhard4：{label} goal 生成失败：{exc}") from exc
+                raise
+            setattr(self, attr, goal)
+            goals[seg] = np.asarray(goal.pose.p, dtype=np.float64).reshape(-1)[:2]
+
+        min_cg = self.cube_half_size * native_pos["cube_rejection"]["min_distance_factor"]
+        for seg, name, attr, label in (("demo", "fixed_cube", "cube", "演示段"),
+                                       ("execution", "fixed_cube_2", "cube_2", "执行段")):
+            region = regions[seg]
+            try:
+                cube = spawn_random_cube(
+                    self,
+                    region_center=[float(region["center"][0]), float(region["center"][1])],
+                    color=(1, 0, 0, 1),
+                    name_prefix=name,
+                    recorder=self._spec,
+                    spec_path=f"layout.{seg}.cube_pose",
+                    # 采样框 = 圆环外接正方形（spawn 内部会把框收缩一个方块半边长）
+                    region_half_size=region["r_out"] + self.cube_half_size,
+                    generator=self._hb_generator,
+                    half_size=self.cube_half_size,
+                    max_trials=region["cube_max_trials"],
+                    # 两段方块从不同时在场、goal 无碰撞体：不以任何 actor 作障碍，约束全部由下面的区域规则给出
+                    include_existing=False,
+                    include_goal=False,
+                    annulus=region["annulus"],
+                    base_band=(base_xy, region["base_lo"], region["base_hi"]),
+                    segment_clearance=[(*pegs[seg]["segment"], region["peg_gap"])],
+                    push_feasible=(tuple(goals[seg]), min_cg, region["push_len_max"], PUSH_BACKOFF_M,
+                                   PEG_PUSH_LATERAL_M, base_xy, region["base_lo"], region["base_hi"]),
+                )
+            except RuntimeError as exc:
+                if not isinstance(exc, SceneGenerationError):
+                    raise SceneGenerationError(f"MoveCube xhard4：{label}方块生成失败：{exc}") from exc
+                raise
+            setattr(self, attr, cube)
+        self.cube_init_pose = self.cube.pose
+        self.cube_init_pose_2 = self.cube_2.pose
+        self._store_goal_poses()
+
+        # 只读记录本局实际生效的区域规则与杆循环尝试次数（N18；不抽随机数，排在全部取值点之后）
+        for seg in ("demo", "execution"):
+            self._spec.record(f"layout.{seg}.region", dict(
+                regions[seg]["decision"], peg_axis_extent_m=list(peg_extent), robot_base_xy=list(ROBOT_BASE_XY),
+                push_backoff_m=PUSH_BACKOFF_M, peg_push_lateral_m=PEG_PUSH_LATERAL_M, min_cube_goal_m=min_cg))
+            self._spec.record(f"layout.{seg}.region_trials", dict(trials[seg]))
+
+    def _xhard4_region(self, layout, key):
+        """取并校验 xhard4 的统一区域 U（计划 2.6）；缺字段或数值不合法时拒绝，不许静默放宽。"""
+        cfg = layout["xhard4"]["region"]
+        where = f"MoveCube xhard4：decision.{key}.xhard4.region"
         if not isinstance(cfg, dict):
             raise SamplingConfigError(f"{where} 必须是字典，收到 {cfg!r}")
-        if cfg.get("shape") != "circle":
-            raise SamplingConfigError(f"{where}.shape 只支持 circle，收到 {cfg.get('shape')!r}")
-        if cfg.get("judge") != "object_center":
-            raise SamplingConfigError(f"{where}.judge 只支持 object_center，收到 {cfg.get('judge')!r}")
         try:
             center = np.asarray(cfg["center"], dtype=np.float64).reshape(-1)
-            radius = float(cfg["radius_m"])
-            max_trials = cfg["max_trials"]
+            r_in, r_out = float(cfg["r_in"]), float(cfg["r_out"])
+            base_lo, base_hi = (float(v) for v in cfg["base_dist"])
+            nums = {k: float(cfg[k]) for k in ("push_len_max", "peg_gap", "goal_peg_gap")}
+            budgets = {k: cfg[k] for k in ("peg_max_trials", "goal_max_trials", "cube_max_trials")}
         except (KeyError, TypeError, ValueError) as exc:
             raise SamplingConfigError(f"{where} 缺字段或类型不对：{exc}") from exc
         if center.shape != (2,) or not np.all(np.isfinite(center)):
             raise SamplingConfigError(f"{where}.center 必须是两个有限数，收到 {cfg['center']!r}")
-        if not (np.isfinite(radius) and radius >= 0.0):
-            raise SamplingConfigError(f"{where}.radius_m 必须是 ≥0 的有限数，收到 {cfg['radius_m']!r}")
-        if isinstance(max_trials, bool) or not isinstance(max_trials, (int, np.integer)) or int(max_trials) < 1:
-            raise SamplingConfigError(f"{where}.max_trials 必须是 ≥1 的整数，收到 {max_trials!r}")
+        if not (np.isfinite(r_in) and np.isfinite(r_out) and 0.0 <= r_in < r_out):
+            raise SamplingConfigError(f"{where} 须满足 0 ≤ r_in < r_out，收到 ({cfg['r_in']!r}, {cfg['r_out']!r})")
+        if not (np.isfinite(base_lo) and np.isfinite(base_hi) and 0.0 <= base_lo < base_hi):
+            raise SamplingConfigError(f"{where}.base_dist 须为 [lo, hi] 且 0 ≤ lo < hi，收到 {cfg['base_dist']!r}")
+        for k, v in nums.items():
+            if not (np.isfinite(v) and v >= 0.0):
+                raise SamplingConfigError(f"{where}.{k} 必须是 ≥0 的有限数，收到 {cfg[k]!r}")
+        for k, v in budgets.items():
+            if isinstance(v, bool) or not isinstance(v, (int, np.integer)) or int(v) < 1:
+                raise SamplingConfigError(f"{where}.{k} 必须是 ≥1 的整数，收到 {v!r}")
         return {
-            "rule": ((float(center[0]), float(center[1])), radius),
+            "key": key,
             "center": center,
-            "radius": radius,
-            "max_trials": int(max_trials),
+            "r_in": r_in,
+            "r_out": r_out,
+            "annulus": ((float(center[0]), float(center[1])), r_in, r_out),
+            "base_lo": base_lo,
+            "base_hi": base_hi,
+            **nums,
+            **{k: int(v) for k, v in budgets.items()},
             "decision": copy.deepcopy(cfg),
         }
 
-    def _xhard_sample_peg_outside_zone(self, base_y, peg_policy, yaw_policy, zone, extent, seg_label):
-        """V5 xhard：按原顺序抽 (x_jitter, y_jitter, yaw)，杆轴线段离禁区圆心最近点 < 半径就三者原地重抽。
+    def _xhard4_sample_peg_in_region(self, region, yaw_policy, extent, seg_label):
+        """V6 xhard4：每次试验按 (抓取点 x, 抓取点 y, yaw) 各抽一次 ``torch.rand``，推出杆根后按杆规则判，
+        违反就整组重抽。抓取点在圆环外接正方形里均匀抽（拒绝后即 U 内均匀）。
 
-        随机调用顺序与原路径相同（x、y、yaw 各一次 ``torch.rand``），只是被拒时整组重来；
-        ``base_y`` 不重抽。只返回被接受的那组，``recorder.value`` 由调用方在其后照常调用（N18）。
-        返回 ``(x_jitter, y_jitter, yaw, 尝试次数)``；超过 ``max_trials`` 抛真 ``SceneGenerationError``。
+        返回 ``(杆根 x, 杆根 y, yaw, 尝试次数)``；判定用的杆根与建杆时一样经 float32 平移（``_peg_root_xy``），
+        保证回放复核与生成时逐位同判。超过 ``peg_max_trials`` 抛真 ``SceneGenerationError``。
         """
-        span = peg_policy["jitter_span"]
-        for trial in range(1, zone["max_trials"] + 1):
-            x_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * span
-            y_jitter = (torch.rand(1, generator=self._hb_generator).item() - 0.5) * span
+        cx, cy = float(region["center"][0]), float(region["center"][1])
+        side = 2.0 * region["r_out"]
+        for trial in range(1, region["peg_max_trials"] + 1):
+            gx = torch.rand(1, generator=self._hb_generator).item() * side + (cx - region["r_out"])
+            gy = torch.rand(1, generator=self._hb_generator).item() * side + (cy - region["r_out"])
             yaw = torch.rand(1, generator=self._hb_generator).item() * (yaw_policy["span_rad"]) - (yaw_policy["offset_rad"])
-            if _peg_zone_distance(base_y, x_jitter, y_jitter, yaw, zone, extent) >= zone["radius"]:
-                return x_jitter, y_jitter, yaw, trial
+            root_x = gx + self.length * float(np.cos(yaw))
+            root_y = gy + self.length * float(np.sin(yaw))
+            root = _peg_root_xy(0.0, root_x, root_y)
+            if _peg_region_violation(root, yaw, self.length, extent, region) is None:
+                return float(root_x), float(root_y), float(yaw), trial
         raise SceneGenerationError(
-            f"MoveCube xhard：{seg_label}杆 {zone['max_trials']} 次重抽全部落进桌面中心禁区")
+            f"MoveCube xhard4：{seg_label}杆 {region['peg_max_trials']} 次重抽全部违反统一区域 U")
 
-    def _xhard_verify_peg_extent(self, extent):
-        """用刚建好的杆的实际碰撞盒与可视盒复核禁区判据所用的轴线段区间（取二者并集）。
+    def _xhard4_verify_peg_extent(self, extent):
+        """用刚建好的杆的实际碰撞盒与可视盒复核杆规则（V6 统一区域 U）所用的轴线段区间（取二者并集）。
 
         读 head/tail 两个 link 的 box 形状半长、形状局部位姿与 tail 固定关节的 ``pose_in_parent``／``pose_in_child``，
         得到沿杆朝向（link 局部 x 轴）的实际区间；与 ``_peg_axis_extent`` 不一致就抛 RuntimeError
@@ -700,13 +792,13 @@ class MoveCube(BaseEnv):
                     if hasattr(rs, "half_size"):
                         shapes.append((float(rs.half_size[0]), float(rs.local_pose.p[0])))
             if not shapes:
-                raise RuntimeError(f"MoveCube xhard：杆 link {link.name} 没有可读的 box 形状，无法复核禁区杆轴线段")
+                raise RuntimeError(f"MoveCube xhard4：杆 link {link.name} 没有可读的 box 形状，无法复核杆规则所用的杆轴线段")
             for half, local_x in shapes:
                 lo = min(lo, offset + local_x - half)
                 hi = max(hi, offset + local_x + half)
         if abs(lo - extent[0]) > 1e-6 or abs(hi - extent[1]) > 1e-6:
             raise RuntimeError(
-                f"MoveCube xhard：禁区判据用的杆轴线段 {tuple(extent)} 与实际几何 ({lo}, {hi}) 不一致")
+                f"MoveCube xhard4：杆规则用的杆轴线段 {tuple(extent)} 与实际几何 ({lo}, {hi}) 不一致")
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         # 每次初始化各自记一份规格，不复用上一次的结果
@@ -742,7 +834,7 @@ class MoveCube(BaseEnv):
             #self.way="gripper_push"
 
             self.agent.reset(qpos)            
-            if is_newvalue_difficulty(self.difficulty):
+            if self.difficulty == "xhard4":
                 # B11：每次初始化清掉上一次抓杆的归约标记（由 grasp_and_lift_peg_side 重新设置）
                 self._peg_grasp_flipped = False
                 self._peg_grasp_flip_log = []

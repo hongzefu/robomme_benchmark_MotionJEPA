@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""轻量测试：V4 MoveCube 的 xhard 档（计划 2.16 / 2.17），纯 CPU、不起 sapien 场景。
+"""轻量测试：V4 MoveCube 的 xhard4 档兼容机制（计划 2.16 / 2.17），纯 CPU、不起 sapien 场景。
 
-* A6：``configs`` 三档同值且等于原全局常量；xhard 为 ±180°；
-  V5（计划 2.9，L33）：xhard 的 ``corner_bias`` 已删干净，改为 ``center_exclusion``（断言已改为 V5 语义，
+* A6：``configs`` 三档同值且等于原全局常量；xhard4 为 ±180°；
+  V5（计划 2.9，L33）：旧档的 ``corner_bias`` 已删干净，改为 ``center_exclusion``；V6（计划 2.6）再换成
+  统一区域 ``region``（断言已改为 V6 语义，
   ``corner_bias`` 取值校验的旧单测随 ``_xhard_corner_bias`` 一并删除，禁区校验见 ``test_v5_xhard_movecube.py``）；
-* ``_native_decision`` 去掉 ``xhard`` 子键后与 V3 原值逐字相同；守卫放行 xhard 取新值；
-  演示段与执行段的 ``center_exclusion`` 各自声明（两套不可合并）；
+* ``_native_decision`` 去掉 ``xhard4`` 子键后与 V3 原值逐字相同；守卫放行 xhard4 取新值；
+  演示段与执行段的 ``region`` 各自声明（两套不可合并）；
 * B11：翻转夹爪后 ``solve_push_to_target_with_peg`` 的世界系路点与杆位姿对
   ``obj_flag × direction`` 四种组合逐一与未归约时一致，不补偿则杆朝向相差 180°。
 
-    uv run --no-sync python -m pytest tests/lightweight/test_v4_xhard_movecube.py -q
+    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_v4_xhard_movecube.py -q
 """
 
 from __future__ import annotations
@@ -58,35 +59,36 @@ V3_DECISION = {
 
 def _strip(node):
     if isinstance(node, dict):
-        return {k: _strip(v) for k, v in node.items() if k != "xhard"}
+        return {k: _strip(v) for k, v in node.items() if k != "xhard4"}
     return node
 
 
-def test_configs_three_tiers_identical_and_xhard_values() -> None:
+def test_configs_three_tiers_identical_and_xhard4_values() -> None:
     for tier in ("easy", "medium", "hard"):
         assert CLS.configs[tier]["peg_yaw_range"] == V3_DECISION["peg_yaw_range"]
         assert CLS.configs[tier]["corner_bias"] == 0.0
-    x = CLS.configs["xhard"]
+    x = CLS.configs["xhard4"]
     assert x["peg_yaw_range"]["span_rad"] == pytest.approx(2 * np.pi)
     assert x["peg_yaw_range"]["offset_rad"] == pytest.approx(np.pi)
-    # V5 L33：corner_bias 删键；桌面中心禁区为 L30 定数
-    assert "corner_bias" not in x
-    assert x["center_exclusion"] == {"shape": "circle", "center": [0.0, 0.0], "radius_m": 0.05,
-                                     "judge": "object_center", "max_trials": 128}
+    # V5 L33：corner_bias 删键；V6（计划 2.6）：V5 的中心圆禁区换成统一区域 U（圆环版，用户 2026-09-25 定）
+    assert "corner_bias" not in x and "center_exclusion" not in x
+    assert x["region"] == {"center": [-0.06, 0.0], "r_in": 0.12, "r_out": 0.20, "base_dist": [0.35, 0.76],
+                           "push_len_max": 0.30, "peg_gap": 0.04, "goal_peg_gap": 0.02,
+                           "peg_max_trials": 128, "goal_max_trials": 256, "cube_max_trials": 4096}
 
 
 def test_decision_visible_part_unchanged_and_guard() -> None:
     decision, _native = movecube_mod.native_blocks(CLS)
     assert _strip(decision) == V3_DECISION
-    assert decision["demo_layout"]["xhard"] == {"center_exclusion": CLS.configs["xhard"]["center_exclusion"]}
-    assert decision["execution_layout"]["xhard"] == {"center_exclusion": CLS.configs["xhard"]["center_exclusion"]}
+    assert decision["demo_layout"]["xhard4"] == {"region": CLS.configs["xhard4"]["region"]}
+    assert decision["execution_layout"]["xhard4"] == {"region": CLS.configs["xhard4"]["region"]}
     # 两段是各自的副本，改一段不影响另一段与类默认值
-    assert decision["demo_layout"]["xhard"]["center_exclusion"] is not decision["execution_layout"]["xhard"]["center_exclusion"]
-    assert decision["peg_yaw_range"]["xhard"] == CLS.configs["xhard"]["peg_yaw_range"]
+    assert decision["demo_layout"]["xhard4"]["region"] is not decision["execution_layout"]["xhard4"]["region"]
+    assert decision["peg_yaw_range"]["xhard4"] == CLS.configs["xhard4"]["peg_yaw_range"]
     # 演示段与执行段各自一份（可取不同值）
     tuned = copy.deepcopy(decision)
-    tuned["demo_layout"]["xhard"]["center_exclusion"]["radius_m"] = 0.04
-    tuned["execution_layout"]["xhard"]["center_exclusion"]["radius_m"] = 0.06
+    tuned["demo_layout"]["xhard4"]["region"]["r_in"] = 0.10
+    tuned["execution_layout"]["xhard4"]["region"]["r_in"] = 0.14
     assert_native_decision(tuned, decision, "MoveCube")
     bad = copy.deepcopy(decision)
     bad["demo_layout"]["peg_position_policy"]["jitter_span"] = 0.2
@@ -172,8 +174,8 @@ def test_push_without_compensation_flips_peg(obj_flag, direction) -> None:
 
 @pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3"])
 def test_v6_no_tier_rejects_xhard123(tier) -> None:
-    """V6（计划 2.13 / M2）：本环境原版无梯度、不加档，configs 仍只有 4 档；
+    """V6（计划 2.13 / M2）：本环境原版无梯度、不加档，configs 仍只有 xhard4；
     传入 xhard1/2/3 在 __init__ 里（super().__init__ 之前、不起 sapien 场景）明确抛 ValueError。"""
-    assert set(CLS.configs) == {"easy", "medium", "hard", "xhard"}
+    assert set(CLS.configs) == {"easy", "medium", "hard", "xhard4"}
     with pytest.raises(ValueError, match="不加档"):
         CLS(difficulty=tier)

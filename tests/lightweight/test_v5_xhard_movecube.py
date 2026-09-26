@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 MoveCube 的 xhard 档（NEWTASK_RELEASE_V5_PLAN 2.9，L30～L34）。
+"""轻量测试：V5 MoveCube 机制在 V6 xhard4 区域实现下的回归（L30～L34）。
 
 离线部分纯 CPU、不起 sapien 场景：``TableSceneBuilder``、``build_peg``、方块与圆盘 builder 用假对象顶替，
 直接跑真实的 ``MoveCube._load_scene``（随机调用、拒绝循环、规格记录全是真代码）。
 
 * 原三档逐位不变：easy/medium/hard 的规格、物体位姿与调用后随机流哨兵的 SHA-256 与改动前代码
   （基线 12.120，删 ``corner_bias`` 之前）算出的金标准相同；
-* ``MOVECUBE_CENTER_EXCLUSION``：多 seed 下杆轴线段、两段 goal、两段方块候选中心与最终中心都不进
-  (0,0)、R=0.05 的圆，且没有一局生成失败；
-* ``MOVECUBE_REJECTION_BUDGET``：同一批 seed 下没有任何拒绝循环耗尽；把禁区调到必然耗尽时抛的是真
-  ``SceneGenerationError``（杆循环、goal 循环两条路径）；
-* ``MOVECUBE_EXEC_SPAWN``：xhard 两段方块都以 ``include_existing=False`` 生成（L34），seed 1000442 / 1000446
+* V6（计划 2.6）：旧档已更名为 xhard4，V5 桌面中心圆禁区已换成统一区域 U，``MOVECUBE_CENTER_EXCLUSION`` /
+  ``MOVECUBE_REJECTION_BUDGET`` 与禁区校验用例随之删除，新判据见 ``test_v6_xhard_movecube_region.py``；
+  本文件保留原三档金标准、杆几何、两段方块生成、回放复核（违规样例在 V6 下同样违规）；
+* ``MOVECUBE_EXEC_SPAWN``：xhard4 两段方块都以 ``include_existing=False`` 生成（L34），seed 1000442 / 1000446
   生成成功；真实模拟器上的同名检查在带 ``gpu`` 标记的用例里；
 * L33：``corner_bias`` 在 MoveCube 里删干净（配置、decision、方法、规格记录、``corner_push`` 调用）；
-* N17：回放冻结规格时杆、goal、方块三处违反禁区都报 ``EpisodeSpecError``；合规规格回放逐值一致。
+* N17：回放冻结规格时杆、goal、方块三处违规都报 ``EpisodeSpecError``；合规规格回放逐值一致。
 
-    uv run --no-sync python -m pytest tests/lightweight/test_v5_xhard_movecube.py -q -s
+    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_v5_xhard_movecube.py -q -s
 """
 
 from __future__ import annotations
@@ -28,7 +27,6 @@ import json
 import math
 import sys
 from pathlib import Path
-from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -68,10 +66,6 @@ class _FakeActor:
     def __init__(self, name, pose):
         self.name = name
         self.pose = pose
-
-
-# V6：_xhard_center_exclusion 按本局档位查 layout[self.difficulty]，假 self 只需带 difficulty
-_XHARD_SELF = SimpleNamespace(difficulty="xhard")
 
 
 def _as_ms_pose(sp):
@@ -121,7 +115,7 @@ def fake_scene(monkeypatch):
     monkeypatch.setattr(mc, "build_peg", _fake_build_peg)
     monkeypatch.setattr(mc, "TableSceneBuilder", _FakeTableSceneBuilder)
     # 假杆没有 sapien 形状；实际几何复核在 gpu 用例里对真实模拟器做
-    monkeypatch.setattr(CLS, "_xhard_verify_peg_extent", lambda self, extent: None)
+    monkeypatch.setattr(CLS, "_xhard4_verify_peg_extent", lambda self, extent: None)
     spy = _SpawnSpy(mc.spawn_random_cube)
     monkeypatch.setattr(mc, "spawn_random_cube", spy)
     return spy
@@ -201,33 +195,13 @@ def test_corner_bias_removed_cleanly() -> None:
     src = inspect.getsource(mc)
     assert "corner_push" not in src
     assert not hasattr(CLS, "_xhard_corner_bias")
-    assert "corner_bias" not in CLS.config_xhard
+    assert "corner_bias" not in CLS.config_xhard4
     decision, _ = mc.native_blocks(CLS)
     for seg in ("demo_layout", "execution_layout"):
-        assert set(decision[seg]["xhard"]) == {"center_exclusion"}
+        # V6（计划 2.6）：V5 的 center_exclusion 已换成统一区域 region
+        assert set(decision[seg]["xhard4"]) == {"region"}
     load_src = inspect.getsource(CLS._load_scene)
     assert "corner_bias" not in load_src.replace("corner_bias 已删除", "")
-
-
-def test_center_exclusion_decision_and_validation() -> None:
-    decision, _ = mc.native_blocks(CLS)
-    layout = copy.deepcopy(decision["demo_layout"])
-    zone = CLS._xhard_center_exclusion(_XHARD_SELF, layout, "demo_layout")
-    assert zone["rule"] == ((0.0, 0.0), 0.05)
-    assert zone["max_trials"] == 128
-    bad_cases = [
-        ("shape", "square"), ("judge", "outline"), ("radius_m", -0.01), ("radius_m", float("nan")),
-        ("radius_m", None), ("max_trials", 0), ("max_trials", 1.5), ("max_trials", True), ("center", [0.0]),
-    ]
-    for key, value in bad_cases:
-        broken = copy.deepcopy(layout)
-        broken["xhard"]["center_exclusion"][key] = value
-        with pytest.raises(SamplingConfigError):
-            CLS._xhard_center_exclusion(_XHARD_SELF, broken, "demo_layout")
-    missing = copy.deepcopy(layout)
-    del missing["xhard"]["center_exclusion"]["radius_m"]
-    with pytest.raises(SamplingConfigError):
-        CLS._xhard_center_exclusion(_XHARD_SELF, missing, "demo_layout")
 
 
 def test_peg_axis_extent_matches_measured_geometry() -> None:
@@ -236,84 +210,11 @@ def test_peg_axis_extent_matches_measured_geometry() -> None:
     assert hi == pytest.approx(PEG_EXTENT_MEASURED[1], abs=1e-12)
 
 
-# ---------------------------------------------------------------------------
-# MOVECUBE_CENTER_EXCLUSION / MOVECUBE_REJECTION_BUDGET
-# ---------------------------------------------------------------------------
-def test_center_exclusion_and_rejection_budget(fake_scene) -> None:
-    violations, layout_fail, redraw, exhausted = [], [], [], 0
-    peg_redraw_rounds = 0
-    for seed in EXCLUSION_SEEDS:
-        start = len(fake_scene.calls)
-        env, err = _run(seed, "xhard")
-        if err is not None:
-            layout_fail.append((seed, err))
-            exhausted += err == "SceneGenerationError"
-            continue
-        spec = env._spec.to_dict()["layout"]
-        calls = fake_scene.calls[start:]
-        assert [c["name"] for c in calls] == ["fixed_cube", "fixed_cube_2"]
-        for seg, call in zip(("demo", "execution"), calls):
-            lay = spec[seg]
-            d_peg = _seg_dist(_peg_root(lay), lay["peg_yaw"], PEG_EXTENT_MEASURED)
-            d_goal = float(np.hypot(*lay["goal_xy"]))
-            d_cand = float(np.hypot(*call["region_center"]))
-            d_cube = float(np.hypot(*lay["cube_pose"][:2]))
-            for what, d in (("peg", d_peg), ("goal", d_goal), ("cube_candidate", d_cand), ("cube", d_cube)):
-                if d < R:
-                    violations.append((seed, seg, what, d))
-            # L34 与 2.0①：两段方块都不以 actor 作障碍，并带禁区参数
-            assert call["extra"] == {"include_existing": False, "center_exclusion": ((0.0, 0.0), R)}
-            assert lay["center_exclusion"]["radius_m"] == R
-            assert lay["center_exclusion"]["peg_axis_extent_m"] == pytest.approx(list(PEG_EXTENT_MEASURED))
-            trials = lay["center_exclusion_trials"]
-            assert 1 <= trials["peg_trials"] <= 128
-            peg_redraw_rounds += trials["peg_trials"] - 1
-            redraw.append(trials["peg_trials"] - 1 + trials["cube_candidate_center_rejects"])
-            assert "corner_bias" not in lay
-    n = len(EXCLUSION_SEEDS)
-    print(f"MOVECUBE_CENTER_EXCLUSION={'PASS' if not violations and not layout_fail else 'FAIL'} "
-          f"seeds={n} zone_violations={len(violations)} layout_fail={len(layout_fail)}")
-    print(f"MOVECUBE_REJECTION_BUDGET={'PASS' if exhausted == 0 else 'FAIL'} exhausted={exhausted} "
-          f"peg_redraw_mean={peg_redraw_rounds / (2 * n):.4f} local_redraw_max={max(redraw)}")
-    assert violations == []
-    assert layout_fail == []
-    # 杆规则确实在起作用（P2 离线估计每段约 3.8% 的杆需要重抽），不是形同虚设
-    assert peg_redraw_rounds > 0
-
-
-def _set_radius(radius):
-    def tweak(env):
-        for seg in ("demo_layout", "execution_layout"):
-            env._sampling["decision"][seg]["xhard"]["center_exclusion"]["radius_m"] = radius
-    return tweak
-
-
-def test_peg_budget_exhaustion_raises_real_scene_generation_error(fake_scene) -> None:
-    env = _make(2000000, "xhard")
-    _set_radius(1.0)(env)
-    with pytest.raises(SceneGenerationError, match="杆 128 次重抽"):
-        env._load_scene({})
-
-
-def test_goal_budget_exhaustion_raises_real_scene_generation_error(fake_scene) -> None:
-    # R=0.09：执行段 goal 只在 |x|,|y| ≤ 0.06 内抽，中心离原点最多 0.085，必然耗尽；杆仍可行
-    hit = 0
-    for seed in range(2000000, 2000020):
-        env = _make(seed, "xhard")
-        _set_radius(0.09)(env)
-        with pytest.raises(SceneGenerationError) as info:
-            env._load_scene({})
-        if "goal" in str(info.value):
-            hit += 1
-            assert isinstance(info.value.__cause__, RuntimeError)
-    assert hit > 0
-
-
 def test_exec_spawn_offline_known_seeds(fake_scene) -> None:
     ok = 0
     for seed in (1000442, 1000446):
         start = len(fake_scene.calls)
-        env, err = _run(seed, "xhard")
+        env, err = _run(seed, "xhard4")
         assert err is None, (seed, err)
         cube2 = [c for c in fake_scene.calls[start:] if c["name"] == "fixed_cube_2"]
         assert cube2 and cube2[0]["extra"]["include_existing"] is False
@@ -325,7 +226,7 @@ def test_exec_spawn_offline_known_seeds(fake_scene) -> None:
 # N17：回放冻结规格时复核
 # ---------------------------------------------------------------------------
 def _export(seed):
-    env, err = _run(seed, "xhard")
+    env, err = _run(seed, "xhard4")
     assert err is None
     return env._spec.to_dict(), _fingerprint(env, err)
 
@@ -333,7 +234,7 @@ def _export(seed):
 def test_replay_valid_spec_reproduces_layout(fake_scene) -> None:
     for seed in (2000000, 2000001, 1000446):
         spec, fp = _export(seed)
-        env = _make(seed, "xhard", spec=copy.deepcopy(spec))
+        env = _make(seed, "xhard4", spec=copy.deepcopy(spec))
         env._load_scene({})
         assert env._spec.mismatches == []
         fp2 = _fingerprint(env, None)
@@ -344,11 +245,11 @@ def test_replay_valid_spec_reproduces_layout(fake_scene) -> None:
 @pytest.mark.parametrize("seg", ["demo", "execution"])
 def test_replay_rejects_peg_in_zone(fake_scene, seg) -> None:
     spec, _ = _export(2000000)
-    # 杆根 (0, −0.15)、朝 −y：杆身 root−0.15u 端伸到 (0, 0)
+    # 杆根 (0, −0.15)、朝 −y：V6 下抓取点 (0, −0.05) 落进统一区域 U 的圆环内孔
     spec["layout"][seg]["peg_offsets"] = [-0.2, 0.0, 0.05]
     spec["layout"][seg]["peg_yaw"] = -math.pi / 2
-    env = _make(2000000, "xhard", spec=spec)
-    with pytest.raises(EpisodeSpecError, match="杆轴线段"):
+    env = _make(2000000, "xhard4", spec=spec)
+    with pytest.raises(EpisodeSpecError, match="统一区域 U"):
         env._load_scene({})
 
 
@@ -362,7 +263,7 @@ def test_replay_rejects_goal_and_cube_in_zone(fake_scene, path, value) -> None:
     spec, _ = _export(2000000)
     seg, key = path.split(".")
     spec["layout"][seg][key] = value
-    env = _make(2000000, "xhard", spec=spec)
+    env = _make(2000000, "xhard4", spec=spec)
     with pytest.raises(EpisodeSpecError):
         env._load_scene({})
 
@@ -379,20 +280,20 @@ def test_real_reset_exec_spawn_and_peg_geometry() -> None:
     ok = 0
     for seed in (1000442, 1000446):
         env = gym.make("MoveCube", obs_mode="rgb+depth+segmentation", control_mode="pd_joint_pos",
-                       render_mode="rgb_array", reward_mode="dense", seed=seed, difficulty="xhard")
+                       render_mode="rgb_array", reward_mode="dense", seed=seed, difficulty="xhard4")
         try:
             env.reset()
             u = env.unwrapped
             lay = u._spec.to_dict()["layout"]
+            from tests.lightweight.test_v6_xhard_movecube_region import segment_violations
             for seg in ("demo", "execution"):
-                assert _seg_dist(_peg_root(lay[seg]), lay[seg]["peg_yaw"], PEG_EXTENT_MEASURED) >= R
-                assert float(np.hypot(*lay[seg]["goal_xy"])) >= R
-                assert float(np.hypot(*lay[seg]["cube_pose"][:2])) >= R
+                # V6（计划 2.6）：按统一区域 U 独立复核
+                assert segment_violations(lay[seg]) == []
             # 演示段杆的实测几何：head 中心 = 杆根，tail 中心 = 杆根 − 0.1·u
             head = u.peg_head.pose.p[0, :2].cpu().numpy()
             tail = u.peg_tail.pose.p[0, :2].cpu().numpy()
             assert float(np.linalg.norm(head - tail)) == pytest.approx(0.1, abs=1e-5)
-            u._xhard_verify_peg_extent(mc._peg_axis_extent(u.length))
+            u._xhard4_verify_peg_extent(mc._peg_axis_extent(u.length))
             ok += 1
         finally:
             env.close()

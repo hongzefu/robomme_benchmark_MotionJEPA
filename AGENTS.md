@@ -217,7 +217,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0 基线与 V1 基线侧完成；S1 pipeline 已提交，MoveCube/VP/swap 待集成 | S0 失败／错误集合已冻结；`BinFill/0` 冒烟1/1；`13e5151` 基线侧144/144成功、49 GB、退出0；pipeline核心测试94 passed/3 skipped，dry-run退出0 | 集成剩余三路实现与 V6 快照，运行原档冻结、全环境 reset、LIGHTWEIGHT 失败集合及最终 V1 |
+| 新值模式 V6 实施（2026-09-26） | S0 基线与 V1 基线侧完成；S1 pipeline、MoveCube 已提交，VP/swap 待集成 | S0失败／错误集合已冻结；`13e5151` 基线144/144成功、49 GB、退出0；pipeline核心测试94 passed/3 skipped、dry-run退出0；MoveCube定向47 passed/1 deselected、V5 snapshot散列未变 | 集成VP与swap，导出V6 snapshot，运行13×4真实reset、LIGHTWEIGHT失败集合及最终V1 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1857,6 +1857,12 @@
 - 主树定向测试：`uv run --no-sync python -m pytest tests/lightweight/test_v6_difficulty_tiers.py tests/lightweight/test_v4_specs.py tests/lightweight/test_v5_generation_tools.py tests/lightweight/test_episode_spec_recorder.py tests/lightweight/test_episode_action_sampling.py tests/lightweight/test_sampling_config_split.py -m 'not gpu and not slow' -q`，94 passed、3 skipped、9.60 秒；`tests/lightweight/test_v5_xhard_patternlock_routestick.py` 经最终表断言修正后 40 passed、6.45 秒。dry-run `uv run --no-sync python -m scripts.parity.v5_generation pipeline --run-id s1-dry-run --tiers xhard1,xhard2,xhard3,xhard4 --draw-workers 16 --workers 16 --official-root artifacts/train-parity/local-smoke-01/official-src --dry-run` 退出0，输出16步；前三档各使用13个有梯度环境、xhard4使用all，四个目录隔离且均为 `seed-profile v6`。
 - 集成未完成时先跑的一组跨文件探索测试为 305 passed、44 failed、1 deselected；其中 VideoUnmaskSwap/VideoRepick、MoveCube、VP 的断言仍对应各自待集成的最终实现，PatternLock/RouteStick 文件独立修正后整文件 40 项通过。该探索结果不作为 LIGHTWEIGHT 最终验收；四路合并后须重跑对应目标及同 S0 口径失败集合闸门。
 - 本阶段未启动生成、reset 抽样或 rollout，未改 `generate_dataset_newseed.py`、V2 快照、冻结录像器、五个入口或依赖。下一步应用 MoveCube 圆环、VP放台/visit_counts、VUS/BUS/VR S5/M5(b) 的最终差异，再导出独立 V6 snapshot 和运行全环境单调样本。
+
+### 2026-09-26 America/Detroit — 新值模式 V6 S1 MoveCube 圆环区域集成
+
+- 将 MoveCube 副本的区域 U 实现应用到主树：`MoveCube.py` 的档名、`demo_layout.xhard4.region`、`execution_layout.xhard4.region`、杆/方块/goal采样及回放核验统一使用 `xhard4`；保留 pipeline 提供的 `require_xhard4_only`，使无梯度环境对 `xhard1..3` 明确报错。`utils/object_generation.py` 增加 annulus、base band、杆段净空和 push-feasible 约束接口，默认 `None` 关闭路径保持不变。
+- 冻结的 `scripts/configs/newtask-v5/sampling_config.json` SHA-256 仍为 `c45d4408a5b87d71a8be72d1724322f06d6801118bb53e4afdffd07b1eaf8315`；录像器无差异。`tests/lightweight/test_v4_xhard_movecube.py`、`test_v5_xhard_movecube.py`、`test_v6_xhard_movecube_region.py` 定向组退出0：47 passed、1 deselected、10.50秒；deselected 项为非本轮轻量范围项，三个文件未出现未解决冲突标记，`git diff --cached --check`通过。
+- 此提交只完成 MoveCube 静态/轻量验收；2000局副本探针是 xhard4 重命名前的实现记录，不能替代主树最终reset及V6 release snapshot 验证。S2演示探针与全局V1对拍仍待执行；下一步集成VP与swap后统一导出V6 snapshot。
 
 ### 2026-09-26 America/Detroit — 新值模式 V6 S0 原值基线侧144局完成
 
