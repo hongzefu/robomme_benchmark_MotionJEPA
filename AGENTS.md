@@ -217,7 +217,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1四路代码已提交；V6 snapshot已导出；reset核验器已兼容xhard4全16环境；13×4 reset draws运行中 | 基线144/144成功、49GB、退出0；V6 snapshot ready=16/pending=0、verify通过；V5 snapshot SHA未变；关联测试56 passed；完整LIGHTWEIGHT首轮280秒超时、未取得汇总；tmux `v6-tier-reset`运行中 | reset结束后分片跑完LIGHTWEIGHT并与基线逐项比较；完成 `--reset-all` 实测、V0/FROZEN_FILES、V6演示smoke与S2探针，再跑原档V1严格对拍 |
+| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1四路代码已提交；V6 snapshot已导出；reset核验器已兼容xhard4全16环境；reset draws运行中；Great Lakes单格链路smoke通过 | 基线144/144成功、49GB、退出0；V6 snapshot ready=16/pending=0、verify通过；V5 snapshot SHA未变；关联测试56 passed；完整LIGHTWEIGHT首轮280秒超时、未取得汇总；GL BinFill/xhard1 draw/freeze/rollout/report 1/1通过；tmux `v6-tier-reset`运行中 | 完成 `--reset-all`、V0/FROZEN_FILES、分片LIGHTWEIGHT并比较基线；S1通过后继续S2，按计划并行启动本机V1与GL正式生成；V1 PASS后才接纳GL产物 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1897,3 +1897,10 @@
 
 - 按计划口径执行 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`，完整运行时长达到280秒后由 timeout 以124终止；pytest 进度输出到92%，没有最终失败/错误汇总，因此该次既不算通过，也不能与S0基线作失败集合比较。完整输出保留在忽略路径 `artifacts/newtask-v6/s0/lightweight-v6.log`。
 - 同期16 worker reset 抽样仍在运行，无法据此断定超时由资源竞争造成。reset 结束后按 `rg --files tests/lightweight -g 'test*.py'` 枚举并分成多个小于5分钟的文件分片，逐片执行同一 marker，再合并全部 FAILED/ERROR 身份与 S0 的46 failed/12 errors 对比；分片前后核对覆盖文件集合无遗漏/重复。
+
+### 2026-09-26 America/Detroit — Great Lakes 单格 V6 生成链路预热
+
+- 主仓 `da77662..949b6eb` 的 `src scripts tests` 差异精确应用到 GL 副本 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl`；改后状态恰为68个预期源文件，无 `artifacts/`、`pyproject.toml` 或 lockfile 变化，`git diff --check` 退出0。导入检查确认 `robomme` 与 BinFill 来自 GL 副本；该同步未提交/推送。
+- 仅复用 `61890467`（`gl1526`），未使用 `61890468`，未运行 `sbatch`/`scancel`。执行 `UV_LINK_MODE=copy uv run --no-sync python -m scripts.parity.v5_generation pipeline --run-id /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z --difficulty xhard1 --seed-profile v6 --tasks BinFill --candidates-per-env 1 --max-reset-attempts 30 --select 0 --draw-workers 1 --draw-gpus 0 --workers 1 --rollout-gpu 0 --official-root artifacts/train-parity/local-smoke-01/official-src`，外层采用计划指定的 `srun --jobid=61890467 --overlap --exact --ntasks=1 --cpus-per-task=16 --gpu_cmode=shared`；退出0，draw/reset=1/1，freeze=1条，rollout=1/1成功、59秒，`V5_GENERATION=REPORT draft_ok=1 rollout_ok=1 selected_shortfall=0 bin_collision=0`。
+- 规格 `native-newvalue/2`、seed `8400000`、spec SHA-256 `916b71a5e4a8c2f20c6bbec561e4436af29a24031123a8f02a7e3f3924257a29`；spec replay `value_points=41 mismatch=0 unused=0`。HDF5 为806055656字节、`episode_0`含1209 timestep groups；MP4 为27079634字节，`cv2.VideoCapture` 首帧可读，尺寸768×1280。两者及规格/报告远端与本机散列一致。全部产物由节点 `/tmp` 经SSH/srun tar流直接写回忽略目录 `artifacts/newtask-v6/gl-smoke-61890467-binf-xhard1-20260926T195419Z/`，未落NFS；日志在该目录 `run.log`。该smoke只验证单格链路，不代表550候选/165局正式生成或S4完成。
+- `61890467` 仍RUNNING，GL工作区仍只有同步的68个预期源码路径；录像器对 `da77662` 零diff。正式S4仍等S1闸门；S1通过后可按计划与本机V1并行执行，V1 PASS前生成结果不计正式交付。
