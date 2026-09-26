@@ -217,7 +217,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1代码、V6 snapshot、V0和新口径LIGHTWEIGHT通过；reset xhard1/2完成、xhard3运行中；Great Lakes单格smoke通过 | 基线144/144成功、49GB、退出0；V6 snapshot ready=16/pending=0；`NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0`；LIGHTWEIGHT相对S0新增失败/错误0、已修复20；xhard1 `2600/2600`、xhard2 `2600/2600` 成功；Recorder、三冻结入口及五入口数量核对通过；GL单格pipeline 1/1通过 | 仅完成S1剩余xhard3/4 reset、`--reset-all`、冻结文件基准与S1报告/提交；随后按用户要求停止并移交新对话，不启动S2/S3/S4正式实跑 |
+| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1代码、V6 snapshot、V0、LIGHTWEIGHT、FROZEN_FILES通过；reset xhard1/2完成、xhard3运行中；Great Lakes单格smoke通过 | 基线144/144成功、49GB、退出0；V6 snapshot ready=16/pending=0；`NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0`；LIGHTWEIGHT新增失败/错误0、已修复20；`RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5`（官方源码树 `d53f21a`）；xhard1/2各 `2600/2600` 成功；GL单格pipeline 1/1通过 | 仅完成S1剩余xhard3/4 reset、正式 `--reset-all` 与S1报告/提交；随后按用户要求停止并移交新对话，不启动S2/S3/S4正式实跑 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1922,3 +1922,8 @@
 
 - `scripts/parity/v6_tier_monotone.py` 的帮助文字仍把单调检查器称为S2步骤，并声称四份draft各含13环境；实际S1采样前三档各13环境、xhard4为16环境，额外MoveCube/InsertPeg/StopCube只核验规格与reset尝试，不计入52个梯度格。仅更正文档字符串，检查算法和判定行不变。
 - `command -v uv`确认可用；`uv run --no-sync python -m pytest tests/lightweight/test_v6_tier_monotone.py -q` 为14 passed、0.06秒、退出0；`uv run --no-sync python -m scripts.parity.v6_tier_monotone --help` 展示修订后的S1/13+16口径，退出0；`git diff --check`退出0。`git diff --quiet 949b6eb HEAD -- src/robomme/robomme_env` 返回0，说明此前运行中的四档reset所用环境源码指纹不受此文字修订影响。
+
+### 2026-09-26 America/Detroit — V6 S1 FROZEN_FILES 独立官方基准补齐
+
+- 此前只能证明三冻结入口与 `origin/HEAD` 及 `da77662` 相同，字面 `origin/main` 缺失曾记为NOT_VERIFIED。本次在已有隔离官方源码树 `artifacts/train-parity/local-smoke-01/official-src/` 找到独立基准：同目录的 `run_config.json` 记 `source_ref=d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa`、`official_tree=1d4c13697f0c5fbd7a8b05e01c196c984a07406c`；`git show -s --format=%T d53f21a` 与 `.official_tree` 完全一致，`origin/dataset-gen` 也指向该 commit。
+- 对 `scripts/evaluation.py`、`scripts/run_example.py`、`scripts/dataset_replay.py` 逐一执行 `cmp -s scripts/<名> artifacts/train-parity/local-smoke-01/official-src/scripts/<名>`，三次均退出0；当前 `git hash-object` 与 `git rev-parse d53f21a:scripts/<名>` 对应blob依次为 `9be77ddc4bc942b0387784197e116923c37db123`、`8fe01bfdceff981406eee39023c00dfc2c3e3cc4`、`b3fb5e9b6e587056c71e4279957d7172480122ab`。录像器 `git diff --quiet da77662 -- src/robomme/env_record_wrapper/RecordWrapper.py` 退出0；`ls -1 scripts/*.py` 恰5项。因此按本仓已有的官方源码快照口径判定 `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5`。远端没有字面 `main`/`master` ref 的事实保留，未据此声称另一个仓库当前 main 已验证。
