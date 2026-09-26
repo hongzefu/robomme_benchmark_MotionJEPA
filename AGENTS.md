@@ -217,7 +217,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0 基线与 V1 基线侧完成；S1 pipeline、MoveCube 已提交，VP/swap 待集成 | S0失败／错误集合已冻结；`13e5151` 基线144/144成功、49 GB、退出0；pipeline核心测试94 passed/3 skipped、dry-run退出0；MoveCube定向47 passed/1 deselected、V5 snapshot散列未变 | 集成VP与swap，导出V6 snapshot，运行13×4真实reset、LIGHTWEIGHT失败集合及最终V1 |
+| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1 pipeline、MoveCube、VP已提交到主线；swap待集成 | 基线144/144成功、49GB、退出0；pipeline核心94 passed/3 skipped，MoveCube47 passed/1 deselected，VP41 passed；V5 snapshot散列未变；静态 `TIER_PLAN_TABLE=PASS` | 集成swap，导出V6 snapshot，运行13×4真实reset、LIGHTWEIGHT失败集合及最终V1 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1868,3 +1868,9 @@
 
 - detached tmux `v6-v1-base` 中的 `13e5151` B 路任务正常退出，日志 `artifacts/newtask-v6/v1/base.log` 记录：`RUN_PATH path=B identities=144 ok=144 failed=0 exit=0 elapsed_s=2994.404`、`RUN_DONE paths=1 identities=144 failed=0`、`EXIT_CODE=0`。输出目录 `artifacts/newtask-v6/v1/base/` 含144个 HDF5，总计约49 GB；所有产物都留在仓库忽略目录，不入 Git。完成后 `tmux has-session -t v6-v1-base` 返回非零，session 已结束。
 - 该结果只冻结了 V1 基线侧；V6 侧144局尚未运行，比较器尚未执行，不能据此称 `NATIVE_REGRESSION` 通过。最终逐局 SHA/规格对拍须待 MoveCube、VP、swap 和 V6 snapshot 集成及 S2 探针后执行。
+
+### 2026-09-26 America/Detroit — 新值模式 V6 S1 VPB/VPO 与全环境单调入口集成
+
+- VPB/VPO 新值档 `xhard1..xhard4` 均设为 `return_to_origin`，原 hard 路径保持冻结。VPB 通过 `extra_place_before/after` 构造按钮前后非答案台额外段，target 放置次数为3/4/5/6；VPO 使用固定 `visit_counts` `[2,3]`、`[3,3]`、`[3,4]`、`[4,4]`，总访问数5/6/7/8，仅在两块计数不等时随机分配哪块多访问。共同回家收尾不计入梯度。
+- `scripts/parity/v6_tier_monotone.py` 已接入 `--reset-all --drafts <四档JSONL> --samples 200 --out <仓内报告>`，校验13个环境×4档覆盖、draft header/seed/spec SHA/identity，并从成功 EpisodeSpec 提取实际梯度维度。主树定向测试 `test_v4_xhard_videoplace.py` 与 `test_v6_tier_monotone.py` 退出0：41 passed、2.86秒；静态命令退出0：`TIER_PLAN_TABLE=PASS envs=13 violations=0`。静态表结果不代表真实reset通过。
+- V5 snapshot SHA-256保持 `c45d4408a5b87d71a8be72d1724322f06d6801118bb53e4afdffd07b1eaf8315`；录像器零diff、顶层五入口不变。V6 snapshot、13×4每格200成功reset及VP演示尚未执行。下一步仅待swap/M5(b)层集成，随后统一导出V6 snapshot并运行全环境reset与S2。

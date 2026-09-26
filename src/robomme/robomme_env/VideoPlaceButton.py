@@ -30,10 +30,19 @@ from .utils.SceneGenerationError import SceneGenerationError
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
-from .utils.difficulty import is_newvalue_difficulty, normalize_robomme_difficulty
+from .utils import difficulty as difficulty_utils
+from .utils.difficulty import normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
-from .utils.xhard_home_site import NO_RETURN, build_home_sites, home_pose_record, validate_demo_plan
+from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.xhard_home_site import (
+    RETURN_TO_ORIGIN,
+    build_goal_drop_sites,
+    goal_drop_obstacles,
+    build_home_sites,
+    home_pose_record,
+    returned_mask,
+    validate_demo_plan,
+)
 from .utils.xhard import cube_obb2d_exact
 
 from ..logging_utils import logger
@@ -81,58 +90,115 @@ NATIVE_SAMPLING = {
 }
 
 
-def native_blocks(cls):
+def native_blocks(cls, *, release="newtask-v6"):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
+    if release not in {"newtask-v4", "newtask-v5", "newtask-v6"}:
+        raise ValueError(f"未知 sampling_config 发布版本：{release}")
     native = copy.deepcopy(NATIVE_SAMPLING)
     # 方案第二节把 color 列在 native（「规则不改，只外部生成本局值」），不是 decision：
     # 本轮没有要求改颜色数，它只是随难度取原值。
-    native["parameters"]["color"] = {
-        difficulty: cfg["color"] for difficulty, cfg in cls.configs.items()
-    }
-    return _native_decision(cls), native
+    native["parameters"]["color"] = _tier_config_values(cls, "color", release)
+    return _native_decision(cls, release=release), native
 
 
 # V4 xhard 的演示决策（计划 2.14）：原值 demo_object_count=1 / native_random_goal_site 两键保持不动，
 # xhard 值放在名为 xhard 的子键下（守卫去掉 xhard 后原三档可见部分与原值逐字相同）。
 XHARD_DEMO_DECISION = {"demo_object_count": 2, "demo_return_policy": "return_to_origin"}
-
-# V6（计划 2.10）：新值族四档的演示决策档位表，键结构与 xhard 完全相同，只按档取值。
-# 以「演示放置次数」作难度标尺：xhard1=3、xhard2=4、xhard3=5（占位实为 4）、xhard=6。
-# 「不放回」（no_return）= 演示完方块留在它最后放上的目标台（按钮后那一台），不追加放回原位那一对 pick+drop。
-NEWVALUE_DEMO_DECISION = {
-    "xhard1": {"demo_object_count": 1, "demo_return_policy": "return_to_origin"},
-    "xhard2": {"demo_object_count": 2, "demo_return_policy": NO_RETURN},
-    # TODO(V6 S2)：return_last_only 由另一路实现，此处暂用 (k=2, 不放回) 占位
-    "xhard3": {"demo_object_count": 2, "demo_return_policy": NO_RETURN},
-    "xhard": XHARD_DEMO_DECISION,
+V6_DEMO_DECISIONS = {
+    # target 放置总数 = 每个演示方块的 before/after 两次 + 指定的额外段；回家步骤不计梯度。
+    # 额外段固定分配到按钮前/后，且使用非答案台面。
+    "xhard1": {"demo_object_count": 1, "demo_return_policy": "return_to_origin",
+               "extra_place_before": 0, "extra_place_after": 1},
+    "xhard2": {"demo_object_count": 1, "demo_return_policy": "return_to_origin",
+               "extra_place_before": 1, "extra_place_after": 1},
+    "xhard3": {"demo_object_count": 2, "demo_return_policy": "return_to_origin",
+               "extra_place_before": 1, "extra_place_after": 0},
+    "xhard4": {"demo_object_count": 2, "demo_return_policy": "return_to_origin",
+               "extra_place_before": 1, "extra_place_after": 1},
 }
+_NATIVE_TIERS = ("easy", "medium", "hard")
 
 
-def _native_decision(cls):
+def _is_newvalue_difficulty(value):
+    """优先调用统一难度族判定；VP 副本合并前用本地兼容集合支持定向测试。"""
+    predicate = getattr(difficulty_utils, "is_newvalue_difficulty", None)
+    if predicate is not None:
+        return bool(predicate(value))
+    return isinstance(value, str) and value.strip().lower() in {"xhard1", "xhard2", "xhard3", "xhard4"}
+
+
+def _tier_config_values(cls, field, release):
+    if release in {"newtask-v4", "newtask-v5"}:
+        values = {}
+        for name, cfg in cls.configs.items():
+            if name in _NATIVE_TIERS:
+                values[name] = cfg[field]
+            elif name in {"xhard", "xhard4"}:
+                values["xhard"] = cfg[field]
+        return values
+    values = {}
+    for tier in (*_NATIVE_TIERS, "xhard1", "xhard2", "xhard3", "xhard4"):
+        source = getattr(cls, f"config_{tier}", None)
+        if source is None and tier.startswith("xhard"):
+            source = getattr(cls, "config_xhard4", None) or getattr(cls, "config_xhard", None)
+        if source is not None:
+            values[tier] = source[field]
+    return values
+
+
+def vpb_target_placement_count(tier_cfg):
+    """V6 梯度只数放到 target 的段；末尾放回 home 不计入。"""
+    return (2 * int(tier_cfg["demo_object_count"])
+            + int(tier_cfg.get("extra_place_before", 0))
+            + int(tier_cfg.get("extra_place_after", 0)))
+
+
+def _extra_place_owners(demo_count, before_count, after_count, generator):
+    sides = ["before"] * int(before_count) + ["after"] * int(after_count)
+    if not sides:
+        return sides, []
+    if demo_count == 1:
+        return sides, [0] * len(sides)
+    if demo_count != 2 or len(sides) > 2:
+        raise SceneGenerationError("VPB V6 额外放台仅支持 1～2 个演示方块与至多 2 个额外段")
+    if len(sides) == 1:
+        owner_ids = [int(torch.randint(0, demo_count, (1,), generator=generator).item())]
+    elif len(sides) == 2:
+        owner_ids = torch.randperm(demo_count, generator=generator).tolist()
+    else:
+        owner_ids = []
+    return sides, [int(owner) for owner in owner_ids]
+
+
+def _native_decision(cls, *, release="newtask-v6"):
     """按方案第二节 2.11 切出 decision 块（原值阶段等于原值）。"""
-    return {
+    decision = {
         # 视频中演示操作多少个方块：原值 1（当前唯一 target_cube）；第二节的 2 个本轮不启用。
         "demo_object_count": 1,
         # 每个方块演示完成后返回哪里：原值＝最后放同一个随机 goal_site。
         "demo_return_policy": "native_random_goal_site",
-        "targets": {difficulty: cfg["targets"] for difficulty, cfg in cls.configs.items()},
-        "swap": {difficulty: cfg["swap"] for difficulty, cfg in cls.configs.items()},
-        "additional_place": {difficulty: cfg["additional_place"] for difficulty, cfg in cls.configs.items()},
-        # 消费点见 _load_scene_xhard_tail；xhard 原值不变，V6 追加 xhard1/2/3 同结构子树
-        "xhard": dict(XHARD_DEMO_DECISION),
-        **{tier: dict(NEWVALUE_DEMO_DECISION[tier]) for tier in ("xhard1", "xhard2", "xhard3")},
+        "targets": _tier_config_values(cls, "targets", release),
+        "swap": _tier_config_values(cls, "swap", release),
+        "additional_place": _tier_config_values(cls, "additional_place", release),
     }
+    if release in {"newtask-v4", "newtask-v5"}:
+        decision["xhard"] = dict(XHARD_DEMO_DECISION)
+    else:
+        decision.update(copy.deepcopy(V6_DEMO_DECISIONS))
+    return decision
 
 
 def _resolve_sampling_config(cls, override):
     """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
-    decision_default, native_default = native_blocks(cls)
+    incoming_decision = override.get("decision", {}) if isinstance(override, dict) else {}
+    legacy_v5 = isinstance(incoming_decision, dict) and "xhard" in incoming_decision and not any(
+        tier in incoming_decision for tier in V6_DEMO_DECISIONS
+    )
+    decision_default, native_default = native_blocks(
+        cls, release="newtask-v5" if legacy_v5 else "newtask-v6"
+    )
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
-    fill_missing_newvalue(decision, decision_default)
-    # V6：native.parameters.color 按档取；V5 快照只有四档，缺的新值族档从源码补齐（已有的不动）
-    if isinstance(native.get("parameters", {}).get("color"), dict):
-        fill_missing_newvalue(native["parameters"]["color"], native_default["parameters"]["color"])
     native["decision"] = decision
     return native
 
@@ -183,37 +249,20 @@ class VideoPlaceButton(BaseEnv):
         "swap":True,
         "targets":4
     }
-
-    # V6 新值族 xhard1/2/3（计划 2.10）：color 3、targets 4、swap True 与 hard/xhard 同；
-    # 档间差别只在 decision 的演示决策子树（NEWVALUE_DEMO_DECISION）。
-    config_xhard1 = {
-        'color': 3,
-        "additional_place":False,
-        "swap":True,
-        "targets":4
-    }
-    config_xhard2 = {
-        'color': 3,
-        "additional_place":False,
-        "swap":True,
-        "targets":4
-    }
-    config_xhard3 = {
-        'color': 3,
-        "additional_place":False,
-        "swap":True,
-        "targets":4
-    }
+    config_xhard4 = copy.deepcopy(config_xhard)
+    config_xhard1 = copy.deepcopy(config_xhard4)
+    config_xhard2 = copy.deepcopy(config_xhard4)
+    config_xhard3 = copy.deepcopy(config_xhard4)
 
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard': config_xhard,
         'xhard1': config_xhard1,
         'xhard2': config_xhard2,
         'xhard3': config_xhard3,
+        'xhard4': config_xhard4,
     }
 
 
@@ -406,7 +455,7 @@ class VideoPlaceButton(BaseEnv):
                         cube_name = f"cube_{group['name']}_{cube_idx}"
                         group["name_list"].append(cube_name)
                         setattr(self, cube_name, cube)
-                        if is_newvalue_difficulty(self.difficulty):
+                        if self.difficulty == "xhard" or _is_newvalue_difficulty(self.difficulty):
                             # V5（L2 b，计划 2.16）：已放方块以精确 2D 障碍进 avoid，后续方块与目标台
                             # 两类 spawn 调用都据此避让。actor 路径经 _trimesh_box_to_obb2d 约 2/3 退化成
                             # 线段，min_gap 在其法向失效；取 initial_pose（不依赖仿真已初始化），不抽随机数。
@@ -447,8 +496,8 @@ class VideoPlaceButton(BaseEnv):
                     setattr(self, f"target_{i}", target)
                     avoid.append(target)
 
-            if is_newvalue_difficulty(self.difficulty):
-                # V4 xhard：目标选择及其后的全部抽样与演示模板另走一条路径；原三档下面的代码一行不改
+            if self.difficulty == "xhard" or _is_newvalue_difficulty(self.difficulty):
+                # V6 新档与 V5 旧规格共用演示模板；原三档下面的代码一行不改
                 self._load_scene_xhard_tail(generator)
                 return
             # 原三档：演示 1 个方块、放随机 goal_site（守卫已保证取原值）；这里读一次作真实消费点，不抽随机数
@@ -820,14 +869,26 @@ class VideoPlaceButton(BaseEnv):
         （原样）→ task_flag（原样）→ 新增 answer_demo_index；落点 actor 不抽随机数、放在所有 spawn 之后。
         """
         decision_cfg = self._sampling["decision"]
-        xhard_cfg = decision_cfg[self.difficulty]  # V6：按本局档位取演示决策子树
+        tier_key = "xhard" if self.difficulty == "xhard" else self.difficulty
+        xhard_cfg = decision_cfg[tier_key]
         demo_count, return_policy = validate_demo_plan(
             xhard_cfg["demo_object_count"], xhard_cfg["demo_return_policy"],
             self.difficulty, len(self.all_cubes),
         )
-        if decision_cfg["additional_place"][self.difficulty] == True:
+        is_v6_tier = _is_newvalue_difficulty(self.difficulty)
+        if not is_v6_tier and decision_cfg["additional_place"][self.difficulty] == True:
             # 原 target_2/target_3 的额外放置与「每方块两台」互斥；xhard 声明为 False，传 True 直接拒绝
             raise SceneGenerationError("VideoPlaceButton xhard 不支持 additional_place=True")
+        extra_before = int(xhard_cfg.get("extra_place_before", 0)) if is_v6_tier else 0
+        extra_after = int(xhard_cfg.get("extra_place_after", 0)) if is_v6_tier else 0
+        target_placements = vpb_target_placement_count(xhard_cfg) if is_v6_tier else 2 * demo_count
+        expected_placements = {"xhard1": 3, "xhard2": 4, "xhard3": 5, "xhard4": 6}
+        if is_v6_tier and target_placements != expected_placements[self.difficulty]:
+            raise SceneGenerationError(
+                f"VideoPlaceButton {self.difficulty} 需要 target 放置次数 "
+                f"{expected_placements[self.difficulty]}，配置得到 {target_placements}"
+            )
+        self.target_placement_count = target_placements
         if len(self.targets) < 2 * demo_count:
             raise SceneGenerationError(
                 f"VideoPlaceButton xhard 需要 targets ≥ 2×demo_object_count={2 * demo_count}，实际 {len(self.targets)}"
@@ -836,7 +897,7 @@ class VideoPlaceButton(BaseEnv):
         demo_ids = self._spec.value(
             "objects.demo_ids",
             torch.randperm(len(self.all_cubes), generator=generator)[:demo_count].tolist(),
-            decision_key=f"{self.difficulty}.demo_object_count",
+            decision_key=f"{tier_key}.demo_object_count",
         )
         demo_ids = [int(i) for i in demo_ids]
         if len(demo_ids) != demo_count:
@@ -866,7 +927,7 @@ class VideoPlaceButton(BaseEnv):
         answer_index = int(self._spec.value(
             "objects.answer_demo_index",
             torch.randint(0, demo_count, (1,), generator=generator).item(),
-            decision_key=f"{self.difficulty}.demo_object_count",
+            decision_key=f"{tier_key}.demo_object_count",
         ))
 
         # 每个演示方块：按钮前放 targets[2k]，按钮后放 targets[2k+1]
@@ -886,17 +947,59 @@ class VideoPlaceButton(BaseEnv):
         self.targets_not_true = [t for t in self.targets if t != self.target_target]
         self._spec.record("actions.target_target_id", self.targets.index(self.target_target))
 
+        self.demo_extra_place_before = []
+        self.demo_extra_place_after = []
+        if is_v6_tier:
+            sides, owner_ids_drawn = _extra_place_owners(
+                demo_count, extra_before, extra_after, generator
+            )
+            owner_ids = self._spec.value(
+                "objects.extra_place_owner_ids", owner_ids_drawn,
+                decision_key=f"{tier_key}.extra_place_before/after",
+            )
+            before_ids_drawn, after_ids_drawn = [], []
+            for side, owner in zip(sides, owner_ids):
+                if not 0 <= int(owner) < demo_count:
+                    raise SceneGenerationError(f"VPB 额外放台 owner 越界：{owner}")
+                occupied = ({self.targets.index(t) for t in self.demo_before_targets}
+                            if side == "before"
+                            else {self.targets.index(t) for t in self.demo_after_targets})
+                candidates = [
+                    idx for idx, target in enumerate(self.targets)
+                    if idx not in occupied and target is not self.target_target
+                ]
+                if not candidates:
+                    raise SceneGenerationError(
+                        f"VideoPlaceButton {self.difficulty} {side} 额外放台没有空闲的非答案 target"
+                    )
+                target_idx_drawn = candidates[
+                    int(torch.randint(0, len(candidates), (1,), generator=generator).item())
+                ]
+                target_idx = int(self._spec.value(
+                    f"objects.extra_place_target_ids.{side}.{len(before_ids_drawn if side == 'before' else after_ids_drawn)}",
+                    target_idx_drawn,
+                    decision_key=f"{tier_key}.extra_place_{side}",
+                ))
+                if target_idx not in candidates:
+                    raise SceneGenerationError(
+                        f"VPB 回注的 {side} 额外 target={target_idx} 当前被占用或是答案 target"
+                    )
+                item = (self.demo_cubes[int(owner)], self.targets[target_idx])
+                if side == "before":
+                    self.demo_extra_place_before.append(item)
+                    before_ids_drawn.append(target_idx)
+                else:
+                    self.demo_extra_place_after.append(item)
+                    after_ids_drawn.append(target_idx)
+            self._spec.record("actions.target_placement_count", target_placements)
+
         # 放回原位的落点：所有 spawn 之后、按方块初始位姿直接调 target builder（不用 spawn_random_target）
-        if return_policy == NO_RETURN:
-            # V6 不放回：演示完方块留在按钮后放上的那一台，不建落点、不记放回位姿（builder 本就不抽随机数，
-            # 跳过它不影响随机流）；vqa_options 读到空列表即等价于没有放回段
-            self.xhard_home_sites, self._xhard_home_checks = [], {"pose_equal": [], "rng_state_equal": True}
-        else:
-            self.xhard_home_sites, self._xhard_home_checks = build_home_sites(self, self.demo_cubes, generator)
-            self._spec.record("actions.return_pose_by_object_id", home_pose_record(self.demo_cubes, self.xhard_home_sites))
+        self._build_xhard_final_sites(return_policy, generator)
 
         tasks = []
         for cube, target in zip(self.demo_cubes, self.demo_before_targets):
+            tasks.extend(self._xhard_pick_place(cube, target))
+        for cube, target in self.demo_extra_place_before:
             tasks.extend(self._xhard_pick_place(cube, target))
         tasks.append(
             {
@@ -912,8 +1015,10 @@ class VideoPlaceButton(BaseEnv):
         )
         for cube, target in zip(self.demo_cubes, self.demo_after_targets):
             tasks.extend(self._xhard_pick_place(cube, target))
-        for cube, home in zip(self.demo_cubes, self.xhard_home_sites):
-            tasks.extend(self._xhard_pick_place(cube, home, home=True))
+        for cube, target in self.demo_extra_place_after:
+            tasks.extend(self._xhard_pick_place(cube, target))
+        for cube, site, kind in self._xhard_final_sites:
+            tasks.extend(self._xhard_pick_place(cube, site, home=kind))
         tasks.extend(self._xhard_closing_tasks())
 
         self.task_list = tasks
@@ -927,9 +1032,47 @@ class VideoPlaceButton(BaseEnv):
         else:
             self.fail_grasp_task_index = None
 
+    def _build_xhard_final_sites(self, return_policy, generator):
+        """演示方块的终点落点（V6 计划 2.10）：放回原位的建 home 落点，不放回的建 goal_site 区域落点。
+
+        ``return_to_origin`` 与 V5 xhard 逐位同路（同一次 ``build_home_sites`` 调用、同一条记录）；
+        其余策略只在新值配置下走到，两类落点都不抽随机数。结果按演示顺序存进
+        ``self._xhard_final_sites = [(cube, site, "home" | "goal"), ...]``。
+        """
+        if return_policy == RETURN_TO_ORIGIN:
+            self.xhard_home_sites, self._xhard_home_checks = build_home_sites(self, self.demo_cubes, generator)
+            self._spec.record("actions.return_pose_by_object_id", home_pose_record(self.demo_cubes, self.xhard_home_sites))
+            self.xhard_goal_drop_sites = []
+            self._xhard_final_sites = [(c, h, "home") for c, h in zip(self.demo_cubes, self.xhard_home_sites)]
+            return
+        mask = returned_mask(return_policy, len(self.demo_cubes))
+        home_cubes = [c for c, r in zip(self.demo_cubes, mask) if r]
+        drop_cubes = [c for c, r in zip(self.demo_cubes, mask) if not r]
+        self.xhard_home_sites, self._xhard_home_checks = build_home_sites(self, home_cubes, generator)
+        self.xhard_goal_drop_sites, self._xhard_goal_drop_checks = build_goal_drop_sites(
+            self, drop_cubes, self.goal_site, generator,
+            obstacles=goal_drop_obstacles(self, self._spec.to_dict()["layout"]["button_xy"]),
+        )
+        self._spec.record("actions.return_pose_by_object_id", home_pose_record(home_cubes, self.xhard_home_sites))
+        self._spec.record("actions.goal_drop_pose_by_object_id",
+                          home_pose_record(drop_cubes, self.xhard_goal_drop_sites))
+        homes = dict(zip([c.name for c in home_cubes], self.xhard_home_sites))
+        drops = dict(zip([c.name for c in drop_cubes], self.xhard_goal_drop_sites))
+        self._xhard_final_sites = [
+            (c, homes[c.name], "home") if r else (c, drops[c.name], "goal")
+            for c, r in zip(self.demo_cubes, mask)
+        ]
+
     def _xhard_pick_place(self, cube, target, home=False):
-        """演示段的一对 pick + drop（闭包按默认参数绑定当前方块与落点）。"""
-        if home:
+        """演示段的一对 pick + drop（闭包按默认参数绑定当前方块与落点）。
+
+        ``home``：False / "target" = 放到目标台；True / "home" = 放回原位；"goal" = 不放回、放到桌面
+        （goal_site 区域，文本沿用原三档的 "drop the cube onto table"）。
+        """
+        if home == "goal":
+            name = "drop the cube onto table"
+            segment_text = "drop the cube onto table"
+        elif home is True or home == "home":
             name = "put the cube back to its original position"
             segment_text = "put the cube back to its original position at <>"
         else:

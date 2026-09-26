@@ -715,11 +715,15 @@ def _videoplace_drop_available(env, base):
     原三档：原样返回 ``env.targets``（同一个列表对象，输出逐字不变）。
     xhard：演示里多了「放回原位」这一步，其落点 actor（``xhard_home_sites``）不在 ``targets`` 里，
     不扩进来的话 choice-action 匹配会选不到 ⇒ 追加在 ``targets`` 之后。
+
+    V6 新值档统一回原位，故加入其演示末段使用的 home 落点。历史规格仍可携带副本曾支持的
+    ``xhard_goal_drop_sites``，保留该候选扩展以保证旧规格回放。
     """
-    home_sites = getattr(base, "xhard_home_sites", None)
-    if not home_sites:
+    home_sites = getattr(base, "xhard_home_sites", None) or []
+    drop_sites = getattr(base, "xhard_goal_drop_sites", None) or []
+    if not home_sites and not drop_sites:
         return env.targets
-    return list(env.targets) + list(home_sites)
+    return list(env.targets) + list(home_sites) + list(drop_sites)
 
 
 def _options_videoplaceorder(env, planner, require_target, base) -> List[dict]:

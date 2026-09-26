@@ -75,14 +75,9 @@ def _original_decision(task: str) -> dict:
     return decision
 
 
-NEWVALUE = ("xhard1", "xhard2", "xhard3", "xhard")
-ALL_TIERS = ("easy", "medium", "hard", "xhard1", "xhard2", "xhard3", "xhard")
-
-
 def _strip(node):
     if isinstance(node, dict):
-        # V6：剥离整个新值族（xhard1/2/3/xhard），与 assert_native_decision 同口径
-        return {k: _strip(v) for k, v in node.items() if k not in NEWVALUE}
+        return {k: _strip(v) for k, v in node.items() if k != "xhard"}
     return node
 
 
@@ -94,74 +89,52 @@ def test_original_three_configs_unchanged(task: str) -> None:
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))
-def test_xhard_derived_from_hard(task: str) -> None:
+def test_xhard4_native_config_derived_from_hard(task: str) -> None:
     _, cls = MODULES[task]
-    assert cls.configs["xhard"] == cls.configs["hard"]  # color 3、targets 4、swap True 全部不变
+    assert cls.configs["xhard4"] == cls.configs["hard"]  # color 3、targets 4、swap True 全部不变
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))
 def test_decision_visible_part_equals_original(task: str) -> None:
     module, cls = MODULES[task]
-    decision = module._native_decision(cls)
+    decision = module._native_decision(cls, release="newtask-v5")
     assert _strip(decision) == _original_decision(task)
-    assert decision["xhard"] == {"demo_object_count": 2, "demo_return_policy": "return_to_origin"}
+    expected_xhard = {"demo_object_count": 2, "demo_return_policy": "return_to_origin"}
+    assert decision["xhard"] == expected_xhard
     assert decision["targets"]["xhard"] == 4 and decision["swap"]["xhard"] is True
-    # V6：四个新值档子树键结构与 xhard 相同，targets/swap 等派生映射恰好 7 档
-    for tier in NEWVALUE:
-        assert set(decision[tier]) == set(decision["xhard"])
-    assert set(decision["targets"]) == set(ALL_TIERS) == set(cls.configs)
-
-
-# V6 计划 2.10 的数值表：(k, 放回策略)
-V6_DEMO_TABLE = {
-    "VideoPlaceButton": {
-        "xhard1": (1, "return_to_origin"),
-        "xhard2": (2, "no_return"),
-        "xhard3": (2, "no_return"),  # TODO(V6 S2)：return_last_only 占位
-        "xhard": (2, "return_to_origin"),
-    },
-    "VideoPlaceOrder": {
-        "xhard1": (1, "return_to_origin"),
-        "xhard2": (2, "no_return"),
-        "xhard3": (2, "no_return"),
-        "xhard": (2, "return_to_origin"),
-    },
-}
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))
-def test_v6_newvalue_demo_table(task: str) -> None:
+def test_release_snapshots_keep_v5_shape_and_export_v6_tiers(task: str) -> None:
     module, cls = MODULES[task]
-    decision = module._native_decision(cls)
-    for tier, (k, policy) in V6_DEMO_TABLE[task].items():
-        assert (decision[tier]["demo_object_count"], decision[tier]["demo_return_policy"]) == (k, policy)
-        assert cls.configs[tier] == cls.configs["hard"]  # color 3、targets 4、swap True 与 hard 同
-        assert xhard_home_site.validate_demo_plan(k, policy, tier, 3) == (k, policy)
-
-
-def test_v6_vpo_visit_count_range() -> None:
-    assert vpo_mod.NEWVALUE_VISIT_COUNT_RANGE == {
-        "xhard1": (2, 4), "xhard2": (2, 3), "xhard3": (2, 4), "xhard": (2, 4),
-    }
-
-
-@pytest.mark.parametrize("counts", [[2, 2], [3, 2], [2, 3], [4, 3]])
-def test_v6_button_index_no_return(counts) -> None:
-    """不放回时序列里没有放回单元：下标 = 2 × (button_after_visit + 1)，且与 with_home=True 的单对象退化一致。"""
-    for k in range(sum(counts)):
-        assert vpo_mod.VideoPlaceOrder.xhard_button_task_index(counts, k, with_home=False) == 2 * (k + 1)
+    v5_decision, _ = module.native_blocks(cls, release="newtask-v5")
+    v6_decision, _ = module.native_blocks(cls, release="newtask-v6")
+    assert "xhard" in v5_decision
+    assert not any(tier in v5_decision for tier in ("xhard1", "xhard2", "xhard3", "xhard4"))
+    assert "xhard" not in v6_decision
+    for tier in ("xhard1", "xhard2", "xhard3", "xhard4"):
+        assert v6_decision[tier]["demo_return_policy"] == "return_to_origin"
+    if task == "VideoPlaceButton":
+        assert [module.vpb_target_placement_count(v6_decision[tier]) for tier in
+                ("xhard1", "xhard2", "xhard3", "xhard4")] == [3, 4, 5, 6]
+        generator = torch.Generator().manual_seed(17)
+        sides, owners = module._extra_place_owners(2, 1, 1, generator)
+        assert sides == ["before", "after"] and set(owners) == {0, 1}
+    else:
+        assert [module.vpo_target_placement_count(v6_decision[tier]) for tier in
+                ("xhard1", "xhard2", "xhard3", "xhard4")] == [5, 6, 7, 8]
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))
 def test_guard_accepts_declared_and_rejects_undeclared(task: str) -> None:
     module, cls = MODULES[task]
-    default = module._native_decision(cls)
+    default = module._native_decision(cls, release="newtask-v6")
     assert_native_decision(copy.deepcopy(default), default, task)
     narrowed = copy.deepcopy(default)
-    narrowed["xhard"]["demo_object_count"] = 1  # 组合扫描可收窄已申报的 xhard 值
+    narrowed["xhard4"]["demo_object_count"] = 1  # 组合扫描可收窄已申报的 xhard4 值
     assert_native_decision(narrowed, default, task)
     extra = copy.deepcopy(default)
-    extra["xhard"]["home_radius"] = 0.1
+    extra["xhard4"]["home_radius"] = 0.1
     with pytest.raises(SamplingConfigError):
         assert_native_decision(extra, default, task)
     touched = copy.deepcopy(default)
@@ -174,7 +147,15 @@ def test_validate_demo_plan() -> None:
     v = xhard_home_site.validate_demo_plan
     assert v(1, "native_random_goal_site", "hard", 3) == (1, "native_random_goal_site")
     assert v(2, "return_to_origin", "xhard", 3) == (2, "return_to_origin")
-    for args in ((2, "native_random_goal_site", "hard", 3), (2, "native_random_goal_site", "xhard", 3),
+    # V6 计划 2.10：新值机制放行只放回末块与不放回（沿用原三档策略名）
+    assert v(2, "return_last_only", "xhard", 3) == (2, "return_last_only")
+    assert v(2, "native_random_goal_site", "xhard", 3) == (2, "native_random_goal_site")
+    for tier, count in (("xhard1", 1), ("xhard2", 1), ("xhard3", 2), ("xhard4", 2)):
+        assert v(count, "return_to_origin", tier, 3) == (count, "return_to_origin")
+        with pytest.raises(SceneGenerationError):
+            v(count, "return_last_only", tier, 3)
+    for args in ((2, "native_random_goal_site", "hard", 3), (1, "return_last_only", "hard", 3),
+                 (2, "bogus_policy", "xhard", 3),
                  (4, "return_to_origin", "xhard", 3), (0, "return_to_origin", "xhard", 3)):
         with pytest.raises(SceneGenerationError):
             v(*args)
@@ -298,3 +279,64 @@ def test_audit_exemptions_revoked() -> None:
 
     assert "VideoPlaceButton.decision.demo_object_count" not in train_split_audit.NEUTRAL_KEYS
     assert "VideoPlaceOrder.decision.demo_object_count" not in train_split_audit.NEUTRAL_KEYS
+
+
+def test_returned_mask_and_offsets() -> None:
+    m = xhard_home_site.returned_mask
+    assert m("return_to_origin", 2) == [True, True]
+    assert m("return_last_only", 2) == [False, True]
+    assert m("return_last_only", 1) == [True]
+    assert m("native_random_goal_site", 2) == [False, False]
+    with pytest.raises(SceneGenerationError):
+        m("bogus", 2)
+    center = (-0.1, 0.0)
+    # 中心空着：1 块恰落在 goal_site 中心（与原三档同处）
+    assert xhard_home_site.plan_goal_drop_xy(center, 1, []) == [(-0.1, 0.0)]
+    # 方块压在中心附近（seed 910101 实况：绿块在 (-0.12, -0.035)）：落点离它 ≥ 0.07，两落点互相 ≥ 0.07
+    obstacles = [("cube", (-0.12, -0.035)), ("target", (0.049, -0.069)), ("button", (0.093, 0.122))]
+    picks = xhard_home_site.plan_goal_drop_xy(center, 2, obstacles)
+    for q in picks:
+        for kind, (x, y) in obstacles:
+            assert (q[0] - x) ** 2 + (q[1] - y) ** 2 >= xhard_home_site.GOAL_DROP_CLEARANCE[kind] ** 2
+    assert (picks[0][0] - picks[1][0]) ** 2 + (picks[0][1] - picks[1][1]) ** 2 >= 0.07 ** 2
+    assert picks == xhard_home_site.plan_goal_drop_xy(center, 2, obstacles)  # 逐位确定
+    crowded = [("cube", (-0.1 + dx * 0.05, dy * 0.05)) for dx in range(-3, 4) for dy in range(-3, 4)]
+    with pytest.raises(SceneGenerationError):
+        xhard_home_site.plan_goal_drop_xy(center, 1, crowded)
+
+
+def test_build_goal_drop_sites_positions_and_rng(monkeypatch) -> None:
+    def fake_builder(scene, radius, thickness, name, body_type, add_collision, initial_pose):
+        return _FakeActor(name, initial_pose.raw_pose.clone())
+
+    monkeypatch.setattr(xhard_home_site, "build_gray_white_target", fake_builder)
+    env = _fake_env()
+    goal = _cube("goal_site", -0.12, 0.03, (1.0, 0.0, 0.0, 0.0))
+    cubes = [_cube("cube_red_0", 0.1, 0.1, (1, 0, 0, 0)), _cube("cube_blue_0", 0.0, -0.1, (1, 0, 0, 0))]
+    generator = torch.Generator()
+    generator.manual_seed(3)
+    before = generator.get_state().clone()
+    sites, checks = xhard_home_site.build_goal_drop_sites(env, cubes, goal, generator, obstacles=[])
+    assert torch.equal(before, generator.get_state()) and checks["rng_state_equal"] is True
+    xy = [site.initial_pose.raw_pose[0, :3].tolist() for site in sites]
+    assert xy[0] == pytest.approx([-0.12, 0.03, 0.02])  # 无障碍：第 1 块落在中心
+    assert (xy[0][0] - xy[1][0]) ** 2 + (xy[0][1] - xy[1][1]) ** 2 >= 0.07 ** 2 - 1e-9
+    assert env._hidden_objects == sites and sites[0]._goal_drop_of is cubes[0]
+
+
+def test_vpo_v5_snapshot_keeps_old_decision_and_uses_old_range_at_runtime() -> None:
+    cls = vpo_mod.VideoPlaceOrder
+    decision, native = vpo_mod.native_blocks(cls, release="newtask-v5")
+    assert "visit_count_range" not in decision["xhard"]
+    legacy = copy.deepcopy(decision)
+    resolved = vpo_mod._resolve_sampling_config(cls, {"decision": legacy, "native": native})
+    assert "visit_count_range" not in resolved["decision"]["xhard"]
+
+
+def test_vqa_drop_available_includes_goal_drops() -> None:
+    targets = ["t0", "t1"]
+    env = SimpleNamespace(targets=targets)
+    base = SimpleNamespace(xhard_home_sites=["h1"], xhard_goal_drop_sites=["g0"])
+    assert _videoplace_drop_available(env, base) == ["t0", "t1", "h1", "g0"]
+    base = SimpleNamespace(xhard_home_sites=[], xhard_goal_drop_sites=["g0", "g1"])
+    assert _videoplace_drop_available(env, base) == ["t0", "t1", "g0", "g1"]
