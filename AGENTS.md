@@ -217,7 +217,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1四路代码已提交；V6 snapshot已导出；reset核验器已兼容xhard4全16环境；13×4 reset draws运行中 | 基线144/144成功、49GB、退出0；V6 snapshot ready=16/pending=0、verify通过；V5 snapshot SHA未变；BinFill/xhard1单候选smoke成功；关联测试56 passed；tmux `v6-tier-reset`运行中 | 完成 `--reset-all` 实测，核对LIGHTWEIGHT失败集合，做V6单条演示smoke与S2探针，再跑原档V1严格对拍 |
+| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1四路代码已提交；V6 snapshot已导出；reset核验器已兼容xhard4全16环境；13×4 reset draws运行中 | 基线144/144成功、49GB、退出0；V6 snapshot ready=16/pending=0、verify通过；V5 snapshot SHA未变；关联测试56 passed；完整LIGHTWEIGHT首轮280秒超时、未取得汇总；tmux `v6-tier-reset`运行中 | reset结束后分片跑完LIGHTWEIGHT并与基线逐项比较；完成 `--reset-all` 实测、V0/FROZEN_FILES、V6演示smoke与S2探针，再跑原档V1严格对拍 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1892,3 +1892,8 @@
 
 - 对抗检查发现 `v4_specs draw --difficulty xhard4 --tasks all` 会包含13个梯度环境外的 MoveCube、InsertPeg、StopCube；原 `v6_tier_monotone --reset-all` 把所有档位都限制为13项，因而无法验收计划要求的 xhard4 全任务输入。只修正核验器：前三档严格保留13项；xhard4 接受并核验16项，额外3项的身份、seed、spec 与 reset 尝试仍验证，但不计入52个梯度覆盖格。
 - 回归命令 `uv run --no-sync python -m pytest tests/lightweight/test_v6_tier_monotone.py -q`：14 passed，0.09秒，退出0；组合回归 `uv run --no-sync python -m pytest tests/lightweight/test_v6_tier_monotone.py tests/lightweight/test_v6_difficulty_tiers.py tests/lightweight/test_sampling_config_split.py -q`：56 passed、2条依赖弃用警告、8.17秒，退出0。快照复核 `uv run --no-sync python scripts/parity/train_split_config.py extract --release newtask-v6 --verify`：`ready=16 pending=0 sha256=6ab3b0c218ad77e2`，退出0。测试覆盖xhard4额外任务允许缺少成功规格但必须有reset尝试的边界。reset draws仍在运行，尚未据此宣称 `TIER_MONOTONE` 通过。
+
+### 2026-09-26 America/Detroit — V6 S1 完整 LIGHTWEIGHT 首轮超时
+
+- 按计划口径执行 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`，完整运行时长达到280秒后由 timeout 以124终止；pytest 进度输出到92%，没有最终失败/错误汇总，因此该次既不算通过，也不能与S0基线作失败集合比较。完整输出保留在忽略路径 `artifacts/newtask-v6/s0/lightweight-v6.log`。
+- 同期16 worker reset 抽样仍在运行，无法据此断定超时由资源竞争造成。reset 结束后按 `rg --files tests/lightweight -g 'test*.py'` 枚举并分成多个小于5分钟的文件分片，逐片执行同一 marker，再合并全部 FAILED/ERROR 身份与 S0 的46 failed/12 errors 对比；分片前后核对覆盖文件集合无遗漏/重复。
