@@ -203,6 +203,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| 新值模式 V6 实施（2026-09-26） | S0 基线已记录；V1 基线侧运行中 | 同口径轻量集与 V5 S0 失败／错误集合逐项相同（46 failed、12 errors）；`BinFill/0` 单 worker 冒烟通过；`13e5151` 基线侧在 tmux `v6-v1-base` 中运行144条 | 并行审查四副本后实施 S1；保持V1基线运行，完成后核对144条结果 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1798,3 +1799,17 @@
 - 增补9.6稀疏范围适配：固定原比较核心，保留原episode及阈值，连续范围回归与稀疏／无效集合反例过G5后才使用。8.2补独立xy恢复流、拒绝轨迹、规格符号、float32派生偏移与实际抓取位置绑定，公共工具逐函数审批；不实施源码修改。
 - `command -v uv` 后以 `uv run --no-sync python` 做静态核验，退出0：`PLAN_REVISION=PASS environments=16 original_rows=101 subset=144 recovery=80 decision_recorded=1`、`DOC_CHECK=PASS local_links=22 production_unchanged=1 audit_report_unchanged=1`；`git diff --check`通过。十六环境第二节原表逐字保留，历史审查报告未改；纯文档不重跑仿真或代码测试。独立只读复核补齐R1a引用并收窄历史旧结论的逐条对齐范围。
 - 修订期间检测到另一任务并行修改同文件的集群资源／四job安排，导致一次补丁上下文校验失败；重读后保留其内容，只继续验收条款。提交时需按内容隔离暂存，本轮不把集群探针数字、分片命令或运行安排当作自己验证或提交的成果。
+
+### 2026-09-26 America/Detroit — 新值模式 V6 实施开始（S0）
+
+- 用户指令原话：「/data/hongzefu/robomme\_benchmark\_MotionJEPANewTask/NEWTASK\_RELEASE\_V6\_PLAN.md 开始实施」；追加：「你可以使用multi agent来执行任务 自由决策」。按 V6 定稿的 5.3 从 S0/S1 开始；GL 只连接既有占位作业，不推送四个副本分支。
+- 初始核验：分支 `newtaskRelease-v5`，HEAD `268c41fdbfb34d805a7479dadd31feadb256a89b`，工作区干净；四个副本分别为 pipeline `891180f`、swap `fec4d98`、MoveCube `7adbca5`、VP `9b51421`，均在独立分支且工作区干净。`uv` 位于 `/home/hongzefu/.local/bin/uv`，`/data` 可用 2.4 TB；两张 RTX 6000 Ada 当时显存使用率均为 0%。远端查询确认 GL 占位作业 `61890467`（gl1526）和 `61890468`（gl1517）仍为 RUNNING；本机未安装 `squeue`。
+- 已确认 `train_split_parity.py run --help` 支持显式 `--manifest`、`--paths B`、`--workers`、`--gpus`、`--official-root` 和 `--output`；`13e5151` 中存在对应 parity 入口及 manifest。计划中 S0 的轻量测试正在以 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q` 执行，输出记录在忽略目录 `artifacts/newtask-v6/s0/lightweight-baseline.log`。
+- 三路独立只读审查正在核对 pipeline/swap、MoveCube、VP 草稿与 V6 定稿数值及冻结边界；尚未将任何草稿合入主分支。下一步完成轻量基线，创建 `13e5151` 隔离工作树并按单 worker、单 GPU 启动 144 局基线侧长任务；随后实施 S1、每步留报告并保持 HDF5/视频等大产物不入 Git。
+
+### 2026-09-26 America/Detroit — 新值模式 V6 S0 基线冻结、V1 基线侧启动
+
+- 轻量基线命令 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q` 在 277.73 秒结束，退出码 1：46 failed、1347 passed、22 skipped、79 deselected、12 errors。与 `artifacts/newtask-v5/s0/lightweight_baseline.log` 中 46 个失败和12个错误的集合逐项相同；`diff -u <(rg '^(FAILED|ERROR) ' ...)` 退出 0。完整输出 `artifacts/newtask-v6/s0/lightweight-baseline.log`，SHA-256 `3f7bb05eda8c48c387b0b8b3a928fd91b1739986aadf8840134b538159bb4e87`。这记录的是 S1 需保持的基线，不把既有失败记作通过。
+- 按数据生成规则，先在隔离 `13e5151` worktree 做 `BinFill/0`、B 路、单 worker 冒烟：身份 1 条、成功 1 条、耗时 26.206 秒、退出码 0；产物 `artifacts/newtask-v6/s0/base-smoke/`，日志 `artifacts/newtask-v6/s0/base-smoke.log`。隔离 worktree 为 `artifacts/newtask-v6/v1/base-source/`，官方源码树复用 `.official_tree=1d4c13697f0c5fbd7a8b05e01c196c984a07406c`。
+- 计划原指 `scripts/parity/manifest_16x3.json`，实查仅48行（每 task/difficulty 一条），不足 V1 的16环境×3难度×3局。改用 `scripts/configs/newtask-v3/subset_manifest.json`，实际144行，保留原 episode 身份。此为修正执行清单，不改变 V1 范围。
+- V1 基线侧现由 detached tmux `v6-v1-base` 执行，固定 `13e5151`、B 路、144条、单 worker、GPU 0，输出 `artifacts/newtask-v6/v1/base/`，日志 `artifacts/newtask-v6/v1/base.log`；启动后 `tmux has-session -t v6-v1-base` 返回 0，进程仍运行，尚无退出码。复现命令与输出状态见 `docs/validation/newtask-v6/20260926-s0.md`。S1 不触碰该 worktree及其输出。
