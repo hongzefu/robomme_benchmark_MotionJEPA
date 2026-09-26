@@ -163,7 +163,7 @@ X1 < X2 < X3
 | M12（**已定：不管内环数量，有干扰即可**，用户 2026-09-26） | VU/BU 新档内环容器数从 hard 的 15 降到 xhard 机制的 8（口径 5 下容器数算不算加码字段） | (a) 不算（机制型字段），按 2.3 表。<br>(b) 算，新档内环容器 12/10/8 递减不允许，改为保持 15 并只加干扰 | (a) | |
 | M13（**已定：免逐项批准、改完出报告；计划引用原话**，用户 2026-09-26） | AGENTS.md 规则 11 字面仍是「逐个批准」，与本计划授权边界（用户 2026-09-21 口头：src/robomme 免逐项批准、改完出报告）不一致 | (a) 更新 AGENTS.md 规则 11。<br>(b) 计划头部引用用户原话并保留 AGENTS.md 原文 | (b) | |
 | M14（**已定：(a)**，用户 2026-09-26） | BUS 的「G 连通」reset 接受条件把接受率从 96% 压到 63%（GL 实测）；最常见拒绝形态 `[0,0,1,1,0,0]`（22/28）下 S5 仍可行、极差也能 ≤1，只是对象分两组永不相遇 | (a) 维持 G 连通，接受约 37% 拒绝（已实测）。<br>(b) 放宽为「无孤立槽」，本批可收回 22/28 个拒绝（未实测） | (a) | |
-| M11 | VPB/VPO 的三档：原三档本就有「pick 后放到 goal_site」一段，`return_to_origin` 只是换终点，放置段数不随 hard→xhard1 增加；(k=2,不放回) 时第二块放哪没有定义（只有一个 `goal_site`），`validate_demo_plan` 也会拒；xhard1→xhard2 从放回变不放回是倒退 | (a) 只用两个已存在的旋钮：xhard1=(k1,放回)、xhard2=(k2,放回)=xhard 的机制但 VPO v 上界 3、xhard3=(k2,放回) + 演示时长/按钮数等第三轴（实施方定）。<br>(b) 引入 `return_last_only` 新语义（vp 副本已在实现）并定义 (k2,不放回) 的第二块落点（第二个 goal_site）。<br>(c) VP 两环境退出加档（13→11） | (b)；vp 副本（/data/hongzefu/v6-draft/vp，`9b51421`）已实现并回放核验：不放回的块落在隐藏 `goal_site` 中心周围 ±0.12 m 网格上由近及远取第一个避障可行点（离方块初始位 ≥0.07、离目标台 ≥0.08、离按钮 ≥0.10、离已选落点 ≥0.07；落点确定、不抽随机数，generator 状态逐字节不变；首版「沿 y 等距排开」不避障已废）；`return_last_only` = 前 k−1 块按不放回落点、末块放回原位；`validate_demo_plan` 按档读策略；VPO 新增 decision 键 `visit_count_range`（会让 `test_snapshot_matches_source` 对 v5 快照失败，S4 重导快照后修）。按 reset 实际任务表，VPB 各档 pick-place 段数 3/3/6/6/6，难度差在终点是原位还是桌面。本机真演示 VPB (k1,放回) 3/3、(k2,不放回) 3/3、VPO (k1,v[2,4],放回) 3/3；PatternLock 三档 3/3 且首局步数 646/924/1256（xhard 1614），RouteStick xhard1/2 3/3（1000/1200 步）；VP 的 xhard 本身 1500～1993 步已超评估 1301（V5 现状，与口径 2 一致：新档不超 xhard） | |
+| M11（**已定**，用户 2026-09-26「vpb vpo都是放回原位 xhard123 只在cube放target的步骤上有区分」） | VPB/VPO 的三档 | 五档都 `return_to_origin`，梯度 = 放台次数：VPB 2/2/3/4/4(两块)，VPO 总放台 3/3.5/4/5/6（见 2.10 表）；VPB 的额外放台段需在 xhard 模板里实现 | — | 已定 |
 | M9（**已定**，用户 2026-09-26「忽略原版的hard 和medium对比 原版的hard其实是另外一种单独的task」：VR 新档只向 xhard 内插，不与 hard 比较；论据修正：审计补测 4 块/5 块 reset 成功率 0.625/0.629，低于原写的 ≈0.9/≈0.75；块数少时可行图更稀 1.29/1.46 < 6 块的 1.54，「块数少更易」不成立） | VR 的 hard 是「聚簇 15 块、0 交换」另一条路线，新档按 medium → xhard 的轴（块数/交换/重拿）内插，xhard1（4 块、[3,5] 次交换、[2,3] 次重拿）是否算「比 hard 更难」 | (a) 算，照表。<br>(b) 不算，VR 新档从 6 块起只内插交换/重拿次数 | (a) | |
 
 ### 1.5 本计划推翻或修改的 V5 决策
@@ -362,26 +362,25 @@ hard = 3 色 / 总块 [10,12] / 投入色 [2,3] / 投入 [3,5] / 原生布局；
 
 保持 `spawn_lo ≥ pick_hi` 断言；框、预算不动；reset 成功率随 N 从 7 到 10 单调下降（离线 N=8 98.7%、N=9 93.4%、N=10 71.8%），全部不低于 xhard。
 
-### 2.10 VideoPlaceButton / VideoPlaceOrder（实施方定维度）
+### 2.10 VideoPlaceButton / VideoPlaceOrder（用户 2026-09-26 已定：五档都放回原位，新档只在「方块放到台上」的次数上分档）
 
-hard 与 xhard 之间只有两个开关（演示方块数 k：1 → 2；`demo_return_policy`：不放回 → `return_to_origin`），VPO 另有每块访问台数 v。以「演示放置次数」作难度标尺，逐档 +1：
+**现行结构（subgoal 层面）**：VPB hard = 1 块：放 before 台 → 按按钮 → 放 after 台 → 放桌面；xhard = 2 块：各放 before 台 → 按按钮 → 各放 after 台 → 各放回原位。VPO hard = 1 块依次访问 v∈[2,4] 张台（按钮插在某次访问后）→ 放桌面；xhard = 2 块各访问 v∈[2,4] 张台 → 各放回原位。评估只数执行段（约 200 步），演示段不占 1301 预算。
 
-| 环境 | 档 | k | 放回策略 | v | 演示放置次数 |
-|---|---|---|---|---|---|
-| VPB | hard | 1 | 不放回 | — | 2 |
-| | xhard1 | 1 | 放回 | — | 3 |
-| | xhard2 | 2 | 不放回 | — | 4 |
-| | xhard3 | 2 | 只放回末块（新策略 `return_last_only`） | — | 5 |
-| | xhard | 2 | 全放回 | — | 6 |
-| VPO | hard | 1 | 不放回 | [2,4] | 3 |
-| | xhard1 | 1 | 放回 | [2,4] | 4 |
-| | xhard2 | 2 | 不放回 | [2,3] | 5 |
-| | xhard3 | 2 | 不放回 | [2,4] | 6 |
-| | xhard | 2 | 放回 | [2,4] | 8 |
+**新档定义**（`demo_return_policy` 五档一律 `return_to_origin`；梯度 = 演示里「拿起 → 放到台上」的次数）：
 
-- 颜色 3、目标台 4、swap True 与 hard/xhard 同；布局、`goal_site` 占位、reset 成功率与 xhard 相同（VPB 81.8%、VPO 50.0%），抽签上限沿 V5（VPO 30 次攒 10 条在 0.48 下 96.7%）。
-- `return_last_only` 是新策略值，`validate_demo_plan` 要放行；VPO xhard2 的 v 上限 3 需 `visit_selection.count_sampler` 按档取上界。
-- 验收：`VP_DEMO=REPORT placements=… frames=…`。
+| 档 | VPB | 放台次数 | VPO | 放台次数（总） |
+|---|---|---|---|---|
+| hard | 1 块：before、after，放桌面 | 2 | 1 块，v∈[2,4]，放桌面 | 2～4（均值 3） |
+| xhard1 | 1 块：before、after，放回原位 | 2 | 1 块，v∈[3,4]，放回原位 | 3～4（3.5） |
+| xhard2 | 1 块：before、after + 按钮前或后多放 1 次到无关台（随机一侧），放回原位 | 3 | 2 块，v=2，放回原位 | 4（4） |
+| xhard3 | 1 块：before、after + 按钮前后各多放 1 次到无关台，放回原位 | 4 | 2 块，v∈[2,3]，放回原位 | 4～6（5） |
+| xhard | 2 块：各 before、after，放回原位 | 4（两块） | 2 块，v∈[2,4]，放回原位 | 4～8（6） |
+
+- VPB xhard3 与 xhard 放台次数同为 4，靠「要跟踪的方块数 1→2」区分；「多放到无关台」沿用原版 `additional_place` 的 pre/post 语义（放到非答案台），现行 xhard 模板拒绝 `additional_place=True`，S2 要在 xhard 任务表构造里实现按档的额外放台段（`xhard.extra_place_before/after` 或复用 `additional_place`）。
+- VPO 用 vp 副本已加的 `xhard.visit_count_range` 与 `demo_object_count` 按档取值即可。
+- vp 副本实现的 `return_last_only` / 不放回落点保留在代码里但五档都不启用。
+- 实测（探针 E 代测 + vp 副本本机）：(k1,放回) 3/3、(k2,v[2,3]) 与 (k2,v[2,4]) 各档演示全成功，reset 失败只来自 VPO 既有的 Target 4 放不下（约 50%）；步数 VPB 约 960（1 块）/ 1560（2 块），VPO 1100～2000，均不超过 xhard。
+- 验收：`VP_TIERS=REPORT`（每档实抽放台次数均值单调、演示成功率）。
 
 ### 2.11 PatternLock
 
