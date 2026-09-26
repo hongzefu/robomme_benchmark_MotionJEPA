@@ -161,8 +161,11 @@ def _guarded_calls(func, callee):
     return found
 
 
-# V6（口径 11）：族判断原文 is_newvalue_difficulty(self.difficulty) 同样视为 xhard 分支
-XHARD_CONDS = {"xhard", "self._is_xhard", "self.difficulty == 'xhard'", "is_newvalue_difficulty(self.difficulty)"}
+# 四个 Unmask 环境的新值档都用族判断；保留 xhard 条件仅供旧 V5 规格兼容。
+XHARD_CONDS = {
+    "xhard", "self._is_xhard", "self.difficulty == 'xhard'", "self._is_newvalue",
+    "is_newvalue_difficulty(self.difficulty)",
+}
 
 
 @pytest.mark.parametrize("file_name", FOUR_ENVS)

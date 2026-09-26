@@ -13,7 +13,7 @@
 * **随机流（N5）**：干扰容器的全部抽样走**独立的专用流**（种子 = 本局 seed + 固定盐），
   主流一次都不多抽——原三档根本不进这里，xhard 的主流取值序列也与不加干扰容器时相同。
 
-本模块只在新值族（xhard1/2/3/xhard，V6 族判断 ``is_newvalue_difficulty``）分支被调用；原三档从不 import 这里的函数参与取值。
+本模块的 S5/O4 入口只在新值档分支被调用；原三档不经过这些规划函数。
 
 V5（NEWTASK_RELEASE_V5_PLAN 2.5～2.7，L13～L23）在文件末尾新增一节，两个环境的 xhard 改为调用它：
 
@@ -62,6 +62,8 @@ from .bin_collision import (
     object_state_from_actor,
 )
 from .SceneGenerationError import SceneGenerationError
+from .episode_spec import EpisodeSpecError
+from . import swap_uniform as _su
 from .unmask_distractor_sampler import (
     V5_DISTRACTOR_PRESETS,
     DistractorLayout,
@@ -80,7 +82,21 @@ SWAP_WINDOW_START = 64
 #: 原三档每段交换的步数（速度倍率 1）。
 SWAP_WINDOW_STEPS = 50
 #: xhard 的交换速度倍率（用户原文「swap 速度 x1.5」）。
-XHARD_SWAP_SPEED_MULTIPLIER = 1.5
+NEWVALUE_SWAP_SPEED_MULTIPLIER = 1.5
+
+
+def validate_hidden_bin_selection(indices: Sequence[int], *, permutation_size: int = 3) -> list[int]:
+    """复核 M5(b) 的藏物槽位：恰选前三个容器且不得选择恒空的 ``bin_3``。"""
+    raw = list(indices)
+    if any(isinstance(v, bool) or not isinstance(v, (int, np.integer)) for v in raw):
+        raise EpisodeSpecError(f"objects.selected 必须是整数槽位，收到 {raw!r}；M5(b) 要求 bin_3 恒空")
+    values = [int(v) for v in raw]
+    if (len(values) != permutation_size or len(set(values)) != len(values)
+            or any(v < 0 or v >= permutation_size for v in values)):
+        raise EpisodeSpecError(
+            f"objects.selected 必须是 0..{permutation_size - 1} 的完整不重复选择，收到 {values!r}；M5(b) 要求 bin_3 恒空"
+        )
+    return values
 
 
 def scaled_window_steps(base_steps: int, multiplier) -> int:
@@ -100,8 +116,8 @@ def scaled_window_steps(base_steps: int, multiplier) -> int:
 
 
 # ── 干扰容器（B3 / B13）────────────────────────────────────────────────────────
-#: decision.xhard.distractor 的申报值（两个环境共用同一份）。
-XHARD_DISTRACTOR = {
+#: V4 旧快照中的三容器干扰配置，仅用于 release-aware 旧版导出。
+LEGACY_V4_DISTRACTOR = {
     # 额外容器个数（B3：3 个）
     "count": 3,
     # 其中装方块的个数，闭区间（B13：3 个里 1~2 个有）
@@ -154,7 +170,7 @@ def solve_hold_obj_xhard(env, planner, static_steps: int) -> None:
     ``planner.open_gripper()``：xhard 打开运行时碰撞检查（H1）后，``env.step`` 在交换开始时抛出的
     ``BinCollisionError`` 会被吞掉，``elapsed_steps`` 不前进，等待循环永不结束（本机实测挂满外部超时）。
     这里让碰撞拒绝（及其他一切非 ``AttributeError`` 异常）原样上抛，由 ``_worker`` 归为任务性失败。
-    共享函数按 N12 不就地修；原三档继续用原函数，本函数只在新值族分支被引用。
+    共享函数按 N12 不就地修；原三档继续用原函数，新值档使用本函数。
     """
     start_step = int(getattr(env, "elapsed_steps", 0))
     target_step = start_step + static_steps
@@ -320,11 +336,37 @@ OUTER_PARTNER_RULE = {
 }
 
 
+#: V6（计划 2.2 外环 O4，M7(a)）：每窗在可行对象对里取「两者参与次数 max、再 sum」最小者，平局均匀，
+#: 禁止立即撤销（除非别无选择）；放置后序号按 ``randperm(count)`` 重排（跨局均匀）。路径四道判定不放宽。
+OUTER_BALANCED_RULE = "balanced_greedy_o4"
+OUTER_BALANCED_FALLBACK = "undo_only_if_no_other_feasible"
+OUTER_BALANCED_PARTNER_RULE = {
+    "selection": "balanced_greedy_with_initiator",
+    "score": "max_then_sum_of_participation",
+    "tie_break": "uniform_local_generator",
+    "population": "distractor_bins",
+    "relabel": "randperm_count_after_placement",
+    "resolve_at": "reset_plan",
+}
+
+
 def v5_distractor_cfg(task: str) -> dict:
     """``decision.xhard.distractor`` 的 V5 申报值：统一采样器的预设（L16 b：V4 环带、10 个、含 cube [5,5]）。"""
     if task not in V5_SWAP_TASKS:
         raise ValueError(f"只支持 {V5_SWAP_TASKS}，收到 {task!r}")
     return copy.deepcopy(V5_DISTRACTOR_PRESETS[task])
+
+
+def v6_distractor_cfg(task: str, count: int) -> dict:
+    """按 V6 梯度调整外环干扰容器数量；其余 V5 区域、颜色、间距和采样规则逐项沿用。"""
+    if task not in V5_SWAP_TASKS:
+        raise ValueError(f"只支持 {V5_SWAP_TASKS}，收到 {task!r}")
+    if isinstance(count, bool) or not isinstance(count, int) or count < 2 or count % 2:
+        raise ValueError(f"外环干扰容器数量必须是 ≥2 的偶数，收到 {count!r}")
+    cfg = v5_distractor_cfg(task)
+    cfg["count"] = count
+    cfg["cube_count_range"] = [count // 2, count // 2]
+    return cfg
 
 
 def v5_distractor_swap_cfg(task: str) -> dict:
@@ -366,6 +408,8 @@ class DistractorSwapConfig:
     path_samples: int
     plan_pad_m: float
     layout_max_attempts: int
+    #: V6（2.2 外环 O4）：``OUTER_INITIATOR_RULE``（V5 排列轮转 + 最近邻）或 ``OUTER_BALANCED_RULE``（均衡贪心 + 序号重排）
+    rule: str = "permutation_cycle"
 
 
 DISTRACTOR_SWAP_CFG_KEYS = ("enabled", "initiator_rule", "fallback", "partner", "lane_offset", "smooth",
@@ -381,12 +425,19 @@ def parse_distractor_swap_cfg(cfg: dict | DistractorSwapConfig) -> DistractorSwa
     extra = sorted(keys - set(DISTRACTOR_SWAP_CFG_KEYS))
     if missing or extra:
         raise ValueError(f"distractor_swap 键不符：缺 {missing}，多 {extra}")
-    if cfg["initiator_rule"] != OUTER_INITIATOR_RULE:
-        raise ValueError(f"initiator_rule 只支持 {OUTER_INITIATOR_RULE!r}，收到 {cfg['initiator_rule']!r}")
-    if cfg["fallback"] != OUTER_FALLBACK_RULE:
-        raise ValueError(f"fallback 只支持 {OUTER_FALLBACK_RULE!r}，收到 {cfg['fallback']!r}")
-    if dict(cfg["partner"]) != OUTER_PARTNER_RULE:
-        raise ValueError(f"partner 只支持 {OUTER_PARTNER_RULE}，收到 {cfg['partner']}")
+    if cfg["initiator_rule"] == OUTER_BALANCED_RULE:
+        # V6（计划 2.2 外环 O4）：发起者与搭档一起在可行对里按均衡贪心选，回退与搭档规则随之换成 V6 的申报值
+        if cfg["fallback"] != OUTER_BALANCED_FALLBACK:
+            raise ValueError(f"fallback 只支持 {OUTER_BALANCED_FALLBACK!r}，收到 {cfg['fallback']!r}")
+        if dict(cfg["partner"]) != OUTER_BALANCED_PARTNER_RULE:
+            raise ValueError(f"partner 只支持 {OUTER_BALANCED_PARTNER_RULE}，收到 {cfg['partner']}")
+    else:
+        if cfg["initiator_rule"] != OUTER_INITIATOR_RULE:
+            raise ValueError(f"initiator_rule 只支持 {OUTER_INITIATOR_RULE!r}，收到 {cfg['initiator_rule']!r}")
+        if cfg["fallback"] != OUTER_FALLBACK_RULE:
+            raise ValueError(f"fallback 只支持 {OUTER_FALLBACK_RULE!r}，收到 {cfg['fallback']!r}")
+        if dict(cfg["partner"]) != OUTER_PARTNER_RULE:
+            raise ValueError(f"partner 只支持 {OUTER_PARTNER_RULE}，收到 {cfg['partner']}")
     lane = float(cfg["lane_offset"])
     if lane != LANE_OFFSET:
         # 联合证明（_Mover.pose_at）按 bin_collision.LANE_OFFSET 复算路径，二者必须相同才有证明意义
@@ -413,7 +464,7 @@ def parse_distractor_swap_cfg(cfg: dict | DistractorSwapConfig) -> DistractorSwa
     if attempts < 1:
         raise ValueError(f"layout_max_attempts 必须 ≥ 1，收到 {attempts}")
     return DistractorSwapConfig(bool(cfg["enabled"]), lane, bool(pc["camera_visible"]), clearance, button,
-                                samples, pad, attempts)
+                                samples, pad, attempts, str(cfg["initiator_rule"]))
 
 
 # ── 内环预演 ───────────────────────────────────────────────────────────────────
@@ -764,6 +815,8 @@ def plan_swap_distractors(
     distractor_cfg: dict,
     swap_cfg: dict,
     cube_half_size: float,
+    guard_windows: Sequence[InnerWindow] | None = None,
+    difficulty: str = "xhard4",
 ) -> tuple[DistractorLayout, list[tuple[int, int]], dict[str, float], dict[str, int]]:
     """纯几何的 reset 规划（不建 actor，便于离线复算与单测）：L20 预判 → 整段重抽放置 + 外环规划 → 记录。
 
@@ -789,8 +842,16 @@ def plan_swap_distractors(
         recorder.record("layout.inner_sweep_prejudge", {"window": int(k), "rejection": rejection.as_dict()})
         raise SceneGenerationError(f"xhard 内环对内环扫掠在 reset 预判被拒（L20）：{rejection.summary()}")
 
+    if scfg.rule == OUTER_BALANCED_RULE:
+        # V6：外环 O4 + 放置后序号重排，单列成 _plan_swap_distractors_balanced（V5 分支下面逐字不动）
+        return _plan_swap_distractors_balanced(
+            windows=windows, guard_windows=guard_windows, obstacles=obstacles, buttons_xy=buttons_xy,
+            generator=generator, recorder=recorder, dcfg=dcfg, scfg=scfg, chs=chs, timing=timing, stats=stats,
+            difficulty=difficulty,
+        )
+
     t0 = time.perf_counter()
-    guard = InnerSweepGuard(windows)
+    guard = InnerSweepGuard(windows if guard_windows is None else guard_windows)
     pad_shapes = padded_bin_shapes(chs, scfg.plan_pad_m)
     attempt_reasons: list[dict[str, int]] = []
 
@@ -839,7 +900,7 @@ def spawn_swap_distractors_v5(
     button_obbs: Sequence[Any] = (),
     hidden_half_size: float,
 ) -> SwapDistractorResult:
-    """两个 Swap 环境 xhard 的干扰容器与外环交换规划（计划 2.5 伪码）。
+    """两个 Swap 环境新值档的干扰容器与外环交换规划（计划 2.5 伪码）。
 
     顺序：内环预演 → L20 内环对内环预判（拒绝即抛真 ``SceneGenerationError``）→ 统一采样器整段重抽（每次放置后
     ``perm = randperm(count)`` 并规划全部窗口，某窗全不可行即重抽，最多 ``layout_max_attempts`` 次）→ 被接受那次才
@@ -849,23 +910,275 @@ def spawn_swap_distractors_v5(
     冻结布局经 ``commit`` 按同一规则（含 H1 回调，用同一份内环预演）复核，冻结的发起者排列若与重抽不同则用冻结排列
     重新规划并复核可行性（N17），违反即抛 ``SceneGenerationError``。
     """
-    # V6：按本局档位取新值子树（xhard1/2/3/xhard 各一份，结构相同、数值按档）
     decision = env._sampling["decision"][env.difficulty]
     chs = float(env.cube_half_size)
     dcfg = parse_distractor_cfg(decision["distractor"])
-    windows = predict_inner_windows(env, partner_axes)
+    inner_plan = getattr(env, "_newvalue_inner_plan", None)
+    if inner_plan is not None:
+        # V6（2.2 内环 S5）：内环窗口来自 reset 预规划的序列；H1 守卫覆盖 G 的全部可行槽对（R7）
+        windows = planned_inner_windows(env)
+        guard_windows = graph_guard_windows(env, inner_plan["graph"])
+    else:
+        windows = predict_inner_windows(env, partner_axes)
+        guard_windows = None
     obstacles = obstacle_obbs(list(env.spawned_bins) + list(button_obbs), chs * dcfg.min_gap_factor)
     layout, pairs, timing, stats = plan_swap_distractors(
         windows=windows, obstacles=obstacles,
         buttons_xy=[np.asarray(c, dtype=np.float64)[:2] for c, _axes, _half in button_obbs],
         generator=generator, recorder=env._spec, distractor_cfg=decision["distractor"],
-        swap_cfg=decision["distractor_swap"], cube_half_size=chs,
+        swap_cfg=decision["distractor_swap"], cube_half_size=chs, guard_windows=guard_windows,
+        difficulty=env.difficulty,
     )
     bins, cubes = build_distractor_actors(env, layout, hidden_half_size=hidden_half_size)
     return SwapDistractorResult(
         bins=bins, cubes=cubes, cube_bin_pairs=distractor_cube_bin_pairs(layout, bins, cubes), layout=layout,
         pairs=pairs, predicted_inner_pairs=[(w.a, w.b) for w in windows], timing=timing, stats=stats,
     )
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+# V6（NEWTASK_RELEASE_V6_PLAN 2.2 / 2.4，M5(b)、M6(a)、M7(a)）：内环 S5 + 外环 O4
+# ════════════════════════════════════════════════════════════════════════════════
+def v6_inner_swap_plan_cfg(task: str) -> dict:
+    """``decision.<tier>.swap_plan_v6`` 的申报值：S5（max→sum 评分）、G 连通作 reset 接受条件。"""
+    if task not in V5_SWAP_TASKS:
+        raise ValueError(f"只支持 {V5_SWAP_TASKS}，收到 {task!r}")
+    return _su.inner_swap_plan_cfg(require_connected=True, score="max_sum")
+
+
+def v6_distractor_swap_cfg(task: str) -> dict:
+    """``decision.<tier>.distractor_swap`` 的 V6 申报值：只换规则三键（O4），路径约束与其余数值逐项沿用 V5（M7(a)）。"""
+    cfg = v5_distractor_swap_cfg(task)
+    cfg["initiator_rule"] = OUTER_BALANCED_RULE
+    cfg["fallback"] = OUTER_BALANCED_FALLBACK
+    cfg["partner"] = copy.deepcopy(OUTER_BALANCED_PARTNER_RULE)
+    return cfg
+
+
+def inner_slot_graph(states: Sequence[ObjectState], *, stats: dict | None = None) -> list[list[bool]]:
+    """内环 4 个位姿槽的可行槽对图 G：每个无序槽对跑一次 ``check_swap_sweep_prefiltered``（其余内环容器静止）。
+
+    与 L20 预判 :func:`prejudge_inner_windows` 同一判定；槽集合整局不变（每段交换末精确对换位姿），所以一局只需判 6 次。
+    """
+    states = list(states)
+
+    def feasible(a: int, b: int) -> bool:
+        others = [state for j, state in enumerate(states) if j not in (a, b)]
+        _gap, rejection = check_swap_sweep_prefiltered(states[a], states[b], others, sweep_index=-1,
+                                                       stage="inner_graph", stats=stats)
+        return rejection is None
+
+    return _su.slot_pair_graph(len(states), feasible)
+
+
+def plan_inner_swaps_v6(env, generator: torch.Generator) -> dict:
+    """VUS/BUS xhard 内环 S5 的 reset 预规划（计划 2.2 内环 1～3）。只在 xhard 分支、主流全部既有取值点之后调用。
+
+    1. 读实际位姿构造 4 个槽的状态，算 G 并 ``record`` 进 ``layout.inner_swap_graph``；G 不连通抛真
+       ``SceneGenerationError``（候选级重抽，计入 reset 拒绝）；
+    2. 主流**追加一次** ``objects.swap_plan_seed = randint(0, 2**62)``（``value``），平局打破与重排都在以它播种的局部流上；
+    3. S5 规划整段序列，逐次 ``value`` 进 ``actions.swap_pairs.<k> = {"initiator": "bin_a", "partner": "bin_b"}``；
+       回放时用冻结值，并按 N17 复核「每次槽对在 G 里可行、没有立即撤销」，违反抛 ``EpisodeSpecError``；
+    4. ``record`` ``objects.swap_plan`` = {counts, range, tries, undo}（``UNIFORM=REPORT`` 的逐局来源）。
+
+    返回 ``{"graph", "pairs", "summary"}``，由环境挂到 ``_newvalue_inner_plan``。
+    """
+    from .episode_spec import EpisodeSpecError
+
+    cfg = _su.parse_inner_swap_plan_cfg(env._sampling["decision"][env.difficulty]["swap_plan_v6"])
+    bins = list(env.spawned_bins)
+    states = [object_state_from_actor(actor, f"bin_{index}") for index, actor in enumerate(bins)]
+    graph = inner_slot_graph(states)
+    env._spec.record("layout.inner_swap_graph", [[int(a), int(b)] for a, b in _su.graph_edges(graph)])
+    connected = _su.graph_connected(graph)
+    env._spec.record("layout.inner_swap_graph_connected", bool(connected))
+    if cfg["require_connected_graph"] and not connected:
+        raise SceneGenerationError(
+            f"{env.difficulty} 内环可行槽对图不连通（可行槽对 {_su.graph_edges(graph)}），按 V6 S5 拒绝本次布局"
+        )
+    seed = int(env._spec.value(
+        "objects.swap_plan_seed",
+        int(torch.randint(0, int(cfg["plan_seed_high_exclusive"]), (1,), generator=generator).item()),
+        decision_key=f"{env.difficulty}.swap_plan_v6",
+    ))
+    local = torch.Generator()
+    local.manual_seed(seed)
+    plan = _su.plan_balanced_swaps(graph, int(env.swap_times), local, score=cfg["score"],
+                                   budget=int(cfg["range_retry_budget"]), accept_range=int(cfg["accept_range"]),
+                                   forbid_undo=True)
+    if plan is None:
+        raise SceneGenerationError(f"{env.difficulty} 内环 S5 无法规划 {env.swap_times} 次交换（可行槽对 {_su.graph_edges(graph)}）")
+    pairs = []
+    for k, (a, b) in enumerate(plan.pairs):
+        chosen = env._spec.value(f"actions.swap_pairs.{k}", {"initiator": f"bin_{a}", "partner": f"bin_{b}"},
+                                 decision_key=f"{env.difficulty}.swap_plan_v6")
+        try:
+            pairs.append((int(str(chosen["initiator"]).rsplit("_", 1)[1]), int(str(chosen["partner"]).rsplit("_", 1)[1])))
+        except (TypeError, KeyError, ValueError, IndexError) as exc:
+            raise EpisodeSpecError(f"{env.difficulty}: actions.swap_pairs.{k} 形状非法：{chosen!r}") from exc
+    problems, stats = _su.verify_swap_sequence(graph, pairs, forbid_undo=True)
+    if problems:
+        raise EpisodeSpecError(f"{env.difficulty} 内环交换序列违反 V6 S5 规则：" + "；".join(problems))
+    summary = stats.summary()
+    summary["tries"] = int(plan.tries)
+    env._spec.record("objects.swap_plan", summary)
+    return {"graph": graph, "pairs": pairs, "summary": summary}
+
+
+def planned_inner_windows(env) -> list[InnerWindow]:
+    """按 reset 预规划的 S5 序列（``env._newvalue_inner_plan["pairs"]``）预演全部内环窗口（位姿读实际 actor）。"""
+    bins = list(env.spawned_bins)
+    states = [object_state_from_actor(actor, f"bin_{index}") for index, actor in enumerate(bins)]
+    windows: list[InnerWindow] = []
+    for a, b in env._newvalue_inner_plan["pairs"]:
+        windows.append(InnerWindow(a=int(a), b=int(b), states=tuple(states)))
+        state_a, state_b = states[a], states[b]
+        states[a] = ObjectState(name=state_a.name, p=state_b.p.copy(), q=state_b.q.copy(), shapes=state_a.shapes)
+        states[b] = ObjectState(name=state_b.name, p=state_a.p.copy(), q=state_a.q.copy(), shapes=state_b.shapes)
+    return windows
+
+
+def graph_guard_windows(env, graph: Sequence[Sequence[bool]]) -> list[InnerWindow]:
+    """H1 守卫用的窗口：G 的每条可行边一窗（初始槽状态上交换该槽对）。内环容器盒体相同，任何时刻交换某槽对的扫掠
+    都与此相同，所以守卫覆盖 G 中全部可行槽对（计划 2.2 内环 3、V6 调查 R7），是实际序列的超集。"""
+    bins = list(env.spawned_bins)
+    states = tuple(object_state_from_actor(actor, f"bin_{index}") for index, actor in enumerate(bins))
+    return [InnerWindow(a=int(a), b=int(b), states=states) for a, b in _su.graph_edges(graph)]
+
+
+def relabel_distractor_layout(layout: DistractorLayout, perm: Sequence[int]) -> DistractorLayout:
+    """放置后序号重排（V6 O4 的跨局均匀）：新序号 i 的容器 = 放置序 ``perm[i]`` 的容器；cube 映射随之改写。"""
+    perm = [int(v) for v in perm]
+    if sorted(perm) != list(range(layout.count)):
+        raise ValueError(f"序号重排 {perm} 不是 0..{layout.count - 1} 的排列")
+    inverse = {old: new for new, old in enumerate(perm)}
+    return DistractorLayout(
+        bins=[tuple(layout.bins[old]) for old in perm],
+        cube_count=int(layout.cube_count),
+        cube_bins=[inverse[int(c)] for c in layout.cube_bins],
+        color_order=list(layout.color_order),
+        trials=[layout.trials[old] for old in perm] if len(layout.trials) == layout.count else list(layout.trials),
+    )
+
+
+def plan_distractor_swaps_balanced(
+    layout: DistractorLayout,
+    windows: Sequence[InnerWindow],
+    generator: torch.Generator,
+    *,
+    cfg: DistractorSwapConfig,
+    cube_half_size: float,
+    buttons_xy: Sequence[Sequence[float]] = (),
+    stats: dict | None = None,
+) -> OuterSwapPlan:
+    """V6 外环 O4（纯几何 + 局部流平局）：每窗把全部对象对按「两者参与次数 max、再 sum」升序分组，上一窗用过的对放最末
+    （禁止立即撤销，除非别无选择）；第一组里有可行者即在其可行者中均匀抽一对。四道判定仍是 :func:`evaluate_outer_candidate`。
+
+    ``OuterSwapPlan.fallbacks[k]`` 在本规则下记「第 k 窗被接受的是第几组」（0 = 评分最小组）。
+    """
+    count = layout.count
+    shapes = padded_bin_shapes(cube_half_size, cfg.plan_pad_m)
+    outer = [distractor_bin_state(i, x, y, yaw, cube_half_size, shapes) for i, (x, y, yaw) in enumerate(layout.bins)]
+    plan = OuterSwapPlan(ok=False, perm=list(range(count)))
+    cnt = [0] * count
+    last = None
+    for k, window in enumerate(windows):
+        chosen = None
+        for g, group in enumerate(_su.balanced_pair_groups(count, cnt, last)):
+            feasible = []
+            for o, p in group:
+                ok, reason, _rejection = evaluate_outer_candidate(
+                    k, window, o, p, outer, cfg=cfg, cube_half_size=cube_half_size, buttons_xy=buttons_xy, stats=stats,
+                )
+                if ok:
+                    feasible.append((o, p))
+                else:
+                    plan.reasons[reason] = plan.reasons.get(reason, 0) + 1
+            if feasible:
+                o, p = feasible[int(torch.randint(0, len(feasible), (1,), generator=generator).item())]
+                chosen = (o, p, g)
+                break
+        if chosen is None:
+            plan.fail_window = k
+            return plan
+        o, p, g = chosen
+        plan.pairs.append((o, p))
+        plan.fallbacks.append(g)
+        cnt[o] += 1
+        cnt[p] += 1
+        last = (min(o, p), max(o, p))
+        state_o, state_p = outer[o], outer[p]
+        outer[o] = ObjectState(name=state_o.name, p=state_p.p.copy(), q=state_p.q.copy(), shapes=state_o.shapes)
+        outer[p] = ObjectState(name=state_p.name, p=state_o.p.copy(), q=state_o.q.copy(), shapes=state_p.shapes)
+    plan.ok = True
+    plan.final_xy = [[float(v) for v in state.p[:2]] for state in outer]
+    return plan
+
+
+def _plan_swap_distractors_balanced(*, windows, guard_windows, obstacles, buttons_xy, generator, recorder, dcfg, scfg,
+                                    chs, timing, stats, difficulty):
+    """:func:`plan_swap_distractors` 的 V6 分支：放置 + H1（G 全部可行槽对）→ 每次放置后独立流追加
+    ``randperm(count)``（序号重排）与一个规划种子 → 重排后的布局上跑 O4 → 被接受那次才 ``value``。
+
+    规格：放置序的布局照旧由 ``commit_distractor_layout`` 落 ``objects.distractors.*``（回放按放置序复核，判据与 V5
+    相同）；``objects.distractors.label_perm`` / ``objects.distractors.swap_plan_seed`` 两个新取值点；重排后的
+    公开布局 ``record`` 进 ``objects.distractors.public``；建 actor、交换对、运行时一律用公开序号。
+    """
+    t0 = time.perf_counter()
+    guard = InnerSweepGuard(windows if guard_windows is None else guard_windows)
+    pad_shapes = padded_bin_shapes(chs, scfg.plan_pad_m)
+    attempt_reasons: list[dict[str, int]] = []
+
+    def extra_reject(i, x, y, yaw, _placed):
+        return guard.first_rejection(distractor_bin_state(i, x, y, yaw, chs, pad_shapes)) is not None
+
+    def plan_for(layout, perm, seed):
+        local = torch.Generator()
+        local.manual_seed(int(seed))
+        public = relabel_distractor_layout(layout, perm)
+        plan = plan_distractor_swaps_balanced(public, windows, local, cfg=scfg, cube_half_size=chs,
+                                              buttons_xy=buttons_xy, stats=stats)
+        plan.perm = [int(v) for v in perm]
+        return public, plan
+
+    def accept(layout: DistractorLayout):
+        perm = torch.randperm(layout.count, generator=generator).tolist()  # 追加在放置与 cube 抽样之后
+        seed = int(torch.randint(0, 2 ** 62, (1,), generator=generator).item())
+        _public, plan = plan_for(layout, perm, seed)
+        attempt_reasons.append(dict(plan.reasons))
+        return (True, (perm, seed, plan)) if plan.ok else (False, f"window_{plan.fail_window}")
+
+    layout, payload = resample_distractor_layout(
+        dcfg, obstacles=obstacles, generator=generator, cube_half_size=chs, recorder=recorder,
+        accept=accept, max_attempts=scfg.layout_max_attempts, extra_reject=extra_reject,
+    )
+    perm, seed, plan = payload
+    perm_v = [int(v) for v in recorder.value("objects.distractors.label_perm", list(perm),
+                                             decision_key=f"{difficulty}.distractor_swap.partner.relabel")]
+    seed_v = int(recorder.value("objects.distractors.swap_plan_seed", int(seed),
+                                decision_key=f"{difficulty}.distractor_swap.initiator_rule"))
+    public, replanned = plan_for(layout, perm_v, seed_v)
+    if (perm_v, seed_v) != (list(perm), int(seed)):
+        # 只在回放时可能发生：冻结的重排 / 种子与重抽不同 ⇒ 用冻结值重新规划并复核（N17）
+        plan = replanned
+        if not plan.ok:
+            raise SceneGenerationError(f"回放复核：冻结的外环重排 / 种子在第 {plan.fail_window} 窗不可行")
+    recorder.record("objects.distractors.public", public.to_spec())
+    pairs = [(int(o), int(p)) for o, p in plan.pairs]
+    recorder.record("actions.distractor_swap_pairs", [[o, p] for o, p in pairs])
+    recorder.record("actions.distractor_swap_fallback", [int(v) for v in plan.fallbacks])
+    cnt = _su.participation(pairs, public.count)
+    balance = {"counts": cnt, "unvisited": int(sum(1 for c in cnt if c == 0)),
+               "range": int(max(cnt) - min(cnt)), "undo": int(_su.count_undo(pairs))}
+    recorder.record("actions.distractor_swap_balance", balance)
+    timing["layout_and_plan_s"] = time.perf_counter() - t0
+    stats["candidate_rejects"] = sum(sum(r.values()) for r in attempt_reasons)
+    for reasons in attempt_reasons:
+        for key, value in reasons.items():
+            stats[f"reject_{key}"] = stats.get(f"reject_{key}", 0) + int(value)
+    stats["outer_unvisited"] = balance["unvisited"]
+    stats["outer_undo"] = balance["undo"]
+    return public, pairs, timing, stats
 
 
 # ── 运行时 ─────────────────────────────────────────────────────────────────────

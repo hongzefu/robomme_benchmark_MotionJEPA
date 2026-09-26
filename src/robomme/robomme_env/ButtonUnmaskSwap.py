@@ -33,10 +33,10 @@ from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenera
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
-from .utils.difficulty import is_newvalue_difficulty, normalize_robomme_difficulty
+from .utils.difficulty import NEWVALUE_DIFFICULTIES, is_newvalue_difficulty, newvalue_tier, normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
-from .utils.bin_collision import BinCollisionError, check_bin_state, check_swap_sweep, object_state_from_actor
+from .utils.sampling_config import assert_native_decision, split_sampling_config
+from .utils.bin_collision import BinCollisionError, SpecBindingError, check_bin_state, check_swap_sweep, object_state_from_actor
 from .utils.unmask_distractors import add_distractor_misgrasp_failure
 from .utils.unmask_distractor_sampler import (
     park_cubes_onto_bins,
@@ -46,7 +46,8 @@ from .utils.unmask_distractor_sampler import (
 from .utils.unmask_swap_xhard import (
     SWAP_WINDOW_START,
     SWAP_WINDOW_STEPS,
-    XHARD_SWAP_SPEED_MULTIPLIER,
+    NEWVALUE_SWAP_SPEED_MULTIPLIER,
+    LEGACY_V4_DISTRACTOR,
     distractor_generator,
     joint_sweep_from_actual,
     run_outer_swaps,
@@ -54,19 +55,24 @@ from .utils.unmask_swap_xhard import (
     spawn_swap_distractors_v5,
     v5_distractor_cfg,
     v5_distractor_swap_cfg,
+    # V6（计划 2.2）：内环 S5 与外环 O4
+    plan_inner_swaps_v6,
+    v6_distractor_cfg,
+    v6_distractor_swap_cfg,
+    v6_inner_swap_plan_cfg,
+    validate_hidden_bin_selection,
 )
 from ..logging_utils import logger
 
 
 def _scene_gen_error(difficulty):
-    """V5 L3：按档选场景生成异常类。
+    """按难度族选场景生成异常类。
 
-    xhard 返回真正的 ``SceneGenerationError``（可重试的任务性失败）；原三档原样返回本模块里
+    新值档返回真正的 ``SceneGenerationError``（可重试的任务性失败）；原三档原样返回本模块里
     被遮蔽的名字 ``SceneGenerationError``（子模块，raise / except 时仍是 TypeError，行为逐字不变）。
     用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
-    只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
+    只在新值路径上执行的代码直接用 ``_RealSceneGenerationError``。
     """
-    # V6：新值族（xhard1/2/3/xhard）一律用真异常
     return _RealSceneGenerationError if is_newvalue_difficulty(difficulty) else SceneGenerationError
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
@@ -126,46 +132,43 @@ NATIVE_SAMPLING = {
 }
 
 
-def native_blocks(cls):
+def native_blocks(cls, *, release="newtask-v6"):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
     native = copy.deepcopy(NATIVE_SAMPLING)
-    # 容器数按字段表属 native（本次未要求改按钮／容器布局），从类属性取原值。
-    native["parameters"]["bin_count"] = {
-        difficulty: cfg["bin"] for difficulty, cfg in cls.configs.items()
-    }
+    if release in ("newtask-v4", "newtask-v5"):
+        legacy_configs = {
+            "easy": cls.configs["easy"], "medium": cls.configs["medium"], "hard": cls.configs["hard"],
+            "xhard": {"bin": 4, "swap_min": 6, "swap_max": 8, "pick_min": 3, "pick_max": 3},
+        }
+        native["parameters"]["bin_count"] = {
+            difficulty: cfg["bin"] for difficulty, cfg in legacy_configs.items()
+        }
+        decision = _legacy_decision(legacy_configs, release)
+        return decision, native
+    if release != "newtask-v6":
+        raise ValueError(f"ButtonUnmaskSwap 不支持 sampling_config release {release!r}")
+    native["parameters"]["bin_count"] = {difficulty: cfg["bin"] for difficulty, cfg in cls.configs.items()}
+    native["parameters"]["configs"] = copy.deepcopy(cls.configs)
     return _native_decision(cls), native
 
 
-# ── V6（NEWTASK_RELEASE_V6_PLAN 2.4）：新值族 xhard1 < xhard2 < xhard3 < xhard 的按档数值 ──────────────
-# 新档沿用 xhard 的全部生成机制（外环统一采样器、同窗外环交换、H1 扫掠复核、误抓即失败），只按档取数值：
-#   ButtonUnmaskSwap 外环干扰 4/6/8/10；每段交换步数 50/33/33/33（xhard1 倍率 1.0 保留 hard 的 50 步，xhard2 起 ×1.5）。
-# 含 cube 的干扰容器数计划未给，按 xhard「一半含 cube」（10 个含 [5,5]）取一半：[2,2]/[3,3]/[4,4]（实施方自决）。
-# 环带 [0.2675, 0.45]、色池、min_gap_factor、max_trials 与 distractor_swap 全部沿用 xhard（干扰少时环带稀疏放置）。
-# xhard 行只是把原来的 XHARD_SWAP_SPEED_MULTIPLIER 与 V5 预设原样查出来，取值与改动前逐位相同。
-NEWVALUE_SWAP_SPEED_MULTIPLIER = {
-    "xhard1": 1.0,
-    "xhard2": XHARD_SWAP_SPEED_MULTIPLIER,
-    "xhard3": XHARD_SWAP_SPEED_MULTIPLIER,
-    "xhard4": XHARD_SWAP_SPEED_MULTIPLIER,
-}
-#: 相对 V5 预设（xhard）要覆盖的干扰字段；xhard 不覆盖
-NEWVALUE_DISTRACTOR_OVERRIDES = {
-    "xhard1": {"count": 4, "cube_count_range": [2, 2]},
-    "xhard2": {"count": 6, "cube_count_range": [3, 3]},
-    "xhard3": {"count": 8, "cube_count_range": [4, 4]},
-    "xhard4": {},
-}
-
-
-def _newvalue_decision(tier):
-    """新值族某一档的 decision 子树；键结构与 xhard 完全相同（assert_native_decision 按档核对结构）。"""
-    distractor = v5_distractor_cfg("ButtonUnmaskSwap")
-    distractor.update(copy.deepcopy(NEWVALUE_DISTRACTOR_OVERRIDES[tier]))
-    return {
-        "swap_speed_multiplier": NEWVALUE_SWAP_SPEED_MULTIPLIER[tier],
-        "distractor": distractor,
-        "distractor_swap": v5_distractor_swap_cfg("ButtonUnmaskSwap"),
+def _legacy_decision(configs, release):
+    decision = {
+        "swap_count_range": {difficulty: [cfg["swap_min"], cfg["swap_max"]]
+                             for difficulty, cfg in configs.items()},
+        "pick_count_range": {difficulty: [cfg["pick_min"], cfg["pick_max"]]
+                             for difficulty, cfg in configs.items()},
+        "swap_speed_multiplier": 1,
+        "distractor": None,
+        "xhard": {
+            "swap_speed_multiplier": NEWVALUE_SWAP_SPEED_MULTIPLIER,
+            "distractor": (copy.deepcopy(LEGACY_V4_DISTRACTOR) if release == "newtask-v4"
+                           else v5_distractor_cfg("ButtonUnmaskSwap")),
+        },
     }
+    if release == "newtask-v5":
+        decision["xhard"]["distractor_swap"] = v5_distractor_swap_cfg("ButtonUnmaskSwap")
+    return decision
 
 
 def _native_decision(cls):
@@ -180,27 +183,27 @@ def _native_decision(cls):
         # 交换速度倍率：原值 1（每段 50 步），原三档消费它（=1 ⇒ 原样 50 步）。
         "swap_speed_multiplier": 1,
         "distractor": None,
-        # V4 xhard 专属（2.11）：速度 ×1.5 ⇒ 每段 33 步。放在 xhard 子键下，守卫对原三档可见部分仍逐键全等。
+        # 新值档使用逐档速度与外环数量；容器布局机制沿用原档。
         # V5（2.7，L13/L16 b）：干扰容器改用统一采样器的预设（V4 环带、10 个、含 cube [5,5]）；
         # 新增 distractor_swap：外环随内环同步交换的规则（L17～L23，外环路径离按钮中心 ≥ 0.122）。
-        "xhard4": _newvalue_decision("xhard4"),
-        # V6：追加三棵与 xhard 键结构相同、数值按档的子树（xhard 原值与位置不变）
-        "xhard1": _newvalue_decision("xhard1"),
-        "xhard2": _newvalue_decision("xhard2"),
-        "xhard3": _newvalue_decision("xhard3"),
+        **{
+            tier: {
+                "swap_speed_multiplier": 1.0 if newvalue_tier(tier) == 1 else NEWVALUE_SWAP_SPEED_MULTIPLIER,
+                "distractor": v6_distractor_cfg("ButtonUnmaskSwap", 2 + 2 * newvalue_tier(tier)),
+                "distractor_swap": v6_distractor_swap_cfg("ButtonUnmaskSwap"),
+                "swap_plan_v6": v6_inner_swap_plan_cfg("ButtonUnmaskSwap"),
+            }
+            for tier in NEWVALUE_DIFFICULTIES
+        },
     }
 
 
 def _resolve_sampling_config(cls, override):
     """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
-    decision_default, native_default = native_blocks(cls)
+    decision_default, native_default = native_blocks(cls, release="newtask-v6")
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
-    # V6：旧快照（V5 没有 xhard1/2/3 子树）缺的新值档从源码补齐；已有的不动
-    fill_missing_newvalue(decision, decision_default)
-    # V6：native.parameters.bin_count 按档取；V5 快照只有四档，缺的新值族档从源码类属性补齐（已有的不动）
-    if isinstance(native.get("parameters", {}).get("bin_count"), dict):
-        fill_missing_newvalue(native["parameters"]["bin_count"], native_default["parameters"]["bin_count"])
+    native["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
     native["decision"] = decision
     return native
 
@@ -244,50 +247,28 @@ class ButtonUnmaskSwap(BaseEnv):
     }
 
 
-    # V4 xhard（派生自 hard，2.11）：swap [6,8]（读 decision）、pick 3、容器数不变；
-    # 速度与干扰容器见 decision.xhard。
+    # V6 新值四档只调整 swap/pick 次数与外环干扰数量；内部容器布局机制沿用原 xhard。
+    config_xhard1 = {"bin":4, "swap_min":4, "swap_max":4, "pick_min":2, "pick_max":2}
+    config_xhard2 = {"bin":4, "swap_min":5, "swap_max":5, "pick_min":3, "pick_max":3}
+    config_xhard3 = {"bin":4, "swap_min":6, "swap_max":7, "pick_min":3, "pick_max":3}
     config_xhard4 = {
         "bin":4,
-        "swap_min":6,
-        "swap_max":8,
+        "swap_min":8,
+        "swap_max":9,
         "pick_min":3,
         "pick_max":3
     }
 
-
-    # V6（计划 2.4）：hard 与 xhard 之间的三档，容器数不变，swap / pick 按表内插
-    config_xhard1 = {
-        "bin":4,
-        "swap_min":3,
-        "swap_max":4,
-        "pick_min":2,
-        "pick_max":2
-    }
-    config_xhard2 = {
-        "bin":4,
-        "swap_min":4,
-        "swap_max":5,
-        "pick_min":3,
-        "pick_max":3
-    }
-    config_xhard3 = {
-        "bin":4,
-        "swap_min":5,
-        "swap_max":6,
-        "pick_min":3,
-        "pick_max":3
-    }
 
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
         'medium': config_medium,
-        'xhard4': config_xhard4,
-        # V6（计划 2.4）：新值族三档，追加在 'xhard4' 之后（原有键顺序与值不变）
         'xhard1': config_xhard1,
         'xhard2': config_xhard2,
         'xhard3': config_xhard3,
+        'xhard4': config_xhard4,
     }
     # 交换窗口的具名常量（B4）；运行时读 native.swap_window（默认值即这两个常量）
     SWAP_WINDOW_START = SWAP_WINDOW_START
@@ -350,40 +331,42 @@ class ButtonUnmaskSwap(BaseEnv):
         # Use seed to randomly determine number of repetitions (1-5)
         generator = torch.Generator()
         generator.manual_seed(seed)
-        swap_range = self._sampling["decision"]["swap_count_range"][self.difficulty]
+        decision = self._sampling["decision"]
+        self._is_newvalue = is_newvalue_difficulty(self.difficulty)
+        difficulty_cfg = self._sampling["parameters"]["configs"][self.difficulty]
+        swap_range = (difficulty_cfg["swap_min"], difficulty_cfg["swap_max"])
+        swap_decision_key = f"configs.{self.difficulty}.swap_min/swap_max"
+        pick_range = (difficulty_cfg["pick_min"], difficulty_cfg["pick_max"])
+        pick_decision_key = f"configs.{self.difficulty}.pick_min/pick_max"
         self.swap_times = self._spec.value(
             "objects.n_swaps",
             torch.randint(swap_range[0], swap_range[1]+1, (1,), generator=generator).item(),
-            decision_key=f"swap_count_range.{self.difficulty}",
+            decision_key=swap_decision_key,
         )
         logger.debug(f"Task will swap {self.swap_times} times")
 
 
-        pick_range = self._sampling["decision"]["pick_count_range"][self.difficulty]
         self.pick_times = self._spec.value(
             "objects.n_picks",
             torch.randint(pick_range[0], pick_range[1]+1, (1,), generator=generator).item(),
-            decision_key=f"pick_count_range.{self.difficulty}",
+            decision_key=pick_decision_key,
         )
         logger.debug(f"Task will pick {self.pick_times} times")
 
         # 交换窗口（2.11）：native.swap_window 真正被消费；原三档倍率取 decision 顶层的 1 ⇒ 原样 {64, 50}，
-        # xhard 取 decision.xhard 的 1.5 ⇒ {64, 33}。不抽随机数。
-        decision = self._sampling["decision"]
+        # 新值档按逐档倍率消费：第一档 50 步，其余三档 33 步。不抽随机数。
         window = self._sampling["parameters"]["swap_window"]
-        # V6：_is_xhard 表示「新值族」（xhard1/2/3/xhard），全部沿用 xhard 机制；倍率按本局档位查 decision[档]
-        self._is_xhard = is_newvalue_difficulty(self.difficulty)
-        multiplier = decision[self.difficulty]["swap_speed_multiplier"] if self._is_xhard else decision["swap_speed_multiplier"]
+        multiplier = decision[self.difficulty]["swap_speed_multiplier"] if self._is_newvalue else decision["swap_speed_multiplier"]
         self.swap_window_start = int(window["start_step"])
         self.swap_window_steps = scaled_window_steps(int(window["duration_steps"]), multiplier)
         # xhard 做运行时碰撞检查（H1：初态＋每段交换的连续扫掠，含干扰容器）；原三档不检查，行为不变
-        self._xhard_collision_checks = self._is_xhard
+        self._newvalue_collision_checks = self._is_newvalue
         self._runtime_checks = []
         # 干扰容器单独存放，不进 spawned_bins；原三档恒为空
         self.distractor_bins = []
         self.distractor_cubes = []
-        if self._is_xhard:
-            # V5（2.7）：外环交换对、外环 cube 跟随对、reset 预演的内环对；由 _spawn_xhard_distractors 填写
+        if self._is_newvalue:
+            # 外环交换对、外环 cube 跟随对、reset 预演的内环对；由 _spawn_newvalue_distractors 填写
             self.distractor_swap_pairs = []
             self.distractor_cube_bin_pairs = []
             self.predicted_inner_swap_pairs = []
@@ -536,7 +519,7 @@ class ButtonUnmaskSwap(BaseEnv):
                     spec_path=f"layout.bins.{i}"
                 )
             except RuntimeError as e:
-                if self._is_xhard:
+                if self._is_newvalue:
                     # V5 L15：xhard 不许静默截断（截断后交换对与环带障碍都会变），改抛真异常作候选级重抽
                     raise _RealSceneGenerationError(f"xhard 内环容器 bin_{i} 放不下：{e}") from e
                 break
@@ -571,10 +554,13 @@ class ButtonUnmaskSwap(BaseEnv):
 
         # Randomly select 3 bins from all bins to spawn cube
         num_bins_to_select = min(3, len(self.spawned_bins))
+        # M5(b)：仍只从前三个容器里选藏物位置，第四个容器 bin_3 恒空。
         selected_bin_indices = self._spec.value(
             "objects.selected",
             torch.randperm(3, generator=generator)[:num_bins_to_select].tolist(),
         )
+        if self._is_newvalue:
+            selected_bin_indices = validate_hidden_bin_selection(selected_bin_indices, permutation_size=3)
         selected_bins = [self.spawned_bins[idx] for idx in selected_bin_indices]
         self.selected_bin_indices = selected_bin_indices
         self.selected_bins = selected_bins  # Save selected bins, corresponding to color_names order
@@ -686,6 +672,10 @@ class ButtonUnmaskSwap(BaseEnv):
         for k in range(3, self.swap_times):
             setattr(self, f"swap_pair{k+1}_idx1", self.spawned_bins[swap_indices[k % 3]])
             setattr(self, f"swap_pair{k+1}_idx2", None)
+        if self._is_newvalue:
+            # V6（计划 2.2 内环 S5）：V5 发起者取值点照旧抽，随后主流追加一次规划种子，S5 预规划整段并覆盖发起者；
+            # 搭档由 step 的 xhard 分支读预规划
+            self._plan_inner_swaps_v6(generator)
 
 
         self._refresh_swap_schedule()
@@ -693,13 +683,32 @@ class ButtonUnmaskSwap(BaseEnv):
         self.button_list= [self.button_left, self.button_right]
         self.generator=generator
 
-        if self._is_xhard:
+        if self._is_newvalue:
             # V4 xhard 干扰容器：走专用随机流，主流（含 _initialize_episode 里 inject_fail_grasp
             # 继续消费的 self.generator）一次都不多抽（N5）
-            self._spawn_xhard_distractors([button_obb_1, button_obb_2])
+            self._spawn_newvalue_distractors([button_obb_1, button_obb_2])
 
-    def _spawn_xhard_distractors(self, button_obbs):
-        """V5 xhard（2.7）：10 个外环干扰容器（统一采样器，按钮 OBB 精确进障碍）+ 外环随内环同步交换的 reset 规划。
+    def _plan_inner_swaps_v6(self, generator):
+        """V6 xhard 内环 S5 reset 预规划（见 ``unmask_swap_xhard.plan_inner_swaps_v6``）；G 不连通抛真 ``SceneGenerationError``。"""
+        plan = plan_inner_swaps_v6(self, generator)
+        self._newvalue_inner_plan = plan
+        self._newvalue_swap_partners = [int(b) for _a, b in plan["pairs"]]
+        for k, (a, _b) in enumerate(plan["pairs"]):
+            setattr(self, f"swap_pair{k+1}_idx1", self.spawned_bins[int(a)])
+            setattr(self, f"swap_pair{k+1}_idx2", None)
+
+    def _newvalue_planned_partner(self, sweep_index, initiator):
+        """第 ``sweep_index`` 次交换由 S5 规划的搭档 actor（``step`` 的新值分支调用）。"""
+        partners = getattr(self, "_newvalue_swap_partners", None)
+        if partners is None or sweep_index >= len(partners):
+            raise SpecBindingError(f"{self.difficulty}: 第 {sweep_index} 次交换没有 reset 规划的搭档")
+        partner = self.spawned_bins[partners[sweep_index]]
+        if partner is initiator:
+            raise SpecBindingError(f"{self.difficulty}: 第 {sweep_index} 次交换规划的搭档与发起者是同一个容器")
+        return partner
+
+    def _spawn_newvalue_distractors(self, button_obbs):
+        """新值档外环干扰容器（统一采样器，按钮 OBB 精确进障碍）+ 外环随内环同步交换的 reset 规划。
 
         与 VideoUnmaskSwap 同构（L20 预判 → 放置 + H1 → 外环规划，最多 16 次整段重抽），另加外环路径离两个按钮中心
         ≥ 0.122（L19）。全部抽样只走独立流，主流（含 _initialize_episode 里 inject_fail_grasp 继续消费的
@@ -728,7 +737,7 @@ class ButtonUnmaskSwap(BaseEnv):
             self.table_scene.initialize(env_idx)
             qpos=reset_panda.get_reset_panda_param("qpos")
             self.agent.reset(qpos)
-            if getattr(self, "_xhard_collision_checks", False):
+            if getattr(self, "_newvalue_collision_checks", False):
                 # V4 xhard 的初态复核（H1）：容器＋干扰容器两两读真实碰撞盒
                 gap, rejection = self._check_state_readonly("initial")
                 self._runtime_checks.append(
@@ -794,13 +803,13 @@ class ButtonUnmaskSwap(BaseEnv):
                     "solve": lambda env, planner: solve_pickup_bin(env, planner, obj=self.selected_bins[1]),
                     "segment":self.selected_bins[1],
                 })
-        if self._is_xhard:
+        if self._is_newvalue:
             # V4 xhard：本环境全部任务 demonstration=False，按完两个按钮通常只到第 200 步上下，
             # 而 6~8 次交换要到 64+33n（262~328）才结束；原解法会在容器还在交换时就去抓（实测 2/2 失败）。
             # 在「按第二个按钮」的解法末尾等到最后一段交换结束再交出控制权。放在按钮任务而不放在第一抓，
             # 是因为 inject_fail_grasp 会整个替换被选中抓取任务的 solve，等待会被一并丢掉。
             tasks[1]["solve"] = lambda env, planner: self._solve_press_then_wait_swaps(env, planner, self.button_left)
-        if self._is_xhard and self.pick_times > 2:
+        if self._is_newvalue and self.pick_times > 2:
             # V4 xhard：原分支是 `== 2` 严格相等，pick=3 会落到只抓一次；这里按 pick_times 循环抓
             # selected_bins[0..pick_times-1]，每一抓前先放下上一个。lambda 用默认参数绑定本轮对象。
             if self.pick_times > len(self.selected_bins):
@@ -843,7 +852,7 @@ class ButtonUnmaskSwap(BaseEnv):
             )
         else:
             self.fail_grasp_task_index = None
-        if self._is_xhard:
+        if self._is_newvalue:
             # V4 xhard（用户 2026-09-22「误抓即失败」）：每个已有 failure_func 的抓取／放下任务追加
             # 「任一干扰容器被抬起（z>0.15，与区域内容器同一判据）即失败」
             add_distractor_misgrasp_failure(self, self.task_list)
@@ -965,8 +974,8 @@ class ButtonUnmaskSwap(BaseEnv):
         命中即抛 ``BinCollisionError`` 中止该样本。原三档从不调用。
 
         V5：xhard 改为内环对（运行时解析，L22 a）与本窗外环对的两对联合复核（带认证预筛，L23）；下面 V4 的单对
-        分支只在没有 ``_is_xhard`` 的实例上走（本环境原三档从不调用本函数）。"""
-        if getattr(self, "_is_xhard", False):
+        分支只在没有 ``_is_newvalue`` 的实例上走（本环境原三档从不调用本函数）。"""
+        if getattr(self, "_is_newvalue", False):
             gap, rejection, info = joint_sweep_from_actual(self, sweep_index, initiator, partner)
             if info["inner_partner_mismatch"]:
                 logger.warning(
@@ -1088,7 +1097,7 @@ class ButtonUnmaskSwap(BaseEnv):
 
         timestep = self.elapsed_steps
         
-        if self._is_xhard:
+        if self._is_newvalue:
             # V5 xhard（L14，主会话定内环也用）：内环容器与外环干扰容器同一窗口 [0, 64)、同一时间线揭示，
             # 但每个物体停在各自的画面外停放点，不再全部叠在 (10,10,10)；干扰容器仍不进 spawned_bins
             reveal_actors_parked(self, getattr(self, "spawned_bins", []), group="bin",
@@ -1113,19 +1122,23 @@ class ButtonUnmaskSwap(BaseEnv):
                 pair_idx2 = getattr(self, f'swap_pair{i+1}_idx2')
 
                 if pair_idx2 is None and pair_idx1 is not None:
-                    reference_pos = self._get_actor_position(pair_idx1)
-                    closest_actor = None
-                    closest_dist = float("inf")
-                    for candidate in self.spawned_bins:
-                        if candidate is None or candidate is pair_idx1:
-                            continue
-                        candidate_pos = self._get_actor_position(candidate)
-                        dist = np.linalg.norm(reference_pos[:2] - candidate_pos[:2])
-                        if dist < closest_dist:
-                            closest_dist = dist
-                            closest_actor = candidate
+                    if getattr(self, "_is_newvalue", False):
+                        # V6 xhard（计划 2.2 内环 3）：搭档读 S5 reset 预规划；下面的两对联合复核照旧跑
+                        closest_actor = self._newvalue_planned_partner(i, pair_idx1)
+                    else:
+                        reference_pos = self._get_actor_position(pair_idx1)
+                        closest_actor = None
+                        closest_dist = float("inf")
+                        for candidate in self.spawned_bins:
+                            if candidate is None or candidate is pair_idx1:
+                                continue
+                            candidate_pos = self._get_actor_position(candidate)
+                            dist = np.linalg.norm(reference_pos[:2] - candidate_pos[:2])
+                            if dist < closest_dist:
+                                closest_dist = dist
+                                closest_actor = candidate
                     if closest_actor is not None:
-                        if getattr(self, "_xhard_collision_checks", False):
+                        if getattr(self, "_newvalue_collision_checks", False):
                             # V4 xhard（H1）：定下搭档后、开始移动前，做含干扰容器的连续扫掠检查
                             self._check_swap_sweep_from_actual(i, pair_idx1, closest_actor)
                         setattr(self, f'swap_pair{i+1}_idx2', closest_actor)
@@ -1150,7 +1163,7 @@ class ButtonUnmaskSwap(BaseEnv):
             )
 
 
-        if self._is_xhard:
+        if self._is_newvalue:
             # V5 xhard（2.7，口径 4）：外环与内环同窗口交换，写在内环搭档循环之外，不增加任何控制步
             run_outer_swaps(self, timestep)
             # 内环与外环被藏 cube 在 [64, last_end) 各停独立点，last_end 那一步落到各自容器最终 XY（L14）

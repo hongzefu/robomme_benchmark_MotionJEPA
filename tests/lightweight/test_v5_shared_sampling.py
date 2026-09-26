@@ -510,15 +510,16 @@ SHADOWED = ["VideoRepick", "SwingXtimes", "PatternLock", "RouteStick", "StopCube
 
 
 @pytest.mark.parametrize("name", SHADOWED)
-def test_shadowed_module_selects_real_class_only_for_xhard(name) -> None:
+def test_shadowed_module_selects_real_class_only_for_newvalue(name) -> None:
     mod = importlib.import_module(f"robomme.robomme_env.{name}")
     # 遮蔽现状仍在（原三档依赖它保持 TypeError，H2）
     assert isinstance(mod.SceneGenerationError, types.ModuleType)
     assert mod._RealSceneGenerationError is SceneGenerationError
-    real = mod._scene_gen_error("xhard")
+    newvalue_tier = "xhard4"
+    real = mod._scene_gen_error(newvalue_tier)
     assert real is SceneGenerationError
     with pytest.raises(SceneGenerationError):
-        raise real("xhard 场景生成失败")
+        raise real(f"{newvalue_tier} 场景生成失败")
     for difficulty in ("easy", "medium", "hard"):
         legacy = mod._scene_gen_error(difficulty)
         assert legacy is mod.SceneGenerationError
@@ -551,7 +552,7 @@ def _func_source(module_name, func_name):
 
 
 @pytest.mark.parametrize("module_name,func_names", [
-    ("VideoRepick", ["_load_cubes_xhard"]),
+    ("VideoRepick", ["_load_cubes_newvalue"]),
     ("SwingXtimes", ["_color_name_of", "_select_target_xhard", "_spawn_distractors_xhard"]),
 ])
 def test_xhard_only_methods_use_real_class(module_name, func_names) -> None:
@@ -580,32 +581,27 @@ class _PassSpec:
         pass
 
 
-def test_videorepick_xhard_raise_is_real_class(monkeypatch) -> None:
+def test_videorepick_newvalue_raise_is_real_class(monkeypatch) -> None:
     mod = importlib.import_module("robomme.robomme_env.VideoRepick")
 
     def _fail(*args, **kwargs):
         raise RuntimeError("Region crowded")
 
     monkeypatch.setattr(mod, "spawn_random_cube", _fail)
-    from robomme.robomme_env.utils.xhard import HSV_FLOOR_COLOR
+    decision = mod._native_decision(mod.VideoRepick)
 
     fake = SimpleNamespace(
-        difficulty="xhard",
+        difficulty="xhard1",
         generator=torch.Generator().manual_seed(0),
         _spec=_PassSpec(),
         cube_half_size=0.02,
         _sampling={
-            "decision": {"xhard": {
-                # S3g（V5 2.15）起 xhard 布局多一个 min_center_dist_m（L50），在第一次 spawn 之前就读
-                "layout": {"mode": "clutter", "cube_count": 6, "region_center": [-0.1, 0.0],
-                           "region_half_size": [0.2, 0.25], "min_center_dist_m": 0.12},
-                "block_color": HSV_FLOOR_COLOR,
-            }},
+            "decision": decision,
             "positions": {"hard_cubes": {"random_yaw": True, "include_existing": True, "include_goal": True}},
         },
     )
     with pytest.raises(SceneGenerationError, match="failed to generate bin_0"):
-        mod.VideoRepick._load_cubes_xhard(fake, [])
+        mod.VideoRepick._load_cubes_newvalue(fake, [])
 
 
 def test_swingxtimes_xhard_raise_is_real_class() -> None:

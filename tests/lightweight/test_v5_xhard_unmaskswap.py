@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 S3h，VideoUnmaskSwap / ButtonUnmaskSwap xhard 的外环随内环同步交换（NEWTASK_RELEASE_V5_PLAN 2.5～2.7）。
+"""轻量测试：VideoUnmaskSwap / ButtonUnmaskSwap 新值档外环 O4 随内环同步交换。
 
 纯几何与假环境，不起 SAPIEN 场景：
 
-* 配置：``decision.xhard.distractor`` 为统一采样器预设（10 个、V4 环带、cube [5,5]），``distractor_swap`` 配置块与校验；
+* 配置：``decision.xhard4.distractor`` 沿用外环预设（10 个、V4 环带、cube [5,5]），``distractor_swap`` 配置块与校验；
 * 几何件：向量化可见判据与精确判据逐点一致；H1 守卫与 ``check_multi_swap_sweep`` 的「静止物 × 交换者」判定一致；
   内环预演与 V4 ``predict_swap_sweeps`` 同语义；
 * L20 反例：V4 实跑碰撞局 VUS seed 4500300 的内环布局在 reset 预判第 1 段被拒（bin_2 撞 bin_1）；
 * 规划：每窗恰好一次外环交换、外环对只在干扰容器之间、独立复核四条可行条件全部成立、名字无重复；
 * 记录纪律（N18）与回放复核（N17）：只在被接受的那次 value；回放逐值复现；篡改冻结值被拒或按冻结值重规划复核；
 * 运行时：外环交换与内环同窗口、每窗恰好一次；联合复核带上外环对并记录内环搭档是否与预演一致；
-* 源码结构：外环循环不在 AST 锁定的内环搭档循环里、只在 xhard 分支；BUS 内环截断在 xhard 抛真异常（L15）。
+* 源码结构：外环循环不在 AST 锁定的内环搭档循环里、只在新值分支；BUS 内环截断在新值档抛真异常（L15）。
 
-    uv run --no-sync python -m pytest tests/lightweight/test_v5_xhard_unmaskswap.py -q
+    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_v5_xhard_unmaskswap.py -q
 """
 
 from __future__ import annotations
@@ -104,7 +104,7 @@ def _obstacles(lay):
 
 
 def _plan(lay, recorder=None, swap_cfg=None):
-    recorder = recorder or SpecRecorder(None, lay["task"], {"seed": lay["seed"]}, difficulty="xhard")
+    recorder = recorder or SpecRecorder(None, lay["task"], {"seed": lay["seed"]}, difficulty="xhard4")
     out = ux.plan_swap_distractors(
         windows=_windows(lay), obstacles=_obstacles(lay), buttons_xy=lay["buttons"],
         generator=ux.distractor_generator(lay["seed"]), recorder=recorder,
@@ -116,16 +116,15 @@ def _plan(lay, recorder=None, swap_cfg=None):
 
 # ── 配置 ────────────────────────────────────────────────────────────────────
 @pytest.mark.parametrize("task", sorted(MODULES))
-def test_decision_xhard为统一预设与外环交换配置块(task):
+def test_decision_xhard4保留V5外环预设并使用O4配置(task):
     module, cls = MODULES[task]
     decision, _native = module.native_blocks(cls)
-    assert decision["xhard"]["distractor"] == V5_DISTRACTOR_PRESETS[task]
-    assert decision["xhard"]["distractor"]["count"] == 10
-    assert decision["xhard"]["distractor"]["ring_max_abs_xy"] == [0.2675, 0.45]
-    assert decision["xhard"]["distractor"]["cube_count_range"] == [5, 5]
-    swap = decision["xhard"]["distractor_swap"]
+    assert decision["xhard4"]["distractor"] == {**V5_DISTRACTOR_PRESETS[task], "count": 10, "cube_count_range": [5, 5]}
+    assert decision["xhard4"]["distractor"]["ring_max_abs_xy"] == [0.2675, 0.45]
+    swap = decision["xhard4"]["distractor_swap"]
     assert swap["enabled"] is True and swap["lane_offset"] == 0.07 and swap["layout_max_attempts"] == 16
-    assert swap["initiator_rule"] == "permutation_cycle" and swap["fallback"] == "next_in_permutation"
+    # V6（计划 2.2 外环 O4）：规则三键换成均衡贪心，其余沿用 V5
+    assert swap["initiator_rule"] == ux.OUTER_BALANCED_RULE and swap["fallback"] == ux.OUTER_BALANCED_FALLBACK
     assert swap["partner"]["population"] == "distractor_bins" and swap["partner"]["resolve_at"] == "reset_plan"
     assert swap["path_constraints"]["min_inner_circle_clearance_m"] == 0.04
     button = swap["path_constraints"]["min_button_center_dist_m"]
@@ -258,7 +257,7 @@ def test_外环路径约束真的在拒绝候选():
     lay = LAYOUTS[0]
     cfg = ux.v5_distractor_swap_cfg(lay["task"])
     cfg["path_constraints"]["min_inner_circle_clearance_m"] = 10.0
-    recorder = SpecRecorder(None, lay["task"], {"seed": lay["seed"]}, difficulty="xhard")
+    recorder = SpecRecorder(None, lay["task"], {"seed": lay["seed"]}, difficulty="xhard4")
     with pytest.raises(SceneGenerationError):
         _plan(lay, recorder=recorder, swap_cfg=cfg)
     doc = recorder.to_dict()
@@ -291,7 +290,7 @@ def test_只在被接受那次value_回放逐值复现():
     assert paths.count("objects.distractors.swap_order") == 1
     assert paths.count("objects.distractors.bins.0") == 1
     spec = recorder.to_dict()
-    replay = SpecRecorder(copy.deepcopy(spec), lay["task"], {"seed": lay["seed"]}, difficulty="xhard")
+    replay = SpecRecorder(copy.deepcopy(spec), lay["task"], {"seed": lay["seed"]}, difficulty="xhard4")
     (layout_r, pairs_r, _t, _s), _ = _plan(lay, recorder=replay)
     assert layout_r.same_geometry(layout) and pairs_r == pairs
     assert replay.mismatches == []
@@ -302,7 +301,7 @@ def test_回放篡改冻结布局被拒():
     (_layout, _pairs, _t, _s), recorder = _plan(lay)
     spec = recorder.to_dict()
     spec["objects"]["distractors"]["bins"]["0"] = [0.0, 0.0, 0.0]
-    replay = SpecRecorder(spec, lay["task"], {"seed": lay["seed"]}, difficulty="xhard")
+    replay = SpecRecorder(spec, lay["task"], {"seed": lay["seed"]}, difficulty="xhard4")
     with pytest.raises(SceneGenerationError):
         _plan(lay, recorder=replay)
 
@@ -313,7 +312,7 @@ def test_回放篡改发起者排列按冻结值重规划并复核():
     spec = recorder.to_dict()
     frozen = list(reversed(spec["objects"]["distractors"]["swap_order"]))
     spec["objects"]["distractors"]["swap_order"] = frozen
-    replay = SpecRecorder(spec, lay["task"], {"seed": lay["seed"]}, difficulty="xhard")
+    replay = SpecRecorder(spec, lay["task"], {"seed": lay["seed"]}, difficulty="xhard4")
     cfg = ux.parse_distractor_swap_cfg(ux.v5_distractor_swap_cfg(lay["task"]))
     expected = ux.plan_distractor_swaps(layout, frozen, _windows(lay), cfg=cfg, cube_half_size=CH)
     if not expected.ok:
@@ -336,7 +335,7 @@ def test_运行时外环与内环同窗口且每窗恰好一次(monkeypatch):
     bins = [SimpleNamespace(i=i) for i in range(10)]
     pairs = [(3, 4), (3, 4), (7, 1)]
     schedule = [(None, None, 64 + 33 * k, 64 + 33 * (k + 1)) for k in range(3)]
-    recorder = SpecRecorder(None, "VideoUnmaskSwap", {"seed": 1}, difficulty="xhard")
+    recorder = SpecRecorder(None, "VideoUnmaskSwap", {"seed": 1}, difficulty="xhard4")
     env = SimpleNamespace(distractor_swap_pairs=pairs, swap_schedule=schedule, distractor_bins=bins, _spec=recorder)
     for t in range(0, 200):
         before = len(calls)
@@ -381,14 +380,14 @@ def _func(task, name):
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))
-def test_外环循环在锁定循环之外且只在xhard(task):
+def test_外环循环在锁定循环之外且只在新值档(task):
     step = _func(task, "step")
     locked = [n for n in ast.walk(step) if isinstance(n, ast.For) and ast.unparse(n.iter) == "range(len(self.swap_schedule))"]
     assert len(locked) == 1
     locked_text = ast.unparse(locked[0])
     for name in ("run_outer_swaps", "park_cubes_onto_bins", "distractor_swap_pairs"):
         assert name not in locked_text
-    guarded = [n for n in step.body if isinstance(n, ast.If) and ast.unparse(n.test) == "self._is_xhard"
+    guarded = [n for n in step.body if isinstance(n, ast.If) and ast.unparse(n.test) == "self._is_newvalue"
                and "run_outer_swaps(self, timestep)" in ast.unparse(n.body[0])]
     assert len(guarded) == 1
     # 原三档的被藏 cube 跟随仍是 statechange 的原函数（在 else 分支里）
@@ -396,17 +395,17 @@ def test_外环循环在锁定循环之外且只在xhard(task):
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))
-def test_spawn只用独立流且调用V5入口(task):
-    spawn = ast.unparse(_func(task, "_spawn_xhard_distractors"))
+def test_spawn只用独立流且调用统一外环入口(task):
+    spawn = ast.unparse(_func(task, "_spawn_newvalue_distractors"))
     assert "spawn_swap_distractors_v5(" in spawn and "distractor_generator(self.seed)" in spawn
     assert "generator=generator" not in spawn
 
 
-def test_bus内环截断在xhard抛真异常():
+def test_bus内环截断在新值档抛真异常():
     scene = _func("ButtonUnmaskSwap", "_load_scene")
     handlers = [n for n in ast.walk(scene) if isinstance(n, ast.ExceptHandler) and ast.unparse(n.type) == "RuntimeError"]
     assert len(handlers) == 1
     body = handlers[0].body
-    assert isinstance(body[0], ast.If) and ast.unparse(body[0].test) == "self._is_xhard"
+    assert isinstance(body[0], ast.If) and ast.unparse(body[0].test) == "self._is_newvalue"
     assert isinstance(body[0].body[0], ast.Raise) and "_RealSceneGenerationError" in ast.unparse(body[0].body[0])
     assert isinstance(body[-1], ast.Break)  # 原三档仍静默截断（N12：既有缺陷只在 xhard 修）

@@ -1,12 +1,11 @@
-"""三个交换任务 ``_refresh_swap_schedule`` 通式与原三分支逐项等价（xhard 扩展 S5／S8 的关闭态证明）。
+"""三个交换任务 ``_refresh_swap_schedule`` 通式与原三分支逐项等价（新值档 S5 扩展）。
 
 不加载仿真：用生成入口的 AST 工具把方法源码抽出来，在 ``SimpleNamespace`` 上执行。
 原三分支（10.56 及之前）对 n=1/2/3 的产出手写成期望表；n=0 时原分支不命中、不赋值。
-V4（A7 作废旧 xhard「4~5 次、每段 50 帧」）：两个 UnmaskSwap 的 xhard 为 swap 速度 ×1.5
-⇒ 每段 ``round(50/1.5)=33`` 帧、首段起点仍 64；VideoUnmaskSwap swap [8,12]、ButtonUnmaskSwap [6,8]。
-两个 UnmaskSwap 的窗口从实例属性 ``swap_window_start`` / ``swap_window_steps`` 读（构造器按难度算好）。
+V6 新值档：两个 UnmaskSwap 的 xhard1 速度倍率为 1（每段 50 帧），xhard2～xhard4 倍率为 1.5（每段 33 帧），首段起点均为 64；
+窗口从实例属性 ``swap_window_start`` / ``swap_window_steps`` 读（构造器按难度档算好）。VideoRepick 仍每段 50 帧。
 
-    uv run --no-sync python -m pytest tests/lightweight/test_swap_schedule_generic.py -q
+    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_swap_schedule_generic.py -q
 """
 
 from __future__ import annotations
@@ -102,9 +101,9 @@ def test_零次时不赋值(task):
     assert not hasattr(env, "swap_schedule")
 
 
-@pytest.mark.parametrize("n", [4, 5])
-def test_repick_四五次首尾相接每段五十帧(n):
-    # VideoRepick 的调度仍是每段 50 帧（其 xhard 语义由 VideoRepick 自己的步 3b 维护）；这里只验通式
+@pytest.mark.parametrize("n", [3, 4, 5, 6, 7, 8, 9, 12])
+def test_repick_四档次数范围首尾相接每段五十帧(n):
+    # VideoRepick 所有难度档的每段均为 50 帧；这里只验通式
     env = _env(n)
     _method("VideoRepick")(env)
     schedule = env.swap_schedule
@@ -115,23 +114,27 @@ def test_repick_四五次首尾相接每段五十帧(n):
     assert all(schedule[k][3] == schedule[k + 1][2] for k in range(n - 1))
 
 
-@pytest.mark.parametrize("task,n", [("VideoUnmaskSwap", 8), ("VideoUnmaskSwap", 12), ("ButtonUnmaskSwap", 6), ("ButtonUnmaskSwap", 8)])
-def test_xhard_v4_首尾相接每段三十三帧(task, n):
-    """V4 xhard 端点：swap 速度 ×1.5 ⇒ 每段 33 帧，首段起点 64，发起者槽位按序取。"""
-    env = _env(n, window=33)
+@pytest.mark.parametrize("task,n,window", [
+    ("VideoUnmaskSwap", 4, 50), ("VideoUnmaskSwap", 7, 33), ("VideoUnmaskSwap", 12, 33),
+    ("ButtonUnmaskSwap", 4, 50), ("ButtonUnmaskSwap", 5, 33), ("ButtonUnmaskSwap", 9, 33),
+])
+def test_unmask四档倍率与窗口长度(task, n, window):
+    """xhard1 保持每段 50 帧；xhard2～xhard4 以倍率 1.5 取 33 帧，首段起点 64。"""
+    env = _env(n, window=window)
     _method(task)(env)
     schedule = env.swap_schedule
     assert len(schedule) == n
     for k, (a, b, start, end) in enumerate(schedule):
         assert (a, b) == (getattr(env, f"swap_pair{k+1}_idx1"), getattr(env, f"swap_pair{k+1}_idx2"))
-        assert (start, end) == (64 + 33 * k, 64 + 33 * (k + 1))
+        assert (start, end) == (64 + window * k, 64 + window * (k + 1))
     assert all(schedule[k][3] == schedule[k + 1][2] for k in range(n - 1))
-    assert schedule[-1][3] == 64 + 33 * n
+    assert schedule[-1][3] == 64 + window * n
 
 
 @pytest.mark.parametrize("task", ["VideoUnmaskSwap", "VideoRepick", "ButtonUnmaskSwap"])
 def test_源码里不再有按次数写死的分支(task):
     source = SOURCES[task].read_text(encoding="utf-8")
     assert "self.swap_times==1" not in source and "self.swap_times==3" not in source
-    for name in ("config_easy", "config_medium", "config_hard", "config_xhard4"):
+    for name in ("config_easy", "config_medium", "config_hard", "config_xhard1", "config_xhard2",
+                 "config_xhard3", "config_xhard4"):
         assert re.search(rf"^\s+{name}\s*=", source, re.M), name  # 源码里 config_medium= 没有空格，按正则找

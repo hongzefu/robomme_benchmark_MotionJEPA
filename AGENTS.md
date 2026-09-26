@@ -217,7 +217,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1 pipeline、MoveCube、VP已提交到主线；swap待集成 | 基线144/144成功、49GB、退出0；pipeline核心94 passed/3 skipped，MoveCube47 passed/1 deselected，VP41 passed；V5 snapshot散列未变；静态 `TIER_PLAN_TABLE=PASS` | 集成swap，导出V6 snapshot，运行13×4真实reset、LIGHTWEIGHT失败集合及最终V1 |
+| 新值模式 V6 实施（2026-09-26） | S0基线完成；S1 pipeline、MoveCube、VP已提交，swap代码已集成待提交 | 基线144/144成功、49GB、退出0；pipeline核心94 passed/3 skipped，MoveCube47 passed/1 deselected，VP41 passed，swap定向298 passed；V5 snapshot散列未变 | 完成swap提交，导出V6 snapshot，运行13×4真实reset、LIGHTWEIGHT失败集合及最终V1 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1874,3 +1874,9 @@
 - VPB/VPO 新值档 `xhard1..xhard4` 均设为 `return_to_origin`，原 hard 路径保持冻结。VPB 通过 `extra_place_before/after` 构造按钮前后非答案台额外段，target 放置次数为3/4/5/6；VPO 使用固定 `visit_counts` `[2,3]`、`[3,3]`、`[3,4]`、`[4,4]`，总访问数5/6/7/8，仅在两块计数不等时随机分配哪块多访问。共同回家收尾不计入梯度。
 - `scripts/parity/v6_tier_monotone.py` 已接入 `--reset-all --drafts <四档JSONL> --samples 200 --out <仓内报告>`，校验13个环境×4档覆盖、draft header/seed/spec SHA/identity，并从成功 EpisodeSpec 提取实际梯度维度。主树定向测试 `test_v4_xhard_videoplace.py` 与 `test_v6_tier_monotone.py` 退出0：41 passed、2.86秒；静态命令退出0：`TIER_PLAN_TABLE=PASS envs=13 violations=0`。静态表结果不代表真实reset通过。
 - V5 snapshot SHA-256保持 `c45d4408a5b87d71a8be72d1724322f06d6801118bb53e4afdffd07b1eaf8315`；录像器零diff、顶层五入口不变。V6 snapshot、13×4每格200成功reset及VP演示尚未执行。下一步仅待swap/M5(b)层集成，随后统一导出V6 snapshot并运行全环境reset与S2。
+
+### 2026-09-26 America/Detroit — 新值模式 V6 S1 swap/S5/M5(b) 集成
+
+- VUS、BUS、VR 新值档均覆盖 `xhard1..xhard4`；swap/pick次数由各档 `native.parameters.configs[档]` 实际消费，内环使用 S5 可行图预规划并在窗口起点复核，外环使用 O4。M5(b) 维持仅前三个内环容器可作为藏物位置，`bin_3` 恒空；删除 M5(a) 的四容器藏物扩展。V4/V5 `native_blocks(release=...)` 保留旧 xhard 快照形状，V6 才导出四档决策与参数。
+- 主树定向组覆盖纯 S5算法、VUS/BUS/VR规格/时序/碰撞/揭示邻接：`uv run --no-sync python -m pytest tests/lightweight/test_v6_swap_uniform.py tests/lightweight/test_v4_xhard_unmaskswap.py tests/lightweight/test_v5_xhard_unmaskswap.py tests/lightweight/test_v4_xhard_videorepick.py tests/lightweight/test_v5_xhard_videorepick.py tests/lightweight/test_swap_schedule_generic.py tests/lightweight/test_v4_xhard_swap_hold.py tests/lightweight/test_v4_xhard_unmask_distractor_reveal.py tests/lightweight/test_v5_shared_sampling.py tests/lightweight/test_v5_unmask_distractor_sampler.py tests/lightweight/test_window_timeline.py -m 'not gpu and not slow' -q`，298 passed、2 warnings、63.64秒，退出0。V5 snapshot散列仍为 `c45d4408a5b87d71a8be72d1724322f06d6801118bb53e4afdffd07b1eaf8315`；录像器零diff；共享 helper 临时覆盖未提交，`git diff --check`通过。
+- xhard4 S5 单测使用7块固定完全可行图验证9次交换、参与计数极差≤1、无立即撤销与规格回放相同；这是算法/绑定覆盖，不是实际reset几何可行率。真实各档候选、VP/Unmask演示、13×4×200 reset、完整LIGHTWEIGHT失败集合、V6 snapshot与V1对拍仍待运行。

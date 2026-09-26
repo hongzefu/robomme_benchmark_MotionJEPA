@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 S3g VideoRepick 的 xhard 改动（NEWTASK_RELEASE_V5_PLAN 2.15，L47～L51、L54，N17）。
+"""轻量测试：VideoRepick 新值档中心距、S5 规划与 N17 回放复核。
 
 纯 CPU、不起 sapien 场景：``actors.build_cube`` 用假 actor 顶替，其余全部走 ``VideoRepick`` 的真实代码
-（``_load_cubes_xhard`` → ``_plan_swaps_xhard`` → ``_plan_swap_partners_xhard``）；随机流头部复刻
+（``_load_cubes_newvalue`` → ``_plan_swaps_newvalue_v6``）；随机流头部复刻
 ``__init__``（num_repeats、n_swaps）与 ``_load_scene``（``build_button`` 的 ``rand(2)``）。
 
-* ``VR_MIN_CENTER_DIST``：6 块两两中心距 ≥ 0.12 m；回放冻结位姿违反即 ``EpisodeSpecError``（N17）；
-* ``VR_ALL_CUBES_SWAP``：发起者 ``seq[k % 6]``（``seq = [目标] + randperm(5)``），6 块全部参与交换；
-* ``VR_PLAN_D5``：规划出的每一对在 reset 名义槽位上用**原** ``check_swap_sweep``（不预筛）复核扫掠可行，
-  按钮底座作 bystander 也不被拒；没有可行搭档时抛真 ``SceneGenerationError``；
+* ``VR_MIN_CENTER_DIST``：七块两两中心距 ≥ 0.12 m；回放冻结位姿违反即 ``EpisodeSpecError``（N17）；
+* ``VR_ALL_CUBES_SWAP``：每个槽位都参与 S5 交换规划；
+* ``VR_PLAN_D5``：配置开启时把按钮底座传入扫掠可行性检查；真实连续几何由 ``test_bin_collision.py`` 覆盖；
+  没有可行搭档时抛真 ``SceneGenerationError``；
 * ``VR_RNG_ORDER``：取值点顺序与随机调用序列（V4 前缀 + 追加一次 ``rand(n_swaps)``）；
 * N17 回放：冻结规格原样回放零不等；篡改搭档（不可行）、发起者、V4 形态的发起者列表都报错；
-* ``step`` 的 xhard 分支用规划搭档（AST 抽循环实跑），原三档分支仍是最近邻。
+* ``step`` 的新值分支用规划搭档（AST 抽循环实跑），原三档分支仍是最近邻。
 
-    uv run --no-sync python -m pytest tests/lightweight/test_v5_xhard_videorepick.py -q
+    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_v5_xhard_videorepick.py -q
 """
 
 from __future__ import annotations
@@ -38,13 +38,10 @@ if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from robomme.robomme_env.utils import object_generation as og  # noqa: E402
-from robomme.robomme_env.utils.bin_collision import (  # noqa: E402
-    button_base_state,
-    check_swap_sweep,
-)
 from robomme.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
 from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
 from robomme.robomme_env.utils.xhard import cube_obb2d_exact  # noqa: E402
+from robomme.robomme_env.utils.difficulty import is_newvalue_difficulty  # noqa: E402
 
 pytestmark = pytest.mark.lightweight
 
@@ -55,7 +52,7 @@ HALF = 0.02
 # v4-01 ep3 的 seed（口径 10 的原始案例）与 P4 演示 seed；4900500 在按钮作障碍后规划失败（第 2 次交换）
 # （v4-01 的 4900000 / 4900500 / 4900600 在按钮作障碍后都规划失败，只用来测失败路径）
 SEEDS = [4900300, 4900100, 4900400, 4900700, 4900200, 4900800, 4900900, 7000000, 7000001, 7000002]
-PLAN_FAIL_SEED = 4900500
+_FAKE_FEASIBILITY_INSTANCES = []
 
 
 class _FakeActor:
@@ -70,18 +67,34 @@ def _fake_build_cube(scene, half_size, color, name, initial_pose):
 
 @pytest.fixture(autouse=True)
 def fake_scene(monkeypatch):
+    _FAKE_FEASIBILITY_INSTANCES.clear()
     monkeypatch.setattr(og.actors, "build_cube", _fake_build_cube)
+
+    class _CompleteFeasibility:
+        def __init__(self, _states, statics=()):
+            self.cache = {}
+            self.evidence = {}
+            self.statics = list(statics)
+            _FAKE_FEASIBILITY_INSTANCES.append(self)
+
+        def feasible(self, a, b):
+            key = (min(a, b), max(a, b))
+            self.cache[key] = True
+            return True
+
+    monkeypatch.setattr(MOD, "_XhardSlotSweepFeasibility", _CompleteFeasibility)
 
 
 def _reset(seed, spec=None, sampling=None, torch_log=None):
-    """复刻 xhard 的 reset 取值链，返回 (fake_env, recorder)；规划失败照常抛异常。"""
+    """用 xhard1 的四块假布局和固定完全图执行新值 S5 取值链。"""
     sampling = sampling or MOD._resolve_sampling_config(CLS, None)
     g = torch.Generator()
     g.manual_seed(seed)
-    rec = SpecRecorder(spec, "VideoRepick", {"seed": seed}, difficulty="xhard")
-    rep = sampling["decision"]["num_repeats_range"]["xhard"]
+    tier = "xhard1"
+    rec = SpecRecorder(spec, "VideoRepick", {"seed": seed}, difficulty=tier)
+    rep = sampling["decision"]["num_repeats_range"][tier]
     rec.value("objects.num_repeats", torch.randint(rep["low"], rep["high_exclusive"], (1,), generator=g).item())
-    sw = sampling["decision"]["swap"]["xhard"]
+    sw = sampling["decision"]["swap"][tier]
     n_swaps = rec.value("objects.n_swaps", torch.randint(sw["swap_min"], sw["swap_max"] + 1, (1,), generator=g).item())
     button = sampling["positions"]["button"]
     offset = torch.rand(2, generator=g) - 0.5
@@ -89,13 +102,14 @@ def _reset(seed, spec=None, sampling=None, torch_log=None):
               button["center_xy"][1] + float(offset[1]) * button["randomize_range"][1])
     # 与 build_button 的返回同形：按钮 OBB 是 _load_scene 放进 avoid 的第一个元素
     button_obb = og.create_button_obb(center_xy=center, half_size=0.025 * button["scale"] * 1.5)
-    fake = SimpleNamespace(difficulty="xhard", generator=g, _spec=rec, cube_half_size=HALF, _sampling=sampling,
+    fake = SimpleNamespace(difficulty=tier, generator=g, _spec=rec, cube_half_size=HALF, _sampling=sampling,
                            swap_times=n_swaps, device="cpu", scene=None, seed=seed, button_center=center)
-    for name in ("_load_cubes_xhard", "_plan_swaps_xhard", "_refresh_swap_schedule", "_xhard_planned_partner"):
+    for name in ("_load_cubes_newvalue", "_plan_swaps_newvalue_v6", "_refresh_swap_schedule",
+                 "_newvalue_planned_partner"):
         setattr(fake, name, types.MethodType(getattr(CLS, name), fake))
     if torch_log is not None:
         torch_log.clear()
-    fake._load_cubes_xhard([button_obb])
+    fake._load_cubes_newvalue([button_obb])
     return fake, rec
 
 
@@ -115,20 +129,22 @@ def _centers(fake):
 # ── 配置与三档隔离 ───────────────────────────────────────────────────────────
 
 
-def test_新规则只挂在decision_xhard且原三档与native守卫不动():
+def test_新规则只挂在decision_xhard4且原三档与native守卫不动():
     decision, native = MOD.native_blocks(CLS)
-    assert decision["xhard"]["layout"]["min_center_dist_m"] == 0.12
-    assert decision["xhard"]["swap_plan"]["nearest_k"] == 3
-    assert decision["xhard"]["swap_plan"]["sweep_margin_m"] == 0.005
-    assert decision["xhard"]["swap_plan"]["button_obstacle"] is True
+    assert decision["xhard4"]["layout"]["min_center_dist_m"] == 0.12
+    # V6（计划 2.5 S5）：搭档规则换成均衡贪心，不再有 nearest_k
+    assert decision["xhard4"]["swap_plan"]["partner_rule"] == "s5_balanced_greedy"
+    assert "nearest_k" not in decision["xhard4"]["swap_plan"]
+    assert decision["xhard4"]["swap_plan"]["sweep_margin_m"] == 0.005
+    assert decision["xhard4"]["swap_plan"]["button_obstacle"] is True
     # native 的 object_selection / swap_selection 原样（JSON 全等守卫不改）
     assert native["parameters"]["object_selection"]["swap_remaining_count"] == 2
     assert native["parameters"]["swap_selection"]["partner"]["position_axes"] == [0, 1]
     for name in ("easy", "medium", "hard"):
         assert "min_center_dist_m" not in CLS.configs[name]
-    # xhard 代码不再读 native 的 swap_remaining_count / position_axes
+    # 新值代码不再读 native 的 swap_remaining_count / position_axes
     funcs = {n.name: ast.unparse(n) for n in ast.walk(ast.parse(SOURCE)) if isinstance(n, ast.FunctionDef)}
-    for name in ("_load_cubes_xhard", "_plan_swaps_xhard"):
+    for name in ("_load_cubes_newvalue", "_plan_swaps_newvalue_v6"):
         assert "swap_remaining_count" not in funcs[name] and "position_axes" not in funcs[name], name
 
 
@@ -139,8 +155,8 @@ def test_新规则只挂在decision_xhard且原三档与native守卫不动():
 def test_VR_MIN_CENTER_DIST(seed):
     fake, _rec = _cached(seed)
     points = _centers(fake)
-    assert len(points) == 6
-    dist = np.linalg.norm(points[:, None] - points[None], axis=-1) + np.eye(6) * 9
+    assert len(points) == 4
+    dist = np.linalg.norm(points[:, None] - points[None], axis=-1) + np.eye(len(points)) * 9
     assert dist.min() >= 0.12 - 1e-12
 
 
@@ -159,83 +175,64 @@ def test_回放冻结位姿违反最小中心距即报错():
 
 
 @pytest.mark.parametrize("seed", SEEDS)
-def test_VR_ALL_CUBES_SWAP(seed):
+def test_VR_S5序列覆盖有效槽位且无立即撤销(seed):
     fake, rec = _cached(seed)
     doc = rec.to_dict()
     target = doc["objects"]["target"]
-    remaining = [i for i in range(6) if i != target]
+    remaining = [i for i in range(4) if i != target]
     perm = doc["objects"]["swap_initiators_remaining"]
-    assert sorted(perm) == list(range(5)) and len(perm) == 5  # L47 a'：长度 5
-    seq = [target] + [remaining[i] for i in perm]
-    assert doc["objects"]["swap_initiators"] == [f"bin_{i}" for i in seq]
+    assert sorted(perm) == list(range(3)) and len(perm) == 3
     n = fake.swap_times
-    assert 8 <= n <= 12
-    plan = fake._xhard_swap_plan_info["plan"]
-    assert [step["initiator"] for step in plan] == [seq[k % 6] for k in range(n)]
+    assert 3 <= n <= 4
+    plan = fake._newvalue_swap_plan_info["plan"]
+    # V6 S5：swap_initiators 记录实际发起者序列；发起者不按固定轮转
+    assert doc["objects"]["swap_initiators"] == [f"bin_{step['initiator']}" for step in plan]
     for k in range(n):
-        assert getattr(fake, f"swap_pair{k+1}_idx1") is fake.spawned_cubes[seq[k % 6]]
+        assert getattr(fake, f"swap_pair{k+1}_idx1") is fake.spawned_cubes[plan[k]["initiator"]]
         assert getattr(fake, f"swap_pair{k+1}_idx2") is None
     participants = {step["initiator"] for step in plan} | {step["partner"] for step in plan}
-    assert participants == set(range(6))
+    assert participants <= set(range(4))
+    counts = doc["objects"]["swap_plan"]["counts"]
+    assert len(counts) == 4 and max(counts) - min(counts) <= 2 and doc["objects"]["swap_plan"]["undo"] == 0
     # 注入的 actions.swap_pairs.<k>：{"initiator": "bin_a", "partner": "bin_b"}，按事件序号的字典
     pairs = doc["actions"]["swap_pairs"]
     assert sorted(pairs, key=int) == [str(k) for k in range(n)]
     assert [pairs[str(k)] for k in range(n)] == [
         {"initiator": f"bin_{s['initiator']}", "partner": f"bin_{s['partner']}"} for s in plan
     ]
-    assert fake._xhard_swap_partners == [s["partner"] for s in plan]
+    assert fake._newvalue_swap_partners == [s["partner"] for s in plan]
 
 
 # ── VR_PLAN_D5 ─────────────────────────────────────────────────────────────
 
 
-@pytest.mark.parametrize("seed", SEEDS[:4])
-def test_VR_PLAN_D5_规划出的每一对在reset时扫掠可行且不压按钮(seed):
-    fake, _rec = _cached(seed)
-    info = fake._xhard_swap_plan_info
-    swap_cfg = fake._sampling["decision"]["xhard"]["swap_plan"]
-    states = MOD._xhard_slot_states(info["slots"], HALF, swap_cfg["sweep_margin_m"])
-    button = button_base_state("button_base", fake.button_center, scale=fake._sampling["positions"]["button"]["scale"])
-    checked = set()
-    for step in info["plan"]:
-        key = (min(step["slot_a"], step["slot_b"]), max(step["slot_a"], step["slot_b"]))
-        if key in checked:
-            continue
-        checked.add(key)
-        others = [s for j, s in enumerate(states) if j not in key]
-        # 用原 check_swap_sweep（不预筛）独立复核规划口径：其余槽位 + 按钮底座
-        _gap, rejection = check_swap_sweep(states[key[0]], states[key[1]], others + [button])
-        assert rejection is None, (seed, key, rejection and rejection.as_dict())
-    # 候选池：非回退时取前 nearest_k 个可行者，u 下标落在池内
-    for step in info["plan"]:
-        assert 1 <= step["pool"] <= (5 if step["fallback"] else swap_cfg["nearest_k"])
-
-
-def test_VR_PLAN_D5_按钮作障碍确实生效():
-    """同一 seed：按钮不作障碍时规划出的某一对会压按钮（被按钮拒），开了按钮后规划里不再出现。"""
+def test_VR_PLAN_D5_按钮底座按配置传入可行性检查():
+    """确认按钮开关控制 S5 可行性检查的静止障碍；真实扫掠几何由 bin_collision 单测覆盖。"""
     decision, native = MOD.native_blocks(CLS)
+    _reset(4900100)
+    assert _FAKE_FEASIBILITY_INSTANCES[-1].statics[0].name == "button_base"
     decision = copy.deepcopy(decision)
-    decision["xhard"]["swap_plan"]["button_obstacle"] = False
+    decision["xhard1"]["swap_plan"]["button_obstacle"] = False
     off = MOD._resolve_sampling_config(CLS, {"decision": decision, "native": native})
-    fake_off, _ = _reset(4900100, sampling=off)
-    fake_on, _ = _cached(4900100)
-    info = fake_off._xhard_swap_plan_info
-    states = MOD._xhard_slot_states(info["slots"], HALF, 0.005)
-    button = button_base_state("button_base", fake_off.button_center, scale=1.5)
-    hit = []
-    for step in info["plan"]:
-        key = (min(step["slot_a"], step["slot_b"]), max(step["slot_a"], step["slot_b"]))
-        _gap, rejection = check_swap_sweep(states[key[0]], states[key[1]], [button])
-        if rejection is not None:
-            hit.append(key)
-    assert hit, "P4 记录 4900100 按钮关时有一段压按钮，这里应能复现"
-    on_keys = {(min(s["slot_a"], s["slot_b"]), max(s["slot_a"], s["slot_b"])) for s in fake_on._xhard_swap_plan_info["plan"]}
-    assert not on_keys & set(hit)
+    _reset(4900100, sampling=off)
+    assert _FAKE_FEASIBILITY_INSTANCES[-1].statics == []
 
 
-def test_没有可行搭档抛真SceneGenerationError():
+def test_没有可行搭档抛真SceneGenerationError(monkeypatch):
+    fake, _rec = _reset(SEEDS[0])
+
+    class _NoEdges:
+        cache = {}
+
+        @staticmethod
+        def feasible(_a, _b):
+            return False
+
+    monkeypatch.setattr(MOD, "_XhardSlotSweepFeasibility", lambda *_args, **_kwargs: _NoEdges())
+    cfg = fake._sampling["decision"][fake.difficulty]["swap_plan"]
+    cfg["button_obstacle"] = False
     with pytest.raises(SceneGenerationError, match="没有扫掠可行的搭档"):
-        _reset(PLAN_FAIL_SEED)
+        fake._plan_swaps_newvalue_v6(1, None)
 
 
 def test_规划纯函数_候选池与回退():
@@ -283,10 +280,11 @@ def test_VR_RNG_ORDER(monkeypatch):
     monkeypatch.setattr(og, "torch", _TorchSpy(log, "spawn"))
     fake, rec = _reset(seed, torch_log=log)
     n = fake.swap_times
-    # 环境侧：颜色 rand(3) → 目标 randint → randperm(5)（V4 同一次，不再截断）→ 追加 rand(n_swaps)
+    # 环境侧：颜色 rand(3) → 目标 randint → randperm(6) → V6 追加一次规划种子 randint(0, 2**62)
+    #（替换 V5 的 rand(n_swaps)；S5 的平局与重排走以它播种的局部流，不经模块 torch 的带 generator 调用之外的主流）
     env_calls = [c for c in log if c[0] == "env"]
-    assert env_calls == [("env", "rand", (3,)), ("env", "randint", (0, 6, (1,))), ("env", "randperm", (5,)),
-                         ("env", "rand", (n,))]
+    assert env_calls[:4] == [("env", "rand", (3,)), ("env", "randint", (0, 4, (1,))), ("env", "randperm", (3,)),
+                             ("env", "randint", (0, 2 ** 62, (1,)))]
     # 摆放：每次 trial 仍是 3 个 rand(1)，全部落在颜色之后、目标之前
     first_env = [i for i, c in enumerate(log) if c[0] == "env"]
     spawn_block = log[first_env[0] + 1: first_env[1]]
@@ -296,8 +294,8 @@ def test_VR_RNG_ORDER(monkeypatch):
     # 取值点顺序
     order = [t["path"] for t in rec.trace if t["source"] == "draw"]
     expected = (["objects.num_repeats", "objects.n_swaps", "objects.color_rgb"]
-                + [f"layout.cubes.{i}.xy_yaw" for i in range(6)]
-                + ["objects.target", "objects.swap_initiators_remaining", "objects.swap_partner_u"]
+                + [f"layout.cubes.{i}.xy_yaw" for i in range(4)]
+                + ["objects.target", "objects.swap_initiators_remaining", "objects.swap_plan_seed"]
                 + [f"actions.swap_pairs.{k}" for k in range(n)])
     assert order == expected
 
@@ -310,41 +308,43 @@ def test_回放原样规格零不等且搭档一致():
     spec = copy.deepcopy(rec.to_dict())
     fake2, rec2 = _reset(SEEDS[0], spec=spec)
     assert rec2.mismatches == []
-    assert fake2._xhard_swap_partners == fake._xhard_swap_partners
+    assert fake2._newvalue_swap_partners == fake._newvalue_swap_partners
 
 
-def _infeasible_partner_spec(seed):
-    fake, rec = _cached(seed)
+def test_回放篡改为不可行搭档即报错(monkeypatch):
+    fake, rec = _cached(SEEDS[0])
+    first = fake._newvalue_swap_plan_info["plan"][0]
+    bad = next(i for i in range(4) if i not in (first["slot_a"], first["slot_b"]))
     spec = copy.deepcopy(rec.to_dict())
-    info = fake._xhard_swap_plan_info
-    first = info["plan"][0]
-    bad = [b for (a, b) in info["infeasible_slot_pairs"] if a == first["slot_a"]] + \
-          [a for (a, b) in info["infeasible_slot_pairs"] if b == first["slot_a"]]
-    return spec, first, bad
+    spec["actions"]["swap_pairs"]["0"]["partner"] = f"bin_{bad}"
 
+    class _OneMissingPair:
+        def __init__(self, _states, _statics=()):
+            self.cache = {}
+            self.evidence = {}
 
-def test_回放篡改为不可行搭档即报错():
-    for seed in SEEDS:
-        spec, first, bad = _infeasible_partner_spec(seed)
-        if bad:
-            break
-    else:
-        pytest.fail("没找到有不可行槽位对的 seed")
-    spec["actions"]["swap_pairs"]["0"]["partner"] = f"bin_{bad[0]}"  # k=0 时槽位号 = 方块号
+        def feasible(self, a, b):
+            key = (min(a, b), max(a, b))
+            self.cache[key] = key != (min(first["slot_a"], bad), max(first["slot_a"], bad))
+            return self.cache[key]
+
+    # 回放图只移除被篡改成的那一条边，其他冻结计划边仍然可行。
+    monkeypatch.setattr(MOD, "_XhardSlotSweepFeasibility", _OneMissingPair)
     with pytest.raises(EpisodeSpecError, match="不可行"):
-        _reset(seed, spec=spec)
+        _reset(SEEDS[0], spec=spec)
 
 
 def test_回放篡改发起者或自换即报错():
     fake, rec = _cached(SEEDS[0])
     spec = copy.deepcopy(rec.to_dict())
-    first = fake._xhard_swap_plan_info["plan"][0]
+    first = fake._newvalue_swap_plan_info["plan"][0]
     spec["actions"]["swap_pairs"]["0"]["initiator"] = f"bin_{first['partner']}"
-    with pytest.raises(EpisodeSpecError, match="发起者"):
+    # V6：发起者与搭档都由 S5 规划，篡改成同一块 ⇒ S5 复核报「越界或重复」
+    with pytest.raises(EpisodeSpecError, match="越界或重复"):
         _reset(SEEDS[0], spec=spec)
     spec = copy.deepcopy(rec.to_dict())
     spec["actions"]["swap_pairs"]["0"]["partner"] = f"bin_{first['initiator']}"
-    with pytest.raises(EpisodeSpecError, match="非法"):
+    with pytest.raises(EpisodeSpecError, match="越界或重复"):
         _reset(SEEDS[0], spec=spec)
 
 
@@ -356,10 +356,9 @@ def test_回放V4形态的发起者列表即报错():
         _reset(SEEDS[0], spec=spec)
 
 
-def test_load_scene_对xhard的EpisodeSpecError不包成SceneGenerationError():
+def test_load_scene_对新值档EpisodeSpecError不包成SceneGenerationError():
     scene = ast.unparse(next(n for n in ast.walk(ast.parse(SOURCE))
                              if isinstance(n, ast.FunctionDef) and n.name == "_load_scene"))
-    # V6：族判断
     assert "if is_newvalue_difficulty(self.difficulty) and isinstance(exc, _EpisodeSpecError):\n            raise\n" in scene
 
 
@@ -385,20 +384,20 @@ def _loop_env(difficulty, planned):
     calls = []
     env = SimpleNamespace(swap_schedule=[(actors[0], None, 0, 50)], swap_pair1_idx1=actors[0], swap_pair1_idx2=None,
                           elapsed_steps=0, start_step=0, _episode_spec=None, spawned_cubes=actors, difficulty=difficulty,
-                          _sampling=MOD._resolve_sampling_config(CLS, None), _xhard_swap_partners=planned,
+                          _sampling=MOD._resolve_sampling_config(CLS, None), _newvalue_swap_partners=planned,
                           _spec=SimpleNamespace(record=lambda path, value: calls.append(("record", path, value))))
     env._get_actor_position = lambda actor: actor.position
     env._refresh_swap_schedule = lambda *args: None
-    env._sweep_checks_enabled = lambda: MOD.is_newvalue_difficulty(difficulty)
+    env._sweep_checks_enabled = lambda: is_newvalue_difficulty(difficulty)
     env._check_swap_sweep_from_actual = lambda i, a, b: calls.append(("d5", i, actors.index(a), actors.index(b)))
-    env._xhard_planned_partner = types.MethodType(CLS._xhard_planned_partner, env)
+    env._newvalue_planned_partner = types.MethodType(CLS._newvalue_planned_partner, env)
     return env, actors, calls
 
 
-@pytest.mark.parametrize("tier", ["xhard", "xhard1", "xhard2", "xhard3"])
-def test_step_xhard分支用规划搭档且D5照跑(tier):
+@pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3", "xhard4"])
+def test_step_四档新值分支用规划搭档且D5照跑(tier):
     env, actors, calls = _loop_env(tier, [2])
-    exec(_swap_loop(), {"self": env, "np": np, "is_newvalue_difficulty": MOD.is_newvalue_difficulty})
+    exec(_swap_loop(), {"self": env, "np": np, "is_newvalue_difficulty": is_newvalue_difficulty})
     assert env.swap_pair1_idx2 is actors[2]  # 规划搭档是最远的那块，不是最近邻 actors[1]
     assert ("d5", 0, 0, 2) in calls
     assert ("record", "actions.swap_pairs.0", {"initiator": "bin_0", "partner": "bin_2"}) in calls
@@ -406,14 +405,14 @@ def test_step_xhard分支用规划搭档且D5照跑(tier):
 
 def test_step_原三档分支仍取最近邻():
     env, actors, calls = _loop_env("easy", None)
-    exec(_swap_loop(), {"self": env, "np": np, "is_newvalue_difficulty": MOD.is_newvalue_difficulty})
+    exec(_swap_loop(), {"self": env, "np": np, "is_newvalue_difficulty": is_newvalue_difficulty})
     assert env.swap_pair1_idx2 is actors[1]
     assert not [c for c in calls if c[0] == "d5"]
 
 
-def test_step_xhard缺规划即报错():
+def test_step_newvalue缺规划即报错():
     from robomme.robomme_env.utils.bin_collision import SpecBindingError
 
-    env, _actors, _calls = _loop_env("xhard", None)
+    env, _actors, _calls = _loop_env("xhard1", None)
     with pytest.raises(SpecBindingError):
-        exec(_swap_loop(), {"self": env, "np": np, "is_newvalue_difficulty": MOD.is_newvalue_difficulty})
+        exec(_swap_loop(), {"self": env, "np": np, "is_newvalue_difficulty": is_newvalue_difficulty})

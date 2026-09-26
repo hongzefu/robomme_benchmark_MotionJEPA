@@ -260,11 +260,11 @@ def test_unmask_xhard_v4调度不走甲链路窗口(wt, n):
     本测试同时锁住「甲的常量与源码原三档一致」和「V4 xhard 的窗口与甲的 50 帧口径不同」。"""
     sys.path.insert(0, str(REPO_ROOT / "src"))
     from robomme.robomme_env.utils.unmask_swap_xhard import (
-        SWAP_WINDOW_START, SWAP_WINDOW_STEPS, XHARD_SWAP_SPEED_MULTIPLIER, scaled_window_steps,
+        SWAP_WINDOW_START, SWAP_WINDOW_STEPS, NEWVALUE_SWAP_SPEED_MULTIPLIER, scaled_window_steps,
     )
 
     assert (wt.SWAP_START, wt.SWAP_LEN) == (SWAP_WINDOW_START, SWAP_WINDOW_STEPS) == (64, 50)
-    steps = scaled_window_steps(SWAP_WINDOW_STEPS, XHARD_SWAP_SPEED_MULTIPLIER)
+    steps = scaled_window_steps(SWAP_WINDOW_STEPS, NEWVALUE_SWAP_SPEED_MULTIPLIER)
     assert steps == 33
     v4 = [[SWAP_WINDOW_START + steps * k, SWAP_WINDOW_START + steps * (k + 1)] for k in range(n)]
     assert v4[0][0] == 64 and v4[-1][1] == 64 + 33 * n

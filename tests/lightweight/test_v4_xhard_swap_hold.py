@@ -135,16 +135,16 @@ def _load_scene_text(file_name, func_name):
     return ast.unparse(_function_node(file_name, func_name))
 
 
-def test_VideoUnmaskSwap只有xhard换用专用等待():
+def test_VideoUnmaskSwap只有新值档换用专用等待():
     func = _function_node("VideoUnmaskSwap.py", "_load_scene")
     text = ast.unparse(func)
     # 原三档：static 任务的解法逐字仍是共享 solve_hold_obj
     assert "'solve': lambda env, planner: solve_hold_obj(env, planner, static_steps=self.swap_schedule[-1][3])" in text
-    # xhard：在 `if self._is_xhard:` 分支里整体替换首个任务（static）的解法，且全函数只此一处引用
+    # 新值档：在 `if self._is_newvalue:` 分支里整体替换首个任务（static）的解法，且全函数只此一处引用
     replace = "tasks[0]['solve'] = lambda env, planner: solve_hold_obj_xhard(env, planner, static_steps=self.swap_schedule[-1][3])"
     guarded = [
         node for node in ast.walk(func)
-        if isinstance(node, ast.If) and ast.unparse(node.test) == "self._is_xhard"
+        if isinstance(node, ast.If) and ast.unparse(node.test) == "self._is_newvalue"
         and any(ast.unparse(stmt) == replace for stmt in node.body)
     ]
     assert len(guarded) == 1

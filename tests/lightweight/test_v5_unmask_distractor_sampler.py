@@ -146,7 +146,7 @@ def _gen(seed):
 
 # ── 配置 ────────────────────────────────────────────────────────────────────────
 def test_预设与计划数值一致():
-    from robomme.robomme_env.utils.unmask_swap_xhard import XHARD_DISTRACTOR as V4_SWAP
+    from robomme.robomme_env.utils.unmask_swap_xhard import LEGACY_V4_DISTRACTOR as V4_SWAP
 
     expect = {
         "VideoUnmask": (15, (0.2425, 0.3289), (7, 8)),

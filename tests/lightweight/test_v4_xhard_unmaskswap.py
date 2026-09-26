@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""轻量测试：V4 步 3b 的 VideoUnmaskSwap / ButtonUnmaskSwap xhard（NEWTASK_RELEASE_V4_PLAN 2.7、2.10、2.11）。
+"""轻量测试：VideoUnmaskSwap / ButtonUnmaskSwap 的三档冻结与 V6 四档配置。
 
 纯结构与纯几何，不起 SAPIEN 场景：
 
-* 原三档的 ``config_*``、decision 去掉 ``xhard`` 后的部分、native 关键块逐字不变（V0 口径）；
-* xhard 新值：swap [8,12] / [6,8]、pick 3、bin 4、速度 ×1.5 ⇒ 每段 33 步、3 个干扰容器；
-* 守卫放行已申报的 xhard 收窄、拒绝原三档改动与申报外键；VideoUnmaskSwap 的 xhard 抓取序号
-  受 JSON 全等铁闸保护，外部改不了，旧快照缺它时按源码补齐；
+* 原三档的 ``config_*``、decision 去掉新值键后的部分、native 关键块逐字不变（V0 口径）；
+* xhard1～xhard4 按表配置 swap/pick、速度倍率、外环干扰与 S5；
+* 守卫放行已申报的新值档收窄、拒绝原三档改动与申报外键；
+* VUS/BUS 的 ``native.parameters.configs[档]`` 是 swap/pick 次数来源，M5(b) 保持藏放范围 0～2、bin_3 恒空；
 * 干扰容器采样：外环 + 相机可见 + 避障 + 避开预演扫掠；请求数＝实际数，放不下即抛错；
 * 交换预演的搭档选择与位姿互换语义；3 抓任务目标文本；N5 源码顺序；审计豁免已撤销。
 
-    uv run --no-sync python -m pytest tests/lightweight/test_v4_xhard_unmaskswap.py -q
+    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_v4_xhard_unmaskswap.py -q
 """
 
 from __future__ import annotations
@@ -50,7 +50,6 @@ from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     _strip_xhard,
     assert_native_decision,
-    fill_missing_newvalue,
 )
 from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
 from robomme.robomme_env.utils.task_goal import get_language_goal  # noqa: E402
@@ -72,95 +71,61 @@ ORIGINAL_DECISION = {
     "swap_speed_multiplier": 1,
     "distractor": None,
 }
-XHARD = {
-    "VideoUnmaskSwap": {"bin": 4, "swap_min": 8, "swap_max": 12, "pick_min": 3, "pick_max": 3},
-    "ButtonUnmaskSwap": {"bin": 4, "swap_min": 6, "swap_max": 8, "pick_min": 3, "pick_max": 3},
+TIERS = {
+    "VideoUnmaskSwap": {
+        "xhard1": {"bin": 4, "swap_min": 4, "swap_max": 5, "pick_min": 2, "pick_max": 2},
+        "xhard2": {"bin": 4, "swap_min": 6, "swap_max": 7, "pick_min": 3, "pick_max": 3},
+        "xhard3": {"bin": 4, "swap_min": 8, "swap_max": 9, "pick_min": 3, "pick_max": 3},
+        "xhard4": {"bin": 4, "swap_min": 10, "swap_max": 12, "pick_min": 3, "pick_max": 3},
+    },
+    "ButtonUnmaskSwap": {
+        "xhard1": {"bin": 4, "swap_min": 4, "swap_max": 4, "pick_min": 2, "pick_max": 2},
+        "xhard2": {"bin": 4, "swap_min": 5, "swap_max": 5, "pick_min": 3, "pick_max": 3},
+        "xhard3": {"bin": 4, "swap_min": 6, "swap_max": 7, "pick_min": 3, "pick_max": 3},
+        "xhard4": {"bin": 4, "swap_min": 8, "swap_max": 9, "pick_min": 3, "pick_max": 3},
+    },
 }
 
 
 # ── 配置与 decision ──────────────────────────────────────────────────────────
 @pytest.mark.parametrize("task", sorted(MODULES))
-def test_原三档配置逐字不变_xhard为新值(task):
+def test_原三档配置逐字不变_四档配置符合定稿(task):
     _module, cls = MODULES[task]
     for difficulty, expected in ORIGINAL_CONFIGS.items():
         assert cls.configs[difficulty] == expected
-    assert cls.configs["xhard"] == XHARD[task]
+    for tier, expected in TIERS[task].items():
+        assert cls.configs[tier] == expected
     assert (cls.SWAP_WINDOW_START, cls.SWAP_WINDOW_STEPS) == (64, 50)
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))
-def test_decision去掉xhard后与原值相同(task):
+def test_decision去掉新值后与原值相同(task):
     module, cls = MODULES[task]
     decision, _native = module.native_blocks(cls)
     assert _strip_xhard(decision) == ORIGINAL_DECISION
-    lo, hi = XHARD[task]["swap_min"], XHARD[task]["swap_max"]
-    assert decision["swap_count_range"]["xhard"] == [lo, hi]
-    assert decision["pick_count_range"]["xhard"] == [3, 3]
-    assert decision["xhard"]["swap_speed_multiplier"] == 1.5
-    # V5（2.6/2.7，L16 b）：干扰容器改为统一采样器的键与值（V4 环带、10 个、含 cube [5,5]），新增外环交换配置块
-    assert decision["xhard"]["distractor"] == {
-        "count": 10, "ring_max_abs_xy": [0.2675, 0.45], "cube_count_range": [5, 5],
-        "color_pool": ["yellow", "cyan", "magenta"], "color_rule": "balanced_cycle",
-        "min_gap_factor": 0.75, "max_trials": 1024,
-    }
-    assert decision["xhard"]["distractor_swap"] == ux.v5_distractor_swap_cfg(task)
-
-
-# V6（NEWTASK_RELEASE_V6_PLAN 2.4）：hard 与 xhard 之间的三档，按表内插
-NEWVALUE = {
-    "VideoUnmaskSwap": {"xhard1": [4, 5], "xhard2": [5, 7], "xhard3": [7, 9]},
-    "ButtonUnmaskSwap": {"xhard1": [3, 4], "xhard2": [4, 5], "xhard3": [5, 6]},
-}
-NEWVALUE_PICK = {"xhard1": 2, "xhard2": 3, "xhard3": 3}
-NEWVALUE_COUNT = {"xhard1": 4, "xhard2": 6, "xhard3": 8}
-NEWVALUE_SPEED = {"xhard1": 1.0, "xhard2": 1.5, "xhard3": 1.5}
+    for index, (tier, expected) in enumerate(TIERS[task].items(), start=1):
+        assert decision["swap_count_range"][tier] == [expected["swap_min"], expected["swap_max"]]
+        assert decision["pick_count_range"][tier] == [expected["pick_min"], expected["pick_max"]]
+        tier_decision = decision[tier]
+        assert tier_decision["swap_speed_multiplier"] == (1.0 if index == 1 else 1.5)
+        assert tier_decision["distractor"] == ux.v6_distractor_cfg(task, 2 + 2 * index)
+        assert tier_decision["distractor_swap"] == ux.v6_distractor_swap_cfg(task)
+        assert tier_decision["swap_plan_v6"] == ux.v6_inner_swap_plan_cfg(task)
+        assert "hidden_bin_permutation_size" not in tier_decision["swap_plan_v6"]
 
 
 @pytest.mark.parametrize("task", sorted(MODULES))
-def test_v6新值三档按表取值且键结构同xhard(task):
-    module, cls = MODULES[task]
-    assert list(cls.configs) == ["hard", "easy", "medium", "xhard", "xhard1", "xhard2", "xhard3"]
-    decision, _native = module.native_blocks(cls)
-    for tier, (lo, hi) in NEWVALUE[task].items():
-        pick = NEWVALUE_PICK[tier]
-        assert cls.configs[tier] == {"bin": 4, "swap_min": lo, "swap_max": hi, "pick_min": pick, "pick_max": pick}
-        assert decision["swap_count_range"][tier] == [lo, hi]
-        assert decision["pick_count_range"][tier] == [pick, pick]
-        sub = decision[tier]
-        assert set(sub) == set(decision["xhard"])
-        assert sub["swap_speed_multiplier"] == NEWVALUE_SPEED[tier]
-        assert ux.scaled_window_steps(50, sub["swap_speed_multiplier"]) == (50 if tier == "xhard1" else 33)
-        # 干扰只改数量与含 cube 数（取一半），其余键与 xhard 相同；外环交换配置块与 xhard 逐字相同
-        n = NEWVALUE_COUNT[tier]
-        expected = dict(decision["xhard"]["distractor"], count=n, cube_count_range=[n // 2, n // 2])
-        assert sub["distractor"] == expected
-        assert sub["distractor_swap"] == decision["xhard"]["distractor_swap"]
-    # 快照里出现新档时结构必须一致；V5 旧快照（无 xhard1/2/3）由 fill_missing_newvalue 补齐
-    old = copy.deepcopy(decision)
-    for tier in ("xhard1", "xhard2", "xhard3"):
-        del old[tier]
-        del old["swap_count_range"][tier]
-        del old["pick_count_range"][tier]
-    assert_native_decision(old, decision, task)
-    assert fill_missing_newvalue(old, decision) == decision
-    bad = copy.deepcopy(decision)
-    bad["xhard2"]["新键"] = 1
-    with pytest.raises(SamplingConfigError):
-        assert_native_decision(bad, decision, task)
-
-
-@pytest.mark.parametrize("task", sorted(MODULES))
-def test_守卫放行xhard收窄_拒绝原三档改动与申报外键(task):
+def test_守卫放行新值档收窄_拒绝原三档改动与申报外键(task):
     module, cls = MODULES[task]
     default, _native = module.native_blocks(cls)
     narrowed = copy.deepcopy(default)
-    narrowed["swap_count_range"]["xhard"] = [narrowed["swap_count_range"]["xhard"][1]] * 2
-    narrowed["xhard"]["distractor"]["cube_count_range"] = [4, 4]  # V5 统一键名（V4 为 with_cube_range）
+    narrowed["swap_count_range"]["xhard1"] = [narrowed["swap_count_range"]["xhard1"][1]] * 2
+    narrowed["xhard1"]["distractor"]["cube_count_range"] = [2, 2]
     assert_native_decision(narrowed, default, task)
     for mutate in (
         lambda d: d["swap_count_range"].__setitem__("hard", [2, 4]),
         lambda d: d.__setitem__("swap_speed_multiplier", 1.5),
-        lambda d: d["xhard"].__setitem__("新键", 1),
+        lambda d: d["xhard1"].__setitem__("新键", 1),
     ):
         bad = copy.deepcopy(default)
         mutate(bad)
@@ -171,33 +136,18 @@ def test_守卫放行xhard收窄_拒绝原三档改动与申报外键(task):
 def test_bus_native_swap_window与原值相同且被声明为具名常量():
     _decision, native = bus_module.native_blocks(BUS)
     assert native["parameters"]["swap_window"] == {"start_step": 64, "duration_steps": 50}
-    # V6：configs 追加 xhard1/2/3 后由 cls.configs 派生的 bin_count 扩到 7 档（新档容器数同 xhard）
-    assert native["parameters"]["bin_count"] == {"easy": 3, "medium": 4, "hard": 4, "xhard": 4,
-                                                 "xhard1": 4, "xhard2": 4, "xhard3": 4}
+    assert native["parameters"]["bin_count"] == {"easy": 3, "medium": 4, "hard": 4,
+                                                 "xhard1": 4, "xhard2": 4, "xhard3": 4, "xhard4": 4}
 
 
-def test_vus_object_selection原值不变_xhard抓取序号单列():
+def test_vus_object_selection原值不变_M5b前三个容器藏放():
     _decision, native = vus_module.native_blocks(VUS)
     assert native["parameters"]["object_selection"] == {
         "hidden_bin_permutation_size": 3, "hidden_bin_count_max": 3,
         "pickup_selected_indices": [0, 1], "swap_seed_target_count": 2,
     }
-    assert native["parameters"]["xhard"] == {"object_selection": {"pickup_selected_indices": [0, 1, 2]}}
-
-
-def test_vus_外部改不了xhard抓取序号_旧快照缺项按源码补齐():
-    _decision, native = vus_module.native_blocks(VUS)
-    bad = copy.deepcopy(native)
-    bad["parameters"]["xhard"]["object_selection"]["pickup_selected_indices"] = [0, 1]
-    with pytest.raises(ValueError):
-        vus_module._resolve_sampling_config(VUS, bad)
-    old = copy.deepcopy(native)
-    del old["parameters"]["xhard"]  # v2/v3 旧格式快照
-    state = torch.get_rng_state().clone()
-    resolved = vus_module._resolve_sampling_config(VUS, old)
-    assert resolved["parameters"]["xhard"]["object_selection"]["pickup_selected_indices"] == [0, 1, 2]
-    assert json.dumps(resolved, sort_keys=True) == json.dumps(vus_module._resolve_sampling_config(VUS, None), sort_keys=True)
-    assert torch.equal(state, torch.get_rng_state())
+    assert "xhard" not in native["parameters"]
+    assert native["parameters"]["configs"] == VUS.configs
 
 
 # ── 交换窗口 ────────────────────────────────────────────────────────────────
@@ -212,7 +162,7 @@ def test_窗口倍率取整():
 
 # ── 干扰容器采样 ────────────────────────────────────────────────────────────
 def _recorder():
-    return SpecRecorder(None, "VideoUnmaskSwap", {"seed": 1}, difficulty="xhard")
+    return SpecRecorder(None, "VideoUnmaskSwap", {"seed": 1}, difficulty="xhard4")
 
 
 def _bin_state(name, xy, yaw=0.0):
@@ -222,7 +172,7 @@ def _bin_state(name, xy, yaw=0.0):
 
 @pytest.mark.parametrize("seed", range(12))
 def test_干扰容器落在外环且可见且避障(seed):
-    cfg = copy.deepcopy(ux.XHARD_DISTRACTOR)
+    cfg = copy.deepcopy(ux.LEGACY_V4_DISTRACTOR)
     radius = ux.bin_footprint_radius(CUBE_HALF)
     obstacles = [((x, y), radius) for x, y in [(-0.05, -0.1), (-0.05, 0.1), (0.1, 0.1), (0.1, -0.1)]]
     obstacles += [((-0.2, -0.1), 0.0795), ((-0.2, 0.1), 0.0795)]  # 两个按钮的避让圆
@@ -252,7 +202,7 @@ def test_干扰容器落在外环且可见且避障(seed):
 
 
 def test_干扰容器放不下时抛错而不是截断():
-    cfg = copy.deepcopy(ux.XHARD_DISTRACTOR)
+    cfg = copy.deepcopy(ux.LEGACY_V4_DISTRACTOR)
     # 一个覆盖整张桌面的障碍圆
     with pytest.raises(SceneGenerationError):
         ux.sample_distractors(generator=ux.distractor_generator(0), cfg=cfg, obstacles=[((0.0, 0.0), 2.0)],
@@ -262,7 +212,7 @@ def test_干扰容器放不下时抛错而不是截断():
 def test_干扰容器走专用流_不动主流():
     main = torch.Generator().manual_seed(7)
     before = main.get_state().clone()
-    ux.sample_distractors(generator=ux.distractor_generator(7), cfg=copy.deepcopy(ux.XHARD_DISTRACTOR),
+    ux.sample_distractors(generator=ux.distractor_generator(7), cfg=copy.deepcopy(ux.LEGACY_V4_DISTRACTOR),
                           obstacles=[], sweeps=[], recorder=_recorder(), cube_half_size=CUBE_HALF)
     assert torch.equal(before, main.get_state())
     # 专用流与同 seed 的主流不是同一条
@@ -273,7 +223,7 @@ def test_干扰容器走专用流_不动主流():
 
 def test_色池越界与with_cube越界都拒绝():
     for mutate in (lambda c: c.__setitem__("colors", ["red"]), lambda c: c.__setitem__("with_cube_range", [2, 4])):
-        cfg = copy.deepcopy(ux.XHARD_DISTRACTOR)
+        cfg = copy.deepcopy(ux.LEGACY_V4_DISTRACTOR)
         mutate(cfg)
         with pytest.raises(ValueError):
             ux.sample_distractors(generator=ux.distractor_generator(0), cfg=cfg, obstacles=[], sweeps=[],
@@ -323,8 +273,8 @@ def test_干扰容器在load_scene末尾且不用主流(task):
     path = REPO_ROOT / "src" / "robomme" / "robomme_env" / f"{task}.py"
     scene = _func(path, task, "_load_scene")
     last = scene.body[-1]
-    assert isinstance(last, ast.If) and "_spawn_xhard_distractors" in ast.unparse(last)
-    spawn = ast.unparse(_func(path, task, "_spawn_xhard_distractors"))
+    assert isinstance(last, ast.If) and "_spawn_newvalue_distractors" in ast.unparse(last)
+    spawn = ast.unparse(_func(path, task, "_spawn_newvalue_distractors"))
     assert "distractor_generator(self.seed)" in spawn and "generator=generator" not in spawn
 
 
