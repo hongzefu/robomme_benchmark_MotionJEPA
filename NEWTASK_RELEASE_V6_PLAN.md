@@ -117,28 +117,58 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 ## 五、对拍、验收与实施步骤
 
+### 5.1 两件事分开：对拍原三档（本机）与生成四档（GL）
+
+**对拍 V1（唯一硬闸门，只对原三档）**：
+
+| 项 | 内容 |
+|---|---|
+| 对拍什么 | easy / medium / hard 三档，16 个环境 × 3 档 × 3 局 = **144 局**（清单 `scripts/parity/manifest_16x3.json`） |
+| 两侧 | 基线侧 = `13e5151` 的代码（worktree），V6 侧 = 合并后的主分支代码；同一批 seed |
+| 判定 | 逐局 h5 SHA 逐字节相同、规格字段零不一致：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
+| 在哪跑 | **本机**（两侧必须同一台机器、同一 GPU 架构，跨架构逐位必然不同；V5 实测每侧约 3 h） |
+| 不对拍的 | xhard1～xhard4 一律不对拍（口径 7） |
+
+**生成 v6-01（正式数据）**：
+
+| 档 | 环境数 | 每格候选 / 正式 | 候选 | 正式局 |
+|---|---|---|---|---|
+| xhard1 | 13 | 10 / 3 | 130 | 39 |
+| xhard2 | 13 | 10 / 3 | 130 | 39 |
+| xhard3 | 13 | 10 / 3 | 130 | 39 |
+| xhard4 | 16（13 + MoveCube + InsertPeg + StopCube） | 10 / 3 | 160 | 48 |
+| 合计 | 55 格 | | 550 | 165 |
+
+- 候选 = 抽签（只 reset，不跑演示），每格 10 个；正式局 = 每格取候选 index 0/3/6 跑完整演示；抽签失败按 M4 上限 60 次递补，如实报 shortfall。
+- 在哪跑：**全部在 GL**，两个占位 job 各 `srun --overlap` 16 worker（`OMP_NUM_THREADS=1`，driver 不用 `max_tasks_per_child`），逐局产物写节点 `/tmp`，正式局的 h5/视频与规格搬回 `/data`，NFS 不留大文件。
+- 原三档不重新生成数据。
+
+### 5.2 链路与验收判据
+
 链路：源码 → `train_split_config extract --release newtask-v6` → `scripts/configs/newtask-v6/sampling_config.json` → `v4_specs draw --difficulty <tier> --seed-profile v6` → `freeze` → `v4_rollout run` → 报告；推理 `v4_eval` 不改。
 
-| 判据 | 查什么 | 判定行 |
-|---|---|---|
-| V0 | 原三档 config（StopCube/MoveCube/InsertPeg 为 `config_native`/`_CONFIG_CURRENT`）与原三档消费的 `NATIVE_SAMPLING` 键零 diff；剥掉四个新值键后 decision 与 V5 快照逐字相同 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
-| LIGHTWEIGHT | `tests/lightweight/ -m 'not gpu and not slow'`，失败集合与 S0 基线（46 failed / 12 errors）相同 | `LIGHTWEIGHT=PASS failure_set_equal_baseline=1` |
-| **V1（唯一硬闸门）** | 原三档 16×9 = 144 条与 `13e5151` 逐位比 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
-| FROZEN_FILES | 录像器对 `da77662` 零 diff；三脚本与官方副本逐字节同；五入口 | `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
-| TIER_MONOTONE | 每环境每档 200 局离线：用户指定维度均值严格递增（`scripts/parity/v6_tier_monotone.py`） | `TIER_MONOTONE=PASS envs=13 violations=0` |
-| 均匀性 / 区域 | 第四节 2、6 的判定行 | 同上 |
-| 生成报告（不设门槛） | 每格 draft/rollout/backfilled/shortfall；均匀性统计；MoveCube 区域违例 | `V6_GENERATION=REPORT cells=55 …` |
+| 判据 | 查什么 | 在哪 | 判定行 |
+|---|---|---|---|
+| V0 | 原三档 config（StopCube/MoveCube/InsertPeg 为 `config_native`/`_CONFIG_CURRENT`）与原三档消费的 `NATIVE_SAMPLING` 键零 diff；剥掉四个新值键后 decision 与 V5 快照逐字相同 | 本机静态 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
+| LIGHTWEIGHT | `tests/lightweight/ -m 'not gpu and not slow'`，失败集合与 S0 基线（46 failed / 12 errors）相同 | 本机 | `LIGHTWEIGHT=PASS failure_set_equal_baseline=1` |
+| **V1** | 见 5.1 | 本机 | `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0` |
+| FROZEN_FILES | 录像器对 `da77662` 零 diff；三脚本与官方副本逐字节同；五入口 | 本机静态 | `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
+| TIER_MONOTONE | 每环境每档 200 局离线 reset：用户指定维度均值严格递增且区间不重叠（`scripts/parity/v6_tier_monotone.py`） | 本机 | `TIER_MONOTONE=PASS envs=13 violations=0` |
+| 均匀性 / 区域 | 第四节 2、6 的判定行 | 本机离线 + 生成报告 | 同上 |
+| 生成报告（不设门槛） | 每格 draft/rollout/backfilled/shortfall；均匀性统计；MoveCube 区域违例 | GL | `V6_GENERATION=REPORT cells=55 …` |
 
-| 步 | 内容 | commit（自 12.149 起顺延） |
-|---|---|---|
-| S0 | 存 LIGHTWEIGHT 基线；V1 基线侧（`13e5151` worktree）开跑 | — |
-| S1 | 合并四个副本到主分支：管道改 `xhard4` 命名、四档 config 按第三节表填值、S5/O4、MoveCube U、VP 放台段、单调检查器；恢复 V5 快照原样、另起 `newtask-v6` 快照 | 12.149～12.152 + 报告 |
-| S2 | 本机演示探针：每格 ≥2 局（VUS/BUS/VR 各档 4 局、MoveCube 12 局）；VR 7 块 reset 率实测 | 12.153 + 报告 |
-| S3 | V1 V6 侧 144 条对拍 | 12.154 |
-| S4 | GL 一次多 worker 生成 v6-01（55 格：两个占位 job `srun --overlap`，16 worker/席，`OMP_NUM_THREADS=1`，driver 不用 `max_tasks_per_child`；产物写节点 `/tmp`，正式 h5/视频与规格搬回 `/data`） | 12.155 + 生成报告 |
-| S5 | 总报告、`scripts/README.md` 更新、收尾只留正式产物、`scancel` 占位 job | 12.156 |
+### 5.3 实施步骤
 
-规模与时间（估）：165 正式局 + 550 候选；生成约 2 h（GL 两席）；V1 两侧各约 3 h；产物峰值约 230～270 GB（`/data` 余 2.4 TB）。
+| 步 | 内容 | 在哪 | commit（自 12.150 起顺延） |
+|---|---|---|---|
+| S0 | 存 LIGHTWEIGHT 基线；V1 基线侧（`13e5151` worktree）144 局开跑 | 本机 | — |
+| S1 | 合并四个副本到主分支：管道改 `xhard4` 命名、四档 config 按第三节表填值、S5/O4、MoveCube U、VP 放台段、单调检查器；恢复 V5 快照原样、另起 `newtask-v6` 快照；V0 + LIGHTWEIGHT + FROZEN_FILES + TIER_MONOTONE | 本机 | 12.150～12.153 + 报告 |
+| S2 | 本机演示探针：每格 ≥2 局（VUS/BUS/VR 各档 4 局、MoveCube 12 局）；VR 7 块 reset 率实测 | 本机 | 12.154 + 报告 |
+| S3 | V1 V6 侧 144 局 + 与基线侧比 | 本机 | 12.155 |
+| S4 | 抽签 550 候选 + 生成 165 正式局（5.1 表） | GL | 12.156 + 生成报告 |
+| S5 | 总报告、`scripts/README.md` 更新、收尾只留正式产物、`scancel` 占位 job | 本机 + GL | 12.157 |
+
+规模与时间（估）：V1 两侧各约 3 h（本机）；生成约 2 h（GL 两席）；产物峰值约 230～270 GB（`/data` 余 2.4 TB）。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -179,7 +209,7 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 **踩过的坑（不要再踩）**：driver 用 `ProcessPoolExecutor(max_tasks_per_child=N)` 在 spawn 上下文换代点必挂死（GL 两次）；`RobommeRecordWrapper` 的 h5 逐帧记录挂在 `save_video` 上，关视频会让全部局判失败；`generate_dataset_newseed._worker` 只认 `episode_spec`，MoveCube 等只认 `native_episode_spec`，规格回放走 `train_split_worker.run_one`；VUS 的 swap/pick 次数读 `native.parameters.configs[档]` 不读 decision；VUS/BUS 交换对、VR 发起者方向不是规格取值点（S5 需新增取值点）；出图用 `Noto Sans CJK JP`，出完必须 Read 目视检查；GL 上 NFS `rm -rf` 偶尔报 Directory not empty，重试即可。
 
-**下一步**：从第一部分五的 S0/S1 开始。
+**下一步**：从第一部分 5.3 的 S0/S1 开始（S0～S3 本机，S4 GL）。
 
 ## 一、红线
 
