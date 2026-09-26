@@ -109,6 +109,19 @@
     - **本条约束的是"新增顶层文件"这个动作**，不是禁止写新脚本：新脚本默认落到已有子目录；确实不属于任何现有子目录时，先向用户说明用途与建议位置，获准后再建新子目录。临时脚本一律写到 scratchpad 或 `artifacts/`，不得落在 `scripts/` 顶层。
     - 核查方式：`ls -1 scripts/*.py` 应恰好列出上述五个文件。
 
+13. **仅 OpenAI Codex：积极使用多代理，保持职责与写入边界清晰。**
+    - **适用对象**：本条只约束 OpenAI Codex 主代理及其子代理。Claude Code（包括其子代理与 Workflow）和其他代理必须忽略本条，继续遵守各自宿主规则。
+    - **积极并行**：在用户已经授权、且工作可独立推进时，积极并行探索、实现、验证和审查；主代理继续推进关键依赖与整合工作。存在前后依赖的步骤按依赖顺序执行，不为并行而并行。并行不扩大用户授权范围。
+    - **委派说明**：每项委派都要明确目标、上下文、可读与可写范围、禁止事项、依赖、交付内容和验收方式；依任务需要限制文件、目录、分支或工作区，避免子代理自行推断更大范围。
+    - **写入隔离**：同一文件或共享产物只指定一个写入负责人，其他代理对该对象只读。需要并行修改时，按互不重叠的文件集合或独立 worktree 分隔；整合前由主代理核对重叠、差异和工作区状态，不覆盖或提交其他代理、用户或既有的在途改动。
+    - **模型档位**：子代理及递归子代理的模型档位不得高于本次用户主请求所用模型；默认继承父代理模型，轻量任务可酌情降档。若无法可靠比较档位，则沿用父代理模型。模型档位与推理强度是独立设置；本条只限制前者，推理强度按任务独立选择。
+    - **并发容量**：按当前宿主实际提供的并发容量安排工作。容量已满时复用已有代理或等待空位；不得把累计创建数说成同时运行数，也不得另开顶层任务规避容量限制。
+    - **整合与责任**：子代理须交回结论、证据、验证结果和未解决事项。主代理负责整合、最终验收及经授权的提交；不得扩大授权、覆盖他人改动或将他人内容混入提交。
+
+    来源：2026-09-26 用户要求「尽可能积极调用使用multi agent来实现 但是分隔要保持清晰」及「子agent要小于等于主要请求agent的规格」，并澄清只限制模型档位、不限制推理强度；OpenAI 官方文档 [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)。
+
+    正本锚点：[AgentMetaRules-hongzefu 第 26 条](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/1e79ce3b967f74f6f861d4e5c4d87ca559369643/AGENTS.md)，提交 `1e79ce3b967f74f6f861d4e5c4d87ca559369643`。本次仅同步该条，不改变其他既有规则与项目授权边界。
+
 ## 仓库目标
 
 本仓库专门用于寻找、恢复并验证 RoboMME dataset 的生成脚本。最终目标不是只找到一个历史文件，而是完成以下闭环：
@@ -203,6 +216,7 @@
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 规则正本已同步、配置为16；实际16并发未通过 | 正本 `1e79ce3` 已推送；本地新增规则13；远端0.157.0独立回读与同一App daemon正式热重载均确认16；当前任务原容量仍报 `agent thread limit reached` | 在按新配置创建的App任务中验收16个Luna同时运行与第17个拒绝；不得以解析成功代替实际并发，不重启其他活动任务 |
 | 新值模式 V6 实施（2026-09-26） | S0 基线已记录；V1 基线侧运行中 | 同口径轻量集与 V5 S0 失败／错误集合逐项相同（46 failed、12 errors）；`BinFill/0` 单 worker 冒烟通过；`13e5151` 基线侧在 tmux `v6-v1-base` 中运行144条 | 并行审查四副本后实施 S1；保持V1基线运行，完成后核对144条结果 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
@@ -1813,3 +1827,12 @@
 - 按数据生成规则，先在隔离 `13e5151` worktree 做 `BinFill/0`、B 路、单 worker 冒烟：身份 1 条、成功 1 条、耗时 26.206 秒、退出码 0；产物 `artifacts/newtask-v6/s0/base-smoke/`，日志 `artifacts/newtask-v6/s0/base-smoke.log`。隔离 worktree 为 `artifacts/newtask-v6/v1/base-source/`，官方源码树复用 `.official_tree=1d4c13697f0c5fbd7a8b05e01c196c984a07406c`。
 - 计划原指 `scripts/parity/manifest_16x3.json`，实查仅48行（每 task/difficulty 一条），不足 V1 的16环境×3难度×3局。改用 `scripts/configs/newtask-v3/subset_manifest.json`，实际144行，保留原 episode 身份。此为修正执行清单，不改变 V1 范围。
 - V1 基线侧现由 detached tmux `v6-v1-base` 执行，固定 `13e5151`、B 路、144条、单 worker、GPU 0，输出 `artifacts/newtask-v6/v1/base/`，日志 `artifacts/newtask-v6/v1/base.log`；启动后 `tmux has-session -t v6-v1-base` 返回 0，进程仍运行，尚无退出码。复现命令与输出状态见 `docs/validation/newtask-v6/20260926-s0.md`。S1 不触碰该 worktree及其输出。
+
+### 2026-09-26 America/Detroit — Codex 专属规则与 SSH 并发配置落地，16并发待验收
+
+- 用户要求原话：「写codex特有的提示 让claude忽略这个」「尽可能积极调用使用multi agent来实现 但是分隔要保持清晰」「实验告诉我 注意我是codex app进行ssh的机制 不是cli」「并且同步到https://github.com/hongzefu/AgentMetaRules-hongzefu」；追加「子agent要小于等于主要请求agent的规格」，选择「只限制模型档位」「提高到 16 个子代理」；强调「我的问题是同时已开启的能不能超过」「你先实测16个agent能并发 而且因为现在是asttra尝试用luna并发试试看」「开始实现 并且验收完毕前测试16并发」「已经退出了 开始实现该计划！」。
+- 正本新增规则26并更新README数量、sources溯源，提交 `1e79ce3b967f74f6f861d4e5c4d87ca559369643` 已推送且 `git ls-remote origin refs/heads/main` 核验一致。本地按稳定标记机械提取该条，仅将编号26改为13并记录正本SHA；Claude规则不改。规则明确积极委派、目标和读写范围、单对象单写入负责人、主代理整合验收，以及所有递归子代理模型档位不高于本次用户主请求，推理强度独立选择。
+- SSH远端 `/home/hongzefu/.codex/config.toml` 新增 `[agents] max_concurrent_threads_per_session = 16`，不设置默认子模型，保留继承。独立 `codex app-server --stdio` 经 `initialize`、`config/read` 返回16：`CONFIG_READ=PASS configured_subagents=16 default_model=inherited`，日志 `artifacts/codex-multiagent/20260926/config-read.jsonl`。此前值域实验中0、负数与字符串unlimited均被拒绝，大正整数仅解析接受；默认模型字符串可配置，但错误模型名同样通过解析，不能据此认定实际模型路由。
+- 实际App任务先确认主代理 `gpt-6-astra/ultra`、三个直接子代理 `gpt-6-luna/low` 同时running，模型取自各自rollout的 `turn_context.model`，不使用代理自报；第4子代理返回 `collab spawn failed: agent thread limit reached`。配置写16后重测仍受旧限制。使用当前同一daemon控制套接字的WebSocket连接，先确认 `thread/loaded/list` 包含本任务，再用 `config/batchWrite` 对同一个值16执行 `reloadUserConfig=true`、带用户层 `expectedVersion` 的正式热重载；返回ok且配置语义无其他变化，日志 `artifacts/codex-multiagent/20260926/live-reload-websocket.log`，判定 `LIVE_RELOAD=PASS same_daemon=1 configured_subagents=16 semantic_changes=0 restart=0`。
+- 热重载后主回合及现有Luna的新回合仍触发限制；后者只成功派生两个Luna等待探针，第三个被拒绝，并立即停止扩容。最终所有本轮等待探针均已中断。查 `openai/codex@rust-v0.157.0` 的 `codex-rs/core/src/agent/control/execution.rs::AgentExecutionLimiter`，容量由 `OnceLock<usize>` 及 `initialize/get_or_init` 固定；`LocalAgentControl::with_session_id` 在建立任务树时初始化。已有任务树不能通过用户配置热重载替换容量，须在按新配置创建的App任务中继续验证16个同时运行和第17个拒绝。本轮没有重启现有daemon，没有创建额外顶层任务规避限制，也不把配置PASS当成16并发PASS。
+- 诊断中最初将JSON行直接送给 `codex app-server proxy`，在initialize处25秒超时；实际控制套接字是WebSocket，随后通过一次性 `uv run --no-project --with websockets==15.0.1 python` 连接成功。临时依赖未加入长期项目环境，未改 `pyproject.toml` 或 `uv.lock`。规则静态核验通过：正本历史正文保留、33个本地链接有效、`git diff --check`退出0；本地只提交规则13及本条进度／日志，绕开另一V6任务的同文件改动。当前 `CONCURRENT_16=NOT_PASS`，整项验收尚未完成。
