@@ -217,7 +217,7 @@
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
-| 新值模式 V6 实施（2026-09-26） | S0 基线已记录；V1 基线侧运行中；S1 pipeline 已集成，MoveCube/VP/swap 待集成 | 轻量失败／错误集合已冻结；`BinFill/0` 冒烟通过；`13e5151` 基线侧 144 条在 tmux 运行；pipeline 核心定向测试 94 passed/3 skipped、最终 PL/RS 文件 40 passed、四档 dry-run 退出0 | 集成剩余三路实现与 V6 快照，运行原档冻结、全环境 reset、LIGHTWEIGHT 失败集合及最终 V1 |
+| 新值模式 V6 实施（2026-09-26） | S0 基线与 V1 基线侧完成；S1 pipeline 已提交，MoveCube/VP/swap 待集成 | S0 失败／错误集合已冻结；`BinFill/0` 冒烟1/1；`13e5151` 基线侧144/144成功、49 GB、退出0；pipeline核心测试94 passed/3 skipped，dry-run退出0 | 集成剩余三路实现与 V6 快照，运行原档冻结、全环境 reset、LIGHTWEIGHT 失败集合及最终 V1 |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
 | `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
@@ -1857,3 +1857,8 @@
 - 主树定向测试：`uv run --no-sync python -m pytest tests/lightweight/test_v6_difficulty_tiers.py tests/lightweight/test_v4_specs.py tests/lightweight/test_v5_generation_tools.py tests/lightweight/test_episode_spec_recorder.py tests/lightweight/test_episode_action_sampling.py tests/lightweight/test_sampling_config_split.py -m 'not gpu and not slow' -q`，94 passed、3 skipped、9.60 秒；`tests/lightweight/test_v5_xhard_patternlock_routestick.py` 经最终表断言修正后 40 passed、6.45 秒。dry-run `uv run --no-sync python -m scripts.parity.v5_generation pipeline --run-id s1-dry-run --tiers xhard1,xhard2,xhard3,xhard4 --draw-workers 16 --workers 16 --official-root artifacts/train-parity/local-smoke-01/official-src --dry-run` 退出0，输出16步；前三档各使用13个有梯度环境、xhard4使用all，四个目录隔离且均为 `seed-profile v6`。
 - 集成未完成时先跑的一组跨文件探索测试为 305 passed、44 failed、1 deselected；其中 VideoUnmaskSwap/VideoRepick、MoveCube、VP 的断言仍对应各自待集成的最终实现，PatternLock/RouteStick 文件独立修正后整文件 40 项通过。该探索结果不作为 LIGHTWEIGHT 最终验收；四路合并后须重跑对应目标及同 S0 口径失败集合闸门。
 - 本阶段未启动生成、reset 抽样或 rollout，未改 `generate_dataset_newseed.py`、V2 快照、冻结录像器、五个入口或依赖。下一步应用 MoveCube 圆环、VP放台/visit_counts、VUS/BUS/VR S5/M5(b) 的最终差异，再导出独立 V6 snapshot 和运行全环境单调样本。
+
+### 2026-09-26 America/Detroit — 新值模式 V6 S0 原值基线侧144局完成
+
+- detached tmux `v6-v1-base` 中的 `13e5151` B 路任务正常退出，日志 `artifacts/newtask-v6/v1/base.log` 记录：`RUN_PATH path=B identities=144 ok=144 failed=0 exit=0 elapsed_s=2994.404`、`RUN_DONE paths=1 identities=144 failed=0`、`EXIT_CODE=0`。输出目录 `artifacts/newtask-v6/v1/base/` 含144个 HDF5，总计约49 GB；所有产物都留在仓库忽略目录，不入 Git。完成后 `tmux has-session -t v6-v1-base` 返回非零，session 已结束。
+- 该结果只冻结了 V1 基线侧；V6 侧144局尚未运行，比较器尚未执行，不能据此称 `NATIVE_REGRESSION` 通过。最终逐局 SHA/规格对拍须待 MoveCube、VP、swap 和 V6 snapshot 集成及 S2 探针后执行。
