@@ -131,6 +131,13 @@ def cmd_run(args: argparse.Namespace) -> int:
         raise SystemExit(f"{out_dir} 已存在，禁止覆盖")
     out_dir.mkdir(parents=True)
     tasks = header["tasks"] if args.tasks == "all" else args.tasks.split(",")
+    # V6 的正式目标不随成功候选短缺而降低；V5 保留原有首选计数口径。
+    is_v6 = header.get("difficulty") in ("xhard1", "xhard2", "xhard3", "xhard4")
+    target_by_task = {
+        task: (len(header["select_indices"]) if is_v6 else
+               sum(1 for row in rows.values() if row["task"] == task and row["selected"]))
+        for task in tasks
+    }
     results: list[dict] = []
     round_index = 0
     if args.identities_from:
@@ -139,9 +146,9 @@ def cmd_run(args: argparse.Namespace) -> int:
         batch = [{**rows[(p["task"], p["episode"])], "_role": p["role"]} for p in previous if p["task"] in tasks]
         results = _run_batch(batch, header, out_dir, args, round_index)
     else:
-        need = {t: len([r for r in rows.values() if r["task"] == t and r["selected"]]) for t in tasks}
+        need = target_by_task
         batch = [{**r, "_role": "selected"} for (t, _), r in sorted(rows.items()) if t in tasks and r["selected"]]
-        results = _run_batch(batch, header, out_dir, args, round_index)
+        results = _run_batch(batch, header, out_dir, args, round_index) if batch or not is_v6 else []
         tried = {(r["task"], r["episode"]) for r in results}
         while True:
             ok_count = {t: sum(1 for r in results if r["task"] == t and r["ok"]) for t in tasks}
@@ -164,7 +171,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     per_env = {}
     for task in tasks:
         mine = [r for r in results if r["task"] == task]
-        target = len([r for r in rows.values() if r["task"] == task and r["selected"]])
+        target = target_by_task[task]
         ok = sum(r["ok"] for r in mine)
         per_env[task] = {"attempted": len(mine), "ok": ok,
                          "backfilled": sum(1 for r in mine if r["role"] == "backfill" and r["ok"]),

@@ -264,7 +264,11 @@ def build_report(drafts_path: str | Path, specs_path: str | Path | None, rollout
     for task in tasks:
         mine_d = [r for r in draft_rows if r["task"] == task]
         draft_ok = sum(1 for r in mine_d if r.get("reset_ok"))
-        if spec_rows:
+        if specs_header.get("difficulty", draft_header.get("difficulty")) in (
+                "xhard1", "xhard2", "xhard3", "xhard4"):
+            # V6 即使没有成功候选，也保留每格原定正式局目标与真实缺口。
+            target = len(select_indices)
+        elif spec_rows:
             target = sum(1 for r in spec_rows if r["task"] == task and r.get("selected"))
         else:
             target = sum(1 for idx in select_indices if idx < draft_ok)

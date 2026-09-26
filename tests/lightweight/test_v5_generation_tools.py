@@ -272,6 +272,52 @@ def test_report_na_when_fields_missing(tmp_path: Path) -> None:
     json.dumps(report, ensure_ascii=False)
 
 
+@pytest.mark.parametrize("difficulty,count,failed,expected_episodes,expected_shortfall", [
+    ("xhard1", 4, (), [0, 3, 1], 0),
+    ("xhard2", 4, (1, 2), [0, 3, 1, 2], 1),
+    ("xhard3", 2, (), [0, 1], 1),
+    ("xhard4", 0, (), [], 3),
+    ("xhard", 4, (), [0, 3], 0),
+])
+def test_short_candidates_keep_v6_target(tmp_path: Path, monkeypatch, difficulty, count,
+                                         failed, expected_episodes, expected_shortfall) -> None:
+    """候选不足时仍递补到三成功或耗尽；空格保留缺口，旧 V5 口径不变。"""
+    from scripts.parity import v4_rollout as R
+
+    task = "InsertPeg"
+    header = {"record": "header", "tasks": [task], "difficulty": difficulty,
+              "select_indices": [0, 3, 6], "identity_sha256": "测试身份"}
+    rows = {(task, ep): {"record": "spec", "task": task, "episode": ep,
+                         "selected": ep in (0, 3, 6), "spec": {}}
+            for ep in range(count)}
+    monkeypatch.setattr(R, "_load_all", lambda path: (header, rows))
+    executed = []
+
+    def fake_batch(batch, header, out_dir, args, round_index):
+        assert batch, "空候选格不得启动实跑子进程"
+        executed.extend(row["episode"] for row in batch)
+        return [{"task": task, "episode": row["episode"], "role": row["_role"],
+                 "ok": row["episode"] not in failed} for row in batch]
+
+    monkeypatch.setattr(R, "_run_batch", fake_batch)
+    args = argparse.Namespace(specs="不读取", output=str(tmp_path / "rollout"),
+                              label="run1", tasks="all", identities_from=None)
+    assert R.cmd_run(args) == 0
+    assert executed == expected_episodes
+    rollout = tmp_path / "rollout" / "run1"
+    summary = json.loads((rollout / "summary.json").read_text())
+    assert summary["per_env"][task]["selected_shortfall"] == expected_shortfall
+    drafts = _write_jsonl(tmp_path / "drafts.jsonl", [header, *[
+        {"record": "draft", "task": task, "episode": ep, "reset_ok": True, "spec": {}}
+        for ep in range(count)]])
+    specs = _write_jsonl(tmp_path / "specs.jsonl", [header, *rows.values()])
+    report = G.build_report(drafts, specs, rollout)
+    expected_target = 3 if difficulty != "xhard" else 2
+    assert report["per_env"][task]["selected_target"] == expected_target
+    assert report["per_env"][task]["selected_shortfall"] == expected_shortfall
+    assert report["totals"]["selected_shortfall"] == expected_shortfall
+
+
 def test_count_demo_frames_reads_real_h5(tmp_path: Path) -> None:
     h5py = pytest.importorskip("h5py")
     path = tmp_path / "x.h5"
