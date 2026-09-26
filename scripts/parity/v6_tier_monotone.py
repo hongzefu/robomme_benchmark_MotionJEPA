@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V6 档位单调性检查器（计划 NEWTASK_RELEASE_V6_PLAN.md 的 S2「单调性检查器」与验收判据 TIER_MONOTONE）。
+"""V6 档位单调性检查器（计划 NEWTASK_RELEASE_V6_PLAN.md 的 S1 与验收判据 TIER_MONOTONE）。
 
 难度序 ``easy < medium < hard < xhard1 < xhard2 < xhard3 < xhard4``。每个环境按计划第三节总表里
 用户指定（或实施方定）的难度维度取「每局取值的均值」，逐档比较：
@@ -20,12 +20,13 @@
 
 uv run --no-sync python -m scripts.parity.v6_tier_monotone       # 检查最终计划表
 uv run --no-sync python -m scripts.parity.v6_tier_monotone --json
-# 按 S1 运行规程，用 v4_specs draw 为每个新值档各自生成一份13环境 drafts.jsonl：
+# 按 S1 运行规程，前三档各抽13环境，xhard4 抽含 MoveCube/InsertPeg/StopCube 的16环境：
 uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v6-mono-xhard1 --tasks BinFill,PickXtimes,SwingXtimes,PickHighlight,VideoUnmask,ButtonUnmask,VideoUnmaskSwap,ButtonUnmaskSwap,VideoRepick,PatternLock,RouteStick,VideoPlaceButton,VideoPlaceOrder --difficulty xhard1 --seed-profile v6 --candidates-per-env 200 --max-reset-attempts 12000 --sampling-config scripts/configs/newtask-v6/sampling_config.json --out artifacts/newtask-v6/plan-probes/xhard1/drafts.jsonl
 uv run --no-sync python -m scripts.parity.v6_tier_monotone --reset-all --drafts <xhard1.jsonl> --drafts <xhard2.jsonl> --drafts <xhard3.jsonl> --drafts <xhard4.jsonl> --samples 200 --out artifacts/newtask-v6/vp-tier-monotone.json
 
-``--reset-all`` 消费四份 ``v4_specs draw`` 的真实 reset 规格，不启动仿真；每份须含13个梯度环境、
-每环境200条连续成功 episode。无 ``--reset-all`` 时只验静态计划表，结果标签为 ``TIER_PLAN_TABLE``，
+``--reset-all`` 消费四份 ``v4_specs draw`` 的真实 reset 规格，不启动仿真；xhard1～3 各须含13个梯度环境，
+xhard4 须含全部16环境。13个梯度环境的每档均需200条连续成功 episode，额外3环境只核验规格与尝试行。
+无 ``--reset-all`` 时只验静态计划表，结果标签为 ``TIER_PLAN_TABLE``，
 不得当作 ``TIER_MONOTONE`` 实测闸门。
 """
 

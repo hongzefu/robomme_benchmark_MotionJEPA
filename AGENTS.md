@@ -1917,3 +1917,8 @@
 - 旧 `xhard` 字面与新值族不一致导致8项新失败；只修订 `test_TaskGoal.py`、`test_v4_decision_guard.py`、`test_v5_xhard_obb_fix.py` 三份测试，覆盖四档文本、decision守卫及精确OBB。文本逐字断言与AST条件额外收紧：新值族或已知V5兼容分支可放行，任意 `or` 或 `not` 条件不得假通过；此时定向回归63 passed、2项S0已有失败、5.78秒。随后虚构 `corner_bias` 夹具改为现行 `min_center_dist_m`，完整受影响分片 `run-02c` 为2 failed/427 passed，`run-03b` 为642 passed。
 - 以 `FAILED/ERROR` 测试身份逐项集合比较：S0共58项（46 failed、12 errors），V6共38项（26 failed、12 errors）；`V6 − S0 = 0`，`S0 − V6 = 20`，已修复的20项全属 `test_episode_action_sampling.py`，异常未从分母中删去。用户最新原话「按无新增失败放行（建议）：将判据改为失败/错误集合是 S0 的子集，记明 20 项已修复。」据此将 `NEWTASK_RELEASE_V6_PLAN.md` 的判据改为 `LIGHTWEIGHT=PASS new_failures=0 new_errors=0 resolved=20`；计划原“失败集合完全相同”判据已废止。
 - 用户随后明确「s1收尾后停止 我要重新开始agent对话」。本轮只完成S1剩余 reset 单调闸门、冻结文件核验、报告与提交；S2仅保留已生成的55格/144局预备清单，S4仅保留单格smoke与只读runbook，新对话再决定正式实跑。本记录时xhard1抽签 `DRAW_DONE rows=3062 ok=2600`，xhard2 `DRAW_DONE rows=3071 ok=2600`，xhard3正在运行；尚未执行最终 `TIER_MONOTONE`。
+
+### 2026-09-26 America/Detroit — V6 S1 单调检查器帮助口径同步
+
+- `scripts/parity/v6_tier_monotone.py` 的帮助文字仍把单调检查器称为S2步骤，并声称四份draft各含13环境；实际S1采样前三档各13环境、xhard4为16环境，额外MoveCube/InsertPeg/StopCube只核验规格与reset尝试，不计入52个梯度格。仅更正文档字符串，检查算法和判定行不变。
+- `command -v uv`确认可用；`uv run --no-sync python -m pytest tests/lightweight/test_v6_tier_monotone.py -q` 为14 passed、0.06秒、退出0；`uv run --no-sync python -m scripts.parity.v6_tier_monotone --help` 展示修订后的S1/13+16口径，退出0；`git diff --check`退出0。`git diff --quiet 949b6eb HEAD -- src/robomme/robomme_env` 返回0，说明此前运行中的四档reset所用环境源码指纹不受此文字修订影响。
