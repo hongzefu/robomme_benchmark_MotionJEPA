@@ -2,7 +2,7 @@
 
 本文件的标记块 `common-greatlakes` 是 AgentMetaRules 正本 `greatlakes.md` 的逐字副本（占位 job 口径），块内禁止手改，同步见 `AGENTS.md` 第 25 条。本仓库自己的实测记录（`--gpu_cmode=shared`、逐位复现边界、配额撞线、生成耗时、教训清单）在 [`docs/greatlakes.md`](docs/greatlakes.md)：正本块是规则，实测记录是证据，两者冲突时按正本块执行并在账本里记差异。
 
-<!-- AGENTMETARULES:BEGIN common-greatlakes src=3d47f2fc1d90d2152aa3b8406f6a7b74e3410a61 blob=1c0fd4c3948fe6d6180dbb6c484f1ced489e94cd -->
+<!-- AGENTMETARULES:BEGIN common-greatlakes src=76c89caea121e167a7d55f69a85e9d3ffcb7893d blob=1c0fd4c3948fe6d6180dbb6c484f1ced489e94cd -->
 
 当端到端验证、数据生成或训练需要 GPU、本地 GPU 资源不足时，可以 ssh 到 UMich greatlakes 集群，
 通过 **48 h 占位 job** 拿到席位后把工作负载塞进去跑。**以后所有 greatlakes 提交都必须遵守本文件；违反任何
@@ -376,7 +376,7 @@ sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=
 ```
 进去跑：`srun --jobid=<hold> --overlap --exact --ntasks=1 --cpus-per-task=<n> --gpu_cmode=shared bash <运行器> <脚本与参数>`（运行器模板见 [`templates/run_in_hold.sh`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/main/templates/run_in_hold.sh)）。
 
-<!-- AGENTMETARULES:END common-greatlakes src=3d47f2fc1d90d2152aa3b8406f6a7b74e3410a61 blob=1c0fd4c3948fe6d6180dbb6c484f1ced489e94cd -->
+<!-- AGENTMETARULES:END common-greatlakes src=76c89caea121e167a7d55f69a85e9d3ffcb7893d blob=1c0fd4c3948fe6d6180dbb6c484f1ced489e94cd -->
 
 ## 项目专属
 

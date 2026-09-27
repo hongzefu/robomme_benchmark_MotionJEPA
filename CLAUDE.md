@@ -4,7 +4,7 @@
 
 @AGENTS.md
 
-<!-- AGENTMETARULES:BEGIN common-claude src=3d47f2fc1d90d2152aa3b8406f6a7b74e3410a61 blob=a75133db9f7995ad7e8068368ab31749bdcb7b7f -->
+<!-- AGENTMETARULES:BEGIN common-claude src=76c89caea121e167a7d55f69a85e9d3ffcb7893d blob=a75133db9f7995ad7e8068368ab31749bdcb7b7f -->
 
 ## 规则来源与优先级
 
@@ -70,11 +70,11 @@
 - 宿主明确指定的计划文件属于工具管理文件，不作为仓库数据或实验产物，不能借此把缓存、权重或日志写到 `<STORE_ROOT>` 之外；仅在宿主明确允许时写入。
 - plan mode 期间除该计划文件外一律只读：不改代码、不改配置、不 commit、不跑任何有副作用的命令。**在只读阶段把事实核实清楚**——仓库的坑（如 editable 指向、安装顺序、源码来源、已知缺陷）都是只读就能查清的，带着未经核实的假设进入实施阶段代价远高于多花几分钟查证。
 
-<!-- AGENTMETARULES:END common-claude src=3d47f2fc1d90d2152aa3b8406f6a7b74e3410a61 blob=a75133db9f7995ad7e8068368ab31749bdcb7b7f -->
+<!-- AGENTMETARULES:END common-claude src=76c89caea121e167a7d55f69a85e9d3ffcb7893d blob=a75133db9f7995ad7e8068368ab31749bdcb7b7f -->
 
 ## 项目专属补充
 
 - **Monitor 过滤词表补充**（标记块 Monitor 第 7 条）：生成 / 对拍作业的缺陷特征行 `NO RECORD`（录像器阶段跳过）、`reset 拒绝`、`svulkan2`、`EXCLUSIVE`、`RRT`；完成行 `全部完成`、`EXIT_CODE=`。
 - **Skill 调用**：本机 sled-vail 有集群访问，查 `chaijy2` 占用先调 `greatlakes-usage`；占位 job 规格、开工先占卡、跑完按清单 `scancel` 按 `greatlakes.md`。
-- **plan mode 只读核实清单**：`ls -1 scripts/*.py` 是否仍恰好五个入口；`git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py` 零 diff；冻结配置 `scripts/configs/newtask-v5/sampling_config.json` 的 SHA-256 与账本一致；`artifacts/` 不进 git；账本末尾最新一条日志的「下一步」。
+- **plan mode 只读核实清单**：`ls -1 scripts/*.py` 是否仍恰好五个入口；`git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py` 零 diff；冻结配置 `scripts/configs/newtask-v5/sampling_config.json` 的 SHA-256 与 `docs/validation/` 留档一致；`artifacts/` 不进 git；最近一次 commit body 的「下一步」。
 - Agent 工具子代理与 Workflow 的用法以标记块为准（子代理一次性、默认只读；Workflow 逐次审批），本仓库无额外约定。
