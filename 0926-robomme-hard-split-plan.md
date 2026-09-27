@@ -36,6 +36,7 @@
 - **唯一的代码依赖**：`scripts/parity/v4_specs.py` 从 `scripts/injection/candidates/io.py` 只 import `canonical_json`、`digest` 两个纯函数（标准库实现）。删 injection 包前先把这两个函数内联进 `v4_specs.py`；阶段 2 下沉 `hard_specs.py` 时再归位。
 - **判据**：`git rm` 只按勾选清单逐路径执行、不用 glob；删后 `uv run --no-sync python -m pytest --collect-only -q tests/lightweight tests/dataset` 收集错误 0；`grep -rn "scripts.injection\|tests._shared.parity\|tests._shared.frozen_injection" scripts tests --include=*.py` 零命中；`ls -1 scripts/*.py` 仍为 P1 清单（若用户裁决删 `generate_dataset_newseed.py` 则 P1 改为四入口并同步 `AGENTS.md`）。判定行 `LEGACY_CLEANUP=PASS removed_tracked=<n> collect_errors=0 injection_refs=0`。
 - **红线**：`artifacts/` 下的删除逐目录显式列名（正本第 14 条，2026-09-12 跨运行 glob 事故）；附录 B 的 D 组（他人在途）一律不动。
+- **用户裁决（2026-09-27 原话）**：「B 历史留档，git 可追溯，由用户定（删了不影响拆包）／历史教训小文件留档 进入 …/docs／其他的全部进入删除 只保留git历史／写入计划」。落地口径见附录 B「B 组裁决」：B 组不再是待定项，**A 组 + B 组一并删除**，删前只把「历史教训小文件」按附录 B 的搬迁规则复制进 `docs/`；`generate_dataset_newseed.py` 随之删除，P1 改为四入口（`AGENTS.md` P1、`CLAUDE.md` 核实清单同步改）。判定行追加 `LEGACY_ARCHIVE=PASS copied=<n> bytes=<b> max_file_bytes<=1048576`。
 
 ## 一、env make 的接口：外层多传什么、内部多传什么
 
@@ -529,7 +530,20 @@ V1′ 为什么能逐位：`robomme_hard` 的原三档路径与现 `src/robomme`
 | `INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` | 2 文件 | 只被 `AGENTS.md` 历史账本与 v2 留档引用（账本条目不改，死链可接受） |
 | `artifacts/injection/**`（320 跟踪文件、121 MB）、`artifacts/test-tmp/`（940 MB，514 个测试临时目录）、`artifacts/cache/`（144 MB uv 缓存）、`artifacts/codex-multiagent/`（5.6 MB）、`artifacts/logs/`（236 KB） | — | 与 A 组同源／临时／缓存；`artifacts/injection` 是唯一有 git 跟踪的 `artifacts` 子树，删时 `git rm -r --cached` 一并处理 |
 
-### B　历史留档，git 可追溯，由用户定（删了不影响拆包）
+### B　历史留档，git 可追溯（**已裁决：全部删除，只留 git 历史；小文件先搬进 `docs/`**）
+
+**B 组裁决（用户 2026-09-27 原话「历史教训小文件留档 进入 …/docs 其他的全部进入删除 只保留git历史」）落地规则：**
+
+1. **什么算「历史教训小文件」**：B 组各目录下满足全部三条的文件——①扩展名为 `.md` / `.json` / `.jsonl` / `.txt` / `.log` / `.sh` / `.py`（不含 `.h5` / `.mp4` / `.png` / `.jpg` / `.npy`）；②单文件 ≤ 1 MiB；③属于下列之一：判定行来源（`summary.json`、`report.json`、`*delivery*.json`、`verify*.json`、`outcome.json`、`final_verification.json`）、用户授权记录（`approval.json`）、事故记录（`incident/`）、运行脚本与清洗后日志（`run*.sh`、`*.summary.log`、`run.log` ≤ 1 MiB）、审查汇总（`审查汇总.md`、`verify/*.json`）。不满足即删。
+2. **搬到哪**：`docs/validation/<对应版本>/records/legacy/<原二级目录名>/…`（保留原相对路径；版本对应：`artifacts/newtask-v4` → `newtask-v4`，`newtask-v5` → `newtask-v5`，`newtask-v6/*` 与 `artifacts/audit/*` → `newtask-v6`）。搬完写一份 `docs/validation/<版本>/records/legacy/MANIFEST.md`：原路径、新路径、字节数、sha256，判定行 `LEGACY_ARCHIVE=PASS copied=<n> bytes=<b> max_file_bytes<=1048576`。
+3. **根目录三份旧计划** `0921/0922/0924-newtask-release-v{3,4,5}-plan.md`：属「历史教训」，`git mv` 到 `docs/plans/`（不删），代码 docstring 与测试注释里的链接改成新路径（`grep -rl "092[124]-newtask-release" scripts tests docs`，只改路径串）。
+4. **`docs/validation/newtask-v{3,4,5}/`**：已在 `docs/`，原样保留。
+5. **`scripts/generate_dataset_newseed.py`** 与只依赖它的 `tests/lightweight/{test_swap_schedule_generic,test_binfill_demo_duplicate}.py`：删除；`test_h5_parity_compare`、`test_native_restore_step2` 实施时看测试对象是否仍存在，不存在即删。P1 改为四入口 `dataset_replay.py`、`evaluation.py`、`run_example.py`、`seed_layout.py`（`AGENTS.md` P1 与 `CLAUDE.md`「plan mode 只读核实清单」的 `ls -1 scripts/*.py` 计数同步改 4；D-1 放行后再加 `evaluation_hard.py` 为第五入口）。
+6. **`artifacts/` 的 B 组目录**：按规则 1 抽出小文件后整目录删除（`artifacts/newtask-v4`、`artifacts/newtask-v5`、`artifacts/audit`、`artifacts/newtask-v6/{v6-01,v6-01-infra-recovery-01,v6-s2-20260926-01,v6-s3-20260926-01,gl-smoke-61890467-binf-xhard1-20260926T195419Z,s3-slow-investigation,s0,s1-reset,s2-prep,s4-prep,s4-launch,plan-probes,vpb-order-fix-prep,site,site-v2,site-review,site-v3,site-v4,site-v5,site-v6,site-v7,site-v8,site-v9,site-v10}`），逐目录显式列名，不用 glob；删前 `du -sh` 留数，删后 `df` 留数。C 组的 `artifacts/newtask-v6/{v1,v6-02,s4-relaunch-02,audit-fix-02,site-v11,site-v12}` 与 `artifacts/train-parity/local-smoke-01` 不在此列。
+7. **顺序**：先 A 组代码/测试（含 `canonical_json`/`digest` 内联）→ 搬小文件并写 MANIFEST → 三份旧计划 `git mv` 与链接改写 → 删 `generate_dataset_newseed.py` 并改 P1 → 一个 commit；`artifacts/` 大目录删除放同一阶段最后一步、单独一个 commit body 记录 `du`/`df`。
+
+下表保留为盘点原文（「说明」列的「建议留」「由用户定」已被上述裁决覆盖）：
+
 
 | 路径 | 规模 | 说明 |
 |---|---|---|
