@@ -34,7 +34,7 @@ V6：档位改为 CLI 参数 ``--difficulty``，seed 规则按
 冻结/校验/实跑/推理一律按 header 取，不再与模块常量比：
 
     uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v6-01 --difficulty xhard2 --seed-profile v6 \
-        --sampling-config scripts/configs/newtask-v6/sampling_config.json --out artifacts/newtask-v6/v6-01/xhard2/draft/drafts.jsonl
+        --sampling-config scripts/configs/newtask-v6/sampling_config.json --out artifacts/newtask-v6/v6-02/xhard2/draft/drafts.jsonl
 
 ``--workers N``（默认 1，行为与改动前逐字相同）按环境把抽签分给 N 个 spawn 子进程，各进程独立起 gym 环境；
 每个环境的 (episode, attempt, seed) 序列只由 ``SEED_RULE`` 决定、与 worker 数无关，合并时按 header 的任务序、
@@ -62,8 +62,18 @@ for extra in (REPO_ROOT / "scripts", REPO_ROOT):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-from scripts.injection.candidates.io import canonical_json, digest  # noqa: E402  甲的纯函数，只读复用
 from seed_layout import ALL_TASKS, SeedLayout, env_code  # noqa: E402
+
+
+def canonical_json(value: Any) -> str:
+    """规范化 JSON 串（原 `scripts/injection/candidates/io.py` 同名函数，阶段 0b 逐字内联）。"""
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def digest(value: Any) -> str:
+    """规范化 JSON 的 sha256（原 `scripts/injection/candidates/io.py` 同名函数，阶段 0b 逐字内联）。"""
+    return hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
+
 
 DEFAULT_SAMPLING = REPO_ROOT / "scripts" / "configs" / "newtask-v4" / "sampling_config.json"
 SOURCE_ROOT = REPO_ROOT / "src" / "robomme" / "robomme_env"

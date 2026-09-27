@@ -27,7 +27,7 @@ for extra in (REPO_ROOT, REPO_ROOT / "scripts"):
         sys.path.insert(0, str(extra))
 
 from scripts.parity import v4_specs as V  # noqa: E402
-from scripts.injection.candidates.io import canonical_json  # noqa: E402
+from scripts.parity.v4_specs import canonical_json  # noqa: E402
 
 TASKS = ["PatternLock", "RouteStick"]
 

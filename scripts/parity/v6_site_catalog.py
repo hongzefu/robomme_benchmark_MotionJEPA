@@ -616,7 +616,7 @@ def build_catalog(delivery, baseline, plan):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--delivery", type=Path, default=ARTIFACTS / "newtask-v6/s4-launch/verification/merged-provisional-delivery.json")
+    parser.add_argument("--delivery", type=Path, default=ARTIFACTS / "newtask-v6/s4-relaunch-02/verification/final-delivery.json")
     parser.add_argument("--baseline", type=Path, default=ARTIFACTS / "newtask-v6/v1/base/results/B.json")
     parser.add_argument("--plan", type=Path, default=ROOT / "0925-newtask-release-v6-plan.md")
     parser.add_argument("--out", type=Path, default=ARTIFACTS / "newtask-v6/site")
