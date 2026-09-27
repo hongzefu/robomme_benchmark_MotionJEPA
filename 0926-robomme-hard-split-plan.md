@@ -50,6 +50,27 @@ env_builder = BenchmarkEnvBuilder(
 
 **外层不多传任何新参数。** 后面用到的 `get_task_list()`、`get_episode_num()`、`make_env_for_episode(episode)` 三个方法签名与返回类型也不变。新增的只有一个类方法 `get_difficulty_list()`，`evaluation_hard.py` 用它做外层循环；三个无梯度任务（MoveCube / InsertPeg / StopCube）在 xhard1～3 下 `get_episode_num()` 返回 0，循环体自然跳过。
 
+### 1.1.1 最小用法：只改 `dataset` 一个字符串，其余逐字不动（用户 2026-09-27 确认口径）
+
+用户原话：「`dataset="test"` 能否只改这里 改为 xhard1 xhard2 xhard3 xhard4 其他都正常？」答：可以。把 `scripts/evaluation.py` 原样复制，只做两处：
+
+```python
+from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder   # ① import 指向新包（旧包不认 xhard，会 ValueError）
+...
+        dataset="xhard3",          # ② 唯一要改的取值；换 xhard1/2/4 各跑一次即四档
+```
+
+循环体、`get_task_list()`、`get_episode_num()`、`make_env_for_episode(episode)`、`reset()`/`step()`、`max_steps=1300`、视频落盘、成功率计算全部原样。各处在 xhard 档下的行为：
+
+| 位置 | 行为 |
+|---|---|
+| `TASKS = get_task_list()` | 仍 16 任务固定序 |
+| `get_episode_num()` | 13 个有梯度任务返回 3；MoveCube / InsertPeg / StopCube 在 xhard1～3 返回 0（`range(0)` 自然跳过，不需加 `if`），xhard4 返回 3 |
+| `make_env_for_episode(0/1/2)` | 起该档三条正式规格；候选序号 0/3/6 在 builder 内重编为 0..2 |
+| `info["task_goal"]`、`info["status"]`、`obs` 形状 | 与原三档相同 |
+
+因此 `for tier in get_difficulty_list()` 那层外循环只是为了一次跑完四档，**不是必需**；H4「改一行 import 就能用」在这条最小用法下成立。唯一副作用：四档同任务同 episode 的视频文件名相同，分四次跑要各自换输出目录或在文件名里加档名。
+
 ### 1.2 内部：builder 按 `dataset` 取值分两条路，拼给 `gym.make` 的 kwargs 多三项
 
 `make_env_for_episode(episode)` 内部最终调 `gym.make(self.env_id, **env_kwargs)`。两条路的 `env_kwargs`：
@@ -289,7 +310,8 @@ uv run --no-sync python -c "from robomme_hard.env_record_wrapper import Benchmar
 4. **四档规格随包分发**：`scripts/configs/newtask-v6/v6-01/<tier>/specs.jsonl`（实测 256 K / 276 K / 296 K / 360 K）复制为包数据 `src/robomme_hard/env_metadata/<tier>/specs.jsonl`，`load_specs` 的封套校验从 `scripts/parity/v4_specs.py` 下沉到 `src/robomme_hard/env_record_wrapper/hard_specs.py`（src 不反向依赖 scripts 的红线不变）（§五）。
 5. **原三档在 `robomme_hard` 下必须与 `robomme` 逐位相同（H1）**：验收不是新跑对拍，而是把 S3 正在跑的 V1 对拍换成「`robomme_hard` 侧 vs S0 基线」重跑 144 局（§六 V1′）；**在 S3 出结果前不动 `src/robomme/`**（S3 启动锚点 `c8c06ab` 读的是主仓活树）。
 6. **V6 计划里的「冻结」项全部自然落位**：录像器在 `robomme` 回 2000 步（上游原样），在 `robomme_hard` 保持 5000；`scripts/evaluation.py` / `run_example.py` / `dataset_replay.py` 继续与上游逐字节相同；`scripts/` 顶层从五入口变六入口需用户按 P1 放行（§四 D-1）。
-7. **不在本方案内**：hard 演示数据（165 局）的 HF 发布、`dataset_replay.py` 的 hard 版本、网站；V6 计划 S3/S5 照旧按 `0925-newtask-release-v6-plan.md` 收尾。
+7. **最小用法（2026-09-27 用户确认）**：复制 `evaluation.py`，只改 import 行与 `dataset` 取值，其余逐字不动即可跑单档（第一部分 §1.1.1）。
+8. **不在本方案内**：hard 演示数据（165 局）的 HF 发布、`dataset_replay.py` 的 hard 版本、网站；V6 计划 S3/S5 照旧按 `0925-newtask-release-v6-plan.md` 收尾。
 
 ### 三、现在的整个逻辑链条（回答「逻辑链条是什么」）
 
