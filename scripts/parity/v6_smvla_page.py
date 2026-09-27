@@ -47,7 +47,7 @@ def _cell(c):
     n = sum(c.values())
     s = c["success"]
     rate = s / n if n else 0.0
-    alpha = 0.08 + 0.72 * rate
+    alpha = 0.06 + 0.5 * rate
     extra = f' · {c["error"]} error' if c["error"] else ""
     title = f'success {s} · fail {c["fail"]} · timeout {c["timeout"]}{extra}'
     return (f'<td style="--a:{alpha:.2f}" title="{title}"><span class="frac">{s}/{n}</span>'
@@ -85,15 +85,10 @@ def build(records: Path) -> str:
     errors = sum(1 for d in (base, more) for t in TIERS for r in d[t].values() if r["status"] not in NORMAL)
     steps = " / ".join(f"{t} {BASE_STEPS[t]}" for t in TIERS)
     longsteps = " / ".join(f"{t} {LONG_STEPS[t]}" for t in TIERS)
-    blocks = [
+    blocks = [  # 只展示本体（用户 2026-09-27：「只要本体：每格 20 条」）
         _table(base_c, TIERS, "本体：每格 20 条",
                f"55 格共 1100 条，每条均有生成侧 h5；步数上限 {steps}；未解决 error {errors} 条。"
                "单元格为 成功/总数 与成功率，悬停可看 fail / timeout 分布。"),
-        _table(merged, TIERS, "低成功率格：本体 + 新 seed 补测合并（40 条）",
-               "本体成功率 ≤20% 的格子另评 20 条新 seed（与本体 seed 无重叠），与本体 20 条合并。"),
-        _table(more_c, TIERS, "低成功率格：仅新 seed 补测（20 条）"),
-        _table(long_base, TIERS, "加长步数重测前（本体，对照）", f"本体 timeout ≥5/20 的格子。"),
-        _table(long_c, TIERS, "加长步数重测：同 20 条，步数上限翻倍", f"步数上限 {longsteps}。"),
     ]
     return PAGE.replace("__BLOCKS__", "\n".join(blocks))
 
@@ -123,7 +118,7 @@ th{font-size:12px;font-weight:550;text-align:left;color:var(--muted);padding:6px
 thead th{text-align:center}
 td{text-align:center;border-radius:9px;padding:8px 6px;background:color-mix(in srgb,var(--green) calc(var(--a,0)*100%),transparent);border:1px solid var(--line);font-variant-numeric:tabular-nums;min-width:92px}
 td .frac{display:block;font-size:14px;font-weight:600}
-td .rate{display:block;font-size:11px;color:var(--muted)}
+td .rate{display:block;font-size:11px;color:var(--ink);opacity:.75}
 td.na{background:transparent;color:var(--muted);border-style:dashed}
 tr.sum th{color:var(--ink)}
 td.total{outline:2px solid var(--green);outline-offset:-2px}
