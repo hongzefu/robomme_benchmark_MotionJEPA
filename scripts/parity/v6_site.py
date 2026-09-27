@@ -137,6 +137,13 @@ class MediaHandler(BaseHTTPRequestHandler):
                 if not head:
                     self.wfile.write(payload)
                 return
+            if path == '/smvla':
+                # SimpleMemVLA 成功率静态页（scripts/parity/v6_smvla_page.py 生成）
+                payload = files.html_path.with_name('v6_smvla.html').read_bytes()
+                self._headers(200, 'text/html; charset=utf-8', len(payload), Cache_Control='no-cache')
+                if not head:
+                    self.wfile.write(payload)
+                return
             if path == '/api/catalog':
                 payload = files.catalog_path.read_bytes()
                 self._headers(200, 'application/json; charset=utf-8', len(payload), Cache_Control='no-cache')
