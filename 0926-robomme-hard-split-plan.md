@@ -49,6 +49,17 @@
 
 红线：`artifacts/` 删除逐目录显式列名（正本第 14 条）；D 组（他人在途）不读不删；步骤 4、5 未 PASS 不得进入 6、8。
 
+#### 0.3.1 阶段 0b 实施结果（2026-09-27，追加，不改上表）
+
+| 步骤 | commit | 判定行 / 实测 |
+|---|---|---|
+| 1～3 | 12.200 | `grep scripts.injection` 仅剩待删文件；站点测试 16 passed；`tests/lightweight/test_hard_parity.py` 9 passed（含 dry-run 与 S3 两条 run 命令逐字相同） |
+| 4～5 | 12.201 | `LEGACY_KEEP=PASS referenced=1168 resolved=974 missing=0 absent_before=194 files=3409 large=0 bytes=64469896`；`LEGACY_ARCHIVE=PASS copied=3409 bytes=64469896 sha_mismatch=0`；显式项 `audit/*/records/**`、`v6-01/**/final-delivery.json` 从未存在，记 `OPTIONAL_ABSENT` |
+| 6～7 | 12.202 | `ls -1 scripts/*.py` = 4；collect-only 1329 条、错误 0；四片 8/5/127/47 s，4 failed 均属 S0 基线、0 errors，基线 `artifacts/newtask-v6/hard-split/lightweight-baseline-0b.txt` |
+| 8 | 12.203 | 31 目录 `RM_OK`、两审查 worktree `git worktree remove`；表 C 七个保留目录全在；`/data` 可用 536G → 833G（94%） |
+
+与上表不同之处：`docs/validation/newtask-v2/` 保留（依步骤 5「原地保留」）；`INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` 移入 `docs/plans/` 而非删除；另删两份孤儿测试 `test_parallel_calibration.py`、`test_episode_action_sampling.py`。
+
 ## 一、env make 的接口：外层多传什么、内部多传什么
 
 分两层看：外层是 `scripts/evaluation.py` 里用户写的那个 `BenchmarkEnvBuilder(...)` 调用；内部是 builder 在 `make_env_for_episode` 里拼给 `gym.make` 的 kwargs。
