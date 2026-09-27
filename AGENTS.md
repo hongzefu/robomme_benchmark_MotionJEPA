@@ -535,7 +535,8 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| VPB/VPO网站原子子目标（2026-09-26） | 已上线site-v9并验证 | 30样例544真实子目标与HDF5边界一致，420图像坐标、30对同名静止保留；30样例列表切换及播放PASS，页面错误0；213原视频不变 | 保留网站与原数据；仅显示演示／执行原子子目标，不再使用按档概括 |
+| VPB/VPO网站人读子目标标签（2026-09-26） | 已上线site-v10并验证 | 30样例标签由位置链反推：方块数、放台次数与源码档定值一致，正确方块颜色与题目30/30相符；题意≠程序答案恰为已披露xhard3 ep3/6；30样例问句、标签、标记及播放PASS，页面错误0；213媒体与预览不变 | 保留网站与原数据；再改文案只改`label_flow`文案层并重建新目录 |
+| VPB/VPO网站原子子目标（2026-09-26） | 已被site-v10替代 | 30样例544真实子目标与HDF5边界一致，420图像坐标、30对同名静止保留；30样例列表切换及播放PASS，页面错误0；213原视频不变 | 保留网站与原数据；仅显示演示／执行原子子目标，不再使用按档概括 |
 | V6 S2～S5正式续行（2026-09-26） | 当前授权执行收尾；原验收通过，已知新档问题保留 | S3真实144身份SHA相同144、字段差异0、双方75404步且终态成功，退出0；S4为550候选、55格165程序成功，520梯度值PASS；网站213媒体全测及两任务10卡流程检查通过；[最终报告](docs/validation/newtask-v6/20260926-final.md) | 最终清单accepted仅原V1及来源文件门，KNOWN_ISSUES披露VPB/xhard3/ep3、6；用户仅网站注明、不修数据，补跑0。四GL席与网站保留，无剩余已授权生成 |
 | V6第5.3节完整范围与仅文档边界（2026-09-26） | 计划已写回，生成未启动 | S2恢复144次固定探针，S3保留16×3×3＝144局；S4为13×4×10＋3×1×10＝550候选、13×4×3＋3×1×3＝165成功轨迹目标，复用520候选查取值；额外200 reset仍取消 | 用户最新要求「不要直接做 写回md」；后续收到开始指令再按完整清单执行，已同意范围不分阶段重问 |
 | reset／轨迹生成数量阈值与一次性授权（2026-09-26） | 文档修订完成 | 项目规则 P3 明确单 worker 超过10、多 worker 合计超过50须事先授权，失败重试和递补计入预算；全部已知阶段一次汇总审批，已有授权不重复询问；正本标记块保持不变 | 后续运行沿用完整授权清单；本轮未启动生成 |
@@ -2418,6 +2419,16 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 保留边界：S2的25失败、额外200 reset取消、分布未指定、底层reset未观测、MoveCube实际方法覆盖未证均保留。VPB拟议修复与9补跑因用户决定未执行，实际追加诊断仅先前获准GPU1单身份1次。当前无剩余已批准生成。
 - 资源：收尾时只读squeue核实61890467、61890468、62018665运行，62018666仍因Resources排队，均48h占位；按用户要求全部保留，没有scancel。网站`http://141.212.115.116:8060/`及唯一会话`v6-gradient-site-8060`保留。按用户“等S3收尾后再落文档commit一次”提交并立即推送本次最终记录。
 - 同步边界复核：本轮监控教训正本锚点`38c6732`的三文件同步检查仍为PASS。收尾时另一个并行任务已在正本新增`8077db0`（HF归档规则），故对最新HEAD检查会提示第15条漂移；该并行新规则不属于本轮监控教训改动，未捎带回流。项目`src=`保持实际同步的38c6732，不冒称同步到8077db0。
+
+### 2026-09-26 America/Detroit — 网站VPB/VPO子目标改为人读标签
+
+- 状态：完成。
+- 用户原话：「videoplacebutton/order的subgoal 改为注明是正确方块 button前/后/第几次放置这样的 适合人阅读的标签 记住的」「我说的是网页的表述」。确认口径：方块身份＋按钮前／后＋第几次放置＋台代号；网页去掉图像坐标；上方写中文题目问句并标「◀ 题目所问」。
+- 执行：HDF5无方块id，`scripts/parity/v6_site_catalog.py`新增`parse_goal`／`read_boundaries`／`label_flow`，用位置链（16像素就近归属，缺坐标用`choice_action.point`，`timestep_0`原点取色）反推方块身份与台代号；档方块数与放台次数取源码定值作校验；题意所问与源码程序答案分别计算，集合须等于已披露xhard3 ep3/6。`v6_site.html`渲染问句、角色配色与标记；已知问题框举例改用同一套台代号。新目录`artifacts/newtask-v6/site-v10/`（预览从v9复制），精确重启`v6-gradient-site-8060`。
+- 结果与证据：`KNOWN_ISSUE_MATCH=PASS mismatched=xhard3:3,xhard3:6`、`FLOW_LABELS=PASS samples=30 cubes=48 asked=30`、`SITE_CATALOG=PASS tasks=16 cards=71 videos=213`、`MEDIA_UNCHANGED=PASS ids=213 posters=213 poster_diff=0`、`ATOMIC_SUBGOAL_BROWSER=PASS samples=30 lists_exact=30 asked=30 playback=30 errors=0 other_tasks=14 mobile_overflow=False`；`tests/lightweight/test_v6_site_labels.py` 7 passed。记录入`docs/validation/newtask-v6/records/site-v10-subgoal-audit.json`、`site-v10-atomic-browser-result.json`。
+- 差异或阻塞：首版探针阈值8像素造出幻影方块（台中心与方块中心偏差9–12像素）、hard档「放到桌面」无坐标被当成新方块，改为阈值16＋按档方块数＋位置未知兜底后30/30通过；执行阶段坐标因台交换不与演示比对。未改`src/robomme`、未重跑轨迹。
+- 修改文件：`scripts/parity/v6_site_catalog.py`、`scripts/parity/v6_site.html`、`tests/lightweight/test_v6_site_labels.py`（新增）、`docs/validation/newtask-v6/20260926-site.md`、`docs/validation/newtask-v6/records/site-v10-*.json`（新增）、`scripts/README.md`、本账本。
+- 下一步：网站表述再有调整只改`label_flow`文案层并生成新目录，不动数据。
 
 ### 2026-09-26 America/Detroit — 网站改为逐样例真实子目标列表
 

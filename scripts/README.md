@@ -1042,7 +1042,7 @@ UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python -m scripts.parity.v6_cand
 
 ### 6.4 难度梯度与视频网站
 
-**现行版本为`artifacts/newtask-v6/site-v9/`。** VPB／VPO的30个样例按各自真实HDF5边界展示544项原子子目标，只列“演示子目标／执行子目标”，切换样例同步切换列表；不再显示高层记忆、阶段概括或完成总结。连续同名静止保留，420处定位注明图像坐标。30样例逐项列表及播放的Playwright检查通过，页面错误0，移动截图核验通过。VPB顶部已知问题框保留；用户只要求网站注明，不改环境源码或数据、不补跑。213媒体与预览保持不变，下面全213播放结论属于v4的相同媒体。
+**现行版本为`artifacts/newtask-v6/site-v10/`。** VPB／VPO的30个样例按各自真实HDF5边界展示原子子目标，标签为人读表述（正确／干扰方块及颜色、台代号、按钮前／后第几次放置），列表上方给出中文题目问句并标出「题目所问」的那一步；方块身份由`v6_site_catalog.py::label_flow`按位置链从坐标反推并以源码档定值与题目颜色校验。只列“演示子目标／执行子目标”，切换样例同步切换列表；网页不再显示图像坐标（保留在审计JSON），连续同名静止保留。30样例逐项列表及播放的Playwright检查通过，页面错误0，移动截图核验通过。VPB顶部已知问题框保留；用户只要求网站注明，不改环境源码或数据、不补跑。213媒体与预览保持不变，下面全213播放结论属于v4的相同媒体。
 
 **v4历史验证：`artifacts/newtask-v6/site-v4/`包含16任务、71卡片、213个主视频，API确认每卡3个样例；213条真实界面逐视频测试全部通过，失败0、过短0、页面错误0。** 用户报告SwingXtimes/xhard4示例7的片段2／2无法观看，Playwright复现该尾片只有1帧、0.033333秒，播放约50毫秒即结束。原251文件中38个`NO_OBJECT`尾片只有1～4帧，现仅从展示目录排除，原数据保留。
 
@@ -1050,12 +1050,12 @@ UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python -m scripts.parity.v6_cand
 
 网站地址：[V6难度梯度与视频](http://141.212.115.116:8060/)。按用户要求逐任务、逐难度单独介绍梯度并提供视频，不合并成一张表。历史v3为16任务、71张卡片、251个视频文件；来源为165条新值程序成功轨迹与48条原hard轨迹，部分轨迹含多个视频文件。现行213主视频剔除了展示中的38个状态尾片。S3已由独立真实对拍证明通过，网站只展示视频与难度，不替代该证明；VPB题意问题按用户决定明确保留。
 
-目录生成入口为 `uv run --no-sync python -m scripts.parity.v6_site_catalog`，默认输出初版`artifacts/newtask-v6/site/`；当前服务明确使用`artifacts/newtask-v6/site-v9/`，不能误用默认目录替代。生成器拒绝覆盖已有目录文件，不为重建网站重跑任何轨迹。服务运行在唯一tmux会话`v6-gradient-site-8060`，实际入口为：
+目录生成入口为 `uv run --no-sync python -m scripts.parity.v6_site_catalog`，默认输出初版`artifacts/newtask-v6/site/`；当前服务明确使用`artifacts/newtask-v6/site-v10/`，不能误用默认目录替代。生成器拒绝覆盖已有目录文件，不为重建网站重跑任何轨迹。服务运行在唯一tmux会话`v6-gradient-site-8060`，实际入口为：
 
 ```bash
 UV_CACHE_DIR="$PWD/artifacts/cache/uv" PYTHONUNBUFFERED=1 uv run --no-sync python \
   -m scripts.parity.v6_site --host 0.0.0.0 --port 8060 \
-  --site-dir artifacts/newtask-v6/site-v9
+  --site-dir artifacts/newtask-v6/site-v10
 ```
 
 当前服务已启动，不重复占用8060端口；保留网站会话和产物，不自动清理。浏览器已验证16任务播放、拖动进度与样例切换，搜索、移动导航和无表格布局通过，JavaScript错误0。截图、首帧预览与验证边界见[网站报告](../docs/validation/newtask-v6/20260926-site.md)。
