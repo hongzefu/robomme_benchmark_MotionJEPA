@@ -1,15 +1,41 @@
 # 0926 方案：`src/robomme_hard/` 独立包 + `scripts/evaluation_hard.py` 接口重构（只规划不实施）
 
 > **权威性**：本文件是「把 V6 新难度链路拆成独立包 `robomme_hard`、原包 `robomme` 回到上游原样」的实施方案；只规划，不实施，每一阶段须用户单独批准后才动手。**本方案与 P1（`scripts/` 顶层五入口冻结）、P2（`src/robomme/` 逐个批准）直接相关，第一部分「待用户裁决」一节列出的四项没有裁决前不得开工。**
-> **代码锚点**：本仓库 `newtaskRelease-v5` @ `716f992`（12.174；工作区另有 S3 相关在途改动，不属本方案）；V5 原始锚点 `da77662`；V1 基线 `13e5151`；上游 `RoboMME/robomme_benchmark` `main` @ `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`（2026-09-26 `git ls-remote` 实测）。
+> **代码锚点**：本仓库 `newtaskRelease-v5` @ `bcd7d08`（12.194；2026-09-27 更新，原初稿锚点 `716f992`／12.174；工作区在途改动见红线 R7）；生产源码含审查修复 `ca32e9b`（12.188）；V5 原始锚点 `da77662`；V1 基线 `13e5151`；上游 `RoboMME/robomme_benchmark` `main` @ `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`（2026-09-26 `git ls-remote` 实测）。
 > **工作副本**：`/data/hongzefu/robomme_benchmark_MotionJEPANewTask`（环境 A，sled-vail）。上游只读快照在会话 scratchpad `upstream/`（浅克隆，用后即弃，实施时按第二部分 §2.1 重新取）。
-> **commit 体例**：`<大>.<小>[.<修订>] <中文描述>`，接 12.174。
+> **commit 体例**：`<大>.<小>[.<修订>] <中文描述>`，接 12.195。
+> **前置状态（2026-09-27）**：`0925-newtask-release-v6-plan.md`（S0～S5）与 `0926-v6-audit-fix-plan.md`（8.4 四步）均已完成，本方案进入可实施状态；细节见第一部分 §〇。
 > **依赖锚点**：`uv.lock` / `pyproject.toml` 现状不变；本方案唯一的依赖侧改动是 `[tool.hatch.build.targets.wheel].packages` 增加 `src/robomme_hard`。
 > **对话来源**：用户 2026-09-26 转贴的与合作者的对话（逐字保留在第一部分 §一），本方案是对该对话「能否实现、怎么实现」的回答。
 
 # 第一部分（给人看）
 
 > 2026-09-27 修订：按用户要求，第一部分只讲三件事——①env make 的接口；②`src/robomme` → `src/robomme_hard` 的文件级清单（哪些原样继承、哪些要加东西）；③三个脚本阶段（生成 json、生成规格与轨迹、评估）各自怎么把参数传进 env make。原第一部分的对话原话、逻辑链条、裁决项、验收表全部移到第二部分附录 A，内容不变。文件级事实以 2026-09-27 `git fetch` 上游 `main` 后 `git diff --name-status FETCH_HEAD HEAD -- src/robomme` 实测为准（FETCH_HEAD = `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`，本地 HEAD = `57fe972`）。
+
+## 〇、前提状态更新（2026-09-27）：两份前置计划已完成，本方案可以开工
+
+### 0.1 完成证据（判定行原文）
+
+| 前置计划 | 状态 | 判定行 / 证据 |
+|---|---|---|
+| `0925-newtask-release-v6-plan.md` §5.3 S0～S5 | 全部完成 | S3 原三档 144 局：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`（跑在 `c8c06ab`，**审查修复之前**）；S4 55 格 165 成功局；[最终报告](docs/validation/newtask-v6/20260926-final.md) |
+| `0926-v6-audit-fix-plan.md` 8.4 四步 | 全部完成 | 14 项 `src/robomme` 改动落地于 `ca32e9b`（12.188）；G1 `RESET_PARITY_NATIVE=PASS resets=48 sha_mismatch=0`；G2 `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0 declared_deltas=6`；165 局按新代码重生成为 `v6-02`，`S4_DELIVERY=PASS cells=55 successes=165 shortfall=0`，第二节语义判定行全 PASS；网站 site-v12；[留档](docs/validation/newtask-v6/20260927-audit-fix.md) |
+
+### 0.2 对本方案的影响
+
+1. **D-4 已满足**：S3 结论已出，「不改 `src/robomme/`」的时间锁解除；阶段 5 仍排在 V1′ 之后（红线 R1 改写）。
+2. **V1′ 不能省，且分量加重**：S3 的 144 局跑在 `c8c06ab`，审查修复 `ca32e9b` 之后原三档只做过 48 次 reset 零漂移（G1），**没有做过 144 局轨迹对拍**。V1′（`robomme_hard` 原三档 vs S0 基线 `artifacts/newtask-v6/v1/base/`）因此兼任「审查修复后原三档首次全量轨迹对拍」；若 FAIL 要先分清是拆包引入还是 `ca32e9b` 引入（对照办法：同样 144 局用当前 `src/robomme` 再跑一侧，预算须另批）。
+3. **现行规格是 `v6-02`**，不是初稿写的 `v6-01`：包内 `env_metadata/xhard{1..4}/specs.jsonl` 从 `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl` 复制（四档 260 K / 280 K / 301 K / 367 K）；`SPECS_IDENTITY` 与 `v6-02` 比。第二部分 §1.1 表已同步改；附录 A 口径 4 与 §六 SPECS_IDENTITY 行仍是初稿原文（`v6-01`），以本节为准，附录不改。
+4. **数字勘误**：`scripts`+`tests` 引用 `robomme` 的文件实测 60 个（初稿 14+45=59）；`src/robomme` 内绝对 import 7 个文件（与第二部分 §1.1 的 7 行一致）；`src/robomme` 对上游 `1fadc0e` 为 26 个 .py 改、9 个 .py 新增、4 份 train 元数据改（与 §2.2/2.3 口径一致，审查修复没有新增文件）。
+5. **D-1、D-2、D-3 仍待裁决**（附录 A §四）；D-4 记「已满足」。
+6. **新增阶段 0b「legacy 清理」**（下节），插在实施步骤表阶段 0 与 1 之间，等用户逐组勾选后执行。
+
+### 0.3 阶段 0b：legacy 清理（用户逐组勾选后执行；清单见第二部分附录 B）
+
+- **为什么放在拆包前**：`scripts/injection/**`、V2 对拍测试与夹具、V4 探针、V3 容差对拍都不在 V6 四阶段 + V1′ 的 import 闭包内（闭包实测见附录 B 表 0）。先删掉它们，阶段 3 的 import 机械替换从 60 个文件缩到约 30 个，`LIGHTWEIGHT` 的 S0 基线失败集（46 failed / 12 errors）也随之缩小，减少拆包时的噪声。
+- **唯一的代码依赖**：`scripts/parity/v4_specs.py` 从 `scripts/injection/candidates/io.py` 只 import `canonical_json`、`digest` 两个纯函数（标准库实现）。删 injection 包前先把这两个函数内联进 `v4_specs.py`；阶段 2 下沉 `hard_specs.py` 时再归位。
+- **判据**：`git rm` 只按勾选清单逐路径执行、不用 glob；删后 `uv run --no-sync python -m pytest --collect-only -q tests/lightweight tests/dataset` 收集错误 0；`grep -rn "scripts.injection\|tests._shared.parity\|tests._shared.frozen_injection" scripts tests --include=*.py` 零命中；`ls -1 scripts/*.py` 仍为 P1 清单（若用户裁决删 `generate_dataset_newseed.py` 则 P1 改为四入口并同步 `AGENTS.md`）。判定行 `LEGACY_CLEANUP=PASS removed_tracked=<n> collect_errors=0 injection_refs=0`。
+- **红线**：`artifacts/` 下的删除逐目录显式列名（正本第 14 条，2026-09-12 跨运行 glob 事故）；附录 B 的 D 组（他人在途）一律不动。
 
 ## 一、env make 的接口：外层多传什么、内部多传什么
 
@@ -182,13 +208,13 @@ from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder   # ① import �
 
 ## 〇、前置声明与红线
 
-- R1 **S3 未出结论前不改 `src/robomme/`**（D-4）；阶段 0～3 全部只新增文件或改 `scripts/`、`tests/`、`pyproject.toml`。
+- R1 **（2026-09-27 改写）S3 与审查修复 G1 均已通过，D-4 满足；`src/robomme/` 的整体回退仍只在阶段 5、且排在 V1′ PASS 之后**；阶段 0～4 只新增文件或改 `scripts/`、`tests/`、`pyproject.toml`，阶段 0b 的删除按附录 B 勾选清单。
 - R2 `src/robomme/` 的目标字节 = 上游 `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`；取法只允许 `git fetch https://github.com/RoboMME/robomme_benchmark.git main` 后 `git checkout FETCH_HEAD -- src/robomme`（不合并、不 rebase）。
 - R3 `robomme_hard` 内零 `robomme.` 绝对 import；两包同进程互斥由 `robomme_hard/__init__.py` 负责，`robomme` 不改。
 - R4 `specs.jsonl` 行内容与 `identity_sha256` 不动；builder 侧 episode 重编号只在内存。
 - R5 三脚本 `evaluation.py` / `run_example.py` / `dataset_replay.py` 继续逐字节同上游；`evaluation_hard.py` 只允许 §5.4 的 diff。
 - R6 V1′ 144 次轨迹尝试是本方案唯一的生成预算（P3：单 worker >10 须授权，阶段 1 一次列齐）；不加 reset 对拍、不加 rollout。
-- R7 commit 只 add 本阶段文件；工作区里 S3 相关在途改动（`0925-newtask-release-v6-plan.md`、`scripts/parity/v6_tier_monotone.py`、`tests/lightweight/test_v6_tier_monotone.py`、`v6_site*`、`20260926-s3.md`）一律不碰。
+- R7 commit 只 add 本阶段文件。**当前在途改动（2026-09-27，属其他会话）一律不碰、不读、不删**：`M scripts/parity/v6_site.html`、`M scripts/parity/v6_site.py`、`?? logs/`、`?? scripts/configs/newtask-v6/smvla-smoke-0927/`、`?? scripts/parity/v6_gt_lengths.{py,json}`；以及 `artifacts/newtask-v6/smvla-0927{,-more,-fill,-smoke}`（约 2 TB，`logs/gen-*.sh` 的产物，账本无记录）与 tmux 会话 `smvla-site-8060`、`corlvis-site`。实施时以当时 `git status --short` 为准重列。
 - R8 长期文档禁行号引用；本文件锚点全部用 `文件::符号`。
 
 ## 一、逐文件改动清单
@@ -207,7 +233,7 @@ from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder   # ① import �
 | `env_record_wrapper/episode_config_resolver.py` | `BenchmarkEnvBuilder.__init__`、`_ALLOWED_DATASETS`、`_resolve_metadata_path`、`resolve_episode`、`get_episode_num`、`make_env_for_episode`、`from_v4_specs`、`v4_episodes`、`_v4_kwargs` | 按 §5.2：`_v4` 改名 `_hard`；`_ALLOWED_DATASETS` 并入四档；新增 `_resolve_specs_path()`、`get_difficulty_list()`、`hard_episodes()`；`from_v4_specs` 保留为包装 |
 | `env_record_wrapper/hard_specs.py` | 新 | 从 `scripts/parity/v4_specs.py` 搬 `HEADER_KEYS`、`canonical_json`、`digest`、`identity_sha256`、`seed_rule_for`、`_known_seed_rule`、`load_specs`；`source_fingerprint` 不符改 `warnings.warn` |
 | `env_record_wrapper/__init__.py` | 导出表 | 增 `hard_specs` |
-| `env_metadata/xhard{1..4}/specs.jsonl` | 新 | `cp scripts/configs/newtask-v6/v6-01/<tier>/specs.jsonl`；打包前按 §2.3 重算 `source_fingerprint` |
+| `env_metadata/xhard{1..4}/specs.jsonl` | 新 | `cp scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl`（现行 v6-02，2026-09-27 更正）；打包前按 §2.3 重算 `source_fingerprint` |
 | `README.md` | 新 | §5.5 |
 
 ### 1.2 `scripts/`、`tests/`（阶段 3）
@@ -284,6 +310,8 @@ uv run --no-sync python -c "from robomme_hard.env_record_wrapper import Benchmar
 - 本文件按正本第 2 条命名 `0926-robomme-hard-split-plan.md`；后续修订不改日期前缀。
 
 ## 附录 A、原第一部分（2026-09-26 初稿，内容未改，仅标题降一级）
+
+> 勘误注（2026-09-27）：本附录 §二口径 4、§六 SPECS_IDENTITY 行、§七阶段表所写 `v6-01` 均应读作 `v6-02`；§四 D-4 已满足；阶段表在阶段 0 与 1 之间新增阶段 0b（第一部分 §0.3）。附录正文按「内容未改」原则不动。
 
 
 ### 一、用户与合作者的原话（逐字）
@@ -471,3 +499,52 @@ V1′ 为什么能逐位：`robomme_hard` 的原三档路径与现 `src/robomme`
 | 6 文档与规则 | `src/robomme_hard/README.md`；`AGENTS.md` P1/P2 改写；账本追加；`docs/validation/newtask-v6/<日期>-hard-split.md` 报告 | `git diff --check`；README 内联全部判定行原文 | 否 |
 
 实施完成后实测结果以子节追加在本表之后，不改写原计划。
+
+
+## 附录 B、legacy 清单（2026-09-27，只读盘点；删除须用户逐组勾选后另起一轮执行）
+
+用户原话：「告诉我有哪些 legacy 文件可以删除 我只需要 v6 的几阶段来完成 … 的重构」。分组原则：**A** 不在 V6 四阶段 + V1′ 的闭包内、也不被保留测试引用 → 可删；**B** 历史留档、git 可追溯、删不删由用户定；**C** 必须保留；**D** 他人在途、不动。引用关系由 `grep`（含裸 import，`scripts/parity/__init__.py` 往 `sys.path` 插目录）与 `git ls-files` 实测。
+
+### 表 0　V6 四阶段 + V1′ 的依赖闭包（这就是要保留的最小集合）
+
+| 类别 | 文件 | 谁用 |
+|---|---|---|
+| 入口 | `scripts/parity/train_split_config.py`（阶段 1）、`v4_specs.py`（2a/2b）、`v4_rollout.py`（2c）、`v5_generation.py`（2a～2c 一键管道，审查修复三席用的就是它）、`scripts/eval/v4_eval.py`（3） | 第一部分 §三 |
+| 被入口 import | `scripts/seed_layout.py`（`train_split_config`、`v4_specs`、`train_split_parity`、`train_split_audit`、`v6_tier_monotone` 裸 import）；`train_split_runner.py`（`v4_rollout` subprocess）→ `train_split_worker.py`；`train_split_parity.py`（`v4_rollout::compare_h5_pair`、V1′ 比较器）→ `train_split_comparison.py` ↔ `comparator_fixtures.py`；`train_split_audit.py`（`test_v4_xhard_unmaskswap`/`videoplace` 用）；`scripts/injection/candidates/io.py` 的 `canonical_json`/`digest`（`v4_specs.py` 唯一的 injection 依赖，阶段 0b 内联） | 依赖闭包盘点 |
+| V6 收尾 | `scripts/parity/{v6_candidate_values,v6_tier_monotone,v6_v0_native_definitions,v6_site_catalog,v6_site}.py`、`v6_site.html` | 各自 `test_v6_*` |
+| 配置 | `scripts/configs/newtask-v3/{subset_manifest,train_manifest}.json` + `official_train/`（`train_split_parity.DEFAULT_FROZEN_DIR`、`train_split_audit`）；`newtask-v4/sampling_config.json`（`v4_specs.DEFAULT_SAMPLING`）；`newtask-v5/sampling_config.json`（`v6_v0_native_definitions`、CLAUDE.md 核实清单）；`newtask-v6/{sampling_config.json,v6-01/,v6-02/}`（`v6-01` 仍被 `v5_generation` 路径模板与 `test_v5_generation_tools` 引用） | grep |
+| 产物 | `artifacts/train-parity/local-smoke-01/official-src/`（`--official-root` 官方源码树，`.official_tree=1d4c1369…`）；`artifacts/newtask-v6/v1/base/`（S0 基线 144 局 49 GB，V1′ 对照侧）；`artifacts/newtask-v6/v6-02/`（现行 165 局 112 GB）；`artifacts/newtask-v6/{s4-relaunch-02,audit-fix-02}`（v6-02 验收链）；`artifacts/newtask-v6/{site-v11,site-v12}` | 第二部分 §2.2、审查修复留档 |
+
+### A　可删（git 跟踪的代码、测试、配置、留档）
+
+| 路径 | 规模 | 依据 |
+|---|---|---|
+| `scripts/injection/**`（`candidates/` 11 文件、`rollout/` 12 文件、`delivery.py`、`hf_release.py`、`_migrate_run10.py`、`__init__.py`） | 27 跟踪文件 | V2 注入流程（`INJECTION_REFACTOR_PLAN.md`）；V6 只用 `candidates/io.py` 两个纯函数，先内联进 `v4_specs.py`；`hf_release.py` 是运行 10 的 HF 发布器，`_migrate_run10.py` 只被 `test_injection_migration` 引用，`rollout/{figure_parity,single_binfill}.py` 无人引用 |
+| `scripts/parity/{v4_combos,v4_demo_probe,v4_reset_probe,v4_spec_negative}.py`、`scripts/configs/newtask-v4/combos.json` | 5 文件 | V4 探针；零测试引用，只被 0922/0924 计划与 v4/v5 留档提到 |
+| `scripts/parity/{calibrate,compare_vs_original}.py`、`tolerance.json`、`gl/`（2 文件）、`results/`（79 文件） | 83 文件 | V3 容差对拍（ada/a6000/a40 标定，`scripts/parity/README.md`）；V6 的 V1 走严格 sha 路径 `train_split_parity`，不用容差档；零测试引用 |
+| `tests/_shared/{parity_keyframes,parity_observer,parity_review,parity_runner,parity_worker_isolation,action_freeze_campaign,parallel_calibration,native_sampling_parity,contract_builder_fixture,frozen_injection}.py`、`tests/_shared/parity_sitecustomize/` | 11 项 | 全部只服务 V2 对拍与 injection（保留 `tests/_shared/{__init__,dataset_generation,repo_paths}.py`，上游原有） |
+| `tests/lightweight/{test_candidate_loader,test_candidates_refactor,test_env_check,test_episode_specs,test_episode_timeout,test_hf_release,test_injection_blocks,test_injection_campaign,test_injection_contract,test_injection_delivery,test_injection_migration,test_operand_scope,test_refactor_figures,test_reset_pipeline,test_rollout_parity,test_rollout_state,test_window_timeline,test_native_sampling_config,test_native_sampling_evidence,test_action_freeze_delivery,test_action_freeze_campaign}.py`、`tests/dataset/test_native_sampling_parity.py` | 22 文件 | import A 组模块或读 `scripts/configs/newtask-v2`／`docs/validation/newtask-v2`；`test_env_check` 还引用早已不存在的 `scripts/injection/env_check.py` |
+| `scripts/configs/newtask-v2/`（3 文件）、`newtask-v3/history/`（4）、`newtask-v4/v4-01/`（2）、`newtask-v5/v5-01/`（2） | 11 文件 | 只被 A 组代码／测试或历史文档读；`v4-01` 被 `test_v5_xhard_videounmask_buttonunmask.py` 以绝对路径引用一处、`v5-01` 被 `test_v5_generation_tools.py` 引用一处，删前改这两处夹具 |
+| `docs/validation/newtask-v2/**` | 115 文件、8.2 MB | 只被 A 组测试读取（`cases.json`、证据包） |
+| `INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` | 2 文件 | 只被 `AGENTS.md` 历史账本与 v2 留档引用（账本条目不改，死链可接受） |
+| `artifacts/injection/**`（320 跟踪文件、121 MB）、`artifacts/test-tmp/`（940 MB，514 个测试临时目录）、`artifacts/cache/`（144 MB uv 缓存）、`artifacts/codex-multiagent/`（5.6 MB）、`artifacts/logs/`（236 KB） | — | 与 A 组同源／临时／缓存；`artifacts/injection` 是唯一有 git 跟踪的 `artifacts` 子树，删时 `git rm -r --cached` 一并处理 |
+
+### B　历史留档，git 可追溯，由用户定（删了不影响拆包）
+
+| 路径 | 规模 | 说明 |
+|---|---|---|
+| `0921/0922/0924-newtask-release-v{3,4,5}-plan.md` | 3 文件、400 KB | 被 `train_split_parity/audit`、`v4_specs`、`v5_generation` 的 docstring 与 `test_v4_xhard_*`/`test_v5_*` 注释以链接引用（删了只是死链）；**建议留** |
+| `docs/validation/newtask-v{3,4,5}/` | 60 文件、<1 MB | 代码不读 |
+| `tests/lightweight/{test_swap_schedule_generic,test_binfill_demo_duplicate,test_h5_parity_compare,test_native_restore_step2}.py` | 4 文件 | 前两者只依赖 `generate_dataset_newseed.py`（随下一行裁决）；后两者只依赖 `repo_paths`，实施时看测试对象是否仍存在再定 |
+| `scripts/generate_dataset_newseed.py` | 1 文件 | **不在 V6 闭包内**，只被 A 组与上一行引用；但它是 P1 五入口之一，删除须用户明确改 P1 清单为四入口 |
+| `artifacts/newtask-v4/`、`artifacts/newtask-v5/` | 31 GB、32 GB | 旧规格产物；规格文件本身已在 git |
+| `artifacts/newtask-v6/{v6-01（94 GB）,v6-01-infra-recovery-01（18 GB）,v6-s2-20260926-01（73 GB）,v6-s3-20260926-01（49 GB）,gl-smoke-61890467-…（795 MB）,s3-slow-investigation（361 MB）,s0（361 MB）,plan-probes（154 MB）,s1-reset,s2-prep,s4-prep,s4-launch,vpb-order-fix-prep,site,site-v2,site-review,site-v3～site-v10}` | 约 236 GB | S2/S3 结论与 v6-01 对照已写进 `docs/validation/newtask-v6/`；用户 2026-09-24 口径「收尾只保留最终产物」支持删；`v6-s3` 删前确认 `compare/summary.json` 已在 `records/`；`s4-launch/` 含 S4 事故与恢复批准记录，建议只删其中大文件 |
+| `artifacts/audit/`（5 个 `v6-semantic-*`） | 1.1 GB | 两轮审查证据，结论已在 `0926-v6-audit-fix-plan.md` 第七、八节 |
+
+### C　必须保留
+
+`src/robomme/**`（回上游由阶段 5 处理）；`scripts/{evaluation,run_example,dataset_replay,seed_layout}.py`；表 0 全部；`scripts/parity/{manifest_16x3.json,identities_16x3.txt,README.md,__init__.py}`、`scripts/README.md`；`tests/` 其余（上游 29 文件 + `test_v4_*`、`test_v5_*`、`test_v6_*`、`test_bin_collision`、`test_sampling_config_split`、`test_comparator_scope`、`test_train_split_parity`、`test_scripts_do_not_import_tests` 等）；`docs/validation/newtask-v6/**`、`docs/README.md`、`docs/greatlakes.md`、`docs/maniskill-robomme-multiprocess.md`、`docs/validation/README.md`；三份 0925/0926 计划；上游原有 `challenge_interface/`、`doc/`、`Dockerfile`、`.dockerignore`、`readme.md`、`LICENSE`。
+
+### D　他人在途，不动
+
+`logs/`、`scripts/configs/newtask-v6/smvla-smoke-0927/`、`scripts/parity/v6_gt_lengths.{py,json}`、`M scripts/parity/v6_site.{html,py}`、`artifacts/newtask-v6/smvla-0927{,-more,-fill,-smoke}`（约 2 TB）、tmux `smvla-site-8060`、`corlvis-site`。
