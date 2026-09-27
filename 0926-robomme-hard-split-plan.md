@@ -11,32 +11,74 @@
 
 > 2026-09-27 修订：按用户要求，第一部分只讲三件事——①env make 的接口；②`src/robomme` → `src/robomme_hard` 的文件级清单（哪些原样继承、哪些要加东西）；③三个脚本阶段（生成 json、生成规格与轨迹、评估）各自怎么把参数传进 env make。原第一部分的对话原话、逻辑链条、裁决项、验收表全部移到第二部分附录 A，内容不变。文件级事实以 2026-09-27 `git fetch` 上游 `main` 后 `git diff --name-status FETCH_HEAD HEAD -- src/robomme` 实测为准（FETCH_HEAD = `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`，本地 HEAD = `57fe972`）。
 
-## 一、env make 的接口：两个包一套签名，`robomme_hard` 只多认三个 kwarg
+## 一、env make 的接口：外层多传什么、内部多传什么
 
-所有阶段最终都落到同一个调用：
+分两层看：外层是 `scripts/evaluation.py` 里用户写的那个 `BenchmarkEnvBuilder(...)` 调用；内部是 builder 在 `make_env_for_episode` 里拼给 `gym.make` 的 kwargs。
+
+### 1.1 外层：`evaluation.py` 的调用只改一个参数的取值，不加新参数
+
+上游 `evaluation.py` 原样：
 
 ```python
-gym.make(env_id, **kwargs)
+env_builder = BenchmarkEnvBuilder(
+    env_id=task,
+    dataset="test",
+    action_space="joint_angle",
+    max_steps=1300,
+)
 ```
 
-| kwarg | `robomme`（上游原样） | `robomme_hard` | 谁给 |
+`evaluation_hard.py` 里对应写法：
+
+```python
+env_builder = BenchmarkEnvBuilder(
+    env_id=task,
+    dataset=tier,            # 唯一变化：取值从 "test" 变成 "xhard1" / "xhard2" / "xhard3" / "xhard4"
+    action_space="joint_angle",
+    max_steps=1300,
+)
+```
+
+| 参数 | `evaluation.py` | `evaluation_hard.py` | 说明 |
 |---|---|---|---|
-| `obs_mode="rgb+depth+segmentation"` `control_mode="pd_joint_pos"` `render_mode="rgb_array"` `reward_mode="dense"` | 必传，四项固定 | 相同，四项固定；规格 header 的 `runtime` 存一份用来校验 | 调用方写死 |
-| `seed` | 必传 | 必传 | 原三档：metadata；新档：规格行 |
-| `difficulty` | `easy` / `medium` / `hard` | 原三档 + `xhard1`～`xhard4` | 同上 |
-| `robomme_failure_recovery` / `_mode` | 生成侧按 episode 段传（z / xy），评估侧不传 | 同左；V6 正式规格 `recovery_rule` 为空，实际不传 | 生成脚本 |
-| `sampling_config` | **不认** | 可选；不传时用类里的 `NATIVE_SAMPLING` 默认值，传了走 `_resolve_sampling_config` 校验 | 规格 header |
-| `native_episode_spec` | **不认** | 新档必传；`SpecRecorder` 进回注模式，每个取值点用冻结值、原抽样照常发生只作核验 | 规格行 `spec` |
+| `env_id` | 任务名 | 任务名 | 不变 |
+| `dataset` | `"test"` | `"xhard1"`～`"xhard4"` | **唯一变化**。原值域 `{train,test,val}` 扩为七个 |
+| `action_space` | `"joint_angle"` | `"joint_angle"` | 不变 |
+| `gui_render` | 默认 `False` | 默认 `False` | 不变 |
+| `override_metadata_path` | 默认 `None` | 默认 `None` | 不变；xhard 档下若传，解释为「含 `<tier>/specs.jsonl` 的目录」 |
+| `max_steps` | `1300` | `1300`（值由用户定，xhard 不受 1301 限制，默认仍传 1300） | 不变 |
 
-上层包装 `BenchmarkEnvBuilder` 的公开签名不变：
+**外层不多传任何新参数。** 后面用到的 `get_task_list()`、`get_episode_num()`、`make_env_for_episode(episode)` 三个方法签名与返回类型也不变。新增的只有一个类方法 `get_difficulty_list()`，`evaluation_hard.py` 用它做外层循环；三个无梯度任务（MoveCube / InsertPeg / StopCube）在 xhard1～3 下 `get_episode_num()` 返回 0，循环体自然跳过。
 
-```python
-BenchmarkEnvBuilder(env_id, dataset="test", action_space="joint_angle", gui_render=False,
-                    override_metadata_path=None, max_steps=10000)
-.get_task_list()  .get_episode_num()  .make_env_for_episode(episode_idx, max_steps=None, include_*...)
-```
+### 1.2 内部：builder 按 `dataset` 取值分两条路，拼给 `gym.make` 的 kwargs 多三项
 
-`robomme_hard` 版只加两处：`dataset` 多认 `xhard1`～`xhard4`（此时从包内 `env_metadata/<tier>/specs.jsonl` 读规格，把上表三个 kwarg 补进 `gym.make`）；新增类方法 `get_difficulty_list()` 返回四档。原三档 `dataset="train/test/val"` 路径与上游逐字相同。
+`make_env_for_episode(episode)` 内部最终调 `gym.make(self.env_id, **env_kwargs)`。两条路的 `env_kwargs`：
+
+| kwarg | `dataset="test"`（上游原样，`robomme` 与 `robomme_hard` 相同） | `dataset="xhardN"`（只有 `robomme_hard`） | 值从哪来 |
+|---|---|---|---|
+| `obs_mode="rgb+depth+segmentation"` | 传 | 传 | builder 写死 |
+| `control_mode="pd_joint_pos"` | 传 | 传 | builder 写死 |
+| `render_mode="rgb_array"` | 传 | 传 | builder 按 `gui_render` 定 |
+| `reward_mode="dense"` | 传 | 传 | builder 写死 |
+| `seed` | 传 | 传 | test：包内 `env_metadata/test/record_dataset_<task>_metadata.json` 该 episode 的 `seed`；xhard：包内 `env_metadata/<tier>/specs.jsonl` 该行的 `seed` |
+| `difficulty` | 传，`easy/medium/hard` | 传，`xhardN` | 同上两个文件 |
+| `sampling_config` | **不传** | **多传**：header 里该任务那一段（16 任务的 decision/native 块） | `specs.jsonl` 的 header |
+| `native_episode_spec` | **不传** | **多传**：该行的 `spec`，让 `SpecRecorder` 进回注模式，每个取值点用冻结值、原抽样照常发生只作核验 | `specs.jsonl` 的行 |
+| `robomme_failure_recovery` / `robomme_failure_recovery_mode` | **不传** | 条件传：header 的 `recovery_rule` 把该 episode 划进 z 或 xy 段时才传；V6 正式规格 `recovery_rule` 为空，实际**不传** | `specs.jsonl` 的 header |
+
+所以内部多传的就是 `sampling_config`、`native_episode_spec` 两项必传，`robomme_failure_recovery` 一项条件传。`sampling_config` 严格说可以省（不传时环境用类里的 `NATIVE_SAMPLING` 默认值，V6 快照正是从源码导出的同一份），传它是为了让 header 的 `sampling_config_sha256` 校验能挡住「包内源码与分发规格对不上」。
+
+`gym.make` 之后的包装层（`DemonstrationWrapper` 及按 `action_space` 选的 `Endeffector` / `MultiStep` / `OraclePlanner` wrapper）两条路完全相同，模型看到的 `obs` / `info["task_goal"]` / `step()` 五元组形状一致。
+
+### 1.3 builder 内部要改的三处
+
+| 锚点 | 现状 | 改成 |
+|---|---|---|
+| `episode_config_resolver.py::_ALLOWED_DATASETS` | `{"train","test","val"}` | 并入 `NEWVALUE_DIFFICULTIES` 四档 |
+| `BenchmarkEnvBuilder.__init__` | 只走 `_resolve_metadata_path` → `load_episode_metadata` | `dataset` 是 xhard 值时改走 `hard_specs.load_specs(包内 env_metadata/<tier>/specs.jsonl)`，把 header 该任务段与行装进 `self._hard`（即现 `from_v4_specs` 装 `self._v4` 的那套结构） |
+| `BenchmarkEnvBuilder.get_difficulty_list` | 不存在 | 新增类方法，返回四档列表 |
+
+`resolve_episode` / `get_episode_num` / `make_env_for_episode` 现在已经有 `self._v4` 分支（`from_v4_specs` 路径在用），只需把 `_v4` 改名 `_hard` 并让 `__init__` 也能填它；`from_v4_specs` 保留为薄包装以免打断现有 `scripts/eval/v4_eval.py`。episode 编号：xhard 行的候选序号是 0/3/6，builder 内存里重编为 0..2 让 `for episode in range(episode_count)` 循环体不改，原候选序号放 `info["hard_candidate_index"]`；规格行与 `identity_sha256` 不动。
 
 ## 二、文件级清单：`src/robomme_hard` 从哪来、哪些不动、哪些要加
 
