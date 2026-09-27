@@ -398,6 +398,34 @@ MoveCube peg_push 各 ≤10 局、VideoRepick xhard1～4 各 5～10 局、PickHi
 
 非 `src/robomme/` 改动：`scripts/configs/newtask-v6/sampling_config.json`（BUS 按钮名、VPB 台数、StopCube `motion_segments` 说明 N15）；`scripts/evaluation.py` 新档 `max_steps` 按档取值（N12）；`scripts/parity/v5_generation.py` MoveCube xhard4 选局按 `way_idx` 分层（N14）；本计划 §三/§四 文案（N9、N12、M2）；网站 `v6_site_catalog.py`（N1 等待段说明、VPB 单句题面与台交换说明、N3 历史说明、已知不修项列表）。
 
+
+### 8.5 网站更新清单（goal / subgoal 相关，只涉及 xhard1～4；用户 2026-09-27「追加」）
+
+**一、题面（task_goal）文字改动**
+1. PickHighlight：两句改为与新任务链一致——`first press the button, then pick up all highlighted cubes one by one, finally press the button to stop`（第二句同义变体），并修正 highlighteted 拼写。
+2. VideoPlaceButton：每局只保留一句——before 题 `…on the target where it was last placed before the button was pressed`，after 题 `…on the target where it was first placed after the button was pressed`；删去 right / immediately / previously placed 三种说法，网站写明删除原因（N3 时序不成立、N4 不唯一）与「台可交换、答案按台实体」。
+
+**二、子目标（subgoal）文字与链条改动**
+3. PickHighlight：末块抓起后新增 `place the cube onto the table`，链尾新增 `press the button at <坐标>`；成功时点后移到末按钮。
+4. ButtonUnmaskSwap：第二个按钮之后新增 `wait for the containers to finish swapping`（等待段不再标「press the second button」，choice 不再是 B）；网站按用户要求强调。
+5. VideoPlaceButton / VideoPlaceOrder：`put the cube back to its original position` 模板去掉 `at <>`；数据文字不变，网站注明该子目标无坐标是设计如此。
+6. SwingXtimes xhard4：第 11 轮由 `for the 11th time` 改为 `for the eleventh time`。
+7. VideoRepick xhard4：修复后每次交换对应一个 `static` 边界，边界数 = 交换数 + 1（以 N11 定位到根因为前提）。
+8. InsertPeg xhard4：`Pick up the peg by grasping the near/far end` 的 near/far 改按真实距离判定，个别候选标签翻转。
+
+**三、文字不变但含义或坐标变（网站必须解释）**
+9. VideoPlaceButton before 题答案改为「按钮前最后一次放置的台」，xhard2 及含额外 before 的局答案台会变（Q-C）。
+10. VideoPlaceButton xhard3/4 台数 4→5，额外放台落第 5 台，演示序列不再出现原地空转或两块同台（N2、F6）。
+11. ButtonUnmaskSwap 交换后 `grounded_subgoal` 的 `<坐标>` 随目标移动刷新（F4）。
+12. ButtonUnmaskSwap `button_left / button_right` 改为机器人坐标系命名，`press the first button` 与选择项 a 指向同一按钮（F3）；子目标文字不变。
+
+**四、只披露、不改动（「已知问题」页，按环境列出并注明「原三档同样存在，本轮不修」）**
+13. F2 VideoRepick「previously picked up N times」话术；F5 BinFill 悬空计数；D3 时间窗揭示；D7 VQA 外环不可选；N6～N8 与 S1 遮挡致坐标缺失；S2/S3 交换净恒等与延迟撤销；S4 VideoRepick 模板 1 读法；S5 SwingXtimes 主模板漏「放下」；S6 BinFill 序数无对应物；S7 抓取判据不分色；S8 PickHighlight 序数不可见；S9 RouteStick `NO RECORD`；S10 MoveCube 前相机遮挡；S11 MoveCube 判据不查方式；S12 InsertPeg 措辞不一致；S13 StopCube 容差；M3 ButtonUnmask 原三档容器截断。
+14. PickHighlight 新档无 `, which is <color>` 后缀与按钮失败判定差异（N9），注明来源为 V4 决策。
+15. 所有 left / right 均为机器人坐标系（D2）。
+
+判定行：`SITE_V11_CHANGELOG=PASS items=15`（页面逐条可见）；VPB/VPO 30 样例标签 `FLOW_LABELS=PASS samples=30`。
+
 ### 8.3 与原三档同源、只记录不修的清单（网站与留档披露）
 
 F2、F5、D3、D7、N6～N8、S1～S13、M3。网站「已知问题」页按环境列出，注明「原三档同样存在，本轮不修」。
