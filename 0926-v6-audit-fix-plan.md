@@ -351,3 +351,60 @@ MoveCube peg_push 各 ≤10 局、VideoRepick xhard1～4 各 5～10 局、PickHi
 - 第 5 项（F6/Q-C）前提修正：xhard3/4 台数 4→5 或改额外落点，否则占用表方案无候选（N2）。
 - 新增第 8 项 N1（BUS 等待子目标）、第 9 项 N10（序数词）、第 10 项 N11（VideoRepick 边界，先定位）、第 11 项 N13（PatternLock 注释）、第 12 项 M1（VideoRepick 失败窗口）、第 13 项 N3/N4/N5（VPB/VPO 话术与回原位子目标）。
 - 纯文档项：N9、N12、N15、M2 改计划或配置注释。
+
+## 八、最终裁决与定稿改动清单（2026-09-26 第三轮，用户逐条拍板；**仍未实施**）
+
+### 8.1 用户裁决原话与落地
+
+| 条目 | 用户原话 | 落地 |
+|---|---|---|
+| N1 | 「n1 subgoal定为wait 在网页中强调这个问题」 | BUS 新四档加等待子目标；网站说明 |
+| N2 | 「n2 同意改为5台 但是需要在正式开始修改文件时候 评估 5个能放下吗」 | xhard3/4 台数 4→5；实施第一步先跑 reset 验证 5 台可放，放不下回报 |
+| N3 / N4 | 「n3 不改但是记录下问题 在网页中」「n4 没看懂」→ 后续「vpo vpb同意 且vpb只保留这一句 网站要详细叙述这个问题」 | VPB 新四档题面只留 `…on the target where it was last placed before the button was pressed` / `…first placed after the button was pressed` 各一句，N3/N4 随之消失；网站详细叙述题面口径、台可交换、答案按台实体 |
+| N5 | 「n5 不要坐标了」 | VPB/VPO 放回原位模板删 `at <>` |
+| N6～N8 | 「n6 78都不改 被遮住 导致无坐标问题 不修复」 | 不修；F4 只做位移刷新，不做遮挡回填 |
+| N9 | 「n9 去掉后缀「, which is <color>」」 | 维持新档无后缀；计划补写差异来源 |
+| N10 | 「n10 修复 a」 | 共享序数词表 |
+| N11 | 「n11 a」 | 先定位根因再修，加判定行「边界数 = 交换数 + 1」 |
+| N12 | 「n12 a」 | 改计划清单；新档评估 `max_steps` 按档放宽 |
+| N13 | 「n13 a」 | 只改注释 |
+| N14 | 「n14 b」 | MoveCube xhard4 按运动方式分层选局，补生成一局 peg_push |
+| N15 | 「n15 a」 | 改配置说明文字 |
+| VPO | 「vpo没问题」 | 只做 N5 |
+| M1 | 「m1 a」 | VideoRepick 新四档失败窗口随轮次滚动 |
+| M2 | 「m2 a」 | 改计划文字 |
+| M3 | 未点名 | 只记录 |
+| S1～S5、S7～S13 | 「不管」 | 只记录 |
+| S6 | 「s6 a」 | 只记录 |
+
+### 8.2 定稿改动清单（`src/robomme/`，按 P2 逐项列出；用户下令实施后按此执行）
+
+| # | 文件 / 锚点 | 改什么 | 门控 | 需重抽候选 |
+|---|---|---|---|---|
+| 1 | `PickHighlight.py::_initialize_episode` | 末块也放下 + 追加末尾按钮任务（F1） | `is_newvalue_difficulty` | PH 是 |
+| 2 | `utils/task_goal.py::get_language_goal` PickHighlight 分支 | 两句改为与新任务链一致并修拼写（F1） | 同上 | — |
+| 3 | `utils/task_goal.py::get_language_goal` VideoPlaceButton 分支 | 新四档只生成一句：before 用 `last placed before`，after 用 `first placed after` | 同上 | — |
+| 4 | `ButtonUnmaskSwap.py` 配置 `positions.buttons[*].name`、`button_order`、`_initialize_episode` 的 `button_left/right` 赋值与任务链 `solve`/`segment` | 命名对齐机器人坐标系（左 = +y），建构顺序与位置不变（F3） | 全档改名；若名称入 HDF5 则门控 | — |
+| 5 | `ButtonUnmaskSwap.py::_initialize_episode` 任务链 | 第二按钮后插入 `wait for the containers to finish swapping` 子目标（N1），`func` 用交换时间表结束判定，choice 标签 `wait` | 同上 | BUS 是 |
+| 6 | `utils/segmentation_utils.py::process_segmentation` + BUS 给 `spawned_bins` 打标 `_robomme_refresh_on_move_px=8` | 子目标未切换但目标中心位移 > 8 px 时重算（F4）；**不做遮挡回填** | 按 actor 打标 | — |
+| 7 | `VideoPlaceButton.py::_initialize_episode`（V6 分支）+ `config_xhard3/4` `targets` 4→5 + `sampling_config.json` 同步 | 占用表抽额外台（F6/N2）；before 答案 = 按钮前最后一次放置（Q-C）；`_xhard_pick_place` 回原位模板删 `at <>`（N5） | V6 分支 | VPB 是 |
+| 8 | `utils/xhard_home_site.py` 新增 `validate_place_sequence` | 放置序列占用守卫，冲突抛 `SceneGenerationError` | V6 调用 | — |
+| 9 | `VideoPlaceOrder.py::_xhard_pick_place` | 回原位模板删 `at <>`（N5） | V6 分支 | VPO 否（文本不入 spec；若入则是） |
+| 10 | `SwingXtimes.py::_load_scene` | 序数改用 `subgoal_language._ordinal_word`（N10） | 仅 N>10 触发 | — |
+| 11 | `VideoRepick.py::_initialize_episode` 抓放任务 `failure_func` 的 `timewindow(max_steps=…)` | 新四档窗口随轮次滚动到最后一次放下（M1） | `is_newvalue_difficulty` | — |
+| 12 | `VideoRepick.py` / `utils/subgoal_evaluate_func.py::sequential_task_check` | N11 先定位「12 次交换 11 个边界」根因再修 | 待定位 | 视修法 |
+| 13 | `InsertPeg.py::_initialize_episode` `if xhard:` 分支 | near/far 改欧氏距离（D6） | xhard 分支 | — |
+| 14 | `PatternLock.py::config_xhard4` 上方注释与 `XHARD_DECISION` 注释 | 25 → [21,25]（N13） | 注释 | — |
+
+非 `src/robomme/` 改动：`scripts/configs/newtask-v6/sampling_config.json`（BUS 按钮名、VPB 台数、StopCube `motion_segments` 说明 N15）；`scripts/evaluation.py` 新档 `max_steps` 按档取值（N12）；`scripts/parity/v5_generation.py` MoveCube xhard4 选局按 `way_idx` 分层（N14）；本计划 §三/§四 文案（N9、N12、M2）；网站 `v6_site_catalog.py`（N1 等待段说明、VPB 单句题面与台交换说明、N3 历史说明、已知不修项列表）。
+
+### 8.3 与原三档同源、只记录不修的清单（网站与留档披露）
+
+F2、F5、D3、D7、N6～N8、S1～S13、M3。网站「已知问题」页按环境列出，注明「原三档同样存在，本轮不修」。
+
+### 8.4 实施顺序（等用户下令）
+
+1. VPB 5 台可放性 reset 验证（xhard3/4 各 ≥20 次 reset，只读 spec，不生成轨迹）→ 放不下先回报。
+2. 按 8.2 逐项改 → 定向单测 + G1～G3（原三档 48 次 reset 零漂移）→ commit/push → 集群侧同步。
+3. 三席起 S4 管道 `v6-02`（xhard1+2 / xhard3 / xhard4）→ `verify_s4.py` → 第二节各判定行 + `VPB_SEMANTIC` / `VPO_SEMANTIC` / `BUS_WAIT_SUBGOAL` / `VR_BOUNDARY` 判定行。
+4. 网站 site-v11 → Playwright 全量 → 留档 → commit/push。
