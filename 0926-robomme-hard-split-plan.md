@@ -30,7 +30,7 @@
 3. **legacy 口径改为「V6 之前的全部归档为经验教训」**：不再做 V2～V5 任何对拍与生成；相关代码、测试、配置、产物只有两种去处——经验教训文本进 `docs/`，其余删除（跟踪文件留 git 历史；`artifacts/` 未跟踪文件的唯一副本就是搬进 `docs/` 的那份）。V6 自己的中间产物同样只留现行交付。细则见 §0.3 与附录 B。
 4. **现行规格是 `v6-02`**：包内 `env_metadata/xhard{1..4}/specs.jsonl` 从 `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl` 复制（260 K / 280 K / 301 K / 367 K）；`SPECS_IDENTITY` 与 `v6-02` 比。附录 A 里的 `v6-01` 以本节为准。
 5. **数字勘误**：`scripts`+`tests` 引用 `robomme` 的文件 60 个；`src/robomme` 绝对 import 7 文件；对上游 `1fadc0e` 为 26 个 .py 改、9 个 .py 新增、4 份 train 元数据改。
-6. **D-1、D-2、D-3 仍待裁决**（附录 A §四）。
+6. **D-1～D-3 与 V1′ 预算已裁决（用户 2026-09-27 原话「同意 修改方案」，针对上一轮列出的四项）**：D-1 放行 `scripts/evaluation_hard.py` 为顶层入口（P1 在阶段 0b 删 `generate_dataset_newseed.py` 后为四入口，阶段 3 落 `evaluation_hard.py` 后为五入口：`dataset_replay.py`、`evaluation.py`、`evaluation_hard.py`、`run_example.py`、`seed_layout.py`）；D-2 `robomme_hard` 整包 copy、零跨包 import；D-3 四个 Unmask 系 train 元数据 400 条只留 `robomme_hard/env_metadata/train/`，`robomme` 回上游 100 条；V1′ 144 次轨迹尝试预算一次性授权（P3），不加 reset、不加 rollout，FAIL 时的 `--env-package robomme` 对照侧仍须另批。**阶段 1「裁决」到此完成，实施从阶段 0b 开始，不再逐阶段重问。**
 
 ### 0.3 阶段 0b：legacy 归档与删除（拆包前做；执行顺序即下列编号）
 
@@ -330,6 +330,7 @@ uv run --no-sync python -c "from robomme_hard.env_record_wrapper import Benchmar
 
 ## 附录 A、原第一部分（2026-09-26 初稿，内容未改，仅标题降一级）
 
+> 裁决注（2026-09-27）：§四 D-1～D-4 全部已裁决（放行第六入口 / 整包 copy / 400 条只留 `robomme_hard` / D-4 已满足），V1′ 144 次预算已授权，见第一部分 §0.2 第 6 条。
 > 勘误注（2026-09-27）：本附录 §二口径 4、§六 SPECS_IDENTITY 行、§七阶段表所写 `v6-01` 均应读作 `v6-02`；§四 D-4 已满足；§六 V1′ 行「复用 S3 运行器 `run_s3.py`」改为新入口 `scripts/parity/hard_parity.py`（第二部分 §2.2）；阶段表在阶段 0 与 1 之间新增阶段 0b（第一部分 §0.3），阶段 4 的判定行改为 `NATIVE_REGRESSION_HARD=…`。附录正文按「内容未改」原则不动。
 
 
