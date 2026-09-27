@@ -535,6 +535,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| V6 语义审查修复计划（2026-09-26） | 计划已落根目录，源码零改动，待用户下令实施 | 审查 14 条逐条解释与裁决：F1/F3/F4/F6/D6 与 VPB 旧题共 7 项 `src/robomme` 改动设计；F2/F5/D3/D7 记为与原三档同源的语义问题只报告；只改 xhard1～4、原三档路径不动；165 局用三席重跑 | 用户下令后按 P2 清单实施 → G1～G3 → 三席 S4 → site-v11 |
 | VPB/VPO网站人读子目标标签（2026-09-26） | 已上线site-v10并验证 | 30样例标签由位置链反推：方块数、放台次数与源码档定值一致，正确方块颜色与题目30/30相符；题意≠程序答案恰为已披露xhard3 ep3/6；30样例问句、标签、标记及播放PASS，页面错误0；213媒体与预览不变 | 保留网站与原数据；再改文案只改`label_flow`文案层并重建新目录 |
 | VPB/VPO网站原子子目标（2026-09-26） | 已被site-v10替代 | 30样例544真实子目标与HDF5边界一致，420图像坐标、30对同名静止保留；30样例列表切换及播放PASS，页面错误0；213原视频不变 | 保留网站与原数据；仅显示演示／执行原子子目标，不再使用按档概括 |
 | V6 S2～S5正式续行（2026-09-26） | 当前授权执行收尾；原验收通过，已知新档问题保留 | S3真实144身份SHA相同144、字段差异0、双方75404步且终态成功，退出0；S4为550候选、55格165程序成功，520梯度值PASS；网站213媒体全测及两任务10卡流程检查通过；[最终报告](docs/validation/newtask-v6/20260926-final.md) | 最终清单accepted仅原V1及来源文件门，KNOWN_ISSUES披露VPB/xhard3/ep3、6；用户仅网站注明、不修数据，补跑0。四GL席与网站保留，无剩余已授权生成 |
@@ -2456,3 +2457,13 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 有意不改：`src/robomme/**` 12 处注释（P2 逐个批准 + `source_fingerprint` 覆盖 `src/robomme/robomme_env` 全部 .py，改注释即改 v6-01 specs 封存指纹，且 S3 正在读活树）；`scripts/configs/newtask-v{5,6}/sampling_config.json` note 字段（全文与 sha 封存在 specs header）；`scripts/parity/results/_logs/*.txt` 与 `docs/validation/newtask-v6/20260926-s0.md` 的用户原话「NEWTASK_RELEASE_V6_PLAN.md 开始实施」；本账本历史日志条目（原始记录）。
 - 验证：`git diff --check` 与 `--cached --check` 通过；四个新链接目标全部存在；`pytest tests/lightweight/test_v6_tier_monotone.py tests/lightweight/test_v4_specs.py` 24 passed。
 - 下一步：`src/robomme/**` 注释里的旧名待拆包（0926 方案阶段 2 复制到 `robomme_hard` 时）一并改，不单独动。
+
+### 2026-09-26 America/Detroit — V6 语义审查修复计划（只规划）
+
+- 状态：计划完成，实施未开始。
+- 目标：把 `artifacts/audit/v6-semantic-evidence-01a0e086/审查汇总.md` 的 F1～F6、D1～D8 逐条解释、逐条请用户裁决，写成根目录 `0926-v6-audit-fix-plan.md`。
+- 执行命令：只读 `git show` / `grep` 核对源码锚点；`ssh -O check greatlakes` 与 `squeue -u hongzefu` 查四席状态（61890467/61890468/62018665 RUNNING，62018666 PENDING）。
+- 结果与证据：用户裁决 K1～K14 写入计划「一′、关键决策」；修项 F1（加末按钮）、F3（按钮命名对齐机器人坐标系）、F4（坐标缓存按位移刷新）、F6（额外放台占用表）、D6（near/far 欧氏距离）、VPB 旧题（答案改绑按钮前最后放置台）；不修项 F2、F5、D2、D3、D7 及原 hard 文案 D1/D4/D5。
+- 差异或阻塞：用户在确认清单后要求「不要实施！落到计划内」，源码零改动。
+- 修改文件：`0926-v6-audit-fix-plan.md`（新增）、本账本。
+- 下一步：等用户下令实施；实施顺序见计划第二部分 runbook。
